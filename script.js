@@ -1,6 +1,17 @@
 const WA='8801872692783',EMAIL='contact@hasankhshifat.com';
 const P=[['index.html','/','Home'],['services.html','/services','Services'],['projects.html','/projects','Projects'],['about.html','/about','About'],['contact.html','/contact','Contact']];
 const cur=document.body.dataset.p;
+// ElevenLabs conversational assistant widget — shared across every route.
+const elevenWidget=document.createElement('elevenlabs-convai');
+elevenWidget.setAttribute('agent-id','agent_5501m54wm9rwepdvpfff5t9thf92');
+elevenWidget.setAttribute('variant','tiny');
+elevenWidget.setAttribute('placement','bottom-right');
+document.body.appendChild(elevenWidget);
+const elevenScript=document.createElement('script');
+elevenScript.src='https://unpkg.com/@elevenlabs/convai-widget-embed';
+elevenScript.async=true;
+elevenScript.type='text/javascript';
+document.body.appendChild(elevenScript);
 document.getElementById('hd').innerHTML=`<div class="wrap nav"><a href="/" aria-label="Northstar Dizital AI home"><img src="/assets/logo.png" alt="Northstar Dizital" width="220" height="30"></a>
 <nav aria-label="Main"><div class="links" id="lk">${P.slice(1).map(p=>`<a href="${p[1]}" ${cur===p[0]?'aria-current="page"':''}>${p[2]}</a>`).join('')}<a href="/#pricing">Pricing</a><a href="/#approach">Approach</a><a href="/services#faq">FAQ</a></div></nav>
 <a class="btn w nc" href="/contact">Start a Project ↗</a><button class="burger" id="bg" aria-label="Menu" aria-expanded="false" aria-controls="lk">☰</button></div>`;
