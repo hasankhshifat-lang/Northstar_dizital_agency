@@ -35,6 +35,8 @@ All four were confirmed as differentiators:
 
 ## Brand Commitments
 - Name: **Northstar Dizital AI** (spelling "Dizital" is intentional). Logo at `assets/logo.png`.
+- Visual standard (chosen by the user, 2026-10-28): a clean, light, conventional studio site, executed at the polish of precise product sites (linear.app, vercel.com) and work-first small design studios. Convention is the commitment; no neon-on-dark, gradient text, or decorative 3D.
+- Logo violet (#966EFF) is the brand accent.
 - Voice: plain, practical, honest, no hype. "AI applied where it genuinely helps." Replies promise "a practical next step".
 
 ## Evidence on Hand
