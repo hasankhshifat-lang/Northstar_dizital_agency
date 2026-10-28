@@ -134,7 +134,7 @@ details{border-bottom:1px solid var(--ln);padding:6px 0}details:first-of-type{bo
 .cta{background:var(--fd);color:var(--ft);border-radius:20px;padding:clamp(40px,6vw,72px) clamp(24px,6vw,72px);text-align:left;display:grid;grid-template-columns:minmax(0,1.3fr) auto;gap:32px 48px;align-items:end}
 .cta h2{color:#fff;max-width:13em}.cta p{color:var(--fm);max-width:32em;margin-top:16px}
 .cta .ca{display:flex;flex-wrap:wrap;gap:12px}.cta .btn{margin:0}.cta .btn.g{background:#fff;border-color:#fff;color:var(--ink)}.cta .btn.g:hover{background:var(--at);border-color:var(--at);color:var(--ink)}.cta .btn:not(.g):not(.w){background:transparent;border-color:rgba(255,255,255,.35);color:var(--ft)}.cta .btn:not(.g):not(.w):hover{border-color:#fff}
-.cta .ce{grid-column:1/-1;font-size:.875rem;color:var(--fm)}.cta .ce a{color:#fff}
+.cta .ce{font-size:.875rem;color:var(--fm);margin-top:20px}.cta .ce a{color:#fff}
 .cta :focus-visible{outline-color:#fff}
 @media(max-width:860px){.cta{grid-template-columns:1fr}.cta .ca .btn{flex:1 1 220px}}
 
