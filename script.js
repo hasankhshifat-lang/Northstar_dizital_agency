@@ -21,7 +21,7 @@ if(cur)document.querySelectorAll(`#lk a[href="${cur}"]`).forEach(a=>a.setAttribu
 const yr=document.getElementById('yr');if(yr)yr.textContent=new Date().getFullYear();
 const h=document.getElementById('hd'),bg=document.getElementById('bg'),lk=document.getElementById('lk');
 const edge=()=>h.classList.toggle('s',scrollY>8);edge();addEventListener('scroll',edge,{passive:true});
-const menu=o=>{lk.classList.toggle('o',o);bg.setAttribute('aria-expanded',o);bg.setAttribute('aria-label',o?'Close menu':'Menu')};
+const menu=o=>{lk.classList.toggle('o',o);document.body.classList.toggle('mo-open',o);bg.setAttribute('aria-expanded',o);bg.setAttribute('aria-label',o?'Close menu':'Menu')};
 bg.onclick=()=>menu(!lk.classList.contains('o'));
 lk.addEventListener('click',e=>{if(e.target.closest('a'))menu(false)});
 addEventListener('keydown',e=>{if(e.key=='Escape'&&lk.classList.contains('o')){menu(false);bg.focus()}});
