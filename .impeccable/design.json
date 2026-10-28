@@ -1,0 +1,615 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-28T19:00:55.497982+00:00",
+  "title": "Design System: Northstar Dizital AI",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Ground",
+        "canonical": "#F7F7F9",
+        "oklch": "oklch(97.7% 0.003 286.4)",
+        "tonalRamp": [
+          "#0B0B0C",
+          "#252526",
+          "#424243",
+          "#616162",
+          "#828284",
+          "#A5A5A6",
+          "#C9C9CA",
+          "#EEEEEF"
+        ],
+        "cssVar": "--bg"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#FFFFFF",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ],
+        "cssVar": "--sf"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#101016",
+        "oklch": "oklch(17.6% 0.012 285.1)",
+        "tonalRamp": [
+          "#0B0B0D",
+          "#242529",
+          "#414147",
+          "#606068",
+          "#818189",
+          "#A4A4AB",
+          "#C8C8CE",
+          "#EEEEF2"
+        ],
+        "cssVar": "--ink"
+      },
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Ink Secondary",
+        "canonical": "#4A4856",
+        "oklch": "oklch(40.9% 0.023 291.9)",
+        "tonalRamp": [
+          "#0B0A0F",
+          "#25242C",
+          "#42404B",
+          "#615F6D",
+          "#82808F",
+          "#A5A3B0",
+          "#C9C8D2",
+          "#EEEDF5"
+        ],
+        "cssVar": "--i2"
+      },
+      "ink-tertiary": {
+        "role": "neutral",
+        "displayName": "Ink Tertiary",
+        "canonical": "#64616F",
+        "oklch": "oklch(50.0% 0.022 295.4)",
+        "tonalRamp": [
+          "#0B0A0F",
+          "#25242B",
+          "#42404A",
+          "#625F6C",
+          "#83808E",
+          "#A6A3AF",
+          "#C9C7D1",
+          "#EFEDF5"
+        ],
+        "cssVar": "--i3"
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#E3E1E9",
+        "oklch": "oklch(91.4% 0.011 297.6)",
+        "tonalRamp": [
+          "#0B0B0D",
+          "#252428",
+          "#424146",
+          "#626066",
+          "#838188",
+          "#A5A4AA",
+          "#C9C8CD",
+          "#EFEEF1"
+        ],
+        "cssVar": "--ln"
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "canonical": "#CFCCD8",
+        "oklch": "oklch(85.1% 0.017 297.5)",
+        "tonalRamp": [
+          "#0B0A0E",
+          "#25242A",
+          "#434148",
+          "#625F69",
+          "#83818B",
+          "#A6A3AC",
+          "#CAC8CF",
+          "#EFEDF3"
+        ],
+        "cssVar": "--ln2"
+      },
+      "logo-violet": {
+        "role": "primary",
+        "displayName": "Logo Violet",
+        "canonical": "#966EFF",
+        "oklch": "oklch(64.9% 0.206 292.4)",
+        "tonalRamp": [
+          "#10002E",
+          "#2A0D5B",
+          "#48268C",
+          "#6940C1",
+          "#8965E8",
+          "#A990FF",
+          "#CBBAFF",
+          "#F0E4FF"
+        ],
+        "cssVar": "--ac"
+      },
+      "ink-violet": {
+        "role": "primary",
+        "displayName": "Ink Violet",
+        "canonical": "#5A31D4",
+        "oklch": "oklch(47.6% 0.229 285.2)",
+        "tonalRamp": [
+          "#0D0034",
+          "#250A64",
+          "#402499",
+          "#5D3FD1",
+          "#7B65F8",
+          "#9C91FF",
+          "#C0BBFF",
+          "#E7E5FF"
+        ],
+        "cssVar": "--ai"
+      },
+      "violet-tint": {
+        "role": "primary",
+        "displayName": "Violet Tint",
+        "canonical": "#F0EBFF",
+        "oklch": "oklch(95.0% 0.027 297.3)",
+        "tonalRamp": [
+          "#0C0A10",
+          "#26232C",
+          "#43404C",
+          "#625E6E",
+          "#847F90",
+          "#A6A3B1",
+          "#CAC7D3",
+          "#EFEDF6"
+        ],
+        "cssVar": "--at"
+      },
+      "panel-ink-violet": {
+        "role": "secondary",
+        "displayName": "Panel Ink Violet",
+        "canonical": "#17112A",
+        "oklch": "oklch(20.0% 0.049 292.5)",
+        "tonalRamp": [
+          "#0B0914",
+          "#252232",
+          "#423E54",
+          "#625D79",
+          "#837E9C",
+          "#A5A1BB",
+          "#C9C6DB",
+          "#EEECFD"
+        ],
+        "cssVar": "--fd"
+      },
+      "panel-text": {
+        "role": "secondary",
+        "displayName": "Panel Text",
+        "canonical": "#F4F1FB",
+        "oklch": "oklch(96.3% 0.014 299.8)",
+        "tonalRamp": [
+          "#0B0B0D",
+          "#262429",
+          "#434147",
+          "#626067",
+          "#838189",
+          "#A6A4AB",
+          "#CAC8CE",
+          "#EFEEF2"
+        ],
+        "cssVar": "--ft"
+      },
+      "panel-muted": {
+        "role": "secondary",
+        "displayName": "Panel Muted",
+        "canonical": "#BDB5D3",
+        "oklch": "oklch(78.9% 0.043 297.6)",
+        "tonalRamp": [
+          "#0C0912",
+          "#262230",
+          "#443E52",
+          "#645D75",
+          "#857E98",
+          "#A7A1B8",
+          "#CBC6D8",
+          "#F0ECFA"
+        ],
+        "cssVar": "--fm"
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "#EEEDF2",
+        "oklch": "oklch(94.8% 0.007 295.4)",
+        "tonalRamp": [
+          "#0B0B0C",
+          "#252527",
+          "#424144",
+          "#616064",
+          "#828286",
+          "#A5A4A8",
+          "#C9C9CB",
+          "#EEEEF0"
+        ]
+      },
+      "bubble-grey": {
+        "role": "neutral",
+        "displayName": "Bubble Grey",
+        "canonical": "#F1F0F4",
+        "oklch": "oklch(95.7% 0.005 297.7)",
+        "tonalRamp": [
+          "#0B0B0C",
+          "#252526",
+          "#424144",
+          "#616164",
+          "#828285",
+          "#A5A4A7",
+          "#C9C9CB",
+          "#EEEEF0"
+        ]
+      },
+      "confirm-green": {
+        "role": "status",
+        "displayName": "Confirm Green",
+        "canonical": "#1E7A4C",
+        "oklch": "oklch(51.5% 0.112 156.4)",
+        "tonalRamp": [
+          "#001103",
+          "#002E17",
+          "#0B4F2E",
+          "#217248",
+          "#479568",
+          "#77B58F",
+          "#A5D7B7",
+          "#D4F9E1"
+        ],
+        "cssVar": "--ok"
+      },
+      "confirm-tint": {
+        "role": "status",
+        "displayName": "Confirm Tint",
+        "canonical": "#E8F4EE",
+        "oklch": "oklch(95.7% 0.015 164.7)",
+        "tonalRamp": [
+          "#090C0A",
+          "#212624",
+          "#3D4440",
+          "#5A645F",
+          "#7B8580",
+          "#9FA7A3",
+          "#C4CBC7",
+          "#EAF0ED"
+        ]
+      },
+      "error-red": {
+        "role": "status",
+        "displayName": "Error Red",
+        "canonical": "#B4234A",
+        "oklch": "oklch(50.8% 0.180 11.7)",
+        "tonalRamp": [
+          "#230004",
+          "#4D0017",
+          "#7A112E",
+          "#AA2848",
+          "#D14F68",
+          "#ED7E8E",
+          "#FFABB7",
+          "#FFD9E0"
+        ],
+        "cssVar": "--bad"
+      },
+      "error-tint": {
+        "role": "status",
+        "displayName": "Error Tint",
+        "canonical": "#FBEAEF",
+        "oklch": "oklch(95.2% 0.020 357.6)",
+        "tonalRamp": [
+          "#0E0A0B",
+          "#2A2325",
+          "#493F42",
+          "#6A5D61",
+          "#8C7E82",
+          "#ADA1A5",
+          "#D0C6C9",
+          "#F4ECEE"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page H1s only; balanced wrapping, about 11em wide on the home hero and 14em on inner page headers."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section H2s, including the closing panel heading."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card, step and project titles; packages step to 1.25rem, service rows to 1.5rem."
+      },
+      "price": {
+        "displayName": "Price",
+        "purpose": "Package amounts in the sans with tabular figures, never in the mono."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "One-sentence subcopy under an H1, in ink-secondary."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Secondary card copy, package lists, footer links."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "All button labels."
+      },
+      "label-mono": {
+        "displayName": "Label Mono",
+        "purpose": "Recorded facts: payment terms, durations, frame URLs, the hero price line, category tags, provenance labels, the example label."
+      },
+      "numeral-mono": {
+        "displayName": "Numeral Mono",
+        "purpose": "Two-digit step counters in ink-violet."
+      }
+    },
+    "fonts": [
+      {
+        "family": "Schibsted Grotesk",
+        "source": "/assets/fonts/schibsted-grotesk.woff2",
+        "weights": "400 900",
+        "role": "display and body"
+      },
+      {
+        "family": "Spline Sans Mono",
+        "source": "/assets/fonts/spline-sans-mono.woff2",
+        "weights": "300 700",
+        "role": "metadata"
+      }
+    ],
+    "shadows": [
+      {
+        "name": "frame-rest",
+        "value": "0 1px 2px rgba(16,16,22,.04), 0 24px 48px -24px rgba(16,16,22,.22)",
+        "purpose": "The hero browser frame."
+      },
+      {
+        "name": "frame-quiet",
+        "value": "0 1px 2px rgba(16,16,22,.04)",
+        "purpose": "Work frames at rest."
+      },
+      {
+        "name": "frame-lifted",
+        "value": "0 1px 2px rgba(16,16,22,.04), 0 30px 56px -24px rgba(16,16,22,.3)",
+        "purpose": "Work frames on hover, with a 3px rise."
+      },
+      {
+        "name": "chat-card",
+        "value": "0 2px 4px rgba(16,16,22,.05), 0 30px 60px -20px rgba(16,16,22,.3)",
+        "purpose": "The example conversation floating over the hero frame."
+      },
+      {
+        "name": "menu-drop",
+        "value": "0 18px 30px -18px rgba(16,16,22,.25)",
+        "purpose": "The open mobile menu panel."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 3px #F0EBFF",
+        "purpose": "Inputs on focus, with an ink-violet border."
+      },
+      {
+        "name": "recommended-ring",
+        "value": "inset 0 0 0 1px #966EFF",
+        "purpose": "Doubles the logo-violet border of the recommended package to a 2px ring."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-settle",
+        "value": "cubic-bezier(.2,.8,.2,1)",
+        "purpose": "Button press, frame lift, chat message entry, burger rotation."
+      },
+      {
+        "name": "duration-state",
+        "value": "0.2s",
+        "purpose": "Colour and border changes on buttons, links, cards, inputs and the header edge."
+      },
+      {
+        "name": "duration-object",
+        "value": "0.35s",
+        "purpose": "Frame lift on hover and chat message entry (6px rise)."
+      },
+      {
+        "name": "chat-sequence",
+        "value": "plays once at 50% visibility: 500ms delay, 1100ms typing before each assistant line, 500ms before the Booked chip, 900ms after user lines, 600ms after others",
+        "purpose": "The signature example booking."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all animation and transition disabled; smooth scroll off; chat shown complete",
+        "purpose": "prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "560px"
+      },
+      {
+        "name": "work-stack",
+        "value": "720px"
+      },
+      {
+        "name": "services-stack",
+        "value": "760px"
+      },
+      {
+        "name": "panel-stack",
+        "value": "860px"
+      },
+      {
+        "name": "nav-collapse",
+        "value": "900px"
+      },
+      {
+        "name": "pricing-stack",
+        "value": "980px"
+      },
+      {
+        "name": "container",
+        "value": "1160px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink-filled main action, e.g. Start a project; hover turns ink-violet.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Start a project</a>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:12px 22px;border-radius:10px;font:600 .9375rem/1.2 var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif);letter-spacing:-.005em;border:1px solid var(--ink,#101016);background:var(--ink,#101016);color:#fff;text-decoration:none;cursor:pointer;transition:background-color .2s,border-color .2s,transform .2s cubic-bezier(.2,.8,.2,1)}.ds-btn-primary:hover{background:var(--ai,#5A31D4);border-color:var(--ai,#5A31D4)}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:2px solid var(--ai,#5A31D4);outline-offset:3px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "White outlined companion action, e.g. Chat on WhatsApp with its line icon.",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3.2a8.8 8.8 0 0 0-7.6 13.2L3.2 20.8l4.5-1.2A8.8 8.8 0 1 0 12 3.2z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M9.1 7.6c.3 0 .5 0 .7.5l.8 1.8c.1.3 0 .5-.1.7l-.6.7c-.1.2-.2.3 0 .6.6 1 1.6 2 2.7 2.6.3.1.4.1.6-.1l.7-.8c.2-.2.4-.3.7-.2l1.8.9c.4.2.4.3.4.6 0 .9-.6 1.8-1.6 2-1 .3-2.6-.1-4.4-1.5a10 10 0 0 1-3-3.6c-.7-1.6-.4-3 .3-3.7.3-.3.6-.5 1-.5z\"/></svg>Chat on WhatsApp</a>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:12px 22px;border-radius:10px;font:600 .9375rem/1.2 var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif);letter-spacing:-.005em;border:1px solid var(--ln2,#CFCCD8);background:var(--sf,#fff);color:var(--ink,#101016);text-decoration:none;cursor:pointer;transition:border-color .2s,transform .2s cubic-bezier(.2,.8,.2,1)}.ds-btn-secondary:hover{border-color:var(--ink,#101016)}.ds-btn-secondary:active{transform:translateY(1px)}.ds-btn-secondary:focus-visible{outline:2px solid var(--ai,#5A31D4);outline-offset:3px}"
+    },
+    {
+      "name": "Text Link",
+      "kind": "custom",
+      "refersTo": "button-secondary",
+      "description": "Semibold ink link with a hairline underline; hover turns ink-violet.",
+      "html": "<a class=\"ds-tl\" href=\"#\">Ask about this package on WhatsApp</a>",
+      "css": ".ds-tl{display:inline-flex;align-items:center;gap:8px;min-height:44px;font:600 .9375rem/1.4 var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif);color:var(--ink,#101016);text-decoration:underline;text-decoration-color:var(--ln2,#CFCCD8);text-underline-offset:5px;text-decoration-thickness:1px;transition:color .2s,text-decoration-color .2s}.ds-tl:hover{color:var(--ai,#5A31D4);text-decoration-color:currentColor}.ds-tl:focus-visible{outline:2px solid var(--ai,#5A31D4);outline-offset:3px;border-radius:4px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labelled white field; focus shows an ink-violet border and violet-tint halo.",
+      "html": "<label class=\"ds-field\">Business name <span class=\"ds-opt\">(optional)</span><input class=\"ds-input\" type=\"text\" placeholder=\"Nadia Bridal Studio\"></label>",
+      "css": ".ds-field{display:grid;gap:8px;font:600 .875rem/1.4 var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif);color:var(--ink,#101016)}.ds-opt{font-weight:400;color:var(--i3,#64616F)}.ds-input{background:var(--sf,#fff);border:1px solid var(--ln2,#CFCCD8);border-radius:10px;padding:12px 14px;min-height:48px;width:100%;box-sizing:border-box;font:400 1rem/1.4 var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif);color:var(--ink,#101016);transition:border-color .2s,box-shadow .2s}.ds-input:hover{border-color:var(--i3,#64616F)}.ds-input:focus{border-color:var(--ai,#5A31D4);box-shadow:0 0 0 3px var(--at,#F0EBFF);outline:0}.ds-input[aria-invalid=true]{border-color:var(--bad,#B4234A)}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "description": "Sticky 72px header: logo, quiet links with a current-page state, WhatsApp icon button and compact primary action.",
+      "html": "<nav class=\"ds-nav\"><strong class=\"ds-nav-logo\">Northstar Dizital</strong><div class=\"ds-nav-links\"><a href=\"#\" aria-current=\"page\">Services</a><a href=\"#\">Work</a><a href=\"#\">Pricing</a><a href=\"#\">About</a></div><a class=\"ds-nav-cta\" href=\"#\">Start a project</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:28px;height:72px;padding:0 20px;background:rgba(247,247,249,.94);border-bottom:1px solid var(--ln,#E3E1E9);font-family:var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif)}.ds-nav-logo{margin-right:auto;font-weight:700;letter-spacing:-.02em;color:var(--ink,#101016)}.ds-nav-links{display:flex;gap:4px;font-size:.9375rem;color:var(--i2,#4A4856)}.ds-nav-links a{padding:10px 12px;border-radius:8px;color:inherit;text-decoration:none;transition:color .2s,background-color .2s}.ds-nav-links a:hover{color:var(--ink,#101016);background:rgba(16,16,22,.04)}.ds-nav-links a[aria-current]{color:var(--ink,#101016);font-weight:600}.ds-nav-links a:focus-visible,.ds-nav-cta:focus-visible{outline:2px solid var(--ai,#5A31D4);outline-offset:3px}.ds-nav-cta{display:inline-flex;align-items:center;min-height:42px;padding:10px 16px;border-radius:10px;background:var(--ink,#101016);color:#fff;font:600 .875rem/1.2 inherit;text-decoration:none;transition:background-color .2s}.ds-nav-cta:hover{background:var(--ai,#5A31D4)}"
+    },
+    {
+      "name": "Provenance Label and Capability Tag",
+      "kind": "chip",
+      "refersTo": "provenance-label",
+      "description": "Mono mist label stating what a piece of work is, beside a white outlined capability tag.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-lab\">Demo · sample content</span><span class=\"ds-tag\">Appointment booking</span></div>",
+      "css": ".ds-chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ds-lab{font:500 .75rem/1 var(--mono,\"Spline Sans Mono\",ui-monospace,monospace);padding:5px 8px;border-radius:6px;background:#EEEDF2;color:var(--i2,#4A4856)}.ds-tag{font:500 .8125rem/1 var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif);padding:7px 10px;border:1px solid var(--ln,#E3E1E9);border-radius:6px;background:var(--sf,#fff);color:var(--i2,#4A4856)}"
+    },
+    {
+      "name": "Pricing Package (Recommended)",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat white package with logo-violet ring, Recommended badge, sans price, mono terms and a ruled definition list.",
+      "html": "<article class=\"ds-pk\"><span class=\"ds-rb\">Recommended</span><h3>Business Website</h3><p class=\"ds-for\">Established salons, clinics and service businesses.</p><p class=\"ds-amt\">৳18,000–30,000</p><p class=\"ds-mono\">One-time payment</p><dl><dt>Pages</dt><dd>Up to 5</dd><dt>Delivery</dt><dd>7–12 days</dd></dl><a class=\"ds-pk-btn\" href=\"#\">Choose Business</a></article>",
+      "css": ".ds-pk{position:relative;max-width:340px;background:var(--sf,#fff);border:1px solid var(--ac,#966EFF);box-shadow:inset 0 0 0 1px var(--ac,#966EFF);border-radius:12px;padding:28px;font-family:var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif);color:var(--ink,#101016)}.ds-rb{position:absolute;top:-12px;left:27px;background:var(--ai,#5A31D4);color:#fff;font:600 .75rem/1 inherit;padding:6px 10px;border-radius:6px}.ds-pk h3{margin:0;font-size:1.25rem;font-weight:600;letter-spacing:-.015em}.ds-for{margin:6px 0 0;color:var(--i2,#4A4856);font-size:.9375rem}.ds-amt{margin:22px 0 0;font-weight:600;font-size:2rem;line-height:1.1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.ds-mono{margin:6px 0 0;font-family:var(--mono,\"Spline Sans Mono\",ui-monospace,monospace);font-size:.8125rem;color:var(--i3,#64616F)}.ds-pk dl{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;margin:22px 0;padding:18px 0;border-block:1px solid var(--ln,#E3E1E9);font-size:.9375rem}.ds-pk dt{color:var(--i3,#64616F)}.ds-pk dd{margin:0;text-align:right;font-weight:600}.ds-pk-btn{display:flex;justify-content:center;align-items:center;min-height:48px;border-radius:10px;background:var(--ink,#101016);color:#fff;font-weight:600;font-size:.9375rem;text-decoration:none;transition:background-color .2s}.ds-pk-btn:hover{background:var(--ai,#5A31D4)}.ds-pk-btn:focus-visible{outline:2px solid var(--ai,#5A31D4);outline-offset:3px}"
+    },
+    {
+      "name": "Browser Frame",
+      "kind": "custom",
+      "description": "Signature container for real work: hairline frame, 36px bar with window dots and mono URL, 16:10 screenshot.",
+      "html": "<div class=\"ds-frame\"><div class=\"ds-fb\"><i></i><i></i><i></i><span>ladiesparlor.pages.dev</span></div><div class=\"ds-shot\"></div></div>",
+      "css": ".ds-frame{max-width:520px;background:var(--sf,#fff);border:1px solid var(--ln,#E3E1E9);border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(16,16,22,.04);transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}.ds-frame:hover{transform:translateY(-3px);box-shadow:0 1px 2px rgba(16,16,22,.04),0 30px 56px -24px rgba(16,16,22,.3)}.ds-fb{display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-bottom:1px solid var(--ln,#E3E1E9);background:#FBFBFC}.ds-fb i{width:9px;height:9px;border-radius:50%;background:var(--ln,#E3E1E9)}.ds-fb span{margin-left:6px;font:400 .75rem/1 var(--mono,\"Spline Sans Mono\",ui-monospace,monospace);color:var(--i3,#64616F)}.ds-shot{aspect-ratio:16/10;background:#EEEDF2}"
+    },
+    {
+      "name": "Example Conversation",
+      "kind": "custom",
+      "description": "Phone-scale chat card labelled as an example, ending on a confirm-green Booked chip.",
+      "html": "<figure class=\"ds-chat\"><figcaption class=\"ds-ch\"><span class=\"ds-av\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"m12 2.5 2 7.5 7.5 2-7.5 2-2 7.5-2-7.5-7.5-2 7.5-2z\"/></svg></span><span><b>AI receptionist</b><small>Example conversation</small></span></figcaption><ul class=\"ds-cl\"><li class=\"ds-u\">4:30 please. It's for Nadia.</li><li class=\"ds-a\">Done. Bridal trial, Saturday 4:30 PM, booked for Nadia.</li><li class=\"ds-k\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7\"/></svg>Booked · Sat 4:30 PM</li></ul></figure>",
+      "css": ".ds-chat{margin:0;width:310px;background:var(--sf,#fff);border:1px solid var(--ln,#E3E1E9);border-radius:16px;overflow:hidden;box-shadow:0 2px 4px rgba(16,16,22,.05),0 30px 60px -20px rgba(16,16,22,.3);font-family:var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif);color:var(--ink,#101016)}.ds-ch{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--ln,#E3E1E9)}.ds-av{width:30px;height:30px;border-radius:50%;background:var(--at,#F0EBFF);color:var(--ai,#5A31D4);display:grid;place-items:center}.ds-ch b{display:block;font-size:.875rem;line-height:1.2}.ds-ch small{font:400 .6875rem/1.3 var(--mono,\"Spline Sans Mono\",ui-monospace,monospace);color:var(--i3,#64616F)}.ds-cl{list-style:none;margin:0;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:.875rem;line-height:1.45}.ds-cl li{max-width:86%;padding:8px 12px;border-radius:12px}.ds-u{align-self:flex-end;background:var(--ink,#101016);color:#fff;border-bottom-right-radius:4px}.ds-a{align-self:flex-start;background:#F1F0F4;border-bottom-left-radius:4px}.ds-k{align-self:flex-start;display:flex;align-items:center;gap:8px;background:#E8F4EE;color:var(--ok,#1E7A4C);font-weight:600;font-size:.8125rem}"
+    },
+    {
+      "name": "Closing Panel",
+      "kind": "card",
+      "refersTo": "closing-panel",
+      "description": "Inset ink-violet panel ending each page with the form and WhatsApp actions.",
+      "html": "<div class=\"ds-cta\"><div><h2>Tell us about your business.</h2><p>Send a short brief or message us on WhatsApp. You will get a practical next step.</p></div><div class=\"ds-ca\"><a class=\"ds-cta-p\" href=\"#\">Start a project</a><a class=\"ds-cta-s\" href=\"#\">Chat on WhatsApp</a></div></div>",
+      "css": ".ds-cta{display:grid;grid-template-columns:minmax(0,1.3fr) auto;gap:32px 48px;align-items:end;background:var(--fd,#17112A);color:var(--ft,#F4F1FB);border-radius:20px;padding:56px 48px;font-family:var(--sans,\"Schibsted Grotesk\",system-ui,sans-serif)}.ds-cta h2{margin:0;color:#fff;font-size:2.4rem;line-height:1.08;letter-spacing:-.035em;font-weight:600;max-width:13em}.ds-cta p{margin:16px 0 0;color:var(--fm,#BDB5D3);max-width:32em}.ds-ca{display:flex;flex-wrap:wrap;gap:12px}.ds-cta-p,.ds-cta-s{display:inline-flex;align-items:center;min-height:48px;padding:12px 22px;border-radius:10px;font-weight:600;font-size:.9375rem;text-decoration:none;transition:background-color .2s,border-color .2s}.ds-cta-p{background:#fff;border:1px solid #fff;color:var(--ink,#101016)}.ds-cta-p:hover{background:var(--at,#F0EBFF);border-color:var(--at,#F0EBFF)}.ds-cta-s{background:transparent;border:1px solid rgba(255,255,255,.35);color:var(--ft,#F4F1FB)}.ds-cta-s:hover{border-color:#fff}.ds-cta a:focus-visible{outline:2px solid #fff;outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Open Studio Bench",
+    "overview": "A precise, light studio site that shows the offer instead of describing it. The page is a cool near-white bench on which real things are laid out: live client screenshots in thin browser frames, a phone-width example conversation that books an appointment, three fixed-price packages with their terms printed in mono. Near-black ink carries almost everything; violet appears only where the visitor can act or where Northstar is making a recommendation. The visual standard is conventional by commitment: the polish of precise product sites and work-first small studios, not a novel layout.\n\nDensity is calm but not sparse. Sections breathe on a 48 to 96px rhythm, content sits in a 1160px column, and structure comes from hairline rules and 12px-cornered white surfaces rather than colour blocks or shadows. The one dark moment is the inset ink-violet closing panel that ends each page with the two ways to start: the form and WhatsApp.\n\nThe world replaces the earlier dark theme and refuses the neon \"AI agency\" page outright: no glow, no gradient text, no 3D faces, no buzzword tickers. The AI is shown working (the example chat), never decorated.",
+    "keyCharacteristics": [
+      "Cool near-white ground, near-black ink, white surfaces separated by hairlines.",
+      "One violet family: ink-violet for actions, focus and icons; logo violet only for the brand mark, selection and the recommended-package ring.",
+      "Schibsted Grotesk set tight for display and body; Spline Sans Mono for metadata only.",
+      "Real screenshots in thin browser frames are the primary imagery.",
+      "One inset ink-violet closing panel per page, never a full-bleed field.",
+      "Authored line-icon SVGs at a 1.8 stroke."
+    ],
+    "rules": [
+      {
+        "name": "The Earned Violet Rule",
+        "body": "Violet marks an action, a focus, or Northstar's recommendation. If an element is neither clickable, focused, nor the recommended package, it is ink or grey.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Violets Rule",
+        "body": "Logo violet is a brand mark and a ring; ink-violet is the working accent. Text and icons in violet always use ink-violet.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ledger Rule",
+        "body": "Mono is for recorded facts: terms, durations, URLs, tags, step numerals, the example label. Headings, prices, buttons and prose are always the sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Headings are sentence case and end with a full stop when they are a statement (\"Fixed prices, agreed before we start.\").",
+        "section": "typography"
+      },
+      {
+        "name": "The Artefact Rule",
+        "body": "Only things that represent real objects (a screenshot, a phone conversation, an open menu) cast shadows. Cards, packages and panels stay flat and are separated by hairlines.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep the page on the ground colour with white surfaces and 1px hairlines; let structure come from rules, not fills.",
+      "Do use ink-violet for every violet text, icon, focus and hover; reserve logo violet for the logo, selection and the recommended ring.",
+      "Do show real work in the browser frame, 16:10, top-anchored, with its URL in the bar and its provenance label beside the title.",
+      "Do set prices in the sans with tabular figures and put their terms (payment, duration) in the mono.",
+      "Do give every button a 48px minimum target and keep the form and WhatsApp side by side wherever a page asks for action.",
+      "Do end each page with the inset ink-violet closing panel at 20px corners, inside the content column.",
+      "Do draw icons as authored inline line SVGs at 1.8 stroke, round caps and joins, 14 to 20px.",
+      "Do make any motion play once and leave a complete static state for reduced motion."
+    ],
+    "donts": [
+      "Don't use glow, gradient text, neon-on-dark, 3D faces or buzzword tickers; this world replaced the dark AI-agency theme.",
+      "Don't set violet text in logo violet (#966EFF holds only 3.5:1 on white).",
+      "Don't extend the closing panel to full bleed or add a second dark band elsewhere on the page.",
+      "Don't put a mono or uppercase line above a section heading; mono belongs to facts, not to introducing headings.",
+      "Don't add shadows to cards, packages or the closing panel.",
+      "Don't set headings, prices, buttons or paragraphs in the mono.",
+      "Don't show demo or concept work, or the example conversation, without its label."
+    ]
+  }
+}
