@@ -1,0 +1,77 @@
+# Which Life Next — daily video job
+
+The scheduled task runs this once a day (13:17 SGT). It makes one 6–7 minute video and
+3 Shorts cut from it, and schedules all four for the next morning (SGT).
+
+Channel: **Which Life Next (@whichlifenext)**, YouTube channel `UCPTrW0n3ONI9uU4WetWwFCQ`.
+Audience: USA. The user gave standing approval for these daily posts (see `CLAUDE.md`), so
+the job does not wait for a confirmation.
+
+## 1. Pick today's topic (USA demand)
+
+1. Read `topics-log.md` so no topic repeats within 30 days.
+2. Check the channel's recent uploads and their views (Clawlink `youtube`) to stay in the niche:
+   "which life next" — what-if lives, reincarnation and "if you were born as…" scenarios,
+   alternate life paths, life in other eras and places.
+3. Find 3–5 reference videos in this niche that are getting a lot of views right now, with a
+   US audience: YouTube search with `regionCode: US`, recent uploads (last 30 days), sorted by
+   views; also check US Google/YouTube trends for the niche.
+4. Choose the topic with the best views-per-day and a clear angle we can do better or
+   differently. The reference is **inspiration only**: write an original script, use no
+   footage, audio or script text from the reference video.
+
+## 2. Make the long video (6–7 minutes, 1920×1080)
+
+1. Script: 900–1,050 words (~6.5 min). Hook in the first 10 seconds, open a question,
+   pay it off at the end. US English, US units and examples. Mark 3 self-contained
+   moments of 30–55 seconds each for the Shorts.
+2. Voiceover: ElevenLabs `creative_generate_speech`. Use the same voice every day; record
+   its `voice_id` in `config.md` the first time and reuse it.
+3. Visuals: AI-generated images (image-generation skill), one every 5–8 seconds, with slow
+   zoom/pan, matched to the script. No copyrighted footage.
+4. Assemble with `ffmpeg`: images + voiceover + burned-in captions + quiet royalty-free
+   music bed (or none). Check the final length is 6:00–7:00.
+5. Thumbnail: 1280×720, bold 3–4 word text, high contrast.
+6. Metadata: title under 60 characters with the main search phrase, description with a
+   2-line summary, chapters and 3–5 hashtags, 10–15 tags. Mark "altered or synthetic
+   content" where YouTube asks, since visuals and voice are AI-made.
+
+## 3. Cut 3 Shorts (1080×1920, under 60 seconds)
+
+Cut the 3 marked moments from the long video, reframe to vertical (blurred background fill or
+crop), large captions, a hook text in the first second, and end with "Full video on the
+channel". Title each with `#shorts`. In the description, link the long video once it has an ID.
+
+## 4. Schedule
+
+Read the slots in `config.md` (default: long video 06:00, Shorts 08:00 / 09:00 / 11:00 SGT,
+the next calendar day). Each of the 4 posts follows the rotation in `/CLAUDE.md`, one post at
+a time: read the last row of `social/youtube-schedule-log.md`, use the other tool, log it,
+then do the next post.
+
+- **Clawlink**: `multipart_upload_video`, `privacyStatus: "private"`, `publishAt` in UTC
+  (06:00 SGT = 22:00 UTC the day before).
+- **Metricool**: needs the video at a public URL. Upload the file to Google Drive and share it
+  as "anyone with the link"; use the direct download link. If that is not possible, say so,
+  use Clawlink for that post, and log Clawlink (rule 5 in `CLAUDE.md`).
+
+## 5. Log, commit, push
+
+- Add the 4 rows to `social/youtube-schedule-log.md` and one row to `topics-log.md`.
+- Commit and push to the session's branch. Never commit the video files.
+- Finish with a short summary: topic, reference videos, 4 titles, publish times (SGT and
+  US Eastern), tool and ID of each post, and anything that failed.
+
+## 6. Monday: timing review
+
+Every Monday, before step 1: once there are 14+ days of posts, pull US views per post by
+publish hour (YouTube Analytics through Clawlink, or Metricool `getAnalyticsDataByMetrics` /
+`getBestTimeToPostByNetwork` for brand `7727550`). Apply the rules in `config.md`, update the
+slots there if the data supports it, and add a row to `timing-log.md` either way.
+
+## If something fails
+
+- A step that fails: retry once. If it still fails, schedule what is ready, and report what
+  did not get scheduled and why. Never publish a video that is shorter than 6 minutes or has
+  no voiceover.
+- Never post something now (public) in place of scheduling it.

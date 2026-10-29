@@ -17,3 +17,11 @@ Every YouTube post that is scheduled goes through **one** of two tools, taking t
    Log the tool that was actually used, so the next post goes to the other tool.
 
 Confirm the title, description, publish time, and video file with the user before scheduling.
+
+## Which Life Next daily videos: standing approval
+
+The user gave standing approval (2026-10-29) for the daily **Which Life Next** job: 1 long
+video + 3 Shorts a day, scheduled without asking first. For these posts only, the
+"Confirm … with the user before scheduling" rule above does not apply. Follow
+`social/which-life-next/RUNBOOK.md`; publish slots are in `social/which-life-next/config.md`.
+The rotation rules above still apply to every post. Stop when the user says stop.
