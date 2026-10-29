@@ -8,7 +8,13 @@ type Word = { w: string; s: number; e: number };
 type Segment = { words: Word[] };
 
 /** Word-by-word captions, 1-3 words per page, current word highlighted. */
-export const Captions: React.FC<{ segments: Segment[]; y?: number }> = ({ segments, y = 1330 }) => {
+export const Captions: React.FC<{ segments: Segment[]; y?: number; size?: number; maxWords?: number; side?: number }> = ({
+  segments,
+  y = 1330,
+  size = 104,
+  maxWords = 3,
+  side = 80,
+}) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
@@ -29,7 +35,7 @@ export const Captions: React.FC<{ segments: Segment[]; y?: number }> = ({ segmen
   for (const w of words) {
     cur.push(w);
     const ends = /[.,?!]$/.test(w.w.trim());
-    if (cur.length >= 3 || ends) {
+    if (cur.length >= maxWords || ends) {
       pages.push(cur);
       cur = [];
     }
@@ -46,12 +52,12 @@ export const Captions: React.FC<{ segments: Segment[]; y?: number }> = ({ segmen
         style={{
           position: "absolute",
           top: y,
-          left: 80,
-          right: 80,
+          left: side,
+          right: side,
           textAlign: "center",
           fontFamily: "Oswald",
           fontWeight: 700,
-          fontSize: 104,
+          fontSize: size,
           lineHeight: 1.05,
           textTransform: "uppercase",
           scale: String(pop),
@@ -82,8 +88,8 @@ export const DayCounter: React.FC<{ day: number | string }> = ({ day }) => (
   <div
     style={{
       position: "absolute",
-      top: 120,
-      left: 80,
+      top: 90,
+      left: 90,
       padding: "14px 30px",
       backgroundColor: "rgba(27,22,18,0.78)",
       borderRadius: 14,
@@ -106,7 +112,8 @@ export const Stamp: React.FC<{
   y?: number;
   color?: string;
   bg?: string;
-}> = ({ text, start = 0, size = 150, y = 520, color = C.cream, bg = "rgba(27,22,18,0.82)" }) => {
+  side?: number;
+}> = ({ text, start = 0, size = 150, y = 520, color = C.cream, bg = "rgba(27,22,18,0.82)", side = 70 }) => {
   const frame = useCurrentFrame();
   const f = frame - start;
   return (
@@ -114,8 +121,8 @@ export const Stamp: React.FC<{
       style={{
         position: "absolute",
         top: y,
-        left: 70,
-        right: 70,
+        left: side,
+        right: side,
         textAlign: "center",
         opacity: interpolate(f, [0, 4], [0, 1], clamp),
         scale: String(interpolate(f, [0, 8], [1.35, 1], { ...clamp, easing: Easing.out(Easing.back(2)) })),

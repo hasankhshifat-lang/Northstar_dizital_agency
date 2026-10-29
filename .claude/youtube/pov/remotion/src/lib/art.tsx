@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, interpolate, interpolateColors, random, useCurrentFrame } from "remotion";
+import { AbsoluteFill, interpolate, interpolateColors, random, useCurrentFrame, useVideoConfig } from "remotion";
 import { C } from "./theme";
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
@@ -37,8 +37,9 @@ export const Prairie: React.FC<{ time?: number; horizon?: number; sun?: boolean 
   const sky = interpolateColors(time, [0, 0.5, 1, 1.3], [C.skyDawn, C.skyDay, C.skyDusk, C.skyNight]);
   const ground = interpolateColors(time, [0, 0.5, 1, 1.3], ["#b88f50", C.prairie, "#8f6a3a", "#3b3324"]);
   const far = interpolateColors(time, [0, 0.5, 1, 1.3], ["#a88a63", "#a9a07a", "#8a5f45", "#2c2c3a"]);
-  const sunX = interpolate(time, [0, 1], [150, 930], clamp);
-  const sunY = interpolate(time, [0, 0.5, 1], [horizon - 60, 260, horizon - 60], clamp);
+  const { width: W, height: H } = useVideoConfig();
+  const sunX = interpolate(time, [0, 1], [W * 0.14, W * 0.86], clamp);
+  const sunY = interpolate(time, [0, 0.5, 1], [horizon - 60, H * 0.135, horizon - 60], clamp);
   return (
     <AbsoluteFill style={{ backgroundColor: sky }}>
       {sun && time < 1.15 ? (
@@ -55,9 +56,9 @@ export const Prairie: React.FC<{ time?: number; horizon?: number; sun?: boolean 
           }}
         />
       ) : null}
-      <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
-        <path d={`M0 ${horizon - 40} Q 270 ${horizon - 110} 540 ${horizon - 50} T 1080 ${horizon - 70} V 1920 H 0 Z`} fill={far} />
-        <path d={`M0 ${horizon} Q 300 ${horizon - 50} 620 ${horizon + 10} T 1080 ${horizon - 20} V 1920 H 0 Z`} fill={ground} />
+      <svg width={W} height={H} style={{ position: "absolute", inset: 0 }}>
+        <path d={`M0 ${horizon - 40} Q ${W * 0.25} ${horizon - 110} ${W * 0.5} ${horizon - 50} T ${W} ${horizon - 70} V ${H} H 0 Z`} fill={far} />
+        <path d={`M0 ${horizon} Q ${W * 0.28} ${horizon - 50} ${W * 0.57} ${horizon + 10} T ${W} ${horizon - 20} V ${H} H 0 Z`} fill={ground} />
       </svg>
     </AbsoluteFill>
   );
@@ -233,12 +234,13 @@ export const IndependenceRock: React.FC = () => (
 /** Falling snow. density = flakes. */
 export const Snow: React.FC<{ density?: number; wind?: number }> = ({ density = 80, wind = 2 }) => {
   const frame = useCurrentFrame();
+  const { width: W, height: H } = useVideoConfig();
   return (
     <AbsoluteFill>
       {new Array(density).fill(0).map((_, i) => {
         const speed = 4 + random(`s${i}`) * 6;
-        const x0 = random(`x${i}`) * 1200 - 60;
-        const y = ((random(`y${i}`) * 1920 + frame * speed) % 2000) - 40;
+        const x0 = random(`x${i}`) * (W + 120) - 60;
+        const y = ((random(`y${i}`) * H + frame * speed) % (H + 80)) - 40;
         const x = x0 + Math.sin((frame + i * 13) / 20) * 20 + frame * wind * 0.5;
         const r = 4 + random(`r${i}`) * 8;
         return (
@@ -246,7 +248,7 @@ export const Snow: React.FC<{ density?: number; wind?: number }> = ({ density = 
             key={i}
             style={{
               position: "absolute",
-              left: ((x % 1180) + 1180) % 1180 - 50,
+              left: ((x % (W + 100)) + (W + 100)) % (W + 100) - 50,
               top: y,
               width: r * 2,
               height: r * 2,
@@ -263,13 +265,15 @@ export const Snow: React.FC<{ density?: number; wind?: number }> = ({ density = 
 
 export const River: React.FC<{ y?: number; h?: number }> = ({ y = 1250, h = 420 }) => {
   const frame = useCurrentFrame();
+  const { width: W, height: H } = useVideoConfig();
+  const rows = Math.max(2, Math.floor(h / 80));
   return (
-    <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
-      <path d={`M0 ${y} Q 540 ${y - 60} 1080 ${y} V ${y + h} Q 540 ${y + h + 40} 0 ${y + h} Z`} fill={C.river} />
-      {[0, 1, 2, 3, 4].map((i) => (
+    <svg width={W} height={H} style={{ position: "absolute", inset: 0 }}>
+      <path d={`M0 ${y} Q ${W / 2} ${y - 60} ${W} ${y} V ${y + h} Q ${W / 2} ${y + h + 40} 0 ${y + h} Z`} fill={C.river} />
+      {new Array(rows * Math.ceil(W / 1080)).fill(0).map((_, i) => (
         <path
           key={i}
-          d={`M${((frame * 3 + i * 260) % 1300) - 200} ${y + 60 + i * 70} q 60 -14 120 0`}
+          d={`M${((frame * 3 + i * 260) % (W + 220)) - 200} ${y + 50 + (i % rows) * ((h - 80) / rows)} q 60 -14 120 0`}
           stroke={C.riverLight}
           strokeWidth={8}
           fill="none"
@@ -336,18 +340,24 @@ export const Bacon: React.FC = () => (
 );
 
 /** Shop counter + chalk price board. */
-export const Store: React.FC = () => (
-  <AbsoluteFill style={{ backgroundColor: "#5a3c24" }}>
-    <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-        <rect key={i} x={i * 140} y={0} width={136} height={1920} fill={i % 2 ? "#5f4028" : "#563921"} />
-      ))}
-      <rect x={70} y={180} width={940} height={640} rx={18} fill="#2c3a33" stroke="#8a6239" strokeWidth={24} />
-      <rect x={0} y={1450} width={1080} height={470} fill="#3e2716" />
-      <rect x={0} y={1430} width={1080} height={40} fill="#7a5130" />
-    </svg>
-  </AbsoluteFill>
-);
+export const Store: React.FC<{ board?: { x: number; y: number; w: number; h: number }; counterY?: number }> = ({
+  board = { x: 70, y: 180, w: 940, h: 640 },
+  counterY = 1450,
+}) => {
+  const { width: W, height: H } = useVideoConfig();
+  return (
+    <AbsoluteFill style={{ backgroundColor: "#5a3c24" }}>
+      <svg width={W} height={H} style={{ position: "absolute", inset: 0 }}>
+        {new Array(Math.ceil(W / 140)).fill(0).map((_, i) => (
+          <rect key={i} x={i * 140} y={0} width={136} height={H} fill={i % 2 ? "#5f4028" : "#563921"} />
+        ))}
+        <rect x={board.x} y={board.y} width={board.w} height={board.h} rx={18} fill="#2c3a33" stroke="#8a6239" strokeWidth={24} />
+        <rect x={0} y={counterY} width={W} height={H - counterY} fill="#3e2716" />
+        <rect x={0} y={counterY - 20} width={W} height={40} fill="#7a5130" />
+      </svg>
+    </AbsoluteFill>
+  );
+};
 
 /** Brown campfire-coloured vignette for mood. */
 export const Vignette: React.FC<{ strength?: number }> = ({ strength = 0.55 }) => (
