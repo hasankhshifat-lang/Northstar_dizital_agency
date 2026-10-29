@@ -22,8 +22,10 @@ Confirm the title, description, publish time, and video file with the user befor
 
 Account: Which Life Next (@whichlifenext), via Clawlink `tiktok`. Log: `social/tiktok-post-log.md`.
 
-1. An hourly check lists the channel's uploads (`youtube` → `list_channel_videos`, channel `UCPTrW0n3ONI9uU4WetWwFCQ`)
-   and picks every **public** video not yet in the TikTok log.
+1. No hourly polling. Check only at publish times: whenever a YouTube post is scheduled (or found scheduled in
+   Metricool / YouTube), set a one-time check-in (`send_later`) for about 5 minutes after its publish time. At the
+   check-in, confirm it is public (`youtube` → `list_channel_videos`, channel `UCPTrW0n3ONI9uU4WetWwFCQ`); if not yet,
+   check again 15 minutes later.
 2. Find its file in Google Drive folder `1kAnmt3gXTQ_iuYWXdTNHoOw5Gu2slDr4` (match by the Drive file named in
    `social/youtube-schedule-log.md`, else by name/topic; ask the user if unsure). Stage it with `google-drive` →
    `download_file`, which returns a claw-link.dev URL for `tiktok` → `publish_video`.
