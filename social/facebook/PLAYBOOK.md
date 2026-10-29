@@ -1,7 +1,9 @@
 # NorthStar Dizital — Facebook Page playbook
 
 Page: **NorthStar Dizital** (`1390585830800081`), posted through Clawlink (`integration: facebook`).
-Audience: local business owners in Bangladesh — salons, parlours, clinics, doctors, restaurants,
+**Focus (from 2026-10-30): the AI assistant / AI receptionist service — every post is about it.**
+Pillars and daily angles: `content-pillars.md` (one pillar + one fresh angle per post).
+Audience: business owners in Bangladesh, online and offline — salons, parlours, clinics, doctors, restaurants,
 cleaning and other service businesses.
 
 The owner approved daily publishing without further approval (2026-10-29).
@@ -113,16 +115,8 @@ Headline: `*word*` marks the highlighted part. Keep headlines ≤ 8 words, point
 
 ## Topic bank
 
-Websites: Facebook page বনাম website · Google-এ খুঁজে পাওয়া · mobile-friendly কেন জরুরি ·
-WhatsApp button দিয়ে বেশি enquiry · Google Maps-এ location · service/price page কেন দরকার ·
-landing page কী, কখন লাগে · domain আর hosting সহজ ভাষায় · website বানাতে কী কী লাগে (owner checklist) ·
-slow website-এ customer হারানো · পুরনো website-এর ৫টা লক্ষণ · e-commerce: Facebook order বনাম online shop ·
-maintenance কেন লাগে · SEO-friendly structure সহজ ভাষায়.
-AI: AI voice assistant কীভাবে call ধরে · রাত ১১টার enquiry-ও miss না করা · chatbot দিয়ে booking ·
-AI কোথায় সত্যি সময় বাঁচায় (আর কোথায় না).
-Industry: salon/parlour · bridal studio · clinic/doctor appointment · restaurant menu & booking ·
-cleaning service quote form · coaching centre · freelancer/personal brand portfolio.
-Agency: আমাদের ৪ ধাপের process · ৩টা package তুলনা · portfolio project spotlight (bridal, doctor demo,
-cleaning concept, personal portfolio) · FAQ (কত দিন লাগে? কী দিতে হবে?) · behind the scenes.
-Seasonal: Eid/Pohela Boishakh/wedding season offers — only if the owner has given an offer; otherwise
-seasonal tips without discounts.
+Use `content-pillars.md`. Each post: one pillar, one angle not used in the last 30 posts.
+Good visual ideas for this service: a chat mockup (customer asks at 2 AM → AI answers in seconds),
+a phone call screen, "AI vs staff" comparison card, an industry card (salon/clinic/ISP/f-commerce),
+a 4-step setup card. In videos use the `search`, `showcase` (chat or phone screenshot),
+`features` and `statement` scenes to show the assistant actually working.
