@@ -19,7 +19,7 @@ Audio: `audio/shorts/short-{A,B,C}-*.mp3` (also on the ElevenLabs flow "POV 01 -
 
 ## Short A - Cholera (39s)
 
-**Title:** POV: The Oregon Trail's Deadliest Killer Takes 12 Hours
+**Title:** POV: The Oregon Trail Killer That Can Take You in 12 Hours
 
 **New first line** - hookscore **74 STRONG** (The Question):
 > You have 12 hours. On the Oregon Trail, the thing that kills you most can take you before
@@ -37,6 +37,30 @@ question lands with the viewer already knowing.
 stacked or reframed per shot; in 16:9 the shovel and the wagon sit at the edges and will be cropped.
 Centre the man's face and the tin cup. Grave-marker wide shot at the end: crop to the nearest
 marker, not the whole trail.
+
+---
+
+### Short A - publish pack
+
+**Title** (57 chars): `POV: The Oregon Trail Killer That Can Take You in 12 Hours`
+("Can take you", not "takes": the Park Service says victims *often* died within 12 hours.)
+
+**Description:**
+```
+It's 1850. The man in the next wagon is fine at breakfast. By evening you're digging his grave. Cholera killed more people on the Oregon Trail than anything else - and nobody on the trail knew how it spread.
+
+Full 30-day story: [link the full video here]
+
+Source: National Park Service, "Death on the Trails" - https://www.nps.gov/articles/000/death-on-trails.htm
+Narration voiced with AI. Animation made by the channel.
+
+#Shorts #OregonTrail #History
+```
+
+**Tags:**
+```
+oregon trail, oregon trail cholera, cholera, oregon trail pov, pioneer life 1850, what killed people on the oregon trail, westward expansion, animated history, pov history, american history, shorts
+```
 
 ---
 
