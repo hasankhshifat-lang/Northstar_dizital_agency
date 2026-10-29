@@ -77,11 +77,30 @@ What that shows:
   again". *(inferred from the careful wording in the sample)*
 - No guarantees about ranking on Google or going viral.
 
+## Default voiceover - every video
+
+Every YouTube video (long-form and Shorts) uses this voice unless the user says otherwise for that
+specific video. Do not pick, suggest or audition another voice.
+
+| Setting | Value |
+|---|---|
+| Voice | Mike - 2D & 3D POV/Storytime (ElevenLabs library voice) |
+| voice_id | `zfc8CJQpe8Kqyl0vvCzo` |
+| Speed | 1.10 |
+| Stability | 50% |
+| Similarity boost | 75% |
+| Language / accent | English, neutral American |
+
+Settings come from the reference file the user approved
+(`ElevenLabs_..._Mike_-_2D__3D_POV_Storytime__pvc_sp110_s50_sb75_v4.mp3`). When generating speech,
+pass this voice_id and these settings, and write scripts for this voice: short sentences, spoken
+rhythm, roughly 150 words per minute at speed 1.10.
+
 ## My format
 
 - **Length:** ~50 seconds, about 125 words (~150 wpm). Built for Shorts / Reels.
-- **Voice:** AI voiceover, ElevenLabs "Mike" (speed 1.10, stability 50, similarity 75 - from the
-  file name). No one appears on camera.
+- **Voice:** AI voiceover, ElevenLabs "Mike" - see "Default voiceover" above. No one appears on
+  camera.
 - **Visuals:** 2D / 3D animated POV storytime - the viewer sees the owner's day from her side.
 - **No intro, no channel branding at the start.** Brand appears only in the last line.
 - **Structure:** pain question → her customers' questions → cost of not replying → "Just imagine!"
