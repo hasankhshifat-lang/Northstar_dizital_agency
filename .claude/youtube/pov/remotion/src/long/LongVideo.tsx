@@ -25,6 +25,7 @@ import { Boot, Campfire, Diary, Dresser, HTrailMap, Marker, PersonIcon, Raft, Ri
 import { Captions, Clock, Counter, DayCounter, Stamp } from "../lib/hud";
 import { Scene, lerp, useT } from "../lib/scene";
 import { C } from "../lib/theme";
+import { Kit } from "../lib/Kit";
 import words from "../data/long-oregon-trail.json";
 
 export const LONG_SECONDS = 188.3;
@@ -58,6 +59,9 @@ const TitleCard = () => (
       <Wagon />
     </Place>
     <Stamp text="30 DAYS" y={380} size={220} bg={C.red} side={300} />
+    <div style={{ position: "absolute", left: 1480, top: 400 }}>
+      <Kit mood="determined" size={620} />
+    </div>
   </AbsoluteFill>
 );
 
@@ -71,11 +75,14 @@ const Independence = () => {
           <Wagon />
         </Place>
       ))}
-      {[0, 1, 2].map((i) => (
+      {[0, 2].map((i) => (
         <Place key={`p${i}`} x={300 + i * 520} y={H - 120} scale={0.55}>
           <Person shirt={[C.shirt, "#8e6b4f", "#7a6a8f"][i]} />
         </Place>
       ))}
+      <div style={{ position: "absolute", left: 830, top: H - 180 }}>
+        <Kit mood="happy" look={-1} size={460} />
+      </div>
       <T text={t < 3.4 ? "INDEPENDENCE, MISSOURI · SPRING 1850" : "2,000 MILES TO OREGON"} size={80} start={t < 3.4 ? 0 : 102} />
       <Vignette />
     </AbsoluteFill>
@@ -98,6 +105,9 @@ const DiaryScene = () => {
 const Day1 = () => (
   <AbsoluteFill style={{ backgroundColor: C.ink }}>
     <Stamp text="DAY 1" y={300} size={240} bg="transparent" side={300} />
+    <div style={{ position: "absolute", left: 1460, top: 360 }}>
+      <Kit mood="determined" pose="walk" size={620} />
+    </div>
     <Stamp text="30 DAYS. LET'S SEE." y={620} size={80} side={300} start={30} />
   </AbsoluteFill>
 );
@@ -185,9 +195,9 @@ const Walk = () => {
         <Ox step={t * 6} />
       </Place>
       {t > 3.8 ? (
-        <Place x={1240} y={lerp(t, [3.8, 4.2], [1100, H - 170])} scale={0.8}>
-          <Person shirt="#7a6a8f" />
-        </Place>
+        <div style={{ position: "absolute", left: 1260, top: lerp(t, [3.8, 4.2], [1100, H - 330]) }}>
+          <Kit mood="determined" pose="walk" size={460} />
+        </div>
       ) : null}
       {t > 1.5 && t < 3.8 ? <T text="NO SEAT - IT'S FULL" bg={C.red} /> : null}
       {t >= 3.8 ? <T text="YOU WALK. EVERY MILE." /> : null}
@@ -275,6 +285,9 @@ const Miles = () => {
       <Place x={lerp(t, [0, 4.8], [380, 440], (x) => x)} y={H - 50} scale={0.8}>
         <Ox step={t * 4} />
       </Place>
+      <div style={{ position: "absolute", left: lerp(t, [0, 4.8], [1300, 1360], (x) => x), top: H - 330 }}>
+        <Kit mood="determined" pose="walk" size={460} />
+      </div>
       <T text="10-15 MILES A DAY · ON FOOT" />
       <Vignette />
     </AbsoluteFill>
@@ -339,6 +352,9 @@ const Across = () => {
       <Place x={760} y={lerp(t, [0, 1.6], [520, 360])} scale={0.9}>
         <Wagon wheelTurn={t * 60} />
       </Place>
+      <div style={{ position: "absolute", left: 1400, top: H - 420 }}>
+        <Kit mood={t > 2.6 ? "worried" : "happy"} size={430} look={-1} />
+      </div>
       {t > 2.6 ? <T text="AND THIS ISN'T WHAT KILLS YOU FIRST" size={74} /> : null}
       <Vignette />
     </AbsoluteFill>
@@ -364,6 +380,9 @@ const Routine = () => {
           <Place x={830} y={H - 20}>
             <Campfire />
           </Place>
+          <div style={{ position: "absolute", left: 1120, top: H - 260 }}>
+            <Kit mood={t > 9.2 ? "sad" : "happy"} look={-1} size={460} />
+          </div>
         </>
       ) : (
         <>
@@ -373,6 +392,9 @@ const Routine = () => {
           <Place x={lerp(t, [0, 7.6], [200, 500], (x) => x)} y={H - 50} scale={0.8}>
             <Ox step={t * 5} />
           </Place>
+          <div style={{ position: "absolute", left: lerp(t, [0, 7.6], [1250, 1500], (x) => x), top: H - 330 }}>
+            <Kit mood={t < 3.1 ? "sad" : "determined"} pose="walk" size={460} />
+          </div>
         </>
       )}
       <DayCounter day={12} />
@@ -443,9 +465,9 @@ const Neighbour: React.FC<{ phase: "morning" | "noon" | "evening" }> = ({ phase 
           <Place x={1100} y={H - 220} scale={lerp(t, [0, 1], [0.6, 1])}>
             <Grave mound={lerp(t, [0, 1.2], [0.2, 1])} />
           </Place>
-          <Place x={830} y={H - 300} scale={0.9}>
-            <Person pose="dig" shirt="#8e6b4f" />
-          </Place>
+          <div style={{ position: "absolute", left: 820, top: H - 380 }}>
+            <Kit mood="sad" look={1} size={480} />
+          </div>
         </>
       ) : null}
       <DayCounter day={19} />
@@ -534,6 +556,9 @@ const Answer = () => {
   return (
     <AbsoluteFill>
       <Cup fill={0.9} />
+      <div style={{ position: "absolute", left: 1420, top: 330 }}>
+        <Kit mood="shocked" size={640} look={-1} />
+      </div>
       <T text="THE WATER" size={140} bg={C.red} />
     </AbsoluteFill>
   );
@@ -598,11 +623,15 @@ const Day30 = () => {
       <Place x={340} y={H - 300}>
         <Wagon />
       </Place>
-      {[0, 1, 2].map((i) => (
-        <Place key={i} x={980 + i * 220} y={H - 320 + (i === 2 ? 110 : 0)} scale={i === 2 ? 0.65 : 0.85}>
-          <Person shirt={[C.shirt, "#8e6b4f", "#7a6a8f"][i]} />
-        </Place>
-      ))}
+      <Place x={980} y={H - 320} scale={0.85}>
+        <Person shirt={C.shirt} />
+      </Place>
+      <div style={{ position: "absolute", left: 1190, top: H - 400 }}>
+        <Kit mood="determined" look={-1} size={480} />
+      </div>
+      <Place x={1460} y={H - 210} scale={0.65}>
+        <Person shirt="#7a6a8f" />
+      </Place>
       <DayCounter day={30} />
       <T text={t < 2.2 ? "YOU'RE ALIVE" : "300-400 MILES WALKED"} />
       <Vignette />
@@ -647,6 +676,9 @@ const Close = () => {
     <AbsoluteFill>
       <Cup fill={0.9} time={0.95} />
       <AbsoluteFill style={{ backgroundColor: `rgba(27,22,18,${lerp(t, [1.6, 4.2], [0, 0.7])})` }} />
+      <div style={{ position: "absolute", left: 1560, top: 430 }}>
+        <Kit mood={t > 1.8 ? "smirk" : "happy"} pose={t > 1.8 ? "cheer" : "stand"} size={590} talking={t > 1.8 && t < 3.2} />
+      </div>
       {t > 1.8 ? <T text="WHICH LIFE NEXT?" y={420} size={150} bg={C.red} /> : null}
     </AbsoluteFill>
   );

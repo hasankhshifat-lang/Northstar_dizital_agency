@@ -5,6 +5,7 @@ import { IndependenceRock, Mountains, Ox, Place, Prairie, Snow, Vignette, Wagon 
 import { Captions, Stamp, TrailMap } from "../lib/hud";
 import { Scene, lerp, useT } from "../lib/scene";
 import { C } from "../lib/theme";
+import { Kit } from "../lib/Kit";
 import words from "../data/short-C-july4.json";
 
 export const SHORT_C_SECONDS = 24.5;
@@ -35,8 +36,11 @@ const Hook = () => {
     <AbsoluteFill>
       {t < 1.4 ? (
         <AbsoluteFill style={{ backgroundColor: "#2c2219", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ scale: String(lerp(t, [0, 0.4], [0.7, 1])), marginTop: 120 }}>
+          <div style={{ scale: String(lerp(t, [0, 0.4], [0.7, 1])), marginTop: -330 }}>
             <CalendarPage />
+          </div>
+          <div style={{ position: "absolute", left: 430, top: 1100 }}>
+            <Kit mood="determined" pose="point" size={370} />
           </div>
         </AbsoluteFill>
       ) : t < 3.8 ? (
@@ -145,6 +149,9 @@ const Deadline = () => {
       <Place x={lerp(t, [8.4, 10.5], [200, 330], (x) => x)} y={1100} scale={0.85}>
         <Wagon wheelTurn={t * 80} />
       </Place>
+      <div style={{ position: "absolute", left: 640, top: 960 }}>
+        <Kit mood="worried" pose="walk" size={480} />
+      </div>
       <Snow density={170} wind={5} />
       <Stamp text="RACING THE WINTER" y={330} size={110} bg={C.red} />
       <Vignette strength={0.7} />

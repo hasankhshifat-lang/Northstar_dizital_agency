@@ -1,10 +1,11 @@
 import React from "react";
 import { AbsoluteFill, staticFile } from "remotion";
 import { Audio } from "@remotion/media";
-import { Bacon, Coin, FlourSack, Ox, Person, Place, Prairie, Store, Vignette, Wagon } from "../lib/art";
+import { Bacon, Coin, FlourSack, Ox, Place, Prairie, Store, Vignette, Wagon } from "../lib/art";
 import { Captions, Counter, Stamp, TrailMap } from "../lib/hud";
 import { Scene, lerp, useT } from "../lib/scene";
 import { C } from "../lib/theme";
+import { Kit } from "../lib/Kit";
 import words from "../data/short-B-outfit.json";
 
 export const SHORT_B_SECONDS = 34;
@@ -16,16 +17,19 @@ const YearCoinsMap = () => {
     return (
       <AbsoluteFill style={{ backgroundColor: "#2c2219" }}>
         <Stamp text="600 LB FLOUR" y={140} size={110} bg={C.red} />
+        <div style={{ position: "absolute", left: 400, top: 970 }}>
+          <Kit mood={t < 1.3 ? "happy" : "smirk"} size={490} talking={t > 1.3} />
+        </div>
         {t < 1.3 ? (
-          <Stamp text="1850" y={700} size={300} bg="transparent" />
+          <Stamp text="1850" y={560} size={300} bg="transparent" />
         ) : (
           <>
             {[0, 1, 2].map((i) => (
-              <Place key={i} x={320 + i * 150} y={lerp(t, [1.3 + i * 0.15, 1.7 + i * 0.15], [1900, 860])}>
+              <Place key={i} x={320 + i * 150} y={lerp(t, [1.3 + i * 0.15, 1.7 + i * 0.15], [1900, 560])}>
                 <Coin label="$" />
               </Place>
             ))}
-            <Counter from={0} to={300} start={40} end={66} prefix="$" y={1060} size={180} />
+            <Counter from={0} to={300} start={40} end={66} prefix="$" y={700} size={170} />
           </>
         )}
       </AbsoluteFill>
@@ -132,9 +136,9 @@ const Walk = () => {
         <Ox step={t * 6} />
       </Place>
       {t > 3.6 ? (
-        <Place x={720} y={lerp(t, [3.6, 4.0], [1300, 980])} scale={1.1}>
-          <Person pose="stand" shirt="#7a6a8f" />
-        </Place>
+        <div style={{ position: "absolute", left: 640, top: lerp(t, [3.6, 4.0], [1500, 830]) }}>
+          <Kit mood="determined" pose="walk" size={600} />
+        </div>
       ) : null}
       {t > 1.4 && t < 3.6 ? <Stamp text="NO SEAT" y={330} size={170} bg={C.red} /> : null}
       {t >= 3.6 ? <Stamp text="EVERY MILE" y={330} size={150} /> : null}

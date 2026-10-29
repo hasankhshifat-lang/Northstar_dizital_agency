@@ -133,8 +133,8 @@ export const Kit: React.FC<{
   const bob = walking ? Math.abs(Math.cos(frame / 4)) * -8 : Math.sin(frame / 18) * 2;
   const talk = talking ? (Math.sin(frame / 2.2) + 1) / 2 : 0;
   const flap = Math.sin(frame / 5) * 8;
-  const armL = pose === "cheer" ? -150 : pose === "point" ? -10 : walking ? -stride * 22 : 6;
-  const armR = pose === "cheer" ? 150 : pose === "point" ? -80 : walking ? stride * 22 : -6;
+  const armL = pose === "cheer" ? 140 : pose === "point" ? -10 : walking ? -stride * 22 : 6;
+  const armR = pose === "cheer" ? -140 : pose === "point" ? -80 : walking ? stride * 22 : -6;
 
   return (
     <svg width={(size * 400) / 720} height={size} viewBox="0 0 400 720" style={{ overflow: "visible", scale: flip ? "-1 1" : undefined }}>

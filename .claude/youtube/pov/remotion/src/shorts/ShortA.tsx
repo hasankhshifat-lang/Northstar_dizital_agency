@@ -5,6 +5,7 @@ import { BigX, Bandit, CupInHands, Grave, Person, Place, Prairie, River, Snake, 
 import { Captions, Clock, DayCounter, Stamp } from "../lib/hud";
 import { Scene, lerp, useT } from "../lib/scene";
 import { C } from "../lib/theme";
+import { Kit } from "../lib/Kit";
 import words from "../data/short-A-cholera.json";
 
 export const SHORT_A_SECONDS = 39.5;
@@ -13,10 +14,13 @@ const ClockHook = () => {
   const t = useT();
   return (
     <AbsoluteFill style={{ backgroundColor: C.skyNight, alignItems: "center", justifyContent: "center" }}>
-      <div style={{ marginTop: -260 }}>
-        <Clock hours={lerp(t, [0, 1.9], [0, 12])} size={620} />
+      <div style={{ marginTop: -560 }}>
+        <Clock hours={lerp(t, [0, 1.9], [0, 12])} size={520} />
       </div>
-      <Stamp text={"HEALTHY.\nTHEN GONE."} y={150} size={120} />
+      <Stamp text={"HEALTHY.\nTHEN GONE."} y={120} size={110} />
+      <div style={{ position: "absolute", left: 430, top: 900 }}>
+        <Kit mood="worried" size={400} />
+      </div>
     </AbsoluteFill>
   );
 };
@@ -59,9 +63,9 @@ const Neighbour: React.FC<{ phase: "morning" | "noon" | "evening" }> = ({ phase 
           <Place x={520} y={830} scale={lerp(t, [0, 1], [0.6, 1.1])}>
             <Grave mound={lerp(t, [0, 1.2], [0.2, 1])} />
           </Place>
-          <Place x={170} y={720} scale={1.1}>
-            <Person pose="dig" shirt="#8e6b4f" />
-          </Place>
+          <div style={{ position: "absolute", left: 120, top: 640 }}>
+            <Kit mood="sad" look={1} size={600} />
+          </div>
         </>
       ) : null}
       <DayCounter day={19} />
@@ -148,10 +152,13 @@ const NotSnakes = () => {
       ) : (
         <AbsoluteFill>
           <Prairie time={0.1} />
-          <Place x={160} y={520} scale={1.15}>
+          <Place x={-60} y={560} scale={0.85}>
             <CupInHands fill={0.9} />
           </Place>
           <Stamp text="THE WATER" size={170} y={260} bg={C.red} />
+          <div style={{ position: "absolute", left: 650, top: 790 }}>
+            <Kit mood="shocked" size={480} look={-1} />
+          </div>
         </AbsoluteFill>
       )}
     </AbsoluteFill>
