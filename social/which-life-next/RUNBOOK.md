@@ -1,6 +1,6 @@
 # Which Life Next — daily video job
 
-The scheduled task runs this once a day (13:17 SGT). It makes one 6–7 minute video and
+The scheduled task runs this once a day (13:17 SGT). It makes one 8–12 minute video and
 3 Shorts cut from it, and schedules all four for the next morning (SGT).
 
 Channel: **Which Life Next (@whichlifenext)**, YouTube channel `UCPTrW0n3ONI9uU4WetWwFCQ`.
@@ -62,27 +62,29 @@ If there is no data yet (first days), say so and list what you will measure.
    differently. The reference is **inspiration only**: write an original script, use no
    footage, audio or script text from the reference video.
 
-## 2. Make the long video (6–7 minutes, 1920×1080)
+## 2. Make the long video (8–12 minutes, 1920×1080)
 
-1. Script: 900–1,050 words (~6.5 min). Hook in the first 10 seconds, open a question,
-   pay it off at the end. US English, US units and examples. Mark 3 self-contained
+1. Script: 1,250–1,750 words (~8.5–11.5 min at ~150 words/min). Hook in the first 10 seconds,
+   open a question, pay it off at the end, and re-hook every ~90 seconds (a new danger or
+   choice for Kit) so viewers keep watching — watch hours drive monetization. US English, US units and examples. Mark 3 self-contained
    moments of 30–55 seconds each for the Shorts.
 2. Voiceover: ElevenLabs `creative_generate_speech`. Use the same voice every day; record
    its `voice_id` in `config.md` the first time and reuse it.
 3. Visuals: AI-generated images (image-generation skill), one every 5–8 seconds, with slow
    zoom/pan, matched to the script. No copyrighted footage.
 4. Assemble with `ffmpeg`: images + voiceover + burned-in captions + quiet royalty-free
-   music bed (or none). Check the final length is 6:00–7:00.
+   music bed (or none). Check the final length is 8:00–12:00.
 5. Thumbnail: 1280×720, bold 3–4 word text, high contrast.
 6. Facts: every number and claim comes from a real source (NPS, Library of Congress,
    National Archives, Smithsonian, university history departments, published diaries). Keep a
-   source list while scripting; if historians disagree, say so in the video.
+   source list while scripting (use WebSearch to find and check sources: in this session
+   many .gov sites are blocked for direct fetches); if historians disagree, say so in the video.
 7. Metadata: title under 60 characters starting "POV:" with the main search phrase. The
    description is the **actual text viewers read** (never notes about the description):
    2-line hook summary, "every number is sourced", chapters from 00:00 (at least 3, each
    10s+), the Kit composite note, a comment question ("Would you have made it?"), the full
    source list with links, "Narration voiced with AI. Animation made by the channel.", and
-   3–5 hashtags. 10–15 tags. Mark "altered or synthetic content" where YouTube asks.
+   3–5 hashtags. 10–15 tags, sent as a list of separate strings (not one comma-joined string). Mark "altered or synthetic content" where YouTube asks.
 8. Pre-upload check: search every description for `[`, `TODO`, `link here` or similar
    placeholders and fill them in. Shorts link the long video with its real URL
    (`https://youtu.be/<id>`), so upload/schedule the long video first.
@@ -134,6 +136,6 @@ slots there if the data supports it, and add a row to `timing-log.md` either way
 ## If something fails
 
 - A step that fails: retry once. If it still fails, schedule what is ready, and report what
-  did not get scheduled and why. Never publish a video that is shorter than 6 minutes or has
+  did not get scheduled and why. Never publish a long video that is shorter than 8 minutes or has
   no voiceover.
 - Never post something now (public) in place of scheduling it.

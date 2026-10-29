@@ -6,7 +6,7 @@ The daily job reads this file. Change the slots here, not in the job prompt.
 
 | Slot | SGT | US Eastern (EST, from Nov 1) | Post |
 |---|---|---|---|
-| 1 | 06:00 | 17:00 previous day | Long video (6–7 min) |
+| 1 | 06:00 | 17:00 previous day | Long video (8–12 min) |
 | 2 | 08:00 | 19:00 previous day | Short 1 |
 | 3 | 09:00 | 20:00 previous day | Short 2 |
 | 4 | 11:00 | 22:00 previous day | Short 3 |
