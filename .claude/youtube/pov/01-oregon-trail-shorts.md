@@ -42,7 +42,7 @@ marker, not the whole trail.
 
 ### Short A - publish pack
 
-**Title** (57 chars): `POV: The Oregon Trail Killer That Can Take You in 12 Hours`
+**Title** (58 chars): `POV: The Oregon Trail Killer That Can Take You in 12 Hours`
 ("Can take you", not "takes": the Park Service says victims *often* died within 12 hours.)
 
 **Description:**
