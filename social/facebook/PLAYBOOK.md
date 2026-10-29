@@ -4,8 +4,23 @@ Page: **NorthStar Dizital** (`1390585830800081`), posted through Clawlink (`inte
 Audience: local business owners in Bangladesh — salons, parlours, clinics, doctors, restaurants,
 cleaning and other service businesses.
 
-The owner approved the first posts and asked for **daily posting without further approval**.
-Follow this file exactly; it is the brief.
+The owner approved daily publishing without further approval (2026-10-29).
+Follow this file exactly; it is the brief. Voice and audience: `brand-voice.md`.
+
+## Use the marketing skills every time
+
+Load these with the Skill tool before writing — they make the output better, and the owner asked
+for them to be used on every post:
+
+| Step | Skill |
+|---|---|
+| Pick topic / angle | `social-media-skills:facebook-strategy`, `social-media-skills:content-pillars` |
+| Caption | `social-media-skills:caption-writer` (+ `social-media-skills:hook-writer` for the first line) |
+| Video script | `social-media-skills:short-form-video-script` |
+| Persuasion check | `marketing-psychology` (one principle per post, never manipulative) |
+| Final polish | `humanizer:humanizer` — the caption and script must read like a person wrote them |
+
+If a skill is unavailable, say so in the log row and continue with this playbook.
 
 ## Schedule (Asia/Dhaka, UTC+6)
 
@@ -30,8 +45,24 @@ Create both in the morning run and hand them to Facebook with `published: false`
 - Prices: Starter ৳৮,০০০–১২,০০০ (৩–৫ দিন) · Business ৳১৮,০০০–৩০,০০০ (৭–১২ দিন) ·
   Premium AI ৳৩৫,০০০–৬০,০০০+ (২–৪ সপ্তাহ). Services: business website, landing page, e-commerce,
   UI/UX, maintenance, AI solutions, AI voice assistant / chatbot.
-- Contact line for every caption: `💬 WhatsApp: +880 1872-692783` and `🌐 samplewebsite.tech`.
-- 3–5 hashtags, always `#NorthStarDizital`, mix Bangla and English.
+## Captions: short, human, problem → CTA
+
+Every caption, photo or video, is **3–5 short lines, under ~300 characters**:
+
+1. **Line 1 = the problem**, in the owner's words, inside Facebook's ~80-character preview.
+   A specific moment beats a general statement ("রাত ১১টায় customer message দিল… সকালে দেখলেন।").
+2. **1–2 lines** that twist the knife or show the fix — no feature lists, no long checklists.
+3. **One CTA** with the WhatsApp number: `👉 WhatsApp করুন: +880 1872-692783` (vary the wording).
+4. Optional: 1 hashtag `#NorthStarDizital` (Facebook hashtags do little; max 2).
+
+Example:
+> Customer আপনার নাম Google করলো... পেলো শুধু একটা পুরনো Facebook post। 😬
+> তারপর? সে call দিলো পাশের দোকানে।
+> আপনার নিজের website — ৩–৫ দিনে ready, শুরু ৳৮,০০০।
+> 👉 এখনই WhatsApp করুন: +880 1872-692783
+> #NorthStarDizital
+
+Write 3 first-line options, keep the strongest, then run the humanizer pass.
 
 ## Design: never the same look twice in a row
 
@@ -55,8 +86,8 @@ Headline: `*word*` marks the highlighted part. Keep headlines ≤ 8 words, point
 - Voiceover: ElevenLabs `creative_generate_speech`, model `eleven_v4`,
   voice **Tazim – Natural Bangla & Banglish** `yBrGXLW1RaXDUjUf3kQi`.
   Prompt = exact output of `node social/facebook/render.js prompt <post.json>`. Call it **once**
-  (it costs credits; never call again to retry), poll `creative_get_flow_run_status`, download the
-  first completed take to `voice.mp3` beside post.json.
+  with **`generations_count: 1`** (one take per video — owner's instruction; never call again to
+  retry), poll `creative_get_flow_run_status`, download the take to `voice.mp3` beside post.json.
 - Check layout first: `PREVIEW=2,10,20 node social/facebook/render.js <post.json>` and look at the
   stills; delete the preview PNGs after. Then render (≈10 min): `node social/facebook/render.js <post.json>`.
 
