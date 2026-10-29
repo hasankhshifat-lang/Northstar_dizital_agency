@@ -97,8 +97,7 @@ Walk. Circle the wagons. Cook. Sleep on the ground.
 
 [ON SCREEN: POV's boots, worn through at the toe.]
 
-Your boots are already going. Your feet are worse. And the wagon in front of you has started
-burying things - a dresser, a stove - because the oxen can't pull it all.
+Your boots are already going. Your feet are worse. And the wagon in front of you has started leaving things behind - a dresser, a stove - because the oxen can't pull it all.
 
 [ON SCREEN: A line of abandoned furniture beside the trail, stretching into the distance.]
 
@@ -130,7 +129,7 @@ another, all summer.
 
 [ON SCREEN: The cup, the river, the crowded campsite - all the same brown.]
 
-That cup you drank from on day one? That's what the hook was about. Not snakes. Not bandits. The
+That cup you drank from on day one? That's your answer. Not snakes. Not bandits. The
 water.
 
 ### BEAT 6 - THE NUMBERS (3:59-4:24)
