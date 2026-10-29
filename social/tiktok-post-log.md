@@ -23,7 +23,10 @@ Rule: a video goes to TikTok only after it is live on YouTube. Settings are conf
 - **YouTube Analytics:** no data yet for watch time, retention, country or traffic source. Analytics usually lags 24–48 h.
 - **Description:** links to the full 30-day video and cites the NPS source. Hashtags: #Shorts #OregonTrail #History
 
-## Approved in advance (user said yes on 2026-10-29)
+## Approved in advance (user said yes on 2026-10-29), now ON HOLD
+
+On hold: the user asked for shorter descriptions. Do not post B or C until the user approves the new short captions.
+
 
 Shorts B and C: post to TikTok right after each is public on YouTube, with these settings: Everyone · comments on ·
 duet off · stitch off · not branded · AI-generated label on. Caption = YouTube title + description (without `#Shorts`)

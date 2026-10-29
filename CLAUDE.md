@@ -27,11 +27,21 @@ Account: Which Life Next (@whichlifenext), via Clawlink `tiktok`. Log: `social/t
 2. Find its file in Google Drive folder `1kAnmt3gXTQ_iuYWXdTNHoOw5Gu2slDr4` (match by the Drive file named in
    `social/youtube-schedule-log.md`, else by name/topic; ask the user if unsure). Stage it with `google-drive` →
    `download_file`, which returns a claw-link.dev URL for `tiktok` → `publish_video`.
-3. Caption = YouTube title, blank line, YouTube description, with the same hashtags (drop the YouTube-only
-   `#Shorts`). Keep it under 2200 characters.
+3. Caption: a **short** version of the YouTube post (see "Short descriptions" below): the hook from the title and
+   description, a short AI-narration note, and 3–5 hashtags taken from the YouTube tags (no `#Shorts`).
 4. TikTok rules: call `query_creator_info`, then send the user the summary (account, file, caption, who can view,
    comments, duet, stitch, branded content, AI label) ending with "By posting, you agree to TikTok's Music Usage
    Confirmation." Post only after the user says yes. Never reuse an earlier post's settings without asking.
 5. After posting, check `fetch_publish_status`, add a row to the TikTok log, commit and push.
 
 When scheduling a YouTube post, put the Drive file name in the YouTube log so step 2 can match it.
+
+## Short descriptions for Shorts and TikTok
+
+The user wants **short descriptions** on every YouTube Short and every TikTok post:
+
+- YouTube Short: 1–2 sentence hook, the full-video link, a one-line "AI narration" + source note, then
+  `#Shorts` plus 2 topic hashtags. Aim for about 300 characters or less.
+- TikTok: 1–2 sentence hook, "AI narration.", then 3–5 hashtags. Aim for about 150 characters plus hashtags.
+  No long source lists (links are not clickable on TikTok).
+- Long-form YouTube videos keep their full description with sources.
