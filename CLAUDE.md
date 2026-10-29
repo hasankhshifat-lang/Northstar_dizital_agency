@@ -17,3 +17,21 @@ Every YouTube post that is scheduled goes through **one** of two tools, taking t
    Log the tool that was actually used, so the next post goes to the other tool.
 
 Confirm the title, description, publish time, and video file with the user before scheduling.
+
+## TikTok: repost every YouTube video right after it goes public
+
+Account: Which Life Next (@whichlifenext), via Clawlink `tiktok`. Log: `social/tiktok-post-log.md`.
+
+1. An hourly check lists the channel's uploads (`youtube` → `list_channel_videos`, channel `UCPTrW0n3ONI9uU4WetWwFCQ`)
+   and picks every **public** video not yet in the TikTok log.
+2. Find its file in Google Drive folder `1kAnmt3gXTQ_iuYWXdTNHoOw5Gu2slDr4` (match by the Drive file named in
+   `social/youtube-schedule-log.md`, else by name/topic; ask the user if unsure). Stage it with `google-drive` →
+   `download_file`, which returns a claw-link.dev URL for `tiktok` → `publish_video`.
+3. Caption = YouTube title, blank line, YouTube description, with the same hashtags (drop the YouTube-only
+   `#Shorts`). Keep it under 2200 characters.
+4. TikTok rules: call `query_creator_info`, then send the user the summary (account, file, caption, who can view,
+   comments, duet, stitch, branded content, AI label) ending with "By posting, you agree to TikTok's Music Usage
+   Confirmation." Post only after the user says yes. Never reuse an earlier post's settings without asking.
+5. After posting, check `fetch_publish_status`, add a row to the TikTok log, commit and push.
+
+When scheduling a YouTube post, put the Drive file name in the YouTube log so step 2 can match it.
