@@ -48,8 +48,13 @@ Website-related pains (secondary, only as a side point):
 - Calling demo/concept projects (doctor, cleaning) real clients.
 
 ## Facts we can use
-AI assistant service: no public price yet — never state one; invite them to WhatsApp for a
-consultation instead. "Less cost than a staff salary" is fine as a general comparison; never
+AI assistant service: **monthly subscription, usage-based** (depends on conversations/calls and
+channels). No fixed number — say "মাসিক, usage অনুযায়ী খরচ" and invite them to WhatsApp for an exact
+monthly quote. Never write a number.
+Website maintenance: monthly, depends on the work needed, normally starts from ৳২,০০০–৫,০০০/মাস.
+Contacts: posts and captions always use WhatsApp **+880 1872-692783**. সানভি (web developer
+expert, 01631877391) is only for forwarding to the team when needed or when a customer asks for a
+person — never put it in posts. "Less cost than a staff salary" is fine as a general comparison; never
 put a number on it or on results (no "৮০% বেশি sale").
 
 Starter website ৳৮,০০০–১২,০০০ (৩–৫ দিন) · Business website ৳১৮,০০০–৩০,০০০ (৭–১২ দিন) ·

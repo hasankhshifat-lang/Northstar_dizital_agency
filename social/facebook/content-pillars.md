@@ -70,5 +70,5 @@ Angles:
 ## 5. Demo & offer (minority, ≤1 per week)
 - "আমাদের page-এ message দিয়ে নিজেই test করুন — উত্তর দিবে আমাদের AI" (only while the
   Messenger assistant is connected — check MyChatBot list_channels)
-- Free consultation / setup process via WhatsApp
+- Consultation / setup process via WhatsApp (monthly, usage-based pricing — never a number)
 - Never invent prices, discounts or deadlines; use only what the owner has given.
