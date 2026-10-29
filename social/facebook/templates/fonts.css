@@ -1,0 +1,14 @@
+/* Bangla fonts (Google Fonts, OFL), vendored so renders work offline. */
+@font-face{font-family:'Anek Bangla';src:url(fonts/AnekBangla.ttf);font-weight:100 800;font-stretch:75% 125%}
+@font-face{font-family:'Baloo Da 2';src:url(fonts/BalooDa2.ttf);font-weight:400 800}
+@font-face{font-family:'Galada';src:url(fonts/Galada.ttf)}
+@font-face{font-family:'Tiro Bangla';src:url(fonts/TiroBangla.ttf)}
+@font-face{font-family:'Noto Serif Bengali';src:url(fonts/NotoSerifBengali.ttf);font-weight:100 900;font-stretch:62.5% 100%}
+@font-face{font-family:'Hind Siliguri';src:url(fonts/HindSiliguri-Regular.ttf);font-weight:400}
+@font-face{font-family:'Hind Siliguri';src:url(fonts/HindSiliguri-SemiBold.ttf);font-weight:600}
+@font-face{font-family:'Hind Siliguri';src:url(fonts/HindSiliguri-Bold.ttf);font-weight:700}
+@font-face{font-family:'Atma';src:url(fonts/Atma-Bold.ttf);font-weight:700}
+@font-face{font-family:'Mina';src:url(fonts/Mina-Bold.ttf);font-weight:700}
+@font-face{font-family:'Space Grotesk';src:url(fonts/SpaceGrotesk.woff2) format('woff2');font-weight:300 700}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow:hidden}

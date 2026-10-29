@@ -1,0 +1,34 @@
+{
+  "type": "video",
+  "status": "draft",
+  "title": "Facebook page আছে, তাহলে website কেন লাগবে?",
+  "voice": {"voice_id": "yBrGXLW1RaXDUjUf3kQi", "name": "Tazim - Natural Bangla & Banglish", "model_id": "eleven_v4"},
+  "caption": "Facebook page আছে? খুব ভালো, ওটা রাখুন 👍\n\nকিন্তু customer যখন Google-এ আপনার ব্যবসা search করে, তখন কী দেখে? 🤔\n\nএকটা website আপনার হয়ে ২৪ ঘণ্টা কাজ করে:\n✅ Service, price, location — সব এক জায়গায়\n✅ এক click-এ WhatsApp\n✅ Online booking\n✅ প্রথম দেখাতেই customer-এর বিশ্বাস\n\nLocal business-এর জন্য website — শুরু মাত্র ৳৮,০০০, ৩–৫ দিনেই ready।\n\n💬 WhatsApp: +880 1872-692783\n🌐 samplewebsite.tech\n\n#NorthStarDizital #Website #ব্যবসা #SmallBusinessBangladesh #DigitalBangladesh",
+  "design": {
+    "theme": "brutal",
+    "cover_at": 2.2,
+    "scenes": [
+      {"type": "hook", "tone": "curious",
+       "say": "আপনার ব্যবসার Facebook page আছে? দারুণ! কিন্তু একটা প্রশ্ন... Google-এ আপনার নাম search করলে কী আসে?",
+       "kicker": "একটা প্রশ্ন 🤔", "title": "Facebook page আছে? *Google-এ* আপনাকে পাওয়া যায় তো?"},
+      {"type": "search",
+       "say": "আজকাল customer আগে phone-এ খোঁজে, তারপর call দেয়। কিছু না পেলে... সোজা পাশের দোকানে চলে যায়।",
+       "query": "beauty salon near me",
+       "results": [{"t": "পাশের salon", "d": "Website · Booking · Map", "ok": true}, {"t": "আপনার salon", "d": "কিছুই পাওয়া গেল না", "ok": false}],
+       "title": "Customer আগে *search* করে"},
+      {"type": "statement",
+       "say": "আর সত্যি বলতে, Facebook page-টা পুরোপুরি আপনার না। Algorithm একটু বদলালেই, আপনার post আর কেউ দেখে না।",
+       "icon": "📉", "title": "Facebook page পুরোপুরি *আপনার না*", "body": "Algorithm বদলালেই reach কমে যায়।"},
+      {"type": "showcase", "tone": "warmly",
+       "say": "একটা website কিন্তু চব্বিশ ঘণ্টা কাজ করে। Service, price, location — সব এক জায়গায়। এক click-এ WhatsApp, এক click-এ booking।",
+       "title": "Website খোলা থাকে *২৪/৭*", "image": "assets/projects/bridal-hero.png", "url": "bridalstudio.com",
+       "chips": ["Service & price", "📍 Location", "💬 WhatsApp", "📅 Booking"]},
+      {"type": "statement",
+       "say": "আর customer-এর বিশ্বাসটাও বাড়ে। মনে হয়... হ্যাঁ, এরা serious business।",
+       "icon": "🤝", "title": "Customer-এর *বিশ্বাস* বাড়ে", "body": "দেখেই মনে হয় — এরা serious business।"},
+      {"type": "cta", "tone": "excited",
+       "say": "NorthStar Dizital-এ আমরা local business-এর জন্য website বানাই। শুরু মাত্র ৮,০০০ টাকা থেকে, ৩ থেকে ৫ দিনেই ready। আজই WhatsApp করুন!",
+       "title": "আপনার website, *৩–৫ দিনেই* ready", "price": 8000}
+    ]
+  }
+}

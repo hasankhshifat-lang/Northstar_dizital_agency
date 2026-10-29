@@ -1,44 +1,153 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><link rel="stylesheet" href="brand.css">
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="fonts.css">
 <style>
-.stage{width:1080px;height:1350px;padding:72px 80px;display:flex;flex-direction:column}
-.top{display:flex;justify-content:space-between;align-items:center;position:relative}
-.tag{font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:var(--t2)}
-main{position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px}
-h1{font-size:92px;line-height:1.02;letter-spacing:-.03em;font-weight:600}
-.sub{font-size:36px;line-height:1.4;color:var(--t2);max-width:880px}
-ul{list-style:none;display:grid;gap:18px;padding:34px 40px}
-li{font-size:34px;display:flex;gap:22px;align-items:flex-start;line-height:1.3}
-li:before{content:"✓";color:var(--p);font-weight:700;flex:none}
-.foot{position:relative;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--bd);padding-top:36px}
-.contact{font-size:28px;color:var(--t2);line-height:1.5;text-align:right}
-.contact b{color:var(--tx);font-weight:500}
+.stage{width:1080px;height:1350px;position:relative;overflow:hidden}
+.logo{height:40px;width:auto;display:block}
+.logo.dark{filter:brightness(0)}
+.hl{position:relative;white-space:nowrap}
+.contact{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:27px;line-height:1.45}
+
+/* 1. pop: cream bento grid */
+.t-pop{background:#FFF4E6;color:#151515;font-family:'Anek Bangla';padding:70px 72px;display:flex;flex-direction:column;gap:34px}
+.t-pop .row{display:flex;justify-content:space-between;align-items:center}
+.t-pop .kick{font-weight:600;font-size:30px;background:#151515;color:#FFF4E6;padding:10px 26px;border-radius:99px}
+.t-pop h1{font-weight:800;font-size:104px;line-height:1.12;letter-spacing:-.01em;font-stretch:90%}
+.t-pop .hl{background:linear-gradient(transparent 55%,#C6F432 55%,#C6F432 92%,transparent 92%);padding:0 6px}
+.t-pop .sub{font-size:36px;line-height:1.45;color:#4a4a4a;font-weight:500}
+.t-pop .bento{display:grid;grid-template-columns:1.2fr 1fr;grid-template-rows:1fr 1fr;gap:20px;flex:1}
+.t-pop .b{border-radius:36px;padding:30px;font-size:36px;font-weight:600;line-height:1.3;display:flex;flex-direction:column;justify-content:space-between}
+.t-pop .b i{font-style:normal;font-size:54px}
+.t-pop .b1{grid-row:span 2;background:#4D6BFE;color:#fff}.t-pop .b2{background:#FF8FCF}.t-pop .b3{background:#FF6B2C;color:#fff}
+.t-pop .foot{display:flex;justify-content:space-between;align-items:center}
+.t-pop .chip{background:#C6F432;font-weight:700;font-size:36px;padding:16px 34px;border-radius:99px;border:3px solid #151515}
+
+/* 2. brutal: yellow neo-brutalism */
+.t-brutal{background:#FFE14D;color:#111;font-family:'Baloo Da 2';padding:64px 70px;display:flex;flex-direction:column;gap:30px}
+.t-brutal .row{display:flex;justify-content:space-between;align-items:center}
+.t-brutal .kick{font-weight:700;font-size:30px;border:4px solid #111;background:#fff;padding:6px 22px;box-shadow:6px 6px 0 #111;transform:rotate(-2deg)}
+.t-brutal h1{font-weight:800;font-size:108px;line-height:1.08;margin-top:10px}
+.t-brutal .hl{color:#fff;background:#FF3D7F;padding:0 16px;border:5px solid #111;box-shadow:8px 8px 0 #111;display:inline-block;transform:rotate(-1.5deg);line-height:1.15}
+.t-brutal .sub{font-size:36px;font-weight:500;line-height:1.35}
+.t-brutal .cards{display:grid;gap:18px}
+.t-brutal .c{background:#fff;border:5px solid #111;box-shadow:10px 10px 0 #111;padding:20px 28px;font-size:36px;font-weight:600;display:flex;gap:20px;align-items:center}
+.t-brutal .c b{background:#3DD6F5;border:4px solid #111;width:58px;height:58px;display:grid;place-items:center;font-size:30px;flex:none}
+.t-brutal .c:nth-child(2) b{background:#B4F05A}.t-brutal .c:nth-child(3) b{background:#FF9F43}
+.t-brutal .sticker{position:absolute;right:58px;top:260px;width:200px;height:200px;border-radius:50%;background:#FF3D7F;color:#fff;border:5px solid #111;display:grid;place-items:center;text-align:center;font-weight:800;font-size:40px;line-height:1.05;transform:rotate(12deg);box-shadow:8px 8px 0 #111}
+.t-brutal .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end}
+.t-brutal .chip{background:#111;color:#FFE14D;font-weight:800;font-size:38px;padding:14px 32px}
+
+/* 3. mesh: vivid gradient + glass */
+.t-mesh{color:#fff;font-family:'Hind Siliguri';padding:72px;display:flex;flex-direction:column;gap:34px;
+  background:radial-gradient(circle at 15% 15%,#FFB84D 0,transparent 42%),radial-gradient(circle at 90% 25%,#FF4D8D 0,transparent 45%),radial-gradient(circle at 25% 90%,#7A5CFF 0,transparent 50%),radial-gradient(circle at 85% 85%,#18C8FF 0,transparent 45%),#FF6A4D}
+.t-mesh .row{display:flex;justify-content:space-between;align-items:center}
+.t-mesh .kick{font-weight:600;font-size:30px;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);padding:10px 26px;border-radius:99px;backdrop-filter:blur(10px)}
+.t-mesh .glass{background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.45);border-radius:48px;padding:56px 54px;backdrop-filter:blur(18px);box-shadow:0 40px 80px rgba(60,0,80,.25);display:flex;flex-direction:column;justify-content:center;gap:40px;flex:1}
+.t-mesh h1{font-weight:700;font-size:104px;line-height:1.18;text-shadow:0 6px 30px rgba(80,0,60,.25)}
+.t-mesh .hl{background:#fff;color:#FF4D6D;border-radius:22px;padding:0 18px}
+.t-mesh .sub{font-size:36px;line-height:1.5;opacity:.95}
+.t-mesh .pills{display:flex;flex-wrap:wrap;gap:16px;margin-top:20px}
+.t-mesh .pill{background:#fff;color:#2b1650;font-weight:600;font-size:32px;padding:14px 28px;border-radius:99px}
+.t-mesh .foot{display:flex;justify-content:space-between;align-items:center}
+.t-mesh .chip{font-weight:700;font-size:36px;background:#1d0f3a;padding:16px 34px;border-radius:99px}
+
+/* 4. editorial: magazine serif */
+.t-editorial{background:#F5EFE4;color:#1B1A17;font-family:'Noto Serif Bengali';padding:64px 72px;display:flex;flex-direction:column}
+.t-editorial .mast{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1B1A17;padding-bottom:22px}
+.t-editorial .issue{font-family:'Hind Siliguri';font-weight:600;font-size:26px;letter-spacing:.06em}
+.t-editorial .kick{font-family:'Hind Siliguri';font-weight:700;font-size:30px;color:#E63B2E;margin-top:44px}
+.t-editorial h1{font-weight:800;font-size:128px;line-height:1.14;margin-top:16px;font-stretch:87.5%}
+.t-editorial .hl{color:#E63B2E;font-style:normal}
+.t-editorial .sub{font-family:'Hind Siliguri';font-size:35px;line-height:1.55;color:#4b463d;margin-top:24px;border-left:6px solid #E63B2E;padding-left:28px}
+.t-editorial .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:auto;border-top:1.5px solid #1B1A17;border-bottom:1.5px solid #1B1A17}
+.t-editorial .col{padding:24px 22px;font-family:'Hind Siliguri';font-weight:600;font-size:31px;line-height:1.3}
+.t-editorial .col+.col{border-left:1.5px solid #1B1A17}
+.t-editorial .col span{display:block;font-family:'Noto Serif Bengali';font-weight:800;font-size:64px;color:#E63B2E;line-height:1}
+.t-editorial .foot{display:flex;justify-content:space-between;align-items:center;padding-top:26px}
+.t-editorial .chip{font-family:'Hind Siliguri';font-weight:700;font-size:34px;background:#1B1A17;color:#F5EFE4;padding:14px 30px}
+
+/* 5. retro: rickshaw-art inspired sunburst */
+.t-retro{background:#0E9C96;color:#FFF3D6;font-family:'Hind Siliguri';padding:64px 70px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:26px}
+.t-retro:before{content:"";position:absolute;inset:-40%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,200,60,.22) 0 7.5deg,transparent 7.5deg 15deg);z-index:0}
+.t-retro:after{content:"";position:absolute;inset:26px;border:6px dashed #FFC83C;border-radius:40px;z-index:0}
+.t-retro>*{position:relative;z-index:1}
+.t-retro .kick{font-weight:700;font-size:32px;background:#E8364F;padding:10px 34px;border-radius:99px;margin-top:20px;box-shadow:0 6px 0 #8a1426}
+.t-retro h1{font-family:'Galada';font-weight:400;font-size:124px;line-height:1.15;color:#FFF3D6;text-shadow:6px 6px 0 #0A4F4C,10px 10px 0 #E8364F}
+.t-retro .hl{color:#FFC83C}
+.t-retro .sub{font-size:36px;line-height:1.45;max-width:860px;font-weight:600}
+.t-retro .badges{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:auto}
+.t-retro .badge{background:#FFF3D6;color:#0A4F4C;font-weight:700;font-size:31px;padding:14px 26px;border-radius:20px;box-shadow:0 6px 0 #0A4F4C}
+.t-retro .chip{font-family:'Galada';font-size:54px;color:#FFC83C;text-shadow:3px 3px 0 #0A4F4C}
+.t-retro .contact{color:#FFF3D6;margin-bottom:20px}
+
+/* 6. device: electric gradient + phone mockup */
+.t-device{background:linear-gradient(150deg,#2F5BFF 0%,#6A3BFF 55%,#C13BFF 100%);color:#fff;font-family:'Anek Bangla';padding:70px 72px}
+.t-device .row{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2}
+.t-device .kick{font-weight:600;font-size:30px;color:#D6FF3D}
+.t-device h1{position:relative;z-index:2;font-weight:800;font-size:96px;line-height:1.12;margin-top:50px;width:620px;font-stretch:88%}
+.t-device .hl{color:#D6FF3D}
+.t-device .sub{position:relative;z-index:2;width:560px;font-size:34px;line-height:1.45;margin-top:26px;color:#E7E2FF;font-weight:500}
+.t-device .phone{position:absolute;right:-30px;top:300px;width:420px;height:860px;border-radius:64px;background:#0B0B12;padding:16px;transform:rotate(8deg);box-shadow:0 50px 90px rgba(20,0,80,.5)}
+.t-device .phone .scr{width:100%;height:100%;border-radius:50px;overflow:hidden;background:#fff}
+.t-device .phone img{width:100%;height:100%;object-fit:cover;object-position:top}
+.t-device .notch{position:absolute;left:50%;top:30px;transform:translateX(-50%);width:120px;height:32px;border-radius:20px;background:#0B0B12;z-index:2}
+.t-device .tags{position:absolute;left:72px;top:820px;display:grid;gap:18px;z-index:3}
+.t-device .tg{background:#fff;color:#2a1a6e;font-weight:700;font-size:32px;padding:14px 28px;border-radius:24px;box-shadow:0 14px 30px rgba(20,0,80,.3);justify-self:start}
+.t-device .tg:nth-child(2){margin-left:50px;background:#D6FF3D}.t-device .tg:nth-child(3){margin-left:100px}
+.t-device .foot{position:absolute;left:72px;right:72px;bottom:64px;display:flex;justify-content:space-between;align-items:flex-end;z-index:3}
+.t-device .chip{background:#0B0B12;font-weight:700;font-size:34px;padding:14px 30px;border-radius:99px}
 </style></head>
-<body><div class="stage" id="s">
-<div class="glow g1" style="width:620px;height:620px;left:-200px;top:-160px"></div>
-<div class="glow g2" style="width:520px;height:520px;right:-220px;top:380px"></div>
-<div class="glow g3" style="width:460px;height:460px;left:180px;bottom:-300px;opacity:.3"></div>
-<div class="grid-bg"></div>
-<div class="top"><img class="logo" src="../../../assets/logo.png" alt=""><span class="tag" id="tag"></span></div>
-<main>
-  <span class="kicker" id="kicker"></span>
-  <h1 id="h"></h1>
-  <p class="sub" id="sub"></p>
-  <ul class="glass" id="pts"></ul>
-</main>
-<div class="foot"><span class="chip" id="chip"></span><div class="contact" id="contact"></div></div>
-</div>
+<body><div class="stage" id="s"></div>
 <script>
-// Post data is injected by render.js as window.POST before this runs.
+// Post data is injected by render.js as window.POST. Each theme is a different layout.
 const P = window.POST || {};
-const hl = s => (s||'').replace(/\*(.+?)\*/g,'<span class="gt">$1</span>');
-const set = (id, v, html) => { const el = document.getElementById(id); if (!v) { el.remove(); return; } html ? el.innerHTML = v : el.textContent = v; };
-set('tag', P.tag);
-set('kicker', P.kicker);
-set('h', hl(P.headline), true);
-set('sub', P.sub);
-set('pts', (P.points||[]).map(p => `<li>${p}</li>`).join(''), true);
-set('chip', P.chip);
-set('contact', P.contact || '<b>WhatsApp +880 1872-692783</b><br>samplewebsite.tech', true);
+const hl = s => (s || '').replace(/\*(.+?)\*/g, '<span class="hl">$1</span>');
+const pts = P.points || [];
+const LOGO = '../../../assets/logo.png';
+const contact = (P.contact || 'WhatsApp +880 1872-692783<br>samplewebsite.tech');
+const T = {
+  pop: () => `
+    <div class="row"><img class="logo dark" src="${LOGO}"><span class="kick">${P.kicker}</span></div>
+    <h1>${hl(P.headline)}</h1>
+    <p class="sub">${P.sub}</p>
+    <div class="bento">${pts.map((p, i) => `<div class="b b${i + 1}"><i>${['✦', '◆', '●'][i]}</i>${p}</div>`).join('')}</div>
+    <div class="foot"><span class="chip">${P.chip}</span><div class="contact" style="text-align:right">${contact}</div></div>`,
+  brutal: () => `
+    <div class="row"><img class="logo dark" src="${LOGO}"><span class="kick">${P.kicker}</span></div>
+    ${P.sticker ? `<div class="sticker">${P.sticker}</div>` : ''}
+    <h1>${hl(P.headline)}</h1>
+    <p class="sub">${P.sub}</p>
+    <div class="cards">${pts.map((p, i) => `<div class="c"><b>${['১', '২', '৩'][i]}</b>${p}</div>`).join('')}</div>
+    <div class="foot"><span class="chip">${P.chip}</span><div class="contact" style="text-align:right">${contact}</div></div>`,
+  mesh: () => `
+    <div class="row"><img class="logo" src="${LOGO}" style="filter:brightness(0) invert(1)"><span class="kick">${P.kicker}</span></div>
+    <div class="glass"><h1>${hl(P.headline)}</h1><p class="sub">${P.sub}</p>
+      <div class="pills">${pts.map(p => `<span class="pill">✓ ${p}</span>`).join('')}</div></div>
+    <div class="foot"><span class="chip">${P.chip}</span><div class="contact" style="text-align:right">${contact}</div></div>`,
+  editorial: () => `
+    <div class="mast"><img class="logo dark" src="${LOGO}"><span class="issue">${P.issue || 'ব্যবসার গাইড'}</span></div>
+    <span class="kick">${P.kicker}</span>
+    <h1>${hl(P.headline)}</h1>
+    <p class="sub">${P.sub}</p>
+    <div class="cols">${pts.map((p, i) => `<div class="col"><span>${['১', '২', '৩'][i]}</span>${p}</div>`).join('')}</div>
+    <div class="foot"><span class="chip">${P.chip}</span><div class="contact" style="text-align:right">${contact}</div></div>`,
+  retro: () => `
+    <img class="logo" src="${LOGO}" style="filter:brightness(0) invert(1);margin-top:26px">
+    <span class="kick">${P.kicker}</span>
+    <h1>${hl(P.headline)}</h1>
+    <p class="sub">${P.sub}</p>
+    <div class="badges">${pts.map(p => `<span class="badge">${p}</span>`).join('')}</div>
+    <span class="chip">${P.chip}</span>
+    <div class="contact">${contact.replace('<br>', '  ·  ')}</div>`,
+  device: () => `
+    <div class="row"><img class="logo" src="${LOGO}" style="filter:brightness(0) invert(1)"><span class="kick">${P.kicker}</span></div>
+    <h1>${hl(P.headline)}</h1>
+    <p class="sub">${P.sub}</p>
+    <div class="phone"><div class="notch"></div><div class="scr"><img src="../../../${P.image || 'assets/projects/bridal-hero.png'}"></div></div>
+    <div class="tags">${pts.map(p => `<span class="tg">${p}</span>`).join('')}</div>
+    <div class="foot"><span class="chip">${P.chip}</span><div class="contact" style="text-align:right">${contact}</div></div>`,
+};
+const s = document.getElementById('s');
+s.className = 'stage t-' + (P.theme || 'pop');
+s.innerHTML = (T[P.theme] || T.pop)();
 </script>
 </body></html>
