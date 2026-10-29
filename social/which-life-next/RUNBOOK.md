@@ -36,15 +36,25 @@ Write `reports/YYYY-MM-DD.md` (today's SGT date) covering every video posted in 
 4. **3 improvements for the next videos:** concrete and testable, e.g. "test a face-close-up
    thumbnail", "hook with a question instead of a fact". Apply them in today's video and say how.
 5. **Channel totals:** subscribers, total views this week vs. last week.
+6. **Monetization tracker:** update `monetization.md` (subscribers, public watch hours over
+   the last 365 days, Shorts views over the last 90 days) and the daily pace still needed to
+   hit each target by the goal date. Say plainly whether we are on track.
+7. **Engagement:** reply to new comments on our videos (thank, answer, ask which life to do
+   next), heart the good ones, and add viewer-requested lives to the topic shortlist.
 
 If there is no data yet (first days), say so and list what you will measure.
 
 ## 1. Pick today's topic (USA demand)
 
 1. Read `topics-log.md` so no topic repeats within 30 days.
-2. Check the channel's recent uploads and their views (Clawlink `youtube`) to stay in the niche:
-   "which life next" — what-if lives, reincarnation and "if you were born as…" scenarios,
-   alternate life paths, life in other eras and places.
+2. Check the channel's recent uploads and their views (Clawlink `youtube`) to stay in the niche.
+   **The format (from the channel description, never drift from it):** animated POV American
+   history. Each episode drops "you" into a real moment from America's past (Oregon Trail
+   1850, coal miner 1925, night-shift gas station clerk 1987…) and asks: *would you have made
+   it?* The "you" is **Kit**, a composite built from real diaries, guidebooks and records —
+   everything that happens to Kit happened to real people. Titles start with "POV:".
+   Good US-demand eras: Gold Rush, Wild West, Civil War, Ellis Island, Titanic, 1918 flu,
+   Prohibition, Dust Bowl, Great Depression, WWII home front, 1950s suburbs, 1970s/80s jobs.
 3. Find 3–5 reference videos in this niche that are getting a lot of views right now, with a
    US audience: YouTube search with `regionCode: US`, recent uploads (last 30 days), sorted by
    views; also check US Google/YouTube trends for the niche.
@@ -64,9 +74,25 @@ If there is no data yet (first days), say so and list what you will measure.
 4. Assemble with `ffmpeg`: images + voiceover + burned-in captions + quiet royalty-free
    music bed (or none). Check the final length is 6:00–7:00.
 5. Thumbnail: 1280×720, bold 3–4 word text, high contrast.
-6. Metadata: title under 60 characters with the main search phrase, description with a
-   2-line summary, chapters and 3–5 hashtags, 10–15 tags. Mark "altered or synthetic
-   content" where YouTube asks, since visuals and voice are AI-made.
+6. Facts: every number and claim comes from a real source (NPS, Library of Congress,
+   National Archives, Smithsonian, university history departments, published diaries). Keep a
+   source list while scripting; if historians disagree, say so in the video.
+7. Metadata: title under 60 characters starting "POV:" with the main search phrase. The
+   description is the **actual text viewers read** (never notes about the description):
+   2-line hook summary, "every number is sourced", chapters from 00:00 (at least 3, each
+   10s+), the Kit composite note, a comment question ("Would you have made it?"), the full
+   source list with links, "Narration voiced with AI. Animation made by the channel.", and
+   3–5 hashtags. 10–15 tags. Mark "altered or synthetic content" where YouTube asks.
+8. Pre-upload check: search every description for `[`, `TODO`, `link here` or similar
+   placeholders and fill them in. Shorts link the long video with its real URL
+   (`https://youtu.be/<id>`), so upload/schedule the long video first.
+
+## Monetization guardrails (YouTube "inauthentic content" policy)
+
+YouTube rejects channels whose videos look mass-produced or templated. Every video must have:
+a new story and research (no reused scripts), a real point of view and sourced facts, varied
+visuals (no recycled image sets), and Kit as a consistent character. Never buy views or subs,
+never sub-for-sub, never reupload anyone else's footage. Disclose AI voice every time.
 
 ## 3. Cut 3 Shorts (1080×1920, under 60 seconds)
 
