@@ -9,8 +9,8 @@ Rule: a video goes to TikTok only after it is live on YouTube. Settings are conf
 
 ## Waiting for YouTube
 
-- `short-B-outfit.mp4`: "POV: You Have $300 to Survive the Oregon Trail", goes public on YouTube 2026-10-29 20:00 UTC (Metricool 410015692)
-- `short-C-july4.mp4`: "POV: Miss July 4th on the Oregon Trail and Winter Wins", goes public on YouTube 2026-10-30 14:00 UTC (Metricool 410015778)
+- `short-B-outfit.mp4`: "POV: You Have $300 to Survive the Oregon Trail", goes public on YouTube 2026-10-29 20:00 UTC (Metricool 410019506)
+- `short-C-july4.mp4`: "POV: Miss July 4th on the Oregon Trail and Winter Wins", goes public on YouTube 2026-10-30 14:00 UTC (Metricool 410019578)
 - `01-oregon-trail-30-days.mp4`: on YouTube ([Dd6icXr-dW0](https://youtu.be/Dd6icXr-dW0)), but the user chose to hold it for now
 
 ## YouTube data: short A (snapshot 2026-10-29 12:04 UTC)
@@ -23,12 +23,14 @@ Rule: a video goes to TikTok only after it is live on YouTube. Settings are conf
 - **YouTube Analytics:** no data yet for watch time, retention, country or traffic source. Analytics usually lags 24–48 h.
 - **Description:** links to the full 30-day video and cites the NPS source. Hashtags: #Shorts #OregonTrail #History
 
-## Approved in advance (user said yes on 2026-10-29), now ON HOLD
+## Approved in advance (user said yes to the short captions on 2026-10-29)
 
-On hold: the user asked for shorter descriptions. Do not post B or C until the user approves the new short captions.
+Post each one right after it is public on YouTube, with these settings: Everyone · comments on · duet off · stitch off ·
+not branded · AI-generated label on. YouTube descriptions in Metricool were shortened too (post IDs now 410019506 / 410019578).
 
-
-Shorts B and C: post to TikTok right after each is public on YouTube, with these settings: Everyone · comments on ·
-duet off · stitch off · not branded · AI-generated label on. Caption = YouTube title + description (without `#Shorts`)
-+ YouTube tags as hashtags, exactly as shown to the user in chat. On YouTube, both are now marked as AI-generated
-content (Metricool post IDs changed to 410015692 / 410015778 after that update).
+- **B** (`short-B-outfit.mp4`):
+  `POV: You have $300 to survive the Oregon Trail. First on the list: 600 lb of flour. 🐂 AI narration.`
+  `#oregontrail #americanhistory #history #pioneerlife #pov`
+- **C** (`short-C-july4.mp4`):
+  `POV: Miss July 4th on the Oregon Trail and winter wins. ❄️ Reach Independence Rock in time or get trapped by snow. AI narration.`
+  `#oregontrail #americanhistory #independencerock #history #pov`
