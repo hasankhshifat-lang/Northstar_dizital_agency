@@ -45,6 +45,21 @@ need yoking before anyone eats." Never "settlers did this" - "you do this".
 - The POV character is a composite, and the video says so once, early.
 - No game assets, logos or the game's exact screens. Referencing the game is fine; copying it is not.
 
+## Hero character - Kit
+
+Kit is the "You" in every video: one character who lives a new American life each episode. Code:
+`.claude/youtube/pov/remotion/src/lib/Kit.tsx` (`<Kit outfit mood pose talking look size flip />`).
+
+- **Never changes:** red scarf (brand red, tails always flapping), teal lock of hair over the
+  forehead (visible under every hat), brass pocket watch on a chain, big eyes, freckles.
+- **Changes per era:** hat, top, trousers, boots. Current outfits: `pioneer` (1850), `miner` (1925),
+  `attendant` (1987 night shift), `recruit` (Navy, today), `plain`. Add a new outfit per new life.
+- **Moods:** happy, determined, smirk, worried, shocked, sad. **Poses:** stand, walk, point, cheer.
+- **On screen:** Kit appears in the hook and the payoff of every video and in every thumbnail.
+  First-person shots (hands, cup) are still Kit's hands.
+- **Tone:** Kit reacts to real history - shocked or sad at deaths, never smiling at a grave.
+- **Name:** spoken only if the script needs it. On screen the narration stays "you".
+
 ## Default voiceover
 
 ElevenLabs "Mike - 2D & 3D POV/Storytime" - voice_id `zfc8CJQpe8Kqyl0vvCzo`, speed 1.10,
