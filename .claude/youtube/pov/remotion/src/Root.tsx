@@ -5,6 +5,7 @@ import { ShortC, SHORT_C_SECONDS } from "./shorts/ShortC";
 import { LongVideo, LONG_SECONDS } from "./long/LongVideo";
 import { KitExpressions, KitIntro, KitOutfits } from "./kit/KitSheet";
 import { Banner, BannerSafeCheck, ProfilePicture } from "./kit/ChannelArt";
+import { Thumbnail01 } from "./kit/Thumbnail";
 import { FPS, s } from "./lib/theme";
 
 export const RemotionRoot: React.FC = () => {
@@ -16,6 +17,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Channel-ProfilePicture" component={ProfilePicture} width={800} height={800} fps={FPS} durationInFrames={30} />
       <Composition id="Channel-Banner" component={Banner} width={2560} height={1440} fps={FPS} durationInFrames={30} />
       <Composition id="Channel-Banner-SafeCheck" component={BannerSafeCheck} width={2560} height={1440} fps={FPS} durationInFrames={30} />
+      <Composition id="Thumb-01-Oregon-Trail" component={Thumbnail01} width={1280} height={720} fps={FPS} durationInFrames={30} />
       <Composition id="Kit-Intro" component={KitIntro} width={1920} height={1080} fps={FPS} durationInFrames={180} />
     </Folder>
     <Composition id="Long-Oregon-Trail" component={LongVideo} width={1920} height={1080} fps={FPS} durationInFrames={s(LONG_SECONDS)} />
