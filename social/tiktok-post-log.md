@@ -6,10 +6,10 @@ Rule: a video goes to TikTok only after it is live on YouTube. Settings are conf
 | Posted on (UTC) | File | YouTube video | Tool | TikTok publish ID | Settings |
 |---|---|---|---|---|---|
 | 2026-10-29 12:03 | short-A-cholera.mp4 | [7kxCubu2UdI](https://youtu.be/7kxCubu2UdI) | Clawlink `publish_video` | `v_pub_url~v2-1.7702059262112991240` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on |
+| 2026-10-29 20:08 | short-B-outfit.mp4 | [XiUBmGYlWOE](https://youtu.be/XiUBmGYlWOE) | Clawlink `publish_video` | `v_pub_url~v2-1.7702183951833499666` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on |
 
 ## Waiting for YouTube
 
-- `short-B-outfit.mp4`: "POV: You Have $300 to Survive the Oregon Trail", goes public on YouTube 2026-10-29 20:00 UTC (Metricool 410019506)
 - `short-C-july4.mp4`: "POV: Miss July 4th on the Oregon Trail and Winter Wins", goes public on YouTube 2026-10-30 14:00 UTC (Metricool 410019578)
 - `01-oregon-trail-30-days.mp4`: on YouTube ([Dd6icXr-dW0](https://youtu.be/Dd6icXr-dW0)), but the user chose to hold it for now
 
