@@ -7,6 +7,38 @@ Channel: **Which Life Next (@whichlifenext)**, YouTube channel `UCPTrW0n3ONI9uU4
 Audience: USA. The user gave standing approval for these daily posts (see `CLAUDE.md`), so
 the job does not wait for a confirmation.
 
+## Skills to load (use them, don't work from memory)
+
+Load each skill with the Skill tool at the step where it is needed:
+
+| Step | Skills |
+|---|---|
+| 0. Daily report | `social-media-skills:analytics-and-reporting`, `social-media-skills:content-audit` |
+| 1. Topic | `social-media-skills:viral-reverse-engineering`, `social-media-skills:trend-jacking`, `social-media-skills:audience-research`, `social-media-skills:idea-generation-and-ideation` |
+| 2. Script | `social-media-skills:youtube-long-form`, `social-media-skills:scripting-and-storyboarding`, `social-media-skills:storytelling-and-narrative`, `social-media-skills:hook-writer`, `humanizer:humanizer` |
+| 2. Voice and visuals | `social-media-skills:ai-voiceover`, `image-generation:image-generation`, `social-media-skills:image-prompt`, `social-media-skills:ai-music-and-sound` |
+| 2. Edit | `remotion:remotion-best-practices` (or `ffmpeg`), `remotion:remotion-captions` |
+| 2. Thumbnail | `social-media-skills:thumbnail-design` |
+| 3. Shorts | `social-media-skills:youtube-shorts`, `social-media-skills:captions-and-clipping`, `social-media-skills:short-form-video-script` |
+| 4. Metadata and upload | `social-media-skills:youtube-publishing-and-metadata`, `social-media-skills:social-seo`, `social-media-skills:platform-specs-and-validation`, `social-media-skills:scheduling-and-queue` |
+| 6. Timing review | `social-media-skills:experimentation-and-ab-testing` |
+
+## 0. Daily report (do this first, every run)
+
+Write `reports/YYYY-MM-DD.md` (today's SGT date) covering every video posted in the last 7 days:
+
+1. **Numbers per video:** views, US views and US share, average view duration and % viewed,
+   CTR on impressions, likes, comments, subscribers gained. Get these from YouTube Analytics
+   through Clawlink `youtube`, or Metricool `getAnalyticsDataByMetrics` for brand `7727550`.
+2. **What's working:** the top video and Short, and why (topic, hook, thumbnail, title, length).
+3. **What's not:** the weakest ones and the likely cause (low CTR = thumbnail/title; drop in
+   the first 30s = hook; low US share = topic or timing).
+4. **3 improvements for the next videos:** concrete and testable, e.g. "test a face-close-up
+   thumbnail", "hook with a question instead of a fact". Apply them in today's video and say how.
+5. **Channel totals:** subscribers, total views this week vs. last week.
+
+If there is no data yet (first days), say so and list what you will measure.
+
 ## 1. Pick today's topic (USA demand)
 
 1. Read `topics-log.md` so no topic repeats within 30 days.
@@ -59,8 +91,12 @@ then do the next post.
 
 - Add the 4 rows to `social/youtube-schedule-log.md` and one row to `topics-log.md`.
 - Commit and push to the session's branch. Never commit the video files.
-- Finish with a short summary: topic, reference videos, 4 titles, publish times (SGT and
-  US Eastern), tool and ID of each post, and anything that failed.
+- Finish with a short summary (this is what the user gets as the daily update on their phone):
+  1. **How the videos are doing:** the top video, its views and US views, and the week's trend.
+  2. **How to improve:** the 3 improvements from today's report, and which ones today's video uses.
+  3. **Today's posts:** topic, reference videos, 4 titles, publish times (SGT and US Eastern),
+     tool and ID of each post.
+  4. Anything that failed.
 
 ## 6. Monday: timing review
 
