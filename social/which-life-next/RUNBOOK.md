@@ -20,7 +20,7 @@ Load each skill with the Skill tool at the step where it is needed:
 | 2. Edit | `remotion:remotion-best-practices` (or `ffmpeg`), `remotion:remotion-captions` |
 | 2. Thumbnail | `social-media-skills:thumbnail-design` |
 | 3. Shorts | `social-media-skills:youtube-shorts`, `social-media-skills:captions-and-clipping`, `social-media-skills:short-form-video-script` |
-| 4. Metadata and upload | `social-media-skills:youtube-publishing-and-metadata`, `social-media-skills:social-seo`, `social-media-skills:platform-specs-and-validation`, `social-media-skills:scheduling-and-queue` |
+| 4. Metadata, Drive and upload | `social-media-skills:youtube-publishing-and-metadata`, `social-media-skills:social-seo`, `social-media-skills:platform-specs-and-validation`, `social-media-skills:scheduling-and-queue` |
 | 6. Timing review | `social-media-skills:experimentation-and-ab-testing` |
 
 ## 0. Daily report (do this first, every run)
@@ -116,6 +116,23 @@ then do the next post.
 - **Metricool**: needs the video at a public URL. Upload the file to Google Drive and share it
   as "anyone with the link"; use the direct download link. If that is not possible, say so,
   use Clawlink for that post, and log Clawlink (rule 5 in `CLAUDE.md`).
+
+## 4b. Save the final videos to Google Drive (always)
+
+Every day, after rendering and before scheduling, upload the finished files so they can be
+reused on other platforms (TikTok, Reels, Facebook):
+
+1. In the Drive folder **Which Life Next** (`1F4___JzG4s4rNHblcVBzERva6jyYsYWE`), create a
+   subfolder named `YYYY-MM-DD <topic>` (Clawlink `google-drive`, `create_folder`, `parent_id`
+   = that ID).
+2. Upload into it: `long.mp4`, `short-1.mp4`, `short-2.mp4`, `short-3.mp4`, `thumbnail.jpg`,
+   and `metadata.md` (titles, descriptions, tags, sources, publish times). Use
+   `resumable_upload` for anything over 5 MB, `upload_file` for small files.
+3. Local files: call the action with `s3key` set to the local path. It fails with
+   `missing_file_bytes` and gives a one-time `curl ... https://claw-link.dev/api/files/ingest`
+   command; run it, then retry with the returned `file` object. The same steps work for
+   YouTube `multipart_upload_video`.
+4. Add the folder link to the daily summary and to `topics-log.md`.
 
 ## 5. Log, commit, push
 
