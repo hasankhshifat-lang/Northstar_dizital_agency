@@ -77,8 +77,10 @@ If there is no data yet (first days), say so and list what you will measure.
 5. Thumbnail: 1280×720, bold 3–4 word text, high contrast.
 6. Facts: every number and claim comes from a real source (NPS, Library of Congress,
    National Archives, Smithsonian, university history departments, published diaries). Keep a
-   source list while scripting (use WebSearch to find and check sources: in this session
-   many .gov sites are blocked for direct fetches); if historians disagree, say so in the video.
+   source list while scripting (find sources with WebSearch, then open each page with `curl -sL` to
+   confirm the exact title and numbers; WebFetch may not reach .gov sites, but curl does.
+   Allowed: nps.gov, blm.gov, loc.gov, archives.gov, census.gov. si.edu and britannica.com
+   block automated requests, so cite them only after checking through search results); if historians disagree, say so in the video.
 7. Metadata: title under 60 characters starting "POV:" with the main search phrase. The
    description is the **actual text viewers read** (never notes about the description):
    2-line hook summary, "every number is sourced", chapters from 00:00 (at least 3, each
