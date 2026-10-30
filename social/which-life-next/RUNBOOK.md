@@ -175,3 +175,27 @@ slots there if the data supports it, and add a row to `timing-log.md` either way
   did not get scheduled and why. Never publish a long video that is shorter than 8 minutes or has
   no voiceover.
 - Never post something now (public) in place of scheduling it.
+
+## Known limits (learned 2026-10-30) — plan around these
+
+- **Clawlink file relay: 25 MB per file.** Long videos must be encoded to fit: 720p, two-pass
+  ~310 kbps video + 48 kbps mono AAC, `-preset veryslow -tune animation` gives ~23 MB for 8:40
+  and still looks clean for painted stills. Keep the 1080p master locally only for the day.
+- **Clawlink YouTube uploads share one Google project quota** (video inserts per day). When it
+  says "Video Uploads per day" exceeded, it will not recover the same day: use Metricool for the
+  post, log it honestly, and keep the rotation going the next day.
+- **Metricool accepts the public `claw-link.dev/api/f/...` URL** returned by Clawlink
+  `google-drive` `download_file` and copies the file to its own storage. Use that as `media`.
+  Use `youtubeData.type: "short"` for Shorts and `isAiGeneratedContent: true`.
+- **Figma AI image credits (Starter plan) ran out after ~10 images** and reset at 00:00 UTC.
+  Generate images early in the run, at most ~10 per day, and get more mileage from each with
+  several framings, tints, snow/weather overlays and title cards (`build.py`). Figma image URLs
+  can't be fetched here: relay them via Clawlink `google-drive` `upload_file` (s3key = Figma URL)
+  then `download_file`.
+- **ElevenLabs credits: use `generations_count: 1`** (the default 2 doubles cost; a full episode
+  is ~8k characters). Check remaining credits before starting.
+- **Shorts can't link the long video by ID** when scheduled through Metricool (the ID only exists
+  after publish). Link the channel instead, then update the Short descriptions the next day.
+- Tools: `build.py` (narration, snow layers, title cards, shot clips, captions, final) and
+  `shorts.py` (thumbnail + 3 vertical Shorts) in this folder. Copy them into the day's scratch
+  folder and edit the `CARDS`/`SHOTS`/`SHORTS` tables for each episode.

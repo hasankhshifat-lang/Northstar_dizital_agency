@@ -23,3 +23,4 @@ Requirements can change: check YouTube's current YPP page during the weekly revi
 | Date | Subscribers | Watch hours (365d) | Shorts views (90d) | On track? | Notes |
 |---|---|---|---|---|---|
 | 2026-10-29 | 1 | 0 | 0 | start | Channel created today, 2 videos up |
+| 2026-10-30 | 2 | not reported yet | not reported yet | too early | Analytics lag ~48h; YouTube API quota hit this morning |
