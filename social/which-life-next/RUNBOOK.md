@@ -16,8 +16,8 @@ Load each skill with the Skill tool at the step where it is needed:
 | 0. Daily report | `social-media-skills:analytics-and-reporting`, `social-media-skills:content-audit` |
 | 1. Topic | `social-media-skills:viral-reverse-engineering`, `social-media-skills:trend-jacking`, `social-media-skills:audience-research`, `social-media-skills:idea-generation-and-ideation` |
 | 2. Script | `social-media-skills:youtube-long-form`, `social-media-skills:scripting-and-storyboarding`, `social-media-skills:storytelling-and-narrative`, `social-media-skills:hook-writer`, `humanizer:humanizer` |
-| 2. Voice and visuals | `social-media-skills:ai-voiceover`, `image-generation:image-generation`, `social-media-skills:image-prompt`, `social-media-skills:ai-music-and-sound` |
-| 2. Edit | `remotion:remotion-best-practices` (or `ffmpeg`), `remotion:remotion-captions` |
+| 2. Voice | `social-media-skills:ai-voiceover`, `social-media-skills:ai-music-and-sound` |
+| 2. Animation and edit | `remotion:remotion-best-practices` (read its markup + multi-scene references), `remotion:remotion-captions` |
 | 2. Thumbnail | `social-media-skills:thumbnail-design` |
 | 3. Shorts | `social-media-skills:youtube-shorts`, `social-media-skills:captions-and-clipping`, `social-media-skills:short-form-video-script` |
 | 4. Metadata, Drive and upload | `social-media-skills:youtube-publishing-and-metadata`, `social-media-skills:social-seo`, `social-media-skills:platform-specs-and-validation`, `social-media-skills:scheduling-and-queue` |
@@ -87,11 +87,28 @@ If there is no data yet (first days), say so and list what you will measure.
    - Listen-check: if a tag makes a line sound over-acted, drop that tag and regenerate the line.
    Example: `[tense] By noon, the man in the next wagon can't stand. [pause] [quietly] By
    evening, you're digging his grave.`
-3. Visuals: AI-generated images (image-generation skill), one every 5–8 seconds, with slow
-   zoom/pan, matched to the script. No copyrighted footage.
-4. Assemble with `ffmpeg`: images + voiceover + burned-in captions + quiet royalty-free
-   music bed (or none). Check the final length is 8:00–12:00.
-5. Thumbnail: 1280×720, bold 3–4 word text, high contrast.
+3. Visuals: **animated in Remotion, starring Kit** (project: `remotion/`). Do not use Figma or
+   any AI image generator. Kit is the SVG character in `remotion/src/kit/Kit.tsx`; render the
+   `KitSheet` still and compare: Kit always has short brown hair, the dark charcoal flat cap,
+   the worn brown wool coat with turned-up collar, dark trousers and boots. Never redesign Kit;
+   era outfits (`outfit`) only add details (scarf, miner's lamp, modern jacket cut) and keep the
+   cap, coat colour and silhouette. Other people reuse the rig with `colors` overrides.
+   - Write `shots.json` in the day's scratch folder: for each narration segment, a list of
+     shots (`at` = fraction of the segment where the shot starts) using the `Shot` type in
+     `remotion/src/Episode.tsx`: `landscape` / `interior` / `town` / `card`, time of day,
+     snow, falling snow, elements (sod house, barn, wagon, schoolhouse, rope, storm front,
+     people), Kit's pose/position/walk, camera zoom/pan, tint. Change shot every 5–10 s, put
+     Kit on screen in most shots, and use a title card for each key number or date.
+   - A new era or place needs new sets: add components to `remotion/src/sets/` (same palette
+     from `theme.ts`, same flat-painted style), add an element type in `Episode.tsx`, and check
+     a still before rendering the whole episode.
+4. Assemble: copy `build.py` into the scratch folder (narration timing, wind bed, caption
+   timing), then `python3 -I make_episode.py <scratch> <date> --render --shorts`. It writes
+   `remotion/public/episodes/<date>/episode.json` and renders the long video and Shorts with
+   Remotion (captions are drawn by Remotion). Check stills at 4–5 points before uploading.
+   Check the final length is 8:00–12:00.
+5. Thumbnail: 1280×720 from a Remotion still (`npx remotion still Episode --frame=N`) with Kit
+   in a dramatic moment, plus bold 3–4 word text, high contrast.
 6. Facts: every number and claim comes from a real source (NPS, Library of Congress,
    National Archives, Smithsonian, university history departments, published diaries). Keep a
    source list while scripting (find sources with WebSearch, then open each page with `curl -sL` to
@@ -117,9 +134,10 @@ never sub-for-sub, never reupload anyone else's footage. Disclose AI voice every
 
 ## 3. Cut 3 Shorts (1080×1920, under 60 seconds)
 
-Cut the 3 marked moments from the long video, reframe to vertical (blurred background fill or
-crop), large captions, a hook text in the first second, and end with "Full video on the
-channel". Title each with `#shorts`. In the description, link the long video once it has an ID.
+Pick the 3 marked segments in `shorts.json` (`[{"segment": "07", "hook": ["LINE 1", "LINE 2"]}, ...]`);
+`make_episode.py --shorts` renders them with the Remotion `Short` composition (vertical crop of
+the same animation, hook text for the first 5 s, large captions). Keep each under 60 s. Title each
+with `#shorts`. In the description, link the long video once it has an ID.
 
 ## 4. Schedule
 
@@ -187,15 +205,14 @@ slots there if the data supports it, and add a row to `timing-log.md` either way
 - **Metricool accepts the public `claw-link.dev/api/f/...` URL** returned by Clawlink
   `google-drive` `download_file` and copies the file to its own storage. Use that as `media`.
   Use `youtubeData.type: "short"` for Shorts and `isAiGeneratedContent: true`.
-- **Figma AI image credits (Starter plan) ran out after ~10 images** and reset at 00:00 UTC.
-  Generate images early in the run, at most ~10 per day, and get more mileage from each with
-  several framings, tints, snow/weather overlays and title cards (`build.py`). Figma image URLs
-  can't be fetched here: relay them via Clawlink `google-drive` `upload_file` (s3key = Figma URL)
-  then `download_file`.
+- **Visuals are Remotion only** (user decision, 2026-10-30): no Figma / AI image credits needed.
+  Remotion renders with the installed Chromium (`remotion.config.ts` sets the browser path,
+  because remotion.media downloads are blocked). Speed is ~20 frames/s, so an 8–9 minute
+  episode takes about 13 minutes; run it in the background.
 - **ElevenLabs credits: use `generations_count: 1`** (the default 2 doubles cost; a full episode
   is ~8k characters). Check remaining credits before starting.
 - **Shorts can't link the long video by ID** when scheduled through Metricool (the ID only exists
   after publish). Link the channel instead, then update the Short descriptions the next day.
-- Tools: `build.py` (narration, snow layers, title cards, shot clips, captions, final) and
-  `shorts.py` (thumbnail + 3 vertical Shorts) in this folder. Copy them into the day's scratch
-  folder and edit the `CARDS`/`SHOTS`/`SHORTS` tables for each episode.
+- Tools: `remotion/` (Kit, sets, Episode and Short compositions), `make_episode.py` (props +
+  render), and `build.py` (only for narration timing, wind bed and caption timing now).
+  `shorts.py` and the image parts of `build.py` belong to the retired image workflow.
