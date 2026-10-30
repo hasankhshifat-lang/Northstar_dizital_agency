@@ -1,0 +1,52 @@
+{
+  "type": "photo",
+  "status": "draft",
+  "pillar": "Signature",
+  "angle": "রাত ২টায় customer প্রশ্ন করলো — AI সাথে সাথে উত্তর দিলো, order নিলো",
+  "caption": "রাত ২টায় customer জিজ্ঞেস করলো \"price কত?\"… আপনি দেখলেন সকাল ১০টায়। 😬\n\nততক্ষণে সে অন্য page থেকে order করে ফেলেছে।\n\nআমাদের AI receptionist রাত ২টাতেও সাথে সাথে price বলে দেয়, order-ও নিয়ে নেয়। আপনি তখন আরামে ঘুমান।\n👉 আপনার ব্যবসায় চালু করতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
+  "design": {
+    "theme": "chat",
+    "kicker": "AI Receptionist",
+    "headline": "রাত ২টাতেও customer পায় *সাথে সাথে উত্তর*",
+    "chat_name": "Your Fashion Page",
+    "chat_initials": "YF",
+    "phone_tag": "Demo chat",
+    "messages": [
+      {
+        "from": "me",
+        "text": "আপু, এই dress-টার price কত? M size আছে?",
+        "time": "2:14 AM"
+      },
+      {
+        "from": "ai",
+        "text": "জি আছে 😊 Price আর delivery details দিচ্ছি… Order করতে চাইলে নাম আর address দিন 👇",
+        "time": "2:14 AM"
+      },
+      {
+        "from": "me",
+        "text": "ঠিক আছে, order করবো",
+        "time": "2:15 AM"
+      },
+      {
+        "from": "ai",
+        "text": "ধন্যবাদ! আপনার order নেওয়া হয়েছে ✅ সকালে team confirm করবে।",
+        "time": "2:15 AM"
+      }
+    ],
+    "points": [
+      [
+        "🌙",
+        "২৪ ঘণ্টা active"
+      ],
+      [
+        "🛒",
+        "নিজেই order নেয়"
+      ],
+      [
+        "💬",
+        "বাংলাতেই কথা বলে"
+      ]
+    ],
+    "chip": "AI Receptionist · ২৪/৭"
+  }
+}

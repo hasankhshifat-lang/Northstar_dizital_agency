@@ -95,6 +95,30 @@
 .t-device .tg:nth-child(2){margin-left:50px;background:#D6FF3D}.t-device .tg:nth-child(3){margin-left:100px}
 .t-device .foot{position:absolute;left:72px;right:72px;bottom:64px;display:flex;justify-content:space-between;align-items:flex-end;z-index:3}
 .t-device .chip{background:#0B0B12;font-weight:700;font-size:34px;padding:14px 30px;border-radius:99px}
+
+/* 7. chat: sky-blue + phone with a real-looking conversation (AI assistant posts) */
+.t-chat{background:radial-gradient(circle at 92% 62%,rgba(255,228,92,.35) 0,transparent 30%),linear-gradient(160deg,#3DA9FF 0%,#4D6BFE 60%,#7B5CFF 100%);color:#fff;font-family:'Hind Siliguri';padding:66px 70px}
+.t-chat .row{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2}
+.t-chat .kick{font-weight:700;font-size:28px;background:#FFE45C;color:#1d1b4b;padding:8px 22px;border-radius:99px}
+.t-chat h1{position:relative;z-index:2;font-family:'Anek Bangla';font-weight:800;font-size:86px;line-height:1.12;margin-top:38px;font-stretch:88%}
+.t-chat .hl{color:#FFE45C}
+.t-chat .phone{position:absolute;left:70px;top:360px;width:560px;height:800px;border-radius:60px;background:#0E0E1A;padding:14px;box-shadow:0 40px 90px rgba(20,10,90,.45);transform:rotate(-3deg)}
+.t-chat .scr{width:100%;height:100%;border-radius:48px;background:#F2F3F7;overflow:hidden;display:flex;flex-direction:column}
+.t-chat .bar{background:#fff;padding:30px 26px 18px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #e3e5ec}
+.t-chat .av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#4D6BFE,#C13BFF);display:grid;place-items:center;font:700 22px 'Space Grotesk';color:#fff}
+.t-chat .bar b{display:block;font-size:26px;color:#111}.t-chat .bar small{font-size:20px;color:#1DB954}
+.t-chat .msgs{flex:1;padding:22px 20px;display:flex;flex-direction:column;gap:14px;justify-content:flex-end}
+.t-chat .m{max-width:84%;padding:14px 20px;border-radius:26px;font-size:27px;line-height:1.35;color:#111;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.t-chat .m.me{align-self:flex-end;background:#4D6BFE;color:#fff;border-bottom-right-radius:8px}
+.t-chat .m.ai{border-bottom-left-radius:8px}
+.t-chat .m i{display:block;font-style:normal;font:500 17px 'Space Grotesk';opacity:.6;margin-top:6px}
+.t-chat .tag{position:absolute;left:24px;top:-22px;background:#FF5C8A;color:#fff;font:700 22px 'Hind Siliguri';padding:6px 16px;border-radius:99px;transform:rotate(3deg)}
+.t-chat .side{position:absolute;right:66px;top:470px;width:340px;display:grid;gap:20px;z-index:3}
+.t-chat .pt{background:#fff;color:#1d1b4b;border-radius:28px;padding:22px 24px;font-weight:700;font-size:31px;line-height:1.25;box-shadow:0 16px 34px rgba(20,10,90,.25)}
+.t-chat .pt:nth-child(2){background:#FFE45C}.t-chat .pt:nth-child(3){background:#9BFFCF}
+.t-chat .pt span{display:block;font-size:44px;font-family:'Noto Color Emoji';margin-bottom:6px}
+.t-chat .foot{position:absolute;left:70px;right:70px;bottom:58px;display:flex;justify-content:space-between;align-items:flex-end;z-index:3}
+.t-chat .chip{background:#0E0E1A;font-weight:700;font-size:32px;padding:14px 30px;border-radius:99px}
 </style></head>
 <body><div class="stage" id="s"></div>
 <script>
@@ -144,6 +168,16 @@ const T = {
     <p class="sub">${P.sub}</p>
     <div class="phone"><div class="notch"></div><div class="scr"><img src="../../../${P.image || 'assets/projects/bridal-hero.png'}"></div></div>
     <div class="tags">${pts.map(p => `<span class="tg">${p}</span>`).join('')}</div>
+    <div class="foot"><span class="chip">${P.chip}</span><div class="contact" style="text-align:right">${contact}</div></div>`,
+  // chat: `messages` = [{from: 'me'|'ai', text, time}], `points` = [[emoji, text], ...]
+  chat: () => `
+    <div class="row"><img class="logo" src="${LOGO}" style="filter:brightness(0) invert(1)"><span class="kick">${P.kicker}</span></div>
+    <h1>${hl(P.headline)}</h1>
+    <div class="phone"><div class="scr">
+      <div class="bar"><span class="av">${P.chat_initials || 'AI'}</span><div><b>${P.chat_name || 'আপনার Business'}</b><small>● AI Assistant · Active now</small></div></div>
+      <div class="msgs">${(P.messages || []).map(m => `<div class="m ${m.from}">${m.text}<i>${m.time || ''}</i></div>`).join('')}</div>
+    </div>${P.phone_tag ? `<span class="tag">${P.phone_tag}</span>` : ''}</div>
+    <div class="side">${pts.map(([e, t]) => `<div class="pt"><span>${e}</span>${t}</div>`).join('')}</div>
     <div class="foot"><span class="chip">${P.chip}</span><div class="contact" style="text-align:right">${contact}</div></div>`,
 };
 const s = document.getElementById('s');
