@@ -1,0 +1,91 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="fonts.css">
+<style>
+/* Bangladeshi Facebook-ad style (1080x1080): stacked Bangla headline with a boxed keyword,
+   a hero (cut-out person and/or phone with a live chat), floating glass UI cards and emoji,
+   and a contact bar at the bottom. Palettes swap all colours. */
+.stage{width:1080px;height:1080px;position:relative;overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Hind Siliguri'}
+.p-purple{--accink:#fff;--bg:linear-gradient(160deg,#FBF8FF 0%,#E9DDFF 100%);--ink:#1E1240;--box:#6A2BE2;--boxink:#fff;--acc:#FF7A1A;--bar:#6A2BE2;--barink:#fff;--glow:#B28CFF}
+.p-orange{--accink:#1A1A1A;--bg:linear-gradient(160deg,#FF7A1A 0%,#FF5A1F 100%);--ink:#fff;--box:#fff;--boxink:#FF5A1F;--acc:#FFE14D;--bar:#1A1A1A;--barink:#fff;--glow:#FFC08A}
+.p-green{--accink:#fff;--bg:linear-gradient(160deg,#FFFFFF 0%,#E3FBEC 100%);--ink:#0F2A1C;--box:#0FA958;--boxink:#fff;--acc:#0FA958;--bar:#0B6B3A;--barink:#fff;--glow:#7CE7A8}
+.p-blue{--accink:#071F3A;--bg:linear-gradient(160deg,#0A2FB8 0%,#1E6BFF 100%);--ink:#fff;--box:#FFE14D;--boxink:#0A2FB8;--acc:#7CF6FF;--bar:#071F7A;--barink:#fff;--glow:#5FA8FF}
+.p-yellow{--accink:#fff;--bg:linear-gradient(160deg,#FFD84D 0%,#FFB800 100%);--ink:#16130A;--box:#1D4ED8;--boxink:#fff;--acc:#E11D48;--bar:#16130A;--barink:#FFD84D;--glow:#FFF1A8}
+
+.glow{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;background:var(--glow)}
+.gridbg{position:absolute;inset:0;opacity:.12;background-image:linear-gradient(currentColor 1px,transparent 1px),linear-gradient(90deg,currentColor 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at 50% 60%,#000 20%,transparent 75%)}
+.logo{position:absolute;left:52px;top:44px;height:38px;z-index:6}
+.p-purple .logo,.p-green .logo,.p-yellow .logo{filter:brightness(0)}
+.p-orange .logo,.p-blue .logo{filter:brightness(0) invert(1)}
+.tagtop{position:absolute;right:52px;top:44px;z-index:6;font:600 24px 'Hind Siliguri';padding:6px 20px;border-radius:99px;background:var(--box);color:var(--boxink)}
+
+/* headline */
+.head{position:absolute;left:0;right:0;top:110px;z-index:5;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.head.left{align-items:flex-start;text-align:left;left:56px;right:auto;max-width:600px}
+.ln{font-family:'Mina';font-weight:700;line-height:1.18;white-space:nowrap}
+.ln.s1{font-size:50px}.ln.s2{font-size:68px}.ln.s3{font-size:92px}.ln.s4{font-size:118px}
+.ln.box{background:var(--box);color:var(--boxink);padding:2px 26px 10px;border-radius:14px;transform:rotate(-1.5deg);box-shadow:0 10px 24px rgba(0,0,0,.15)}
+.ln.acc{color:var(--acc)}
+.ln.outline{color:transparent;-webkit-text-stroke:3px var(--ink)}
+.ln.baloo{font-family:'Baloo Da 2';font-weight:800}
+.sub{font:600 30px 'Hind Siliguri';margin-top:10px;opacity:.9}
+
+/* hero */
+.person{position:absolute;bottom:96px;z-index:3;height:640px;filter:drop-shadow(0 30px 40px rgba(0,0,0,.25))}
+.person.right{right:10px}.person.center{left:50%;transform:translateX(-50%)}.person.left{left:10px}
+.orbit{position:absolute;z-index:2;border:4px solid var(--acc);border-radius:50%;opacity:.8;transform:rotate(-14deg);box-shadow:0 0 30px var(--acc)}
+.phone{position:absolute;z-index:4;width:330px;height:560px;border-radius:52px;background:#0E0E1A;padding:12px;box-shadow:0 40px 70px rgba(10,5,40,.35)}
+.scr{width:100%;height:100%;border-radius:42px;background:#F2F3F7;overflow:hidden;display:flex;flex-direction:column}
+.bar{background:#fff;padding:26px 18px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #e3e5ec}
+.av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#4D6BFE,#C13BFF);display:grid;place-items:center;font:700 17px 'Space Grotesk';color:#fff}
+.bar b{display:block;font-size:20px;color:#111}.bar small{font-size:15px;color:#1DB954}
+.msgs{flex:1;padding:16px 14px;display:flex;flex-direction:column;gap:10px;justify-content:flex-end}
+.m{max-width:86%;padding:10px 14px;border-radius:20px;font-size:20px;line-height:1.3;color:#111;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.06)}
+.m.me{align-self:flex-end;background:#4D6BFE;color:#fff;border-bottom-right-radius:6px}.m.ai{border-bottom-left-radius:6px}
+.m i{display:block;font-style:normal;font:500 13px 'Space Grotesk';opacity:.6;margin-top:4px}
+
+/* floating cards + emoji */
+.card{position:absolute;z-index:5;display:flex;align-items:center;gap:14px;padding:14px 20px;border-radius:22px;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,.9);box-shadow:0 18px 36px rgba(20,10,60,.18);font:700 25px 'Hind Siliguri';color:#1E1240;white-space:nowrap}
+.card .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:26px;font-family:'Noto Color Emoji';background:#EEF2FF}
+.card small{display:block;font:500 17px 'Hind Siliguri';color:#6b6680}
+.emo{position:absolute;z-index:4;font-family:'Noto Color Emoji';filter:drop-shadow(0 12px 18px rgba(0,0,0,.25))}
+.emo.blur{filter:blur(5px);opacity:.75}
+.sticker{position:absolute;z-index:6;width:170px;height:170px;border-radius:50%;background:var(--acc);color:var(--accink);display:grid;place-items:center;text-align:center;font:800 32px/1.1 'Baloo Da 2';transform:rotate(12deg);box-shadow:0 14px 30px rgba(0,0,0,.2);border:5px solid #fff}
+
+/* bottom bar */
+.foot{position:absolute;left:0;right:0;bottom:0;height:86px;z-index:7;background:var(--bar);color:var(--barink);display:flex;align-items:center;justify-content:space-between;padding:0 46px 0 0}
+.foot .cta{height:100%;display:flex;align-items:center;gap:12px;padding:0 34px 0 46px;background:var(--acc);color:var(--accink);font:700 30px 'Hind Siliguri';clip-path:polygon(0 0,100% 0,92% 100%,0 100%)}
+.foot .wa{display:flex;align-items:center;gap:12px;font:600 30px 'Space Grotesk'}
+.foot .wa svg{width:36px;height:36px}
+.foot .web{font:500 26px 'Space Grotesk';opacity:.9}
+</style></head>
+<body><div class="stage" id="s"></div>
+<script>
+const P = window.POST || {};
+const hl = s => (s || '').replace(/\*(.+?)\*/g, '<span style="color:var(--acc)">$1</span>');
+const pal = P.palette || 'purple';
+const s = document.getElementById('s');
+s.className = 'stage p-' + pal;
+const at = (el, [x, y]) => `left:${x}px;top:${y}px;` + el;
+const wa = '<svg viewBox="0 0 32 32"><path fill="#25D366" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3z"/><path fill="#fff" d="M23 19.3c-.4-.2-2.3-1.1-2.6-1.2-.4-.1-.6-.2-.9.2l-1.2 1.5c-.2.2-.4.3-.8.1a10.6 10.6 0 0 1-5.3-4.6c-.4-.7.4-.6 1.1-2.1.1-.2 0-.5 0-.7l-1.2-2.8c-.3-.7-.6-.6-.9-.6h-.7a1.4 1.4 0 0 0-1 .5 4.2 4.2 0 0 0-1.3 3.1 7.3 7.3 0 0 0 1.5 3.9 16.7 16.7 0 0 0 6.4 5.6c2.4 1 3.3 1.1 4.5.9a3.8 3.8 0 0 0 2.5-1.8 3.1 3.1 0 0 0 .2-1.8c-.1-.1-.3-.2-.6-.3z"/></svg>';
+const phone = ph => ph ? `<div class="phone" style="${at('', ph.pos || [375, 380])}transform:rotate(${ph.rotate ?? -6}deg)"><div class="scr">
+  <div class="bar"><span class="av">${ph.initials || 'AI'}</span><div><b>${ph.name || 'আপনার Business'}</b><small>● AI Assistant · Active now</small></div></div>
+  <div class="msgs">${(ph.messages || []).map(m => `<div class="m ${m.from}">${m.text}<i>${m.time || ''}</i></div>`).join('')}</div></div></div>` : '';
+s.innerHTML = `
+  <div class="glow" style="width:520px;height:520px;left:-120px;top:420px"></div>
+  <div class="glow" style="width:460px;height:460px;right:-140px;top:120px"></div>
+  <div class="gridbg"></div>
+  <img class="logo" src="../../../assets/logo.png">
+  ${P.tag ? `<span class="tagtop">${P.tag}</span>` : ''}
+  <div class="head ${P.align === 'left' ? 'left' : ''}">
+    ${(P.lines || []).map(l => `<div class="ln s${l.size || 2} ${l.style || ''}">${hl(l.t)}</div>`).join('')}
+    ${P.sub ? `<div class="sub">${P.sub}</div>` : ''}
+  </div>
+  ${P.orbit ? `<div class="orbit" style="${at('', P.orbit.pos)}width:${P.orbit.w}px;height:${P.orbit.h}px"></div>` : ''}
+  ${P.person ? `<img class="person ${P.person_side || 'right'}" src="../../../${P.person}">` : ''}
+  ${phone(P.phone)}
+  ${(P.cards || []).map(c => `<div class="card" style="${at('', c.pos)}transform:rotate(${c.rotate || 0}deg)"><span class="ic">${c.icon}</span><div>${c.text}${c.small ? `<small>${c.small}</small>` : ''}</div></div>`).join('')}
+  ${(P.emoji || []).map(e => `<span class="emo ${e.blur ? 'blur' : ''}" style="${at('', e.pos)}font-size:${e.size || 80}px;transform:rotate(${e.rotate || 0}deg)">${e.e}</span>`).join('')}
+  ${P.sticker ? `<div class="sticker" style="${at('', P.sticker.pos)}">${P.sticker.text}</div>` : ''}
+  <div class="foot"><span class="cta">${P.cta || 'বিস্তারিত জানুন'} →</span><span class="wa">${wa}${P.whatsapp || '+880 1872-692783'}</span><span class="web">samplewebsite.tech</span></div>`;
+</script>
+</body></html>

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Facebook post renderer.
 //   node social/facebook/render.js prompt <post.json>   -> prints the ElevenLabs voiceover prompt for a video
-//   node social/facebook/render.js <post.json>          -> photo: image.png (1080x1350)
+//   node social/facebook/render.js <post.json>          -> photo: image.png (1080x1350; theme "ad" is 1080x1080)
 //                                                          video: video.mp4 (1080x1920, 30fps) + cover.png,
 //                                                                 needs voice.mp3 next to post.json
 //   PREVIEW=2,8,15 node social/facebook/render.js <post.json>  -> video stills only, for checking layout
@@ -135,13 +135,14 @@ async function main() {
   const post = JSON.parse(fs.readFileSync(postFile, 'utf8'));
   const outDir = path.dirname(postFile);
   const browser = await chromium.launch();
-  const size = post.type === 'video' ? { width: 1080, height: 1920 } : { width: 1080, height: 1350 };
+  const isAd = post.design && post.design.theme === 'ad';
+  const size = post.type === 'video' ? { width: 1080, height: 1920 } : isAd ? { width: 1080, height: 1080 } : { width: 1080, height: 1350 };
   const page = await browser.newPage({ viewport: size });
   if (post.type === 'video') {
     await renderVideo(page, post, outDir);
   } else {
     await page.addInitScript(d => { window.POST = d; }, post.design);
-    await page.goto('file://' + path.join(__dirname, 'templates', 'photo.html'));
+    await page.goto('file://' + path.join(__dirname, 'templates', isAd ? 'ad.html' : 'photo.html'));
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: path.join(outDir, 'image.png') });
   }

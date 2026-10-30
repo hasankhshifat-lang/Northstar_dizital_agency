@@ -73,6 +73,16 @@ Photo themes (`design.theme` in post.json, rendered by `templates/photo.html`, 1
 `editorial` (magazine serif, `issue` optional) · `retro` (rickshaw-art sunburst, Galada) ·
 `device` (phone mockup, `image` = a file in `assets/projects/`).
 
+**`ad` (1080×1080, `templates/ad.html`) — Bangladeshi Facebook-ad style, use it for at least
+every second photo post.** Built from the owner's reference ads: stacked Bangla headline in `Mina`
+with one line in a coloured box (`lines: [{t, size 1-4, style: box|acc|outline}]`), a hero
+(`person` cut-out from `people/` and/or a `phone` with a live chat), floating glass `cards`
+(icon + short text, e.g. "Order নেওয়া হয়েছে ✅"), a few `emoji` (some `blur: true` for depth),
+optional `orbit` ring and `sticker`, and the contact bar (`cta` text). Palettes: `purple`,
+`orange`, `green`, `blue`, `yellow` — don't repeat the last palette. Whenever a cut-out exists in
+`people/`, use it (person on one side, phone/cards on the other) — real faces are what make
+these ads work.
+
 Video themes (`templates/video.html`, 1080×1920): `pop` · `brutal` · `mesh` · `retro`.
 
 Rotate: pick a theme that is **not** among the last 3 used for that format (see the log).
