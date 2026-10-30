@@ -29,7 +29,9 @@
 .cap{position:absolute;left:70px;right:70px;bottom:150px;z-index:6;display:flex;justify-content:center}
 .cap span{font-family:'Hind Siliguri';font-weight:600;font-size:40px;line-height:1.35;text-align:center;padding:18px 34px;border-radius:24px;background:rgba(15,15,20,.86);color:#fff;max-width:940px}
 .th-brutal .cap span{border-radius:0;border:4px solid #111;background:#fff;color:#111;box-shadow:8px 8px 0 #111}
-.foot{position:absolute;left:80px;right:80px;bottom:70px;display:flex;justify-content:space-between;font-family:'Space Grotesk';font-weight:500;font-size:28px;z-index:5;color:var(--ink);opacity:.85}
+.foot{position:absolute;left:80px;right:80px;bottom:70px;display:flex;justify-content:space-between;font-family:'Space Grotesk';font-weight:500;font-size:28px;z-index:5;color:var(--ink)}
+.foot span{background:var(--chip,rgba(255,255,255,.8));padding:4px 14px;border-radius:12px}
+.th-mesh,.th-retro{--chip:rgba(0,0,0,.35)}
 
 /* ---------- scenes ---------- */
 .scene{position:absolute;left:80px;right:80px;top:230px;bottom:330px;display:flex;flex-direction:column;justify-content:center;gap:46px;visibility:hidden;z-index:4}
@@ -49,6 +51,15 @@ h2{font-family:var(--disp);font-weight:800;font-size:112px;line-height:1.16;lett
 .th-mesh .hl .wi{color:#FF4D6D}.th-mesh .hl .mk{left:-12px;right:-12px;top:10%;bottom:4%;background:#fff;border-radius:20px}
 .th-retro .hl .wi{color:var(--a1)}.th-retro .hl .mk{display:none}
 .body{font-size:50px;line-height:1.45;color:var(--mut);font-weight:500}
+/* scene with a model cut-out: text sits in the top part, the person stands at the bottom */
+.scene.wp{justify-content:flex-start;padding-top:20px;gap:34px}
+.scene.wp h2{font-size:96px}.scene.wp .body{font-size:44px;max-width:860px}
+.scene.wp .icon{width:170px;height:170px;font-size:92px;border-radius:46px}
+.pp{position:absolute;bottom:-330px;height:1000px;z-index:-1;filter:drop-shadow(0 30px 50px rgba(0,0,0,.3))}
+.pp.right{right:-110px}.pp.left{left:-110px}.pp.center{left:50%;margin-left:-330px}
+.pcard{position:absolute;z-index:2;display:flex;align-items:center;gap:16px;padding:18px 26px;border-radius:28px;background:rgba(255,255,255,.92);box-shadow:0 20px 40px rgba(0,0,0,.18);font:700 34px 'Hind Siliguri';color:#1E1240;white-space:nowrap}
+.pcard .emo{font-size:40px}
+.th-brutal .pcard{border-radius:0;border:4px solid #111;box-shadow:8px 8px 0 #111}
 .icon{width:220px;height:220px;border-radius:60px;display:grid;place-items:center;font-size:120px;background:var(--a2);font-family:'Noto Color Emoji'}
 .th-brutal .icon{border:5px solid #111;box-shadow:12px 12px 0 #111;border-radius:0}
 .th-mesh .icon{background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.6)}
@@ -228,6 +239,20 @@ V.scenes.forEach((sc, i) => {
   root.appendChild(el);
   dots.insertAdjacentHTML('beforeend', '<i></i>');
   B[sc.type](sc, el, t0);
+  if (sc.person) {
+    // Model cut-out rises in from the bottom, then floats gently; optional cards pop beside it.
+    el.classList.add('wp');
+    const img = document.createElement('img');
+    img.className = 'pp ' + (sc.person_side || 'right');
+    img.src = '../../../' + sc.person;
+    el.appendChild(img);
+    tl.from(img, {y: 420, opacity: 0, duration: .9, ease: 'power3.out'}, t0 + .1);
+    tl.to(img, {y: -14, duration: 1.6, repeat: Math.max(1, Math.floor(sc._dur / 1.6)), yoyo: true, ease: 'sine.inOut'}, t0 + 1);
+    (sc.pcards || []).forEach((c, k) => {
+      el.insertAdjacentHTML('beforeend', `<div class="pcard" style="left:${c.pos[0]}px;top:${c.pos[1]}px;transform:rotate(${c.rotate || 0}deg)"><span class="emo">${c.icon}</span>${c.text}</div>`);
+      tl.from(el.lastElementChild, {scale: 0, opacity: 0, duration: .6, ease: 'back.out(2)'}, t0 + .9 + k * .35);
+    });
+  }
   tl.set(el, {visibility: 'visible'}, t0);
   tl.set(dots.children[i], {className: 'on'}, t0);
   if (i < V.scenes.length - 1) {

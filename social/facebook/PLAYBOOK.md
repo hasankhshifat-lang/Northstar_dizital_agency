@@ -116,6 +116,11 @@ Headline: `*word*` marks the highlighted part. Keep headlines ≤ 8 words, point
 
 - 35–55 seconds, 5–7 scenes. Scene types: `hook`, `search`, `statement`, `showcase`, `features`, `cta`.
   Start with a hook that names a real pain; end with `cta` (price + WhatsApp).
+- **Use the model cut-outs in videos too** (owner's request): put a person on at least 2 scenes
+  (usually `hook` and `statement`) with `person: "social/facebook/people/<file>.png"`,
+  `person_side: right|left|center`, and 1–2 `pcards` ({icon, text, pos:[x,y] inside the scene box,
+  rotate}) placed beside them in the lower half. Don't add a person to `search`, `showcase` or `cta`
+  (they have their own visuals). Use a different person per scene, matched to the topic.
 - Each scene has `say` (the spoken Bangla line, human and conversational — short sentences,
   rhetorical questions, "..." for natural pauses) and optional `tone` (`curious`, `warmly`,
   `excited`, `serious`…). On-screen text is shorter than the spoken line.
