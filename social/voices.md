@@ -4,7 +4,7 @@ One voice per channel, for brand identity. Never reuse a channel's voice on anot
 
 | Channel | Voice | voice_id | Model | Locked on |
 |---|---|---|---|---|
-| Which Life Next (@whichlifenext) | Jon - Relaxed, Deep and Approachable (American male) | `Cz0K1kOv9tD8l0b5Qu53` | `eleven_v4` | 2026-10-30 |
+| Which Life Next (@whichlifenext) | Jesse - Elearning, Casual Friendly Male (American male, from the user's assets) | `4N8zjn9tVNuDEBFWVHAq` | `eleven_v4` | 2026-10-30 |
 
 ## Rules
 
@@ -14,4 +14,6 @@ One voice per channel, for brand identity. Never reuse a channel's voice on anot
   direction tags (e.g. `[tense]`, `[quietly]`) only for moments, not to change the character.
 - A new channel gets a **different** voice: pick one that is not in this table, confirm it with
   the user, and add a row here before its first video.
-- The 2 Oregon Trail videos (2026-10-29) used an earlier voice; from 2026-10-30 on, Jon only.
+- The 2 Oregon Trail videos (2026-10-29) used an earlier voice; from 2026-10-30 on, Jesse only.
+- Not used by any channel (don't reuse without asking): Jon `Cz0K1kOv9tD8l0b5Qu53` was briefly
+  chosen and replaced the same day; the custom-designed previews (2026-10-30) were not saved.
