@@ -22,6 +22,10 @@ Confirm the title, description, publish time, and video file with the user befor
 
 Account: Which Life Next (@whichlifenext), via Clawlink `tiktok`. Log: `social/tiktok-post-log.md`.
 
+**ON HOLD since 2026-10-30:** the user paused all TikTok posts until they check the account status (both posts had
+0 views; the account may be restricted after a Bangladesh → Singapore location change). Do not post to TikTok or
+set TikTok check-ins until the user says to resume.
+
 1. No hourly polling. Check only at publish times: whenever a YouTube post is scheduled (or found scheduled in
    Metricool / YouTube), set a one-time check-in (`send_later`) for about 5 minutes after its publish time. At the
    check-in, confirm it is public (`youtube` → `list_channel_videos`, channel `UCPTrW0n3ONI9uU4WetWwFCQ`); if not yet,
