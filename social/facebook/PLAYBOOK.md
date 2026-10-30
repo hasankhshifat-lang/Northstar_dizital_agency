@@ -83,6 +83,30 @@ optional `orbit` ring and `sticker`, and the contact bar (`cta` text). Palettes:
 `people/`, use it (person on one side, phone/cards on the other) — real faces are what make
 these ads work.
 
+### Shuffle rule (owner's request, 2026-10-30)
+
+Photo posts rotate through **8 ad layouts** (`theme: "layout"`, `templates/layouts.html`, 1080×1080) plus
+the `ad` (classic) and `chat` themes. Starting files for each are in `templates/examples/layout-*.json`
+— copy one, then change everything (headline, cards, person, palette):
+
+| layout | Built from | Best for |
+|---|---|---|
+| `split` | text + dashed feature box left, big phone right | listing what the assistant does |
+| `hero` | person centred holding phone, headline across top | "instant reply" / any simple promise |
+| `glass` | person with glowing glass panels (palette `night` works best) | premium / professional support angle |
+| `trio` | three phones fanned, person in front | multi-channel (Messenger, WhatsApp, website) |
+| `laptop` | dashboard mockup + floating icons | owner sees everything in one place, setup |
+| `question` | "AI কি …?" hook, robot, person | myths, objections, curiosity |
+| `bignum` | giant number/keyword (`big`) + person | ২৪/৭, ০ মিস, ১০০ জন একসাথে |
+| `sketch` | line-art city, big word behind person | "for everyone", offline shops |
+
+Rules: never repeat a layout within the last 5 photo posts or a palette within the last 2; never
+the same person twice in a row; match the layout to the angle. Headline markup: `*word*` accent
+colour, `[word]` boxed, `{word}` slanted ribbon; mix fonts per line with `cls: "baloo"|"anek"|"galada"`.
+Mock UI numbers (dashboards, chats) are illustrations — never present them as real results.
+Trend check (optional, ~$0.003): `pinterestdata_search` "bangla social media post design" and read
+titles/descriptions for fresh ideas (images can't be opened from this environment).
+
 Video themes (`templates/video.html`, 1080×1920): `pop` · `brutal` · `mesh` · `retro`.
 
 Rotate: pick a theme that is **not** among the last 3 used for that format (see the log).

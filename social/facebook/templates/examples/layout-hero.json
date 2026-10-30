@@ -1,0 +1,60 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "hero",
+  "palette": "blue",
+  "head": [
+   {
+    "t": "Customer-এর প্রতিটা message"
+   },
+   {
+    "t": "সাথে সাথে উত্তর"
+   },
+   {
+    "t": "আপনি ঘুমালেও!"
+   }
+  ],
+  "person": "social/facebook/people/man-blue-shirt-phone.png",
+  "cards": [
+   {
+    "icon": "⚡",
+    "text": "Reply: সাথে সাথে",
+    "pos": [
+     40,
+     640
+    ],
+    "rotate": -4
+   },
+   {
+    "icon": "🌙",
+    "text": "রাত ২টায়ও active",
+    "pos": [
+     740,
+     700
+    ],
+    "rotate": 4
+   }
+  ],
+  "cta": "Get More Info",
+  "theme": "layout",
+  "emoji": [
+   {
+    "e": "💬",
+    "pos": [
+     110,
+     470
+    ],
+    "size": 80,
+    "rotate": -10
+   },
+   {
+    "e": "✨",
+    "pos": [
+     900,
+     460
+    ],
+    "size": 60
+   }
+  ]
+ }
+}

@@ -1,0 +1,71 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "glass",
+  "palette": "night",
+  "head": [
+   {
+    "t": "Customer service এখন"
+   },
+   {
+    "t": "*smart* আর *smooth*",
+    "cls": "baloo"
+   }
+  ],
+  "person": "social/facebook/people/woman-fcommerce-phone.png",
+  "panes": [
+   {
+    "icon": "💬",
+    "text": "Auto reply",
+    "small": "সব প্রশ্নের উত্তর",
+    "pos": [
+     70,
+     380
+    ],
+    "rotate": -4
+   },
+   {
+    "icon": "🛒",
+    "text": "Order নেওয়া",
+    "small": "নিজে থেকেই",
+    "pos": [
+     90,
+     640
+    ],
+    "rotate": 3
+   },
+   {
+    "icon": "📅",
+    "text": "Booking",
+    "small": "slot দেখে",
+    "pos": [
+     790,
+     360
+    ],
+    "rotate": 4
+   },
+   {
+    "icon": "🤝",
+    "text": "Professional",
+    "small": "customer support",
+    "pos": [
+     770,
+     640
+    ],
+    "rotate": -3
+   }
+  ],
+  "emoji": [
+   {
+    "e": "✨",
+    "pos": [
+     930,
+     250
+    ],
+    "size": 56
+   }
+  ],
+  "cta": "এখনই জানুন",
+  "theme": "layout"
+ }
+}

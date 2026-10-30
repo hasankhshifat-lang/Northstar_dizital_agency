@@ -1,0 +1,45 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "question",
+  "palette": "purple",
+  "head": [
+   {
+    "t": "AI কি"
+   },
+   {
+    "t": "Receptionist-এর"
+   },
+   {
+    "t": "কাজ করতে পারে?"
+   },
+   {
+    "t": "[হ্যাঁ, ২৪/৭!]"
+   }
+  ],
+  "person": "social/facebook/people/receptionist-headset.png",
+  "code": "if (customer.message) {\n  reply(\"জি, বলুন 😊\");\n  takeOrder();\n  bookAppointment();\n}\n// active: 24/7",
+  "cards": [
+   {
+    "icon": "✅",
+    "text": "ছুটি নেয় না",
+    "pos": [
+     60,
+     800
+    ],
+    "rotate": -3
+   },
+   {
+    "icon": "⚡",
+    "text": "এক সাথে ১০০ জন",
+    "pos": [
+     330,
+     860
+    ],
+    "rotate": 3
+   }
+  ],
+  "cta": "বিস্তারিত জানুন",
+  "theme": "layout"
+ }
+}

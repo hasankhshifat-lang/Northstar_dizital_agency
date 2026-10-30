@@ -135,14 +135,15 @@ async function main() {
   const post = JSON.parse(fs.readFileSync(postFile, 'utf8'));
   const outDir = path.dirname(postFile);
   const browser = await chromium.launch();
-  const isAd = post.design && post.design.theme === 'ad';
+  const theme = post.design && post.design.theme;
+  const isAd = theme === 'ad' || theme === 'layout';
   const size = post.type === 'video' ? { width: 1080, height: 1920 } : isAd ? { width: 1080, height: 1080 } : { width: 1080, height: 1350 };
   const page = await browser.newPage({ viewport: size });
   if (post.type === 'video') {
     await renderVideo(page, post, outDir);
   } else {
     await page.addInitScript(d => { window.POST = d; }, post.design);
-    await page.goto('file://' + path.join(__dirname, 'templates', isAd ? 'ad.html' : 'photo.html'));
+    await page.goto('file://' + path.join(__dirname, 'templates', theme === 'layout' ? 'layouts.html' : isAd ? 'ad.html' : 'photo.html'));
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: path.join(outDir, 'image.png') });
   }

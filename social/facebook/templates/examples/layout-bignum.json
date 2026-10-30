@@ -1,0 +1,20 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "bignum",
+  "palette": "yellow",
+  "head": [
+   {
+    "t": "আপনার দোকান খোলা থাকুক"
+   },
+   {
+    "t": "*ঘণ্টা* · *দিন* — রাতেও customer ফেরত যাবে না"
+   }
+  ],
+  "big": "২৪/৭",
+  "sub": "AI receptionist উত্তর দেয়, order নেয়, call ধরে",
+  "person": "social/facebook/people/shopkeeper-elder-phone.png",
+  "cta": "জানতে চাই",
+  "theme": "layout"
+ }
+}

@@ -1,0 +1,68 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "split",
+  "palette": "purple",
+  "head": [
+   {
+    "t": "একজন"
+   },
+   {
+    "t": "AI Receptionist"
+   },
+   {
+    "t": "[২৪ ঘণ্টা] কাজ",
+    "cls": "baloo"
+   }
+  ],
+  "box": "Customer-এর প্রশ্নের উত্তর · Product বিক্রি · Order নেওয়া · Appointment booking · IT help ( সব একসাথে )",
+  "sub": "Messenger · WhatsApp · Website · Phone",
+  "phone": {
+   "name": "Your Shop",
+   "initials": "YS",
+   "messages": [
+    {
+     "from": "me",
+     "text": "Delivery charge কত?",
+     "time": "1:05 AM"
+    },
+    {
+     "from": "ai",
+     "text": "ঢাকার ভিতরে ৬০ টাকা, বাইরে ১২০ 😊",
+     "time": "1:05 AM"
+    },
+    {
+     "from": "me",
+     "text": "ঠিক আছে, order দিচ্ছি",
+     "time": "1:06 AM"
+    },
+    {
+     "from": "ai",
+     "text": "নাম আর address দিন, order confirm করছি ✅",
+     "time": "1:06 AM"
+    }
+   ]
+  },
+  "emoji": [
+   {
+    "e": "✨",
+    "pos": [
+     600,
+     140
+    ],
+    "size": 60
+   },
+   {
+    "e": "💬",
+    "pos": [
+     960,
+     820
+    ],
+    "size": 70,
+    "blur": true
+   }
+  ],
+  "cta": "বিস্তারিত জানুন",
+  "theme": "layout"
+ }
+}

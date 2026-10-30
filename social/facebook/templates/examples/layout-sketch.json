@@ -1,0 +1,39 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "sketch",
+  "palette": "yellow",
+  "head": [
+   {
+    "t": "সবার জন্য AI Receptionist"
+   },
+   {
+    "t": "ছোট দোকান থেকে বড় ব্যবসা, খরচ মাসিক, usage অনুযায়ী"
+   }
+  ],
+  "big": "AI",
+  "person": "social/facebook/people/salon-owner-thumbsup.png",
+  "cards": [
+   {
+    "icon": "💰",
+    "text": "Staff-এর চেয়ে কম খরচ",
+    "pos": [
+     50,
+     620
+    ],
+    "rotate": -4
+   },
+   {
+    "icon": "🛡️",
+    "text": "ছুটি নেই, অসুখ নেই",
+    "pos": [
+     730,
+     640
+    ],
+    "rotate": 4
+   }
+  ],
+  "cta": "বিস্তারিত জানুন",
+  "theme": "layout"
+ }
+}

@@ -1,0 +1,68 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "trio",
+  "palette": "green",
+  "head": [
+   {
+    "t": "Messenger, WhatsApp, Website"
+   },
+   {
+    "t": "সব জায়গায় [একটাই AI]"
+   }
+  ],
+  "person": "social/facebook/people/man-laptop.png",
+  "phones": [
+   {
+    "name": "Messenger",
+    "initials": "M",
+    "messages": [
+     {
+      "from": "me",
+      "text": "Price কত?",
+      "time": "9:01 PM"
+     },
+     {
+      "from": "ai",
+      "text": "জি, details দিচ্ছি 😊",
+      "time": "9:01 PM"
+     }
+    ]
+   },
+   {
+    "name": "WhatsApp",
+    "initials": "W",
+    "messages": [
+     {
+      "from": "me",
+      "text": "Order করতে চাই",
+      "time": "9:03 PM"
+     },
+     {
+      "from": "ai",
+      "text": "নাম আর address দিন ✅",
+      "time": "9:03 PM"
+     }
+    ]
+   },
+   {
+    "name": "Website chat",
+    "initials": "W",
+    "messages": [
+     {
+      "from": "me",
+      "text": "কাল appointment হবে?",
+      "time": "9:05 PM"
+     },
+     {
+      "from": "ai",
+      "text": "১১টায় slot আছে 📅",
+      "time": "9:05 PM"
+     }
+    ]
+   }
+  ],
+  "cta": "বিস্তারিত জানুন",
+  "theme": "layout"
+ }
+}
