@@ -71,6 +71,22 @@ If there is no data yet (first days), say so and list what you will measure.
 2. Voiceover: ElevenLabs `creative_generate_speech` with the channel voice from
    `social/voices.md` — **Jesse, `4N8zjn9tVNuDEBFWVHAq`, model `eleven_v4`** — for the long video
    and every Short. Never use another voice for this channel.
+   **Danger-moment tags (always):** before sending the script to ElevenLabs, mark every danger
+   moment with `eleven_v4` audio tags so Jesse's friendly read turns tense there:
+   - `[tense]` at the start of the sentence where the threat appears (disease, accident,
+     river crossing, mine collapse, robbery, a choice that could kill Kit) — and the re-hook
+     every ~90 seconds is usually one of these.
+   - `[quietly]` or `[whispers]` for the grim payoff line (a death, a grave, a number of dead).
+   - `[pause]`, or an ellipsis, right before the reveal; `[urgent]` only for a sudden event.
+   - Return to a normal read on the next calm line (`[calm]` if needed) — tags shape a moment,
+     they don't change the narrator.
+   - Limits: at most one tag per sentence, roughly 6–12 tagged moments in a long video and
+     1–3 in a Short; Shorts open with `[tense]` on the hook line. Never tag sources,
+     disclaimers or the call to action.
+   - Tags go only into the TTS text, never into on-screen captions or descriptions.
+   - Listen-check: if a tag makes a line sound over-acted, drop that tag and regenerate the line.
+   Example: `[tense] By noon, the man in the next wagon can't stand. [pause] [quietly] By
+   evening, you're digging his grave.`
 3. Visuals: AI-generated images (image-generation skill), one every 5–8 seconds, with slow
    zoom/pan, matched to the script. No copyrighted footage.
 4. Assemble with `ffmpeg`: images + voiceover + burned-in captions + quiet royalty-free
