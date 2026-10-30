@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS inbox (
 );
 CREATE INDEX IF NOT EXISTS idx_inbox_from ON inbox(from_number, wa_timestamp);
 
--- One row per prospect. status: new | contacted | followup_1 | followup_2 | replied | opted_out
+-- One row per prospect. status: new | contacted | followup_1 | followup_2 | replied | opted_out | internal
 CREATE TABLE IF NOT EXISTS contacts (
   phone TEXT PRIMARY KEY,
   name TEXT,
@@ -27,7 +27,18 @@ CREATE TABLE IF NOT EXISTS contacts (
   last_inbound_text TEXT,
   notes TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  -- Lead data synced from ElevenLabs "Inbound Lead Qualifier" data collection
+  business_name TEXT,
+  business_type TEXT,
+  service_interest TEXT,
+  budget TEXT,
+  timeline TEXT,
+  lead_stage TEXT,          -- hot | warm | cold | declined | not_a_lead
+  wants_call INTEGER NOT NULL DEFAULT 0,
+  last_conversation_id TEXT,
+  last_summary TEXT,
+  source TEXT               -- elevenlabs | outreach | internal
 );
 
 CREATE TABLE IF NOT EXISTS outbound_log (
