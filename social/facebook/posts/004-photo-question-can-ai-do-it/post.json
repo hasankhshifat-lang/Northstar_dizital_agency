@@ -1,6 +1,6 @@
 {
   "type": "photo",
-  "status": "draft",
+  "status": "scheduled",
   "pillar": "Trust & setup",
   "angle": "AI কি সত্যিই receptionist-এর কাজ করতে পারে? (myth → yes, 24/7, hands hard cases to team)",
   "caption": "AI কি সত্যিই একজন receptionist-এর কাজ করতে পারে? 🤔\n\nপ্রশ্নের উত্তর দেওয়া, order নেওয়া, appointment book করা, সবই পারে। রাত-দিন, ছুটি ছাড়াই।\nকঠিন কিছু এলে সাথে সাথে আপনার team-কে জানিয়ে দেয়।\n\n👉 আপনার ব্যবসায় কীভাবে কাজ করবে, জানতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
@@ -46,5 +46,8 @@
     ],
     "cta": "বিস্তারিত জানুন",
     "theme": "layout"
-  }
+  },
+  "facebook_photo_id": "122114687955502830",
+  "scheduled_for": "2026-10-30 18:30 Asia/Dhaka",
+  "extra": true
 }
