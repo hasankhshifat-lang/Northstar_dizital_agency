@@ -17,3 +17,13 @@ Every YouTube post that is scheduled goes through **one** of two tools, taking t
    Log the tool that was actually used, so the next post goes to the other tool.
 
 Confirm the title, description, publish time, and video file with the user before scheduling.
+
+## YouTube analysis: use vidIQ
+
+For any YouTube analysis (channel or video performance, keyword and topic research, competitor
+channels, titles, tags, best posting times, outlier videos), use the **vidIQ** connector first.
+- Fall back to YouTube Analytics through Clawlink (`youtube` / `query_analytics`), or Metricool
+  analytics, only when vidIQ is not connected or has no tool for the question. Say which source
+  was used.
+- If vidIQ is not connected, tell the user it needs to be authorized in claude.ai connector
+  settings before using a fallback.
