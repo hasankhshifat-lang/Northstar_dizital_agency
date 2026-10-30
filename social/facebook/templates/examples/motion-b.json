@@ -1,0 +1,150 @@
+{
+ "type": "video",
+ "design": {
+  "engine": "motion",
+  "palette": "lime",
+  "cover_at": 2.5,
+  "beats": [
+   {
+    "type": "chat",
+    "title": "রাত ২টায় *message* এলো…",
+    "name": "Your Fashion Page",
+    "initials": "YF",
+    "messages": [
+     {
+      "from": "me",
+      "text": "এই dress-টার price কত?"
+     },
+     {
+      "from": "ai",
+      "text": "জি 😊 details দিচ্ছি, M size আছে।"
+     },
+     {
+      "from": "me",
+      "text": "Order করবো"
+     },
+     {
+      "from": "ai",
+      "text": "নাম আর address দিন ✅"
+     }
+    ],
+    "chips": [
+     [
+      "🌙",
+      "2:14 AM",
+      80,
+      560
+     ],
+     [
+      "⚡",
+      "সাথে সাথে উত্তর",
+      620,
+      1500
+     ]
+    ],
+    "say": "আপনার ব্যবসার Facebook page আছে? দারুণ! কিন্তু একটা প্রশ্ন... Google-এ আপনার নাম search করলে কী আসে?",
+    "tone": "curious"
+   },
+   {
+    "type": "dashboard",
+    "title": "সব এক জায়গায় *দেখুন*",
+    "rows": [
+     [
+      "🛒",
+      "নতুন order",
+      "রাত ১১:৪২ · Messenger",
+      "✓ নেওয়া হয়েছে"
+     ],
+     [
+      "💬",
+      "\"Delivery কবে?\"",
+      "রাত ১২:১০ · WhatsApp",
+      "✓ উত্তর দিয়েছে"
+     ],
+     [
+      "📅",
+      "Appointment",
+      "সকাল ৯:০৫ · Website",
+      "✓ Booked"
+     ],
+     [
+      "📞",
+      "Call",
+      "সকাল ৯:৩০ · Phone",
+      "✓ ধরেছে"
+     ]
+    ],
+    "say": "আজকাল customer আগে phone-এ খোঁজে, তারপর call দেয়। কিছু না পেলে... সোজা পাশের দোকানে চলে যায়।"
+   },
+   {
+    "type": "bigword",
+    "dark": true,
+    "trans": "wipe",
+    "text": "Algorithm",
+    "after": "বদলালেই আপনার post আর কেউ দেখে না",
+    "say": "আর সত্যি বলতে, Facebook page-টা পুরোপুরি আপনার না। Algorithm একটু বদলালেই, আপনার post আর কেউ দেখে না।"
+   },
+   {
+    "type": "cards",
+    "title": "AI একাই *সব কাজ*",
+    "items": [
+     [
+      "💬",
+      "প্রশ্নের উত্তর",
+      "২৪ ঘণ্টা"
+     ],
+     [
+      "🛒",
+      "Order নেয়",
+      "নিজে থেকেই"
+     ],
+     [
+      "📅",
+      "Booking",
+      "slot দেখে"
+     ],
+     [
+      "🛠️",
+      "IT help",
+      "ধাপে ধাপে"
+     ]
+    ],
+    "say": "একটা website কিন্তু চব্বিশ ঘণ্টা কাজ করে। Service, price, location — সব এক জায়গায়। এক click-এ WhatsApp, এক click-এ booking।",
+    "tone": "warmly"
+   },
+   {
+    "type": "person",
+    "title": "Customer-এর *বিশ্বাস* বাড়ে",
+    "size": "s2",
+    "person": "salon-owner-thumbsup.png",
+    "chips": [
+     [
+      "🤝",
+      "Customer খুশি",
+      70,
+      820
+     ],
+     [
+      "✅",
+      "Booking confirmed",
+      600,
+      1000
+     ]
+    ],
+    "button": [
+     "📅 Booking করুন",
+     90,
+     1120
+    ],
+    "say": "আর customer-এর বিশ্বাসটাও বাড়ে। মনে হয়... হ্যাঁ, এরা serious business।"
+   },
+   {
+    "type": "cta",
+    "text": "আপনার website, *৩–৫ দিনেই* ready",
+    "sub": "শুরু মাত্র ৳৮,০০০",
+    "say": "NorthStar Dizital-এ আমরা local business-এর জন্য website বানাই। শুরু মাত্র ৮,০০০ টাকা থেকে, ৩ থেকে ৫ দিনেই ready। আজই WhatsApp করুন!",
+    "tone": "excited"
+   }
+  ]
+ }
+}

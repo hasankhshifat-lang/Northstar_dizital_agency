@@ -15,7 +15,7 @@ const TAIL = 1.4; // seconds of picture after the voice ends
 const stripTags = s => s.replace(/\[[^\]]*\]\s*/g, '').trim();
 
 // One continuous voiceover; [pause] between scenes gives clean gaps to cut on.
-const voicePrompt = post => post.design.scenes.map(s => (s.tone ? `[${s.tone}] ` : '') + s.say).join(' [pause] ');
+const voicePrompt = post => (post.design.beats || post.design.scenes).map(s => (s.tone ? `[${s.tone}] ` : '') + s.say).join(' [pause] ');
 
 function ffmpeg(args) {
   return execFileSync('ffmpeg', ['-hide_banner', '-nostats', ...args], { stdio: ['ignore', 'pipe', 'pipe'] });
@@ -74,14 +74,14 @@ async function renderVideo(page, post, outDir) {
   const voice = path.join(outDir, 'voice.mp3');
   if (!fs.existsSync(voice)) throw new Error('voice.mp3 missing; generate it from `render.js prompt` first');
   const info = audioInfo(voice);
-  const picked = align(post.design.scenes, info);
+  const picked = align((post.design.beats || post.design.scenes), info);
   const timing = [0, ...picked.map(s => +((s.start + s.end) / 2).toFixed(3))];
   const total = +(info.dur + TAIL).toFixed(3);
-  const video = { ...post.design, timing, total, captions: captions(post.design.scenes, picked, info.dur) };
+  const video = { ...post.design, timing, total, captions: captions((post.design.beats || post.design.scenes), picked, info.dur) };
   fs.writeFileSync(path.join(outDir, 'timing.json'), JSON.stringify({ timing, total, captions: video.captions }, null, 1));
 
   await page.addInitScript(d => { window.VIDEO = d; }, video);
-  await page.goto('file://' + path.join(__dirname, 'templates', 'video.html'));
+  await page.goto('file://' + path.join(__dirname, 'templates', post.design.engine === 'motion' ? 'motion.html' : 'video.html'));
   await page.evaluate(() => document.fonts.ready);
 
   if (process.env.PREVIEW) {

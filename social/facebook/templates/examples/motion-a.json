@@ -1,0 +1,118 @@
+{
+ "type": "video",
+ "design": {
+  "engine": "motion",
+  "palette": "lavender",
+  "cover_at": 2.5,
+  "beats": [
+   {
+    "type": "kinetic",
+    "small": "একটা প্রশ্ন 🤔",
+    "text": "Facebook page আছে? *Google-এ* আপনাকে পাওয়া যায়?",
+    "size": "s2",
+    "avatars": [
+     [
+      "man-blue-shirt-phone.png",
+      90,
+      520
+     ],
+     [
+      "woman-fcommerce-phone.png",
+      840,
+      560
+     ],
+     [
+      "shopkeeper-elder-phone.png",
+      120,
+      1300
+     ],
+     [
+      "salon-owner-thumbsup.png",
+      820,
+      1340
+     ]
+    ],
+    "say": "আপনার ব্যবসার Facebook page আছে? দারুণ! কিন্তু একটা প্রশ্ন... Google-এ আপনার নাম search করলে কী আসে?",
+    "tone": "curious"
+   },
+   {
+    "type": "typing",
+    "label": "Customer আগে *search* করে",
+    "icon": "🔍",
+    "query": "beauty salon near me",
+    "reply": "পাশের salon-এর website পাওয়া গেছে ✅ আপনারটা নেই…",
+    "say": "আজকাল customer আগে phone-এ খোঁজে, তারপর call দেয়। কিছু না পেলে... সোজা পাশের দোকানে চলে যায়।"
+   },
+   {
+    "type": "bigword",
+    "dark": true,
+    "trans": "wipe",
+    "text": "Algorithm",
+    "after": "বদলালেই আপনার post আর কেউ দেখে না",
+    "say": "আর সত্যি বলতে, Facebook page-টা পুরোপুরি আপনার না। Algorithm একটু বদলালেই, আপনার post আর কেউ দেখে না।"
+   },
+   {
+    "type": "hub",
+    "title": "Website খোলা থাকে *২৪/৭*",
+    "center": "WEB",
+    "nodes": [
+     [
+      "🛎️",
+      "Service"
+     ],
+     [
+      "💰",
+      "Price"
+     ],
+     [
+      "📍",
+      "Location"
+     ],
+     [
+      "💬",
+      "WhatsApp"
+     ],
+     [
+      "📅",
+      "Booking"
+     ]
+    ],
+    "say": "একটা website কিন্তু চব্বিশ ঘণ্টা কাজ করে। Service, price, location — সব এক জায়গায়। এক click-এ WhatsApp, এক click-এ booking।",
+    "tone": "warmly"
+   },
+   {
+    "type": "person",
+    "title": "Customer-এর *বিশ্বাস* বাড়ে",
+    "size": "s2",
+    "person": "salon-owner-thumbsup.png",
+    "chips": [
+     [
+      "🤝",
+      "Customer খুশি",
+      70,
+      820
+     ],
+     [
+      "✅",
+      "Booking confirmed",
+      600,
+      1000
+     ]
+    ],
+    "button": [
+     "📅 Booking করুন",
+     90,
+     1120
+    ],
+    "say": "আর customer-এর বিশ্বাসটাও বাড়ে। মনে হয়... হ্যাঁ, এরা serious business।"
+   },
+   {
+    "type": "cta",
+    "text": "আপনার website, *৩–৫ দিনেই* ready",
+    "sub": "শুরু মাত্র ৳৮,০০০",
+    "say": "NorthStar Dizital-এ আমরা local business-এর জন্য website বানাই। শুরু মাত্র ৮,০০০ টাকা থেকে, ৩ থেকে ৫ দিনেই ready। আজই WhatsApp করুন!",
+    "tone": "excited"
+   }
+  ]
+ }
+}

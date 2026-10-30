@@ -1,0 +1,320 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="fonts.css">
+<script src="vendor/gsap.min.js"></script>
+<style>
+/* "motion" video engine (1080x1920): SaaS-explainer style motion graphics — pastel gradient
+   backgrounds, short kinetic Bangla typography beats, typing/chat/dashboard UI demos, hub of
+   channels, people cut-outs with floating cards, cursor clicks, logo + CTA ending.
+   Beats are timed to the voiceover by render.js (timing[] from pauses). */
+.stage{width:1080px;height:1920px;position:relative;overflow:hidden;font-family:'Hind Siliguri';color:var(--ink);background:var(--bg0)}
+.pl-lime{--bg0:#F4FFE9;--b1:#D8FF8F;--b2:#B8F5C8;--b3:#FFFFFF;--ink:#13240F;--mut:#4C5E47;--acc:#2FA84F;--acc2:#7ED957;--card:#fff}
+.pl-lavender{--bg0:#F6F1FF;--b1:#D9C8FF;--b2:#FFD6F0;--b3:#FFFFFF;--ink:#1E1240;--mut:#5E5578;--acc:#7B4DFF;--acc2:#FF6FB5;--card:#fff}
+.pl-sky{--bg0:#EEF5FF;--b1:#BFD9FF;--b2:#C9F3FF;--b3:#FFFFFF;--ink:#0D1B3D;--mut:#4F5B78;--acc:#2F6BFF;--acc2:#21C7E6;--card:#fff}
+.pl-peach{--bg0:#FFF6EE;--b1:#FFD3B0;--b2:#FFE9A8;--b3:#FFFFFF;--ink:#2A1608;--mut:#6B5546;--acc:#FF6A1A;--acc2:#FFB800;--card:#fff}
+/* dark beats inside any palette */
+.beat.dark{background:radial-gradient(circle at 50% 35%,#3A1E8C 0,#120A2E 62%);color:#fff;--mut:#C9C2E8}
+.beat.dark .k{background:linear-gradient(90deg,#9BFF6B,#3DF0FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+#bg{position:absolute;inset:0;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(110px);opacity:.9}
+.grain{position:absolute;inset:0;opacity:.06;background-image:radial-gradient(#000 1px,transparent 1px);background-size:4px 4px}
+#cam{position:absolute;inset:0;transform-origin:50% 45%}
+.logo{position:absolute;left:70px;top:80px;height:42px;z-index:20;filter:brightness(0)}
+.beat{position:absolute;inset:0;visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#sub{position:absolute;left:90px;right:90px;bottom:120px;z-index:21;display:flex;justify-content:center}
+#sub span{font:600 34px/1.35 'Hind Siliguri';color:#fff;background:rgba(20,16,40,.72);padding:12px 26px;border-radius:20px;text-align:center;backdrop-filter:blur(6px)}
+#wipe{position:absolute;left:50%;top:50%;width:3000px;height:3000px;margin:-1500px 0 0 -1500px;border-radius:50%;background:var(--acc);z-index:30;transform:scale(0)}
+
+/* kinetic type */
+.kt{font-family:'Anek Bangla';font-weight:700;font-stretch:92%;text-align:center;line-height:1.22;letter-spacing:-.005em;padding:0 80px}
+.kt.s1{font-size:64px;font-weight:600}.kt.s2{font-size:92px}.kt.s3{font-size:128px;font-weight:800}
+.w{display:inline-block;padding:.08em .03em .18em;margin:-.08em -.03em -.18em}
+.wi{display:inline-block;will-change:transform,filter}
+.k{position:relative;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.uline{position:absolute;left:4%;right:4%;bottom:.02em;height:.09em;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--acc2));transform-origin:left;opacity:.85}
+.mut{color:var(--mut)}
+.avatar{position:absolute;width:150px;height:150px;border-radius:50%;overflow:hidden;border:6px solid #fff;box-shadow:0 18px 40px rgba(0,0,0,.18);background:var(--b1)}
+.avatar img{width:100%;height:170%;object-fit:cover;object-position:50% 4%}
+.big{font-family:'Baloo Da 2';font-weight:800;font-size:300px;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+
+/* ui pieces */
+.label{font:600 54px 'Anek Bangla';text-align:center;margin-bottom:46px}
+.input{width:880px;background:var(--card);border-radius:40px;box-shadow:0 30px 70px rgba(30,20,80,.14);padding:34px 40px;display:flex;align-items:center;gap:22px;font:500 40px 'Hind Siliguri';color:#222}
+.input .ic{font-family:'Noto Color Emoji';font-size:40px}
+.input .send{margin-left:auto;width:74px;height:74px;border-radius:50%;background:var(--acc);display:grid;place-items:center;flex:none}
+.caret{display:inline-block;width:3px;height:44px;background:var(--acc);margin-left:3px;vertical-align:middle}
+.reply{margin-top:40px;width:820px;align-self:center;background:var(--card);border-radius:34px 34px 34px 10px;box-shadow:0 24px 50px rgba(30,20,80,.12);padding:28px 34px;font:500 38px/1.45 'Hind Siliguri';color:#222;display:flex;gap:18px}
+.reply .av{width:64px;height:64px;border-radius:50%;flex:none;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;color:#fff;font:700 24px 'Space Grotesk'}
+.dots span{display:inline-block;width:14px;height:14px;border-radius:50%;background:#bbb;margin-right:8px}
+
+.phone{position:relative;width:520px;height:1000px;border-radius:78px;background:#0E0E1A;padding:18px;box-shadow:0 60px 120px rgba(20,10,60,.35);transform-style:preserve-3d}
+.scr{width:100%;height:100%;border-radius:62px;background:#F2F3F7;overflow:hidden;display:flex;flex-direction:column}
+.pbar{background:#fff;padding:52px 26px 18px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #e6e8ef}
+.pbar .pav{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;color:#fff;font:700 22px 'Space Grotesk'}
+.pbar b{display:block;font-size:30px;color:#111}.pbar small{font-size:21px;color:#1DB954}
+.msgs{flex:1;padding:22px 18px;display:flex;flex-direction:column;gap:14px;justify-content:flex-end}
+.m{max-width:86%;padding:16px 22px;border-radius:28px;font:500 29px/1.35 'Hind Siliguri';color:#111;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.m.me{align-self:flex-end;background:var(--acc);color:#fff;border-bottom-right-radius:8px}.m.ai{border-bottom-left-radius:8px}
+.orbit{position:absolute;left:50%;top:50%;border:3px dashed rgba(0,0,0,.12);border-radius:50%}
+.chip{position:absolute;display:flex;align-items:center;gap:12px;background:var(--card);border-radius:24px;padding:14px 22px;box-shadow:0 18px 40px rgba(30,20,80,.16);font:700 30px 'Hind Siliguri';color:#1E1240;white-space:nowrap}
+.chip .e,.emo{font-family:'Noto Color Emoji'}
+.chip .e{font-size:36px}
+
+.dash{width:900px;background:var(--card);border-radius:36px;box-shadow:0 50px 100px rgba(30,20,80,.18);overflow:hidden;transform:perspective(1600px) rotateX(10deg)}
+.dhead{display:flex;justify-content:space-between;align-items:center;padding:30px 36px;border-bottom:1px solid #eef0f5;font:700 32px 'Space Grotesk';color:#1E1240}
+.dhead span{font:600 24px 'Hind Siliguri';color:#1DB954}
+.row{display:flex;align-items:center;gap:20px;padding:24px 36px;border-bottom:1px solid #f1f2f6}
+.row .ri{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;background:#F1F0FF;font:34px 'Noto Color Emoji'}
+.row .rt{flex:1;font:600 29px 'Hind Siliguri';color:#222}.row .rt small{display:block;font:500 23px 'Hind Siliguri';color:#888}
+.pill{font:700 23px 'Hind Siliguri';padding:10px 20px;border-radius:99px;white-space:nowrap}
+.pill.wait{background:#FFF1D6;color:#B26A00}.pill.done{background:#DDF8E6;color:#12823B}
+
+.hubc{position:relative;width:1080px;height:1000px}
+.hub{position:absolute;left:390px;top:350px;width:300px;height:300px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;color:#fff;font:800 76px 'Space Grotesk';box-shadow:0 0 0 30px rgba(255,255,255,.4),0 30px 80px rgba(30,20,80,.25)}
+.node{position:absolute;width:190px;text-align:center;font:700 26px 'Hind Siliguri'}
+.node .nc{width:150px;height:150px;margin:0 auto 12px;border-radius:44px;background:var(--card);display:grid;place-items:center;font:78px 'Noto Color Emoji';box-shadow:0 18px 40px rgba(30,20,80,.14)}
+svg.lines{position:absolute;inset:0}
+.flow{position:absolute;width:20px;height:20px;border-radius:50%;background:var(--acc);box-shadow:0 0 18px var(--acc)}
+
+.pglow{position:absolute;width:820px;height:820px;border-radius:50%;background:radial-gradient(circle,var(--b1) 0,transparent 68%);left:130px;bottom:240px}
+.person{position:absolute;bottom:0;height:1180px;left:50%;filter:drop-shadow(0 40px 60px rgba(0,0,0,.22))}
+.btn{display:inline-flex;align-items:center;gap:16px;background:var(--acc);color:#fff;font:700 40px 'Hind Siliguri';padding:26px 48px;border-radius:99px;box-shadow:0 20px 40px rgba(30,20,80,.2);white-space:nowrap}
+.cursor{position:absolute;width:64px;height:64px;z-index:15}
+.ripple{position:absolute;width:40px;height:40px;border-radius:50%;border:5px solid var(--acc);z-index:14}
+
+.fcard{position:absolute;width:420px;background:var(--card);border-radius:36px;box-shadow:0 30px 70px rgba(30,20,80,.16);padding:34px;font:700 38px/1.3 'Hind Siliguri';color:#1E1240}
+.fcard .e{font:76px 'Noto Color Emoji';display:block;margin-bottom:18px}
+.fcard small{display:block;font:500 27px/1.4 'Hind Siliguri';color:#777;margin-top:8px}
+
+.ctal{height:66px;filter:brightness(0)}
+.beat.dark .ctal,.beat.dark ~ .logo{filter:brightness(0) invert(1)}
+.num{font:600 46px 'Space Grotesk';margin-top:26px}
+.web{font:500 34px 'Space Grotesk';color:var(--mut);margin-top:10px}
+</style></head>
+<body><div class="stage" id="s">
+  <div id="bg"><div class="grain"></div></div>
+  <div id="cam"></div>
+  <img class="logo" id="logo" src="../../../assets/logo.png">
+  <div id="sub"><span id="subt"></span></div>
+  <div id="wipe"></div>
+</div>
+<script>
+const V = window.VIDEO;
+const s = document.getElementById('s');
+s.className = 'stage pl-' + (V.palette || 'lavender');
+const cam = document.getElementById('cam');
+gsap.ticker.lagSmoothing(0);
+const tl = gsap.timeline({paused: true});
+const ROOT = '../../../';
+const seg = new Intl.Segmenter('bn', {granularity: 'grapheme'});
+const graphemes = t => [...seg.segment(t)].map(x => x.segment);
+
+// ---------- living gradient background ----------
+const bg = document.getElementById('bg');
+[['--b1', 900, -250, -200], ['--b2', 800, 450, 700], ['--b3', 700, -200, 1300], ['--b1', 600, 600, 1500]].forEach(([c, sz, x, y], i) => {
+  const b = document.createElement('div');
+  b.className = 'blob';
+  Object.assign(b.style, {width: sz + 'px', height: sz + 'px', left: x + 'px', top: y + 'px', background: `var(${c})`});
+  bg.insertBefore(b, bg.firstChild);
+  tl.to(b, {x: (i % 2 ? -1 : 1) * 220, y: (i % 3 ? 1 : -1) * 260, scale: 1.15, duration: V.total, ease: 'sine.inOut'}, 0);
+});
+
+// ---------- helpers ----------
+const words = (t, cls = '') => t.split(/(\*[^*]+\*)/).filter(Boolean).flatMap(p => {
+  const k = p.startsWith('*');
+  return p.replace(/\*/g, '').split(/\s+/).filter(Boolean).map(w => `<span class="w"><span class="wi${k ? ' k' : ''}">${w}${k ? '<i class="uline"></i>' : ''}</span></span>`);
+}).join(' ');
+const kt = (t, size = 's2', extra = '') => `<div class="kt ${size} ${extra}">${words(t)}</div>`;
+function revealWords(el, at, stagger = .07) {
+  const wi = el.querySelectorAll('.wi');
+  tl.fromTo(wi, {y: 70, opacity: 0, filter: 'blur(14px)'}, {y: 0, opacity: 1, filter: 'blur(0px)', duration: .9, ease: 'expo.out', stagger}, at);
+  el.querySelectorAll('.uline').forEach(u => tl.fromTo(u, {scaleX: 0}, {scaleX: 1, duration: .6, ease: 'power3.inOut'}, at + .4 + wi.length * stagger));
+  return at + wi.length * stagger + .5;
+}
+const pop = (els, at, o = {}) => tl.fromTo(els, {scale: .6, opacity: 0, y: 40}, {scale: 1, opacity: 1, y: 0, duration: .7, ease: 'back.out(1.8)', stagger: .18, ...o}, at);
+const floaty = (el, at, d, amp = 14) => tl.to(el, {y: `-=${amp}`, duration: 1.4, repeat: Math.max(1, Math.floor(d / 1.4)), yoyo: true, ease: 'sine.inOut'}, at);
+const cursorSvg = '<svg viewBox="0 0 24 24"><path d="M4 2l16 9-7 2-3 7z" fill="#111" stroke="#fff" stroke-width="1.5"/></svg>';
+function click(el, beat, target, at) {
+  // cursor glides to the target's centre, presses, ripple
+  const c = document.createElement('div'); c.className = 'cursor'; c.innerHTML = cursorSvg; beat.appendChild(c);
+  const r = document.createElement('div'); r.className = 'ripple'; beat.appendChild(r);
+  const tr = target.getBoundingClientRect(), br = beat.getBoundingClientRect();
+  const x = tr.left - br.left + tr.width * .6, y = tr.top - br.top + tr.height * .55;
+  gsap.set(c, {left: x + 260, top: y + 360, opacity: 0}); gsap.set(r, {left: x - 20, top: y - 20, opacity: 0, scale: .2});
+  tl.to(c, {opacity: 1, duration: .2}, at).to(c, {left: x, top: y, duration: .9, ease: 'power3.inOut'}, at)
+    .to(target, {scale: .93, duration: .12, yoyo: true, repeat: 1}, at + .95)
+    .fromTo(r, {opacity: 1, scale: .2}, {opacity: 0, scale: 3.4, duration: .7, ease: 'power2.out'}, at + .95);
+}
+const people = p => ROOT + 'social/facebook/people/' + p;
+
+// ---------- beat builders ----------
+const B = {
+  kinetic(b, el, t0, d) {
+    el.innerHTML = (b.small ? kt(b.small, 's1', 'mut') : '') + kt(b.text, b.size || 's2') + (b.after ? kt(b.after, 's1', 'mut') : '');
+    (b.avatars || []).forEach(([p, x, y], i) => {
+      el.insertAdjacentHTML('beforeend', `<div class="avatar" style="left:${x}px;top:${y}px"><img src="${people(p)}"></div>`);
+      const a = el.lastElementChild; pop(a, t0 + .3 + i * .15); floaty(a, t0 + 1, d, 18);
+    });
+    let t = t0 + .1;
+    el.querySelectorAll('.kt').forEach(k => { t = revealWords(k, t) - .3; });
+  },
+  bigword(b, el, t0, d) {
+    el.innerHTML = `<div class="big"><span class="w1">${b.text}</span></div>` + (b.after ? `<div style="margin-top:30px">${kt(b.after, 's1', 'mut')}</div>` : '');
+    const w = el.querySelector('.big');
+    // auto-fit: keep the word inside the frame
+    document.body.appendChild(el); const fit = Math.min(1, 940 / w.scrollWidth); cam.appendChild(el);
+    w.style.fontSize = Math.floor(300 * fit) + 'px';
+    tl.fromTo(w, {scale: 1.6, opacity: 0, filter: 'blur(30px)', letterSpacing: '.25em'}, {scale: 1, opacity: 1, filter: 'blur(0px)', letterSpacing: '-.02em', duration: 1.1, ease: 'expo.out'}, t0);
+    tl.to(w, {scale: 1.06, duration: d, ease: 'none'}, t0 + 1.1);
+    if (b.after) revealWords(el.querySelector('.kt'), t0 + .8);
+  },
+  typing(b, el, t0, d) {
+    el.innerHTML = `<div class="label">${words(b.label || '')}</div>
+      <div class="input"><span class="ic">${b.icon || '💬'}</span><span><span class="q"></span><i class="caret"></i></span>
+      <span class="send"><svg width="34" height="34" viewBox="0 0 24 24"><path d="M3 12l18-8-7 18-2-7z" fill="#fff"/></svg></span></div>
+      ${b.reply ? `<div class="reply"><span class="av">AI</span><span class="rt"><span class="dots"><span></span><span></span><span></span></span></span></div>` : ''}`;
+    revealWords(el.querySelector('.label'), t0);
+    tl.fromTo(el.querySelector('.input'), {y: 80, opacity: 0, scale: .94}, {y: 0, opacity: 1, scale: 1, duration: .8, ease: 'expo.out'}, t0 + .2);
+    const q = el.querySelector('.q'), g = graphemes(b.query), tt = Math.min(2.2, g.length * .07);
+    tl.to({n: 0}, {n: g.length, duration: tt, ease: 'none', onUpdate() { q.textContent = g.slice(0, Math.round(this.targets()[0].n)).join(''); }}, t0 + .8);
+    tl.to(el.querySelector('.caret'), {opacity: 0, duration: .01, repeat: Math.floor(d * 2), yoyo: true, repeatDelay: .45}, t0);
+    const send = el.querySelector('.send');
+    tl.to(send, {scale: 1.25, duration: .18, yoyo: true, repeat: 1}, t0 + .9 + tt);
+    if (b.reply) {
+      const r = el.querySelector('.reply'), rt = el.querySelector('.rt');
+      tl.fromTo(r, {y: 50, opacity: 0}, {y: 0, opacity: 1, duration: .6, ease: 'back.out(1.6)'}, t0 + 1.2 + tt);
+      tl.to(el.querySelectorAll('.dots span'), {y: -10, duration: .25, yoyo: true, repeat: 3, stagger: .1}, t0 + 1.3 + tt);
+      tl.call(() => {}, [], t0 + 2.1 + tt);
+      tl.set(rt, {innerHTML: b.reply}, t0 + 2.1 + tt);
+      tl.fromTo(rt, {opacity: 0}, {opacity: 1, duration: .4, immediateRender: false}, t0 + 2.1 + tt);
+    }
+  },
+  chat(b, el, t0, d) {
+    el.innerHTML = (b.title ? `<div style="position:absolute;top:200px;left:0;right:0">${kt(b.title, 's1')}</div>` : '') +
+      `<div class="orbit" style="width:900px;height:900px;margin:-450px 0 0 -450px;top:58%"></div>
+       <div style="margin-top:180px;perspective:1800px"><div class="phone"><div class="scr">
+       <div class="pbar"><span class="pav">${b.initials || 'AI'}</span><div><b>${b.name || 'আপনার Business'}</b><small>● AI Assistant · Active now</small></div></div>
+       <div class="msgs">${b.messages.map(m => `<div class="m ${m.from}">${m.text}</div>`).join('')}</div></div></div></div>` +
+      (b.chips || []).map(([e, t, x, y]) => `<div class="chip" style="left:${x}px;top:${y}px"><span class="e">${e}</span>${t}</div>`).join('');
+    if (b.title) revealWords(el.querySelector('.kt'), t0);
+    const ph = el.querySelector('.phone');
+    tl.fromTo(ph, {rotateY: -28, rotateX: 10, y: 260, opacity: 0}, {rotateY: -12, rotateX: 6, y: 0, opacity: 1, duration: 1.1, ease: 'expo.out'}, t0 + .1);
+    tl.to(ph, {rotateY: 8, rotateX: 2, duration: d - 1, ease: 'sine.inOut'}, t0 + 1.2);
+    tl.fromTo(el.querySelector('.orbit'), {rotate: 0, scale: .6, opacity: 0}, {rotate: 90, scale: 1, opacity: 1, duration: d, ease: 'none'}, t0);
+    const ms = el.querySelectorAll('.m'), step = Math.min(1.1, (d - 1.6) / Math.max(1, ms.length));
+    ms.forEach((m, i) => tl.fromTo(m, {opacity: 0, y: 30, scale: .9}, {opacity: 1, y: 0, scale: 1, duration: .45, ease: 'back.out(1.7)'}, t0 + .9 + i * step));
+    el.querySelectorAll('.chip').forEach((c, i) => { pop(c, t0 + 1.2 + i * .3); floaty(c, t0 + 2, d - 2); });
+  },
+  dashboard(b, el, t0, d) {
+    el.innerHTML = (b.title ? `<div style="position:absolute;top:220px;left:0;right:0">${kt(b.title, 's1')}</div>` : '') +
+      `<div class="dash" style="margin-top:150px"><div class="dhead">${b.head || 'AI Receptionist · Inbox'}<span>● Live</span></div>
+       ${b.rows.map(r => `<div class="row"><span class="ri">${r[0]}</span><span class="rt">${r[1]}<small>${r[2]}</small></span><span class="pill wait">${b.wait || 'অপেক্ষায়'}</span></div>`).join('')}</div>`;
+    if (b.title) revealWords(el.querySelector('.kt'), t0);
+    const dash = el.querySelector('.dash');
+    tl.fromTo(dash, {y: 300, opacity: 0, scale: 1.25, rotateX: 25}, {y: 0, opacity: 1, scale: 1.12, rotateX: 10, duration: 1.1, ease: 'expo.out', transformPerspective: 1600}, t0 + .1);
+    tl.to(dash, {scale: 1, rotateX: 4, duration: d - 1.2, ease: 'sine.inOut'}, t0 + 1.2);
+    const rows = el.querySelectorAll('.row'), step = Math.min(.8, (d - 2) / rows.length);
+    tl.fromTo(rows, {x: -60, opacity: 0}, {x: 0, opacity: 1, duration: .5, ease: 'power3.out', stagger: .12}, t0 + .6);
+    rows.forEach((r, i) => {
+      const p = r.querySelector('.pill');
+      tl.set(p, {className: 'pill done', textContent: b.rows[i][3] || '✓ Done'}, t0 + 1.4 + i * step);
+      tl.fromTo(p, {scale: .6}, {scale: 1, duration: .4, ease: 'back.out(2.5)', immediateRender: false}, t0 + 1.4 + i * step);
+    });
+  },
+  hub(b, el, t0, d) {
+    const N = b.nodes, cx = 540, cy = 500, R = 400;
+    const pos = N.map((_, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N.length; return [cx + R * Math.cos(a), cy + R * Math.sin(a)]; });
+    el.innerHTML = (b.title ? `<div style="position:absolute;top:210px;left:0;right:0">${kt(b.title, 's1')}</div>` : '') +
+      `<div class="hubc" style="margin-top:220px"><svg class="lines" viewBox="0 0 1080 1000">${pos.map(([x, y]) => `<line x1="${x}" y1="${y}" x2="${cx}" y2="${cy}" stroke="var(--acc)" stroke-width="5" stroke-dasharray="1000" stroke-dashoffset="1000" stroke-linecap="round" opacity=".55"/>`).join('')}</svg>
+       ${pos.map(([x, y]) => `<span class="flow" style="left:${x - 10}px;top:${y - 10}px"></span>`).join('')}
+       <div class="hub">${b.center || 'AI'}</div>
+       ${N.map(([e, t], i) => `<div class="node" style="left:${pos[i][0] - 95}px;top:${pos[i][1] - 90}px"><div class="nc">${e}</div>${t}</div>`).join('')}</div>`;
+    if (b.title) revealWords(el.querySelector('.kt'), t0);
+    tl.fromTo(el.querySelector('.hub'), {scale: 0}, {scale: 1, duration: .9, ease: 'elastic.out(1,.6)'}, t0 + .2);
+    tl.to(el.querySelector('.hub'), {boxShadow: '0 0 0 70px rgba(255,255,255,0),0 30px 80px rgba(30,20,80,.25)', duration: 1.2, repeat: Math.floor(d / 1.2), ease: 'sine.out'}, t0 + 1.1);
+    pop(el.querySelectorAll('.node'), t0 + .5, {stagger: .12});
+    tl.to(el.querySelectorAll('line'), {strokeDashoffset: 0, duration: .9, ease: 'power2.inOut', stagger: .1}, t0 + 1);
+    el.querySelectorAll('.flow').forEach((f, i) => tl.fromTo(f, {x: 0, y: 0, opacity: 1}, {x: cx - pos[i][0], y: cy - pos[i][1], opacity: .2, duration: 1.1, repeat: Math.floor((d - 2) / 1.1), ease: 'power1.in'}, t0 + 1.8 + i * .15));
+  },
+  person(b, el, t0, d) {
+    el.innerHTML = (b.title ? `<div style="position:absolute;top:190px;left:0;right:0">${kt(b.title, b.size || 's2')}</div>` : '') +
+      `<div class="pglow"></div><img class="person" src="${people(b.person)}" style="${b.side === 'left' ? 'left:36%' : b.side === 'right' ? 'left:64%' : ''}">` +
+      (b.chips || []).map(([e, t, x, y]) => `<div class="chip" style="left:${x}px;top:${y}px"><span class="e">${e}</span>${t}</div>`).join('') +
+      (b.button ? `<div class="btn" style="position:absolute;left:${b.button[1]}px;top:${b.button[2]}px">${b.button[0]}</div>` : '');
+    if (b.title) revealWords(el.querySelector('.kt'), t0);
+    const p = el.querySelector('.person');
+    gsap.set(p, {xPercent: -50});
+    tl.fromTo(el.querySelector('.pglow'), {scale: .3, opacity: 0}, {scale: 1, opacity: 1, duration: 1.2, ease: 'expo.out'}, t0);
+    tl.fromTo(p, {y: 500, opacity: 0}, {y: 0, opacity: 1, duration: 1.1, ease: 'expo.out'}, t0 + .15);
+    tl.to(p, {scale: 1.04, duration: d - 1.2, ease: 'none', transformOrigin: '50% 100%'}, t0 + 1.2);
+    el.querySelectorAll('.chip').forEach((c, i) => { pop(c, t0 + .9 + i * .35); floaty(c, t0 + 1.8, d - 2); });
+    if (b.button) { const bt = el.querySelector('.btn'); pop(bt, t0 + 1.3); click(el, el, bt, Math.min(t0 + d - 1.4, t0 + 2.2)); }
+  },
+  cards(b, el, t0, d) {
+    const spots = b.spots || [[90, 760, -8], [570, 720, 7], [100, 1180, 5], [560, 1150, -6]];
+    el.innerHTML = (b.title ? `<div style="position:absolute;top:260px;left:0;right:0">${kt(b.title, 's2')}</div>` : '') +
+      b.items.map(([e, t, sm]) => `<div class="fcard" style="left:330px;top:950px"><span class="e">${e}</span>${t}${sm ? `<small>${sm}</small>` : ''}</div>`).join('');
+    if (b.title) revealWords(el.querySelector('.kt'), t0);
+    el.querySelectorAll('.fcard').forEach((c, i) => {
+      const [x, y, r] = spots[i];
+      tl.fromTo(c, {scale: .5, opacity: 0, rotate: 0}, {scale: 1, opacity: 1, duration: .5, ease: 'back.out(2)'}, t0 + .5 + i * .12);
+      tl.to(c, {left: x, top: y, rotate: r, duration: .9, ease: 'expo.inOut'}, t0 + 1.1 + i * .1);
+      floaty(c, t0 + 2.2, d - 2.4, 10);
+    });
+  },
+  cta(b, el, t0, d) {
+    el.innerHTML = `<img class="ctal" src="${ROOT}assets/logo.png" style="margin-bottom:60px">${kt(b.text, 's2')}
+      ${b.sub ? `<div style="margin-top:20px">${kt(b.sub, 's1', 'mut')}</div>` : ''}
+      <div style="margin-top:70px"><div class="btn"><span class="emo">💬</span>${b.button || 'WhatsApp করুন'}</div></div>
+      <div class="num">+880 1872-692783</div><div class="web">samplewebsite.tech</div>`;
+    tl.fromTo(el.querySelector('.ctal'), {scale: .6, opacity: 0, filter: 'brightness(0) blur(16px)'}, {scale: 1, opacity: 1, filter: 'brightness(0) blur(0px)', duration: .9, ease: 'expo.out'}, t0);
+    let t = t0 + .3; el.querySelectorAll('.kt').forEach(k => { t = revealWords(k, t) - .3; });
+    const bt = el.querySelector('.btn'); pop(bt, t + .1);
+    tl.fromTo(el.querySelectorAll('.num,.web'), {opacity: 0, y: 20}, {opacity: 1, y: 0, duration: .5, stagger: .15}, t + .4);
+    click(el, el, bt, t + .9);
+    tl.to(bt, {scale: 1.06, duration: .5, repeat: Math.max(1, Math.floor((d - (t - t0) - 2) / .5)), yoyo: true, ease: 'sine.inOut'}, t + 2);
+  },
+};
+
+// ---------- assemble ----------
+const logo = document.getElementById('logo');
+V.beats.forEach((b, i) => {
+  const t0 = V.timing[i], t1 = V.timing[i + 1] ?? V.total, d = t1 - t0;
+  const el = document.createElement('section');
+  el.className = 'beat' + (b.dark ? ' dark' : '');
+  cam.appendChild(el);
+  B[b.type](b, el, t0, d);
+  tl.set(el, {visibility: 'visible'}, t0);
+  tl.set(logo, {filter: b.dark ? 'brightness(0) invert(1)' : 'brightness(0)', opacity: b.type === 'cta' ? 0 : 1}, t0);
+  // gentle camera push inside every beat
+  tl.fromTo(el, {scale: 1}, {scale: 1.035, duration: d, ease: 'none', immediateRender: false}, t0);
+  if (i < V.beats.length - 1) {
+    const next = V.beats[i + 1];
+    if (next.trans === 'wipe') {
+      const w = document.getElementById('wipe');
+      tl.fromTo(w, {scale: 0}, {scale: 1, duration: .4, ease: 'power3.in', immediateRender: false}, t1 - .4);
+      tl.set(el, {visibility: 'hidden'}, t1);
+      tl.to(w, {scale: 0, duration: .45, ease: 'power3.out'}, t1);
+    } else {
+      tl.to(el, {opacity: 0, scale: 1.12, filter: 'blur(18px)', duration: .45, ease: 'power2.in'}, t1 - .45);
+      tl.set(el, {visibility: 'hidden'}, t1);
+      tl.fromTo(el, {}, {}, t1);
+    }
+    // next beat arrives from slightly small + blurred (camera pull)
+    tl.fromTo(cam, {scale: .96, filter: 'blur(8px)'}, {scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out', immediateRender: false}, t1);
+  }
+});
+// subtitles (small, for sound-off viewers)
+const sub = document.getElementById('subt'), subw = document.getElementById('sub');
+if (V.subtitles === false) subw.style.display = 'none';
+gsap.set(subw, {opacity: 0});
+V.captions.forEach(c => {
+  tl.set(sub, {textContent: c.text}, c.t);
+  tl.fromTo(subw, {opacity: 0, y: 14}, {opacity: 1, y: 0, duration: .25, immediateRender: false}, c.t);
+});
+tl.set({}, {}, V.total);
+window.DURATION = V.total;
+window.seek = t => { tl.seek(t, false); };
+seek(0);
+</script>
+</body></html>

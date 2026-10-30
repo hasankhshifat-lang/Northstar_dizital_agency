@@ -114,6 +114,29 @@ Headline: `*word*` marks the highlighted part. Keep headlines ≤ 8 words, point
 
 ## Videos
 
+**Always use the `motion` engine** (`design.engine: "motion"`, `templates/motion.html`) — the
+owner's reference style: SaaS-explainer motion graphics with smooth kinetic Bangla typography.
+Examples: `templates/examples/motion-a.json`, `motion-b.json`. A video is 7–10 short **beats**
+(`design.beats`, each 3–6 s of voice), not long scenes:
+
+| beat `type` | what it shows |
+|---|---|
+| `kinetic` | 1–2 lines of big Bangla type, words blur/slide in, `*keyword*` gradient + underline; optional `small`/`after` lines and `avatars` (people cut-outs as round bubbles: `[file, x, y]`) |
+| `bigword` | one huge word filling the frame (auto-fit), optional `after` line — good with `dark: true` |
+| `typing` | label + search/chat box that types `query` letter by letter, send pulse, AI `reply` bubble with typing dots |
+| `chat` | 3D phone turning, messages pop in one by one, orbit ring, floating `chips` |
+| `dashboard` | perspective inbox card, rows slide in, pills flip from "অপেক্ষায়" to done |
+| `hub` | channel `nodes` connected by drawn lines to a glowing centre, dots flowing in |
+| `person` | people cut-out rises with glow, `chips` float, optional `button` clicked by a cursor |
+| `cards` | feature `items` pop from a stack and fan out |
+| `cta` | logo reveal, line(s), WhatsApp button clicked, number + website (always last) |
+
+Rules: start with `kinetic` (with avatars) or `typing`; use at least one `person` beat and one UI
+beat (`chat`/`dashboard`/`typing`); one or two beats `dark: true`; add `trans: "wipe"` on 1–2 beats
+for a colour-wipe transition; `palette`: lime, lavender, sky or peach — rotate, never the same
+twice in a row. Each beat's `say` is one short spoken line; on-screen text is shorter than the
+voice. Subtitles stay on (small) for sound-off viewers.
+
 - 35–55 seconds, 5–7 scenes. Scene types: `hook`, `search`, `statement`, `showcase`, `features`, `cta`.
   Start with a hook that names a real pain; end with `cta` (price + WhatsApp).
 - **Use the model cut-outs in videos too** (owner's request): put a person on at least 2 scenes
