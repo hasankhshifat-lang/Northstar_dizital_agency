@@ -1,6 +1,6 @@
 {
   "type": "photo",
-  "status": "draft",
+  "status": "scheduled",
   "pillar": "Signature",
   "angle": "রাত ২টায় customer প্রশ্ন করলো — AI সাথে সাথে উত্তর দিলো, order নিলো",
   "caption": "রাত ২টায় customer জিজ্ঞেস করলো \"price কত?\"… আপনি দেখলেন সকাল ১০টায়। 😬\n\nততক্ষণে সে অন্য page থেকে order করে ফেলেছে।\n\nআমাদের AI receptionist রাত ২টাতেও সাথে সাথে price বলে দেয়, order-ও নিয়ে নেয়। আপনি তখন আরামে ঘুমান।\n👉 আপনার ব্যবসায় চালু করতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
@@ -48,5 +48,7 @@
       ]
     ],
     "chip": "AI Receptionist · ২৪/৭"
-  }
+  },
+  "facebook_photo_id": "122114661753502830",
+  "scheduled_for": "2026-10-30 12:30 Asia/Dhaka"
 }

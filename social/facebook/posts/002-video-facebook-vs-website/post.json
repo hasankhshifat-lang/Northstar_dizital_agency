@@ -1,6 +1,6 @@
 {
   "type": "video",
-  "status": "scheduled",
+  "status": "published",
   "title": "Facebook page আছে, তাহলে website কেন লাগবে?",
   "voice": {
     "voice_id": "yBrGXLW1RaXDUjUf3kQi",
@@ -75,5 +75,8 @@
     ]
   },
   "facebook_video_id": "1118089197789382",
-  "scheduled_for": "2026-10-29 20:30 Asia/Dhaka"
+  "scheduled_for": "2026-10-29 20:30 Asia/Dhaka",
+  "facebook_post_id": "1390585830800081_122114424489502830",
+  "permalink": "https://www.facebook.com/reel/1118089197789382/",
+  "note": "Went live with the original long caption; the pre-publish caption update did not apply."
 }
