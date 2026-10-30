@@ -1,0 +1,11 @@
+name = "whatsapp-webhook"
+main = "src/worker.js"
+compatibility_date = "2026-10-01"
+
+# Secrets (already set on the deployed worker, set with `wrangler secret put` if redeploying fresh):
+# WHATSAPP_VERIFY_TOKEN, WHATSAPP_APP_SECRET, HERMES_WEBHOOK_URL, HERMES_WEBHOOK_SECRET
+
+[[d1_databases]]
+binding = "DB"
+database_name = "northstar-whatsapp-inbox"
+database_id = "59bce3ce-ccd8-4a08-9145-82946f72e188"
