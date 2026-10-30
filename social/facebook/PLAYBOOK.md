@@ -124,8 +124,16 @@ Headline: `*word*` marks the highlighted part. Keep headlines ≤ 8 words, point
 - Each scene has `say` (the spoken Bangla line, human and conversational — short sentences,
   rhetorical questions, "..." for natural pauses) and optional `tone` (`curious`, `warmly`,
   `excited`, `serious`…). On-screen text is shorter than the spoken line.
-- Voiceover: ElevenLabs `creative_generate_speech`, model `eleven_v4`,
-  voice **Tazim – Natural Bangla & Banglish** `yBrGXLW1RaXDUjUf3kQi`.
+- Voiceover: ElevenLabs `creative_generate_speech`, model `eleven_v4`. **Shuffle voices — alternate
+  female and male every video, never the same voice twice in a row** (owner's request):
+  | Voice | id | Use for |
+  |---|---|---|
+  | Tazim (male, Bangladeshi, Banglish) | `yBrGXLW1RaXDUjUf3kQi` | default male, conversational |
+  | Maksud (male, young, Bangladeshi) | `6551pRDYAi5ZzvTYlIp6` | informative / explainer |
+  | Swati (female, warm, upbeat) | `nUarI71Lei0IFt1ybDm1` | female videos (standard Bangla, slight Kolkata tone) |
+  Samples: `voice-samples/`. When the voice is female, prefer a female model in the hook scene
+  (and male with a male voice) so the face and voice feel like the same person. Record the voice
+  name in post.json (`voice`) and in the log row.
   Prompt = exact output of `node social/facebook/render.js prompt <post.json>`. Call it **once**
   with **`generations_count: 1`** (one take per video — owner's instruction; never call again to
   retry), poll `creative_get_flow_run_status`, download the take to `voice.mp3` beside post.json.
