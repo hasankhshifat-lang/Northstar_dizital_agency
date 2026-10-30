@@ -68,8 +68,9 @@ If there is no data yet (first days), say so and list what you will measure.
    open a question, pay it off at the end, and re-hook every ~90 seconds (a new danger or
    choice for Kit) so viewers keep watching — watch hours drive monetization. US English, US units and examples. Mark 3 self-contained
    moments of 30–55 seconds each for the Shorts.
-2. Voiceover: ElevenLabs `creative_generate_speech`. Use the same voice every day; record
-   its `voice_id` in `config.md` the first time and reuse it.
+2. Voiceover: ElevenLabs `creative_generate_speech` with the channel voice from
+   `social/voices.md` — **Jon, `Cz0K1kOv9tD8l0b5Qu53`, model `eleven_v4`** — for the long video
+   and every Short. Never use another voice for this channel.
 3. Visuals: AI-generated images (image-generation skill), one every 5–8 seconds, with slow
    zoom/pan, matched to the script. No copyrighted footage.
 4. Assemble with `ffmpeg`: images + voiceover + burned-in captions + quiet royalty-free
