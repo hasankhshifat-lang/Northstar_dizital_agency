@@ -25,3 +25,6 @@ video + 3 Shorts a day, scheduled without asking first. For these posts only, th
 "Confirm … with the user before scheduling" rule above does not apply. Follow
 `social/which-life-next/RUNBOOK.md`; publish slots are in `social/which-life-next/config.md`.
 The rotation rules above still apply to every post. Stop when the user says stop.
+
+Comment replies: the user gave standing approval (2026-10-31) to reply to comments on the channel
+automatically every day via vidIQ, following the engagement step in the runbook.

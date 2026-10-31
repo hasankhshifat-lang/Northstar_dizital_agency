@@ -39,8 +39,18 @@ Write `reports/YYYY-MM-DD.md` (today's SGT date) covering every video posted in 
 6. **Monetization tracker:** update `monetization.md` (subscribers, public watch hours over
    the last 365 days, Shorts views over the last 90 days) and the daily pace still needed to
    hit each target by the goal date. Say plainly whether we are on track.
-7. **Engagement:** reply to new comments on our videos (thank, answer, ask which life to do
-   next), heart the good ones, and add viewer-requested lives to the topic shortlist.
+7. **Engagement — auto-reply (standing approval from the user, 2026-10-31):**
+   - `vidiq_video_comments` with channelId `UCPTrW0n3ONI9uU4WetWwFCQ`, order `time`; reply to every
+     top-level comment that has no reply with `byChannelOwner: true` yet, via `vidiq_reply_to_comment`
+     (check `vidiq_comment_reply_permission` first; if it is false, give the user the verification link).
+   - Style: 1–2 short sentences in the channel's voice, warm, specific to what they said, usually ending
+     with a question. No emojis spam, no "smash subscribe", no links.
+   - Facts: only what the video's sources support. A correction → thank them, check it, flag it in the report.
+   - Do NOT reply to spam, links, insults, politics or arguments — list them in the report for the user to
+     hide/delete. Never reply twice to the same comment (a second call can post a duplicate).
+   - On each new long video, post one question comment from the channel for the user to pin in Studio
+     (the API cannot pin). Hearting is not available through the API.
+   - Add viewer-requested lives to the topic shortlist. List every reply posted in the daily report.
 
 If there is no data yet (first days), say so and list what you will measure.
 
