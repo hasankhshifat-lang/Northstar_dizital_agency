@@ -52,7 +52,7 @@ Tags: children's blizzard, 1888 blizzard, history shorts, pov history, american 
 Description:
 January 12, 1888. A warm morning on the Great Plains. By that night, Huron, Dakota Territory, hit 27 below zero.
 
-Full story: "POV: Your First Winter as a Homesteader (1888)" on the channel https://www.youtube.com/@whichlifenext
+Full story: "POV: Your First Winter as a Homesteader (1888)" https://youtu.be/kQzq9g26F6Q
 
 Source: U.S. Census Bureau, "History and the Census: The 1888 Schoolchildren's Blizzard" - https://www.census.gov/about/history/stories/monthly/2026/january-2026.html
 Narration voiced with AI. Animation made by the channel.
@@ -65,7 +65,7 @@ Tags: minnie freeman, children's blizzard, schoolhouse blizzard, history shorts,
 Description:
 Minnie Freeman was 19. When the 1888 blizzard tore the roof off her sod schoolhouse, she tied her students together with twine and walked them to safety.
 
-Full story: "POV: Your First Winter as a Homesteader (1888)" on the channel https://www.youtube.com/@whichlifenext
+Full story: "POV: Your First Winter as a Homesteader (1888)" https://youtu.be/kQzq9g26F6Q
 
 Source: U.S. Census Bureau, "History and the Census: The 1888 Schoolchildren's Blizzard" - https://www.census.gov/about/history/stories/monthly/2026/january-2026.html
 Narration voiced with AI. Animation made by the channel.
@@ -78,7 +78,7 @@ Tags: children's blizzard, homesteader, prairie blizzard, history shorts, pov hi
 Description:
 In the 1888 blizzard, a 70-year-old farmer went out to feed his animals and was found 12 feet from his house. This is why homesteaders tied a rope from the door to the barn.
 
-Full story: "POV: Your First Winter as a Homesteader (1888)" on the channel https://www.youtube.com/@whichlifenext
+Full story: "POV: Your First Winter as a Homesteader (1888)" https://youtu.be/kQzq9g26F6Q
 
 Sources: U.S. Census Bureau, "History and the Census: The 1888 Schoolchildren's Blizzard" - https://www.census.gov/about/history/stories/monthly/2026/january-2026.html ; National Park Service, Wind Cave National Park, "Homesteaders" - https://www.nps.gov/wica/learn/historyculture/homesteaders.htm
 Narration voiced with AI. Animation made by the channel.
