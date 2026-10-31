@@ -17,8 +17,10 @@ export type Element =
   | { type: "hopperdozer"; x: number; y?: number; scale?: number; driveTo?: number }
   | { type: "locusts"; density?: number };
 
+export type BoardEntry = { label: string; tier: number };
+
 export type Shot = {
-  kind: "landscape" | "interior" | "town" | "card" | "mountains";
+  kind: "landscape" | "interior" | "town" | "card" | "mountains" | "board";
   durationInFrames: number;
   time?: TimeOfDay;
   /** 0..1 how snow-covered the ground is */
@@ -34,7 +36,17 @@ export type Shot = {
   camera?: { zoom?: [number, number]; pan?: [number, number]; panY?: [number, number] };
   tint?: "cold" | "warm" | "night" | "fire" | null;
   interior?: { stormOutside?: boolean; night?: boolean; drip?: boolean };
-  card?: { title: string[]; subtitle?: string; background?: Omit<Shot, "card" | "durationInFrames" | "kind"> & { kind?: Shot["kind"] } };
+  card?: { title: string[]; subtitle?: string; big?: string; background?: Omit<Shot, "card" | "durationInFrames" | "kind"> & { kind?: Shot["kind"] } };
+  /** Pop-up danger word (1–2 words) with a shake, e.g. "CHOLERA". */
+  keyword?: string;
+  /** When the keyword pops, as a fraction of the shot (default 0.1). */
+  keywordAt?: number;
+  /** Survival-time chip shown for the whole shot, e.g. "3 DAYS". */
+  timer?: string;
+  /** Auto fast-cutting into 2–3 s beats (default on for shots > 3.5 s). */
+  cuts?: boolean;
+  /** "HOW LONG WOULD YOU LAST?" scoreboard; the last entry animates in. */
+  board?: { title?: string; entries: BoardEntry[] };
 };
 
 export type Caption = { start: number; end: number; text: string };
@@ -128,10 +140,116 @@ const PlacedPerson: React.FC<{ e: Extract<Element, { type: "person" }>; t: numbe
   );
 };
 
+
+export const TIERS = ["WHOLE LIFE", "YEARS", "MONTHS", "DAYS", "HOURS", "MINUTES"];
+const TIER_COLORS = ["#3fae55", "#8cc63f", "#e2c33a", "#f08a2c", "#e4512c", "#c62828"];
+
+/** Recurring survival scoreboard (competitor research: every top "how long would you last" video has one). */
+const Board: React.FC<{ board: NonNullable<Shot["board"]>; dur: number; narrow?: boolean }> = ({ board, dur, narrow }) => {
+  const frame = useCurrentFrame();
+  const fade = interpolate(frame, [0, 6, dur - 6, dur], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const rowH = narrow ? 118 : 128;
+  const left = narrow ? 470 : 140;
+  const width = narrow ? 980 : 1640;
+  const last = board.entries.length - 1;
+  return (
+    <AbsoluteFill style={{ opacity: fade, background: "radial-gradient(ellipse at center, #2a221a 0%, #120d09 100%)" }}>
+      <div style={{ position: "absolute", top: narrow ? 110 : 40, width: "100%", textAlign: "center", fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 56 : 72, color: "#fff", textShadow: "0 4px 0 #000, 0 0 18px #000", letterSpacing: 1 }}>
+        {board.title ?? "HOW LONG WOULD YOU LAST?"}
+      </div>
+      {TIERS.map((t, i) => {
+        const top = (narrow ? 210 : 150) + i * rowH;
+        const inRow = board.entries.map((e, j) => ({ ...e, j })).filter((e) => e.tier === i);
+        return (
+          <div key={t} style={{ position: "absolute", top, left, width, height: rowH - 14, display: "flex", alignItems: "center", gap: 18 }}>
+            <div style={{ width: narrow ? 250 : 300, height: "100%", borderRadius: 14, background: TIER_COLORS[i], border: "5px solid #000", display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 30 : 38, color: "#fff", textShadow: "0 3px 0 #000" }}>{t}</div>
+            {inRow.map((e) => {
+              const isNew = e.j === last;
+              const pop = isNew ? interpolate(frame, [12, 22, 26], [0, 1.15, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) : 1;
+              return (
+                <div key={e.j} style={{ scale: String(pop), padding: "0 26px", height: "86%", borderRadius: 12, background: isNew ? "#fff3c4" : "#f4ead8", border: `5px solid ${isNew ? TIER_COLORS[i] : "#000"}`,
+                  display: "flex", alignItems: "center", fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 30 : 36, color: "#1d1712", boxShadow: isNew ? `0 0 24px ${TIER_COLORS[i]}` : "none" }}>{e.label}</div>
+              );
+            })}
+          </div>
+        );
+      })}
+    </AbsoluteFill>
+  );
+};
+
+/** Pop-up danger word with a shake. */
+const Keyword: React.FC<{ text: string; start: number; narrow?: boolean }> = ({ text, start, narrow }) => {
+  const frame = useCurrentFrame() - start;
+  if (frame < 0 || frame > 54) return null;
+  const s = interpolate(frame, [0, 5, 9], [2.2, 0.92, 1], { extrapolateRight: "clamp" });
+  const o = interpolate(frame, [0, 3, 44, 54], [0, 1, 1, 0], { extrapolateRight: "clamp" });
+  const shake = frame < 14 ? Math.sin(frame * 2.7) * (14 - frame) * 1.2 : 0;
+  return (
+    <AbsoluteFill style={{ alignItems: "center", paddingTop: narrow ? 300 : 120, opacity: o }}>
+      <div style={{ scale: String(s), translate: `${shake}px 0px`, rotate: "-4deg", fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 120 : 150, color: "#ffd23f",
+        WebkitTextStroke: "10px #000", paintOrder: "stroke fill", textShadow: "0 10px 0 #000, 0 0 40px rgba(255,80,30,0.7)", letterSpacing: 2 }}>{text}</div>
+    </AbsoluteFill>
+  );
+};
+
+/** Survival-time chip (top right). */
+const Timer: React.FC<{ text: string; narrow?: boolean }> = ({ text, narrow }) => {
+  const frame = useCurrentFrame();
+  const pulse = 1 + Math.max(0, Math.sin(frame * 0.25)) * 0.04;
+  return (
+    <AbsoluteFill style={{ alignItems: "flex-end", padding: narrow ? "450px 450px 0 0" : "36px 40px 0 0" }}>
+      <div style={{ scale: String(pulse), display: "flex", alignItems: "center", gap: 14, padding: "12px 24px", borderRadius: 16, background: "rgba(16,10,6,0.82)", border: "4px solid #e4512c",
+        fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 34 : 40, color: "#fff" }}>
+        <span style={{ fontSize: narrow ? 26 : 30, color: "#ffb08a" }}>SURVIVAL TIME</span>{text}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/** Film grain + paper texture so flat vector art reads as painted. */
+const Grain: React.FC = () => {
+  const frame = useCurrentFrame();
+  const seed = frame % 6;
+  return (
+    <AbsoluteFill style={{ pointerEvents: "none", mixBlendMode: "overlay", opacity: 0.16 }}>
+      <svg width="100%" height="100%">
+        <filter id={`grain${seed}`}><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={2} seed={seed} /><feColorMatrix type="saturate" values="0" /></filter>
+        <rect width="100%" height="100%" filter={`url(#grain${seed})`} />
+      </svg>
+    </AbsoluteFill>
+  );
+};
+
+/** Camera for one beat of an auto-cut shot: wide (shot's own camera), Kit close-up, medium, pan. */
+function beatCamera(shot: Shot, beat: number, local: number): { z: number; tx: number; ty: number } | null {
+  if (beat === 0) return null;
+  const k = shot.kit;
+  const cycle = beat % 3;
+  let px = 960, py = 540, z = 1.35;
+  if (k) {
+    const sc = k.scale ?? 1;
+    const kx = k.x, ky = (k.y ?? HORIZON + 300) - 330 * sc;
+    if (cycle === 1) { z = Math.min(3.0, 3.2 / Math.max(0.6, sc)); px = kx; py = ky; }
+    else if (cycle === 2) { z = 1.6; px = (kx + 960) / 2; py = (ky + 540) / 2 + 60; }
+    else { z = 1.3; px = 960 + (beat % 2 ? -220 : 220); py = 520; }
+  } else {
+    px = cycle === 1 ? 640 : cycle === 2 ? 1280 : 960; z = cycle === 0 ? 1.25 : 1.45;
+  }
+  z = z * (1 + 0.05 * local);
+  let tx = z * (960 - px), ty = z * (540 - py);
+  const mx = (z - 1) * 960, my = (z - 1) * 540;
+  tx = Math.max(-mx, Math.min(mx, tx)); ty = Math.max(-my, Math.min(my, ty));
+  return { z, tx, ty };
+}
+const BEAT = 75; // 2.5 s at 30 fps
+
 export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, narrow = false }) => {
   const frame = useCurrentFrame();
   const dur = shot.durationInFrames;
-  const fade = Math.min(8, dur / 4);
+  const fade = Math.min(4, dur / 4);
+  if (shot.kind === "board" && shot.board) return <Board board={shot.board} dur={dur} narrow={narrow} />;
   const opacity = interpolate(frame, [0, fade, dur - fade, dur], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   if (shot.kind === "card" && shot.card) {
     const bg = shot.card.background;
@@ -145,6 +263,11 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
           </AbsoluteFill>
         )}
         <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", flexDirection: "column", gap: 24, padding: narrow ? "0 450px" : "0 120px" }}>
+          {shot.card.big && (
+            <div style={{ fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 200 : 280, lineHeight: 1, color: "#ffd23f",
+              WebkitTextStroke: "10px #1a120c", paintOrder: "stroke fill", textShadow: "0 8px 0 #7a3e12, 0 16px 0 #1a120c, 0 0 60px rgba(255,170,60,0.55)",
+              scale: String(interpolate(frame, [0, 10, 16], [1.6, 0.95, 1], { extrapolateRight: "clamp" })) }}>{shot.card.big}</div>
+          )}
           {shot.card.title.map((line, i) => (
             <div key={i} style={{
               fontFamily: fonts.serif, fontWeight: 700, fontSize: narrow ? 78 : 112, color: palette.paper, letterSpacing: 2, textAlign: "center", lineHeight: 1.1,
@@ -167,12 +290,16 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
   const [p0, p1] = cam.pan ?? [0, 0];
   const [q0, q1] = cam.panY ?? [0, 0];
   const tint = shot.tint ? tints[shot.tint] : null;
+  const autoCut = (shot.cuts ?? true) && dur > 105;
+  const nBeats = autoCut ? Math.max(1, Math.round(dur / BEAT)) : 1;
+  const beatLen = dur / nBeats;
+  const beat = Math.min(nBeats - 1, Math.floor(frame / beatLen));
+  const bc = autoCut ? beatCamera(shot, beat, (frame - beat * beatLen) / beatLen) : null;
+  const scale = bc ? bc.z : interpolate(frame, [0, dur], [z0, z1]);
+  const translate = bc ? `${bc.tx}px ${bc.ty}px` : interpolate(frame, [0, dur], [`${p0}px ${q0}px`, `${p1}px ${q1}px`]);
   return (
     <AbsoluteFill style={{ opacity, backgroundColor: palette.ink, overflow: "hidden" }}>
-      <AbsoluteFill style={{
-        scale: interpolate(frame, [0, dur], [z0, z1]),
-        translate: interpolate(frame, [0, dur], [`${p0}px ${q0}px`, `${p1}px ${q1}px`]),
-      }}>
+      <AbsoluteFill style={{ scale: String(scale), translate }}>
         <svg viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
           <World shot={shot} dur={dur} />
         </svg>
@@ -180,6 +307,8 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
       {tint && <AbsoluteFill style={{ backgroundColor: tint.color, opacity: tint.opacity, mixBlendMode: tint.blend }} />}
       {/* soft vignette for the painted-documentary look */}
       <AbsoluteFill style={{ background: "radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45) 100%)" }} />
+      {shot.timer && <Timer text={shot.timer} narrow={narrow} />}
+      {shot.keyword && <Keyword text={shot.keyword} start={Math.round((shot.keywordAt ?? 0.1) * dur)} narrow={narrow} />}
     </AbsoluteFill>
   );
 };
@@ -213,6 +342,7 @@ export const Episode: React.FC<EpisodeProps> = ({ shots, captions, narration, wi
         from += s.durationInFrames;
         return seq;
       })}
+      <Grain />
       {narration && <Audio src={staticFile(narration)} />}
       {wind && <Audio src={staticFile(wind)} volume={windVolume} />}
       {showCaptions && <CaptionLayer captions={captions} />}

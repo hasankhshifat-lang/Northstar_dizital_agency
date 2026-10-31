@@ -254,3 +254,15 @@ big hazel eyes with highlights, freckles, signature RED NECKERCHIEF, brass-butto
 pockets, leather satchel, knee patch, laced boots. Expressions: neutral, happy, scared, determined, sad
 (`expression` prop, front + side). Reference: `social/which-life-next/kit-v2-sheet.png` (KitSheet still).
 Use "scared" in danger beats and thumbnails, "determined" when Kit acts, "happy" at the cold open/verdict.
+
+## Competitor techniques in the Episode system (2026-10-31, see research/competitor-animation-2026-10-31.md)
+Kit v2 is the hero (user confirmed). New shot fields in shots.json (passed straight through by make_episode.py):
+- **Auto fast-cutting** (default on): any shot > 3.5 s is split into ~2.5 s beats that cycle wide → Kit close-up → medium → pan.
+  Set `"cuts": false` only for title cards or slow emotional moments.
+- `"keyword": "CHOLERA!"` (+ optional `"keywordAt": 0.3`): pop-up danger word with shake — one per danger beat.
+- `"timer": "3 DAYS"`: survival-time chip for the shot.
+- `"kind": "board", "board": {"entries": [{"label": "...", "tier": 0-5}]}`: the "HOW LONG WOULD YOU LAST?" scoreboard
+  (tiers: WHOLE LIFE, YEARS, MONTHS, DAYS, HOURS, MINUTES). Show it at the end of every section; the last entry animates in.
+  Tiers must come from the script's sourced facts.
+- `"card": {"big": "1888", ...}`: huge embossed year/number on title cards.
+- Film grain is applied to every episode automatically.
