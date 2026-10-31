@@ -22,9 +22,10 @@ Confirm the title, description, publish time, and video file with the user befor
 
 Account: Which Life Next (@whichlifenext), via Clawlink `tiktok`. Log: `social/tiktok-post-log.md`.
 
-**ON HOLD since 2026-10-30:** the user paused all TikTok posts until they check the account status (both posts had
-0 views; the account may be restricted after a Bangladesh → Singapore location change). Do not post to TikTok or
-set TikTok check-ins until the user says to resume.
+Resumed 2026-10-31 (user checked the account status: no issue found). If the YouTube API quota is exceeded,
+confirm a post is live from Metricool's `getScheduledPosts` (provider status PUBLISHED + video id) instead.
+Videos scheduled in Metricool without a Drive file can be posted from their Metricool media URL with
+`tiktok` → `upload_video` (`publish: true`, `file_to_upload.s3key` = the URL).
 
 1. No hourly polling. Check only at publish times: whenever a YouTube post is scheduled (or found scheduled in
    Metricool / YouTube), set a one-time check-in (`send_later`) for about 5 minutes after its publish time. At the
