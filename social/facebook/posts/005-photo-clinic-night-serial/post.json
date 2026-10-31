@@ -1,6 +1,6 @@
 {
  "type": "photo",
- "status": "draft",
+ "status": "scheduled",
  "pillar": "Industry",
  "angle": "Clinic / doctor chamber: রাতে রোগীর serial প্রশ্ন — AI উত্তর দেয়, serial নেয়, reminder পাঠায়",
  "caption": "রাত ১০টায় রোগীর message: \"কাল ডাক্তার বসবেন?\" উত্তর গেলো সকালে। 😬\nততক্ষণে সে অন্য chamber-এ serial নিয়ে ফেলেছে।\n\nAI receptionist রাতেই উত্তর দেয়, serial নেয়, আগের দিন reminder পাঠায়।\n👉 আপনার chamber-এর জন্য জানতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
@@ -71,5 +71,7 @@
    }
   ],
   "cta": "WhatsApp করুন"
- }
+ },
+ "facebook_photo_id": "122115054081502830",
+ "scheduled_for": "2026-10-31 12:30 Asia/Dhaka"
 }
