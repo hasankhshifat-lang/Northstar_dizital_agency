@@ -22,6 +22,11 @@ Confirm the title, description, publish time, and video file with the user befor
 
 Account: Which Life Next (@whichlifenext), via Clawlink `tiktok`. Log: `social/tiktok-post-log.md`.
 
+**No automatic TikTok uploads (user rule, 2026-10-31).** Do not post or upload to TikTok on your own, and do not
+set TikTok check-ins. The user adds a trending sound and posts in the TikTok app. Only upload when the user asks
+for a specific video (as an inbox draft, `publish: false`, unless they say to post it directly). The steps below
+apply only then.
+
 Resumed 2026-10-31 (user checked the account status: no issue found). If the YouTube API quota is exceeded,
 confirm a post is live from Metricool's `getScheduledPosts` (provider status PUBLISHED + video id) instead.
 Videos scheduled in Metricool without a Drive file can be posted from their Metricool media URL with

@@ -19,9 +19,9 @@ Rule: a video goes to TikTok only after it is live on YouTube. Settings are conf
 The user checked the account status and found no issue; posting resumed.
 Views check 2026-10-31 03:07 UTC: all 6 TikTok posts still at 0 views / 0 likes (oldest is ~39 h old).
 
-## Waiting for YouTube
+## Automatic uploads stopped (2026-10-31)
 
-- Nothing waiting.
+The user will add trending sounds and post in the TikTok app themselves. Upload only when they ask.
 
 ## YouTube data: short A (snapshot 2026-10-29 12:04 UTC)
 
