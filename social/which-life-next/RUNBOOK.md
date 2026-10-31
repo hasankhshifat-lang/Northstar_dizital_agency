@@ -266,3 +266,35 @@ Kit v2 is the hero (user confirmed). New shot fields in shots.json (passed strai
   Tiers must come from the script's sourced facts.
 - `"card": {"big": "1888", ...}`: huge embossed year/number on title cards.
 - Film grain is applied to every episode automatically.
+
+## Never boring: cold open + "what's next?" structure (user rule, 2026-10-31)
+Every long video and every Short must make the viewer ask "what happens next?". Never start the story cold.
+
+**1. Cold open (first 12–18 s), every long video — built by make_episode.py from `_teaser` in shots.json:**
+- 3–4 flashes of the BEST moments from later in the video (each: the real narration line, Kit reacting
+  with `expression`, a 1–2 word `keyword`, whoosh between flashes). Pick the most shocking/visual lines.
+- Then a hook QUESTION card (style "hook", boom): e.g. "COULD YOU / SURVIVE 1874?" + a short subtitle claim.
+- Then the story starts from the beginning (segment 01).
+```json
+"_teaser": {"clips": [{"find": "<exact start of a narration sentence>", "keyword": "GONE.", "expression": "sad",
+                        "caption": "<optional clean caption>"}, ...],
+            "question": ["COULD YOU", "SURVIVE 1874?"], "sub": "THE BIGGEST LOCUST SWARM EVER RECORDED"}
+```
+Never reveal the ending in the teaser (show the danger, not the outcome).
+
+**2. Script rules (write these into every script):**
+- Open loop in the first 30 s: promise something specific that pays off later ("…and by the end, you'll see
+  why this insect vanished forever").
+- Re-hook every 60–90 s: a new danger, a twist, a number, or "but that wasn't the worst part."
+- End each section on a cliffhanger line, then show the **survival board**, then "Next…" teaser for the
+  following section (one sentence).
+- Pattern interrupts: a keyword pop, a title card with a big year/number, or a board update at least every
+  45 s; Kit's expression changes with every danger beat.
+- No dead air: no sentence without something changing on screen (auto-cuts handle long shots).
+- Final 20 s: the verdict + the board's final state + a direct question for the comments + "watch next" line.
+
+**3. Shorts:** the first second is the most shocking frame (Kit's scared face or the threat up close) with the
+hook text; first spoken line is the danger, not the setup; end on a question or a cliffhanger that loops.
+
+**4. Thumbnails:** competitor style only (see "Thumbnails"): one huge focal threat or Kit's scared face, dark
+background with a warm glow, 2–3 words built around a number; 3 options for Test & compare.

@@ -36,7 +36,7 @@ export type Shot = {
   camera?: { zoom?: [number, number]; pan?: [number, number]; panY?: [number, number] };
   tint?: "cold" | "warm" | "night" | "fire" | null;
   interior?: { stormOutside?: boolean; night?: boolean; drip?: boolean };
-  card?: { title: string[]; subtitle?: string; big?: string; background?: Omit<Shot, "card" | "durationInFrames" | "kind"> & { kind?: Shot["kind"] } };
+  card?: { title: string[]; subtitle?: string; big?: string; style?: "hook"; background?: Omit<Shot, "card" | "durationInFrames" | "kind"> & { kind?: Shot["kind"] } };
   /** Pop-up danger word (1–2 words) with a shake, e.g. "CHOLERA". */
   keyword?: string;
   /** When the keyword pops, as a fraction of the shot (default 0.1). */
@@ -269,7 +269,12 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
               scale: String(interpolate(frame, [0, 10, 16], [1.6, 0.95, 1], { extrapolateRight: "clamp" })) }}>{shot.card.big}</div>
           )}
           {shot.card.title.map((line, i) => (
-            <div key={i} style={{
+            <div key={i} style={shot.card!.style === "hook" ? {
+              fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 96 : 150, color: i % 2 ? "#ffd23f" : "#fff", textAlign: "center", lineHeight: 1.05,
+              WebkitTextStroke: "10px #000", paintOrder: "stroke fill", textShadow: "0 10px 0 #000",
+              scale: String(interpolate(frame, [i * 5, i * 5 + 6, i * 5 + 10], [1.8, 0.94, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })),
+              opacity: interpolate(frame, [i * 5, i * 5 + 3], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
+            } : {
               fontFamily: fonts.serif, fontWeight: 700, fontSize: narrow ? 78 : 112, color: palette.paper, letterSpacing: 2, textAlign: "center", lineHeight: 1.1,
               opacity: interpolate(frame, [6 + i * 6, 18 + i * 6], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
               translate: interpolate(frame, [6 + i * 6, 18 + i * 6], ["0px 24px", "0px 0px"], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
