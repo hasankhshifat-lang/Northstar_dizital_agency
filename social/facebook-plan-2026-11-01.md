@@ -15,7 +15,7 @@ Status: **approved.** All Reels and images are made in Remotion (`northstar-vide
 | 4 Reel | Tue 3 Nov, 8:30 PM | video 1151764284032810 |
 | 5 Photo | Wed 4 Nov, 12:30 PM | 122115112911502830 |
 | 6 Photo | Wed 4 Nov, 8:30 PM | 122115112965502830 |
-| 7 Reel | Thu 5 Nov, 8:30 PM | video 1631148468363460 |
+| 7 Reel | Thu 5 Nov, 8:30 PM | video 971951349306207 (v2, real portfolio photos) |
 | 8 Text | Fri 6 Nov, 3:00 PM | 1390585830800081_122115111153502830 |
 | 9 Photo | Sat 7 Nov, 8:30 PM | 122115113013502830 |
 

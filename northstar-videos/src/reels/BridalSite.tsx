@@ -1,11 +1,11 @@
 import React from "react";
-import { AbsoluteFill, Series } from "remotion";
+import { AbsoluteFill, Img, Series, staticFile } from "remotion";
 import { Backdrop, CtaScene, HookScene, PopIn } from "../components/Brand";
 import { Phone, ScrollingSite } from "../components/Phone";
 import { SiteHero, SiteNav, SiteSection, WhatsAppButton } from "../components/Site";
 
 // Reel 7 · Thu 5 Nov — walkthrough of a bridal studio demo website.
-export const BRIDAL_SITE_DURATION = 90 + 420 + 150;
+export const BRIDAL_SITE_DURATION = 90 + 480 + 150;
 
 const ACCENT = "#9D174D";
 
@@ -15,14 +15,8 @@ const PACKAGES = [
   { name: "Bridal Full Package", detail: "Makeup · Hair · Jewellery setting · Trial" },
 ];
 
-const PORTFOLIO = [
-  "linear-gradient(135deg,#F9A8D4,#BE185D)",
-  "linear-gradient(135deg,#FDE68A,#D97706)",
-  "linear-gradient(135deg,#FBCFE8,#9D174D)",
-  "linear-gradient(135deg,#FCA5A5,#B91C1C)",
-  "linear-gradient(135deg,#DDD6FE,#7C3AED)",
-  "linear-gradient(135deg,#FECDD3,#E11D48)",
-];
+// Real bridal looks supplied by the client, in public/portfolio.
+const PORTFOLIO = [1, 2, 3, 4, 5, 6].map((n) => staticFile(`portfolio/look${n}.jpg`));
 
 const SiteScene: React.FC = () => (
   <Backdrop>
@@ -33,7 +27,7 @@ const SiteScene: React.FC = () => (
         </div>
       </PopIn>
       <Phone width={740} height={1460}>
-        <ScrollingSite scrollFrom={50} scrollTo={380} distance={1420}>
+        <ScrollingSite scrollFrom={50} scrollTo={440} distance={1700}>
           <SiteNav name="Rose Bridal Studio" accent={ACCENT} />
           <SiteHero
             title="আপনার বিশেষ দিনের জন্য"
@@ -59,22 +53,35 @@ const SiteScene: React.FC = () => (
           </SiteSection>
           <SiteSection title="Portfolio">
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              {PORTFOLIO.map((g, i) => (
+              {PORTFOLIO.map((src, i) => (
                 <div
-                  key={g}
+                  key={src}
                   style={{
-                    height: 260,
+                    height: 400,
                     borderRadius: 20,
-                    background: g,
-                    display: "flex",
-                    alignItems: "flex-end",
-                    padding: 16,
-                    color: "#fff",
-                    fontSize: 26,
-                    fontWeight: 600,
+                    overflow: "hidden",
+                    position: "relative",
                   }}
                 >
-                  Look {i + 1}
+                  <Img
+                    src={src}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 25%" }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: "linear-gradient(transparent 65%, rgba(0,0,0,0.55))",
+                      display: "flex",
+                      alignItems: "flex-end",
+                      padding: 16,
+                      color: "#fff",
+                      fontSize: 26,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Look {i + 1}
+                  </div>
                 </div>
               ))}
             </div>
@@ -96,7 +103,7 @@ export const BridalSite: React.FC = () => (
     <Series.Sequence name="Hook" durationInFrames={90}>
       <HookScene lines={["Bridal studio-র website", "দেখতে এমন হয় 💄"]} />
     </Series.Sequence>
-    <Series.Sequence name="Site" durationInFrames={420}>
+    <Series.Sequence name="Site" durationInFrames={480}>
       <SiteScene />
     </Series.Sequence>
     <Series.Sequence name="CTA" durationInFrames={150}>
