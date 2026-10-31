@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, Audio, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Kit, KitProps } from "./kit/Kit";
 import { Barn, HORIZON, Prairie, Rope, Schoolhouse, Sky, Snow, SodHouse, SodInterior, StormFront, TownStreet, Wagon } from "./sets/sets";
+import { Cornfield, Hopperdozer, LocustCarpet, Mountains, Swarm } from "./sets/plains";
 import { fonts, palette, TimeOfDay } from "./theme";
 
 export type Element =
@@ -11,10 +12,13 @@ export type Element =
   | { type: "schoolhouse"; x: number; y?: number; scale?: number; lit?: boolean }
   | { type: "rope"; x1: number; y1: number; x2: number; y2: number }
   | { type: "stormfront"; from?: number; to?: number }
-  | { type: "person"; x: number; y?: number; scale?: number; kit: KitProps; walkTo?: number };
+  | { type: "person"; x: number; y?: number; scale?: number; kit: KitProps; walkTo?: number }
+  | { type: "cornfield"; x: number; y?: number; width?: number; rows?: number; scale?: number; eaten?: [number, number] }
+  | { type: "hopperdozer"; x: number; y?: number; scale?: number; driveTo?: number }
+  | { type: "locusts"; density?: number };
 
 export type Shot = {
-  kind: "landscape" | "interior" | "town" | "card";
+  kind: "landscape" | "interior" | "town" | "card" | "mountains";
   durationInFrames: number;
   time?: TimeOfDay;
   /** 0..1 how snow-covered the ground is */
@@ -22,6 +26,8 @@ export type Shot = {
   /** 0..1 falling snow */
   weather?: number;
   wind?: number;
+  /** flying locust swarm intensity 0..1, or [from, to] over the shot */
+  swarm?: number | [number, number];
   green?: boolean;
   elements?: Element[];
   kit?: KitProps & { x: number; y?: number; scale?: number; walkTo?: number };
@@ -40,6 +46,8 @@ export type EpisodeProps = {
   wind?: string;
   windVolume?: number;
   showCaptions?: boolean;
+  /** Render title cards for a vertical (Short) crop. */
+  narrow?: boolean;
 };
 
 const tints: Record<string, { color: string; opacity: number; blend: React.CSSProperties["mixBlendMode"] }> = {
@@ -69,7 +77,7 @@ const World: React.FC<{ shot: Shot; dur: number }> = ({ shot, dur }) => {
         const s = e as Extract<Element, { type: "stormfront" }>;
         return <StormFront key={i} progress={interpolate(t, [0, 1], [s.from ?? 0, s.to ?? 0.6])} />;
       })}
-      {shot.kind === "town" ? <TownStreet snowy={snow} /> : <Prairie snowy={snow} green={shot.green} />}
+      {shot.kind === "town" ? <TownStreet snowy={snow} /> : shot.kind === "mountains" ? <Mountains /> : <Prairie snowy={snow} green={shot.green} />}
       {(shot.elements ?? []).map((e, i) => {
         const y = "y" in e && e.y !== undefined ? e.y : HORIZON + 160;
         switch (e.type) {
@@ -85,12 +93,19 @@ const World: React.FC<{ shot: Shot; dur: number }> = ({ shot, dur }) => {
             return <Rope key={i} {...e} />;
           case "person":
             return <PlacedPerson key={i} e={e} t={t} />;
+          case "cornfield":
+            return <Cornfield key={i} x={e.x} y={e.y} width={e.width} rows={e.rows} scale={e.scale} eaten={e.eaten ? interpolate(t, [0, 1], e.eaten) : 0} />;
+          case "hopperdozer":
+            return <Hopperdozer key={i} x={e.driveTo !== undefined ? interpolate(t, [0, 1], [e.x, e.driveTo]) : e.x} y={e.y} scale={e.scale} />;
+          case "locusts":
+            return <LocustCarpet key={i} density={e.density} />;
           default:
             return null;
         }
       })}
       {shot.kit && <PlacedKit k={shot.kit} t={t} />}
       {(shot.weather ?? 0) > 0 && <Snow intensity={shot.weather ?? 0} wind={shot.wind ?? 1} />}
+      {shot.swarm !== undefined && <Swarm intensity={Array.isArray(shot.swarm) ? interpolate(t, [0, 1], shot.swarm) : shot.swarm} />}
     </>
   );
 };
@@ -113,7 +128,7 @@ const PlacedPerson: React.FC<{ e: Extract<Element, { type: "person" }>; t: numbe
   );
 };
 
-export const ShotView: React.FC<{ shot: Shot }> = ({ shot }) => {
+export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, narrow = false }) => {
   const frame = useCurrentFrame();
   const dur = shot.durationInFrames;
   const fade = Math.min(8, dur / 4);
@@ -129,16 +144,16 @@ export const ShotView: React.FC<{ shot: Shot }> = ({ shot }) => {
             </svg>
           </AbsoluteFill>
         )}
-        <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", flexDirection: "column", gap: 24 }}>
+        <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", flexDirection: "column", gap: 24, padding: narrow ? "0 450px" : "0 120px" }}>
           {shot.card.title.map((line, i) => (
             <div key={i} style={{
-              fontFamily: fonts.serif, fontWeight: 700, fontSize: 112, color: palette.paper, letterSpacing: 2, textAlign: "center",
+              fontFamily: fonts.serif, fontWeight: 700, fontSize: narrow ? 78 : 112, color: palette.paper, letterSpacing: 2, textAlign: "center", lineHeight: 1.1,
               opacity: interpolate(frame, [6 + i * 6, 18 + i * 6], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
               translate: interpolate(frame, [6 + i * 6, 18 + i * 6], ["0px 24px", "0px 0px"], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
             }}>{line}</div>
           ))}
           {shot.card.subtitle && (
-            <div style={{ fontFamily: fonts.sans, fontWeight: 700, fontSize: 44, color: palette.gold, letterSpacing: 1.5, textAlign: "center", padding: "0 160px",
+            <div style={{ fontFamily: fonts.sans, fontWeight: 700, fontSize: narrow ? 36 : 44, color: palette.gold, letterSpacing: 1.5, textAlign: "center", padding: narrow ? 0 : "0 160px",
               opacity: interpolate(frame, [22, 34], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
               {shot.card.subtitle}
             </div>
@@ -185,14 +200,14 @@ const CaptionLayer: React.FC<{ captions: Caption[]; vertical?: boolean }> = ({ c
   );
 };
 
-export const Episode: React.FC<EpisodeProps> = ({ shots, captions, narration, wind, windVolume = 0.12, showCaptions = true }) => {
+export const Episode: React.FC<EpisodeProps> = ({ shots, captions, narration, wind, windVolume = 0.12, showCaptions = true, narrow = false }) => {
   let from = 0;
   return (
     <AbsoluteFill style={{ backgroundColor: palette.ink }}>
       {shots.map((s, i) => {
         const seq = (
           <Sequence key={i} from={from} durationInFrames={s.durationInFrames} name={`${i} ${s.kind}${s.card ? " " + s.card.title[0] : ""}`}>
-            <ShotView shot={s} />
+            <ShotView shot={s} narrow={narrow} />
           </Sequence>
         );
         from += s.durationInFrames;
@@ -218,7 +233,7 @@ export const Short: React.FC<ShortProps> = ({ startFrame, hook, captions, ...res
     <AbsoluteFill style={{ backgroundColor: palette.ink }}>
       <Sequence from={-startFrame}>
         <AbsoluteFill style={{ width: 1920, height: 1080, top: 420, left: -420, scale: 1.0 }}>
-          <Episode {...rest} captions={[]} showCaptions={false} />
+          <Episode {...rest} captions={[]} showCaptions={false} narrow />
         </AbsoluteFill>
       </Sequence>
       <AbsoluteFill style={{ top: 0, height: 420, backgroundColor: palette.ink }} />

@@ -1,0 +1,1271 @@
+{
+ "01": [
+  {
+   "at": 0,
+   "kind": "landscape",
+   "time": "day",
+   "green": true,
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 5,
+     "y": 820
+    },
+    {
+     "type": "sodhouse",
+     "x": 1600,
+     "y": 760,
+     "scale": 0.7
+    }
+   ],
+   "kit": {
+    "x": 420,
+    "walkTo": 760,
+    "pose": "side",
+    "walking": true,
+    "y": 1010,
+    "scale": 0.9
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.06
+    ]
+   }
+  },
+  {
+   "at": 0.2,
+   "kind": "landscape",
+   "time": "day",
+   "green": true,
+   "swarm": [
+    0,
+    0.25
+   ],
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 3,
+     "y": 900
+    }
+   ],
+   "kit": {
+    "x": 980,
+    "pose": "back",
+    "y": 1060,
+    "scale": 1.15
+   },
+   "camera": {
+    "zoom": [
+     1.05,
+     1.15
+    ]
+   }
+  },
+  {
+   "at": 0.42,
+   "kind": "card",
+   "card": {
+    "title": [
+     "JULY 1874"
+    ],
+    "subtitle": "NEBRASKA",
+    "background": {
+     "time": "day",
+     "green": true
+    }
+   }
+  },
+  {
+   "at": 0.55,
+   "kind": "landscape",
+   "time": "dawn",
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 5,
+     "y": 820,
+     "eaten": [
+      1,
+      1
+     ]
+    },
+    {
+     "type": "locusts",
+     "density": 0.6
+    }
+   ],
+   "kit": {
+    "x": 900,
+    "pose": "front",
+    "y": 1020,
+    "scale": 1.0
+   },
+   "camera": {
+    "zoom": [
+     1.12,
+     1.0
+    ]
+   }
+  },
+  {
+   "at": 0.78,
+   "kind": "card",
+   "card": {
+    "title": [
+     "WOULD YOU",
+     "HAVE MADE IT?"
+    ],
+    "subtitle": "KIT'S SECOND SUMMER ON THE HOMESTEAD",
+    "background": {
+     "time": "dawn"
+    }
+   }
+  }
+ ],
+ "02": [
+  {
+   "at": 0,
+   "kind": "landscape",
+   "time": "day",
+   "green": true,
+   "elements": [
+    {
+     "type": "sodhouse",
+     "x": 1350,
+     "y": 800,
+     "scale": 1
+    },
+    {
+     "type": "wagon",
+     "x": 420,
+     "y": 860,
+     "scale": 0.6,
+     "oxen": true
+    }
+   ],
+   "kit": {
+    "x": 900,
+    "pose": "front",
+    "y": 980,
+    "scale": 0.95
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.08
+    ],
+    "pan": [
+     0,
+     -30
+    ]
+   }
+  },
+  {
+   "at": 0.3,
+   "kind": "card",
+   "card": {
+    "title": [
+     "160 ACRES",
+     "5 YEARS"
+    ],
+    "subtitle": "THE HOMESTEAD ACT",
+    "background": {
+     "time": "day",
+     "green": true
+    }
+   }
+  },
+  {
+   "at": 0.45,
+   "kind": "landscape",
+   "time": "day",
+   "green": true,
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": 200,
+     "width": 1700,
+     "rows": 5,
+     "y": 780
+    }
+   ],
+   "kit": {
+    "x": 120,
+    "walkTo": 700,
+    "pose": "side",
+    "walking": true,
+    "y": 1000,
+    "scale": 0.95
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.1
+    ],
+    "pan": [
+     0,
+     -60
+    ]
+   }
+  },
+  {
+   "at": 0.75,
+   "kind": "interior",
+   "interior": {},
+   "kit": {
+    "x": 760,
+    "pose": "front",
+    "y": 1000,
+    "scale": 1.0
+   },
+   "camera": {
+    "zoom": [
+     1.1,
+     1.0
+    ]
+   },
+   "tint": "warm"
+  }
+ ],
+ "03": [
+  {
+   "at": 0,
+   "kind": "landscape",
+   "time": "day",
+   "green": true,
+   "swarm": [
+    0.05,
+    0.5
+   ],
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 4,
+     "y": 860
+    },
+    {
+     "type": "sodhouse",
+     "x": 1500,
+     "y": 770,
+     "scale": 0.7
+    }
+   ],
+   "kit": {
+    "x": 700,
+    "pose": "back",
+    "y": 1040,
+    "scale": 1.0
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.1
+    ]
+   }
+  },
+  {
+   "at": 0.3,
+   "kind": "landscape",
+   "time": "storm",
+   "green": true,
+   "swarm": [
+    0.6,
+    1
+   ],
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 4,
+     "y": 860
+    },
+    {
+     "type": "locusts",
+     "density": 0.8
+    }
+   ],
+   "kit": {
+    "x": 1000,
+    "pose": "front",
+    "y": 1020,
+    "scale": 1.1
+   },
+   "camera": {
+    "zoom": [
+     1.05,
+     1.18
+    ]
+   }
+  },
+  {
+   "at": 0.6,
+   "kind": "card",
+   "card": {
+    "title": [
+     "~JULY 25, 1874"
+    ],
+    "subtitle": "THE SWARMS REACH KANSAS AND NEBRASKA",
+    "background": {
+     "time": "storm",
+     "green": true
+    }
+   }
+  },
+  {
+   "at": 0.78,
+   "kind": "landscape",
+   "time": "day",
+   "swarm": 0.35,
+   "elements": [
+    {
+     "type": "locusts",
+     "density": 1.2
+    },
+    {
+     "type": "sodhouse",
+     "x": 1300,
+     "y": 800,
+     "scale": 0.9
+    }
+   ],
+   "kit": {
+    "x": 600,
+    "pose": "side",
+    "walking": true,
+    "walkTo": 800,
+    "y": 1000,
+    "scale": 0.95
+   },
+   "camera": {
+    "zoom": [
+     1.1,
+     1.0
+    ]
+   }
+  }
+ ],
+ "04": [
+  {
+   "at": 0,
+   "kind": "landscape",
+   "time": "day",
+   "swarm": 0.3,
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 5,
+     "y": 820,
+     "eaten": [
+      0,
+      0.6
+     ]
+    },
+    {
+     "type": "locusts",
+     "density": 1
+    }
+   ],
+   "camera": {
+    "zoom": [
+     1,
+     1.15
+    ],
+    "panY": [
+     0,
+     -40
+    ]
+   }
+  },
+  {
+   "at": 0.35,
+   "kind": "landscape",
+   "time": "day",
+   "swarm": 0.2,
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 5,
+     "y": 820,
+     "eaten": [
+      0.6,
+      1
+     ]
+    },
+    {
+     "type": "locusts",
+     "density": 1
+    }
+   ],
+   "kit": {
+    "x": 1300,
+    "pose": "back",
+    "y": 1030,
+    "scale": 1.0
+   },
+   "camera": {
+    "zoom": [
+     1.1,
+     1.0
+    ]
+   }
+  },
+  {
+   "at": 0.6,
+   "kind": "card",
+   "card": {
+    "title": [
+     "2\u20133 WEEKS"
+    ],
+    "subtitle": "TO STRIP EVERY STALK OF CORN IN ONE KANSAS COUNTY",
+    "background": {
+     "time": "day"
+    }
+   }
+  },
+  {
+   "at": 0.78,
+   "kind": "landscape",
+   "time": "dusk",
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 5,
+     "y": 820,
+     "eaten": [
+      1,
+      1
+     ]
+    },
+    {
+     "type": "sodhouse",
+     "x": 1450,
+     "y": 780,
+     "scale": 0.8
+    }
+   ],
+   "kit": {
+    "x": 700,
+    "pose": "back",
+    "y": 1030,
+    "scale": 1.0
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.08
+    ]
+   }
+  }
+ ],
+ "05": [
+  {
+   "at": 0,
+   "kind": "landscape",
+   "time": "day",
+   "swarm": 0.4,
+   "elements": [
+    {
+     "type": "locusts",
+     "density": 1.3
+    },
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 3,
+     "y": 880,
+     "eaten": [
+      0.7,
+      0.9
+     ]
+    }
+   ],
+   "kit": {
+    "x": 500,
+    "walkTo": 1300,
+    "pose": "side",
+    "walking": true,
+    "y": 1010,
+    "scale": 1.0
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.08
+    ]
+   }
+  },
+  {
+   "at": 0.35,
+   "kind": "card",
+   "card": {
+    "title": [
+     "1877"
+    ],
+    "subtitle": "FEDERAL LOCUST COMMISSION \u00b7 C. V. RILEY",
+    "background": {
+     "time": "day"
+    }
+   }
+  },
+  {
+   "at": 0.52,
+   "kind": "landscape",
+   "time": "day",
+   "elements": [
+    {
+     "type": "locusts",
+     "density": 1
+    },
+    {
+     "type": "hopperdozer",
+     "x": 300,
+     "driveTo": 1400,
+     "y": 930,
+     "scale": 1.1
+    }
+   ],
+   "camera": {
+    "zoom": [
+     1,
+     1.08
+    ]
+   }
+  },
+  {
+   "at": 0.8,
+   "kind": "card",
+   "card": {
+    "title": [
+     "THE HOPPERDOZER"
+    ],
+    "subtitle": "A SHEET-IRON PAN SMEARED WITH COAL TAR",
+    "background": {
+     "time": "day"
+    }
+   }
+  }
+ ],
+ "06": [
+  {
+   "at": 0,
+   "kind": "interior",
+   "interior": {
+    "night": true
+   },
+   "kit": {
+    "x": 900,
+    "pose": "front",
+    "y": 1000,
+    "scale": 1.05
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.12
+    ]
+   },
+   "tint": "night"
+  },
+  {
+   "at": 0.4,
+   "kind": "landscape",
+   "time": "dusk",
+   "elements": [
+    {
+     "type": "wagon",
+     "x": 1500,
+     "driveTo": 2300,
+     "y": 820,
+     "scale": 0.7,
+     "moving": true
+    },
+    {
+     "type": "wagon",
+     "x": 900,
+     "driveTo": 1700,
+     "y": 780,
+     "scale": 0.5,
+     "moving": true
+    }
+   ],
+   "camera": {
+    "zoom": [
+     1,
+     1.05
+    ]
+   }
+  },
+  {
+   "at": 0.6,
+   "kind": "card",
+   "card": {
+    "title": [
+     "STAY OR LEAVE?"
+    ],
+    "subtitle": "GRASSHOPPER SUFFERERS COULD LEAVE THEIR CLAIMS TO FIND WORK",
+    "background": {
+     "time": "dusk"
+    }
+   }
+  },
+  {
+   "at": 0.78,
+   "kind": "landscape",
+   "time": "dawn",
+   "snow": 0.1,
+   "elements": [
+    {
+     "type": "sodhouse",
+     "x": 300,
+     "y": 800,
+     "scale": 0.8
+    }
+   ],
+   "kit": {
+    "x": 800,
+    "walkTo": 1700,
+    "pose": "side",
+    "walking": true,
+    "y": 990,
+    "scale": 0.95
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.06
+    ],
+    "pan": [
+     0,
+     -60
+    ]
+   }
+  }
+ ],
+ "07": [
+  {
+   "at": 0,
+   "kind": "town",
+   "time": "day",
+   "snow": 0.4,
+   "weather": 0.2,
+   "elements": [
+    {
+     "type": "person",
+     "x": 500,
+     "y": 900,
+     "scale": 0.85,
+     "kit": {
+      "pose": "front",
+      "colors": {
+       "coat": "#4b5a6b",
+       "cap": "#2a2f36"
+      }
+     }
+    },
+    {
+     "type": "person",
+     "x": 700,
+     "y": 905,
+     "scale": 0.8,
+     "kit": {
+      "pose": "front",
+      "colors": {
+       "coat": "#7a6a50",
+       "cap": "#5a4a36"
+      }
+     }
+    }
+   ],
+   "kit": {
+    "x": 1100,
+    "pose": "front",
+    "y": 920,
+    "scale": 0.9,
+    "outfit": "winter"
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.06
+    ]
+   },
+   "tint": "cold"
+  },
+  {
+   "at": 0.18,
+   "kind": "card",
+   "card": {
+    "title": [
+     "$50,000"
+    ],
+    "subtitle": "NEBRASKA STATE BONDS FOR SEED",
+    "background": {
+     "time": "day",
+     "snow": 0.4
+    }
+   }
+  },
+  {
+   "at": 0.3,
+   "kind": "card",
+   "card": {
+    "title": [
+     "FEBRUARY 1875"
+    ],
+    "subtitle": "PRESIDENT GRANT'S MESSAGE ON THE SUFFERERS IN KANSAS AND NEBRASKA",
+    "background": {
+     "time": "storm",
+     "snow": 0.5
+    }
+   }
+  },
+  {
+   "at": 0.45,
+   "kind": "town",
+   "time": "day",
+   "snow": 0.5,
+   "weather": 0.3,
+   "kit": {
+    "x": 300,
+    "walkTo": 900,
+    "pose": "side",
+    "walking": true,
+    "y": 930,
+    "scale": 0.9,
+    "outfit": "winter"
+   },
+   "camera": {
+    "zoom": [
+     1.05,
+     1.12
+    ]
+   },
+   "tint": "cold"
+  },
+  {
+   "at": 0.62,
+   "kind": "card",
+   "card": {
+    "title": [
+     "$73,000"
+    ],
+    "subtitle": "KANSAS STATE RELIEF BONDS",
+    "background": {
+     "time": "day",
+     "snow": 0.5
+    }
+   }
+  },
+  {
+   "at": 0.74,
+   "kind": "town",
+   "time": "dusk",
+   "snow": 0.5,
+   "weather": 0.4,
+   "elements": [
+    {
+     "type": "person",
+     "x": 400,
+     "y": 900,
+     "scale": 0.8,
+     "kit": {
+      "pose": "back",
+      "colors": {
+       "coat": "#4b5a6b"
+      }
+     }
+    },
+    {
+     "type": "person",
+     "x": 560,
+     "y": 900,
+     "scale": 0.8,
+     "kit": {
+      "pose": "back",
+      "colors": {
+       "coat": "#6a5a48"
+      }
+     }
+    }
+   ],
+   "kit": {
+    "x": 760,
+    "pose": "back",
+    "y": 905,
+    "scale": 0.85,
+    "outfit": "winter"
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.1
+    ]
+   },
+   "tint": "cold"
+  },
+  {
+   "at": 0.9,
+   "kind": "interior",
+   "interior": {
+    "night": true,
+    "stormOutside": true
+   },
+   "kit": {
+    "x": 800,
+    "pose": "front",
+    "y": 1000,
+    "scale": 1.0,
+    "outfit": "winter"
+   },
+   "camera": {
+    "zoom": [
+     1.08,
+     1.0
+    ]
+   }
+  }
+ ],
+ "08": [
+  {
+   "at": 0,
+   "kind": "landscape",
+   "time": "day",
+   "green": true,
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": 200,
+     "width": 1600,
+     "rows": 4,
+     "y": 860,
+     "scale": 0.6
+    },
+    {
+     "type": "locusts",
+     "density": 0.4
+    }
+   ],
+   "kit": {
+    "x": 400,
+    "walkTo": 800,
+    "pose": "side",
+    "walking": true,
+    "y": 1000,
+    "scale": 0.95
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.06
+    ]
+   }
+  },
+  {
+   "at": 0.2,
+   "kind": "town",
+   "time": "day",
+   "kit": {
+    "x": 1300,
+    "pose": "back",
+    "y": 930,
+    "scale": 0.9
+   },
+   "swarm": [
+    0.1,
+    0.6
+   ],
+   "camera": {
+    "zoom": [
+     1,
+     1.1
+    ]
+   }
+  },
+  {
+   "at": 0.33,
+   "kind": "card",
+   "card": {
+    "title": [
+     "1875",
+     "ALBERT'S SWARM"
+    ],
+    "subtitle": "PLATTSMOUTH, NEBRASKA",
+    "background": {
+     "time": "storm"
+    }
+   }
+  },
+  {
+   "at": 0.45,
+   "kind": "card",
+   "card": {
+    "title": [
+     "1,800 \u00d7 110 MILES"
+    ],
+    "subtitle": "\u2248198,000 SQUARE MILES \u00b7 BIGGER THAN CALIFORNIA",
+    "background": {
+     "time": "storm"
+    }
+   }
+  },
+  {
+   "at": 0.6,
+   "kind": "card",
+   "card": {
+    "title": [
+     "3.5\u201312.5 TRILLION"
+    ],
+    "subtitle": "ESTIMATED LOCUSTS \u00b7 THE LARGEST SWARM EVER RECORDED",
+    "background": {
+     "time": "storm"
+    }
+   }
+  },
+  {
+   "at": 0.8,
+   "kind": "landscape",
+   "time": "storm",
+   "green": true,
+   "swarm": [
+    0.7,
+    1
+   ],
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 4,
+     "y": 860,
+     "eaten": [
+      0,
+      0.5
+     ]
+    }
+   ],
+   "kit": {
+    "x": 900,
+    "pose": "back",
+    "y": 1060,
+    "scale": 1.15
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.15
+    ]
+   }
+  }
+ ],
+ "09": [
+  {
+   "at": 0,
+   "kind": "card",
+   "card": {
+    "title": [
+     "EXTINCT"
+    ],
+    "subtitle": "THE ROCKY MOUNTAIN LOCUST",
+    "background": {
+     "time": "dusk"
+    }
+   }
+  },
+  {
+   "at": 0.3,
+   "kind": "landscape",
+   "time": "day",
+   "green": true,
+   "swarm": [
+    0.3,
+    0.0
+   ],
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 4,
+     "y": 860
+    }
+   ],
+   "camera": {
+    "zoom": [
+     1,
+     1.08
+    ]
+   }
+  },
+  {
+   "at": 0.55,
+   "kind": "card",
+   "card": {
+    "title": [
+     "1902"
+    ],
+    "subtitle": "LAST LIVE SPECIMENS COLLECTED \u00b7 MANITOBA, CANADA",
+    "background": {
+     "time": "day",
+     "green": true
+    }
+   }
+  },
+  {
+   "at": 0.78,
+   "kind": "landscape",
+   "time": "dusk",
+   "green": true,
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 4,
+     "y": 860
+    }
+   ],
+   "kit": {
+    "x": 800,
+    "pose": "back",
+    "y": 1040,
+    "scale": 1.0
+   },
+   "camera": {
+    "zoom": [
+     1.1,
+     1.0
+    ]
+   }
+  }
+ ],
+ "10": [
+  {
+   "at": 0,
+   "kind": "mountains",
+   "time": "day",
+   "camera": {
+    "zoom": [
+     1,
+     1.08
+    ]
+   }
+  },
+  {
+   "at": 0.22,
+   "kind": "mountains",
+   "time": "day",
+   "elements": [
+    {
+     "type": "wagon",
+     "x": 200,
+     "driveTo": 800,
+     "y": 980,
+     "scale": 0.5,
+     "moving": true
+    }
+   ],
+   "camera": {
+    "zoom": [
+     1.05,
+     1.12
+    ],
+    "pan": [
+     0,
+     -40
+    ]
+   }
+  },
+  {
+   "at": 0.45,
+   "kind": "mountains",
+   "time": "day",
+   "snow": 0.6,
+   "camera": {
+    "zoom": [
+     1.2,
+     1.5
+    ],
+    "pan": [
+     0,
+     -60
+    ],
+    "panY": [
+     0,
+     40
+    ]
+   }
+  },
+  {
+   "at": 0.7,
+   "kind": "card",
+   "card": {
+    "title": [
+     "FROZEN IN ICE"
+    ],
+    "subtitle": "LOCUSTS PRESERVED IN GLACIERS IN MONTANA AND WYOMING",
+    "background": {
+     "kind": "mountains",
+     "time": "day"
+    }
+   }
+  },
+  {
+   "at": 0.86,
+   "kind": "landscape",
+   "time": "day",
+   "green": true,
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 4,
+     "y": 860
+    },
+    {
+     "type": "sodhouse",
+     "x": 1500,
+     "y": 780,
+     "scale": 0.7
+    }
+   ],
+   "kit": {
+    "x": 700,
+    "pose": "front",
+    "y": 1020,
+    "scale": 1.0
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.06
+    ]
+   }
+  }
+ ],
+ "11": [
+  {
+   "at": 0,
+   "kind": "landscape",
+   "time": "dusk",
+   "green": true,
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 4,
+     "y": 860
+    },
+    {
+     "type": "sodhouse",
+     "x": 1450,
+     "y": 790,
+     "scale": 0.8
+    }
+   ],
+   "kit": {
+    "x": 800,
+    "pose": "back",
+    "y": 1030,
+    "scale": 1.05
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.08
+    ]
+   }
+  },
+  {
+   "at": 0.3,
+   "kind": "landscape",
+   "time": "day",
+   "green": true,
+   "elements": [
+    {
+     "type": "cornfield",
+     "x": -60,
+     "width": 2100,
+     "rows": 4,
+     "y": 860
+    }
+   ],
+   "kit": {
+    "x": 300,
+    "walkTo": 900,
+    "pose": "side",
+    "walking": true,
+    "y": 1010,
+    "scale": 0.95
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.06
+    ]
+   }
+  },
+  {
+   "at": 0.62,
+   "kind": "card",
+   "card": {
+    "title": [
+     "WOULD YOU HAVE",
+     "STAYED?"
+    ],
+    "subtitle": "TELL US IN THE COMMENTS",
+    "background": {
+     "time": "dusk",
+     "green": true
+    }
+   }
+  },
+  {
+   "at": 0.82,
+   "kind": "landscape",
+   "time": "dusk",
+   "snow": 0.6,
+   "weather": 0.3,
+   "elements": [
+    {
+     "type": "sodhouse",
+     "x": 1100,
+     "y": 820,
+     "scale": 1
+    }
+   ],
+   "kit": {
+    "x": 700,
+    "pose": "back",
+    "y": 1010,
+    "scale": 1.0,
+    "lantern": true
+   },
+   "camera": {
+    "zoom": [
+     1,
+     1.1
+    ]
+   },
+   "tint": "cold"
+  }
+ ]
+}

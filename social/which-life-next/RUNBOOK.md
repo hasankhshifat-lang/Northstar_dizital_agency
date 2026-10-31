@@ -216,3 +216,16 @@ slots there if the data supports it, and add a row to `timing-log.md` either way
 - Tools: `remotion/` (Kit, sets, Episode and Short compositions), `make_episode.py` (props +
   render), and `build.py` (only for narration timing, wind bed and caption timing now).
   `shorts.py` and the image parts of `build.py` belong to the retired image workflow.
+- **Source sites that open here**: nps.gov, loc.gov (search API `?fo=json`), archives.gov,
+  census.gov, blm.gov. Blocked: tile.loc.gov (LOC full texts/PDFs), state historical societies
+  (kansashistory.gov, history.nebraska.gov, mnhs.org), university sites. Use LOC item records to
+  confirm a document exists, and say in the daily update which facts came only from search results.
+- **Shorts must be under 60 s**: pick segments of 25–55 s for `shorts.json` (check
+  `out/timing.json` durations); split long segments when writing the script if a key moment needs
+  its own Short.
+- **Remotion sets available** (2026-10-31): sky, prairie, sod house, barn, wagon, schoolhouse,
+  town, storm front, sod-house interior, rope, snow, cornfield (`eaten`), locust swarm/carpet,
+  hopperdozer, Rocky Mountains with glacier. Thumbnails: render a still with
+  `showCaptions: false` in the props, then add text with PIL.
+- **Public view counts**: Clawlink `youtube-data` `channel_videos` / `channel_shorts`
+  (handle `whichlifenext`) work even when the YouTube API quota is exhausted.
