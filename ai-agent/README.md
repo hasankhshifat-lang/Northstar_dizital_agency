@@ -22,3 +22,8 @@ Retrained 31 Oct 2026:
 Simulation tests (ElevenLabs → Agent → Tests): restaurant demo, Banglish price question, Singapore clinic visitor.
 
 To change prices or services, update the fact sheet in ElevenLabs → Knowledge Base; the prompt reads facts from it.
+
+**Language (31 Oct 2026):** English is the default language and first message. The website widget has a language
+dropdown (English / বাংলা); choosing Bangla switches the greeting and replies to Bangla. Richi also follows whatever
+language the visitor writes or speaks. International visitors never get taka prices; the team sends a quote in their
+currency.
