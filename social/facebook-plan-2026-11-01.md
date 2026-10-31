@@ -4,6 +4,23 @@ Page: NorthStar Dizital (1390585830800081). Times are Bangladesh time (UTC+6).
 Mix: 3 Reels, 1 demo, 1 package, 1 FAQ, 1 behind-the-scenes, 1 industry post, 1 engagement post, 1 offer.
 Status: **approved.** All Reels and images are made in Remotion (`northstar-videos/`); captions say "demo" because the chats and sites are animated mock-ups, not real customers.
 
+## Scheduled on Facebook (31 Oct)
+
+| # | When (BD time) | Facebook ID |
+|---|---|---|
+| Replacement | Sat 31 Oct, 8:30 PM | 1390585830800081_122115113625502830 |
+| 1 Reel | Sun 1 Nov, 8:30 PM | video 2570598920078707 |
+| 2 Photo | Mon 2 Nov, 12:30 PM | 122115112623502830 |
+| 3 Text | Mon 2 Nov, 8:30 PM | 1390585830800081_122115111129502830 |
+| 4 Reel | Tue 3 Nov, 8:30 PM | video 1151764284032810 |
+| 5 Photo | Wed 4 Nov, 12:30 PM | 122115112911502830 |
+| 6 Photo | Wed 4 Nov, 8:30 PM | 122115112965502830 |
+| 7 Reel | Thu 5 Nov, 8:30 PM | video 1631148468363460 |
+| 8 Text | Fri 6 Nov, 3:00 PM | 1390585830800081_122115111153502830 |
+| 9 Photo | Sat 7 Nov, 8:30 PM | 122115113013502830 |
+
+The old 31 Oct 8:30 PM post (1390585830800081_122115057261502830) was scheduled by another app and must be deleted by hand in Meta Business Suite.
+
 ## Replacement for Sat 31 Oct, 8:30 PM (text post)
 
 > AI receptionist আপনার হয়ে কোন কোন প্রশ্নের উত্তর দেয়? 🤖
