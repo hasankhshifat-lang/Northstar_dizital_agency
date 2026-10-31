@@ -29,7 +29,7 @@ Status values: `queued`, `sent`, `fu1`, `fu2`, `fu3` (breakup), `replied`, `meet
      reply came back "stop/spam": **pause new sends**, do only follow-ups and replies, and tell the owner.
    - Gmail: send a test from the connected account to contact@hasankhshifat.com and check the sent message's
      From. If it is not contact@hasankhshifat.com, do not send any outreach today; prepare the batch only.
-   - `templates.md` must contain a real postal address (not `{POSTAL_ADDRESS}`). If not, prepare only; do not send.
+   - Footer postal address: 500 Old Choa Chu Kang Road, Singapore 698924 (set 31 Oct 2026).
 2. **Replies first** (Gmail search `to:contact@hasankhshifat.com newer_than:2d -from:me` and replies in sent threads).
    Classify each: positive / question / not now / not interested / unsubscribe / out of office / bounce.
    - Unsubscribe, "not interested", bounce: add to `suppression.csv`, set status, stop all follow-ups.

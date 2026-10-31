@@ -9,7 +9,7 @@ Signature (all emails):
     NorthStar Dizital
     https://samplewebsite.tech
 
-    {POSTAL_ADDRESS}
+    500 Old Choa Chu Kang Road, Singapore 698924
     Not for you? Reply "no thanks" and I won't email again.
 
 ## First email (day 0)
