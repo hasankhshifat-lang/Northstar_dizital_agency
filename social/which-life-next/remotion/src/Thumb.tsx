@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, random } from "remotion";
 import { Kit } from "./kit/Kit";
-import { Prairie, Sky } from "./sets/sets";
+import { Barn, Prairie, Sky, Wagon } from "./sets/sets";
 import { Cornfield, LocustCarpet, Swarm } from "./sets/plains";
 
 /**
@@ -9,7 +9,7 @@ import { Cornfield, LocustCarpet, Swarm } from "./sets/plains";
  * Rules learned from the niche's top thumbnails (Fossil, ONE RULE, Santi Can't):
  * one huge focal threat or a big scared face, very high contrast, room for 2–3 words.
  */
-export type ThumbProps = { variant: "closeup" | "split" };
+export type ThumbProps = { variant: "closeup" | "split" | "blizzard" | "trail" };
 
 /** A big, detailed Rocky Mountain locust in side view, facing right. ~620 units long at scale 1. */
 export const GiantLocust: React.FC<{ x: number; y: number; scale?: number; rotate?: number; flip?: boolean }> = ({ x, y, scale = 1, rotate = 0, flip }) => {
@@ -147,8 +147,74 @@ const Split: React.FC = () => (
   </svg>
 );
 
+
+/** Blowing snow streaks (static, horizontal) for blizzard thumbnails. */
+const Streaks: React.FC<{ n: number; seed: string }> = ({ n, seed }) => (
+  <g>
+    {Array.from({ length: n }).map((_, i) => {
+      const x = random(`${seed}x${i}`) * 2100 - 100, y = random(`${seed}y${i}`) * 1080;
+      const len = 30 + random(`${seed}l${i}`) * 120, w = 3 + random(`${seed}w${i}`) * 7;
+      return <line key={i} x1={x} y1={y} x2={x + len} y2={y + len * 0.18} stroke="#fff" strokeWidth={w} strokeLinecap="round" opacity={0.5 + random(`${seed}o${i}`) * 0.5} />;
+    })}
+  </g>
+);
+
+const Blizzard: React.FC = () => (
+  <svg viewBox="0 0 1920 1080" width="100%" height="100%">
+    <defs>
+      <linearGradient id="bzSky" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#0d1b2e" />
+        <stop offset="0.55" stopColor="#3d5f86" />
+        <stop offset="1" stopColor="#c9dcec" />
+      </linearGradient>
+    </defs>
+    <rect x={0} y={0} width={1920} height={1080} fill="url(#bzSky)" />
+    {/* the barn, barely visible through the whiteout */}
+    <g opacity={0.35}><Barn x={420} y={760} scale={1.1} snowy={1} /></g>
+    <path d="M 0 860 Q 960 820 1920 880 L 1920 1080 L 0 1080 Z" fill="#e8f0f7" />
+    {/* the rope to the barn: the only way back */}
+    <path d="M -20 990 Q 520 1010 1180 840" stroke="#3a2a18" strokeWidth={22} fill="none" />
+    <path d="M -20 990 Q 520 1010 1180 840" stroke="#c9a46a" strokeWidth={14} fill="none" strokeDasharray="26 10" />
+    <Streaks n={260} seed="bz1" />
+    <g transform="translate(1360 3060) scale(7.4)">
+      <Kit pose="front" outfit="winter" expression="scared" />
+    </g>
+    {/* snow piled on the cap */}
+    <path d="M 1040 300 Q 1100 196 1360 190 Q 1620 196 1680 300 Q 1520 250 1360 252 Q 1200 250 1040 300 Z" fill="#f4f8fb" />
+    <Streaks n={35} seed="bz2" />
+  </svg>
+);
+
+/** Wooden grave marker by the trail. */
+const Grave: React.FC<{ x: number; y: number; s: number; r?: number }> = ({ x, y, s, r = 0 }) => (
+  <g transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>
+    <ellipse cx={0} cy={6} rx={90} ry={22} fill="#3b2a18" />
+    <rect x={-12} y={-190} width={24} height={196} fill="#6b4f30" stroke="#2c2012" strokeWidth={5} />
+    <rect x={-70} y={-150} width={140} height={24} fill="#6b4f30" stroke="#2c2012" strokeWidth={5} />
+  </g>
+);
+
+const Trail: React.FC = () => (
+  <svg viewBox="0 0 1920 1080" width="100%" height="100%">
+    <SunsetSky />
+    <circle cx={1360} cy={560} r={420} fill="url(#thumbSun)" />
+    <circle cx={1360} cy={560} r={190} fill="#ffe08a" />
+    <path d="M 0 780 Q 960 740 1920 790 L 1920 1080 L 0 1080 Z" fill="#5a3f22" />
+    <path d="M 0 1000 Q 600 900 1100 790" stroke="#7a5a35" strokeWidth={60} fill="none" opacity={0.6} />
+    <Wagon x={430} y={800} scale={1.25} oxen />
+    {/* graves along the trail */}
+    <Grave x={160} y={1040} s={1.5} r={-6} />
+    <Grave x={470} y={1010} s={1.15} r={5} />
+    <Grave x={720} y={975} s={0.85} r={-3} />
+    <Grave x={900} y={950} s={0.6} r={4} />
+    <g transform="translate(1360 3060) scale(7.4)">
+      <Kit pose="front" expression="scared" />
+    </g>
+  </svg>
+);
+
 export const Thumb: React.FC<ThumbProps> = ({ variant }) => (
-  <AbsoluteFill style={{ backgroundColor: "#000" }}>{variant === "split" ? <Split /> : <Closeup />}</AbsoluteFill>
+  <AbsoluteFill style={{ backgroundColor: "#000" }}>{variant === "split" ? <Split /> : variant === "blizzard" ? <Blizzard /> : variant === "trail" ? <Trail /> : <Closeup />}</AbsoluteFill>
 );
 
 // unused imports guard (LocustCarpet/Swarm kept available for future thumbnail variants)
