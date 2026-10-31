@@ -1,6 +1,6 @@
 {
  "type": "video",
- "status": "draft",
+ "status": "scheduled",
  "pillar": "Missed customers",
  "angle": "\"Price কত?\" — ৩ ঘণ্টা পরে reply, customer ততক্ষণে অন্য page-এ",
  "voice": "Swati",
@@ -194,5 +194,7 @@
     "tone": "excited"
    }
   ]
- }
+ },
+ "facebook_video_id": "1431864005737093",
+ "scheduled_for": "2026-10-31 20:30 Asia/Dhaka"
 }
