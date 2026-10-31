@@ -108,7 +108,7 @@ const Closeup: React.FC = () => (
       <path key={i} d={`M ${i * 33 + random(`st${i}`) * 10} 1080 l ${random(`sl${i}`) * 10 - 5} -${50 + random(`sh${i}`) * 50}`} stroke="#4d3b20" strokeWidth={6} />
     ))}
     {/* Kit, close up and terrified */}
-    <g transform="translate(1360 3060) scale(7.4)">
+    <g transform="translate(1360 2660) scale(6.1)">
       <Kit pose="front" expression="scared" />
     </g>
     <Crawler x={1250} y={300} s={0.16} r={-8} />
@@ -176,11 +176,11 @@ const Blizzard: React.FC = () => (
     <path d="M -20 990 Q 520 1010 1180 840" stroke="#3a2a18" strokeWidth={22} fill="none" />
     <path d="M -20 990 Q 520 1010 1180 840" stroke="#c9a46a" strokeWidth={14} fill="none" strokeDasharray="26 10" />
     <Streaks n={260} seed="bz1" />
-    <g transform="translate(1360 3060) scale(7.4)">
+    <g transform="translate(1360 2660) scale(6.1)">
       <Kit pose="front" outfit="winter" expression="scared" />
     </g>
     {/* snow piled on the cap */}
-    <path d="M 1040 300 Q 1100 196 1360 190 Q 1620 196 1680 300 Q 1520 250 1360 252 Q 1200 250 1040 300 Z" fill="#f4f8fb" />
+    <path d="M 1150 230 Q 1190 118 1360 112 Q 1530 118 1570 230 Q 1470 186 1360 188 Q 1250 186 1150 230 Z" fill="#f4f8fb" stroke="#2b1d14" strokeWidth={6} />
     <Streaks n={35} seed="bz2" />
   </svg>
 );
@@ -207,7 +207,7 @@ const Trail: React.FC = () => (
     <Grave x={470} y={1010} s={1.15} r={5} />
     <Grave x={720} y={975} s={0.85} r={-3} />
     <Grave x={900} y={950} s={0.6} r={4} />
-    <g transform="translate(1360 3060) scale(7.4)">
+    <g transform="translate(1360 2660) scale(6.1)">
       <Kit pose="front" expression="scared" />
     </g>
   </svg>

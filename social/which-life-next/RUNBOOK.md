@@ -247,3 +247,10 @@ Top thumbnails in the niche (Fossil "How Long You'd Last…", ONE RULE, Santi Ca
 dark background with a warm glow, 2–3 words (often a survival time, number in a colour). Render art with the Remotion `Thumb`
 still (`variant: closeup | split`, Kit `expression: "scared"`), then add text with PIL (Inter Black, black stroke).
 Make 3 options for YouTube Test & compare; check them at ~350 px wide before sending.
+
+## Kit v2 (2026-10-31)
+Kit was redesigned at the user's request for a more eye-catching, detailed hero: ink outlines, cel shading,
+big hazel eyes with highlights, freckles, signature RED NECKERCHIEF, brass-button coat with patches and
+pockets, leather satchel, knee patch, laced boots. Expressions: neutral, happy, scared, determined, sad
+(`expression` prop, front + side). Reference: `social/which-life-next/kit-v2-sheet.png` (KitSheet still).
+Use "scared" in danger beats and thumbnails, "determined" when Kit acts, "happy" at the cold open/verdict.

@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, CalculateMetadataFunction, Composition, Folder, Still } from "remotion";
 import { Episode, EpisodeProps, episodeDuration, Short, ShortProps } from "./Episode";
 import { Kit } from "./kit/Kit";
-import { HORIZON, Prairie, Sky } from "./sets/sets";
+import { Prairie, Sky } from "./sets/sets";
 import { demoEpisode } from "./demo";
 import { Thumb } from "./Thumb";
 import { fonts, palette } from "./theme";
@@ -10,20 +10,27 @@ import { fonts, palette } from "./theme";
 const episodeMeta: CalculateMetadataFunction<EpisodeProps> = ({ props }) => ({ durationInFrames: Math.max(1, episodeDuration(props)) });
 const shortMeta: CalculateMetadataFunction<ShortProps> = ({ props }) => ({ durationInFrames: props.durationInFrames });
 
-/** Character sheet: the reference for Kit's look. Compare every new episode against it. */
+/** Character sheet: the reference for Kit's look (v2, 2026-10-31). Compare every new episode against it. */
 const KitSheet: React.FC = () => (
   <AbsoluteFill style={{ backgroundColor: palette.ink }}>
     <svg viewBox="0 0 1920 1080" width="100%" height="100%">
       <Sky time="day" clouds={3} />
       <Prairie tufts={30} />
-      {([["front", 420], ["side", 960], ["back", 1500]] as const).map(([pose, x]) => (
-        <g key={pose} transform={`translate(${x} ${HORIZON + 330}) scale(1.4)`}>
-          <Kit pose={pose} />
+      {([
+        ["front", 230, {}], ["side", 590, {}], ["back", 950, {}], ["front", 1310, { outfit: "winter" }], ["side", 1680, { lantern: true, facing: -1 }],
+      ] as const).map(([pose, x, extra], i) => (
+        <g key={i} transform={`translate(${x} 520) scale(1.1)`}>
+          <Kit pose={pose} {...(extra as object)} />
+        </g>
+      ))}
+      {(["neutral", "happy", "scared", "determined", "sad"] as const).map((e, i) => (
+        <g key={e} transform={`translate(${230 + i * 362} 1500) scale(2.2)`}>
+          <Kit pose="front" expression={e} />
         </g>
       ))}
     </svg>
-    <AbsoluteFill style={{ alignItems: "center", paddingTop: 40, fontFamily: fonts.serif, fontSize: 64, color: palette.paper, fontWeight: 700 }}>
-      KIT — front · side · back
+    <AbsoluteFill style={{ alignItems: "center", paddingTop: 14, fontFamily: fonts.serif, fontSize: 30, color: palette.paper, fontWeight: 700 }}>
+      KIT v2 — front · side · back · winter · lantern  /  neutral · happy · scared · determined · sad
     </AbsoluteFill>
   </AbsoluteFill>
 );
