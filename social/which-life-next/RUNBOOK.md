@@ -1,7 +1,7 @@
 # Which Life Next — daily video job
 
 The scheduled task runs this once a day (13:17 SGT). It makes one 8–12 minute video and
-3 Shorts cut from it, and schedules all four for the next morning (SGT).
+6 Shorts cut from it (changed from 3 on 2026-10-31, Shorts-first path to 10M Shorts views), and schedules all seven for the publish day's slots (SGT, see config.md).
 
 Channel: **Which Life Next (@whichlifenext)**, YouTube channel `UCPTrW0n3ONI9uU4WetWwFCQ`.
 Audience: USA. The user gave standing approval for these daily posts (see `CLAUDE.md`), so
@@ -142,7 +142,9 @@ a new story and research (no reused scripts), a real point of view and sourced f
 visuals (no recycled image sets), and Kit as a consistent character. Never buy views or subs,
 never sub-for-sub, never reupload anyone else's footage. Disclose AI voice every time.
 
-## 3. Cut 3 Shorts (1080×1920, under 60 seconds)
+## 3. Cut 6 Shorts (1080×1920, under 60 seconds)
+
+Six entries in `shorts.json`, each a different segment with its own hook (a person facing death, one number, 25–45 s).
 
 Pick the 3 marked segments in `shorts.json` (`[{"segment": "07", "hook": ["LINE 1", "LINE 2"]}, ...]`);
 `make_episode.py --shorts` renders them with the Remotion `Short` composition (vertical crop of

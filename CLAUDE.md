@@ -21,7 +21,7 @@ Confirm the title, description, publish time, and video file with the user befor
 ## Which Life Next daily videos: standing approval
 
 The user gave standing approval (2026-10-29) for the daily **Which Life Next** job: 1 long
-video + 3 Shorts a day, scheduled without asking first. For these posts only, the
+video + 6 Shorts a day (changed from 3 on 2026-10-31), scheduled without asking first. For these posts only, the
 "Confirm … with the user before scheduling" rule above does not apply. Follow
 `social/which-life-next/RUNBOOK.md`; publish slots are in `social/which-life-next/config.md`.
 The rotation rules above still apply to every post. Stop when the user says stop.
