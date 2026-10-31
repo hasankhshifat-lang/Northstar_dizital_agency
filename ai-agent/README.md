@@ -1,0 +1,16 @@
+# Richi — ElevenLabs "Inbound Lead Qualifier"
+
+Agent ID: `agent_5501m54wm9rwepdvpfff5t9thf92` (answers WhatsApp +880 / +65 and the website widget, voice + chat).
+
+Retrained 31 Oct 2026:
+- **System prompt:** identity as a live product demo, natural Bangla with English tech terms, voice vs text style rules,
+  **demo mode** (role-plays as the visitor's own business receptionist), published prices only, lead capture via
+  `submit_qualified_lead` with consent, human handover, honesty rules, OTP/spam handling.
+- **Knowledge base:** one accurate fact sheet "NorthStar Dizital — Official agency facts (Oct 2026)" (always in the prompt)
+  plus the website crawl. The two older PDFs (draft prices ৳5,999 / ৳12,999 / ৳24,999, "contact not confirmed")
+  were detached, not deleted.
+- **First message:** offers services info or a quick demo (typo "আলাইকু" fixed). English preset updated too.
+- **Workflow:** node instructions rewritten to match real capabilities (no calendar booking, no case studies).
+- **Data collection:** 10 lead fields (see `social/whatsapp-outreach.md`).
+
+To change prices or services, update the fact sheet in ElevenLabs → Knowledge Base; the prompt reads facts from it.
