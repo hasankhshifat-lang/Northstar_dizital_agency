@@ -1,22 +1,22 @@
 date_added,city,country,niche,business,website,email,rating,reviews,chatbot_check,status,sent_date,thread_id,last_touch,next_touch,notes
-2026-10-31,Austin TX,US,dentist,ATX Family Dental,https://www.atxfamilydental.com/,info@atxfamilydental.com,4.9,916,unknown,queued,,,,,
-2026-10-31,Austin TX,US,dentist,Emergency Dentist of Austin,https://emergencydentistofaustin.com/,info@emergencydentistofaustin.com,4.8,1577,unknown,queued,,,,,emergency practice
-2026-10-31,Austin TX,US,dentist,Austin Dental Works,https://www.austindentalworks.com/,info@austindentalworks.com,4.9,636,unknown,queued,,,,,
-2026-10-31,Austin TX,US,dentist,Austin Emergency Dental,https://emergencydentalaustin.com/,admin@emergencydentalaustin.com,4.9,886,unknown,queued,,,,,emergency practice
-2026-10-31,Austin TX,US,dentist,Lady Bird Dental,https://ladybirddental.com/,info@ladybirddental.com,4.9,467,unknown,queued,,,,,
-2026-10-31,Austin TX,US,dentist,Austin Dental Center PC,https://www.smileaustin.com/,info@smileaustin.com,4.9,171,unknown,queued,,,,,
-2026-10-31,Austin TX,US,med spa,Spa Luxe Austin,https://spaluxe.com/,info@spaluxe.com,4.9,92,unknown,queued,,,,,
-2026-10-31,Austin TX,US,med spa,Spa 7 Austin,https://www.spa7austin.com/,info@spa7austin.com,4.7,288,unknown,queued,,,,,
-2026-10-31,Austin TX,US,med spa,Austin Aesthetics Club,https://www.austinaestheticsclub.com/,info@austinaestheticsclub.com,5.0,48,unknown,queued,,,,,
-2026-10-31,Austin TX,US,med spa,Cabana Medical Spa,https://www.cabanamedspa.com/,info@cabanamedspa.com,5.0,52,unknown,queued,,,,,
-2026-10-31,Austin TX,US,med spa,Austin Aesthetic Atelier,https://austinaestheticatelier.com/,hi@austinaestheticatelier.com,5.0,230,unknown,queued,,,,,
-2026-10-31,Austin TX,US,med spa,Wild and Beautiful Natural Aesthetics,https://www.wildandbeautifulaustin.com/,info@wildandbeautifulaustin.com,5.0,606,unknown,queued,,,,,
-2026-10-31,Austin TX,US,med spa,VIO Med Spa Mueller,https://viomedspa.com/mueller/,mueller@viomedspa.com,4.8,301,unknown,queued,,,,,
-2026-10-31,Austin TX,US,med spa,Glo Med Spa Austin,https://www.glomedspaaustin.com/,info.glomedspaaustin@gmail.com,4.7,123,unknown,queued,,,,,
-2026-10-31,Austin TX,US,med spa,NakedMD Med Spa Austin,https://www.nakedmd.com/,concierge@nakedmd.com,4.8,552,unknown,queued,,,,,multi-location chain
-2026-10-31,Austin TX,US,personal injury lawyer,McMinn Law Firm,https://www.mcminnlaw.com/,info@mcminnlaw.com,4.9,370,unknown,queued,,,,,
-2026-10-31,Austin TX,US,personal injury lawyer,Ramos James Law PLLC,https://www.ramosjames.com/,info@ramosjames.com,4.9,251,unknown,queued,,,,,
-2026-10-31,Austin TX,US,personal injury lawyer,Wayne Wright Injury Lawyers,https://waynewright.com/austin/,help@waynewright.com,4.8,390,unknown,queued,,,,,
-2026-10-31,Austin TX,US,personal injury lawyer,Shamieh Law,https://shamiehlaw.com/austin/,ramez@shamiehlaw.com,5.0,172,unknown,queued,,,,,
-2026-10-31,Austin TX,US,personal injury lawyer,Daniel Stark Injury Lawyers,https://www.danielstark.com/austin/,info@danielstark.com,4.8,453,unknown,queued,,,,,
-2026-10-31,Austin TX,US,personal injury lawyer,Anderson Injury Lawyers Austin,https://maafirm.com/austin-personal-injury-lawyer/,intake@andersoninjurylaw.com,5.0,222,unknown,queued,,,,,
+2026-10-31,Austin TX,US,dentist,ATX Family Dental,https://www.atxfamilydental.com/,info@atxfamilydental.com,4.9,916,none,queued,,,,,
+2026-10-31,Austin TX,US,dentist,Emergency Dentist of Austin,https://emergencydentistofaustin.com/,info@emergencydentistofaustin.com,4.8,1577,none,queued,,,,,emergency practice
+2026-10-31,Austin TX,US,dentist,Austin Dental Works,https://www.austindentalworks.com/,info@austindentalworks.com,4.9,636,has: chatwidget/leadconnectorhq/webchat,skipped_has_chatbot,,,,,
+2026-10-31,Austin TX,US,dentist,Austin Emergency Dental,https://emergencydentalaustin.com/,admin@emergencydentalaustin.com,4.9,886,none,queued,,,,,emergency practice
+2026-10-31,Austin TX,US,dentist,Lady Bird Dental,https://ladybirddental.com/,info@ladybirddental.com,4.9,467,none,queued,,,,,
+2026-10-31,Austin TX,US,dentist,Austin Dental Center PC,https://www.smileaustin.com/,info@smileaustin.com,4.9,171,has: leadconnectorhq,skipped_has_chatbot,,,,,
+2026-10-31,Austin TX,US,med spa,Spa Luxe Austin,https://spaluxe.com/,info@spaluxe.com,4.9,92,none,queued,,,,,
+2026-10-31,Austin TX,US,med spa,Spa 7 Austin,https://www.spa7austin.com/,info@spa7austin.com,4.7,288,none,queued,,,,,
+2026-10-31,Austin TX,US,med spa,Austin Aesthetics Club,https://www.austinaestheticsclub.com/,info@austinaestheticsclub.com,5.0,48,none,queued,,,,,
+2026-10-31,Austin TX,US,med spa,Cabana Medical Spa,https://www.cabanamedspa.com/,info@cabanamedspa.com,5.0,52,has: chat-widget/chatwidget/ngage,skipped_has_chatbot,,,,,
+2026-10-31,Austin TX,US,med spa,Austin Aesthetic Atelier,https://austinaestheticatelier.com/,hi@austinaestheticatelier.com,5.0,230,none,queued,,,,,
+2026-10-31,Austin TX,US,med spa,Wild and Beautiful Natural Aesthetics,https://www.wildandbeautifulaustin.com/,info@wildandbeautifulaustin.com,5.0,606,none,queued,,,,,
+2026-10-31,Austin TX,US,med spa,VIO Med Spa Mueller,https://viomedspa.com/mueller/,mueller@viomedspa.com,4.8,301,has: leadconnectorhq/msgsndr,skipped_has_chatbot,,,,,
+2026-10-31,Austin TX,US,med spa,Glo Med Spa Austin,https://www.glomedspaaustin.com/,info.glomedspaaustin@gmail.com,4.7,123,none,queued,,,,,
+2026-10-31,Austin TX,US,med spa,NakedMD Med Spa Austin,https://www.nakedmd.com/,concierge@nakedmd.com,4.8,552,none,queued,,,,,multi-location chain
+2026-10-31,Austin TX,US,personal injury lawyer,McMinn Law Firm,https://www.mcminnlaw.com/,info@mcminnlaw.com,4.9,370,has: live chat/ngage,skipped_has_chatbot,,,,,
+2026-10-31,Austin TX,US,personal injury lawyer,Ramos James Law PLLC,https://www.ramosjames.com/,info@ramosjames.com,4.9,251,none,queued,,,,,
+2026-10-31,Austin TX,US,personal injury lawyer,Wayne Wright Injury Lawyers,https://waynewright.com/austin/,help@waynewright.com,4.8,390,none,queued,,,,,
+2026-10-31,Austin TX,US,personal injury lawyer,Shamieh Law,https://shamiehlaw.com/austin/,ramez@shamiehlaw.com,5.0,172,none,queued,,,,,
+2026-10-31,Austin TX,US,personal injury lawyer,Daniel Stark Injury Lawyers,https://www.danielstark.com/austin/,info@danielstark.com,4.8,453,none,queued,,,,,
+2026-10-31,Austin TX,US,personal injury lawyer,Anderson Injury Lawyers Austin,https://maafirm.com/austin-personal-injury-lawyer/,intake@andersoninjurylaw.com,5.0,222,none,queued,,,,,

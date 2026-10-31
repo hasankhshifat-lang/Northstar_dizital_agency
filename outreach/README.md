@@ -38,16 +38,21 @@ Status values: `queued`, `sent`, `fu1`, `fu2`, `fu3` (breakup), `replied`, `meet
    - Out of office: push `next_touch` by a week.
 3. **Follow-ups due today** (`next_touch` = today, status `sent`/`fu1`/`fu2`): send the next template as a reply in
    the same Gmail thread. Schedule: first email day 0, follow-up 1 day 3, follow-up 2 day 7, breakup day 14.
-4. **Find new leads**: next city in `cities.md`. For each of the 10 niches, use ClawLink `google-maps-data` /
-   `contacts` (query = niche, location = city, website = withWebsite, limit = 20). Run a second query with a
-   variant (e.g. "cosmetic dentist", "emergency plumber") if fewer than 10 usable emails.
-   - Usable email: on the business's own domain or a clearly business mailbox. Skip masked (`**`), `privacy@`,
-     `noreply@`, platform emails (joinblvd, wix, squarespace), big national chains, and anything in `suppression.csv`
-     or already in `leads.csv`.
-   - **Chatbot check**: open the homepage (WebFetch / page fetch) and look for chat or voice widgets (Intercom,
-     Tidio, Drift, LiveChat, tawk.to, Podium, Birdeye, Zendesk, HubSpot chat, Weave, Ngage, Apex Chat, Smith.ai,
-     "chat with us"). Has one: `skipped_has_chatbot`. If the site can't be opened (network blocked), mark
-     `unknown` and use the template wording that does not claim they lack one.
+4. **Find new leads** (owner rule: no ClawLink; search the web directly): next city in `cities.md`. For each of
+   the 10 niches:
+   - Use **WebSearch** with Google-business-style queries, e.g. `plumbers in Manchester`, `best dentist Toronto`,
+     `emergency plumber Manchester`, `"{niche}" "{city}" contact`. Collect the businesses' **own websites**
+     (skip directories and lead sites such as Yelp, Angi, BBB, Yellow Pages, Thumbtack, Houzz, Facebook,
+     leadstal, orbital). "Best {niche} in {city}" list pages are good sources: open them and take the businesses
+     they name, then find each one's own site.
+   - Run `python3 outreach/scan_site.py <url> [<url> ...]`. It opens the homepage and contact/about pages,
+     returns public emails, and flags existing chat or voice assistants (Intercom, Tidio, Drift, LiveChat,
+     tawk.to, Podium, Birdeye, Zendesk, HubSpot, Ngage, LeadConnector/GoHighLevel, Smith.ai, ElevenLabs,
+     Voiceflow, "live chat", ...). `chatbot: true` means `skipped_has_chatbot`. No email means `skipped_no_email`.
+   - Keep going until there are **10 qualified leads per niche** (website, usable email, no chatbot).
+   - Usable email: on the business's own domain or a clearly business mailbox. Skip `privacy@`, `noreply@`,
+     platform emails, big national chains, and anything in `suppression.csv` or already in `leads.csv`.
+   - If a site can't be opened, mark `unknown` and use the template wording that does not claim they lack one.
 5. **Write and send 100 first emails** (10 per niche). Personalise the first line from what we know (niche,
    neighbourhood, reviews, emergency service, opening hours). Plain text, no images, no tracking, one link
    (https://samplewebsite.tech). Space sends out (at least 20–30 seconds apart). Record `sent_date`, `thread_id`,
