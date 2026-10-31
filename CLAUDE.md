@@ -40,6 +40,11 @@ Videos scheduled in Metricool without a Drive file can be posted from their Metr
    comments, duet, stitch, branded content, AI label) ending with "By posting, you agree to TikTok's Music Usage
    Confirmation." Post only after the user says yes. Never reuse an earlier post's settings without asking.
 5. After posting, check `fetch_publish_status`, add a row to the TikTok log, commit and push.
+6. Covers (user rule, 2026-10-31: "edit cover for all videos"). TikTok's API cannot change a cover after posting,
+   so pick it at upload: build a frame contact sheet with ffmpeg (`fps=1/20,scale=320:-1,tile=4x4`), choose the
+   strongest title-card frame, and pass `video_cover_timestamp_ms`. Log the chosen frame. For YouTube, set a custom
+   thumbnail after it publishes with `youtube` → `update_thumbnail` (needs a public 1280x720 JPG/PNG under 2 MB and
+   a phone-verified channel; Shorts may not show custom thumbnails).
 
 When scheduling a YouTube post, put the Drive file name in the YouTube log so step 2 can match it.
 

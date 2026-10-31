@@ -12,6 +12,7 @@ Rule: a video goes to TikTok only after it is live on YouTube. Settings are conf
 | 2026-10-31 01:29 | 50°F to -27°F Short (Metricool media) | [HyqmpcvzHKI](https://youtu.be/HyqmpcvzHKI) | Clawlink `upload_video` | `v_pub_file~v2-1.7702637511001884692` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on |
 | 2026-10-31 01:30 | Minnie Freeman Short (Metricool media) | [J5rJThy08hk](https://youtu.be/J5rJThy08hk) | Clawlink `upload_video` | `v_pub_file~v2-1.7702637792039323655` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on |
 | 2026-10-31 03:07 | 12 Feet Short (Metricool media) | [qbtwhG8IDL8](https://youtu.be/qbtwhG8IDL8) | Clawlink `upload_video` | `v_pub_file~v2-1.7702662901793933319` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on |
+| 2026-10-31 07:29 | 01-oregon-trail-30-days.mp4 | [Dd6icXr-dW0](https://youtu.be/Dd6icXr-dW0) | Clawlink `publish_video` | `v_pub_url~v2-1.7702729790759208980` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on · cover frame 133 s (CHOLERA title card) |
 
 ## Hold lifted (2026-10-31)
 
@@ -20,7 +21,7 @@ Views check 2026-10-31 03:07 UTC: all 6 TikTok posts still at 0 views / 0 likes 
 
 ## Waiting for YouTube
 
-- `01-oregon-trail-30-days.mp4`: on YouTube ([Dd6icXr-dW0](https://youtu.be/Dd6icXr-dW0)), but the user chose to hold it for now
+- Nothing waiting.
 
 ## YouTube data: short A (snapshot 2026-10-29 12:04 UTC)
 
