@@ -11,16 +11,15 @@ Rule: a video goes to TikTok only after it is live on YouTube. Settings are conf
 | 2026-10-31 01:29 | Homesteader long (Metricool media) | [kQzq9g26F6Q](https://youtu.be/kQzq9g26F6Q) | Clawlink `upload_video` | `v_pub_file~v2-1.7702637511001819156` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on |
 | 2026-10-31 01:29 | 50°F to -27°F Short (Metricool media) | [HyqmpcvzHKI](https://youtu.be/HyqmpcvzHKI) | Clawlink `upload_video` | `v_pub_file~v2-1.7702637511001884692` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on |
 | 2026-10-31 01:30 | Minnie Freeman Short (Metricool media) | [J5rJThy08hk](https://youtu.be/J5rJThy08hk) | Clawlink `upload_video` | `v_pub_file~v2-1.7702637792039323655` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on |
+| 2026-10-31 03:07 | 12 Feet Short (Metricool media) | [qbtwhG8IDL8](https://youtu.be/qbtwhG8IDL8) | Clawlink `upload_video` | `v_pub_file~v2-1.7702662901793933319` | Everyone · comments on · duet off · stitch off · not branded · AI-generated label on |
 
 ## Hold lifted (2026-10-31)
 
 The user checked the account status and found no issue; posting resumed.
+Views check 2026-10-31 03:07 UTC: all 6 TikTok posts still at 0 views / 0 likes (oldest is ~39 h old).
 
 ## Waiting for YouTube
 
-- "POV: Found 12 Feet From His Own Door (1888)": approved by the user 2026-10-31; posts after it is live on YouTube (2026-10-31 03:00 UTC, Metricool 410861234). Caption:
-  `1888: a farmer went out to feed his animals and was found 12 feet from his house. That's why homesteaders tied a rope from the door to the barn. AI narration.`
-  `#childrensblizzard #homesteader #americanhistory #history #pov` · same settings as above.
 - `01-oregon-trail-30-days.mp4`: on YouTube ([Dd6icXr-dW0](https://youtu.be/Dd6icXr-dW0)), but the user chose to hold it for now
 
 ## YouTube data: short A (snapshot 2026-10-29 12:04 UTC)
