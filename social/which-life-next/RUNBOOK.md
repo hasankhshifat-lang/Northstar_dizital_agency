@@ -1,7 +1,7 @@
 # Which Life Next — daily video job
 
 The scheduled task runs this once a day (13:17 SGT). It makes one 8–12 minute video and
-6 Shorts cut from it (changed from 3 on 2026-10-31, Shorts-first path to 10M Shorts views), and schedules all seven for the publish day's slots (SGT, see config.md).
+4 Shorts (1 cut from the long video + 3 standalone story Shorts, see "Standalone story Shorts"), and schedules all five for the publish day's slots (SGT, see config.md).
 
 Channel: **Which Life Next (@whichlifenext)**, YouTube channel `UCPTrW0n3ONI9uU4WetWwFCQ`.
 Audience: USA. The user gave standing approval for these daily posts (see `CLAUDE.md`), so
@@ -142,9 +142,9 @@ a new story and research (no reused scripts), a real point of view and sourced f
 visuals (no recycled image sets), and Kit as a consistent character. Never buy views or subs,
 never sub-for-sub, never reupload anyone else's footage. Disclose AI voice every time.
 
-## 3. Cut 6 Shorts (1080×1920, under 60 seconds)
+## 3. Shorts: 1 cut from the long video + 3 standalone stories
 
-Six entries in `shorts.json`, each a different segment with its own hook (a person facing death, one number, 25–45 s).
+One entry in `shorts.json` (the long video's most dramatic segment, 25–60 s). The other three are standalone story Shorts — see "Standalone story Shorts" below.
 
 Pick the 3 marked segments in `shorts.json` (`[{"segment": "07", "hook": ["LINE 1", "LINE 2"]}, ...]`);
 `make_episode.py --shorts` renders them with the Remotion `Short` composition (vertical crop of
@@ -298,3 +298,21 @@ hook text; first spoken line is the danger, not the setup; end on a question or 
 
 **4. Thumbnails:** competitor style only (see "Thumbnails"): one huge focal threat or Kit's scared face, dark
 background with a warm glow, 2–3 words built around a number; 3 options for Test & compare.
+
+## Standalone story Shorts (user rule, 2026-10-31) — 3 a day
+Each one is its own complete story from REAL history (sourced like the long videos), starring Kit v2, with the same
+cold-open hook as the long videos. Must be complete and ≤ 2 minutes (target 75–110 s).
+1. **Pick the story with `story-types.md`:** 2 of the 3 from the current best-performing type, 1 test of another type.
+   Real event, one person facing death or a shocking turn, a clear ending. Not covered on the channel before
+   (check topics-log.md). 2 sources minimum (allowlisted sites).
+2. **Script 180–300 words, 2–4 segments** (`segments.json` like the long videos, Jesse voice, tense tags in danger):
+   - seg 01: drop straight into the danger (second person, "It's 1906. The ground is moving.")
+   - middle: escalation + one twist / number
+   - last: the outcome + a one-line question that makes people comment ("Would you have run back in?")
+3. **Folder:** `.work/<date>/story-<n>/` with a copy of build.py (SEGS = its segments), segments.json, vo/, shots.json.
+   `shots.json` needs `"_teaser"` (2 flashes from the climax + the question) and `"_title"` (2 short lines kept in the top bar).
+   Kit is the person in every story (composite "you", or Kit wearing the era outfit). Use expressions + keywords.
+4. **Render:** `python3 -I make_episode.py .work/<date>/story-<n> <date>-story-<n> --standalone-short` → `out/short.mp4`
+   (1080×1920, title bar top, captions bottom). Check length ≤ 120 s.
+5. **Title:** "POV: …" or the shocking fact, < 60 chars, + #shorts. Description: 1–2 lines + sources + AI narration note.
+6. Log each Short in `story-types.md` (type, title, ID, views 24 h / 72 h) and pick tomorrow's types from it.

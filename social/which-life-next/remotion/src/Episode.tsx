@@ -318,14 +318,14 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
   );
 };
 
-const CaptionLayer: React.FC<{ captions: Caption[]; vertical?: boolean }> = ({ captions, vertical }) => {
+const CaptionLayer: React.FC<{ captions: Caption[]; vertical?: boolean; bottomPad?: number }> = ({ captions, vertical, bottomPad }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
   const c = captions.find((x) => t >= x.start && t < x.end);
   if (!c) return null;
   return (
-    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: vertical ? 520 : 70 }}>
+    <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: bottomPad ?? (vertical ? 520 : 70) }}>
       <div style={{
         fontFamily: fonts.sans, fontWeight: 700, fontSize: vertical ? 70 : 58, color: "#fff", textAlign: "center", maxWidth: vertical ? 900 : 1600,
         padding: "0 40px", lineHeight: 1.2, WebkitTextStroke: "0px", textShadow: "0 0 8px #000, 0 3px 6px #000, 0 0 2px #000",
@@ -358,9 +358,11 @@ export const Episode: React.FC<EpisodeProps> = ({ shots, captions, narration, wi
 export const episodeDuration = (p: EpisodeProps) => p.shots.reduce((a, s) => a + s.durationInFrames, 0);
 
 /** Vertical 1080x1920 Short: a window of the episode reframed, hook text on top, captions mid-low. */
-export type ShortProps = EpisodeProps & { startFrame: number; durationInFrames: number; hook: string[] };
+export type ShortProps = EpisodeProps & { startFrame: number; durationInFrames: number; hook: string[];
+  /** Standalone story Shorts: keep the title in the top bar for the whole Short, captions in the bottom bar. */
+  title?: string[]; titleFrom?: number };
 
-export const Short: React.FC<ShortProps> = ({ startFrame, hook, captions, ...rest }) => {
+export const Short: React.FC<ShortProps> = ({ startFrame, hook, captions, title, titleFrom = 0, ...rest }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const shifted = captions.map((c) => ({ ...c, start: c.start - startFrame / fps, end: c.end - startFrame / fps }));
@@ -378,7 +380,20 @@ export const Short: React.FC<ShortProps> = ({ startFrame, hook, captions, ...res
           <div key={i} style={{ fontFamily: fonts.sans, fontWeight: 800, fontSize: 78, color: i === 0 ? "#ffd640" : "#fff", textShadow: "0 0 10px #000, 0 4px 8px #000", textAlign: "center" }}>{h}</div>
         ))}
       </AbsoluteFill>
-      <CaptionLayer captions={shifted} vertical />
+      {title && frame >= titleFrom && (
+        <AbsoluteFill style={{ height: 420, justifyContent: "center", alignItems: "center", padding: "40px 50px 0",
+          opacity: interpolate(frame, [titleFrom, titleFrom + 8], [0, 1], { extrapolateRight: "clamp" }) }}>
+          {title.map((h, i) => (
+            <div key={i} style={{ fontFamily: fonts.sans, fontWeight: 900, fontSize: 74, lineHeight: 1.08, color: i % 2 ? "#ffd23f" : "#fff",
+              WebkitTextStroke: "8px #000", paintOrder: "stroke fill", textAlign: "center" }}>{h}</div>
+          ))}
+        </AbsoluteFill>
+      )}
+      {title ? (
+        <AbsoluteFill style={{ top: 1500, height: 420 }}><CaptionLayer captions={shifted} vertical bottomPad={170} /></AbsoluteFill>
+      ) : (
+        <CaptionLayer captions={shifted} vertical />
+      )}
     </AbsoluteFill>
   );
 };

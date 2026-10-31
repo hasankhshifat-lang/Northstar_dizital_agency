@@ -1,7 +1,11 @@
 """Turn a day's narration + shot plan into Remotion props, then render.
 
 Usage (from the day's scratch folder that holds build.py, segments.json, vo/*.mp3, shots.json):
-    python3 -I make_episode.py <scratch_dir> <date> [--render] [--shorts]
+    python3 -I make_episode.py <scratch_dir> <date> [--render] [--shorts] [--standalone-short]
+
+--standalone-short: the scratch folder holds ONE standalone story Short (its own script, 2-4 segments,
+"_teaser" with 2 flashes + question). Renders the whole thing as a vertical Short to out/short.mp4
+(cold open + full story; must be <= 120 s).
 
 shots.json maps segment id -> list of shots. Each shot is a Remotion `Shot` (see
 remotion/src/Episode.tsx) plus "at": the fraction of the segment where it starts (0..1).
@@ -69,6 +73,16 @@ def main():
     json.dump(props, open(f"{pub}/episode.json", "w"), indent=1)
     print("shots", len(shots), "frames", sum(s["durationInFrames"] for s in shots), "of", total_frames)
 
+    if "--standalone-short" in sys.argv:
+        total = sum(sh["durationInFrames"] for sh in shots)
+        if total > 120 * FPS:
+            print(f"WARNING: standalone Short is {total / FPS:.1f}s (> 120 s) — trim the script")
+        tz = plan.get("_teaser", {})
+        tq = sum(sh["durationInFrames"] for sh in shots[:len(tz.get("clips", [])) + 1]) if tz else 0
+        sp = dict(props, startFrame=0, durationInFrames=total, hook=[], title=plan.get("_title", tz.get("question", [])), titleFrom=tq)
+        path = f"{pub}/short.json"
+        json.dump(sp, open(path, "w"))
+        render("Short", path, f"{out}/short.mp4")
     if "--render" in sys.argv:
         render("Episode", f"{pub}/episode.json", f"{out}/long_remotion.mp4")
     if "--shorts" in sys.argv:
