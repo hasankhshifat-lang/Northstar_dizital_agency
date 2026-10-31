@@ -31,3 +31,16 @@ The ElevenLabs agent extracts these fields from each chat (after 15 min idle): `
 
 ## Never message
 - `6585352026`: owner's own phone (status `internal`).
+
+## Templates (submitted 31 Oct 2026, Bangla `bn`, MARKETING)
+On the messaging account behind +880 1872-692783. Image headers: `northstar-videos/out/WA-*.jpg`
+(served from the `ccr-f8f3fde4-4ghldu` branch on GitHub; keep the branch or merge it before sending).
+
+| Day | Template | Template ID | Buttons |
+|---|---|---|---|
+| 0 | `northstar_intro_offer` | 1458456772885747 | হ্যাঁ, কথা বলতে চাই · আগ্রহী নই · AI assistant ট্রাই করুন (samplewebsite.tech) |
+| 3 | `northstar_followup_1` | 1653154379861516 | হ্যাঁ, কথা বলি · আগ্রহী নই · AI assistant ট্রাই করুন |
+| 7 | `northstar_followup_2` | 2622387644865741 | হ্যাঁ · আগ্রহী নই · AI assistant ট্রাই করুন |
+
+Each body has one placeholder, `{{1}}` = contact's name. Footer: "বন্ধ করতে STOP লিখুন".
+"আগ্রহী নই" or STOP = permanent opt-out.
