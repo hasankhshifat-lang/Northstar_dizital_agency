@@ -27,6 +27,12 @@ set TikTok check-ins. The user adds a trending sound and posts in the TikTok app
 for a specific video (as an inbox draft, `publish: false`, unless they say to post it directly). The steps below
 apply only then.
 
+**Daily views check (user rule, 2026-10-31).** A scheduled task checks the TikTok views every day at 11:41 SGT
+(after the daily Shorts are live on YouTube). While every video is at 0 views, upload nothing. Once any video has
+views, switch on daily posting: **3 videos per day**, the day's 3 YouTube Shorts. Each day, send the user one
+summary of all 3 (captions, covers, settings, ending with the Music Usage Confirmation line), then post all 3 after
+the user's single "yes". TikTok requires that yes for every post.
+
 Resumed 2026-10-31 (user checked the account status: no issue found). If the YouTube API quota is exceeded,
 confirm a post is live from Metricool's `getScheduledPosts` (provider status PUBLISHED + video id) instead.
 Videos scheduled in Metricool without a Drive file can be posted from their Metricool media URL with

@@ -23,6 +23,10 @@ Views check 2026-10-31 03:07 UTC: all 6 TikTok posts still at 0 views / 0 likes 
 
 The user will add trending sounds and post in the TikTok app themselves. Upload only when they ask.
 
+## Daily views check (11:41 SGT)
+
+- 2026-10-31 03:07 UTC: 7 videos, 0 views, 0 likes, 0 followers.
+
 ## YouTube data: short A (snapshot 2026-10-29 12:04 UTC)
 
 - **Title:** POV: The Oregon Trail Killer That Can Take You in 12 Hours
