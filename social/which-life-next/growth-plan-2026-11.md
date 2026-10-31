@@ -43,6 +43,12 @@ About 3,200 Shorts views, 4 long-form views, 2 subscribers.
 6. **No data on clicks or retention.** Without the channel connected to vidIQ (or YouTube Studio
    numbers), we can't tell whether the thumbnail or the first 30 seconds is the problem.
 
+## Target (confirmed by the user, 2026-10-31)
+1,000 subscribers **and either** 4,000 public watch hours (last 365 days) **or** 10M public Shorts views (last 90 days).
+Today Shorts are the only thing getting views (~4K public Shorts views vs 4 long-form views), so the
+Shorts path is the main track; long videos stay as the subscriber/watch-time backup.
+Pace needed for 10M by 30 Nov: ~333K Shorts views/day (by end of the 90-day window, late Jan: ~111K/day).
+
 ## The honest math for 30 November
 
 - 4,000 hours = 240,000 minutes. A 14-min video where viewers watch ~35% gives ~5 min per view, so
