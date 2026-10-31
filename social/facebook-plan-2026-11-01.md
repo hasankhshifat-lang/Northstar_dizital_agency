@@ -2,7 +2,7 @@
 
 Page: NorthStar Dizital (1390585830800081). Times are Bangladesh time (UTC+6).
 Mix: 3 Reels, 1 demo, 1 package, 1 FAQ, 1 behind-the-scenes, 1 industry post, 1 engagement post, 1 offer.
-Status: **draft — waiting for approval.** Reels need footage from you; photo posts need an image.
+Status: **approved.** All Reels and images are made in Remotion (`northstar-videos/`); captions say "demo" because the chats and sites are animated mock-ups, not real customers.
 
 ## Replacement for Sat 31 Oct, 8:30 PM (text post)
 
@@ -35,11 +35,10 @@ Status: **draft — waiting for approval.** Reels need footage from you; photo p
 | 9 | Sat 7 Nov, 8:30 PM | Photo | Offer: free 15-min consultation + free AI demo |
 
 ### 1 · Sun 1 Nov, 8:30 PM — Reel: Richi live demo
-**Footage:** screen-record WhatsApp on your phone: send "price কত?" at night to +880 1872-692783 and record Richi's reply. 20–30 s.
-**On-screen hook (first 2 s):** রাত ২টা। Customer: "price কত?" ⏱️
+**Video:** `northstar-videos/out/Reel1-RichiDemo.mp4` (21 s, animated demo chat).
 **Caption:**
 > রাত ২টায় customer message দিলো। উত্তর এলো ৫ সেকেন্ডে। 👇
-> এটা আমাদের AI receptionist, real chat, কোনো edit নেই।
+> আমাদের AI receptionist এভাবেই কাজ করে (demo)। নিজে test করতে চাইলে এখনই WhatsApp করুন, AI নিজেই উত্তর দেবে।
 >
 > আপনার page বা WhatsApp-এ এটা বসাতে চান?
 > 👉 WhatsApp করুন: +880 1872-692783
@@ -47,7 +46,7 @@ Status: **draft — waiting for approval.** Reels need footage from you; photo p
 > #NorthStarDizital #AIReceptionist #WhatsAppBusiness
 
 ### 2 · Mon 2 Nov, 12:30 PM — Photo: ৳8,000 website package
-**Image:** checklist graphic, brand colours, "৳৮,০০০ থেকে" large.
+**Image:** `northstar-videos/out/Post2-Package.png`
 **Caption:**
 > ৳৮,০০০-এ website-এ কী কী পাবেন? ✅
 >
@@ -71,10 +70,9 @@ Status: **draft — waiting for approval.** Reels need footage from you; photo p
 > #NorthStarDizital #AIReceptionist
 
 ### 4 · Tue 3 Nov, 8:30 PM — Reel: before/after
-**Footage:** 5 s scrolling an old-style Facebook page → cut → 10 s scrolling a finished website on a phone. Use a demo site or a client site you have permission to show.
-**On-screen hook:** শুধু Facebook page ➜ ৫ দিনে website 🚀
+**Video:** `northstar-videos/out/Reel4-BeforeAfter.mp4` (22 s, demo salon "Glow Salon").
 **Caption:**
-> Before: customer-কে inbox-এ price জিজ্ঞেস করতে হতো।
+> (Demo) Before: customer-কে inbox-এ price জিজ্ঞেস করতে হতো।
 > After: সব তথ্য এক জায়গায়, এক click-এ WhatsApp। ✅
 >
 > Website শুরু ৳৮,০০০ থেকে, ৩–৫ দিনে ready।
@@ -83,7 +81,7 @@ Status: **draft — waiting for approval.** Reels need footage from you; photo p
 > #NorthStarDizital #Website #BeforeAfter
 
 ### 5 · Wed 4 Nov, 12:30 PM — Photo: behind the scenes
-**Image:** 4-step timeline graphic.
+**Image:** `northstar-videos/out/Post5-Timeline.png`
 **Caption:**
 > ৩–৫ দিনে website কীভাবে বানাই? 🛠️
 >
@@ -97,7 +95,7 @@ Status: **draft — waiting for approval.** Reels need footage from you; photo p
 > #NorthStarDizital #Website
 
 ### 6 · Wed 4 Nov, 8:30 PM — Photo: restaurants
-**Image:** phone mock-up of a WhatsApp chat taking a table booking.
+**Image:** `northstar-videos/out/Post6-Restaurant.png`
 **Caption:**
 > Restaurant মালিকদের জন্য 🍽️
 >
@@ -109,10 +107,9 @@ Status: **draft — waiting for approval.** Reels need footage from you; photo p
 > #NorthStarDizital #Restaurant #AIReceptionist
 
 ### 7 · Thu 5 Nov, 8:30 PM — Reel: demo website walkthrough
-**Footage:** screen-record scrolling the bridal studio demo website on a phone: home → packages → portfolio → booking/WhatsApp button. 20–30 s.
-**On-screen hook:** Bridal studio-র website দেখতে এমন হয় 💄
+**Video:** `northstar-videos/out/Reel7-BridalSite.mp4` (22 s, demo site "Rose Bridal Studio").
 **Caption:**
-> Portfolio, package, price আর online booking, সব এক জায়গায়। ✨
+> Demo website: portfolio, package আর online booking, সব এক জায়গায়। ✨
 > Salon, bridal studio, clinic, যেকোনো local business-এর জন্য বানাই।
 >
 > শুরু ৳৮,০০০ থেকে।
@@ -134,7 +131,7 @@ Status: **draft — waiting for approval.** Reels need footage from you; photo p
 > _Note: Claude can't read comments through the current connection. Check replies in the Page inbox._
 
 ### 9 · Sat 7 Nov, 8:30 PM — Photo: offer
-**Image:** "FREE 15-min consultation" graphic with the WhatsApp number.
+**Image:** `northstar-videos/out/Post9-Offer.png`
 **Caption:**
 > এই সপ্তাহে আমাদের সাথে free ১৫ মিনিট কথা বলুন ☕
 >
