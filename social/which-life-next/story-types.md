@@ -1,8 +1,8 @@
 # Which Life Next — Short story types: what gets views
 
 Every Short is tagged with ONE type. The daily run updates views (public counts via Clawlink youtube-data
-`channel_shorts`, or vidIQ when it has credits) and picks the next day's 3 standalone stories:
-**2 from the best type by average views at 24 h, 1 test from another type.** Re-rank weekly (Mondays) on 72 h views.
+`channel_shorts`, or vidIQ when it has credits) and picks the next day's 4 standalone stories:
+**3 from the best type(s) by average views at 24 h, 1 test from another type.** Re-rank weekly (Mondays) on 72 h views.
 A type needs 3+ Shorts before it can lose its place; a test that beats the leader becomes a leader.
 
 ## Types

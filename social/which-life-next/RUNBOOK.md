@@ -1,3 +1,8 @@
+> **CURRENT MODE (user, 2026-10-31): SHORTS ONLY.** Long videos are paused until the 10M Shorts-views target is
+> reached or the user says to resume. Each day: step 0 (report, story-type ranking, comments) → 4 standalone story
+> Shorts ("Standalone story Shorts" section; 3 from the best type, 1 test) → Drive → schedule (config.md slots,
+> Clawlink/Metricool rotation) → logs. Skip the long-video steps, thumbnails and the cut-from-long Short.
+
 # Which Life Next — daily video job
 
 The scheduled task runs this once a day (13:17 SGT). It makes one 8–12 minute video and
@@ -302,7 +307,7 @@ background with a warm glow, 2–3 words built around a number; 3 options for Te
 ## Standalone story Shorts (user rule, 2026-10-31) — 3 a day
 Each one is its own complete story from REAL history (sourced like the long videos), starring Kit v2, with the same
 cold-open hook as the long videos. Must be complete and ≤ 2 minutes (target 75–110 s).
-1. **Pick the story with `story-types.md`:** 2 of the 3 from the current best-performing type, 1 test of another type.
+1. **Pick the story with `story-types.md`:** 3 of the 4 from the current best-performing type(s), 1 test of another type.
    Real event, one person facing death or a shocking turn, a clear ending. Not covered on the channel before
    (check topics-log.md). 2 sources minimum (allowlisted sites).
 2. **Script 180–300 words, 2–4 segments** (`segments.json` like the long videos, Jesse voice, tense tags in danger):

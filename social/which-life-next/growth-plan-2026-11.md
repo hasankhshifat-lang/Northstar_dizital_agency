@@ -49,6 +49,8 @@ Today Shorts are the only thing getting views (~4K public Shorts views vs 4 long
 Shorts path is the main track; long videos stay as the subscriber/watch-time backup.
 Pace needed for 10M by 30 Nov: ~333K Shorts views/day (by end of the 90-day window, late Jan: ~111K/day).
 
+**Update (2026-10-31, user): long videos paused — Shorts only (4 story Shorts/day) until 10M Shorts views.**
+
 ## The honest math for 30 November
 
 - 4,000 hours = 240,000 minutes. A 14-min video where viewers watch ~35% gives ~5 min per view, so

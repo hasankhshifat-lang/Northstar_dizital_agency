@@ -6,15 +6,14 @@ The daily job reads this file. Change the slots here, not in the job prompt.
 
 | Slot | SGT | US Eastern (EST) | Post |
 |---|---|---|---|
-| 1 | 06:00 | 17:00 previous day | Long video (12–16 min) |
-| 2 | 08:00 | 19:00 previous day | Short A — cut from the long video |
-| 3 | 09:00 | 20:00 previous day | Short B — standalone story |
-| 4 | 11:00 | 22:00 previous day | Short C — standalone story |
-| 5 | 21:00 | 08:00 same day | Short D — standalone story |
+| 1 | 06:00 | 17:00 previous day | Story Short 1 |
+| 2 | 08:00 | 19:00 previous day | Story Short 2 |
+| 3 | 11:00 | 22:00 previous day | Story Short 3 |
+| 4 | 21:00 | 08:00 same day | Story Short 4 |
 
-Slots last changed: 2026-10-31 (evening) — user: 3–4 Shorts a day, 1 cut from the long video + standalone
-story Shorts (own script, real history, complete story ≤ 2 min, cold-open hook). Replaces the 6-Short plan.
-The 21:00 slot tests US morning views.
+Slots last changed: 2026-10-31 (late) — user: **pause long videos; Shorts only until the 10M Shorts-views
+target is reached.** 4 standalone story Shorts a day (own script, real history, ≤ 2 min, cold-open hook, Kit v2).
+Long videos resume only when the user says so.
 
 ## Rules for changing slots
 
