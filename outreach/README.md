@@ -20,7 +20,7 @@ Owner decisions (31 Oct 2026):
 - `cities.md`: city rotation and which cities are done.
 - `daily-log.md`: one line per day (city, leads found, sent, follow-ups, replies, bounces, meetings).
 
-Status values: `queued`, `sent`, `fu1`, `fu2`, `fu3` (breakup), `replied`, `meeting`, `not_interested`,
+Status values: `skipped_chain`, `queued`, `sent`, `fu1`, `fu2`, `fu3` (breakup), `replied`, `meeting`, `not_interested`,
 `unsubscribed`, `bounced`, `skipped_has_chatbot`, `skipped_no_email`.
 
 ## Daily steps
