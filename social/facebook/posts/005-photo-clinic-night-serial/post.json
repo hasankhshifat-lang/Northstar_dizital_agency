@@ -1,0 +1,75 @@
+{
+ "type": "photo",
+ "status": "draft",
+ "pillar": "Industry",
+ "angle": "Clinic / doctor chamber: রাতে রোগীর serial প্রশ্ন — AI উত্তর দেয়, serial নেয়, reminder পাঠায়",
+ "caption": "রাত ১০টায় রোগীর message: \"কাল ডাক্তার বসবেন?\" উত্তর গেলো সকালে। 😬\nততক্ষণে সে অন্য chamber-এ serial নিয়ে ফেলেছে।\n\nAI receptionist রাতেই উত্তর দেয়, serial নেয়, আগের দিন reminder পাঠায়।\n👉 আপনার chamber-এর জন্য জানতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
+ "design": {
+  "theme": "layout",
+  "layout": "glass",
+  "palette": "night",
+  "head": [
+   {
+    "t": "Chamber বন্ধ,"
+   },
+   {
+    "t": "*serial* নেওয়া চলছে",
+    "cls": "baloo"
+   }
+  ],
+  "person": "social/facebook/people/doctor-tablet.png",
+  "panes": [
+   {
+    "icon": "📅",
+    "text": "Serial booking",
+    "small": "রাতেও",
+    "pos": [
+     70,
+     380
+    ],
+    "rotate": -4
+   },
+   {
+    "icon": "💬",
+    "text": "প্রশ্নের উত্তর",
+    "small": "ফি, সময়, ঠিকানা",
+    "pos": [
+     90,
+     640
+    ],
+    "rotate": 3
+   },
+   {
+    "icon": "⏰",
+    "text": "Reminder",
+    "small": "appointment-এর আগে",
+    "pos": [
+     780,
+     360
+    ],
+    "rotate": 4
+   },
+   {
+    "icon": "🤝",
+    "text": "কঠিন প্রশ্ন?",
+    "small": "আপনার team-কে দেয়",
+    "pos": [
+     760,
+     640
+    ],
+    "rotate": -3
+   }
+  ],
+  "emoji": [
+   {
+    "e": "✨",
+    "pos": [
+     930,
+     250
+    ],
+    "size": 56
+   }
+  ],
+  "cta": "WhatsApp করুন"
+ }
+}

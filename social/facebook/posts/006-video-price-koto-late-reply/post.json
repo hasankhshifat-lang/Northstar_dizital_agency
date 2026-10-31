@@ -1,0 +1,198 @@
+{
+ "type": "video",
+ "status": "draft",
+ "pillar": "Missed customers",
+ "angle": "\"Price কত?\" — ৩ ঘণ্টা পরে reply, customer ততক্ষণে অন্য page-এ",
+ "voice": "Swati",
+ "title": "Price কত? — উত্তর দিতে দেরি মানেই হারানো customer",
+ "caption": "\"Price কত?\" জিজ্ঞেস করে customer ৩ ঘণ্টা বসে থাকে না। 😬\nআপনি reply দিতে দিতে সে অন্য page থেকে কিনে ফেলেছে।\n\nAI receptionist সাথে সাথে উত্তর দেয়, order-ও নিয়ে রাখে।\n👉 আপনার page-এ বসাতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
+ "design": {
+  "engine": "motion",
+  "palette": "peach",
+  "cover_at": 2.5,
+  "beats": [
+   {
+    "type": "kinetic",
+    "small": "রাত ৯টা ১৫ 🌙",
+    "text": "Customer লিখলো: *Price কত?*",
+    "size": "s2",
+    "avatars": [
+     [
+      "woman-fcommerce-phone.png",
+      90,
+      520
+     ],
+     [
+      "man-blue-shirt-phone.png",
+      840,
+      560
+     ],
+     [
+      "salon-owner-thumbsup.png",
+      120,
+      1300
+     ],
+     [
+      "shopkeeper-elder-phone.png",
+      820,
+      1340
+     ]
+    ],
+    "say": "রাত সোয়া নয়টা। আপনার page-এ একজন customer লিখলো... আপু, এই dress-টার price কত?",
+    "tone": "curious"
+   },
+   {
+    "type": "chat",
+    "title": "Message *Seen*… কিন্তু reply নেই",
+    "name": "Your Fashion Page",
+    "initials": "YF",
+    "messages": [
+     {
+      "from": "me",
+      "text": "এই dress-টার price কত?"
+     },
+     {
+      "from": "me",
+      "text": "আপু? 🙂"
+     },
+     {
+      "from": "me",
+      "text": "থাক, অন্য জায়গা থেকে নিচ্ছি"
+     }
+    ],
+    "chips": [
+     [
+      "👀",
+      "Seen 9:16 PM",
+      80,
+      560
+     ],
+     [
+      "⏳",
+      "কোনো উত্তর নেই",
+      600,
+      1500
+     ]
+    ],
+    "say": "আপনি তখন ব্যস্ত। Message seen হলো, কিন্তু reply দেওয়া হলো না।"
+   },
+   {
+    "type": "bigword",
+    "dark": true,
+    "trans": "wipe",
+    "text": "৩ ঘণ্টা",
+    "after": "পরে reply দিলেন… customer ততক্ষণে অন্য page-এ",
+    "say": "তিন ঘণ্টা পরে যখন reply দিলেন... customer ততক্ষণে অন্য page থেকে order করে ফেলেছে।",
+    "tone": "serious"
+   },
+   {
+    "type": "kinetic",
+    "text": "Customer *অপেক্ষা* করে না",
+    "size": "s1",
+    "say": "সত্যি কথা হলো, আজকের customer অপেক্ষা করে না। যে আগে উত্তর দেয়, order সে-ই পায়।"
+   },
+   {
+    "type": "typing",
+    "label": "AI receptionist থাকলে",
+    "icon": "💬",
+    "query": "এই dress-টার price কত?",
+    "reply": "জি আপু 😊 দাম আর size দিলাম। Order করবেন?",
+    "say": "এখন ভাবুন, আপনার page-এ একটা AI receptionist আছে। Customer প্রশ্ন করলো, আর সাথে সাথে উত্তর।",
+    "tone": "warmly"
+   },
+   {
+    "type": "dashboard",
+    "title": "আপনি ব্যস্ত, *AI* কাজ করছে",
+    "head": "AI Receptionist · Inbox",
+    "rows": [
+     [
+      "💰",
+      "\"Price কত?\"",
+      "রাত ৯:১৫ · Messenger",
+      "✓ উত্তর দিয়েছে"
+     ],
+     [
+      "🛒",
+      "নতুন order",
+      "রাত ৯:১৮ · Messenger",
+      "✓ নেওয়া হয়েছে"
+     ],
+     [
+      "🚚",
+      "\"Delivery কবে?\"",
+      "রাত ১১:০২ · WhatsApp",
+      "✓ উত্তর দিয়েছে"
+     ],
+     [
+      "📏",
+      "Size জানতে চাইলো",
+      "রাত ১২:৪০ · Instagram",
+      "✓ উত্তর দিয়েছে"
+     ]
+    ],
+    "say": "Price বলে দেয়, size বলে দেয়, delivery-র খবর দেয়... আর order-টাও নিয়ে রাখে।"
+   },
+   {
+    "type": "person",
+    "title": "সকালে উঠে দেখুন *order* রেডি",
+    "size": "s2",
+    "person": "woman-fcommerce-phone.png",
+    "chips": [
+     [
+      "🛒",
+      "রাতের order list",
+      70,
+      820
+     ],
+     [
+      "✅",
+      "সব উত্তর দেওয়া",
+      600,
+      1000
+     ]
+    ],
+    "button": [
+     "📋 Order দেখুন",
+     90,
+     1120
+    ],
+    "say": "আপনি সকালে উঠে শুধু order list-টা দেখবেন। কোনো message মিস হবে না।",
+    "tone": "warmly"
+   },
+   {
+    "type": "cards",
+    "title": "একটা assistant, *সব জায়গায়*",
+    "items": [
+     [
+      "💬",
+      "Messenger",
+      "২৪ ঘণ্টা"
+     ],
+     [
+      "📱",
+      "WhatsApp",
+      "সাথে সাথে"
+     ],
+     [
+      "📸",
+      "Instagram",
+      "একসাথে অনেকজন"
+     ],
+     [
+      "🌐",
+      "Website",
+      "Bangla, Banglish"
+     ]
+    ],
+    "say": "Messenger, WhatsApp, Instagram, website... সব জায়গায় একটাই assistant, চব্বিশ ঘণ্টা।"
+   },
+   {
+    "type": "cta",
+    "text": "আপনার page-এর *AI receptionist*",
+    "sub": "মাসিক, usage অনুযায়ী খরচ",
+    "say": "NorthStar Dizital আপনার ব্যবসার জন্য AI receptionist সেট করে দেয়। খরচ মাসিক, usage অনুযায়ী। জানতে আজই WhatsApp করুন!",
+    "tone": "excited"
+   }
+  ]
+ }
+}
