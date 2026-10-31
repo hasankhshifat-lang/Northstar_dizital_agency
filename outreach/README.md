@@ -21,12 +21,13 @@ Owner decisions (31 Oct 2026):
 - `daily-log.md`: one line per day (city, leads found, sent, follow-ups, replies, bounces, meetings).
 
 Status values: `skipped_chain`, `queued`, `sent`, `fu1`, `fu2`, `fu3` (breakup), `replied`, `meeting`, `not_interested`,
-`unsubscribed`, `bounced`, `skipped_has_chatbot`, `skipped_no_email`.
+`unsubscribed`, `bounced`, `skipped_has_chatbot`, `skipped_no_email`, `skipped_sole_trader_uk`.
 
 ## Daily steps
 1. **Pre-flight**
    - Read `daily-log.md`. If yesterday's bounces were over 3%, or any spam complaint or Gmail warning came in, or a
-     reply came back "stop/spam": **pause new sends**, do only follow-ups and replies, and tell the owner.
+     reply calls the email spam or is abusive: **pause new sends**. (A normal "remove me" / "no thanks" is an opt-out:
+     suppress it and carry on.), do only follow-ups and replies, and tell the owner.
    - Gmail: send a test from the connected account to contact@hasankhshifat.com and check the sent message's
      From. If it is not contact@hasankhshifat.com, do not send any outreach today; prepare the batch only.
    - Footer postal address: 500 Old Choa Chu Kang Road, Singapore 698924 (set 31 Oct 2026).

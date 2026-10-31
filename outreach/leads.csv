@@ -17,6 +17,12 @@ date_added,city,country,niche,business,website,email,rating,reviews,chatbot_chec
 2026-10-31,Austin TX,US,personal injury lawyer,McMinn Law Firm,https://www.mcminnlaw.com/,info@mcminnlaw.com,4.9,370,has: live chat/ngage,skipped_has_chatbot,,,,,
 2026-10-31,Austin TX,US,personal injury lawyer,Ramos James Law PLLC,https://www.ramosjames.com/,info@ramosjames.com,4.9,251,none,sent,2026-10-31,1a192421c8069250,2026-10-31,2026-11-03,
 2026-10-31,Austin TX,US,personal injury lawyer,Wayne Wright Injury Lawyers,https://waynewright.com/austin/,help@waynewright.com,4.8,390,none,sent,2026-10-31,1a192422667b0490,2026-10-31,2026-11-03,
-2026-10-31,Austin TX,US,personal injury lawyer,Shamieh Law,https://shamiehlaw.com/austin/,ramez@shamiehlaw.com,5.0,172,none,sent,2026-10-31,1a19242307091204,2026-10-31,2026-11-03,
+2026-10-31,Austin TX,US,personal injury lawyer,Shamieh Law,https://shamiehlaw.com/austin/,ramez@shamiehlaw.com,5.0,172,none,unsubscribed,2026-10-31,1a19242307091204,2026-10-31,2026-11-03,
 2026-10-31,Austin TX,US,personal injury lawyer,Daniel Stark Injury Lawyers,https://www.danielstark.com/austin/,info@danielstark.com,4.8,453,none,sent,2026-10-31,1a192423b2d21b74,2026-10-31,2026-11-03,
 2026-10-31,Austin TX,US,personal injury lawyer,Anderson Injury Lawyers Austin,https://maafirm.com/austin-personal-injury-lawyer/,intake@andersoninjurylaw.com,5.0,222,none,sent,2026-10-31,1a1924243734d6d2,2026-10-31,2026-11-03,
+2026-10-31,Manchester,UK,personal injury lawyer,Fletchers Solicitors,https://www.fletcherssolicitors.co.uk/,enquiry@fs.co.uk,,,none,skipped_chain,,,,,large national firm
+2026-10-31,Manchester,UK,personal injury lawyer,Stephensons Solicitors,https://www.stephensons.co.uk/,enquiries@stephensons.co.uk,,,has: live chat,skipped_has_chatbot,,,,,
+2026-10-31,Manchester,UK,personal injury lawyer,Freeman Harris,https://freemanharris.co.uk/,contact@freemanharris.co.uk,,,has: crisp.chat,skipped_has_chatbot,,,,,
+2026-10-31,Manchester,UK,personal injury lawyer,Express Solicitors,https://www.expresssolicitors.co.uk/,,,,none,skipped_no_email,,,,,large firm
+2026-10-31,Manchester,UK,med spa,Diane Nivern Advanced Facial Treatments,https://dianenivern.com/,therapy@dianenivern.com,,,none,skipped_sole_trader_uk,,,,,UK sole trader: PECR needs prior consent
+2026-10-31,Manchester,UK,auto repair,Service4Service,https://www.service4service.co.uk/,,,,has: ngage,skipped_has_chatbot,,,,,

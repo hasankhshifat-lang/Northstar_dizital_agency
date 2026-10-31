@@ -8,7 +8,7 @@ chiropractor, veterinarian, auto repair, home cleaning.
 | # | City | Country | Status |
 |---|---|---|---|
 | 1 | Austin, TX | US | in progress 2026-10-31 (16 qualified: dentist, med spa, PI lawyer; 5 skipped with chatbots) |
-| 2 | Manchester | UK | |
+| 2 | Manchester | UK | attempted 2026-10-31: 0 sendable (web search yield too low) |
 | 3 | Toronto, ON | Canada | |
 | 4 | Brisbane, QLD | Australia | |
 | 5 | Denver, CO | US | |
