@@ -1,7 +1,7 @@
 # Manual upload — long video (Which Life Next)
 
 **File:** `long_1080p.mp4` (1920×1080, 30 fps, 8:39)
-**Thumbnail:** `thumbnail_v2.jpg` (1280×720). Backup for Test & compare: `../thumbnail.jpg`
+**Thumbnail:** `thumb_A_closeup.jpg` (main). Test & compare: A + `thumb_B_split.jpg` + `thumb_C_closeup.jpg` (1280×720)
 **Schedule:** 1 Nov 2026, 06:00 Singapore time (= 31 Oct, 6:00 pm US Eastern). This is the same slot as before, two hours ahead of the locust Shorts (08:00, 09:00, 11:00).
 
 ## Title

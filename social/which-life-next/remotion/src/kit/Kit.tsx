@@ -25,6 +25,8 @@ export type KitProps = {
   outfit?: KitOutfit;
   /** Lean into the wind, in degrees (storm scenes). */
   lean?: number;
+  /** Front pose only: "scared" = wide eyes, raised brows, open mouth, sweat drop (danger moments, thumbnails). */
+  expression?: "neutral" | "scared";
   /** Recolour the rig for other characters (teacher, neighbour, child). Kit never uses this. */
   colors?: Partial<KitColors>;
 };
@@ -161,9 +163,10 @@ const SidePose: React.FC<{ coat: string; legSwing: number; armSwing: number; lan
   );
 };
 
-const FrontPose: React.FC<{ coat: string; armSwing: number; lantern: boolean; frame: number; outfit: KitOutfit }> = ({ coat, armSwing, lantern, frame, outfit }) => {
+const FrontPose: React.FC<{ coat: string; armSwing: number; lantern: boolean; frame: number; outfit: KitOutfit; expression?: "neutral" | "scared" }> = ({ coat, armSwing, lantern, frame, outfit, expression = "neutral" }) => {
   const k = useContext(KitColorCtx);
-  const blink = frame % 110 >= 104;
+  const scared = expression === "scared";
+  const blink = !scared && frame % 110 >= 104;
   return (
     <g>
       <rect x={-36} y={-178} width={30} height={160} rx={8} fill={k.trousers} />
@@ -189,21 +192,37 @@ const FrontPose: React.FC<{ coat: string; armSwing: number; lantern: boolean; fr
       <rect x={-13} y={-318} width={26} height={18} fill={k.skinShade} />
       <circle cx={0} cy={-340} r={38} fill={k.skin} />
       <path d="M -36 -350 Q -30 -380 0 -380 Q 30 -380 36 -350 Q 20 -360 0 -360 Q -20 -360 -36 -350 Z" fill={k.hair} />
-      {blink ? (
+      {scared ? (
         <>
-          <path d="M -20 -340 L -8 -340" stroke="#1d1914" strokeWidth={3} />
-          <path d="M 8 -340 L 20 -340" stroke="#1d1914" strokeWidth={3} />
+          <ellipse cx={-14} cy={-340} rx={9} ry={10} fill="#fbf7ef" stroke="#1d1914" strokeWidth={1.5} />
+          <ellipse cx={14} cy={-340} rx={9} ry={10} fill="#fbf7ef" stroke="#1d1914" strokeWidth={1.5} />
+          <circle cx={-13} cy={-339} r={3.6} fill="#1d1914" />
+          <circle cx={13} cy={-339} r={3.6} fill="#1d1914" />
+          <path d="M -24 -354 L -7 -360" stroke={k.hair} strokeWidth={4} strokeLinecap="round" />
+          <path d="M 7 -360 L 24 -354" stroke={k.hair} strokeWidth={4} strokeLinecap="round" />
+          <path d="M 0 -334 L -3 -324 L 3 -324" stroke={k.skinShade} strokeWidth={3} fill="none" />
+          <ellipse cx={0} cy={-313} rx={8} ry={10} fill="#3a1f18" />
+          <path d="M 30 -356 Q 36 -346 32 -340 Q 26 -344 30 -356 Z" fill="#cfe8f5" stroke="#8fb6c9" strokeWidth={1} />
         </>
       ) : (
         <>
-          <circle cx={-14} cy={-340} r={4} fill="#1d1914" />
-          <circle cx={14} cy={-340} r={4} fill="#1d1914" />
-        </>
+      {blink ? (
+          <>
+            <path d="M -20 -340 L -8 -340" stroke="#1d1914" strokeWidth={3} />
+            <path d="M 8 -340 L 20 -340" stroke="#1d1914" strokeWidth={3} />
+          </>
+        ) : (
+          <>
+            <circle cx={-14} cy={-340} r={4} fill="#1d1914" />
+            <circle cx={14} cy={-340} r={4} fill="#1d1914" />
+          </>
+        )}
+        <path d="M -22 -352 L -8 -354" stroke={k.hair} strokeWidth={4} strokeLinecap="round" />
+        <path d="M 8 -354 L 22 -352" stroke={k.hair} strokeWidth={4} strokeLinecap="round" />
+        <path d="M 0 -338 L -3 -326 L 3 -326" stroke={k.skinShade} strokeWidth={3} fill="none" />
+        <path d="M -10 -316 Q 0 -312 10 -316" stroke="#8a5a44" strokeWidth={3} fill="none" strokeLinecap="round" />
+          </>
       )}
-      <path d="M -22 -352 L -8 -354" stroke={k.hair} strokeWidth={4} strokeLinecap="round" />
-      <path d="M 8 -354 L 22 -352" stroke={k.hair} strokeWidth={4} strokeLinecap="round" />
-      <path d="M 0 -338 L -3 -326 L 3 -326" stroke={k.skinShade} strokeWidth={3} fill="none" />
-      <path d="M -10 -316 Q 0 -312 10 -316" stroke="#8a5a44" strokeWidth={3} fill="none" strokeLinecap="round" />
       <ellipse cx={0} cy={-370} rx={46} ry={18} fill={k.cap} />
       <path d="M -40 -364 Q 0 -350 40 -364 L 44 -356 Q 0 -342 -44 -356 Z" fill={k.capBand} />
       {lantern && <Lantern x={68} y={-120} frame={frame} />}
@@ -219,6 +238,7 @@ export const Kit: React.FC<KitProps> = ({
   holdingRope = false,
   outfit = "frontier",
   lean = 0,
+  expression = "neutral",
   colors,
 }) => {
   const frame = useCurrentFrame();
@@ -239,7 +259,7 @@ export const Kit: React.FC<KitProps> = ({
       </defs>
       <ellipse cx={0} cy={4} rx={70} ry={10} fill="#000" opacity={0.18} />
       {pose === "back" && <BackPose coat={coat} armSwing={armSwing} lantern={lantern} frame={frame} outfit={outfit} />}
-      {pose === "front" && <FrontPose coat={coat} armSwing={armSwing} lantern={lantern} frame={frame} outfit={outfit} />}
+      {pose === "front" && <FrontPose coat={coat} armSwing={armSwing} lantern={lantern} frame={frame} outfit={outfit} expression={expression} />}
       {pose === "side" && (
         <g transform={`scale(${facing} 1)`}>
           <SidePose coat={coat} legSwing={legSwing} armSwing={armSwing} lantern={lantern} holdingRope={holdingRope} frame={frame} outfit={outfit} />

@@ -4,6 +4,7 @@ import { Episode, EpisodeProps, episodeDuration, Short, ShortProps } from "./Epi
 import { Kit } from "./kit/Kit";
 import { HORIZON, Prairie, Sky } from "./sets/sets";
 import { demoEpisode } from "./demo";
+import { Thumb } from "./Thumb";
 import { fonts, palette } from "./theme";
 
 const episodeMeta: CalculateMetadataFunction<EpisodeProps> = ({ props }) => ({ durationInFrames: Math.max(1, episodeDuration(props)) });
@@ -31,6 +32,7 @@ export const RemotionRoot: React.FC = () => (
   <>
     <Folder name="Reference">
       <Still id="KitSheet" component={KitSheet} width={1920} height={1080} />
+      <Still id="Thumb" component={Thumb} width={1920} height={1080} defaultProps={{ variant: "closeup" as const }} />
     </Folder>
     <Composition id="Episode" component={Episode} width={1920} height={1080} fps={30} durationInFrames={300}
       defaultProps={demoEpisode} calculateMetadata={episodeMeta} />

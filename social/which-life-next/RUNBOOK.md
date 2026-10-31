@@ -229,3 +229,9 @@ slots there if the data supports it, and add a row to `timing-log.md` either way
   `showCaptions: false` in the props, then add text with PIL.
 - **Public view counts**: Clawlink `youtube-data` `channel_videos` / `channel_shorts`
   (handle `whichlifenext`) work even when the YouTube API quota is exhausted.
+
+## Thumbnails (from 2026-10-31 competitor review)
+Top thumbnails in the niche (Fossil "How Long You'd Last…", ONE RULE, Santi Can't) share: one huge focal threat or a big scared face,
+dark background with a warm glow, 2–3 words (often a survival time, number in a colour). Render art with the Remotion `Thumb`
+still (`variant: closeup | split`, Kit `expression: "scared"`), then add text with PIL (Inter Black, black stroke).
+Make 3 options for YouTube Test & compare; check them at ~350 px wide before sending.
