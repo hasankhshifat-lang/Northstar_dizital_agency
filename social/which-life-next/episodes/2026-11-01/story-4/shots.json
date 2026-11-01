@@ -1,0 +1,315 @@
+{
+ "_title": [
+  "TRAPPED",
+  "UNDERGROUND"
+ ],
+ "_teaser": {
+  "clips": [
+   {
+    "find": "Then, four days in, the passage collapses.",
+    "keyword": "TRAPPED",
+    "expression": "scared",
+    "seg": "02",
+    "shot": 2
+   },
+   {
+    "find": "On February eleventh, the light bulb goes dark.",
+    "keyword": "LIGHTS OUT",
+    "expression": "scared",
+    "seg": "03",
+    "shot": 1
+   }
+  ],
+  "question": [
+   "COULD YOU",
+   "SURVIVE 14 DAYS?"
+  ],
+  "sub": "55 FEET UNDERGROUND"
+ },
+ "01": [
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "big": "1925",
+    "title": [
+     "SAND CAVE,",
+     "KENTUCKY"
+    ],
+    "subtitle": "JANUARY 30",
+    "background": {
+     "kind": "set",
+     "base": "cavelamp"
+    }
+   },
+   "at": 0
+  },
+  {
+   "kind": "set",
+   "base": "cavelamp",
+   "at": 0.2,
+   "kit": {
+    "x": 700,
+    "y": 800,
+    "scale": 0.9,
+    "pose": "side",
+    "walking": true,
+    "lean": 35,
+    "lantern": true,
+    "walkTo": 1150
+   }
+  },
+  {
+   "kind": "set",
+   "base": "caveoff",
+   "at": 0.5,
+   "tint": "night",
+   "kit": {
+    "x": 960,
+    "y": 800,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "keyword": "DARKNESS",
+   "keywordAt": 0.2,
+   "atSentence": "You knock it over"
+  },
+  {
+   "kind": "set",
+   "base": "cavelamp",
+   "at": 0.75,
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 760,
+     "scale": 0.9,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "scared"
+     }
+    },
+    {
+     "type": "boulder",
+     "x": 1040,
+     "y": 800,
+     "scale": 0.9
+    }
+   ],
+   "keyword": "26 POUNDS",
+   "keywordAt": 0.15,
+   "cuts": false,
+   "atSentence": "You reach for the wall"
+  }
+ ],
+ "02": [
+  {
+   "kind": "set",
+   "base": "cavelamp",
+   "at": 0,
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 760,
+     "scale": 0.9,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "sad"
+     }
+    },
+    {
+     "type": "boulder",
+     "x": 1040,
+     "y": 800,
+     "scale": 0.9
+    },
+    {
+     "type": "person",
+     "x": 500,
+     "y": 800,
+     "scale": 0.8,
+     "kit": {
+      "pose": "side",
+      "walking": true,
+      "lean": 35,
+      "lantern": true,
+      "colors": {
+       "coat": "#4a5a3a",
+       "cap": "#5a4a3a"
+      }
+     },
+     "walkTo": 700
+    }
+   ]
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "day",
+   "at": 0.25,
+   "elements": [
+    {
+     "type": "crowd",
+     "y": 700,
+     "density": 1.2
+    }
+   ],
+   "keyword": "NATIONAL NEWS",
+   "keywordAt": 0.1
+  },
+  {
+   "kind": "set",
+   "base": "cave",
+   "at": 0.55,
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 760,
+     "scale": 0.9,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "scared"
+     }
+    },
+    {
+     "type": "boulder",
+     "x": 1040,
+     "y": 800,
+     "scale": 0.9
+    }
+   ],
+   "collapse": [
+    0,
+    1
+   ],
+   "keyword": "COLLAPSE!",
+   "keywordAt": 0.15,
+   "cuts": false,
+   "atSentence": "Then, four days in"
+  },
+  {
+   "kind": "set",
+   "base": "cave",
+   "at": 0.75,
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 760,
+     "scale": 0.9,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "sad"
+     }
+    },
+    {
+     "type": "boulder",
+     "x": 1040,
+     "y": 800,
+     "scale": 0.9
+    }
+   ],
+   "keyword": "CUT OFF",
+   "keywordAt": 0.3
+  }
+ ],
+ "03": [
+  {
+   "kind": "set",
+   "base": "shaft",
+   "at": 0,
+   "shaft": [
+    0.2,
+    0.7
+   ],
+   "keyword": "2 FEET AN HOUR",
+   "keywordAt": 0.3,
+   "timer": "DAY 10",
+   "timerLabel": "TRAPPED"
+  },
+  {
+   "kind": "set",
+   "base": "caveoff",
+   "at": 0.25,
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 760,
+     "scale": 0.9,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "sad"
+     }
+    },
+    {
+     "type": "boulder",
+     "x": 1040,
+     "y": 800,
+     "scale": 0.9
+    }
+   ],
+   "tint": "night",
+   "keyword": "LIGHTS OUT",
+   "keywordAt": 0.1,
+   "atSentence": "On February eleventh"
+  },
+  {
+   "kind": "set",
+   "base": "shaft",
+   "at": 0.42,
+   "shaft": [
+    0.8,
+    1
+   ],
+   "keyword": "TOO LATE",
+   "keywordAt": 0.4,
+   "timer": "DAY 17",
+   "timerLabel": "TRAPPED",
+   "atSentence": "On February sixteenth"
+  },
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "title": [
+     "FLOYD COLLINS"
+    ],
+    "subtitle": "ONE OF KENTUCKY'S GREATEST CAVE EXPLORERS",
+    "background": {
+     "kind": "set",
+     "base": "cavelamp"
+    }
+   },
+   "at": 0.58
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "dusk",
+   "at": 0.8,
+   "elements": [
+    {
+     "type": "crowd",
+     "y": 700,
+     "density": 0.5
+    }
+   ],
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "sad"
+   }
+  }
+ ]
+}

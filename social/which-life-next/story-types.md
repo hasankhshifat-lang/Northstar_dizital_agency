@@ -17,16 +17,30 @@ A type needs 3+ Shorts before it can lose its place; a test that beats the leade
 | **Weird but true** | Bizarre real history that sounds fake | (to test) |
 | **Everyday hard life** | Prices, chores, rules of daily life | $300 for the Oregon Trail; July 4th deadline |
 
-## Results so far (public counts, 2026-10-31 ~23:45 SGT; all cut from long videos)
+## Results (public counts, last updated 2026-11-01 13:20 SGT)
 | Short | Type | Posted (SGT) | Views | Likes |
 |---|---|---|---|---|
-| She Tied 12 Kids Together to Survive a Blizzard (`J5rJThy08hk`) | Rescue / hero | 10-31 09:02 | 1,277 | 25 |
-| 50°F to −27°F in One Afternoon (`HyqmpcvzHKI`) | Sudden disaster | 10-31 08:03 | 1,273 | 28 |
-| The Oregon Trail Killer That Can Take You in 12 Hours (`7kxCubu2UdI`) | Deadly disease | 10-29 10:51 | 1,218 | 22 |
-| Found 12 Feet From His Own Door (`qbtwhG8IDL8`) | So close to safety | 10-31 11:02 | 997 | 19 |
-| Miss July 4th on the Oregon Trail (`pGNi9O6MFIA`) | Everyday hard life | 10-30 22:06 | 401 | 5 |
-| You Have $300 to Survive the Oregon Trail (`XiUBmGYlWOE`) | Everyday hard life | 10-30 04:03 | 297 | 2 |
+| She Tied 12 Kids Together to Survive a Blizzard (`J5rJThy08hk`) | Rescue / hero | 10-31 09:02 | 1,299 | 25 |
+| 50°F to −27°F in One Afternoon (`HyqmpcvzHKI`) | Sudden disaster | 10-31 08:03 | 1,280 | 28 |
+| The Oregon Trail Killer That Can Take You in 12 Hours (`7kxCubu2UdI`) | Deadly disease | 10-29 10:51 | 1,223 | 22 |
+| Found 12 Feet From His Own Door (`qbtwhG8IDL8`) | So close to safety | 10-31 11:02 | 1,199 | 19 |
+| Miss July 4th on the Oregon Trail (`pGNi9O6MFIA`) | Everyday hard life | 10-30 22:06 | 396 | 5 |
+| You Have $300 to Survive the Oregon Trail (`XiUBmGYlWOE`) | Everyday hard life | 10-30 04:03 | 303 | 2 |
+| The Corn Was Gone by Morning (`Bxq73rQ54xk`) | Disaster (insects/nature, slow) | 11-01 08:03 | 28 (5 h) | 0 |
+| The Day the Sky Went Dark With Locusts (`LhQtj0tc_q8`) | Disaster (insects/nature, slow) | 11-01 09:04 | 98 (4 h) | 1 |
+| Trillions of Them. Then They Vanished. (`pXOy92KjJt4`) | Weird but true (extinction) | 11-01 11:02 | 59 (2 h) | 2 |
 
 **Current ranking:** life-or-death types (rescue, sudden disaster, deadly disease, so close to safety) average
 ~1,190 views; everyday-hard-life averages ~350 (3.4× less). → Next picks: 2 × life-or-death (rotate rescue /
 sudden disaster / deadly disease), 1 test (lost/stranded, outlaw or weird-but-true). Stop everyday-hard-life Shorts.
+
+**2026-11-01 note:** the 3 locust Shorts are slow so far (28–98 views in 2–5 h; the life-or-death Shorts had ~200 at 4 h).
+A slow-moving threat (insects eating crops) seems weaker than a person facing sudden death. Recheck at 24 h.
+
+## Scheduled (first standalone story Shorts, with cold-open hook + title bar)
+| Short | Type | Publish (SGT) | Metricool |
+|---|---|---|---|
+| She Crawled Across a Flooded Bridge to Stop a Train | Rescue / hero | 11-02 06:00 | #412683378 |
+| A 60-Foot Wall of Water Hit This Town in 1889 | Sudden disaster | 11-02 08:00 | #412686619 |
+| The Fever That Emptied America's Capital (1793) | Deadly disease | 11-02 11:00 | #412684049 |
+| Trapped Underground for 14 Days (1925) | Lost / stranded (test) | 11-02 21:00 | #412684066 |

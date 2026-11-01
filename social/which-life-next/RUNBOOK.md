@@ -321,3 +321,18 @@ cold-open hook as the long videos. Must be complete and ≤ 2 minutes (target 75
    (1080×1920, title bar top, captions bottom). Check length ≤ 120 s.
 5. **Title:** "POV: …" or the shocking fact, < 60 chars, + #shorts. Description: 1–2 lines + sources + AI narration note.
 6. Log each Short in `story-types.md` (type, title, ID, views 24 h / 72 h) and pick tomorrow's types from it.
+
+## Story-Short tools (2026-11-01)
+- Sets in `remotion/src/sets/stories.tsx`, used with shot `"kind": "set"` and `"base"`: night, stormnight, city, citynight,
+  town, sky, cave, caveoff, cavelamp, shaft. Elements: river, railbridge (gap), locomotive (light, tilt, driveTo),
+  floodwave (front [from,to]), dam (breach [from,to]), deadcart, mosquito, boulder, crowd, bank, person (rotate), wagon,
+  sodhouse, rope. Shot fields: rain 0..1, lightning, collapse, shaft, timer + timerLabel.
+- `"atSentence": "<start of a narration sentence>"` on a shot makes it start exactly on that line (use it for every
+  threat reveal so the picture matches the words).
+- Teaser clips can name the exact shot: `{"find": ..., "seg": "02", "shot": 4}`; `"wide": true` keeps the threat in frame
+  instead of punching in on Kit.
+- Shorts build: copy build.py into each story folder, set `SEGS`, `FPS, GAP, LEAD = 30, 0.35, 0.3`; make a full-length
+  ambience bed `out/wind.wav` with ffmpeg (rain/wind for storms, low rumble for caves).
+- Render → re-encode for upload (fits the 25 MB relay, loudness for phones):
+  `ffmpeg -i out/short.mp4 -c:v libx264 -preset slow -crf 23 -maxrate 2400k -bufsize 4800k -pix_fmt yuv420p -af loudnorm=I=-14:TP=-1.5:LRA=11 -c:a aac -b:a 128k -ar 48000 -movflags +faststart out/short_final.mp4`
+- Check a contact sheet of frames (teaser flashes must show the threat) before rendering.

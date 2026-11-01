@@ -1,0 +1,281 @@
+{
+ "_title": [
+  "THE WALL",
+  "OF WATER"
+ ],
+ "_teaser": {
+  "clips": [
+   {
+    "find": "A wall of water and wreckage",
+    "keyword": "60 FEET",
+    "expression": "scared",
+    "caption": "A wall of water, sixty feet high.",
+    "seg": "02",
+    "shot": 4,
+    "wide": true
+   },
+   {
+    "find": "At the old stone bridge",
+    "keyword": "FIRE!",
+    "expression": "scared",
+    "caption": "The wreckage catches fire.",
+    "seg": "03",
+    "shot": 1,
+    "wide": true
+   }
+  ],
+  "question": [
+   "COULD YOU",
+   "OUTRUN IT?"
+  ],
+  "sub": "40 MILES AN HOUR"
+ },
+ "01": [
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "big": "1889",
+    "title": [
+     "JOHNSTOWN,",
+     "PENNSYLVANIA"
+    ],
+    "subtitle": "MAY 31",
+    "background": {
+     "kind": "set",
+     "base": "town",
+     "time": "storm",
+     "rain": 0.7
+    }
+   },
+   "at": 0
+  },
+  {
+   "kind": "set",
+   "base": "town",
+   "time": "storm",
+   "rain": 0.7,
+   "at": 0.2,
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "neutral"
+   }
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "storm",
+   "rain": 0.6,
+   "at": 0.55,
+   "elements": [
+    {
+     "type": "dam",
+     "breach": [
+      0,
+      0.05
+     ]
+    }
+   ],
+   "keyword": "14 MILES UPSTREAM",
+   "keywordAt": 0.15
+  }
+ ],
+ "02": [
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "storm",
+   "rain": 0.5,
+   "at": 0,
+   "elements": [
+    {
+     "type": "dam"
+    },
+    {
+     "type": "person",
+     "x": 800,
+     "y": 680,
+     "scale": 0.45,
+     "kit": {
+      "pose": "side",
+      "walking": true,
+      "colors": {
+       "coat": "#4a4f3a"
+      }
+     }
+    },
+    {
+     "type": "person",
+     "x": 1100,
+     "y": 680,
+     "scale": 0.45,
+     "kit": {
+      "pose": "back",
+      "colors": {
+       "coat": "#5a3a2a"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "storm",
+   "at": 0.3,
+   "elements": [
+    {
+     "type": "dam",
+     "breach": [
+      0,
+      1
+     ]
+    }
+   ],
+   "keyword": "THE DAM BREAKS",
+   "keywordAt": 0.2,
+   "atSentence": "Then, a little after three"
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "storm",
+   "at": 0.52,
+   "elements": [
+    {
+     "type": "floodwave",
+     "front": [
+      -200,
+      1300
+     ],
+     "height": 500
+    }
+   ],
+   "cuts": false
+  },
+  {
+   "kind": "set",
+   "base": "town",
+   "time": "storm",
+   "rain": 0.7,
+   "at": 0.7,
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "keyword": "ROAR",
+   "keywordAt": 0.05,
+   "atSentence": "Fifty-seven minutes later"
+  },
+  {
+   "kind": "set",
+   "base": "town",
+   "time": "storm",
+   "at": 0.85,
+   "elements": [
+    {
+     "type": "floodwave",
+     "front": [
+      700,
+      1150
+     ],
+     "height": 640
+    }
+   ],
+   "kit": {
+    "x": 1420,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "keyword": "60 FEET",
+   "keywordAt": 0.1,
+   "cuts": false,
+   "atSentence": "A wall of water and wreckage"
+  }
+ ],
+ "03": [
+  {
+   "kind": "set",
+   "base": "town",
+   "time": "storm",
+   "at": 0,
+   "elements": [
+    {
+     "type": "floodwave",
+     "front": [
+      700,
+      2200
+     ],
+     "height": 640
+    }
+   ],
+   "kit": {
+    "x": 1300,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "side",
+    "walking": true,
+    "walkTo": 1900,
+    "expression": "scared"
+   }
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "dusk",
+   "at": 0.28,
+   "elements": [
+    {
+     "type": "floodwave",
+     "front": [
+      1500,
+      1600
+     ],
+     "height": 420
+    }
+   ],
+   "tint": "fire",
+   "keyword": "FIRE!",
+   "keywordAt": 0.15,
+   "atSentence": "At the old stone bridge"
+  },
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "big": "2,208",
+    "title": [
+     "PEOPLE KILLED"
+    ],
+    "subtitle": "THE DEADLIEST FLASH FLOOD IN U.S. HISTORY",
+    "background": {
+     "kind": "set",
+     "base": "town",
+     "time": "dusk"
+    }
+   },
+   "at": 0.48
+  },
+  {
+   "kind": "set",
+   "base": "town",
+   "time": "day",
+   "at": 0.72,
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "sad"
+   }
+  }
+ ]
+}

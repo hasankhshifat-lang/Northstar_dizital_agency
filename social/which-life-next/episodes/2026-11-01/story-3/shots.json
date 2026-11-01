@@ -1,0 +1,315 @@
+{
+ "_title": [
+  "THE FEVER THAT",
+  "EMPTIED THE CAPITAL"
+ ],
+ "_teaser": {
+  "clips": [
+   {
+    "find": "Within days, he's dead.",
+    "keyword": "DEAD",
+    "expression": "scared",
+    "seg": "01",
+    "shot": 3
+   },
+   {
+    "find": "The real killer is buzzing",
+    "keyword": "MOSQUITOES",
+    "expression": "scared",
+    "caption": "The real killer is buzzing right past your ear.",
+    "seg": "02",
+    "shot": 4
+   }
+  ],
+  "question": [
+   "WOULD YOU",
+   "STAY OR FLEE?"
+  ],
+  "sub": "1 IN 10 PEOPLE DIED"
+ },
+ "01": [
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "big": "1793",
+    "title": [
+     "PHILADELPHIA"
+    ],
+    "subtitle": "THE CAPITAL OF THE UNITED STATES",
+    "background": {
+     "kind": "set",
+     "base": "city"
+    }
+   },
+   "at": 0
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "at": 0.25,
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "neutral"
+   }
+  },
+  {
+   "kind": "interior",
+   "interior": {
+    "night": true
+   },
+   "at": 0.45,
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 900,
+     "scale": 0.8,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "sad",
+      "colors": {
+       "skin": "#e2c060",
+       "skinShade": "#c4a040",
+       "coat": "#d9d2c0"
+      }
+     }
+    }
+   ],
+   "kit": {
+    "x": 760,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "keyword": "YELLOW FEVER",
+   "keywordAt": 0.2,
+   "atSentence": "Your neighbor has a fever"
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "at": 0.72,
+   "elements": [
+    {
+     "type": "deadcart",
+     "x": 300,
+     "y": 1000,
+     "driveTo": 900
+    }
+   ],
+   "kit": {
+    "x": 1300,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "sad"
+   },
+   "keyword": "DEAD",
+   "keywordAt": 0.1,
+   "atSentence": "Within days"
+  }
+ ],
+ "02": [
+  {
+   "kind": "set",
+   "base": "city",
+   "snow": 1,
+   "at": 0,
+   "kit": {
+    "x": 600,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "side",
+    "walking": true,
+    "walkTo": 1300,
+    "expression": "sad"
+   }
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "at": 0.28,
+   "elements": [
+    {
+     "type": "wagon",
+     "x": 200,
+     "y": 1000,
+     "driveTo": 1500,
+     "moving": true,
+     "oxen": true
+    }
+   ],
+   "keyword": "20,000 FLEE",
+   "keywordAt": 0.15,
+   "atSentence": "About twenty thousand"
+  },
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "big": "SEPT 10",
+    "title": [
+     "EVEN WASHINGTON",
+     "LEAVES"
+    ],
+    "background": {
+     "kind": "set",
+     "base": "city"
+    }
+   },
+   "at": 0.5
+  },
+  {
+   "kind": "interior",
+   "interior": {
+    "night": true
+   },
+   "at": 0.65,
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "elements": [
+    {
+     "type": "mosquito",
+     "x": 1500,
+     "y": 420,
+     "scale": 0.9,
+     "driveTo": 1150
+    }
+   ],
+   "atSentence": "Doctors bleed"
+  },
+  {
+   "kind": "set",
+   "base": "citynight",
+   "at": 0.82,
+   "elements": [
+    {
+     "type": "mosquito",
+     "x": 1250,
+     "y": 520,
+     "scale": 1.6
+    }
+   ],
+   "kit": {
+    "x": 800,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "keyword": "MOSQUITOES",
+   "keywordAt": 0.2,
+   "cuts": false,
+   "atSentence": "The real killer is buzzing"
+  }
+ ],
+ "03": [
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "at": 0,
+   "elements": [
+    {
+     "type": "deadcart",
+     "x": 700,
+     "y": 1000
+    },
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 1000,
+     "scale": 0.85,
+     "kit": {
+      "pose": "front",
+      "expression": "determined",
+      "colors": {
+       "skin": "#8a5a3a",
+       "skinShade": "#6e4428",
+       "hair": "#1e1612",
+       "coat": "#3e4a5a",
+       "scarf": "#d9cbb0"
+      }
+     }
+    },
+    {
+     "type": "person",
+     "x": 1350,
+     "y": 1000,
+     "scale": 0.85,
+     "kit": {
+      "pose": "side",
+      "colors": {
+       "skin": "#8a5a3a",
+       "skinShade": "#6e4428",
+       "hair": "#1e1612",
+       "coat": "#5a4a3a",
+       "scarf": "#d9cbb0"
+      }
+     }
+    }
+   ],
+   "keyword": "THEY STAYED",
+   "keywordAt": 0.3
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "dusk",
+   "at": 0.35,
+   "tint": "cold",
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "neutral"
+   },
+   "keyword": "FROST",
+   "keywordAt": 0.2
+  },
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "big": "5,000+",
+    "title": [
+     "DEAD"
+    ],
+    "subtitle": "ABOUT 1 IN 10 PEOPLE IN THE CITY",
+    "background": {
+     "kind": "set",
+     "base": "citynight"
+    }
+   },
+   "at": 0.6
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "at": 0.8,
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "determined"
+   }
+  }
+ ]
+}

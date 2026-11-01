@@ -46,7 +46,15 @@ def main():
         st, d = tm["starts"][seg]
         for i, sh in enumerate(plan[seg]):
             t0 = 0.0 if (seg == build.SEGS[0] and i == 0) else st + sh.get("at", 0) * d
-            starts.append((round(t0 * FPS), {k: v for k, v in sh.items() if k != "at"}))
+            if sh.get("atSentence"):  # start exactly when this narration sentence starts
+                key = sh["atSentence"].strip().lower()
+                ev = next((e for e in events if st - 0.5 <= e[0] <= st + d + 0.5 and e[2].strip().lower().startswith(key)), None)
+                if ev:
+                    t0 = max(0.0, ev[0] - 0.1)
+                else:
+                    print("atSentence not found:", sh["atSentence"])
+            starts.append((round(t0 * FPS), {k: v for k, v in sh.items() if k not in ("at", "atSentence")}))
+    starts.sort(key=lambda x: x[0])
     for i, (f0, sh) in enumerate(starts):
         f1 = starts[i + 1][0] if i + 1 < len(starts) else total_frames
         sh["durationInFrames"] = max(1, f1 - f0)
@@ -57,7 +65,7 @@ def main():
     caps = [{"start": round(a, 2), "end": round(b, 2), "text": t} for a, b, t in events]
     T = 0.0
     if plan.get("_teaser"):
-        tshots, tcaps, T = teaser(plan["_teaser"], events, starts, shots, out)
+        tshots, tcaps, T = teaser(plan["_teaser"], events, starts, shots, out, plan)
         shots = tshots + shots
         caps = tcaps + [{"start": round(c["start"] + T, 2), "end": round(c["end"] + T, 2), "text": c["text"]} for c in caps]
         shutil.copy(f"{out}/narration_full.wav", f"{pub}/narration.wav")
@@ -95,7 +103,7 @@ def main():
             render("Short", path, f"{out}/short-{n}.mp4")
 
 
-def teaser(cfg, events, starts, main_shots, out):
+def teaser(cfg, events, starts, main_shots, out, plan=None):
     """Build the cold-open montage + question card and narration_full.wav (teaser audio + narration)."""
     clips, tshots, tcaps, t = [], [], [], 0.0
     for c in cfg["clips"]:
@@ -107,6 +115,10 @@ def teaser(cfg, events, starts, main_shots, out):
         b = min(b, a + 4.0)
         f0 = round(a * FPS)
         idx = max(i for i, (sf, _) in enumerate(starts) if sf <= f0)
+        if c.get("seg") and c.get("shot") is not None:  # explicit shot for this flash
+            want = plan[c["seg"]][c["shot"]]
+            want_keys = {k: v for k, v in want.items() if k not in ("at", "atSentence")}
+            idx = next((i for i, (_, s0) in enumerate(starts) if {k: v for k, v in s0.items() if k != "durationInFrames"} == want_keys), idx)
         # use the scene on screen; if that is a title card/board, the nearest real scene after (then before) it
         order = list(range(idx, len(starts))) + list(range(idx - 1, -1, -1))
         src = next((starts[j][1] for j in order if starts[j][1].get("kind") not in ("card", "board")), None)
@@ -116,6 +128,15 @@ def teaser(cfg, events, starts, main_shots, out):
         d = (b - a) + 0.25
         cam = {"zoom": [1.3, 1.5]}
         k = sh.get("kit")
+        if k and k.get("walkTo") is not None:  # freeze Kit where he is at that moment of the story
+            sf = next(sf for sf, s0 in starts if s0 is src)
+            sd = src.get("durationInFrames") or 1
+            frac = min(1.0, max(0.0, (f0 - sf) / sd))
+            k = dict(k, x=k["x"] + (k["walkTo"] - k["x"]) * frac)
+            k.pop("walkTo")
+            sh["kit"] = k
+        if k and c.get("wide"):  # keep the threat in frame
+            k = None
         if k:  # punch in on Kit's face
             z, sc = 1.9, k.get("scale", 1)
             kx, ky = k.get("x", 960), k.get("y", 940) - 300 * sc
