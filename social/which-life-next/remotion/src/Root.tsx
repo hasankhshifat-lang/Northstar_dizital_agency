@@ -5,6 +5,7 @@ import { Kit } from "./kit/Kit";
 import { Prairie, Sky } from "./sets/sets";
 import { demoEpisode } from "./demo";
 import { Thumb } from "./Thumb";
+import { MapShort, MAP_SHORT_FRAMES } from "./MapShort";
 import { fonts, palette } from "./theme";
 
 const episodeMeta: CalculateMetadataFunction<EpisodeProps> = ({ props }) => ({ durationInFrames: Math.max(1, episodeDuration(props)) });
@@ -45,5 +46,6 @@ export const RemotionRoot: React.FC = () => (
       defaultProps={demoEpisode} calculateMetadata={episodeMeta} />
     <Composition id="Short" component={Short} width={1080} height={1920} fps={30} durationInFrames={300}
       defaultProps={{ ...demoEpisode, startFrame: 0, durationInFrames: 300, hook: ["KIT'S FIRST WINTER", "WOULD YOU MAKE IT?"] }} calculateMetadata={shortMeta} />
+    <Composition id="MapShort" component={MapShort} width={1080} height={1920} fps={30} durationInFrames={MAP_SHORT_FRAMES} defaultProps={{}} />
   </>
 );

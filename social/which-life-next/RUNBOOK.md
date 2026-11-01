@@ -367,3 +367,34 @@ the visual for each; no sentence may be covered by an unrelated or generic shot.
   are auto-clamped there; with a close-up camera, set a callout's `x` near Kit's `walkTo` position.
 - Info graphics in narrow mode end above world y ≈ 700, so the captions never cover them (counter max 24 icons).
 - Check a contact sheet (`npx remotion still Short …` at 6–8 frames) before encoding.
+
+## Map Shorts, GeoGlobeTales style (2026-11-01)
+Full breakdown: `research/geoglobetales-breakdown-2026-11-01.md`.
+
+**Format:** native 1080×1920 with **one continuous camera over a real map and no cuts**. The camera flies between real places.
+
+**Built so far:** `remotion/src/MapShort.tsx` (composition `MapShort`), with these parts:
+- an Albers USA map from us-atlas/world-atlas, in parchment and teal with flat political fills and thick outlines
+- a keyframed camera, plus a follow-cam that rides along the route with Kit
+- Kit on a galloping horse (`sets/horse.tsx`)
+- pins, route draw-on, relay-station pops, a day counter, a day/night tint, a telegraph wire with poles, a sign flip, a rewind effect (◀◀◀ with blur), and big serif dates
+
+**On-screen text:** 1–5-word white/yellow lines around y 1300, plus big serif dates. No title cards.
+
+**Sound:** `pony_mix.py` builds the audio:
+- a synthesized pizzicato music bed, royalty-free
+- ElevenLabs `eleven_text_to_sound_v2` effects (gallop, whoosh, pop, rewind, telegraph, zap, neigh, boom, cheer, ding, wind), each placed on its visual event
+- one silence beat before the twist
+
+**No-voiceover Shorts** use this format: the story is carried by the on-screen lines and sound effects.
+
+**Story shape:**
+1. Payoff first.
+2. Rewind.
+3. Big date.
+4. Setup on the map.
+5. The journey, with counters.
+6. Payoff number.
+7. Silence and "Then…".
+8. Twist.
+9. A final hard number.
