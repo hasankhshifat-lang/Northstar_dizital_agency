@@ -1,53 +1,34 @@
 {
- "_title": [
-  "TRAPPED",
-  "UNDERGROUND"
- ],
- "_teaser": {
-  "clips": [
-   {
-    "find": "Then, four days in, the passage collapses.",
-    "keyword": "TRAPPED",
-    "expression": "scared",
-    "seg": "02",
-    "shot": 2
-   },
-   {
-    "find": "On February eleventh, the light bulb goes dark.",
-    "keyword": "LIGHTS OUT",
-    "expression": "scared",
-    "seg": "03",
-    "shot": 1
-   }
-  ],
-  "question": [
-   "COULD YOU",
-   "SURVIVE 14 DAYS?"
-  ],
-  "sub": "55 FEET UNDERGROUND"
- },
  "01": [
   {
-   "kind": "card",
-   "cuts": false,
-   "card": {
-    "big": "1925",
-    "title": [
-     "SAND CAVE,",
-     "KENTUCKY"
+   "kind": "map",
+   "map": {
+    "target": [
+     -86.06,
+     37.196
     ],
-    "subtitle": "JANUARY 30",
-    "background": {
-     "kind": "set",
-     "base": "cavelamp"
-    }
+    "zoom": "region",
+    "markers": [
+     {
+      "at": [
+       -86.06,
+       37.196
+      ],
+      "label": "SAND CAVE",
+      "appear": 0.6
+     }
+    ],
+    "spin": 0.4,
+    "highlight": [
+     "Kentucky"
+    ],
+    "title": "KENTUCKY \u00b7 JAN 30, 1925"
    },
-   "at": 0
+   "atSentence": "January thirtieth"
   },
   {
    "kind": "set",
    "base": "cavelamp",
-   "at": 0.2,
    "kit": {
     "x": 700,
     "y": 800,
@@ -57,12 +38,38 @@
     "lean": 35,
     "lantern": true,
     "walkTo": 1150
-   }
+   },
+   "labels": [
+    {
+     "x": 960,
+     "y": 420,
+     "text": "TIGHT PASSAGE",
+     "dx": 0,
+     "dy": 220,
+     "appear": 0.1
+    }
+   ],
+   "atSentence": "You're deep inside Sand Cave"
+  },
+  {
+   "kind": "set",
+   "base": "cavelamp",
+   "tint": "night",
+   "kit": {
+    "x": 960,
+    "y": 800,
+    "scale": 0.9,
+    "pose": "side",
+    "lantern": true,
+    "expression": "scared"
+   },
+   "keyword": "LAMP DYING",
+   "keywordAt": 0.2,
+   "atSentence": "when your lamp starts to die"
   },
   {
    "kind": "set",
    "base": "caveoff",
-   "at": 0.5,
    "tint": "night",
    "kit": {
     "x": 960,
@@ -72,13 +79,29 @@
     "expression": "scared"
    },
    "keyword": "DARKNESS",
-   "keywordAt": 0.2,
+   "keywordAt": 0.1,
    "atSentence": "You knock it over"
   },
   {
    "kind": "set",
    "base": "cavelamp",
-   "at": 0.75,
+   "collapse": [
+    0,
+    0.3
+   ],
+   "kit": {
+    "x": 960,
+    "y": 800,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "cuts": false,
+   "atSentence": "You reach for the wall"
+  },
+  {
+   "kind": "set",
+   "base": "cavelamp",
    "elements": [
     {
      "type": "person",
@@ -98,17 +121,52 @@
      "scale": 0.9
     }
    ],
-   "keyword": "26 POUNDS",
-   "keywordAt": 0.15,
+   "labels": [
+    {
+     "x": 1040,
+     "y": 760,
+     "text": "26-POUND ROCK",
+     "dx": 0,
+     "dy": -260,
+     "appear": 0.1
+    }
+   ],
+   "keyword": "CRUSH",
+   "keywordAt": 0.1,
    "cuts": false,
-   "atSentence": "You reach for the wall"
+   "atSentence": "and a twenty-six pound"
+  },
+  {
+   "kind": "set",
+   "base": "cavelamp",
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 760,
+     "scale": 0.9,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "scared"
+     }
+    },
+    {
+     "type": "boulder",
+     "x": 1040,
+     "y": 800,
+     "scale": 0.9
+    }
+   ],
+   "keyword": "PINNED",
+   "keywordAt": 0.1,
+   "atSentence": "You can't move"
   }
  ],
  "02": [
   {
    "kind": "set",
    "base": "cavelamp",
-   "at": 0,
    "elements": [
     {
      "type": "person",
@@ -144,27 +202,112 @@
      },
      "walkTo": 700
     }
-   ]
+   ],
+   "labels": [
+    {
+     "x": 600,
+     "y": 620,
+     "text": "HIS BROTHER HOMER",
+     "dx": 0,
+     "dy": -180,
+     "appear": 0.1
+    },
+    {
+     "x": 700,
+     "y": 700,
+     "text": "FOOD & WATER",
+     "dx": 200,
+     "dy": -100,
+     "appear": 0.4
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Your brother squeezes"
   },
   {
    "kind": "set",
    "base": "sky",
    "time": "day",
-   "at": 0.25,
    "elements": [
     {
      "type": "crowd",
      "y": 700,
-     "density": 1.2
+     "density": 0.5
     }
    ],
-   "keyword": "NATIONAL NEWS",
-   "keywordAt": 0.1
+   "labels": [
+    {
+     "x": 700,
+     "y": 700,
+     "text": "REPORTERS",
+     "dx": 0,
+     "dy": -200,
+     "appear": 0.1
+    }
+   ],
+   "keyword": "ON THE RADIO",
+   "keywordAt": 0.5,
+   "atSentence": "Reporters arrive"
+  },
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "title": [
+     "NATIONAL NEWS"
+    ],
+    "background": {
+     "kind": "set",
+     "base": "sky",
+     "time": "day"
+    },
+    "subtitle": "NEWSPAPERS AND RADIO ACROSS AMERICA"
+   },
+   "atSentence": "Within days, your name"
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "day",
+   "elements": [
+    {
+     "type": "crowd",
+     "y": 700,
+     "density": 1.4
+    }
+   ],
+   "keyword": "10,000s OF PEOPLE",
+   "keywordAt": 0.2,
+   "cuts": false,
+   "atSentence": "and tens of thousands"
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "day",
+   "elements": [
+    {
+     "type": "crowd",
+     "y": 700,
+     "density": 1.0
+    }
+   ],
+   "labels": [
+    {
+     "x": 500,
+     "y": 560,
+     "text": "HAMBURGERS \u00b7 25\u00a2",
+     "dx": 150,
+     "dy": -160,
+     "appear": 0.1
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Vendors sell hamburgers"
   },
   {
    "kind": "set",
    "base": "cave",
-   "at": 0.55,
    "elements": [
     {
      "type": "person",
@@ -190,13 +333,14 @@
    ],
    "keyword": "COLLAPSE!",
    "keywordAt": 0.15,
+   "timer": "DAY 4",
+   "timerLabel": "TRAPPED",
    "cuts": false,
    "atSentence": "Then, four days in"
   },
   {
    "kind": "set",
    "base": "cave",
-   "at": 0.75,
    "elements": [
     {
      "type": "person",
@@ -217,27 +361,115 @@
     }
    ],
    "keyword": "CUT OFF",
-   "keywordAt": 0.3
+   "keywordAt": 0.2,
+   "atSentence": "Now no one can reach you"
+  },
+  {
+   "kind": "set",
+   "base": "cave",
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 760,
+     "scale": 0.9,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "sad"
+     }
+    },
+    {
+     "type": "boulder",
+     "x": 1040,
+     "y": 800,
+     "scale": 0.9
+    }
+   ],
+   "labels": [
+    {
+     "x": 1500,
+     "y": 500,
+     "text": "VOICE THROUGH THE ROCK",
+     "dx": -200,
+     "dy": -180,
+     "appear": 0.1
+    }
+   ],
+   "atSentence": "There's only a voice"
+  },
+  {
+   "kind": "set",
+   "base": "cave",
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 760,
+     "scale": 0.9,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "sad"
+     }
+    },
+    {
+     "type": "boulder",
+     "x": 1040,
+     "y": 800,
+     "scale": 0.9
+    }
+   ],
+   "labels": [
+    {
+     "x": 1100,
+     "y": 320,
+     "text": "LIGHT BULB ON A WIRE",
+     "dx": -260,
+     "dy": -150,
+     "appear": 0.1
+    }
+   ],
+   "cuts": false,
+   "atSentence": "and a wire to a single"
   }
  ],
  "03": [
   {
    "kind": "set",
    "base": "shaft",
-   "at": 0,
    "shaft": [
     0.2,
+    0.55
+   ],
+   "labels": [
+    {
+     "x": 960,
+     "y": 900,
+     "text": "RESCUE SHAFT",
+     "dx": 320,
+     "dy": -120,
+     "appear": 0.1
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Miners dig a shaft"
+  },
+  {
+   "kind": "set",
+   "base": "shaft",
+   "shaft": [
+    0.55,
     0.7
    ],
-   "keyword": "2 FEET AN HOUR",
-   "keywordAt": 0.3,
-   "timer": "DAY 10",
-   "timerLabel": "TRAPPED"
+   "timer": "~2 FT / HOUR",
+   "timerLabel": "DIGGING",
+   "cuts": false,
+   "atSentence": "a couple of feet an hour"
   },
   {
    "kind": "set",
    "base": "caveoff",
-   "at": 0.25,
    "elements": [
     {
      "type": "person",
@@ -260,21 +492,38 @@
    "tint": "night",
    "keyword": "LIGHTS OUT",
    "keywordAt": 0.1,
+   "timer": "FEB 11",
+   "timerLabel": "DATE",
    "atSentence": "On February eleventh"
   },
   {
    "kind": "set",
    "base": "shaft",
-   "at": 0.42,
    "shaft": [
     0.8,
     1
    ],
-   "keyword": "TOO LATE",
-   "keywordAt": 0.4,
-   "timer": "DAY 17",
-   "timerLabel": "TRAPPED",
+   "timer": "FEB 16",
+   "timerLabel": "DATE",
+   "keyword": "BREAKTHROUGH",
+   "keywordAt": 0.6,
+   "cuts": false,
    "atSentence": "On February sixteenth"
+  },
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "title": [
+     "TOO LATE"
+    ],
+    "background": {
+     "kind": "set",
+     "base": "cavelamp"
+    },
+    "big": "3 DAYS"
+   },
+   "atSentence": "They're about three days"
   },
   {
    "kind": "card",
@@ -283,33 +532,71 @@
     "title": [
      "FLOYD COLLINS"
     ],
-    "subtitle": "ONE OF KENTUCKY'S GREATEST CAVE EXPLORERS",
     "background": {
      "kind": "set",
      "base": "cavelamp"
-    }
+    },
+    "subtitle": "ONE OF KENTUCKY'S GREATEST CAVE EXPLORERS"
    },
-   "at": 0.58
+   "atSentence": "His name was Floyd Collins"
   },
   {
    "kind": "set",
    "base": "sky",
    "time": "dusk",
-   "at": 0.8,
    "elements": [
     {
      "type": "crowd",
      "y": 700,
-     "density": 0.5
+     "density": 0.8
     }
    ],
-   "kit": {
-    "x": 960,
-    "y": 1000,
-    "scale": 0.9,
-    "pose": "front",
-    "expression": "sad"
-   }
+   "keyword": "ON AMERICAN RADIO",
+   "keywordAt": 0.2,
+   "atSentence": "and his rescue was one"
+  },
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "title": [
+     "COULD YOU",
+     "SURVIVE?"
+    ],
+    "background": {
+     "kind": "set",
+     "base": "cave"
+    },
+    "big": "14 DAYS"
+   },
+   "atSentence": "Could you survive fourteen"
   }
- ]
+ ],
+ "_title": [
+  "TRAPPED",
+  "UNDERGROUND"
+ ],
+ "_teaser": {
+  "clips": [
+   {
+    "find": "Then, four days in, the passage collapses.",
+    "keyword": "TRAPPED",
+    "seg": "02",
+    "shot": 5,
+    "wide": true
+   },
+   {
+    "find": "On February eleventh, the light bulb goes dark.",
+    "keyword": "LIGHTS OUT",
+    "seg": "03",
+    "shot": 2,
+    "wide": true
+   }
+  ],
+  "question": [
+   "COULD YOU",
+   "SURVIVE 14 DAYS?"
+  ],
+  "sub": "55 FEET UNDERGROUND"
+ }
 }

@@ -67,7 +67,7 @@ export const River: React.FC<{ level?: number; flood?: boolean; color?: string }
 };
 
 /** Wooden railroad trestle bridge. gap: x-range [a,b] that has collapsed. */
-export const RailBridge: React.FC<{ y?: number; x0?: number; x1?: number; gap?: [number, number] | null }> = ({ y = HORIZON + 40, x0 = -100, x1 = 2020, gap = null }) => {
+export const RailBridge: React.FC<{ y?: number; x0?: number; x1?: number; gap?: [number, number] | null; steel?: boolean }> = ({ y = HORIZON + 40, x0 = -100, x1 = 2020, gap = null, steel = false }) => {
   const inGap = (x: number) => gap && x > gap[0] && x < gap[1];
   const legs = [];
   for (let x = x0; x <= x1; x += 120) if (!inGap(x)) legs.push(x);
@@ -77,8 +77,9 @@ export const RailBridge: React.FC<{ y?: number; x0?: number; x1?: number; gap?: 
     <g>
       {legs.map((x) => (
         <g key={x}>
-          <path d={`M ${x} ${y + 14} L ${x - 30} ${y + 420} M ${x} ${y + 14} L ${x + 30} ${y + 420}`} stroke="#5a3f26" strokeWidth={12} />
-          <path d={`M ${x - 16} ${y + 120} L ${x + 16} ${y + 220} M ${x + 16} ${y + 120} L ${x - 16} ${y + 220}`} stroke="#4a331f" strokeWidth={7} />
+          <path d={`M ${x} ${y + 14} L ${x - 30} ${y + 420} M ${x} ${y + 14} L ${x + 30} ${y + 420}`} stroke={steel ? "#5f6670" : "#5a3f26"} strokeWidth={steel ? 16 : 12} />
+          <path d={`M ${x - 16} ${y + 120} L ${x + 16} ${y + 220} M ${x + 16} ${y + 120} L ${x - 16} ${y + 220}`} stroke={steel ? "#4a5058" : "#4a331f"} strokeWidth={7} />
+          {steel && <path d={`M ${x - 60} ${y + 14} L ${x + 60} ${y + 14} M ${x - 24} ${y + 300} L ${x + 24} ${y + 300}`} stroke="#4a5058" strokeWidth={8} />}
         </g>
       ))}
       {ties.map((x) => <rect key={x} x={x - 7} y={y - 4} width={14} height={20} fill="#6b4a2e" stroke={INK} strokeWidth={2} />)}
@@ -307,6 +308,64 @@ export const Shaft: React.FC<{ progress?: number }> = ({ progress = 0.5 }) => {
       <path d={`M 860 ${HORIZON} L 960 ${HORIZON - 220} L 1060 ${HORIZON} M 960 ${HORIZON - 220} L 960 ${HORIZON + d - 40}`} stroke="#6b4a2e" strokeWidth={10} fill="none" />
       <circle cx={960} cy={HORIZON - 220} r={18} fill="#8a8f96" stroke={INK} strokeWidth={3} />
       <rect x={930} y={HORIZON + d - 60} width={60} height={46} fill="#7a5a36" stroke={INK} strokeWidth={3} />
+    </g>
+  );
+};
+
+/** Johnstown's Pennsylvania Railroad Stone Bridge: a multi-arch stone viaduct. fire: debris burning against it. */
+export const StoneBridge: React.FC<{ x?: number; y?: number; scale?: number; debris?: boolean; fire?: boolean }> = ({ x = 960, y = 760, scale = 1, debris, fire }) => {
+  const frame = useCurrentFrame();
+  const arches = 7, w = 230;
+  const x0 = -((arches * w) / 2);
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`}>
+      <rect x={x0 - 40} y={-260} width={arches * w + 80} height={80} fill="#9a8f80" stroke={INK} strokeWidth={6} />
+      {Array.from({ length: arches }).map((_, i) => {
+        const ax = x0 + i * w;
+        return (
+          <g key={i}>
+            <path d={`M ${ax} -180 L ${ax + w} -180 L ${ax + w} 120 L ${ax + w - 30} 120 L ${ax + w - 30} 0 Q ${ax + w / 2} -150 ${ax + 30} 0 L ${ax + 30} 120 L ${ax} 120 Z`} fill="#a89c8b" stroke={INK} strokeWidth={6} />
+            {[-140, -100, -60].map((ry) => <path key={ry} d={`M ${ax + 10} ${ry} L ${ax + w - 10} ${ry}`} stroke="#857a6b" strokeWidth={3} />)}
+          </g>
+        );
+      })}
+      <rect x={x0 - 40} y={-272} width={arches * w + 80} height={14} fill="#5a5048" />
+      {debris && Array.from({ length: 70 }).map((_, i) => {
+        const dx = x0 + random(`sb${i}`) * arches * w, dy = -170 + random(`sby${i}`) * 300, r = random(`sbr${i}`) * 90 - 45;
+        return <rect key={i} x={dx} y={dy} width={60 + random(`sbw${i}`) * 90} height={14} fill={["#6b4a2e", "#5a3f26", "#7a5a36"][i % 3]} stroke={INK} strokeWidth={2} transform={`rotate(${r} ${dx} ${dy})`} />;
+      })}
+      {fire && Array.from({ length: 24 }).map((_, i) => {
+        const fx = x0 + 60 + (i / 24) * (arches * w - 120), h = 120 + Math.sin(frame * 0.5 + i * 1.7) * 40 + random(`fh${i}`) * 80;
+        return (
+          <g key={`f${i}`}>
+            <path d={`M ${fx - 40} -120 Q ${fx} ${-120 - h * 1.3} ${fx + 40} -120 Z`} fill="#ff8a1f" opacity={0.85} />
+            <path d={`M ${fx - 20} -120 Q ${fx} ${-120 - h * 0.8} ${fx + 20} -120 Z`} fill="#ffe08a" />
+          </g>
+        );
+      })}
+    </g>
+  );
+};
+
+/** People in floodwater: heads and an arm above the surface, bobbing. */
+export const Swimmers: React.FC<{ at: [number, number][] }> = ({ at }) => {
+  const frame = useCurrentFrame();
+  return (
+    <g>
+      {at.map(([x, y], i) => {
+        const b = Math.sin(frame * 0.2 + i * 2) * 8;
+        return (
+          <g key={i} transform={`translate(${x} ${y + b})`}>
+            <circle r={26} fill="#e2b48f" stroke={INK} strokeWidth={4} />
+            <path d="M -26 -6 Q 0 -40 26 -6 Z" fill="#3a2a1e" />
+            <circle cx={-8} cy={2} r={3.5} fill={INK} /><circle cx={8} cy={2} r={3.5} fill={INK} />
+            <ellipse cx={0} cy={14} rx={5} ry={6} fill="#4a1a14" />
+            <path d={`M 22 6 L 60 ${-50 - b}`} stroke="#3e4a5a" strokeWidth={14} strokeLinecap="round" />
+            <circle cx={62} cy={-54 - b} r={10} fill="#e2b48f" stroke={INK} strokeWidth={3} />
+            <ellipse cx={0} cy={26} rx={60} ry={10} fill="#d8cfb8" opacity={0.6} />
+          </g>
+        );
+      })}
     </g>
   );
 };

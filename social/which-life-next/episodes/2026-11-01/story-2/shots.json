@@ -1,86 +1,188 @@
 {
- "_title": [
-  "THE WALL",
-  "OF WATER"
- ],
- "_teaser": {
-  "clips": [
-   {
-    "find": "A wall of water and wreckage",
-    "keyword": "60 FEET",
-    "expression": "scared",
-    "caption": "A wall of water, sixty feet high.",
-    "seg": "02",
-    "shot": 4,
-    "wide": true
-   },
-   {
-    "find": "At the old stone bridge",
-    "keyword": "FIRE!",
-    "expression": "scared",
-    "caption": "The wreckage catches fire.",
-    "seg": "03",
-    "shot": 1,
-    "wide": true
-   }
-  ],
-  "question": [
-   "COULD YOU",
-   "OUTRUN IT?"
-  ],
-  "sub": "40 MILES AN HOUR"
- },
  "01": [
   {
-   "kind": "card",
-   "cuts": false,
-   "card": {
-    "big": "1889",
-    "title": [
-     "JOHNSTOWN,",
-     "PENNSYLVANIA"
+   "kind": "map",
+   "map": {
+    "target": [
+     -78.922,
+     40.3267
     ],
-    "subtitle": "MAY 31",
-    "background": {
-     "kind": "set",
-     "base": "town",
-     "time": "storm",
-     "rain": 0.7
-    }
+    "zoom": "state",
+    "markers": [
+     {
+      "at": [
+       -78.922,
+       40.3267
+      ],
+      "label": "JOHNSTOWN",
+      "appear": 0.6
+     }
+    ],
+    "spin": 0.4,
+    "highlight": [
+     "Pennsylvania"
+    ],
+    "title": "MAY 31, 1889"
    },
-   "at": 0
+   "atSentence": "May thirty-first"
   },
   {
    "kind": "set",
    "base": "town",
    "time": "storm",
    "rain": 0.7,
-   "at": 0.2,
+   "elements": [
+    {
+     "type": "river",
+     "level": 1010,
+     "flood": true
+    }
+   ],
    "kit": {
     "x": 960,
     "y": 1000,
     "scale": 0.9,
     "pose": "front",
     "expression": "neutral"
-   }
+   },
+   "labels": [
+    {
+     "x": 960,
+     "y": 1020,
+     "text": "FLOODED STREETS",
+     "dx": 0,
+     "dy": -420,
+     "appear": 0.1
+    }
+   ],
+   "atSentence": "It has been raining"
+  },
+  {
+   "kind": "set",
+   "base": "town",
+   "time": "storm",
+   "rain": 0.7,
+   "elements": [
+    {
+     "type": "river",
+     "level": 1010,
+     "flood": true
+    }
+   ],
+   "kit": {
+    "x": 700,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "side",
+    "walking": true,
+    "walkTo": 1200
+   },
+   "keyword": "WAIT IT OUT",
+   "keywordAt": 0.3,
+   "atSentence": "You carry your things"
+  },
+  {
+   "kind": "map",
+   "map": {
+    "target": [
+     -78.85,
+     40.34
+    ],
+    "zoom": 90000,
+    "markers": [
+     {
+      "at": [
+       -78.922,
+       40.3267
+      ],
+      "label": "JOHNSTOWN",
+      "appear": 0.15,
+      "labelSide": "left"
+     },
+     {
+      "at": [
+       -78.7751,
+       40.3486
+      ],
+      "label": "SOUTH FORK DAM",
+      "appear": 0.3,
+      "color": "#2f7fd0"
+     }
+    ],
+    "spin": 0.05,
+    "lines": [
+     {
+      "from": [
+       -78.7751,
+       40.3486
+      ],
+      "to": [
+       -78.922,
+       40.3267
+      ],
+      "label": "14 MILES",
+      "appear": 0.45,
+      "dashed": true
+     }
+    ],
+    "highlight": [
+     "Pennsylvania"
+    ],
+    "start": [
+     -78.922,
+     40.3267
+    ]
+   },
+   "atSentence": "What you don't know"
   },
   {
    "kind": "set",
    "base": "sky",
    "time": "storm",
    "rain": 0.6,
-   "at": 0.55,
+   "elements": [
+    {
+     "type": "dam"
+    }
+   ],
+   "labels": [
+    {
+     "x": 500,
+     "y": 560,
+     "text": "SOUTH FORK DAM",
+     "dx": 0,
+     "dy": -200,
+     "appear": 0.1
+    },
+    {
+     "x": 1500,
+     "y": 600,
+     "text": "LAKE CONEMAUGH",
+     "dx": 0,
+     "dy": -200,
+     "appear": 0.3
+    }
+   ],
+   "cuts": false,
+   "atSentence": "an old earth dam"
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "storm",
+   "rain": 0.6,
    "elements": [
     {
      "type": "dam",
      "breach": [
       0,
-      0.05
+      0.06
      ]
     }
    ],
-   "keyword": "14 MILES UPSTREAM",
-   "keywordAt": 0.15
+   "keyword": "FAILING",
+   "keywordAt": 0.15,
+   "atSentence": "And it's starting to fail"
   }
  ],
  "02": [
@@ -89,7 +191,6 @@
    "base": "sky",
    "time": "storm",
    "rain": 0.5,
-   "at": 0,
    "elements": [
     {
      "type": "dam"
@@ -119,13 +220,77 @@
       }
      }
     }
-   ]
+   ],
+   "labels": [
+    {
+     "x": 950,
+     "y": 600,
+     "text": "DIGGING A NEW CHANNEL",
+     "dx": 0,
+     "dy": -220,
+     "appear": 0.1
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Up at the dam"
+  },
+  {
+   "kind": "map",
+   "map": {
+    "target": [
+     -78.7751,
+     40.3486
+    ],
+    "zoom": 250000,
+    "markers": [
+     {
+      "at": [
+       -78.7751,
+       40.3486
+      ],
+      "label": "DAM",
+      "appear": 0.05,
+      "color": "#2f7fd0",
+      "labelSide": "left"
+     },
+     {
+      "at": [
+       -78.7914,
+       40.364
+      ],
+      "label": "TELEGRAPH: SOUTH FORK",
+      "appear": 0.15
+     }
+    ],
+    "spin": 0.03,
+    "lines": [
+     {
+      "from": [
+       -78.7751,
+       40.3486
+      ],
+      "to": [
+       -78.7914,
+       40.364
+      ],
+      "label": "WARNING",
+      "appear": 0.25
+     }
+    ],
+    "highlight": [
+     "Pennsylvania"
+    ],
+    "start": [
+     -78.7751,
+     40.3486
+    ]
+   },
+   "atSentence": "Twice, a rider"
   },
   {
    "kind": "set",
    "base": "sky",
    "time": "storm",
-   "at": 0.3,
    "elements": [
     {
      "type": "dam",
@@ -137,13 +302,15 @@
    ],
    "keyword": "THE DAM BREAKS",
    "keywordAt": 0.2,
+   "timer": "~3 PM",
+   "timerLabel": "MAY 31",
+   "cuts": false,
    "atSentence": "Then, a little after three"
   },
   {
    "kind": "set",
    "base": "sky",
    "time": "storm",
-   "at": 0.52,
    "elements": [
     {
      "type": "floodwave",
@@ -154,14 +321,51 @@
      "height": 500
     }
    ],
-   "cuts": false
+   "labels": [
+    {
+     "x": 500,
+     "y": 700,
+     "text": "LAKE CONEMAUGH'S WATER",
+     "dx": 200,
+     "dy": -260,
+     "appear": 0.3
+    }
+   ],
+   "cuts": false,
+   "atSentence": "The whole lake comes down"
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "storm",
+   "elements": [
+    {
+     "type": "floodwave",
+     "front": [
+      900,
+      1900
+     ],
+     "height": 560
+    }
+   ],
+   "labels": [
+    {
+     "x": 700,
+     "y": 800,
+     "text": "TREES \u00b7 HOUSES \u00b7 TRAIN CARS \u00b7 WIRE",
+     "dx": 0,
+     "dy": -380,
+     "appear": 0.1
+    }
+   ],
+   "cuts": false,
+   "atSentence": "ripping up trees"
   },
   {
    "kind": "set",
    "base": "town",
    "time": "storm",
    "rain": 0.7,
-   "at": 0.7,
    "kit": {
     "x": 960,
     "y": 1000,
@@ -170,14 +374,15 @@
     "expression": "scared"
    },
    "keyword": "ROAR",
-   "keywordAt": 0.05,
+   "keywordAt": 0.4,
+   "timer": "57 MIN",
+   "timerLabel": "DAM \u2192 TOWN",
    "atSentence": "Fifty-seven minutes later"
   },
   {
    "kind": "set",
    "base": "town",
    "time": "storm",
-   "at": 0.85,
    "elements": [
     {
      "type": "floodwave",
@@ -197,6 +402,8 @@
    },
    "keyword": "60 FEET",
    "keywordAt": 0.1,
+   "timer": "40 MPH",
+   "timerLabel": "SPEED",
    "cuts": false,
    "atSentence": "A wall of water and wreckage"
   }
@@ -206,7 +413,6 @@
    "kind": "set",
    "base": "town",
    "time": "storm",
-   "at": 0,
    "elements": [
     {
      "type": "floodwave",
@@ -225,57 +431,185 @@
     "walking": true,
     "walkTo": 1900,
     "expression": "scared"
-   }
+   },
+   "cuts": false,
+   "atSentence": "There's no time to run"
+  },
+  {
+   "kind": "set",
+   "base": "town",
+   "time": "storm",
+   "elements": [
+    {
+     "type": "floodwave",
+     "front": [
+      1000,
+      1800
+     ],
+     "height": 640
+    }
+   ],
+   "labels": [
+    {
+     "x": 1500,
+     "y": 500,
+     "text": "HOMES",
+     "dx": 0,
+     "dy": -160,
+     "appear": 0.2
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Most people are caught"
   },
   {
    "kind": "set",
    "base": "sky",
    "time": "dusk",
-   "at": 0.28,
    "elements": [
     {
-     "type": "floodwave",
-     "front": [
-      1500,
-      1600
-     ],
-     "height": 420
+     "type": "river",
+     "level": 880,
+     "flood": true
+    },
+    {
+     "type": "stonebridge",
+     "x": 960,
+     "y": 800,
+     "scale": 0.7,
+     "debris": true,
+     "fire": true
     }
    ],
    "tint": "fire",
+   "labels": [
+    {
+     "x": 960,
+     "y": 640,
+     "text": "STONE BRIDGE (PENNSYLVANIA RAILROAD)",
+     "dx": 0,
+     "dy": -300,
+     "appear": 0.1
+    }
+   ],
    "keyword": "FIRE!",
-   "keywordAt": 0.15,
+   "keywordAt": 0.5,
+   "cuts": false,
    "atSentence": "At the old stone bridge"
+  },
+  {
+   "kind": "info",
+   "info": {
+    "type": "counter",
+    "value": 80,
+    "label": "DIED AT THE STONE BRIDGE",
+    "perIcon": 1
+   },
+   "atSentence": "At least eighty people"
+  },
+  {
+   "kind": "info",
+   "info": {
+    "type": "counter",
+    "value": 2208,
+    "label": "PEOPLE KILLED",
+    "sub": "Johnstown Flood, May 31, 1889",
+    "perIcon": 25
+   },
+   "atSentence": "In all, two thousand"
   },
   {
    "kind": "card",
    "cuts": false,
    "card": {
-    "big": "2,208",
     "title": [
-     "PEOPLE KILLED"
+     "DEADLIEST FLASH FLOOD",
+     "IN U.S. HISTORY"
     ],
-    "subtitle": "THE DEADLIEST FLASH FLOOD IN U.S. HISTORY",
     "background": {
      "kind": "set",
      "base": "town",
      "time": "dusk"
-    }
+    },
+    "big": "#1"
    },
-   "at": 0.48
+   "atSentence": "It's still the deadliest"
+  },
+  {
+   "kind": "set",
+   "base": "sky",
+   "time": "day",
+   "elements": [
+    {
+     "type": "crowd",
+     "y": 700,
+     "density": 0.4
+    }
+   ],
+   "labels": [
+    {
+     "x": 400,
+     "y": 560,
+     "text": "AMERICAN RED CROSS",
+     "dx": 150,
+     "dy": -160,
+     "appear": 0.1
+    },
+    {
+     "x": 1300,
+     "y": 700,
+     "text": "CLARA BARTON'S RELIEF",
+     "dx": 0,
+     "dy": -260,
+     "appear": 0.3
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Clara Barton"
   },
   {
    "kind": "set",
    "base": "town",
    "time": "day",
-   "at": 0.72,
    "kit": {
     "x": 960,
     "y": 1000,
     "scale": 0.9,
     "pose": "front",
-    "expression": "sad"
-   }
+    "expression": "determined"
+   },
+   "keyword": "WOULD YOU?",
+   "keywordAt": 0.3,
+   "atSentence": "Would you have made it"
   }
- ]
+ ],
+ "_title": [
+  "THE WALL",
+  "OF WATER"
+ ],
+ "_teaser": {
+  "clips": [
+   {
+    "find": "A wall of water and wreckage",
+    "keyword": "60 FEET",
+    "caption": "A wall of water, sixty feet high.",
+    "seg": "02",
+    "shot": 6,
+    "wide": true
+   },
+   {
+    "find": "At the old stone bridge",
+    "keyword": "FIRE!",
+    "caption": "The wreckage catches fire.",
+    "seg": "03",
+    "shot": 2,
+    "wide": true
+   }
+  ],
+  "question": [
+   "COULD YOU",
+   "OUTRUN IT?"
+  ],
+  "sub": "40 MILES AN HOUR"
+ }
 }

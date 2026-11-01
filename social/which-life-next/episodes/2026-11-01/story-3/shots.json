@@ -1,68 +1,98 @@
 {
- "_title": [
-  "THE FEVER THAT",
-  "EMPTIED THE CAPITAL"
- ],
- "_teaser": {
-  "clips": [
-   {
-    "find": "Within days, he's dead.",
-    "keyword": "DEAD",
-    "expression": "scared",
-    "seg": "01",
-    "shot": 3
-   },
-   {
-    "find": "The real killer is buzzing",
-    "keyword": "MOSQUITOES",
-    "expression": "scared",
-    "caption": "The real killer is buzzing right past your ear.",
-    "seg": "02",
-    "shot": 4
-   }
-  ],
-  "question": [
-   "WOULD YOU",
-   "STAY OR FLEE?"
-  ],
-  "sub": "1 IN 10 PEOPLE DIED"
- },
  "01": [
   {
-   "kind": "card",
-   "cuts": false,
-   "card": {
-    "big": "1793",
-    "title": [
-     "PHILADELPHIA"
+   "kind": "map",
+   "map": {
+    "target": [
+     -75.1652,
+     39.9526
     ],
-    "subtitle": "THE CAPITAL OF THE UNITED STATES",
-    "background": {
-     "kind": "set",
-     "base": "city"
-    }
+    "zoom": "region",
+    "markers": [
+     {
+      "at": [
+       -75.1652,
+       39.9526
+      ],
+      "label": "PHILADELPHIA \u00b7 U.S. CAPITAL",
+      "appear": 0.6
+     }
+    ],
+    "spin": 0.4,
+    "highlight": [
+     "Pennsylvania"
+    ],
+    "title": "AUGUST 1793"
    },
-   "at": 0
-  },
-  {
-   "kind": "set",
-   "base": "city",
-   "time": "day",
-   "at": 0.25,
-   "kit": {
-    "x": 960,
-    "y": 1000,
-    "scale": 0.9,
-    "pose": "front",
-    "expression": "neutral"
-   }
+   "atSentence": "It's August 1793"
   },
   {
    "kind": "interior",
    "interior": {
     "night": true
    },
-   "at": 0.45,
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 900,
+     "scale": 0.8,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "sad",
+      "colors": {}
+     }
+    }
+   ],
+   "kit": {
+    "x": 700,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "labels": [
+    {
+     "x": 1000,
+     "y": 830,
+     "text": "FEVER",
+     "dx": 60,
+     "dy": -250,
+     "appear": 0.1
+    }
+   ],
+   "atSentence": "Your neighbor has a fever"
+  },
+  {
+   "kind": "interior",
+   "interior": {
+    "night": true
+   },
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 900,
+     "scale": 0.8,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "sad",
+      "colors": {}
+     }
+    }
+   ],
+   "keyword": "CHILLS",
+   "keywordAt": 0.1,
+   "tint": "cold",
+   "atSentence": "Then chills"
+  },
+  {
+   "kind": "interior",
+   "interior": {
+    "night": true
+   },
    "elements": [
     {
      "type": "person",
@@ -75,28 +105,29 @@
       "expression": "sad",
       "colors": {
        "skin": "#e2c060",
-       "skinShade": "#c4a040",
-       "coat": "#d9d2c0"
+       "skinShade": "#c4a040"
       }
      }
     }
    ],
-   "kit": {
-    "x": 760,
-    "y": 1000,
-    "scale": 0.9,
-    "pose": "front",
-    "expression": "scared"
-   },
-   "keyword": "YELLOW FEVER",
-   "keywordAt": 0.2,
-   "atSentence": "Your neighbor has a fever"
+   "keyword": "YELLOW SKIN",
+   "keywordAt": 0.15,
+   "labels": [
+    {
+     "x": 800,
+     "y": 840,
+     "text": "YELLOW FEVER",
+     "dx": -40,
+     "dy": -260,
+     "appear": 0.4
+    }
+   ],
+   "atSentence": "Then his skin turns yellow"
   },
   {
    "kind": "set",
    "base": "city",
    "time": "day",
-   "at": 0.72,
    "elements": [
     {
      "type": "deadcart",
@@ -114,66 +145,115 @@
    },
    "keyword": "DEAD",
    "keywordAt": 0.1,
-   "atSentence": "Within days"
-  }
- ],
- "02": [
-  {
-   "kind": "set",
-   "base": "city",
-   "snow": 1,
-   "at": 0,
-   "kit": {
-    "x": 600,
-    "y": 1000,
-    "scale": 0.9,
-    "pose": "side",
-    "walking": true,
-    "walkTo": 1300,
-    "expression": "sad"
-   }
+   "atSentence": "Within days, he's dead"
   },
   {
    "kind": "set",
    "base": "city",
    "time": "day",
-   "at": 0.28,
    "elements": [
     {
-     "type": "wagon",
+     "type": "deadcart",
      "x": 200,
      "y": 1000,
-     "driveTo": 1500,
-     "moving": true,
-     "oxen": true
+     "driveTo": 700
+    },
+    {
+     "type": "deadcart",
+     "x": 1000,
+     "y": 1040,
+     "scale": 0.8,
+     "driveTo": 1500
     }
    ],
-   "keyword": "20,000 FLEE",
-   "keywordAt": 0.15,
-   "atSentence": "About twenty thousand"
-  },
-  {
-   "kind": "card",
-   "cuts": false,
-   "card": {
-    "big": "SEPT 10",
-    "title": [
-     "EVEN WASHINGTON",
-     "LEAVES"
-    ],
-    "background": {
-     "kind": "set",
-     "base": "city"
+   "labels": [
+    {
+     "x": 800,
+     "y": 860,
+     "text": "MORE EVERY DAY",
+     "dx": 0,
+     "dy": -300,
+     "appear": 0.1
     }
+   ],
+   "cuts": false,
+   "atSentence": "And he isn't the only one"
+  }
+ ],
+ "02": [
+  {
+   "kind": "info",
+   "info": {
+    "type": "counter",
+    "value": 200,
+    "label": "DEATHS THIS WEEK",
+    "sub": "Thomas Jefferson's estimate, September 1793",
+    "perIcon": 2
    },
-   "at": 0.5
+   "atSentence": "By September"
   },
   {
-   "kind": "interior",
-   "interior": {
-    "night": true
+   "kind": "info",
+   "info": {
+    "type": "handshake",
+    "label": "NO MORE HANDSHAKES"
    },
-   "at": 0.65,
+   "atSentence": "People stop shaking hands"
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "elements": [
+    {
+     "type": "person",
+     "x": 900,
+     "y": 1000,
+     "scale": 0.85,
+     "walkTo": 500,
+     "kit": {
+      "pose": "side",
+      "facing": -1,
+      "walking": true,
+      "colors": {
+       "coat": "#3e4a5a"
+      }
+     }
+    }
+   ],
+   "kit": {
+    "x": 1000,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "side",
+    "walking": true,
+    "walkTo": 1400
+   },
+   "labels": [
+    {
+     "x": 950,
+     "y": 700,
+     "text": "AVOIDING EACH OTHER",
+     "dx": 0,
+     "dy": -200,
+     "appear": 0.1
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Friends cross the street"
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "elements": [
+    {
+     "type": "rag",
+     "x": 960,
+     "y": 690,
+     "scale": 1.0
+    }
+   ],
    "kit": {
     "x": 960,
     "y": 1000,
@@ -181,21 +261,133 @@
     "pose": "front",
     "expression": "scared"
    },
-   "elements": [
+   "labels": [
     {
-     "type": "mosquito",
-     "x": 1500,
-     "y": 420,
-     "scale": 0.9,
-     "driveTo": 1150
+     "x": 990,
+     "y": 690,
+     "text": "RAG SOAKED IN VINEGAR",
+     "dx": 200,
+     "dy": -200,
+     "appear": 0.1
     }
    ],
-   "atSentence": "Doctors bleed"
+   "cuts": false,
+   "atSentence": "People walk around holding rags"
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "elements": [
+    {
+     "type": "bell",
+     "x": 960,
+     "y": 520,
+     "scale": 1.0,
+     "stopped": true
+    }
+   ],
+   "keyword": "NO BELLS",
+   "keywordAt": 0.3,
+   "cuts": false,
+   "atSentence": "and the city stops ringing"
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "elements": [
+    {
+     "type": "fleeing",
+     "n": 14
+    }
+   ],
+   "keyword": "20,000 FLEE",
+   "keywordAt": 0.15,
+   "cuts": false,
+   "atSentence": "About twenty thousand"
+  },
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "title": [
+     "EVEN PRESIDENT",
+     "WASHINGTON LEAVES"
+    ],
+    "background": {
+     "kind": "set",
+     "base": "city"
+    },
+    "big": "SEPT 10"
+   },
+   "atSentence": "even President Washington"
+  },
+  {
+   "kind": "interior",
+   "interior": {
+    "night": true
+   },
+   "elements": [
+    {
+     "type": "person",
+     "x": 1150,
+     "y": 900,
+     "scale": 0.8,
+     "rotate": -90,
+     "kit": {
+      "pose": "front",
+      "expression": "sad",
+      "colors": {
+       "skin": "#e2c060",
+       "skinShade": "#c4a040"
+      }
+     }
+    },
+    {
+     "type": "person",
+     "x": 800,
+     "y": 1000,
+     "scale": 0.9,
+     "kit": {
+      "pose": "side",
+      "colors": {
+       "coat": "#1e1a18",
+       "cap": "#1e1a18"
+      }
+     }
+    }
+   ],
+   "labels": [
+    {
+     "x": 820,
+     "y": 700,
+     "text": "DOCTOR",
+     "dx": -80,
+     "dy": -150,
+     "appear": 0.1
+    }
+   ],
+   "atSentence": "Doctors bleed and purge"
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "keyword": "WHY?",
+   "keywordAt": 0.1,
+   "atSentence": "Nobody knows"
   },
   {
    "kind": "set",
    "base": "citynight",
-   "at": 0.82,
    "elements": [
     {
      "type": "mosquito",
@@ -211,10 +403,50 @@
     "pose": "front",
     "expression": "scared"
    },
-   "keyword": "MOSQUITOES",
-   "keywordAt": 0.2,
+   "labels": [
+    {
+     "x": 1130,
+     "y": 520,
+     "text": "MOSQUITO",
+     "dx": 120,
+     "dy": -200,
+     "appear": 0.3
+    }
+   ],
    "cuts": false,
    "atSentence": "The real killer is buzzing"
+  },
+  {
+   "kind": "set",
+   "base": "citynight",
+   "elements": [
+    {
+     "type": "mosquito",
+     "x": 1150,
+     "y": 540,
+     "scale": 2.2
+    }
+   ],
+   "keyword": "MOSQUITOES",
+   "keywordAt": 0.05,
+   "cuts": false,
+   "atSentence": "Mosquitoes"
+  },
+  {
+   "kind": "card",
+   "cuts": false,
+   "card": {
+    "title": [
+     "BEFORE ANYONE",
+     "PROVES IT"
+    ],
+    "background": {
+     "kind": "set",
+     "base": "citynight"
+    },
+    "big": "100+ YEARS"
+   },
+   "atSentence": "It will be a century"
   }
  ],
  "03": [
@@ -222,16 +454,10 @@
    "kind": "set",
    "base": "city",
    "time": "day",
-   "at": 0,
    "elements": [
     {
-     "type": "deadcart",
-     "x": 700,
-     "y": 1000
-    },
-    {
      "type": "person",
-     "x": 1150,
+     "x": 800,
      "y": 1000,
      "scale": 0.85,
      "kit": {
@@ -248,11 +474,12 @@
     },
     {
      "type": "person",
-     "x": 1350,
+     "x": 1120,
      "y": 1000,
      "scale": 0.85,
      "kit": {
-      "pose": "side",
+      "pose": "front",
+      "expression": "determined",
       "colors": {
        "skin": "#8a5a3a",
        "skinShade": "#6e4428",
@@ -263,15 +490,129 @@
      }
     }
    ],
-   "keyword": "THEY STAYED",
-   "keywordAt": 0.3
+   "labels": [
+    {
+     "x": 960,
+     "y": 560,
+     "text": "FREE AFRICAN SOCIETY",
+     "dx": 0,
+     "dy": -180,
+     "appear": 0.1
+    }
+   ],
+   "atSentence": "The city asks"
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "elements": [
+    {
+     "type": "person",
+     "x": 800,
+     "y": 1000,
+     "scale": 0.85,
+     "kit": {
+      "pose": "front",
+      "expression": "determined",
+      "colors": {
+       "skin": "#8a5a3a",
+       "skinShade": "#6e4428",
+       "hair": "#1e1612",
+       "coat": "#3e4a5a",
+       "scarf": "#d9cbb0"
+      }
+     }
+    },
+    {
+     "type": "person",
+     "x": 1120,
+     "y": 1000,
+     "scale": 0.85,
+     "kit": {
+      "pose": "front",
+      "expression": "determined",
+      "colors": {
+       "skin": "#8a5a3a",
+       "skinShade": "#6e4428",
+       "hair": "#1e1612",
+       "coat": "#5a4a3a",
+       "scarf": "#d9cbb0"
+      }
+     }
+    }
+   ],
+   "labels": [
+    {
+     "x": 800,
+     "y": 600,
+     "text": "RICHARD ALLEN",
+     "dx": -60,
+     "dy": -160,
+     "appear": 0.1
+    },
+    {
+     "x": 1120,
+     "y": 600,
+     "text": "ABSALOM JONES",
+     "dx": 60,
+     "dy": -160,
+     "appear": 0.25
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Led by Richard Allen"
+  },
+  {
+   "kind": "set",
+   "base": "city",
+   "time": "day",
+   "elements": [
+    {
+     "type": "deadcart",
+     "x": 500,
+     "y": 1000,
+     "driveTo": 900
+    },
+    {
+     "type": "person",
+     "x": 1250,
+     "y": 1000,
+     "scale": 0.85,
+     "kit": {
+      "pose": "side",
+      "facing": -1,
+      "walking": true,
+      "colors": {
+       "skin": "#8a5a3a",
+       "skinShade": "#6e4428",
+       "hair": "#1e1612",
+       "coat": "#3e4a5a",
+       "scarf": "#d9cbb0"
+      }
+     },
+     "walkTo": 1050
+    }
+   ],
+   "labels": [
+    {
+     "x": 1100,
+     "y": 600,
+     "text": "NURSING THE SICK",
+     "dx": 0,
+     "dy": -200,
+     "appear": 0.1
+    }
+   ],
+   "cuts": false,
+   "atSentence": "its members nurse"
   },
   {
    "kind": "set",
    "base": "city",
    "time": "dusk",
-   "at": 0.35,
    "tint": "cold",
+   "weather": 0.25,
    "kit": {
     "x": 960,
     "y": 1000,
@@ -280,36 +621,100 @@
     "expression": "neutral"
    },
    "keyword": "FROST",
-   "keywordAt": 0.2
+   "keywordAt": 0.2,
+   "atSentence": "Then, in late fall"
   },
   {
-   "kind": "card",
-   "cuts": false,
-   "card": {
-    "big": "5,000+",
-    "title": [
-     "DEAD"
-    ],
-    "subtitle": "ABOUT 1 IN 10 PEOPLE IN THE CITY",
-    "background": {
-     "kind": "set",
-     "base": "citynight"
+   "kind": "set",
+   "base": "citynight",
+   "tint": "cold",
+   "elements": [
+    {
+     "type": "mosquito",
+     "x": 1000,
+     "y": 300,
+     "scale": 1.2,
+     "driveTo": 1000
     }
+   ],
+   "labels": [
+    {
+     "x": 950,
+     "y": 330,
+     "text": "MOSQUITOES DIE",
+     "dx": 0,
+     "dy": 250,
+     "appear": 0.1
+    }
+   ],
+   "keyword": "FEVER STOPS",
+   "keywordAt": 0.5,
+   "cuts": false,
+   "atSentence": "The mosquitoes die"
+  },
+  {
+   "kind": "info",
+   "info": {
+    "type": "counter",
+    "value": 5000,
+    "label": "PEOPLE DEAD",
+    "sub": "Philadelphia, August\u2013November 1793",
+    "perIcon": 50
    },
-   "at": 0.6
+   "atSentence": "At least five thousand"
+  },
+  {
+   "kind": "info",
+   "info": {
+    "type": "ratio",
+    "n": 10,
+    "k": 1,
+    "label": "1 IN 10 PEOPLE"
+   },
+   "atSentence": "About one in every ten"
   },
   {
    "kind": "set",
    "base": "city",
    "time": "day",
-   "at": 0.8,
    "kit": {
     "x": 960,
     "y": 1000,
     "scale": 0.9,
     "pose": "front",
     "expression": "determined"
-   }
+   },
+   "keyword": "STAY OR FLEE?",
+   "keywordAt": 0.3,
+   "atSentence": "Would you have stayed"
   }
- ]
+ ],
+ "_title": [
+  "THE FEVER THAT",
+  "EMPTIED THE CAPITAL"
+ ],
+ "_teaser": {
+  "clips": [
+   {
+    "find": "Within days, he's dead.",
+    "keyword": "DEAD",
+    "expression": "scared",
+    "seg": "01",
+    "shot": 4
+   },
+   {
+    "find": "The real killer is buzzing",
+    "keyword": "MOSQUITOES",
+    "caption": "The real killer is buzzing right past your ear.",
+    "seg": "02",
+    "shot": 9,
+    "wide": true
+   }
+  ],
+  "question": [
+   "WOULD YOU",
+   "STAY OR FLEE?"
+  ],
+  "sub": "1 IN 10 PEOPLE DIED"
+ }
 }

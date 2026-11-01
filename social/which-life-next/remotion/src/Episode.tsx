@@ -3,6 +3,9 @@ import { AbsoluteFill, Audio, interpolate, Sequence, staticFile, useCurrentFrame
 import { Kit, KitProps } from "./kit/Kit";
 import { Barn, HORIZON, Prairie, Rope, Schoolhouse, Sky, Snow, SodHouse, SodInterior, StormFront, TownStreet, Wagon } from "./sets/sets";
 import { Cornfield, Hopperdozer, LocustCarpet, Mountains, Swarm } from "./sets/plains";
+import { MapProps, MapView } from "./sets/map";
+import { Bell, Callout, Callouts, Counter, Fleeing, Handshake, Rag, Ratio } from "./sets/info";
+import { StoneBridge, Swimmers } from "./sets/stories";
 import { Boulder, Cave, CityStreet, Crowd, Dam, DeadCart, FloodWave, GiantMosquito, Lightning, Locomotive, NightSky, RailBridge, Rain, River, Shaft } from "./sets/stories";
 import { fonts, palette, TimeOfDay } from "./theme";
 
@@ -18,7 +21,7 @@ export type Element =
   | { type: "hopperdozer"; x: number; y?: number; scale?: number; driveTo?: number }
   | { type: "locusts"; density?: number }
   | { type: "river"; level?: number; flood?: boolean }
-  | { type: "railbridge"; y?: number; gap?: [number, number] | null }
+  | { type: "railbridge"; y?: number; gap?: [number, number] | null; steel?: boolean }
   | { type: "locomotive"; x: number; y?: number; scale?: number; light?: boolean; tilt?: number; driveTo?: number }
   | { type: "floodwave"; front: [number, number]; height?: number }
   | { type: "dam"; breach?: [number, number] }
@@ -26,12 +29,23 @@ export type Element =
   | { type: "mosquito"; x: number; y: number; scale?: number; driveTo?: number }
   | { type: "boulder"; x: number; y: number; scale?: number }
   | { type: "crowd"; y?: number; density?: number }
-  | { type: "bank"; x0: number; x1: number; y: number; color?: string };
+  | { type: "bank"; x0: number; x1: number; y: number; color?: string }
+  | { type: "fleeing"; n?: number }
+  | { type: "stonebridge"; x?: number; y?: number; scale?: number; debris?: boolean; fire?: boolean }
+  | { type: "swimmers"; at: [number, number][] }
+  | { type: "bell"; x: number; y: number; scale?: number; stopped?: boolean }
+  | { type: "rag"; x: number; y: number; scale?: number };
 
 export type BoardEntry = { label: string; tier: number };
 
 export type Shot = {
-  kind: "landscape" | "interior" | "town" | "card" | "mountains" | "board" | "set";
+  kind: "landscape" | "interior" | "town" | "card" | "mountains" | "board" | "set" | "map" | "info";
+  /** kind "map": real-geography globe → zoom (see sets/map.tsx) */
+  map?: MapProps;
+  /** kind "info": mute-proof explainers */
+  info?: { type: "counter"; value: number; label: string; sub?: string; perIcon?: number; color?: string; prefix?: string; suffix?: string } | { type: "handshake"; label?: string } | { type: "ratio"; n: number; k?: number; label: string };
+  /** arrow callouts naming real things (world coords) */
+  labels?: Callout[];
   /** For kind "set": the base scene drawn before elements. */
   base?: "night" | "stormnight" | "city" | "citynight" | "cave" | "caveoff" | "cavelamp" | "shaft" | "sky" | "town";
   /** rain overlay 0..1 and lightning flashes */
@@ -90,6 +104,7 @@ const tints: Record<string, { color: string; opacity: number; blend: React.CSSPr
   fire: { color: "#ff6a1a", opacity: 0.32, blend: "overlay" },
 };
 
+let narrowCtx = false;
 const World: React.FC<{ shot: Shot; dur: number }> = ({ shot, dur }) => {
   const frame = useCurrentFrame();
   const t = Math.min(1, frame / Math.max(1, dur));
@@ -102,6 +117,13 @@ const World: React.FC<{ shot: Shot; dur: number }> = ({ shot, dur }) => {
         {(shot.elements ?? []).map((e, i) => <StoryElement key={i} e={e} t={t} snow={0} />)}
       </>
     );
+  }
+  if (shot.kind === "map" && shot.map) return <MapView {...shot.map} dur={dur} narrow={narrowCtx} />;
+  if (shot.kind === "info" && shot.info) {
+    const i = shot.info;
+    if (i.type === "counter") return <Counter {...i} dur={dur} narrow={narrowCtx} />;
+    if (i.type === "ratio") return <Ratio n={i.n} k={i.k} label={i.label} narrow={narrowCtx} />;
+    return <Handshake label={i.label} dur={dur} narrow={narrowCtx} />;
   }
   if (shot.kind === "set") {
     const b = shot.base ?? "sky";
@@ -167,7 +189,7 @@ const StoryElement: React.FC<{ e: Element; t: number; snow: number }> = ({ e, t,
   const mv = (x: number, to?: number) => (to !== undefined ? interpolate(t, [0, 1], [x, to]) : x);
   switch (e.type) {
     case "river": return <River level={e.level} flood={e.flood} />;
-    case "railbridge": return <RailBridge y={e.y} gap={e.gap ?? null} />;
+    case "railbridge": return <RailBridge y={e.y} gap={e.gap ?? null} steel={e.steel} />;
     case "locomotive": return <Locomotive x={mv(e.x, e.driveTo)} y={e.y ?? HORIZON + 30} scale={e.scale} light={e.light} tilt={e.tilt} />;
     case "floodwave": return <FloodWave front={interpolate(t, [0, 1], e.front)} height={e.height} />;
     case "dam": return <Dam breach={e.breach ? interpolate(t, [0, 1], e.breach) : 0} />;
@@ -175,6 +197,11 @@ const StoryElement: React.FC<{ e: Element; t: number; snow: number }> = ({ e, t,
     case "mosquito": return <GiantMosquito x={mv(e.x, e.driveTo)} y={e.y} scale={e.scale} />;
     case "boulder": return <Boulder x={e.x} y={e.y} scale={e.scale} />;
     case "crowd": return <Crowd y={e.y} density={e.density} />;
+    case "fleeing": return <Fleeing n={e.n} t={t} />;
+    case "stonebridge": return <StoneBridge x={e.x} y={e.y} scale={e.scale} debris={e.debris} fire={e.fire} />;
+    case "swimmers": return <Swimmers at={e.at} />;
+    case "bell": return <Bell x={e.x} y={e.y} scale={e.scale} stopped={e.stopped} />;
+    case "rag": return <Rag x={e.x} y={e.y} scale={e.scale} />;
     case "bank": return <path d={`M ${e.x0} ${e.y} Q ${(e.x0 + e.x1) / 2} ${e.y - 30} ${e.x1} ${e.y + 10} L ${e.x1} 1300 L ${e.x0} 1300 Z`} fill={e.color ?? "#3f4a2c"} stroke="#2b1d14" strokeWidth={5} />;
     case "person": return <PlacedPerson e={e} t={t} />;
     case "sodhouse": return <SodHouse x={e.x} y={e.y ?? HORIZON + 160} scale={e.scale} snowy={snow} lit={e.lit} smoke={e.smoke ?? true} />;
@@ -357,7 +384,8 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
   const [p0, p1] = cam.pan ?? [0, 0];
   const [q0, q1] = cam.panY ?? [0, 0];
   const tint = shot.tint ? tints[shot.tint] : null;
-  const autoCut = (shot.cuts ?? true) && dur > 105;
+  narrowCtx = narrow;
+  const autoCut = (shot.cuts ?? !["map", "info"].includes(shot.kind)) && dur > 105;
   const nBeats = autoCut ? Math.max(1, Math.round(dur / BEAT)) : 1;
   const beatLen = dur / nBeats;
   const beat = Math.min(nBeats - 1, Math.floor(frame / beatLen));
@@ -369,6 +397,7 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
       <AbsoluteFill style={{ scale: String(scale), translate }}>
         <svg viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
           <World shot={shot} dur={dur} />
+          {shot.labels && <Callouts items={shot.labels} t={Math.min(1, frame / dur)} />}
         </svg>
       </AbsoluteFill>
       {tint && <AbsoluteFill style={{ backgroundColor: tint.color, opacity: tint.opacity, mixBlendMode: tint.blend }} />}

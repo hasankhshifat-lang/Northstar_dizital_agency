@@ -50,10 +50,10 @@ def main():
                 key = sh["atSentence"].strip().lower()
                 ev = next((e for e in events if st - 0.5 <= e[0] <= st + d + 0.5 and e[2].strip().lower().startswith(key)), None)
                 if ev:
-                    t0 = max(0.0, ev[0] - 0.1)
+                    t0 = max(0.0, ev[0] - 0.1 + sh.get("atOffset", 0))
                 else:
                     print("atSentence not found:", sh["atSentence"])
-            starts.append((round(t0 * FPS), {k: v for k, v in sh.items() if k not in ("at", "atSentence")}))
+            starts.append((round(t0 * FPS), {k: v for k, v in sh.items() if k not in ("at", "atSentence", "atOffset")}))
     starts.sort(key=lambda x: x[0])
     for i, (f0, sh) in enumerate(starts):
         f1 = starts[i + 1][0] if i + 1 < len(starts) else total_frames
@@ -117,7 +117,7 @@ def teaser(cfg, events, starts, main_shots, out, plan=None):
         idx = max(i for i, (sf, _) in enumerate(starts) if sf <= f0)
         if c.get("seg") and c.get("shot") is not None:  # explicit shot for this flash
             want = plan[c["seg"]][c["shot"]]
-            want_keys = {k: v for k, v in want.items() if k not in ("at", "atSentence")}
+            want_keys = {k: v for k, v in want.items() if k not in ("at", "atSentence", "atOffset")}
             idx = next((i for i, (_, s0) in enumerate(starts) if {k: v for k, v in s0.items() if k != "durationInFrames"} == want_keys), idx)
         # use the scene on screen; if that is a title card/board, the nearest real scene after (then before) it
         order = list(range(idx, len(starts))) + list(range(idx - 1, -1, -1))

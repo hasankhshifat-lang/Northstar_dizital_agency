@@ -1,55 +1,45 @@
 {
- "_title": [
-  "THE BRIDGE",
-  "IN THE DARK"
- ],
- "_teaser": {
-  "clips": [
-   {
-    "find": "So you crawl.",
-    "keyword": "CRAWL",
-    "expression": "scared",
-    "seg": "02",
-    "shot": 3
-   },
-   {
-    "find": "A crash.",
-    "keyword": "CRASH!",
-    "expression": "scared",
-    "seg": "01",
-    "shot": 2
-   }
-  ],
-  "question": [
-   "WOULD YOU",
-   "CROSS IT?"
-  ],
-  "sub": "IN THE DARK, IN A FLOOD"
- },
  "01": [
   {
-   "kind": "card",
-   "cuts": false,
-   "card": {
-    "big": "1881",
-    "title": [
-     "HONEY CREEK, IOWA"
+   "kind": "map",
+   "map": {
+    "target": [
+     -93.9286,
+     42.0186
     ],
-    "subtitle": "ALMOST MIDNIGHT",
-    "background": {
-     "kind": "set",
-     "base": "stormnight",
-     "rain": 1
-    }
+    "zoom": "region",
+    "markers": [
+     {
+      "at": [
+       -93.9286,
+       42.0186
+      ],
+      "label": "MOINGONA",
+      "appear": 0.6
+     },
+     {
+      "at": [
+       -93.8802,
+       42.0597
+      ],
+      "label": "BOONE",
+      "appear": 0.7,
+      "kind": "dot"
+     }
+    ],
+    "spin": 0.4,
+    "highlight": [
+     "Iowa"
+    ],
+    "title": "IOWA \u00b7 JULY 6, 1881"
    },
-   "at": 0
+   "atSentence": "It's July sixth"
   },
   {
    "kind": "set",
    "base": "stormnight",
    "rain": 1,
    "lightning": true,
-   "at": 0.18,
    "elements": [
     {
      "type": "river",
@@ -59,7 +49,8 @@
     {
      "type": "railbridge",
      "y": 640,
-     "gap": null
+     "gap": null,
+     "steel": false
     },
     {
      "type": "bank",
@@ -76,19 +67,97 @@
     "expression": "neutral",
     "lantern": true
    },
-   "camera": {
-    "zoom": [
-     1.0,
-     1.1
-    ]
-   }
+   "labels": [
+    {
+     "x": 700,
+     "y": 900,
+     "text": "HONEY CREEK",
+     "dx": 0,
+     "dy": -260,
+     "appear": 0.1
+    }
+   ],
+   "timer": "11 PM",
+   "timerLabel": "TIME",
+   "atSentence": "A storm is tearing"
   },
   {
    "kind": "set",
    "base": "stormnight",
    "rain": 1,
    "lightning": true,
-   "at": 0.62,
+   "elements": [
+    {
+     "type": "river",
+     "level": 820,
+     "flood": true
+    },
+    {
+     "type": "bank",
+     "x0": 300,
+     "x1": 1700,
+     "y": 985
+    }
+   ],
+   "kit": {
+    "x": 1150,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "labels": [
+    {
+     "x": 800,
+     "y": 860,
+     "text": "FLOODING",
+     "dx": 40,
+     "dy": -200,
+     "appear": 0.1
+    }
+   ],
+   "atSentence": "and the creek behind"
+  },
+  {
+   "kind": "set",
+   "base": "stormnight",
+   "rain": 1,
+   "lightning": true,
+   "elements": [
+    {
+     "type": "river",
+     "level": 880,
+     "flood": true
+    },
+    {
+     "type": "railbridge",
+     "y": 640,
+     "gap": null,
+     "steel": false
+    },
+    {
+     "type": "bank",
+     "x0": 300,
+     "x1": 1700,
+     "y": 985
+    }
+   ],
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "keyword": "?!",
+   "keywordAt": 0.3,
+   "atSentence": "Then you hear it"
+  },
+  {
+   "kind": "set",
+   "base": "stormnight",
+   "rain": 1,
+   "lightning": true,
    "elements": [
     {
      "type": "river",
@@ -101,7 +170,8 @@
      "gap": [
       760,
       1160
-     ]
+     ],
+     "steel": false
     },
     {
      "type": "locomotive",
@@ -125,17 +195,14 @@
     "expression": "scared"
    },
    "keyword": "CRASH!",
-   "keywordAt": 0.2,
+   "keywordAt": 0.05,
    "atSentence": "A crash"
-  }
- ],
- "02": [
+  },
   {
    "kind": "set",
    "base": "stormnight",
    "rain": 1,
    "lightning": true,
-   "at": 0,
    "elements": [
     {
      "type": "river",
@@ -148,7 +215,72 @@
      "gap": [
       760,
       1160
-     ]
+     ],
+     "steel": false
+    },
+    {
+     "type": "locomotive",
+     "x": 900,
+     "y": 960,
+     "tilt": 28,
+     "light": false
+    },
+    {
+     "type": "bank",
+     "x0": 300,
+     "x1": 1700,
+     "y": 985
+    }
+   ],
+   "kit": {
+    "x": 1300,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared"
+   },
+   "labels": [
+    {
+     "x": 860,
+     "y": 880,
+     "text": "LOCOMOTIVE IN THE CREEK",
+     "dx": 60,
+     "dy": -300,
+     "appear": 0.1
+    },
+    {
+     "x": 960,
+     "y": 650,
+     "text": "BRIDGE WASHED OUT",
+     "dx": -60,
+     "dy": -200,
+     "appear": 0.35
+    }
+   ],
+   "cuts": false,
+   "atSentence": "A locomotive just went"
+  }
+ ],
+ "02": [
+  {
+   "kind": "set",
+   "base": "stormnight",
+   "rain": 1,
+   "lightning": true,
+   "elements": [
+    {
+     "type": "river",
+     "level": 880,
+     "flood": true
+    },
+    {
+     "type": "railbridge",
+     "y": 640,
+     "gap": [
+      760,
+      1160
+     ],
+     "steel": false
     },
     {
      "type": "bank",
@@ -165,14 +297,95 @@
     "walking": true,
     "lantern": true,
     "walkTo": 1150
-   }
+   },
+   "atSentence": "You run out with a lantern"
   },
   {
    "kind": "set",
    "base": "stormnight",
    "rain": 1,
    "lightning": true,
-   "at": 0.22,
+   "elements": [
+    {
+     "type": "river",
+     "level": 880,
+     "flood": true
+    },
+    {
+     "type": "swimmers",
+     "at": [
+      [
+       800,
+       900
+      ],
+      [
+       1080,
+       930
+      ]
+     ]
+    },
+    {
+     "type": "bank",
+     "x0": 300,
+     "x1": 1700,
+     "y": 985
+    }
+   ],
+   "kit": {
+    "x": 1350,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "scared",
+    "lantern": true
+   },
+   "labels": [
+    {
+     "x": 940,
+     "y": 880,
+     "text": "2 SURVIVORS",
+     "dx": 0,
+     "dy": -250,
+     "appear": 0.1
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Two of the crew are alive"
+  },
+  {
+   "kind": "set",
+   "base": "stormnight",
+   "rain": 1,
+   "lightning": true,
+   "elements": [
+    {
+     "type": "river",
+     "level": 880,
+     "flood": true
+    },
+    {
+     "type": "bank",
+     "x0": 300,
+     "x1": 1700,
+     "y": 985
+    }
+   ],
+   "kit": {
+    "x": 960,
+    "y": 1000,
+    "scale": 0.9,
+    "pose": "front",
+    "expression": "determined"
+   },
+   "keyword": "BUT...",
+   "keywordAt": 0.2,
+   "atSentence": "And you know something"
+  },
+  {
+   "kind": "set",
+   "base": "stormnight",
+   "rain": 1,
+   "lightning": true,
    "elements": [
     {
      "type": "railbridge",
@@ -187,15 +400,25 @@
      "driveTo": 700
     }
    ],
-   "keyword": "MIDNIGHT TRAIN",
-   "keywordAt": 0.15
+   "labels": [
+    {
+     "x": 600,
+     "y": 520,
+     "text": "PASSENGER TRAIN",
+     "dx": 200,
+     "dy": -200,
+     "appear": 0.1
+    }
+   ],
+   "timer": "12:00",
+   "timerLabel": "DUE AT",
+   "atSentence": "A passenger train is due"
   },
   {
    "kind": "set",
    "base": "stormnight",
    "rain": 1,
    "lightning": true,
-   "at": 0.52,
    "elements": [
     {
      "type": "river",
@@ -205,7 +428,103 @@
     {
      "type": "railbridge",
      "y": 640,
-     "gap": null
+     "gap": [
+      760,
+      1160
+     ],
+     "steel": false
+    },
+    {
+     "type": "locomotive",
+     "x": 100,
+     "y": 670,
+     "scale": 0.7,
+     "light": true,
+     "driveTo": 500
+    }
+   ],
+   "labels": [
+    {
+     "x": 960,
+     "y": 660,
+     "text": "BRIDGE GONE",
+     "dx": 0,
+     "dy": -220,
+     "appear": 0.1
+    }
+   ],
+   "keyword": "DANGER",
+   "keywordAt": 0.5,
+   "atSentence": "and it's headed for that river"
+  },
+  {
+   "kind": "set",
+   "base": "stormnight",
+   "rain": 0.7,
+   "lightning": true,
+   "elements": [
+    {
+     "type": "river",
+     "level": 880,
+     "flood": true
+    },
+    {
+     "type": "railbridge",
+     "y": 640,
+     "gap": null,
+     "steel": false
+    },
+    {
+     "type": "bank",
+     "x0": -200,
+     "x1": 500,
+     "y": 960
+    }
+   ],
+   "kit": {
+    "x": 250,
+    "y": 960,
+    "scale": 0.7,
+    "pose": "front",
+    "lantern": true
+   },
+   "labels": [
+    {
+     "x": 960,
+     "y": 650,
+     "text": "DES MOINES RIVER BRIDGE",
+     "dx": 0,
+     "dy": -230,
+     "appear": 0.1
+    },
+    {
+     "x": 1800,
+     "y": 600,
+     "text": "MOINGONA STATION \u2192",
+     "dx": -250,
+     "dy": -120,
+     "appear": 0.4
+    }
+   ],
+   "cuts": false,
+   "atSentence": "The station is on the other side"
+  },
+  {
+   "kind": "set",
+   "base": "stormnight",
+   "rain": 1,
+   "lightning": true,
+   "elements": [
+    {
+     "type": "river",
+     "level": 880,
+     "flood": true
+    },
+    {
+     "type": "railbridge",
+     "y": 640,
+     "gap": null,
+     "steel": false
     }
    ],
    "kit": {
@@ -216,7 +535,7 @@
     "expression": "scared"
    },
    "keyword": "LANTERN OUT",
-   "keywordAt": 0.4,
+   "keywordAt": 0.2,
    "tint": "night",
    "atSentence": "Then your lantern goes out"
   },
@@ -225,7 +544,6 @@
    "base": "stormnight",
    "rain": 1,
    "lightning": true,
-   "at": 0.68,
    "elements": [
     {
      "type": "river",
@@ -235,7 +553,8 @@
     {
      "type": "railbridge",
      "y": 640,
-     "gap": null
+     "gap": null,
+     "steel": false
     }
    ],
    "kit": {
@@ -248,9 +567,59 @@
     "walkTo": 1250
    },
    "keyword": "CRAWL",
-   "keywordAt": 0.15,
+   "keywordAt": 0.1,
    "tint": "night",
+   "labels": [
+    {
+     "x": 1500,
+     "y": 660,
+     "text": "DES MOINES RIVER",
+     "dx": -200,
+     "dy": 200,
+     "appear": 0.3
+    }
+   ],
    "atSentence": "So you crawl"
+  },
+  {
+   "kind": "set",
+   "base": "stormnight",
+   "rain": 1,
+   "lightning": true,
+   "elements": [
+    {
+     "type": "river",
+     "level": 760,
+     "flood": true
+    },
+    {
+     "type": "railbridge",
+     "y": 640,
+     "gap": null,
+     "steel": false
+    }
+   ],
+   "kit": {
+    "x": 1000,
+    "y": 640,
+    "scale": 0.6,
+    "pose": "side",
+    "walking": true,
+    "lean": 35,
+    "walkTo": 1300
+   },
+   "tint": "night",
+   "labels": [
+    {
+     "x": 960,
+     "y": 860,
+     "text": "RIVER ROARING BELOW",
+     "dx": 0,
+     "dy": 160,
+     "appear": 0.1
+    }
+   ],
+   "atSentence": "in the dark, with the river"
   }
  ],
  "03": [
@@ -258,8 +627,6 @@
    "kind": "set",
    "base": "stormnight",
    "rain": 0.6,
-   "lightning": true,
-   "at": 0,
    "elements": [
     {
      "type": "bank",
@@ -278,14 +645,14 @@
     "expression": "determined"
    },
    "timer": "2 MILES",
-   "timerLabel": "TO THE DEPOT"
+   "timerLabel": "TO GO",
+   "atSentence": "On the other side"
   },
   {
    "kind": "set",
    "base": "town",
    "time": "night",
    "rain": 0.5,
-   "at": 0.22,
    "kit": {
     "x": 960,
     "y": 1000,
@@ -293,52 +660,175 @@
     "pose": "front",
     "expression": "determined"
    },
+   "labels": [
+    {
+     "x": 1250,
+     "y": 480,
+     "text": "MOINGONA DEPOT",
+     "dx": 0,
+     "dy": -120,
+     "appear": 0.1
+    }
+   ],
    "keyword": "STOP THE TRAIN!",
-   "keywordAt": 0.15
+   "keywordAt": 0.35,
+   "atSentence": "You reach the depot"
+  },
+  {
+   "kind": "map",
+   "map": {
+    "target": [
+     -94.5466,
+     42.0225
+    ],
+    "zoom": 30000,
+    "markers": [
+     {
+      "at": [
+       -93.9286,
+       42.0186
+      ],
+      "label": "MOINGONA",
+      "appear": 0.05,
+      "kind": "dot",
+      "labelSide": "left"
+     },
+     {
+      "at": [
+       -94.5466,
+       42.0225
+      ],
+      "label": "TRAIN STOPPED: SCRANTON",
+      "appear": 0.2
+     }
+    ],
+    "spin": 0.05,
+    "lines": [
+     {
+      "from": [
+       -93.9286,
+       42.0186
+      ],
+      "to": [
+       -94.5466,
+       42.0225
+      ],
+      "appear": 0.08,
+      "dashed": true
+     }
+    ],
+    "highlight": [
+     "Iowa"
+    ],
+    "start": [
+     -93.9286,
+     42.0186
+    ]
+   },
+   "atSentence": "The train is stopped at Scranton"
+  },
+  {
+   "kind": "info",
+   "info": {
+    "type": "counter",
+    "value": 200,
+    "label": "PEOPLE ABOARD",
+    "sub": "The express, stopped in time",
+    "perIcon": 2,
+    "color": "#3fae55"
+   },
+   "atSentence": "The train is stopped at Scranton",
+   "atOffset": 2.4
   },
   {
    "kind": "set",
-   "base": "night",
-   "at": 0.42,
+   "base": "stormnight",
+   "rain": 0.4,
    "elements": [
     {
-     "type": "railbridge",
-     "y": 640
+     "type": "river",
+     "level": 880,
+     "flood": true
     },
     {
-     "type": "locomotive",
-     "x": 800,
-     "y": 670,
-     "scale": 0.9,
-     "light": true
+     "type": "swimmers",
+     "at": [
+      [
+       900,
+       910
+      ]
+     ]
+    },
+    {
+     "type": "bank",
+     "x0": -200,
+     "x1": 700,
+     "y": 960
+    },
+    {
+     "type": "person",
+     "x": 350,
+     "y": 960,
+     "scale": 0.75,
+     "kit": {
+      "pose": "side",
+      "lantern": true,
+      "colors": {
+       "coat": "#4a4f3a"
+      }
+     }
+    },
+    {
+     "type": "person",
+     "x": 480,
+     "y": 960,
+     "scale": 0.75,
+     "kit": {
+      "pose": "side",
+      "colors": {
+       "coat": "#5a3a2a"
+      }
+     }
     }
    ],
-   "keyword": "200 SAVED",
-   "keywordAt": 0.3,
-   "atSentence": "The train is stopped"
+   "kit": {
+    "x": 600,
+    "y": 960,
+    "scale": 0.75,
+    "pose": "side",
+    "lantern": true
+   },
+   "labels": [
+    {
+     "x": 450,
+     "y": 700,
+     "text": "RESCUE PARTY",
+     "dx": 150,
+     "dy": -150,
+     "appear": 0.1
+    }
+   ],
+   "atSentence": "Then you lead the rescuers"
   },
   {
    "kind": "card",
    "cuts": false,
    "card": {
     "title": [
-     "HER NAME WAS",
      "KATE SHELLEY"
     ],
-    "subtitle": "A TEENAGE GIRL FROM IOWA",
     "background": {
      "kind": "set",
      "base": "night"
-    }
+    },
+    "subtitle": "THE TEENAGER WHO STOPPED THE TRAIN"
    },
-   "at": 0.6,
-   "atSentence": "Her name was"
+   "atSentence": "Her name was Kate Shelley"
   },
   {
    "kind": "set",
    "base": "sky",
    "time": "day",
-   "at": 0.82,
    "elements": [
     {
      "type": "river",
@@ -348,7 +838,8 @@
     {
      "type": "railbridge",
      "y": 640,
-     "gap": null
+     "gap": null,
+     "steel": true
     },
     {
      "type": "bank",
@@ -358,13 +849,74 @@
      "color": "#5d7a3a"
     }
    ],
+   "labels": [
+    {
+     "x": 960,
+     "y": 640,
+     "text": "KATE SHELLEY HIGH BRIDGE",
+     "dx": 0,
+     "dy": -230,
+     "appear": 0.1
+    }
+   ],
+   "cuts": false,
+   "atSentence": "Years later"
+  },
+  {
+   "kind": "set",
+   "base": "stormnight",
+   "rain": 0.5,
+   "lightning": true,
+   "elements": [
+    {
+     "type": "river",
+     "level": 880,
+     "flood": true
+    },
+    {
+     "type": "railbridge",
+     "y": 640,
+     "gap": null,
+     "steel": false
+    }
+   ],
    "kit": {
     "x": 960,
-    "y": 1000,
-    "scale": 0.9,
+    "y": 1040,
+    "scale": 1.0,
     "pose": "front",
     "expression": "determined"
-   }
+   },
+   "keyword": "WOULD YOU?",
+   "keywordAt": 0.3,
+   "atSentence": "Would you have crawled across"
   }
- ]
+ ],
+ "_title": [
+  "THE BRIDGE",
+  "IN THE DARK"
+ ],
+ "_teaser": {
+  "clips": [
+   {
+    "find": "So you crawl.",
+    "keyword": "CRAWL",
+    "expression": "scared",
+    "seg": "02",
+    "shot": 6
+   },
+   {
+    "find": "A crash.",
+    "keyword": "CRASH!",
+    "expression": "scared",
+    "seg": "01",
+    "shot": 4
+   }
+  ],
+  "question": [
+   "WOULD YOU",
+   "CROSS IT?"
+  ],
+  "sub": "IN THE DARK, IN A FLOOD"
+ }
 }
