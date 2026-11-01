@@ -13,7 +13,9 @@ import { inboxRoutes, quickReplyRoutes } from "./inbox/routes";
 import { webhookRoutes } from "./engine/webhook";
 import "./inbox/notifications";
 import { agentRoutes } from "./agent/routes";
-import { followupRoutes } from "./followups/routes";
+import { broadcastRoutes, followupRoutes } from "./followups/routes";
+import { runScheduler } from "./followups/scheduler";
+import { runMaintenance } from "./maintenance";
 import "./followups/rules";
 import { runDuePushes } from "./agent/push";
 import { runDueEngineJobs } from "./engine/jobs";
@@ -36,6 +38,7 @@ app.route("/api/quick-replies", quickReplyRoutes);
 app.route("/api/engine", webhookRoutes);
 app.route("/api/agent", agentRoutes);
 app.route("/api/followups", followupRoutes);
+app.route("/api/broadcasts", broadcastRoutes);
 
 app.notFound((c) => c.json(errorBody("NOT_FOUND"), 404));
 app.onError(errorHandler);
@@ -44,7 +47,14 @@ export default {
   fetch: app.fetch,
   async scheduled(_event: ScheduledController, env: Env, _ctx: ExecutionContext) {
     const now = new Date();
-    await runDueEngineJobs(env, now);
-    await runDuePushes(env, now);
+    // Each step is independent: one failing must not stop the others.
+    for (const [name, step] of [
+      ["engine-jobs", () => runDueEngineJobs(env, now)],
+      ["agent-push", () => runDuePushes(env, now)],
+      ["scheduler", () => runScheduler(env, now)],
+      ["maintenance", () => runMaintenance(env, now)],
+    ] as const) {
+      try { await step(); } catch (e) { console.error(`cron ${name} failed`, e); }
+    }
   },
 } satisfies ExportedHandler<Env>;

@@ -44,7 +44,7 @@ export interface ConversationFilter {
 }
 
 export type OutboundMessage =
-  | { kind: "text"; text: string; by?: "human" | "ai" | "system" }
+  | { kind: "text"; text: string; by?: "human" | "ai" | "system"; /** WhatsApp template name when sending outside the 24h window. */ template?: string }
   | { kind: "product"; product: { code: string; name: string; price: number; sale_price?: number | null; image_url?: string | null; url?: string } }
   | { kind: "receipt"; order: { number: number; total: number; status: string; items: { name: string; qty: number; unit_price: number }[]; tracking?: string | null; courier?: string | null } };
 
