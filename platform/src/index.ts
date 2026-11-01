@@ -12,6 +12,9 @@ import { publicRoutes } from "./public/routes";
 import { inboxRoutes, quickReplyRoutes } from "./inbox/routes";
 import { webhookRoutes } from "./engine/webhook";
 import "./inbox/notifications";
+import { agentRoutes } from "./agent/routes";
+import { runDuePushes } from "./agent/push";
+import { runDueEngineJobs } from "./engine/jobs";
 
 export const app = new Hono<AppEnv>();
 
@@ -29,11 +32,16 @@ app.route("/p", publicRoutes);
 app.route("/api/inbox", inboxRoutes);
 app.route("/api/quick-replies", quickReplyRoutes);
 app.route("/api/engine", webhookRoutes);
+app.route("/api/agent", agentRoutes);
 
 app.notFound((c) => c.json(errorBody("NOT_FOUND"), 404));
 app.onError(errorHandler);
 
 export default {
   fetch: app.fetch,
-  async scheduled(_event: ScheduledController, _env: Env, _ctx: ExecutionContext) {},
+  async scheduled(_event: ScheduledController, env: Env, _ctx: ExecutionContext) {
+    const now = new Date();
+    await runDueEngineJobs(env, now);
+    await runDuePushes(env, now);
+  },
 } satisfies ExportedHandler<Env>;
