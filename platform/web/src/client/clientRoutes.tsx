@@ -6,6 +6,7 @@ import { ReportsPage } from "./commerce/Reports";
 import { HomePage } from "./Home";
 import { InboxPage } from "./chat/Inbox";
 import { AgentPage } from "./chat/Agent";
+import { FollowupsPage } from "./Followups";
 
 /** Client pages: path under /app ("" = index), element, required feature. */
 export const clientRoutes: { path: string; element: ReactNode; feature?: string }[] = [
@@ -21,4 +22,5 @@ export const clientRoutes: { path: string; element: ReactNode; feature?: string 
   { path: "customers", element: <CustomersPage />, feature: "orders" },
   { path: "customers/:id", element: <CustomerDetailPage />, feature: "orders" },
   { path: "reports", element: <ReportsPage />, feature: "orders" },
+  { path: "followups", element: <FollowupsPage />, feature: "followups" },
 ];

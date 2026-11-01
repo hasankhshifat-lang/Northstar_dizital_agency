@@ -48,7 +48,7 @@ Cloudflare Worker  ── Hono API ──┬── D1 (all relational data, tena
 - **Location:** a new `platform/` folder in this repository. The existing static agency site is not changed.
 - **Deployment:** a single Worker serves both the static SPA (Workers static assets) and `/api/*`, at a subdomain such as `app.northstardizital.com`.
 - **Frontend:** React + TypeScript + Vite, Tailwind CSS, and i18n with Bangla and English string files.
-- **Backend:** TypeScript, the Hono router, and D1 accessed through Drizzle ORM. Migrations are SQL files kept under `platform/migrations/`.
+- **Backend:** TypeScript, the Hono router, and D1 accessed through plain prepared statements behind a tenant-scoped helper (`tenantDb`). This was changed from Drizzle during implementation because the helper is easier to audit for tenant isolation. Migrations are SQL files kept under `platform/migrations/`.
 - **Storage:** R2 bucket `northstar-platform-media`, with keys prefixed `tenants/<tenant_id>/…`.
 
 ### 2.1 ChatEngine adapter
