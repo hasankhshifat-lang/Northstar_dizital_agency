@@ -23,7 +23,10 @@ Confirm the title, description, publish time, and video file with the user befor
 The user gave standing approval (2026-10-29) for the daily **Which Life Next** job, scheduled without asking first.
 Current output (user, 2026-10-31): **Shorts only — 4 standalone story Shorts a day; long videos are paused** until the
 10M Shorts-views target is reached or the user says to resume. For these posts only, the
-"Confirm … with the user before scheduling" rule above does not apply. Follow
+"Confirm … with the user before scheduling" rule above does not apply.
+Format (user, 2026-11-01): **every Short is a map Short in the GeoGlobeTales-learned style**. That means one continuous
+camera over a real map, Kit on the map, **no voiceover**, and on-screen lines plus sound effects over a music bed.
+Follow the RUNBOOK section "Map Shorts". Follow
 `social/which-life-next/RUNBOOK.md`; publish slots are in `social/which-life-next/config.md`.
 The rotation rules above still apply to every post. Stop when the user says stop.
 

@@ -1,4 +1,11 @@
 > **CURRENT MODE (user, 2026-10-31): SHORTS ONLY.** Long videos are paused until the 10M Shorts-views target is
+> **FORMAT (user, 2026-11-01): ALL Shorts are map Shorts. Follow the section "Map Shorts, GeoGlobeTales style" below.**
+> - No voiceover.
+> - One continuous camera over a real map.
+> - Kit v2 as the hero.
+> - On-screen lines and sound effects.
+>
+> The voiceover and `make_episode.py` sections below are kept for reference only.
 > reached or the user says to resume. Each day: step 0 (report, story-type ranking, comments) → 4 standalone story
 > Shorts ("Standalone story Shorts" section; 3 from the best type, 1 test) → Drive → schedule (config.md slots,
 > Clawlink/Metricool rotation) → logs. Skip the long-video steps, thumbnails and the cut-from-long Short.
@@ -398,3 +405,11 @@ Full breakdown: `research/geoglobetales-breakdown-2026-11-01.md`.
 7. Silence and "Then…".
 8. Twist.
 9. A final hard number.
+
+**Per-Short workflow:**
+1. Copy `src/MapShort.tsx` to `src/stories/<slug>.tsx` and register it in `Root.tsx`.
+2. Change ROUTE (real coordinates), the timeline `T`, the camera keys and the on-screen lines.
+3. The sound-effect library is in `remotion/public/sfx/` (gallop, whoosh, pop, rewind, telegraph, zap, neigh, boom, cheer, ding, wind). Generate missing ones with ElevenLabs `eleven_text_to_sound_v2` (generations_count 1) and add them there.
+4. Copy `pony_mix.py`, rewrite its cue list to match the new timeline, and render the audio to `public/<slug>/sound.wav`. Then render the composition with `--props='{"sound":"<slug>/sound.wav"}'`.
+5. Length 35–60 s, with something new on screen about every second.
+6. YouTube description must end with: "Sound effects generated with AI. Animation made by the channel."

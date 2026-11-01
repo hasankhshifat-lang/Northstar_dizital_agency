@@ -1,7 +1,7 @@
 """Sound design for the no-voiceover Pony Express Short: synth music bed + SFX on every visual event."""
 import numpy as np, subprocess, math, json
 SR = 48000
-D = "/home/user/Northstar_dizital_agency/.work/pony/sfx/"
+D = "/home/user/Northstar_dizital_agency/social/which-life-next/remotion/public/sfx/"
 END = 43.5
 N = int(END * SR)
 out = np.zeros((N, 2), np.float32)
