@@ -4,7 +4,8 @@ SR = 48000
 D = "/home/user/Northstar_dizital_agency/social/which-life-next/remotion/public/sfx/"
 END = 43.5
 N = int(END * SR)
-out = np.zeros((N, 2), np.float32)
+out = np.zeros((N, 2), np.float32)   # SFX bus (music is mixed in at the end)
+VOICE = None  # set to a wav path for voiced Shorts: SFX + music are ducked under the voice
 
 def load(name):
     raw = subprocess.check_output(["ffmpeg", "-v", "error", "-i", D + name + ".mp3", "-f", "f32le", "-ac", "2", "-ar", str(SR), "-"])
@@ -75,7 +76,21 @@ section(32.4, END, prog_minor, 0.17, drums=False, half=True)
 def env(t0, t1, v0, v1):
     a, b = int(t0 * SR), int(t1 * SR); music[a:b] *= np.linspace(v0, v1, b - a)[:, None]
 env(3.3, 3.6, 1, 0); env(30.6, 31.0, 1, 0); env(END - 1.2, END, 1, 0)
-music /= (np.abs(music).max() + 1e-9); out += music * 0.32
+music /= (np.abs(music).max() + 1e-9)
+
+def voice_env(path):
+    """0..1 envelope of where the narrator is speaking (smoothed, with 120 ms look-ahead/hold)."""
+    raw = subprocess.check_output(["ffmpeg", "-v", "error", "-i", path, "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"])
+    v = np.frombuffer(raw, np.float32)
+    v = np.pad(v, (0, max(0, N - len(v))))[:N]
+    win = int(0.05 * SR)
+    rms = np.sqrt(np.convolve(v * v, np.ones(win) / win, mode="same"))
+    on = (rms > 0.02).astype(np.float32)
+    hold = int(0.12 * SR)
+    on = np.convolve(on, np.ones(2 * hold), mode="same") > 0      # look-ahead + hold
+    sm = int(0.08 * SR)
+    return np.convolve(on.astype(np.float32), np.ones(sm) / sm, mode="same"), v
+
 
 # ---------- SFX cues ----------
 x = lambda u: math.acos(1 - 2 * u) / math.pi       # inverse of the ride easing
@@ -121,6 +136,19 @@ put("whoosh", 40.6, 0.6)
 put("boom", 41.0, 0.7)                       # 18 months
 put("ding", 41.05, 0.35)
 
+# ---------- final mix: ducking happens AFTER every SFX cue is placed ----------
+if VOICE:
+    env_v, vo = voice_env(VOICE)
+    # RULE (user, 2026-11-01): sound effects must never cover the voiceover.
+    # Under the voice: SFX at -14 dB, music at -20 dB. Between lines they come back up.
+    sfx_gain = 1 - env_v * (1 - 10 ** (-14 / 20))
+    mus_gain = 1 - env_v * (1 - 10 ** (-20 / 20))
+    out *= sfx_gain[:, None]
+    out = out * 0.55 + music * 0.30 * mus_gain[:, None]
+    out = out / (np.abs(out).max() + 1e-9) * 0.35          # bed sits well below the voice
+    out += vo[:, None] * 0.9
+else:
+    out += music * 0.32
 peak = np.abs(out).max(); out = out / peak * 0.89
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "2", "-i", "-",
                 "/home/user/Northstar_dizital_agency/social/which-life-next/remotion/public/pony/sound.wav"], input=out.tobytes(), check=True)
