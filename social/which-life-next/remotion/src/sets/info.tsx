@@ -71,7 +71,7 @@ export const Handshake: React.FC<{ label?: string; dur: number; narrow?: boolean
 
 /** Arrow callouts naming real things in a scene (world coords). */
 export type Callout = { x: number; y: number; text: string; dx?: number; dy?: number; appear?: number };
-export const Callouts: React.FC<{ items: Callout[]; t: number; narrow?: boolean }> = ({ items, t, narrow }) => (
+export const Callouts: React.FC<{ items: Callout[]; t: number; narrow?: boolean; map?: (x: number, y: number) => [number, number] }> = ({ items, t, narrow, map }) => (
   <g>
     {items.map((c, i) => {
       const a = c.appear ?? 0.1;
@@ -82,12 +82,15 @@ export const Callouts: React.FC<{ items: Callout[]; t: number; narrow?: boolean 
       const w = c.text.length * fs * 0.64 + 44;
       // keep the label inside the visible frame (Shorts show x 420-1500)
       const minX = narrow ? 685 + w / 2 : 20 + w / 2, maxX = narrow ? 1235 - w / 2 : 1900 - w / 2;
-      const lx = Math.max(minX, Math.min(maxX, c.x + dx)), ly = c.y + dy;
+      const [ax, ay] = map ? map(c.x, c.y) : [c.x, c.y];
+      const lx = Math.max(minX, Math.min(maxX, ax + dx));
+      // keep the label below the Short's title and above its captions
+      const ly = narrow ? Math.max(230, Math.min(640, ay + dy)) : Math.max(60, Math.min(1000, ay + dy));
       return (
         <g key={i} opacity={o}>
-          <path d={`M ${lx} ${ly + 30} L ${c.x} ${c.y}`} stroke="#000" strokeWidth={12} strokeLinecap="round" />
-          <path d={`M ${lx} ${ly + 30} L ${c.x} ${c.y}`} stroke="#ffd23f" strokeWidth={6} strokeLinecap="round" />
-          <circle cx={c.x} cy={c.y} r={12} fill="#ffd23f" stroke="#000" strokeWidth={5} />
+          <path d={`M ${lx} ${ly + 30} L ${ax} ${ay}`} stroke="#000" strokeWidth={12} strokeLinecap="round" />
+          <path d={`M ${lx} ${ly + 30} L ${ax} ${ay}`} stroke="#ffd23f" strokeWidth={6} strokeLinecap="round" />
+          <circle cx={ax} cy={ay} r={12} fill="#ffd23f" stroke="#000" strokeWidth={5} />
           <rect x={lx - w / 2} y={ly - 32} width={w} height={62} rx={12} fill="#1b140d" stroke="#ffd23f" strokeWidth={5} />
           <text x={lx} y={ly + 12} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={fs} fill="#fff">{c.text}</text>
         </g>

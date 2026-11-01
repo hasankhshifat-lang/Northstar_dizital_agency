@@ -277,7 +277,7 @@ const Keyword: React.FC<{ text: string; start: number; narrow?: boolean }> = ({ 
   const shake = frame < 14 ? Math.sin(frame * 2.7) * (14 - frame) * 1.2 : 0;
   return (
     <AbsoluteFill style={{ alignItems: "center", paddingTop: narrow ? 250 : 120, opacity: o }}>
-      <div style={{ scale: String(s), translate: `${shake}px 0px`, rotate: "-4deg", fontFamily: fonts.sans, fontWeight: 900, fontSize: Math.min(narrow ? 78 : 150, (narrow ? 520 : 1650) / (text.length * 0.8)), color: "#ffd23f",
+      <div style={{ scale: String(s), translate: `${shake}px 0px`, rotate: "-4deg", fontFamily: fonts.sans, fontWeight: 900, fontSize: Math.min(narrow ? 78 : 150, (narrow ? 500 : 1650) / (text.length * 0.95)), color: "#ffd23f",
         WebkitTextStroke: narrow ? "7px #000" : "10px #000", paintOrder: "stroke fill", textShadow: narrow ? "0 6px 0 #000, 0 0 30px rgba(255,80,30,0.7)" : "0 10px 0 #000, 0 0 40px rgba(255,80,30,0.7)", letterSpacing: 2 }}>{text}</div>
     </AbsoluteFill>
   );
@@ -319,16 +319,23 @@ function beatCamera(shot: Shot, beat: number, local: number, tShot = 0): { z: nu
   let px = 960, py = 540, z = 1.35;
   if (k) {
     const sc = k.scale ?? 1;
-    const kx = k.walkTo !== undefined ? k.x + (k.walkTo - k.x) * tShot : k.x, ky = (k.y ?? HORIZON + 300) - 330 * sc;
-    if (cycle === 1) { z = Math.min(3.0, 3.2 / Math.max(0.6, sc)); px = kx; py = ky; }
+    // aim at the head: a lean tips the head forward and down
+    const lean = ((k as { lean?: number }).lean ?? 0) * Math.PI / 180;
+    const dir = (k as { facing?: number }).facing ?? 1;
+    const kx = (k.walkTo !== undefined ? k.x + (k.walkTo - k.x) * tShot : k.x) + Math.sin(lean) * 330 * sc * dir;
+    const ky = (k.y ?? HORIZON + 300) - 330 * sc * Math.cos(lean);
+    if (cycle === 1) { z = Math.min(narrowCtx ? 2.2 : 3.0, 3.2 / Math.max(0.6, sc)); px = kx; py = ky; }
     else if (cycle === 2) { z = 1.6; px = (kx + 960) / 2; py = (ky + 540) / 2 + 60; }
     else { z = 1.3; px = 960 + (beat % 2 ? -220 : 220); py = 520; }
+    // full-screen Shorts only show ~600 px of width: keep Kit in the middle on every beat
+    if (narrowCtx) px = kx;
   } else {
     px = cycle === 1 ? 640 : cycle === 2 ? 1280 : 960; z = cycle === 0 ? 1.25 : 1.45;
   }
   z = z * (1 + 0.05 * local);
   let tx = z * (960 - px), ty = z * (540 - py);
-  const mx = (z - 1) * 960, my = (z - 1) * 540;
+  // Shorts only see ~600 world px across, so the camera may travel further sideways
+  const mx = narrowCtx ? z * 960 - 320 : (z - 1) * 960, my = (z - 1) * 540;
   tx = Math.max(-mx, Math.min(mx, tx)); ty = Math.max(-my, Math.min(my, ty));
   return { z, tx, ty };
 }
@@ -391,15 +398,35 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
   const beat = Math.min(nBeats - 1, Math.floor(frame / beatLen));
   const bc = autoCut ? beatCamera(shot, beat, (frame - beat * beatLen) / beatLen, Math.min(1, frame / dur)) : null;
   const scale = bc ? bc.z : interpolate(frame, [0, dur], [z0, z1]);
-  const translate = bc ? `${bc.tx}px ${bc.ty}px` : interpolate(frame, [0, dur], [`${p0}px ${q0}px`, `${p1}px ${q1}px`]);
+  let translate = bc ? `${bc.tx}px ${bc.ty}px` : interpolate(frame, [0, dur], [`${p0}px ${q0}px`, `${p1}px ${q1}px`]);
+  if (narrow && !bc && !cam.pan && shot.kit && ["set", "landscape", "interior", "town", "mountains"].includes(shot.kind)) {
+    // fixed-camera shot in a full-screen Short: frame Kit and the main moving thing together
+    const k = shot.kit, tS = Math.min(1, frame / dur);
+    const kx = k.walkTo !== undefined ? k.x + (k.walkTo - k.x) * tS : k.x;
+    const el = (shot.elements ?? [])[0] as { x?: number; driveTo?: number } | undefined;
+    const ex = el && el.x !== undefined ? (el.driveTo !== undefined ? el.x + (el.driveTo - el.x) * tS : el.x) : undefined;
+    const target = Math.max(400, Math.min(1520, ex !== undefined && Math.abs(ex - kx) < 600 ? (kx + ex) / 2 : kx));
+    translate = `${scale * (960 - target)}px 0px`;
+  }
   return (
     <AbsoluteFill style={{ opacity, backgroundColor: palette.ink, overflow: "hidden" }}>
       <AbsoluteFill style={{ scale: String(scale), translate }}>
         <svg viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
           <World shot={shot} dur={dur} />
-          {shot.labels && <Callouts items={shot.labels} t={Math.min(1, frame / dur)} narrow={narrow} />}
         </svg>
       </AbsoluteFill>
+      {/* callouts are drawn above the camera: anchors follow the zoom, label size stays fixed and inside the frame */}
+      {shot.labels && (() => {
+        const [tx, ty] = String(translate).split(" ").map((v) => parseFloat(v));
+        const map = (x: number, y: number): [number, number] => [960 + tx + scale * (x - 960), 540 + ty + scale * (y - 540)];
+        return (
+          <AbsoluteFill>
+            <svg viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+              <Callouts items={shot.labels} t={Math.min(1, frame / dur)} narrow={narrow} map={map} />
+            </svg>
+          </AbsoluteFill>
+        );
+      })()}
       {tint && <AbsoluteFill style={{ backgroundColor: tint.color, opacity: tint.opacity, mixBlendMode: tint.blend }} />}
       {/* soft vignette for the painted-documentary look */}
       <AbsoluteFill style={{ background: "radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45) 100%)" }} />
