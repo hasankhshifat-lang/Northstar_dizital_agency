@@ -16,7 +16,11 @@ Rotation: Clawlink → Metricool → Clawlink → … (see `CLAUDE.md`). Next po
 Note 2026-10-31 17:05 SGT: the user asked to upload the locust long video manually at 1080p (Metricool copy was 720p because of the 25 MB relay limit). Metricool post #411945897 was changed to a draft (new id 412012046), so it will not publish. The user uploads `long_1080p.mp4` themselves with the title "Could You Survive the Biggest Locust Swarm in History?" — the video ID will be added when known. This manual upload is not part of the Clawlink/Metricool rotation; the next scheduled post still goes to Clawlink.
 
 Note 2026-11-01: the locust long video was uploaded manually by the user as `NtC-QGdCfG0` ("Could You Survive the Biggest Locust Swarm in History?"). Long videos are now paused (Shorts only).
-| 2026-11-01 | 2026-11-02 06:00 SGT (2026-11-01 17:00 ET) | She Crawled Across a Flooded Bridge to Stop a Train #shorts | Metricool (Clawlink's turn; Clawlink YouTube "Video Uploads per day" quota exhausted, retry after ~18 h) | Metricool #412793336 |
-| 2026-11-01 | 2026-11-02 08:00 SGT (2026-11-01 19:00 ET) | A 60-Foot Wall of Water Hit This Town in 1889 #shorts | Metricool (Clawlink quota exhausted) | Metricool #412793382 |
-| 2026-11-01 | 2026-11-02 11:00 SGT (2026-11-01 22:00 ET) | The Fever That Emptied America's Capital (1793) #shorts | Metricool (Clawlink quota exhausted) | Metricool #412798080 |
-| 2026-11-01 | 2026-11-02 21:00 SGT (2026-11-02 08:00 ET) | Trapped Underground for 14 Days (1925) #shorts | Metricool (Clawlink quota exhausted) | Metricool #412798121 |
+| 2026-11-01 | 2026-11-02 06:00 SGT (2026-11-01 17:00 ET) | She Crawled Across a Flooded Bridge to Stop a Train #shorts | Metricool (Clawlink's turn; Clawlink YouTube "Video Uploads per day" quota exhausted, retry after ~18 h) | Metricool #412830446 |
+| 2026-11-01 | 2026-11-02 08:00 SGT (2026-11-01 19:00 ET) | A 60-Foot Wall of Water Hit This Town in 1889 #shorts | Metricool (Clawlink quota exhausted) | Metricool #412835463 |
+| 2026-11-01 | 2026-11-02 11:00 SGT (2026-11-01 22:00 ET) | The Fever That Emptied America's Capital (1793) #shorts | Metricool (Clawlink quota exhausted) | Metricool #412839608 |
+| 2026-11-01 | 2026-11-02 21:00 SGT (2026-11-02 08:00 ET) | Trapped Underground for 14 Days (1925) #shorts | Metricool (Clawlink quota exhausted) | Metricool #412842895 |
+
+Note 2026-11-01 19:40 SGT: the four 2026-11-02 Shorts were re-rendered full screen (no black bars, user request)
+and swapped in place in Metricool. Updating a Metricool post changes its id; the ids above are the current ones
+(uuids unchanged: 7095003926368964501, 406502206951016623, -3275628932150116193, -8626886603209879974).
