@@ -5,7 +5,7 @@ D = "/home/user/Northstar_dizital_agency/social/which-life-next/remotion/public/
 END = 43.5
 N = int(END * SR)
 out = np.zeros((N, 2), np.float32)   # SFX bus (music is mixed in at the end)
-VOICE = None  # set to a wav path for voiced Shorts: SFX + music are ducked under the voice
+VOICE = None  # path to the narration wav (required for voiced Shorts, user rule 2026-11-01): SFX + music are ducked under it
 
 def load(name):
     raw = subprocess.check_output(["ffmpeg", "-v", "error", "-i", D + name + ".mp3", "-f", "f32le", "-ac", "2", "-ar", str(SR), "-"])
