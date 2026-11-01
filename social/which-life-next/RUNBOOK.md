@@ -336,3 +336,23 @@ cold-open hook as the long videos. Must be complete and ≤ 2 minutes (target 75
 - Render → re-encode for upload (fits the 25 MB relay, loudness for phones):
   `ffmpeg -i out/short.mp4 -c:v libx264 -preset slow -crf 23 -maxrate 2400k -bufsize 4800k -pix_fmt yuv420p -af loudnorm=I=-14:TP=-1.5:LRA=11 -c:a aac -b:a 128k -ar 48000 -movflags +faststart out/short_final.mp4`
 - Check a contact sheet of frames (teaser flashes must show the threat) before rendering.
+
+## MUTE TEST — the picture must tell the story (user rule, 2026-11-01)
+Someone watching with the sound OFF must understand what is happening. For EVERY narration sentence there is a
+shot that shows it (use `"atSentence"` so the shot starts on that line). Before rendering, list the sentences and
+the visual for each; no sentence may be covered by an unrelated or generic shot.
+- **Real places:** open every story with a `"kind": "map"` shot — the globe spins and zooms into the REAL location
+  (real coordinates; highlight the state; pin + label). Use a second, closer map whenever the narration relates two
+  places (distances, "up the valley", "stopped at Scranton") with a line + distance label.
+  Map data is real (Natural Earth + US Census via world-atlas/us-atlas). Look up coordinates; never guess a location.
+- **Real infrastructure:** draw the real kind of structure (earth dam, multi-arch stone viaduct, wooden trestle vs
+  steel viaduct, brick row houses, sandstone cave) and NAME it with a `labels` callout ("SOUTH FORK DAM",
+  "STONE BRIDGE (PENNSYLVANIA RAILROAD)"). If we don't know what something looked like, label it plainly
+  rather than inventing details.
+- **Numbers on screen:** every number spoken is shown — `"kind": "info"` counter ("2,208 PEOPLE KILLED" with icons),
+  ratio ("1 IN 10"), timers (`timer` + `timerLabel`: "57 MIN", "40 MPH", "FEB 11"), or big title cards.
+- **Actions on screen:** what people do is acted out — handshakes refused (`info.type: "handshake"`), people fleeing
+  (`fleeing`), bells stopped (`bell` stopped), rags to the face (`rag`), survivors in the water (`swimmers`),
+  rescuers with lanterns, crowds.
+- **Names on screen:** every named person or group gets a callout or a title card.
+- Captions stay on (bottom bar), but the visuals must work even without them.

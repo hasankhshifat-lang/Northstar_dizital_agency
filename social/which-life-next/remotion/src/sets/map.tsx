@@ -130,7 +130,7 @@ export const MapView: React.FC<MapProps & { dur: number }> = ({ target, start = 
       })}
       {title && (
         <g opacity={interpolate(t, [0, 0.08], [0, 1], { extrapolateRight: "clamp" })}>
-          <text x={960} y={narrow ? 470 : 110} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? 60 : 72} fill="#fff" stroke="#000" strokeWidth={10} paintOrder="stroke">{title}</text>
+          <text x={960} y={narrow ? 120 : 110} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? 64 : 72} fill="#fff" stroke="#000" strokeWidth={10} paintOrder="stroke">{title}</text>
         </g>
       )}
     </g>
