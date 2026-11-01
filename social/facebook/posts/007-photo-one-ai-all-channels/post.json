@@ -1,0 +1,73 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "trio",
+  "palette": "orange",
+  "head": [
+   {
+    "t": "Messenger, WhatsApp, Instagram"
+   },
+   {
+    "t": "সব জায়গায় [একটাই AI]",
+    "cls": "baloo"
+   }
+  ],
+  "person": "social/facebook/people/woman-fcommerce-phone.png",
+  "phones": [
+   {
+    "name": "Messenger",
+    "initials": "M",
+    "messages": [
+     {
+      "from": "me",
+      "text": "এটা stock-এ আছে?",
+      "time": "9:01 PM"
+     },
+     {
+      "from": "ai",
+      "text": "জি আছে 😊 কোন size লাগবে?",
+      "time": "9:01 PM"
+     }
+    ]
+   },
+   {
+    "name": "WhatsApp",
+    "initials": "W",
+    "messages": [
+     {
+      "from": "me",
+      "text": "Delivery charge কত?",
+      "time": "9:01 PM"
+     },
+     {
+      "from": "ai",
+      "text": "এলাকা বলুন, জানিয়ে দিচ্ছি 🚚",
+      "time": "9:01 PM"
+     }
+    ]
+   },
+   {
+    "name": "Instagram",
+    "initials": "I",
+    "messages": [
+     {
+      "from": "me",
+      "text": "Order করতে চাই",
+      "time": "9:02 PM"
+     },
+     {
+      "from": "ai",
+      "text": "নাম আর address দিন ✅",
+      "time": "9:02 PM"
+     }
+    ]
+   }
+  ],
+  "cta": "WhatsApp করুন",
+  "theme": "layout"
+ },
+ "status": "draft",
+ "pillar": "Signature",
+ "angle": "Messenger, WhatsApp, Instagram — সব জায়গায় একটাই assistant, একসাথে সবার উত্তর",
+ "caption": "Messenger-এ ৫ জন, WhatsApp-এ ৩ জন, Instagram-এ আরও ২… একা কতজনকে সামলাবেন? 😮‍💨\n\nএকটা AI receptionist সব জায়গার message একসাথে উত্তর দেয়, order-ও নিয়ে রাখে।\n👉 আপনার ব্যবসায় বসাতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital"
+}
