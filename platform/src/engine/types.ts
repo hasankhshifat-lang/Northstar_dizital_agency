@@ -9,6 +9,8 @@ export interface Conversation {
   customerRef: string;
   lastMessage: string;
   lastAt: string;
+  /** Who sent the last message; "customer" means the chat is waiting for a reply. */
+  lastFrom: "customer" | "ai" | "human";
   unread: number;
   handler: Handler;
   /** Engine-side state when the engine supports it; platform merges its own conversation_state otherwise. */

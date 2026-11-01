@@ -9,6 +9,9 @@ import { mediaRoutes } from "./catalog/media";
 import { customerRoutes, orderRoutes } from "./orders/routes";
 import { reportRoutes } from "./reports/routes";
 import { publicRoutes } from "./public/routes";
+import { inboxRoutes, quickReplyRoutes } from "./inbox/routes";
+import { webhookRoutes } from "./engine/webhook";
+import "./inbox/notifications";
 
 export const app = new Hono<AppEnv>();
 
@@ -23,6 +26,9 @@ app.route("/api/orders", orderRoutes);
 app.route("/api/customers", customerRoutes);
 app.route("/api/reports", reportRoutes);
 app.route("/p", publicRoutes);
+app.route("/api/inbox", inboxRoutes);
+app.route("/api/quick-replies", quickReplyRoutes);
+app.route("/api/engine", webhookRoutes);
 
 app.notFound((c) => c.json(errorBody("NOT_FOUND"), 404));
 app.onError(errorHandler);

@@ -93,3 +93,15 @@ export async function makeOrder(cookie: string, items: { variant_id: string; qty
 
 export const setStatus = (cookie: string, id: string, to: string, extra: Record<string, unknown> = {}) =>
   call(`/api/orders/${id}/status`, { method: "POST", cookie, json: { to, ...extra } });
+
+/** Client with a provisioned demo workspace. */
+export async function makeClientWithEngine(opts: Parameters<typeof makeClient>[0] = {}) {
+  const c = await makeClient(opts);
+  const { enqueueEngineJob } = await import("../src/engine/jobs");
+  await enqueueEngineJob(testEnv, c.tenantId, "createWorkspace", {});
+  const t = await testEnv.DB.prepare("SELECT engine_workspace_ref AS ref FROM tenants WHERE id=?").bind(c.tenantId).first<{ ref: string }>();
+  return { ...c, ref: t!.ref };
+}
+
+export const webhook = (body: Record<string, unknown>, secret = "test-bootstrap-token") =>
+  call("/api/engine/demo/webhook", { method: "POST", json: body, headers: { "x-demo-secret": secret } });

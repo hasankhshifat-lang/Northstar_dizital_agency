@@ -101,7 +101,7 @@ export class DemoEngine implements ChatEngine {
   async listConversations(ref: string, filter: ConversationFilter): Promise<ConversationPage> {
     await this.ws(ref, { allowPaused: true });
     const rows = (await this.db.prepare(
-      `SELECT c.*, (SELECT text FROM demo_messages m WHERE m.conversation_id=c.id ORDER BY at DESC LIMIT 1) AS last_text
+      `SELECT c.*, (SELECT text FROM demo_messages m WHERE m.conversation_id=c.id ORDER BY at DESC, rowid DESC LIMIT 1) AS last_text, (SELECT by_who FROM demo_messages m WHERE m.conversation_id=c.id ORDER BY at DESC, rowid DESC LIMIT 1) AS last_from
        FROM demo_conversations c WHERE workspace_ref=? ORDER BY last_at DESC`,
     ).bind(ref).all<any>()).results;
     const items = rows
@@ -114,7 +114,7 @@ export class DemoEngine implements ChatEngine {
   async getConversation(ref: string, id: string): Promise<ConversationDetail> {
     await this.ws(ref, { allowPaused: true });
     const row = await this.db.prepare(
-      `SELECT c.*, (SELECT text FROM demo_messages m WHERE m.conversation_id=c.id ORDER BY at DESC LIMIT 1) AS last_text
+      `SELECT c.*, (SELECT text FROM demo_messages m WHERE m.conversation_id=c.id ORDER BY at DESC, rowid DESC LIMIT 1) AS last_text, (SELECT by_who FROM demo_messages m WHERE m.conversation_id=c.id ORDER BY at DESC, rowid DESC LIMIT 1) AS last_from
        FROM demo_conversations c WHERE workspace_ref=? AND id=?`,
     ).bind(ref, id).first<any>();
     if (!row) throw new ApiError(404, "NOT_FOUND");
@@ -194,6 +194,6 @@ export class DemoEngine implements ChatEngine {
 function toConversation(r: any): Conversation {
   return {
     id: r.id, channel: r.channel, customerName: r.customer_name, customerRef: r.customer_ref,
-    lastMessage: r.last_text ?? "", lastAt: r.last_at, unread: r.unread, handler: r.handler,
+    lastMessage: r.last_text ?? "", lastAt: r.last_at, lastFrom: r.last_from ?? "customer", unread: r.unread, handler: r.handler,
   };
 }
