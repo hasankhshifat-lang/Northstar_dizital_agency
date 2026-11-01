@@ -4,6 +4,8 @@ import { errorBody, errorHandler } from "./lib/errors";
 import { authRoutes } from "./auth/routes";
 import { clientPing, testRoutes } from "./client/ping";
 import { adminRoutes } from "./admin/routes";
+import { catalogRoutes } from "./catalog/routes";
+import { mediaRoutes } from "./catalog/media";
 
 export const app = new Hono<AppEnv>();
 
@@ -12,6 +14,8 @@ app.route("/api/auth", authRoutes);
 app.route("/api/client", clientPing);
 app.route("/api/test", testRoutes);
 app.route("/api/admin", adminRoutes);
+app.route("/api/products", catalogRoutes);
+app.route("/media", mediaRoutes);
 
 app.notFound((c) => c.json(errorBody("NOT_FOUND"), 404));
 app.onError(errorHandler);
