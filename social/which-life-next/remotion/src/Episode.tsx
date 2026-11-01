@@ -277,7 +277,7 @@ const Keyword: React.FC<{ text: string; start: number; narrow?: boolean }> = ({ 
   const shake = frame < 14 ? Math.sin(frame * 2.7) * (14 - frame) * 1.2 : 0;
   return (
     <AbsoluteFill style={{ alignItems: "center", paddingTop: narrow ? 300 : 120, opacity: o }}>
-      <div style={{ scale: String(s), translate: `${shake}px 0px`, rotate: "-4deg", fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 120 : 150, color: "#ffd23f",
+      <div style={{ scale: String(s), translate: `${shake}px 0px`, rotate: "-4deg", fontFamily: fonts.sans, fontWeight: 900, fontSize: Math.min(narrow ? 120 : 150, (narrow ? 860 : 1650) / (text.length * 0.8)), color: "#ffd23f",
         WebkitTextStroke: "10px #000", paintOrder: "stroke fill", textShadow: "0 10px 0 #000, 0 0 40px rgba(255,80,30,0.7)", letterSpacing: 2 }}>{text}</div>
     </AbsoluteFill>
   );
@@ -397,7 +397,7 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
       <AbsoluteFill style={{ scale: String(scale), translate }}>
         <svg viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
           <World shot={shot} dur={dur} />
-          {shot.labels && <Callouts items={shot.labels} t={Math.min(1, frame / dur)} />}
+          {shot.labels && <Callouts items={shot.labels} t={Math.min(1, frame / dur)} narrow={narrow} />}
         </svg>
       </AbsoluteFill>
       {tint && <AbsoluteFill style={{ backgroundColor: tint.color, opacity: tint.opacity, mixBlendMode: tint.blend }} />}

@@ -485,10 +485,10 @@
    "labels": [
     {
      "x": 960,
-     "y": 640,
-     "text": "STONE BRIDGE (PENNSYLVANIA RAILROAD)",
+     "y": 700,
+     "text": "STONE BRIDGE \u00b7 PENNSYLVANIA RAILROAD",
      "dx": 0,
-     "dy": -300,
+     "dy": -120,
      "appear": 0.1
     }
    ],

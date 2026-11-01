@@ -40,7 +40,7 @@ A slow-moving threat (insects eating crops) seems weaker than a person facing su
 ## Scheduled (first standalone story Shorts, with cold-open hook + title bar)
 | Short | Type | Publish (SGT) | Metricool |
 |---|---|---|---|
-| She Crawled Across a Flooded Bridge to Stop a Train | Rescue / hero | 11-02 06:00 | #412683378 |
-| A 60-Foot Wall of Water Hit This Town in 1889 | Sudden disaster | 11-02 08:00 | #412686619 |
-| The Fever That Emptied America's Capital (1793) | Deadly disease | 11-02 11:00 | #412684049 |
-| Trapped Underground for 14 Days (1925) | Lost / stranded (test) | 11-02 21:00 | #412684066 |
+| She Crawled Across a Flooded Bridge to Stop a Train | Rescue / hero | 11-02 06:00 | #412793336 |
+| A 60-Foot Wall of Water Hit This Town in 1889 | Sudden disaster | 11-02 08:00 | #412793382 |
+| The Fever That Emptied America's Capital (1793) | Deadly disease | 11-02 11:00 | #412798080 |
+| Trapped Underground for 14 Days (1925) | Lost / stranded (test) | 11-02 21:00 | #412798121 |

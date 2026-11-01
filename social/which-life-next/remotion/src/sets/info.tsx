@@ -67,22 +67,25 @@ export const Handshake: React.FC<{ label?: string; dur: number; narrow?: boolean
 
 /** Arrow callouts naming real things in a scene (world coords). */
 export type Callout = { x: number; y: number; text: string; dx?: number; dy?: number; appear?: number };
-export const Callouts: React.FC<{ items: Callout[]; t: number }> = ({ items, t }) => (
+export const Callouts: React.FC<{ items: Callout[]; t: number; narrow?: boolean }> = ({ items, t, narrow }) => (
   <g>
     {items.map((c, i) => {
       const a = c.appear ?? 0.1;
       const o = interpolate(t, [a, a + 0.08], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
       if (o <= 0) return null;
       const dx = c.dx ?? 140, dy = c.dy ?? -170;
-      const lx = c.x + dx, ly = c.y + dy;
-      const w = c.text.length * 27 + 44;
+      const fs = Math.min(42, ((narrow ? 860 : 1500) - 44) / (c.text.length * 0.64));
+      const w = c.text.length * fs * 0.64 + 44;
+      // keep the label inside the visible frame (Shorts show x 420-1500)
+      const minX = narrow ? 440 + w / 2 : 20 + w / 2, maxX = narrow ? 1480 - w / 2 : 1900 - w / 2;
+      const lx = Math.max(minX, Math.min(maxX, c.x + dx)), ly = c.y + dy;
       return (
         <g key={i} opacity={o}>
           <path d={`M ${lx} ${ly + 30} L ${c.x} ${c.y}`} stroke="#000" strokeWidth={12} strokeLinecap="round" />
           <path d={`M ${lx} ${ly + 30} L ${c.x} ${c.y}`} stroke="#ffd23f" strokeWidth={6} strokeLinecap="round" />
           <circle cx={c.x} cy={c.y} r={12} fill="#ffd23f" stroke="#000" strokeWidth={5} />
           <rect x={lx - w / 2} y={ly - 32} width={w} height={62} rx={12} fill="#1b140d" stroke="#ffd23f" strokeWidth={5} />
-          <text x={lx} y={ly + 12} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={42} fill="#fff">{c.text}</text>
+          <text x={lx} y={ly + 12} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={fs} fill="#fff">{c.text}</text>
         </g>
       );
     })}
