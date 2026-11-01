@@ -71,3 +71,25 @@ export async function makeClient(opts: { features?: string[]; channels?: string[
   if (opts.status) await testEnv.DB.prepare("UPDATE tenants SET status=? WHERE id=?").bind(opts.status, tenantId).run();
   return { cookie, tenantId, userId, email };
 }
+
+/** Create a product with given variant stocks via the API; returns product JSON. */
+export async function makeProduct(cookie: string, opts: { price?: number; sale_price?: number | null; variants?: { label: string; stock: number }[]; status?: string; name?: string } = {}) {
+  const res = await call("/api/products", {
+    method: "POST", cookie,
+    json: { code: uniq("P"), name_bn: opts.name ?? "নেভি পাঞ্জাবি", price: opts.price ?? 225000, sale_price: opts.sale_price ?? null, status: opts.status ?? "active", variants: opts.variants ?? [{ label: "L", stock: 5 }] },
+  });
+  if (res.status !== 200) throw new Error("makeProduct " + (await res.text()));
+  return (await res.json() as any).product;
+}
+
+export async function makeOrder(cookie: string, items: { variant_id: string; qty: number }[], extra: Record<string, unknown> = {}) {
+  const res = await call("/api/orders", {
+    method: "POST", cookie,
+    json: { customer: { name: "রহিম", phone: "01711111111", address: "মিরপুর, ঢাকা" }, items, delivery_charge: 6000, discount: 0, payment_method: "cod", ...extra },
+  });
+  if (res.status !== 200) throw new Error("makeOrder " + (await res.text()));
+  return (await res.json() as any).order;
+}
+
+export const setStatus = (cookie: string, id: string, to: string, extra: Record<string, unknown> = {}) =>
+  call(`/api/orders/${id}/status`, { method: "POST", cookie, json: { to, ...extra } });
