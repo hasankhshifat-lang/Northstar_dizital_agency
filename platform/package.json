@@ -1,0 +1,25 @@
+{
+  "name": "northstar-platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "build": "cd web && vite build",
+    "deploy": "npm run build && wrangler deploy",
+    "e2e": "playwright test",
+    "pretest": "node -e \"require('fs').mkdirSync('web/dist',{recursive:true})\""
+  },
+  "dependencies": {
+    "hono": "^4.13.16",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.11",
+    "@cloudflare/workers-types": "^5.20261101.1",
+    "typescript": "~5.9",
+    "vitest": "~4.1.0",
+    "wrangler": "^4.156.0"
+  }
+}
