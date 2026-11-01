@@ -20,6 +20,7 @@ Note 2026-11-01: the locust long video was uploaded manually by the user as `NtC
 | 2026-11-01 | 2026-11-02 08:00 SGT (2026-11-01 19:00 ET) | A 60-Foot Wall of Water Hit This Town in 1889 #shorts | Metricool (Clawlink quota exhausted) | Metricool #412835463 |
 | 2026-11-01 | 2026-11-02 11:00 SGT (2026-11-01 22:00 ET) | The Fever That Emptied America's Capital (1793) #shorts | Metricool (Clawlink quota exhausted) | Metricool #412839608 |
 | 2026-11-01 | 2026-11-02 21:00 SGT (2026-11-02 08:00 ET) | Trapped Underground for 14 Days (1925) #shorts | Metricool (Clawlink quota exhausted) | Metricool #412842895 |
+| 2026-11-01 | 2026-11-03 06:00 SGT (2026-11-02 17:00 ET) | They Carried Mail 1,900 Miles in 10 Days… on Horseback #shorts | Metricool (Clawlink's turn; Clawlink YouTube "Video Uploads per day" quota exhausted, resets ~6 h) | Metricool #413119675 |
 
 Note 2026-11-01 19:40 SGT: the four 2026-11-02 Shorts were re-rendered full screen (no black bars, user request)
 and swapped in place in Metricool. Updating a Metricool post changes its id; the ids above are the current ones

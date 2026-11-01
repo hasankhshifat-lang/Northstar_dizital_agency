@@ -44,3 +44,4 @@ A slow-moving threat (insects eating crops) seems weaker than a person facing su
 | A 60-Foot Wall of Water Hit This Town in 1889 | Sudden disaster | 11-02 08:00 | #412835463 |
 | The Fever That Emptied America's Capital (1793) | Deadly disease | 11-02 11:00 | #412839608 |
 | Trapped Underground for 14 Days (1925) | Lost / stranded (test) | 11-02 21:00 | #412842895 |
+| They Carried Mail 1,900 Miles in 10 Days… on Horseback (FIRST voiced map Short) | Journey / race against time | 11-03 06:00 | #413119675 |
