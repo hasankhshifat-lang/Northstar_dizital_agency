@@ -1,21 +1,18 @@
 import type { ReactNode } from "react";
-import { useT } from "../i18n";
-import { useSession } from "../auth/session";
-import { PageHeader } from "../ui";
 import { ProductFormPage, ProductsPage } from "./commerce/Products";
 import { OrderDetailPage, OrderNewPage, OrdersPage } from "./commerce/Orders";
 import { CustomerDetailPage, CustomersPage } from "./commerce/Customers";
 import { ReportsPage } from "./commerce/Reports";
-
-function HomePlaceholder() {
-  const { t } = useT();
-  const { me } = useSession();
-  return <PageHeader title={`${t("nav_home")} — ${me?.tenant?.business_name ?? ""}`} />;
-}
+import { HomePage } from "./Home";
+import { InboxPage } from "./chat/Inbox";
+import { AgentPage } from "./chat/Agent";
 
 /** Client pages: path under /app ("" = index), element, required feature. */
 export const clientRoutes: { path: string; element: ReactNode; feature?: string }[] = [
-  { path: "", element: <HomePlaceholder /> },
+  { path: "", element: <HomePage /> },
+  { path: "inbox", element: <InboxPage />, feature: "inbox" },
+  { path: "inbox/:cid", element: <InboxPage />, feature: "inbox" },
+  { path: "agent", element: <AgentPage />, feature: "ai_agent" },
   { path: "products", element: <ProductsPage />, feature: "orders" },
   { path: "products/:id", element: <ProductFormPage />, feature: "orders" },
   { path: "orders", element: <OrdersPage />, feature: "orders" },
