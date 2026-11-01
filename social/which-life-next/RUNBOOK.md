@@ -1,11 +1,8 @@
 > **CURRENT MODE (user, 2026-10-31): SHORTS ONLY.** Long videos are paused until the 10M Shorts-views target is
-> **FORMAT (user, 2026-11-01): ALL Shorts are map Shorts. Follow the section "Map Shorts, GeoGlobeTales style" below.**
-> - No voiceover.
-> - One continuous camera over a real map.
-> - Kit v2 as the hero.
-> - On-screen lines and sound effects.
->
-> The voiceover and `make_episode.py` sections below are kept for reference only.
+> **FORMAT (user, 2026-11-01, latest): ALL Shorts are map Shorts WITH a voiceover. About 2 minutes, opening on a hook of the main story.**
+> - Visuals: the "Map Shorts" section below (continuous camera over a real map, Kit v2 on the map).
+> - Narration: Jesse (`4N8zjn9tVNuDEBFWVHAq`, eleven_v4), as in the voiceover sections.
+> - Sound effects must NEVER cover the voice. `pony_mix.py` with `VOICE=` ducks effects to −14 dB and music to −20 dB under speech; they come back up between lines.
 > reached or the user says to resume. Each day: step 0 (report, story-type ranking, comments) → 4 standalone story
 > Shorts ("Standalone story Shorts" section; 3 from the best type, 1 test) → Drive → schedule (config.md slots,
 > Clawlink/Metricool rotation) → logs. Skip the long-video steps, thumbnails and the cut-from-long Short.
@@ -413,3 +410,14 @@ Full breakdown: `research/geoglobetales-breakdown-2026-11-01.md`.
 4. Copy `pony_mix.py`, rewrite its cue list to match the new timeline, and render the audio to `public/<slug>/sound.wav`. Then render the composition with `--props='{"sound":"<slug>/sound.wav"}'`.
 5. Length 35–60 s, with something new on screen about every second.
 6. YouTube description must end with: "Sound effects generated with AI. Animation made by the channel."
+
+### Voiced map Shorts (user rule, 2026-11-01, latest)
+1. **Length** about 2 minutes (110–125 s). The script is about 280–320 words of interesting real history, with 2+ sources.
+2. **Hook** (the first 5–8 s): tell the main story's most surprising outcome and ask a question, over flashes of the climax on the map. Then rewind (◀◀◀) to the start and show a big date.
+3. **Narration:** generate it per segment with ElevenLabs (Jesse, eleven_v4, tense tags). Get word timestamps with faster-whisper; pass it a numpy array, because the `av` decoder is broken here. Set the timeline `T`, the camera keys and the on-screen pops from those timestamps, so every spoken place, number and action appears on screen when it is said (MUTE TEST).
+4. **Captions:** 1–4-word chunks in sync with the voice, around y 1300 (white with a black stroke), plus big serif dates and yellow keyword pops.
+5. **Sound effects:** keep the pops, whooshes and booms on visual events. Run `pony_mix.py` with `VOICE="<narration.wav>"`.
+   - Under speech, effects drop 14 dB and music 20 dB (tested: the background sits 18 dB below the voice while it speaks). They return in the gaps.
+   - Put the big effects (boom, rewind, cheer, zap) in pauses between lines.
+   - Keep the silence beat before the twist.
+6. **Description** must end with: "Narration voiced with AI. Sound effects generated with AI. Animation made by the channel."
