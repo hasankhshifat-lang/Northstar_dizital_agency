@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { useT } from "../i18n";
 import { hasFeature, useSession } from "../auth/session";
-import { LangSwitch, cx } from "../ui";
+import { SidebarToggles, cx } from "../ui";
 
 export const CLIENT_NAV: { to: string; key: string; feature?: string; end?: boolean }[] = [
   { to: "/app", key: "nav_home", end: true },
@@ -21,7 +21,7 @@ export function ClientLayout() {
   const link = ({ isActive }: { isActive: boolean }) => cx("block rounded-lg px-3 py-2 text-sm font-medium", isActive ? "bg-brand-50 text-brand-700" : "text-slate-700 hover:bg-slate-100");
   return (
     <div className="flex min-h-full">
-      <aside className="w-56 shrink-0 border-r border-slate-200 bg-white p-4">
+      <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col overflow-y-auto border-r border-slate-200 bg-white p-4">
         <div className="mb-6 px-2">
           <div className="text-xs font-semibold uppercase tracking-wider text-brand-600">★ Northstar</div>
           <div className="truncate text-lg font-semibold" title={me?.tenant?.business_name}>{me?.tenant?.business_name}</div>
@@ -31,11 +31,11 @@ export function ClientLayout() {
             <NavLink key={n.to} to={n.to} end={n.end} className={link}>{t(n.key)}</NavLink>
           ))}
         </nav>
+        <div className="mt-auto pt-6"><SidebarToggles /></div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-end gap-3 border-b border-slate-200 bg-white px-6 py-3 text-sm">
           <span className="text-slate-600">{me?.user.name}</span>
-          <LangSwitch />
           <button className="text-slate-600 hover:text-slate-900" onClick={async () => { await logout(); nav("/login"); }}>{t("logout")}</button>
         </header>
         <main className="min-w-0 flex-1 p-6"><Outlet /></main>

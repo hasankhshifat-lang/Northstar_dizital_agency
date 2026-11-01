@@ -26,6 +26,13 @@ export const STRINGS = {
   password: ["পাসওয়ার্ড", "Password"],
   download_csv: ["CSV ডাউনলোড", "Download CSV"],
 
+  on: ["চালু", "On"],
+  off: ["বন্ধ", "Off"],
+  language: ["ভাষা", "Language"],
+  theme: ["থিম", "Theme"],
+  light: ["লাইট", "Light"],
+  dark: ["ডার্ক", "Dark"],
+
   // auth
   login_title: ["লগইন করুন", "Log in"],
   login_btn: ["লগইন", "Log in"],

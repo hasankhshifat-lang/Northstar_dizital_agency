@@ -5,10 +5,10 @@ export type Lang = "bn" | "en";
 const KEY = "ns_lang";
 
 export function currentLang(): Lang {
-  return (localStorage.getItem(KEY) as Lang) || "bn";
+  return localStorage.getItem(KEY) === "bn" ? "bn" : "en";
 }
 
-const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void }>({ lang: "bn", setLang: () => {} });
+const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void }>({ lang: "en", setLang: () => {} });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(currentLang());

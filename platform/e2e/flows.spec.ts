@@ -28,6 +28,10 @@ async function createClientAndSetup(page: Page, business: string): Promise<strin
   return email;
 }
 
+// These flows use the Bangla UI labels; English is the default, so pin Bangla here.
+const pinBangla = () => localStorage.setItem("ns_lang", "bn");
+test.beforeEach(async ({ context }) => { await context.addInitScript(pinBangla); });
+
 test.beforeAll(async ({ request }) => {
   const r = await request.post("/api/auth/bootstrap", { data: { token: "e2e-bootstrap", name: "Shifat", ...ADMIN } });
   expect([200, 403]).toContain(r.status()); // 403 if a previous test in this server already bootstrapped
@@ -74,6 +78,7 @@ test("client onboarding → product → AI order in chat → confirm & ship", as
 test("admin suspends → client sees Paused → admin reactivates → client logs in", async ({ page, browser }) => {
   const email = await createClientAndSetup(page, "Rangdhanu Fashion");
   const client = await browser.newPage();
+  await client.addInitScript(pinBangla);
   await login(client, email, "clientpass1");
   await client.waitForURL("**/app");
 

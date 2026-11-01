@@ -1,6 +1,7 @@
 import { useEffect, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { api, ApiError } from "./api";
-import { useT } from "./i18n";
+import { useT, type Lang } from "./i18n";
+import { useTheme, type Theme } from "./theme";
 
 export function cx(...c: (string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
@@ -37,7 +38,7 @@ export function Toggle({ checked, onChange, disabled, label }: { checked: boolea
   return (
     <button type="button" role="switch" aria-checked={checked} aria-label={label} disabled={disabled} onClick={() => onChange(!checked)}
       className={cx("relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition", checked ? "bg-emerald-500" : "bg-slate-300", disabled && "opacity-50")}>
-      <span className={cx("inline-block h-5 w-5 rounded-full bg-white shadow transition", checked ? "translate-x-5" : "translate-x-0.5")} />
+      <span className={cx("inline-block h-5 w-5 rounded-full bg-[#fff] shadow transition", checked ? "translate-x-5" : "translate-x-0.5")} />
     </button>
   );
 }
@@ -82,7 +83,7 @@ export function Table({ head, children, empty }: { head: ReactNode[]; children: 
 export function Modal({ open, title, onClose, children }: { open: boolean; title: string; onClose: () => void; children: ReactNode }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div className="w-full max-w-lg rounded-xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold">{title}</h3>
@@ -153,5 +154,42 @@ export function CopyButton({ text }: { text: string }) {
     <Button variant="secondary" size="sm" onClick={async () => { await navigator.clipboard.writeText(text); setDone(true); setTimeout(() => setDone(false), 1500); }}>
       {done ? t("copied") : t("copy")}
     </Button>
+  );
+}
+
+/** Two-option segmented control used for the sidebar settings. */
+function Segmented<T extends string>({ label, value, options, onChange, onDark }: {
+  label: string; value: T; options: { value: T; label: string; testId: string }[]; onChange: (v: T) => void; onDark?: boolean;
+}) {
+  return (
+    <div role="radiogroup" aria-label={label}>
+      <div className={cx("mb-1 px-1 text-[11px] font-semibold uppercase tracking-wider", onDark ? "text-[#dbe6ff]/70" : "text-slate-500")}>{label}</div>
+      <div className={cx("grid grid-cols-2 gap-1 rounded-lg p-1", onDark ? "bg-[#fff]/10" : "border border-slate-200 bg-slate-100")}>
+        {options.map((o) => {
+          const on = o.value === value;
+          return (
+            <button key={o.value} type="button" role="radio" aria-checked={on} data-testid={o.testId} onClick={() => onChange(o.value)}
+              className={cx("rounded-md px-2 py-1.5 text-xs font-medium transition",
+                on ? (onDark ? "bg-[#fff] text-[#14244f]" : "bg-brand-600 text-white shadow-sm") : (onDark ? "text-[#dbe6ff] hover:bg-[#fff]/10" : "text-slate-600 hover:text-slate-900"))}>
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** Language + theme toggles shown at the bottom of the left sidebar. */
+export function SidebarToggles({ onDark }: { onDark?: boolean }) {
+  const { t, lang, setLang } = useT();
+  const { theme, setTheme } = useTheme();
+  return (
+    <div className="space-y-3">
+      <Segmented<Lang> label={t("language")} value={lang} onChange={setLang} onDark={onDark}
+        options={[{ value: "en", label: "English", testId: "lang-en" }, { value: "bn", label: "বাংলা", testId: "lang-bn" }]} />
+      <Segmented<Theme> label={t("theme")} value={theme} onChange={setTheme} onDark={onDark}
+        options={[{ value: "light", label: `☀ ${t("light")}`, testId: "theme-light" }, { value: "dark", label: `☾ ${t("dark")}`, testId: "theme-dark" }]} />
+    </div>
   );
 }

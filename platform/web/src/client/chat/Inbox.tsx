@@ -90,7 +90,7 @@ function MessageBubble({ m }: { m: Msg }) {
           </div>
         ) : m.kind === "image" && m.url ? <img src={m.url} className="max-h-60 rounded" alt="" />
           : <span className="whitespace-pre-wrap">{m.text}</span>}
-        <div className={cx("mt-0.5 text-[10px]", mine && m.by !== "ai" ? "text-brand-100" : "text-slate-400")}>{m.by === "ai" ? "AI · " : ""}{new Date(m.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+        <div className={cx("mt-0.5 text-[10px]", mine && m.by !== "ai" ? "text-white/70" : "text-slate-400")}>{m.by === "ai" ? "AI · " : ""}{new Date(m.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
       </div>
     </div>
   );

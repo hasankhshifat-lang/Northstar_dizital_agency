@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes, useNavigate } from "react-router";
 import "./styles.css";
 import { I18nProvider, useT } from "./i18n";
+import { ThemeProvider } from "./theme";
 import { SessionProvider, useSession } from "./auth/session";
 import { BootstrapPage, LoginPage, PausedPage, SetupPage } from "./auth/AuthPages";
 import { AdminLayout } from "./admin/AdminLayout";
@@ -46,6 +47,7 @@ function Home() {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <ThemeProvider>
     <I18nProvider>
       <SessionProvider>
         <BrowserRouter>
@@ -75,5 +77,6 @@ createRoot(document.getElementById("root")!).render(
         </BrowserRouter>
       </SessionProvider>
     </I18nProvider>
+    </ThemeProvider>
   </StrictMode>,
 );

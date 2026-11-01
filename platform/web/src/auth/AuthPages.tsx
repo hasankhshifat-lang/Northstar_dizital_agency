@@ -8,7 +8,7 @@ import { useSession } from "./session";
 function Shell({ title, children }: { title: string; children: ReactNode }) {
   const { t } = useT();
   return (
-    <div className="flex min-h-full items-center justify-center bg-gradient-to-br from-brand-900 to-brand-600 p-4">
+    <div className="flex min-h-full items-center justify-center bg-gradient-to-br from-[#14244f] to-brand-600 p-4">
       <div className="w-full max-w-sm rounded-2xl bg-white p-7 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <div>

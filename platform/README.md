@@ -21,7 +21,7 @@ The design is in `../docs/superpowers/specs/2026-11-01-client-automation-platfor
 | Database | Cloudflare D1, with migrations in `migrations/` |
 | Images, backups | Cloudflare R2 |
 | Scheduled work | Cron every 5 min: engine retries, AI config pushes, follow-ups/broadcasts, purge of deleted clients, Sunday CSV backups |
-| Web app | React 19 + Vite + Tailwind, Bangla/English |
+| Web app | React 19 + Vite + Tailwind. English (default) / Bangla and Light (default) / Dark toggles in the left sidebar, remembered per browser |
 
 ## Local development
 

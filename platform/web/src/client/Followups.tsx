@@ -64,7 +64,7 @@ function RuleCard({ rule }: { rule: Rule }) {
   };
   const past24h = amount * UNIT_MIN[unit] >= 1440;
   return (
-    <Card title={<span>{t("rule_" + r.type)} {r.enabled ? <Badge tone="green">{t("active")}</Badge> : <Badge>{t("suspended")}</Badge>}</span>}
+    <Card title={<span>{t("rule_" + r.type)} {r.enabled ? <Badge tone="green">{t("on")}</Badge> : <Badge>{t("off")}</Badge>}</span>}
       actions={<Toggle checked={r.enabled} label={t("rule_" + r.type)} onChange={(v) => save({ enabled: v })} />}>
       <p className="mb-3 text-sm text-slate-500">{t("rule_" + r.type + "_help")}</p>
       <div className="space-y-3">
