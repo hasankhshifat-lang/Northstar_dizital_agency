@@ -1,5 +1,6 @@
 """Sound design for the no-voiceover Pony Express Short: synth music bed + SFX on every visual event."""
 import numpy as np, subprocess, math, json
+OUT_WAV = "/home/user/Northstar_dizital_agency/social/which-life-next/remotion/public/pony/sound.wav"
 SR = 48000
 D = "/home/user/Northstar_dizital_agency/social/which-life-next/remotion/public/sfx/"
 END = 43.5
@@ -149,7 +150,16 @@ if VOICE:
     out += vo[:, None] * 0.9
 else:
     out += music * 0.32
-peak = np.abs(out).max(); out = out / peak * 0.89
+peak = np.abs(out).max(); out = (out / peak * 0.89).astype(np.float32)   # MUST be float32: ffmpeg reads f32le (float64 here = garbled noise)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "2", "-i", "-",
-                "/home/user/Northstar_dizital_agency/social/which-life-next/remotion/public/pony/sound.wav"], input=out.tobytes(), check=True)
+                OUT_WAV], input=out.tobytes(), check=True)
+# ---------- safety check: the voice must be clearly present in the written file ----------
+if VOICE:
+    chk = np.frombuffer(subprocess.check_output(["ffmpeg", "-v", "error", "-i", OUT_WAV, "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"]), np.float32)[:N]
+    vv = vo[: len(chk)]
+    k = float(chk @ vv) / float(vv @ vv + 1e-9)
+    resid = chk - k * vv
+    snr = 10 * math.log10(float((k * vv) @ (k * vv)) / float(resid @ resid + 1e-9))
+    print(f"voice gain in file {k:.2f}, voice-to-background {snr:.1f} dB")
+    assert k > 0.3 and snr > 6, "VOICE NOT CLEAR IN THE MIX — do not render"
 print("ok", out.shape[0] / SR)
