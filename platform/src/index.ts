@@ -7,6 +7,8 @@ import { adminRoutes } from "./admin/routes";
 import { catalogRoutes } from "./catalog/routes";
 import { mediaRoutes } from "./catalog/media";
 import { customerRoutes, orderRoutes } from "./orders/routes";
+import { reportRoutes } from "./reports/routes";
+import { publicRoutes } from "./public/routes";
 
 export const app = new Hono<AppEnv>();
 
@@ -19,6 +21,8 @@ app.route("/api/products", catalogRoutes);
 app.route("/media", mediaRoutes);
 app.route("/api/orders", orderRoutes);
 app.route("/api/customers", customerRoutes);
+app.route("/api/reports", reportRoutes);
+app.route("/p", publicRoutes);
 
 app.notFound((c) => c.json(errorBody("NOT_FOUND"), 404));
 app.onError(errorHandler);

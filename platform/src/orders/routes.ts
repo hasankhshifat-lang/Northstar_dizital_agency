@@ -7,6 +7,7 @@ import { ApiError } from "../lib/errors";
 import { parseBody } from "../lib/validate";
 import { parseCustomer } from "./customers";
 import { changeStatus, createOrder, loadOrder, type OrderStatus } from "./service";
+import { renderInvoice } from "../public/routes";
 
 export const orderRoutes = new Hono<AppEnv>();
 orderRoutes.use("*", ...clientGroup("orders"));
@@ -68,6 +69,12 @@ orderRoutes.get("/:id", async (c) => {
   const o = await loadOrder(tenantDb(c.env.DB, c.var.tenant.id), c.req.param("id"));
   if (!o) throw new ApiError(404, "NOT_FOUND");
   return c.json({ order: o });
+});
+
+orderRoutes.get("/:id/invoice", async (c) => {
+  const o = await loadOrder(tenantDb(c.env.DB, c.var.tenant.id), c.req.param("id"));
+  if (!o) throw new ApiError(404, "NOT_FOUND");
+  return c.html(renderInvoice(o, c.var.tenant));
 });
 
 orderRoutes.post("/:id/status", async (c) => {
