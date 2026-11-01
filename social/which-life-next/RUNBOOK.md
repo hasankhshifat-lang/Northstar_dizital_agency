@@ -421,3 +421,17 @@ Full breakdown: `research/geoglobetales-breakdown-2026-11-01.md`.
    - Put the big effects (boom, rewind, cheer, zap) in pauses between lines.
    - Keep the silence beat before the twist.
 6. **Description** must end with: "Narration voiced with AI. Sound effects generated with AI. Animation made by the channel."
+
+### Ground scenes inside map Shorts (user rule, 2026-11-01): don't stay stuck on the map
+Start on the map, then **dive into the place** and show what the narration describes. Then return to the map when the story moves.
+- **What a ground scene shows:** real buildings and infrastructure (towns, stations, offices, railroads, telegraph lines), other characters doing the action, close-ups of key objects (prices, newspapers, scales, ledgers), and terrain beats (desert, blizzard, night).
+- **Rhythm:** about 50–60% of a 2-minute Short is ground scenes and the rest is map. Change place every 3–6 s, and never sit on one view longer than about 8 s.
+- **Transitions:**
+  - map → scene: a dive (map zoom ×4, then the scene settles from ×1.35, with a white flash).
+  - scene → scene: a whip slide.
+  - scene → map: a pull-out.
+  - Each transition gets a whoosh.
+- **Code:**
+  - `src/sets/ponyScenes.tsx` holds the reusable vertical pieces: Sky, Hills (parallax), Ground, Cabin, Fence, Storefront, Pole, Bunting, Wall, Person (recoloured Kit rig with top-hat option; SUIT/KEEPER/CLERK/WORKER/TOWN palettes) and Horse. It also has example scenes (gallop, town and railroad end, office, relay swap, scale, desert, blizzard, night, arrival, counter, newsboy, dusk, crew, telegraph office, CLOSED).
+  - `src/stories/ponyVoiced.tsx` has the `SCENES` schedule, `diveFactor` and `SceneLayer`. Each scene's internal beats use its local time, matched to word timestamps.
+- **Layout:** draw scenes on GY=1240 and shift them up 130 px in the SceneLayer. Captions sit at y 1420, below the action.

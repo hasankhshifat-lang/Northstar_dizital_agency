@@ -6,6 +6,67 @@ import worldTopo from "world-atlas/countries-50m.json";
 import statesTopo from "us-atlas/states-10m.json";
 import { Horse } from "../sets/horse";
 import { fonts } from "../theme";
+import { SceneArrival, SceneBlizzard, SceneClosed, SceneCounter, SceneCrew, SceneDesert, SceneDusk, SceneGallop, SceneNewsboy, SceneNight, SceneOffice, SceneRelay, SceneRider, SceneStJoseph, SceneTelegraph } from "../sets/ponyScenes";
+
+// ---------- ground scenes (dive from the map into the place, then back out) ----------
+type SceneDef = { from: number; to: number; el: (p: { lt: number; dur: number; frame: number }) => React.ReactNode };
+const SCENES: SceneDef[] = [
+  { from: 4.9, to: 12.4, el: (p) => <SceneGallop {...p} /> },
+  { from: 21.4, to: 24.2, el: (p) => <SceneStJoseph {...p} /> },
+  { from: 32.6, to: 37.2, el: (p) => <SceneOffice {...p} /> },
+  { from: 42.6, to: 47.8, el: (p) => <SceneRelay {...p} /> },
+  { from: 47.8, to: 54.6, el: (p) => <SceneRider {...p} /> },
+  { from: 62.5, to: 64.3, el: (p) => <SceneDesert {...p} /> },
+  { from: 64.3, to: 66.2, el: (p) => <SceneBlizzard {...p} /> },
+  { from: 66.2, to: 69.5, el: (p) => <SceneNight {...p} /> },
+  { from: 69.5, to: 75.0, el: (p) => <SceneArrival {...p} /> },
+  { from: 75.0, to: 78.7, el: (p) => <SceneCounter {...p} /> },
+  { from: 78.7, to: 81.4, el: (p) => <SceneNewsboy {...p} /> },
+  { from: 86.3, to: 90.9, el: (p) => <SceneDusk {...p} /> },
+  { from: 90.9, to: 94.4, el: (p) => <SceneCrew {...p} /> },
+  { from: 98.2, to: 101.9, el: (p) => <SceneTelegraph {...p} /> },
+  { from: 101.9, to: 105.6, el: (p) => <SceneClosed {...p} /> },
+  { from: 105.6, to: 110.6, el: (p) => <SceneOffice {...p} sad /> },
+  { from: 110.6, to: 116.0, el: (p) => <SceneGallop {...p} silhouette sky={["#3a1f3a", "#f08a4b"]} sun="#ffcf7a" /> },
+];
+export const SCENE_TIMES = SCENES.map((s) => [s.from, s.to]);
+const DIVE = 0.45;
+/** map zoom multiplier: the camera dives into the place before a scene and pulls back out after it */
+function diveFactor(t: number) {
+  let f = 1;
+  for (let i = 0; i < SCENES.length; i++) {
+    const sc = SCENES[i], prevAdj = i > 0 && Math.abs(SCENES[i - 1].to - sc.from) < 0.01, nextAdj = i < SCENES.length - 1 && Math.abs(SCENES[i + 1].from - sc.to) < 0.01;
+    if (!prevAdj && t > sc.from - DIVE && t <= sc.from) f = Math.max(f, Math.pow(4, Easing.in(Easing.cubic)((t - (sc.from - DIVE)) / DIVE)));
+    if (!nextAdj && t >= sc.to && t < sc.to + 0.7) f = Math.max(f, Math.pow(4, 1 - Easing.out(Easing.cubic)((t - sc.to) / 0.7)));
+  }
+  return f;
+}
+const SceneLayer: React.FC<{ t: number; frame: number }> = ({ t, frame }) => {
+  const i = SCENES.findIndex((s) => t >= s.from && t < s.to);
+  if (i < 0) return null;
+  const sc = SCENES[i], lt = t - sc.from, dur = sc.to - sc.from;
+  const prevAdj = i > 0 && Math.abs(SCENES[i - 1].to - sc.from) < 0.01;
+  const nextAdj = i < SCENES.length - 1 && Math.abs(SCENES[i + 1].from - sc.to) < 0.01;
+  // enter: dive (scale down from 1.35 + flash) or whip (slide in from the right)
+  const enter = Math.min(1, lt / (prevAdj ? 0.3 : 0.4));
+  const exitK = nextAdj ? 0 : interpolate(t, [sc.to - 0.25, sc.to], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const scale = (prevAdj ? 1 : 1.35 - 0.35 * Easing.out(Easing.cubic)(enter)) * (1 + exitK * 0.6);
+  const tx = prevAdj ? (1 - Easing.out(Easing.cubic)(enter)) * 1080 : 0;
+  const blur = prevAdj ? (1 - enter) * 18 : (1 - enter) * 10 + exitK * 12;
+  const opacity = prevAdj ? 1 : Math.min(1, enter * 2.5) * (1 - exitK);
+  const prev = prevAdj && enter < 1 ? SCENES[i - 1] : null;
+  return (
+    <AbsoluteFill>
+      {prev && <AbsoluteFill style={{ transform: `translateX(${-Easing.out(Easing.cubic)(enter) * 1080}px)`, filter: `blur(${enter * 18}px)` }}>
+        <svg viewBox="0 0 1080 1920" width="100%" height="100%"><g transform="translate(0 -130)">{prev.el({ lt: prev.to - prev.from, dur: prev.to - prev.from, frame })}</g></svg>
+      </AbsoluteFill>}
+      <AbsoluteFill style={{ opacity, transform: `translateX(${tx}px) scale(${scale})`, filter: blur > 0.3 ? `blur(${blur}px)` : undefined }}>
+        <svg viewBox="0 0 1080 1920" width="100%" height="100%"><g transform="translate(0 -130)">{sc.el({ lt, dur, frame })}</g></svg>
+      </AbsoluteFill>
+      {!prevAdj && lt < 0.25 && <AbsoluteFill style={{ backgroundColor: "#fff", opacity: 0.55 * (1 - lt / 0.25) }} />}
+    </AbsoluteFill>
+  );
+};
 
 /**
  * VOICED map Short (user rule 2026-11-01): Pony Express, ~2 min, Jesse narration.
@@ -74,7 +135,7 @@ function kitU(t: number): number {
   // the ride: hit each landmark when Jesse says it
   return interpolate(t, [54.7, 57.06, 57.92, 58.92, 60.84, 62.62, 64.46, 68.4], [0.03, U.kearny, U.laramie, U.pass, U.slc, U.desert, U.sierra, 1], cl);
 }
-function camera(t: number): Cam {
+function baseCamera(t: number): Cam {
   const kit = (z: number): Cam => ({ c: P(routeAt(Math.max(0, kitU(t)))), z });
   const seg = (t0: number, t1: number, a: Cam, b: Cam) => lerpCam(a, b, ease(interpolate(t, [t0, t1], [0, 1], cl)));
   const cold: Cam = { c: P(routeAt(0.81)), z: 4.8 };
@@ -94,6 +155,7 @@ function camera(t: number): Cam {
   return seg(115.6, 117.4, { c: [P(ROUTE[12].at)[0] + 10, P(ROUTE[12].at)[1] - 26], z: 5.2 }, { c: WIDE.c, z: 1.7 });
 }
 
+function camera(t: number): Cam { const c = baseCamera(t); return { c: c.c, z: c.z * diveFactor(t) }; }
 const pop = (t: number, at: number, dur = 0.28) => interpolate(t, [at, at + dur * 0.6, at + dur], [0, 1.18, 1], cl);
 const fade = (t: number, a: number, b: number, d = 0.2) => interpolate(t, [a, a + d, b - d, b], [0, 1, 1, 0], cl);
 const Big: React.FC<{ t: number; at: number; until: number; text: string; y?: number; size?: number; color?: string; serif?: boolean }> = ({ t, at, until, text, y = 360, size = 150, color = "#fff", serif = true }) =>
@@ -169,7 +231,7 @@ export const PonyVoiced: React.FC<{ sound?: string; words?: Word[] }> = ({ sound
   // hook flash-forward wire (12.6–14.8) and the real wire (91.5–97.4)
   const wireU = t >= 12.6 && t < 15.3 ? interpolate(t, [12.6, 13.9], [0, 1], cl) : t >= 91.4 ? interpolate(t, [91.4, 97.4], [0, 1], { ...cl, easing: Easing.inOut(Easing.quad) }) : 0;
   const zapU = t >= 99.0 && t < 100.9 ? interpolate(t, [99.0, 100.6], [0, 1], cl) : -1; // a message racing the wire "in minutes"
-  const newsU = t >= 81.4 && t < 85.6 ? interpolate(t, [81.4, 84.8], [0, 1], { ...cl, easing: Easing.inOut(Easing.sin) }) : -1;
+  const newsU = t >= 81.6 && t < 86.3 ? interpolate(t, [81.6, 84.8], [0, 1], { ...cl, easing: Easing.inOut(Easing.sin) }) : -1;
   const letterU = t >= 1.7 && t < 4.6 ? interpolate(t, [1.7, 4.6], [0, 0.08], cl) : -1;
   const closedAt = 104.2;
   const dark = t >= 86.4 && t < 91.0 ? fade(t, 86.4, 91.0, 0.4) * 0.45 : 0;
@@ -299,7 +361,7 @@ export const PonyVoiced: React.FC<{ sound?: string; words?: Word[] }> = ({ sound
           </g>
         )}
         {newsU >= 0 && (() => { const [x, y] = toS(routeAt(newsU)); return (
-          <g transform={`translate(${x} ${y - 90}) scale(${pop(t, 81.4)})`}>
+          <g transform={`translate(${x} ${y - 90}) scale(${pop(t, 81.6)})`}>
             <rect x={-110} y={-60} width={220} height={120} fill="#f4efe2" stroke="#000" strokeWidth={5} />
             <text y={-20} textAnchor="middle" fontFamily="serif" fontWeight={900} fontSize={26} fill="#111">LINCOLN</text>
             <text y={14} textAnchor="middle" fontFamily="serif" fontWeight={900} fontSize={26} fill="#111">ELECTED!</text>
@@ -353,23 +415,21 @@ export const PonyVoiced: React.FC<{ sound?: string; words?: Word[] }> = ({ sound
         </div>
       )}
 
+      <SceneLayer t={t} frame={frame} />
       {/* big pops (numbers, dates) */}
       <Big t={t} at={6.32} until={11.2} text="10 DAYS" color="#ffd23f" size={190} />
       <Big t={t} at={11.3} until={12.4} text="IT WORKED." serif={false} size={110} color="#fff" />
       <Big t={t} at={13.98} until={15.3} text="18 months?" color="#ffd23f" size={128} />
       <Big t={t} at={18.38} until={22.2} text="April 3, 1860" size={130} />
-      <Big t={t} at={34.16} until={37.2} text="Russell, Majors & Waddell" size={84} y={380} />
       <Big t={t} at={73.76} until={76.2} text="10 DAYS" color="#ffd23f" size={190} />
       <Big t={t} at={83.08} until={86.4} text="7 days, 17 hours" color="#ffd23f" size={110} y={420} />
       <Big t={t} at={87.28} until={90.6} text="Something faster…" serif={false} size={84} color="#bfe9ff" y={520} />
       <Big t={t} at={94.68} until={98.2} text="Oct 24, 1861" size={130} />
       <Big t={t} at={100.42} until={102.0} text="MINUTES" serif={false} size={130} color="#bfe9ff" />
-      <Big t={t} at={106.48} until={108.3} text="18 months" color="#ffd23f" size={160} />
-      <Big t={t} at={108.34} until={110.6} text="−$200,000" serif={false} size={130} color="#ff5a4e" />
 
       {/* captions, in sync with the voice */}
       {cap && (
-        <div style={{ position: "absolute", top: 1300, left: 60, right: 60, textAlign: "center", fontFamily: fonts.sans, fontWeight: 900, fontSize: 66, lineHeight: 1.1,
+        <div style={{ position: "absolute", top: 1420, left: 60, right: 60, textAlign: "center", fontFamily: fonts.sans, fontWeight: 900, fontSize: 66, lineHeight: 1.1,
           color: "#fff", WebkitTextStroke: "9px #000", paintOrder: "stroke fill", textShadow: "0 6px 0 #000", transform: `scale(${interpolate(t, [cap.s, cap.s + 0.08], [0.9, 1], cl)})` }}>{cap.text}</div>
       )}
       {sound && <Audio src={staticFile(sound)} />}

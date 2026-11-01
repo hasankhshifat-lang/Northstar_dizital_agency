@@ -41,7 +41,7 @@ export const Horse: React.FC<{ phase?: number; galloping?: boolean; color?: stri
         <path d={`M 92 -130 Q ${140 + g * c * 10} ${-120 + g * s * 12} ${150 + g * c * 16} ${-70 + g * s * 8}`} stroke="#3a2618" strokeWidth={14} fill="none" strokeLinecap="round" />
         {/* rider sits behind the body so the legs are hidden */}
         {rider && (
-          <g transform="translate(6 -112) scale(0.5)">
+          <g transform="translate(6 -98) scale(0.5)">
             <g transform="rotate(-14)">
               <Kit pose="side" facing={-1} expression={riderExpression} />
             </g>

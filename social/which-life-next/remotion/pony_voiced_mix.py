@@ -115,14 +115,14 @@ loop("gallop", 46.3, 54.6, 0.35)
 put("pop", 48.86, 0.5); put("pop", 52.24, 0.5)
 loop("gallop", 54.7, 69.0, 0.5)
 for tt in (57.06, 57.92, 58.92, 60.84, 62.62, 64.46): put("pop", tt, 0.45)
-loop("wind", 63.8, 68.4, 0.45)
-put("cheer", 69.1, 0.75); put("ding", 69.2, 0.4)            # arrival (gap)
+loop("wind", 64.3, 66.3, 0.55)
+put("cheer", 69.6, 0.8); put("ding", 69.7, 0.4)            # arrival scene (gap)
 put("boom", 73.76, 0.5)                                      # 10 DAYS
 put("whoosh", 74.6, 0.5); put("pop", 76.34, 0.6); put("ding", 76.4, 0.3)
 put("pop", 81.4, 0.5); put("ding", 84.8, 0.5)               # Lincoln news + 7d17h
 # 85.6–86.6: silence beat before the twist (music already out)
 put("boom", 90.2, 0.75)                                      # gap: the turn
-put("telegraph", 91.4, 0.4, dur=6.0)
+put("telegraph", 98.4, 0.45, dur=3.4)          # telegraph office scene
 for k in range(16): put("pop", 91.4 + 6.0 * ((k + 0.5) / 16) ** 0.8, 0.22)
 put("boom", 94.68, 0.5)
 put("zap", 97.3, 0.7)                                        # wire finished
@@ -132,6 +132,24 @@ put("pop", 104.2, 0.6); put("whoosh", 104.4, 0.4); put("boom", 104.5, 0.45)   # 
 put("ding", 106.48, 0.4); put("boom", 108.34, 0.45)
 put("whoosh", 110.6, 0.5); put("neigh", 111.0, 0.45)
 put("whoosh", 115.6, 0.5); put("ding", 116.0, 0.35)
+
+
+# ---------- scene transitions (dive = whoosh before the scene; whip = whoosh at the cut; pull-out after) ----------
+SC = [(4.9,12.4),(21.4,24.2),(32.6,37.2),(42.6,47.8),(47.8,54.6),(62.5,64.3),(64.3,66.2),(66.2,69.5),(69.5,75.0),(75.0,78.7),(78.7,81.4),(86.3,90.9),(90.9,94.4),(98.2,101.9),(101.9,105.6),(105.6,110.6),(110.6,116.0)]
+starts = {round(a, 2) for a, b in SC}; ends = {round(b, 2) for a, b in SC}
+for a, b in SC:
+    if round(a, 2) in ends: put("whoosh", a - 0.08, 0.45)          # whip pan between scenes
+    else: put("whoosh", a - 0.45, 0.65)                             # dive from the map
+    if round(b, 2) not in starts: put("whoosh", b - 0.05, 0.45)     # pull back out to the map
+loop("gallop", 4.9, 12.4, 0.45)
+loop("gallop", 42.6, 44.0, 0.5); loop("gallop", 46.1, 47.6, 0.5)
+loop("gallop", 69.5, 70.8, 0.45)
+loop("gallop", 110.6, 116.0, 0.4)
+put("pop", 34.06, 0.4); put("pop", 34.4, 0.4); put("pop", 34.9, 0.4)   # owners' names
+put("pop", 76.3, 0.5); put("pop", 77.4, 0.4)                            # $5, ½ ounce
+put("pop", 78.9, 0.5)                                                    # newspaper
+for i in range(7): put("pop", 86.7 + i * 0.35, 0.25)                     # poles on the horizon
+put("ding", 52.2, 0.4)                                                   # scale needle
 
 # ---------- final mix: ducking happens AFTER every SFX cue is placed ----------
 if VOICE:
