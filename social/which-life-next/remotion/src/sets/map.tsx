@@ -96,9 +96,9 @@ export const MapView: React.FC<MapProps & { dur: number }> = ({ target, start = 
             <path d={d} stroke="#000" strokeWidth={14} fill="none" strokeLinecap="round" opacity={0.5} />
             <path d={d} stroke={l.color ?? "#e4512c"} strokeWidth={8} fill="none" strokeLinecap="round" strokeDasharray={l.dashed ? "18 12" : undefined} />
             {l.label && lm && p > 0.9 && (
-              <g transform={`translate(${lm[0]} ${lm[1] - 34})`}>
-                <rect x={-150} y={-38} width={300} height={56} rx={12} fill="#fff3c4" stroke="#000" strokeWidth={5} />
-                <text x={0} y={2} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={34} fill="#1d1712">{l.label}</text>
+              <g transform={`translate(${lm[0]} ${lm[1] - (narrow ? 20 : 34)})`}>
+                <rect x={-(l.label.length * (narrow ? 22 : 34) * 0.64 + 30) / 2} y={narrow ? -26 : -38} width={l.label.length * (narrow ? 22 : 34) * 0.64 + 30} height={narrow ? 38 : 56} rx={10} fill="#fff3c4" stroke="#000" strokeWidth={narrow ? 4 : 5} />
+                <text x={0} y={narrow ? 1 : 2} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? 22 : 34} fill="#1d1712">{l.label}</text>
               </g>
             )}
           </g>
@@ -110,10 +110,11 @@ export const MapView: React.FC<MapProps & { dur: number }> = ({ target, start = 
         const xy = proj(m.at);
         if (!xy || p <= 0 || !visible(m.at)) return null;
         const side = m.labelSide ?? "right";
-        const fs = narrow ? 40 : 46;
+        const fs = narrow ? Math.min(30, 520 / (m.label.length * 0.62)) : 46;
         const w = m.label.length * fs * 0.62 + 40;
-        const lx = narrow ? -w / 2 : side === "right" ? 40 : -40 - w;
-        const ly = narrow ? (m.labelSide === "left" ? 80 : -120) : -70;
+        // narrow (full-screen Short shows world x ~660-1260): centre over the pin, but keep inside the frame
+        const lx = narrow ? Math.max(680 - xy[0], Math.min(1240 - xy[0] - w, -w / 2)) : side === "right" ? 40 : -40 - w;
+        const ly = narrow ? (m.labelSide === "left" ? 60 : -100) : -70;
         const pulse = 1 + Math.sin(frame * 0.25) * 0.08;
         return (
           <g key={`m${i}`} transform={`translate(${xy[0]} ${xy[1]}) scale(${p})`}>
@@ -130,7 +131,7 @@ export const MapView: React.FC<MapProps & { dur: number }> = ({ target, start = 
       })}
       {title && (
         <g opacity={interpolate(t, [0, 0.08], [0, 1], { extrapolateRight: "clamp" })}>
-          <text x={960} y={narrow ? 120 : 110} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? 64 : 72} fill="#fff" stroke="#000" strokeWidth={10} paintOrder="stroke">{title}</text>
+          <text x={960} y={narrow ? 240 : 110} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? Math.min(46, 540 / (title.length * 0.62)) : 72} fill="#fff" stroke="#000" strokeWidth={10} paintOrder="stroke">{title}</text>
         </g>
       )}
     </g>

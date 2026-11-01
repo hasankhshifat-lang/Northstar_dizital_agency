@@ -276,9 +276,9 @@ const Keyword: React.FC<{ text: string; start: number; narrow?: boolean }> = ({ 
   const o = interpolate(frame, [0, 3, 44, 54], [0, 1, 1, 0], { extrapolateRight: "clamp" });
   const shake = frame < 14 ? Math.sin(frame * 2.7) * (14 - frame) * 1.2 : 0;
   return (
-    <AbsoluteFill style={{ alignItems: "center", paddingTop: narrow ? 300 : 120, opacity: o }}>
-      <div style={{ scale: String(s), translate: `${shake}px 0px`, rotate: "-4deg", fontFamily: fonts.sans, fontWeight: 900, fontSize: Math.min(narrow ? 120 : 150, (narrow ? 860 : 1650) / (text.length * 0.8)), color: "#ffd23f",
-        WebkitTextStroke: "10px #000", paintOrder: "stroke fill", textShadow: "0 10px 0 #000, 0 0 40px rgba(255,80,30,0.7)", letterSpacing: 2 }}>{text}</div>
+    <AbsoluteFill style={{ alignItems: "center", paddingTop: narrow ? 250 : 120, opacity: o }}>
+      <div style={{ scale: String(s), translate: `${shake}px 0px`, rotate: "-4deg", fontFamily: fonts.sans, fontWeight: 900, fontSize: Math.min(narrow ? 78 : 150, (narrow ? 520 : 1650) / (text.length * 0.8)), color: "#ffd23f",
+        WebkitTextStroke: narrow ? "7px #000" : "10px #000", paintOrder: "stroke fill", textShadow: narrow ? "0 6px 0 #000, 0 0 30px rgba(255,80,30,0.7)" : "0 10px 0 #000, 0 0 40px rgba(255,80,30,0.7)", letterSpacing: 2 }}>{text}</div>
     </AbsoluteFill>
   );
 };
@@ -288,10 +288,10 @@ const Timer: React.FC<{ text: string; narrow?: boolean; label?: string }> = ({ t
   const frame = useCurrentFrame();
   const pulse = 1 + Math.max(0, Math.sin(frame * 0.25)) * 0.04;
   return (
-    <AbsoluteFill style={{ alignItems: "flex-end", padding: narrow ? "450px 450px 0 0" : "36px 40px 0 0" }}>
+    <AbsoluteFill style={{ alignItems: "flex-end", padding: narrow ? "205px 680px 0 0" : "36px 40px 0 0" }}>
       <div style={{ scale: String(pulse), display: "flex", alignItems: "center", gap: 14, padding: "12px 24px", borderRadius: 16, background: "rgba(16,10,6,0.82)", border: "4px solid #e4512c",
-        fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 34 : 40, color: "#fff" }}>
-        <span style={{ fontSize: narrow ? 26 : 30, color: "#ffb08a" }}>{label}</span>{text}
+        fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 22 : 40, color: "#fff" }}>
+        <span style={{ fontSize: narrow ? 15 : 30, color: "#ffb08a" }}>{label}</span>{text}
       </div>
     </AbsoluteFill>
   );
@@ -351,26 +351,26 @@ export const ShotView: React.FC<{ shot: Shot; narrow?: boolean }> = ({ shot, nar
             </svg>
           </AbsoluteFill>
         )}
-        <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", flexDirection: "column", gap: 24, padding: narrow ? "0 450px" : "0 120px" }}>
+        <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", flexDirection: "column", gap: narrow ? 14 : 24, padding: narrow ? "0 690px" : "0 120px" }}>
           {shot.card.big && (
-            <div style={{ fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 200 : 280, lineHeight: 1, color: "#ffd23f",
+            <div style={{ fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? Math.min(130, 560 / (shot.card.big.length * 0.62)) : 280, lineHeight: 1, color: "#ffd23f",
               WebkitTextStroke: "10px #1a120c", paintOrder: "stroke fill", textShadow: "0 8px 0 #7a3e12, 0 16px 0 #1a120c, 0 0 60px rgba(255,170,60,0.55)",
               scale: String(interpolate(frame, [0, 10, 16], [1.6, 0.95, 1], { extrapolateRight: "clamp" })) }}>{shot.card.big}</div>
           )}
           {shot.card.title.map((line, i) => (
             <div key={i} style={shot.card!.style === "hook" ? {
-              fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? 96 : 150, color: i % 2 ? "#ffd23f" : "#fff", textAlign: "center", lineHeight: 1.05,
+              fontFamily: fonts.sans, fontWeight: 900, fontSize: narrow ? Math.min(64, 540 / (line.length * 0.66)) : 150, color: i % 2 ? "#ffd23f" : "#fff", textAlign: "center", lineHeight: 1.05,
               WebkitTextStroke: "10px #000", paintOrder: "stroke fill", textShadow: "0 10px 0 #000",
               scale: String(interpolate(frame, [i * 5, i * 5 + 6, i * 5 + 10], [1.8, 0.94, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })),
               opacity: interpolate(frame, [i * 5, i * 5 + 3], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
             } : {
-              fontFamily: fonts.serif, fontWeight: 700, fontSize: narrow ? 78 : 112, color: palette.paper, letterSpacing: 2, textAlign: "center", lineHeight: 1.1,
+              fontFamily: fonts.serif, fontWeight: 700, fontSize: narrow ? Math.min(52, 540 / (line.length * 0.74)) : 112, color: palette.paper, letterSpacing: 2, textAlign: "center", lineHeight: 1.1,
               opacity: interpolate(frame, [6 + i * 6, 18 + i * 6], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
               translate: interpolate(frame, [6 + i * 6, 18 + i * 6], ["0px 24px", "0px 0px"], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
             }}>{line}</div>
           ))}
           {shot.card.subtitle && (
-            <div style={{ fontFamily: fonts.sans, fontWeight: 700, fontSize: narrow ? 36 : 44, color: palette.gold, letterSpacing: 1.5, textAlign: "center", padding: narrow ? 0 : "0 160px",
+            <div style={{ fontFamily: fonts.sans, fontWeight: 700, fontSize: narrow ? 24 : 44, color: palette.gold, letterSpacing: 1.5, textAlign: "center", padding: narrow ? 0 : "0 160px",
               opacity: interpolate(frame, [22, 34], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
               {shot.card.subtitle}
             </div>
@@ -419,7 +419,7 @@ const CaptionLayer: React.FC<{ captions: Caption[]; vertical?: boolean; bottomPa
     <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: bottomPad ?? (vertical ? 520 : 70) }}>
       <div style={{
         fontFamily: fonts.sans, fontWeight: 700, fontSize: vertical ? 70 : 58, color: "#fff", textAlign: "center", maxWidth: vertical ? 900 : 1600,
-        padding: "0 40px", lineHeight: 1.2, WebkitTextStroke: "0px", textShadow: "0 0 8px #000, 0 3px 6px #000, 0 0 2px #000",
+        padding: "0 40px", lineHeight: 1.2, WebkitTextStroke: vertical ? "8px #000" : "0px", paintOrder: "stroke fill", textShadow: "0 0 8px #000, 0 3px 6px #000, 0 0 2px #000",
       }}>{c.text}</div>
     </AbsoluteFill>
   );
@@ -458,33 +458,32 @@ export const Short: React.FC<ShortProps> = ({ startFrame, hook, captions, title,
   const { fps } = useVideoConfig();
   const shifted = captions.map((c) => ({ ...c, start: c.start - startFrame / fps, end: c.end - startFrame / fps }));
   return (
-    <AbsoluteFill style={{ backgroundColor: palette.ink }}>
+    <AbsoluteFill style={{ backgroundColor: palette.ink, overflow: "hidden" }}>
+      {/* full-bleed: the 16:9 scene scaled to fill the 9:16 frame (no bars) */}
       <Sequence from={-startFrame}>
-        <AbsoluteFill style={{ width: 1920, height: 1080, top: 420, left: -420, scale: 1.0 }}>
+        <AbsoluteFill style={{ width: 1920, height: 1080, top: 420, left: -420, scale: String(1920 / 1080) }}>
           <Episode {...rest} captions={[]} showCaptions={false} narrow />
         </AbsoluteFill>
       </Sequence>
-      <AbsoluteFill style={{ top: 0, height: 420, backgroundColor: palette.ink }} />
-      <AbsoluteFill style={{ top: 1500, height: 420, backgroundColor: palette.ink }} />
-      <AbsoluteFill style={{ alignItems: "center", paddingTop: 150, opacity: interpolate(frame, [0, 6, 4.5 * fps, 5 * fps], [0, 1, 1, 0.0], { extrapolateRight: "clamp" }) }}>
-        {hook.map((h, i) => (
-          <div key={i} style={{ fontFamily: fonts.sans, fontWeight: 800, fontSize: 78, color: i === 0 ? "#ffd640" : "#fff", textShadow: "0 0 10px #000, 0 4px 8px #000", textAlign: "center" }}>{h}</div>
-        ))}
-      </AbsoluteFill>
-      {title && frame >= titleFrom && (
-        <AbsoluteFill style={{ height: 420, justifyContent: "center", alignItems: "center", padding: "40px 50px 0",
-          opacity: interpolate(frame, [titleFrom, titleFrom + 8], [0, 1], { extrapolateRight: "clamp" }) }}>
-          {title.map((h, i) => (
-            <div key={i} style={{ fontFamily: fonts.sans, fontWeight: 900, fontSize: 74, lineHeight: 1.08, color: i % 2 ? "#ffd23f" : "#fff",
-              WebkitTextStroke: "8px #000", paintOrder: "stroke fill", textAlign: "center" }}>{h}</div>
+      {/* soft shade behind the top text and the captions so they read on any scene */}
+      <AbsoluteFill style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 18%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.55) 100%)" }} />
+      {hook.length > 0 && (
+        <AbsoluteFill style={{ alignItems: "center", paddingTop: 150, opacity: interpolate(frame, [0, 6, 4.5 * fps, 5 * fps], [0, 1, 1, 0.0], { extrapolateRight: "clamp" }) }}>
+          {hook.map((h, i) => (
+            <div key={i} style={{ fontFamily: fonts.sans, fontWeight: 800, fontSize: 78, color: i === 0 ? "#ffd640" : "#fff", textShadow: "0 0 10px #000, 0 4px 8px #000", textAlign: "center" }}>{h}</div>
           ))}
         </AbsoluteFill>
       )}
-      {title ? (
-        <AbsoluteFill style={{ top: 1500, height: 420 }}><CaptionLayer captions={shifted} vertical bottomPad={170} /></AbsoluteFill>
-      ) : (
-        <CaptionLayer captions={shifted} vertical />
+      {title && frame >= titleFrom && (
+        <AbsoluteFill style={{ height: 330, justifyContent: "center", alignItems: "center", padding: "60px 50px 0",
+          opacity: interpolate(frame, [titleFrom, titleFrom + 8], [0, 1], { extrapolateRight: "clamp" }) }}>
+          {title.map((h, i) => (
+            <div key={i} style={{ fontFamily: fonts.sans, fontWeight: 900, fontSize: 70, lineHeight: 1.08, color: i % 2 ? "#ffd23f" : "#fff",
+              WebkitTextStroke: "9px #000", paintOrder: "stroke fill", textAlign: "center", textShadow: "0 5px 0 #000" }}>{h}</div>
+          ))}
+        </AbsoluteFill>
       )}
+      <CaptionLayer captions={shifted} vertical bottomPad={330} />
     </AbsoluteFill>
   );
 };

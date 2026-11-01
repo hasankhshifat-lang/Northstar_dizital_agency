@@ -22,22 +22,26 @@ export const Counter: React.FC<{ value: number; label: string; sub?: string; per
   const frame = useCurrentFrame();
   const p = interpolate(frame, [6, Math.min(dur * 0.6, 75)], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.out(Easing.cubic) });
   const n = Math.round(value * p);
-  const per = perIcon ?? Math.max(1, Math.ceil(value / 100));
-  const icons = Math.min(120, Math.ceil(value / per));
+  const maxIcons = narrow ? 24 : 120;
+  let per = perIcon ?? Math.max(1, Math.ceil(value / 100));
+  if (Math.ceil(value / per) > maxIcons) per = Math.ceil(value / maxIcons);
+  const icons = Math.min(maxIcons, Math.ceil(value / per));
   const shown = Math.round(icons * p);
-  const cols = narrow ? 10 : 20;
-  const gx = narrow ? 560 : 360, gy = narrow ? 560 : 560, step = narrow ? 80 : 60;
+  const cols = narrow ? 6 : 20;
+  const step = narrow ? 76 : 60;
+  const gx = narrow ? 960 - ((cols - 1) * step) / 2 : 360, gy = narrow ? 480 : 560;
+  const rowH = narrow ? 64 : step * 1.15;
   return (
     <g>
       <rect x={-200} y={-200} width={2320} height={1480} fill="#15100c" />
-      <text x={960} y={narrow ? 330 : 250} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? 150 : 190} fill="#ffd23f" stroke="#000" strokeWidth={12} paintOrder="stroke">
+      <text x={960} y={narrow ? 290 : 250} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? 110 : 190} fill="#ffd23f" stroke="#000" strokeWidth={12} paintOrder="stroke">
         {prefix}{n.toLocaleString("en-US")}{suffix}
       </text>
-      <text x={960} y={narrow ? 430 : 360} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? 56 : 70} fill="#fff" stroke="#000" strokeWidth={8} paintOrder="stroke">{label}</text>
+      <text x={960} y={narrow ? 350 : 360} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? Math.min(44, 540 / (label.length * 0.66)) : 70} fill="#fff" stroke="#000" strokeWidth={8} paintOrder="stroke">{label}</text>
       {Array.from({ length: icons }).map((_, i) => (
-        <Person key={i} x={gx + (i % cols) * step} y={gy + Math.floor(i / cols) * (step * 1.15)} s={narrow ? 1.1 : 0.85} color={i < shown ? color : "#3a2f26"} />
+        <Person key={i} x={gx + (i % cols) * step} y={gy + Math.floor(i / cols) * rowH} s={narrow ? 0.8 : 0.85} color={i < shown ? color : "#3a2f26"} />
       ))}
-      {sub && <text x={960} y={narrow ? 1500 : 1040} textAnchor="middle" fontFamily="Inter" fontWeight={800} fontSize={narrow ? 40 : 40} fill="#e9dcc3">{sub}{per > 1 ? ` · 1 icon = ${per.toLocaleString("en-US")} people` : ""}</text>}
+      {sub && <text x={960} y={narrow ? 392 : 1040} textAnchor="middle" fontFamily="Inter" fontWeight={800} fontSize={narrow ? Math.min(22, 560 / ((sub.length + 22) * 0.55)) : 40} fill="#e9dcc3">{sub}{per > 1 ? ` · 1 icon = ${per.toLocaleString("en-US")} people` : ""}</text>}
     </g>
   );
 };
@@ -53,13 +57,13 @@ export const Handshake: React.FC<{ label?: string; dur: number; narrow?: boolean
     <g>
       <rect x={-200} y={-200} width={2320} height={1480} fill="#c9b48f" />
       <rect x={-200} y={760} width={2320} height={600} fill="#8a7a5e" />
-      <g transform="translate(760 1000) scale(1.5)"><Kit pose="side" facing={1} expression="scared" lean={-pull / 4} /></g>
-      <g transform="translate(1160 1000) scale(1.5)"><Kit {...other} holdingRope={reach < -20} /></g>
-      <g transform="translate(960 640)" opacity={x}>
+      <g transform={narrow ? "translate(820 980) scale(1.05)" : "translate(760 1000) scale(1.5)"}><Kit pose="side" facing={1} expression="scared" lean={-pull / 4} /></g>
+      <g transform={narrow ? "translate(1100 980) scale(1.05)" : "translate(1160 1000) scale(1.5)"}><Kit {...other} holdingRope={reach < -20} /></g>
+      <g transform={narrow ? "translate(960 640) scale(0.7)" : "translate(960 640)"} opacity={x}>
         <circle r={110 * (0.6 + 0.4 * x)} fill="none" stroke="#c62828" strokeWidth={22} />
         <path d="M -78 78 L 78 -78" stroke="#c62828" strokeWidth={22} strokeLinecap="round" />
       </g>
-      <text x={960} y={narrow ? 380 : 200} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? 68 : 90} fill="#fff" stroke="#000" strokeWidth={10} paintOrder="stroke" opacity={x}>{label}</text>
+      <text x={960} y={narrow ? 330 : 200} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? Math.min(46, 540 / (label.length * 0.66)) : 90} fill="#fff" stroke="#000" strokeWidth={10} paintOrder="stroke" opacity={x}>{label}</text>
       {dur > 0 && null}
     </g>
   );
@@ -74,10 +78,10 @@ export const Callouts: React.FC<{ items: Callout[]; t: number; narrow?: boolean 
       const o = interpolate(t, [a, a + 0.08], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
       if (o <= 0) return null;
       const dx = c.dx ?? 140, dy = c.dy ?? -170;
-      const fs = Math.min(42, ((narrow ? 860 : 1500) - 44) / (c.text.length * 0.64));
+      const fs = Math.min(narrow ? 30 : 42, ((narrow ? 540 : 1500) - 44) / (c.text.length * 0.64));
       const w = c.text.length * fs * 0.64 + 44;
       // keep the label inside the visible frame (Shorts show x 420-1500)
-      const minX = narrow ? 440 + w / 2 : 20 + w / 2, maxX = narrow ? 1480 - w / 2 : 1900 - w / 2;
+      const minX = narrow ? 685 + w / 2 : 20 + w / 2, maxX = narrow ? 1235 - w / 2 : 1900 - w / 2;
       const lx = Math.max(minX, Math.min(maxX, c.x + dx)), ly = c.y + dy;
       return (
         <g key={i} opacity={o}>
@@ -111,14 +115,15 @@ export const Fleeing: React.FC<{ n?: number; t: number }> = ({ n = 14, t }) => (
 export const Ratio: React.FC<{ n: number; k?: number; label: string; narrow?: boolean }> = ({ n, k = 1, label, narrow }) => {
   const frame = useCurrentFrame();
   const on = interpolate(frame, [15, 25], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const step = narrow ? 100 : 150;
-  const x0 = 960 - ((n - 1) * step) / 2;
+  const perRow = narrow ? Math.ceil(n / 2) : n;
+  const step = narrow ? 95 : 150;
+  const x0 = 960 - ((perRow - 1) * step) / 2;
   return (
     <g>
       <rect x={-200} y={-200} width={2320} height={1480} fill="#15100c" />
-      <text x={960} y={narrow ? 380 : 260} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? 84 : 110} fill="#ffd23f" stroke="#000" strokeWidth={10} paintOrder="stroke">{label}</text>
+      <text x={960} y={narrow ? 330 : 260} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={narrow ? Math.min(60, 540 / (label.length * 0.66)) : 110} fill="#ffd23f" stroke="#000" strokeWidth={10} paintOrder="stroke">{label}</text>
       {Array.from({ length: n }).map((_, i) => (
-        <Person key={i} x={x0 + i * step} y={700} s={narrow ? 2.2 : 3} color={i < k ? (on > 0.5 ? "#c62828" : "#e9dcc3") : "#e9dcc3"} />
+        <Person key={i} x={x0 + (i % perRow) * step} y={narrow ? 560 + Math.floor(i / perRow) * 150 : 700} s={narrow ? 1.5 : 3} color={i < k ? (on > 0.5 ? "#c62828" : "#e9dcc3") : "#e9dcc3"} />
       ))}
     </g>
   );

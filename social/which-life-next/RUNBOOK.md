@@ -315,10 +315,10 @@ cold-open hook as the long videos. Must be complete and ≤ 2 minutes (target 75
    - middle: escalation + one twist / number
    - last: the outcome + a one-line question that makes people comment ("Would you have run back in?")
 3. **Folder:** `.work/<date>/story-<n>/` with a copy of build.py (SEGS = its segments), segments.json, vo/, shots.json.
-   `shots.json` needs `"_teaser"` (2 flashes from the climax + the question) and `"_title"` (2 short lines kept in the top bar).
+   `shots.json` needs `"_teaser"` (2 flashes from the climax + the question) and `"_title"` (2 short lines shown at the top, over the video).
    Kit is the person in every story (composite "you", or Kit wearing the era outfit). Use expressions + keywords.
 4. **Render:** `python3 -I make_episode.py .work/<date>/story-<n> <date>-story-<n> --standalone-short` → `out/short.mp4`
-   (1080×1920, title bar top, captions bottom). Check length ≤ 120 s.
+   (1080×1920 full screen: title at the top and captions low, both over the video). Check length ≤ 120 s.
 5. **Title:** "POV: …" or the shocking fact, < 60 chars, + #shorts. Description: 1–2 lines + sources + AI narration note.
 6. Log each Short in `story-types.md` (type, title, ID, views 24 h / 72 h) and pick tomorrow's types from it.
 
@@ -355,4 +355,15 @@ the visual for each; no sentence may be covered by an unrelated or generic shot.
   (`fleeing`), bells stopped (`bell` stopped), rags to the face (`rag`), survivors in the water (`swimmers`),
   rescuers with lanterns, crowds.
 - **Names on screen:** every named person or group gets a callout or a title card.
-- Captions stay on (bottom bar), but the visuals must work even without them.
+- Captions stay on (over the video, no bar), but the visuals must work even without them.
+
+## FULL SCREEN Shorts — no black bars (user rule, 2026-11-01)
+"Use full screen video, don't put bars at the top and bottom; just show the texts/captions."
+- The `Short` composition scales the 16:9 scene ×1.78 to fill the 1080×1920 frame. Never add bars back.
+- The title (2 lines) sits at the top and the captions sit low (`bottomPad` 330), both directly on the video:
+  white/yellow text with a thick black stroke over a soft dark gradient.
+- **Safe zone:** a full-screen Short shows only world x ≈ 660–1260 (all of y 0–1080) of each scene.
+  Put every important thing (Kit, the threat, labels, numbers) inside x 680–1240. Callouts and map labels
+  are auto-clamped there; with a close-up camera, set a callout's `x` near Kit's `walkTo` position.
+- Info graphics in narrow mode end above world y ≈ 700, so the captions never cover them (counter max 24 icons).
+- Check a contact sheet (`npx remotion still Short …` at 6–8 frames) before encoding.
