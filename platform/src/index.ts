@@ -13,6 +13,8 @@ import { inboxRoutes, quickReplyRoutes } from "./inbox/routes";
 import { webhookRoutes } from "./engine/webhook";
 import "./inbox/notifications";
 import { agentRoutes } from "./agent/routes";
+import { followupRoutes } from "./followups/routes";
+import "./followups/rules";
 import { runDuePushes } from "./agent/push";
 import { runDueEngineJobs } from "./engine/jobs";
 
@@ -33,6 +35,7 @@ app.route("/api/inbox", inboxRoutes);
 app.route("/api/quick-replies", quickReplyRoutes);
 app.route("/api/engine", webhookRoutes);
 app.route("/api/agent", agentRoutes);
+app.route("/api/followups", followupRoutes);
 
 app.notFound((c) => c.json(errorBody("NOT_FOUND"), 404));
 app.onError(errorHandler);
