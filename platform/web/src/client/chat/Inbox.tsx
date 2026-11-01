@@ -24,8 +24,8 @@ export function InboxPage() {
   const list = useApi<{ conversations: Conv[]; counts: Record<string, number> }>(`/api/inbox?tab=${tab}&channel=${channel}&handler=${handler}`, [tick]);
   useEffect(() => { const i = setInterval(() => setTick((x) => x + 1), 15000); return () => clearInterval(i); }, []);
   return (
-    <div className="-m-6 flex h-[calc(100vh-49px)]">
-      <div className="flex w-80 shrink-0 flex-col border-r border-slate-200 bg-white">
+    <div className="flex h-full min-h-[560px] overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-200/40">
+      <div className="flex w-80 shrink-0 flex-col border-r border-slate-100 bg-white">
         <div className="flex flex-wrap gap-1 border-b border-slate-200 p-2">
           {TABS.map((k) => (
             <button key={k} onClick={() => setTab(k)} className={cx("rounded-md px-2 py-1 text-xs font-medium", tab === k ? "bg-brand-600 text-white" : "text-slate-600 hover:bg-slate-100")}>
@@ -120,7 +120,7 @@ function ChatPane({ cid, onChange }: { cid: string; onChange: () => void }) {
   const tomorrow = Math.max(1, Math.round((new Date(new Date().setHours(33, 0, 0, 0)).getTime() - Date.now()) / 3600_000));
   return (
     <>
-      <div className="flex min-w-0 flex-1 flex-col bg-slate-50">
+      <div className="flex min-w-0 flex-1 flex-col bg-slate-50/70">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 py-2">
           <div>
             <div className="font-semibold">{CH_ICON[c.channel]} {c.customerName}</div>
@@ -142,23 +142,23 @@ function ChatPane({ cid, onChange }: { cid: string; onChange: () => void }) {
         </div>
         <ErrorText error={err} />
         <div className="border-t border-slate-200 bg-white p-3">
-          <div className="mb-2 flex flex-wrap gap-1">
+          <div className="mb-2 flex flex-wrap items-center gap-1">
             {qr.data?.quick_replies.map((q) => <button key={q.id} onClick={() => setText(q.body)} className="rounded-full border border-slate-300 px-2 py-0.5 text-xs hover:bg-slate-100">{q.title}</button>)}
             <button onClick={() => setQrOpen(true)} className="px-2 py-0.5 text-xs text-brand-700 hover:underline">{t("manage_quick_replies")}</button>
+              {products.data && products.data.products.length > 0 && (
+                <Select aria-label={t("send_product")} value="" onChange={(e) => e.target.value && act("/messages", { product_id: e.target.value })} className="ml-auto w-44! shrink-0 rounded-full! py-1! text-xs">
+                  <option value="">{t("send_product")}</option>
+                  {products.data.products.map((p) => <option key={p.id} value={p.id}>{pname(p)}</option>)}
+                </Select>
+              )}
           </div>
           <form className="flex gap-2" onSubmit={async (e) => { e.preventDefault(); if (!text.trim()) return; await act("/messages", { text }); setText(""); }}>
-            <Input value={text} onChange={(e) => setText(e.target.value)} placeholder={t("type_reply")} aria-label={t("type_reply")} />
-            {products.data && products.data.products.length > 0 && (
-              <Select aria-label={t("send_product")} value="" onChange={(e) => e.target.value && act("/messages", { product_id: e.target.value })} className="max-w-40">
-                <option value="">{t("send_product")}</option>
-                {products.data.products.map((p) => <option key={p.id} value={p.id}>{pname(p)}</option>)}
-              </Select>
-            )}
+            <Input value={text} onChange={(e) => setText(e.target.value)} placeholder={t("type_reply")} aria-label={t("type_reply")} className="min-w-0 flex-1" />
             <Button type="submit">{t("send")}</Button>
           </form>
         </div>
       </div>
-      <aside className="w-72 shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-4">
+      <aside className="w-72 shrink-0 overflow-y-auto border-l border-slate-100 bg-white p-5">
         <h3 className="mb-2 font-semibold">{t("customer_panel")}</h3>
         {cust ? (
           <div className="space-y-1 text-sm">

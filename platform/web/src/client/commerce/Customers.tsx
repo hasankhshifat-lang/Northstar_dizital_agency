@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
+import { useEffect } from "react";
 import { api, fmtDate, taka } from "../../api";
 import { useT } from "../../i18n";
 import { Badge, Card, ErrorText, Input, PageHeader, Table, useApi } from "../../ui";
@@ -9,7 +10,9 @@ interface Customer { id: string; name: string; phones: string[]; addresses: stri
 
 export function CustomersPage() {
   const { t } = useT();
-  const [q, setQ] = useState("");
+  const [sp] = useSearchParams();
+  const [q, setQ] = useState(sp.get("q") ?? "");
+  useEffect(() => setQ(sp.get("q") ?? ""), [sp]);
   const { data, error } = useApi<{ customers: Customer[] }>(`/api/customers?q=${encodeURIComponent(q)}`);
   return (
     <>
