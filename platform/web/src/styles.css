@@ -5,12 +5,24 @@
 
 @theme {
   --font-sans: "Hind Siliguri", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --color-brand-50: #eef4ff;
-  --color-brand-100: #dbe6ff;
-  --color-brand-500: #3b6cf6;
-  --color-brand-600: #2952d9;
-  --color-brand-700: #1f3fae;
-  --color-brand-900: #14244f;
+  /* Violet brand, after the reference dashboards. */
+  --color-brand-50: #f3f1ff;
+  --color-brand-100: #e6e1ff;
+  --color-brand-200: #cfc6ff;
+  --color-brand-500: #7058f0;
+  --color-brand-600: #5b45e0;
+  --color-brand-700: #4a35c4;
+  --color-brand-900: #241a66;
+  --shadow-soft: 0 1px 2px rgb(30 20 90 / 0.04), 0 8px 28px -6px rgb(30 20 90 / 0.10);
+  --shadow-lift: 0 2px 4px rgb(30 20 90 / 0.05), 0 18px 40px -10px rgb(30 20 90 / 0.18);
+  --radius-4xl: 2rem;
+}
+
+:root {
+  /* App frame (sidebar background) and the content panel it holds. */
+  --frame-from: #4b36c9;
+  --frame-to: #6c4fe8;
+  --panel: #f6f5fc;
 }
 
 html, body, #root { height: 100%; }
@@ -64,11 +76,38 @@ html, body, #root { height: 100%; }
   --color-violet-800: oklch(89.4% 0.057 293.283);
   --color-violet-900: oklch(94.3% 0.029 294.588);
   --color-violet-950: oklch(96.9% 0.016 293.756);
-  --color-brand-50: #111a33;
-  --color-brand-100: #1c2b57;
-  --color-brand-700: #a9c1ff;
-  --color-brand-900: #dbe6ff;
+  --color-brand-50: #1d1838;
+  --color-brand-100: #2a2257;
+  --color-brand-200: #3a2f78;
+  --color-brand-700: #bdb1ff;
+  --color-brand-900: #e6e1ff;
+  --frame-from: #1a1440;
+  --frame-to: #2a1f63;
+  --panel: oklch(16% 0.04 270);
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 28px -6px rgb(0 0 0 / 0.45);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.35), 0 18px 40px -10px rgb(0 0 0 / 0.6);
 }
 /* White surfaces become dark cards (unlayered rule wins over utilities). Text-white is untouched. */
 .dark .bg-white { background-color: oklch(20.8% 0.042 265.755); }
 .dark body, .dark #root { background-color: oklch(12.9% 0.042 264.695); }
+
+/* ---------- App shell (frame + inset panel, after the reference video) ---------- */
+.app-frame { background: linear-gradient(160deg, var(--frame-from), var(--frame-to)); }
+.app-panel {
+  background-color: var(--panel);
+  background-image:
+    radial-gradient(40rem 22rem at 100% 0%, rgb(167 139 250 / 0.16), transparent 70%),
+    radial-gradient(30rem 20rem at 0% 100%, rgb(45 212 191 / 0.10), transparent 70%);
+}
+.dark .app-panel {
+  background-image:
+    radial-gradient(40rem 22rem at 100% 0%, rgb(124 92 255 / 0.14), transparent 70%),
+    radial-gradient(30rem 20rem at 0% 100%, rgb(45 212 191 / 0.06), transparent 70%);
+}
+/* Active nav item: a panel-coloured tab that flows into the content panel, with inverted corners. */
+.nav-tab-active { position: relative; background: var(--panel); }
+.nav-tab-active::before, .nav-tab-active::after {
+  content: ""; position: absolute; right: 0; width: 20px; height: 20px; pointer-events: none;
+}
+.nav-tab-active::before { top: -20px; background: radial-gradient(circle at 0 0, transparent 20px, var(--panel) 20.5px); }
+.nav-tab-active::after { bottom: -20px; background: radial-gradient(circle at 0 100%, transparent 20px, var(--panel) 20.5px); }

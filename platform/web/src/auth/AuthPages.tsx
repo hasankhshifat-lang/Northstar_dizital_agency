@@ -8,12 +8,19 @@ import { useSession } from "./session";
 function Shell({ title, children }: { title: string; children: ReactNode }) {
   const { t } = useT();
   return (
-    <div className="flex min-h-full items-center justify-center bg-gradient-to-br from-[#14244f] to-brand-600 p-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-7 shadow-2xl">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-brand-600">★ {t("app_name")}</div>
-            <h1 className="mt-1 text-xl font-semibold">{title}</h1>
+    <div className="app-frame relative flex min-h-full items-center justify-center overflow-hidden p-4">
+      <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-[#fff]/10" />
+      <div className="pointer-events-none absolute right-[12%] bottom-[12%] h-24 w-24 rotate-12 rounded-3xl bg-gradient-to-br from-[#ffc46b] to-[#f28c28] opacity-80" />
+      <div className="pointer-events-none absolute top-[14%] right-[18%] h-16 w-16 rounded-full bg-gradient-to-br from-[#ff8fd0] to-[#e5469b] opacity-80" />
+      <div className="pointer-events-none absolute bottom-[18%] left-[14%] h-12 w-12 rounded-2xl bg-[#5ee0c8] opacity-80" />
+      <div className="relative w-full max-w-sm rounded-4xl bg-white p-8 shadow-lift">
+        <div className="mb-7 flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-[#8b7bff] to-[#5b45e0] text-lg font-bold text-white">N</span>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-brand-600">{t("app_name")}</div>
+              <h1 className="text-xl font-bold text-slate-900">{title}</h1>
+            </div>
           </div>
           <LangSwitch />
         </div>
