@@ -56,23 +56,24 @@ npm run typecheck:web
 npm run e2e          # Playwright: builds, starts a fresh local worker on :8788, runs the two main flows
 ```
 
-## Deploying to Cloudflare (first time)
+## Deploying to Cloudflare
 
-1. Authorize Wrangler: `npx wrangler login` (or set `CLOUDFLARE_API_TOKEN`).
-2. Create the database and bucket:
-   ```bash
-   npx wrangler d1 create northstar-platform          # copy the database_id into wrangler.jsonc
-   npx wrangler r2 bucket create northstar-platform-media
-   ```
-3. Set the bootstrap secret: `npx wrangler secret put BOOTSTRAP_TOKEN` (use a long random value).
-4. Set `vars.APP_URL` in `wrangler.jsonc` to your real address (it's used in client setup links).
-5. Apply migrations and deploy:
-   ```bash
-   npx wrangler d1 migrations apply northstar-platform --remote
-   npm run deploy
-   ```
-6. Custom domain: in the Cloudflare dashboard go to Workers & Pages → northstar-platform → Settings → Domains & Routes → Add custom domain, e.g. `app.northstardizital.com`.
-7. Visit `https://app.northstardizital.com/bootstrap` once to create the first admin, then delete or rotate the `BOOTSTRAP_TOKEN` secret if you like. The demo webhook also uses it.
+Already done in the Northstar Cloudflare account (1 Nov 2026):
+- D1 database `northstar-platform` (APAC), ID set in `wrangler.jsonc`, with all migrations applied.
+- R2 bucket `northstar-platform-media`.
+
+To deploy (needs a Cloudflare API token in `CLOUDFLARE_API_TOKEN`, plus `CLOUDFLARE_ACCOUNT_ID`):
+
+```bash
+cd platform
+npx wrangler secret put BOOTSTRAP_TOKEN                     # first deploy only; use a long random value
+npx wrangler d1 migrations apply northstar-platform --remote # only applies new migrations
+npm run deploy                                              # builds the web app and deploys the Worker
+```
+
+The app is then live at `https://northstar-platform.<your-subdomain>.workers.dev`. To use your own address, add a custom domain in the Cloudflare dashboard: Workers & Pages → northstar-platform → Settings → Domains & Routes, for example `app.northstardizital.com`. Client setup links use whichever address you open the admin panel from. You can pin them with an `APP_URL` var in `wrangler.jsonc`.
+
+First admin: open `/bootstrap` once and enter the `BOOTSTRAP_TOKEN` value.
 
 ## Everyday admin tasks
 

@@ -62,7 +62,7 @@ adminRoutes.post("/clients", async (c) => {
     phone: z.string().trim().max(30).optional(),
     plan_label: z.string().trim().max(60).optional().nullable(),
   }));
-  const { tenantId, setupUrl } = await provisionTenant(c.env, body);
+  const { tenantId, setupUrl } = await provisionTenant(c.env, body, new URL(c.req.url).origin);
   await audit(c.env.DB, c.var.user.id, tenantId, "client.create", { business_name: body.business_name, email: body.email });
   await enqueueEngineJob(c.env, tenantId, "createWorkspace", {});
   return c.json({ client: await clientView(c.env.DB, tenantId), setup_url: setupUrl });
@@ -129,7 +129,7 @@ adminRoutes.post("/clients/:id/reset-login", async (c) => {
   const owner = await c.env.DB.prepare("SELECT id FROM users WHERE tenant_id=? AND role='client_owner' LIMIT 1").bind(id).first<{ id: string }>();
   if (!owner) throw new ApiError(404, "NOT_FOUND");
   await c.env.DB.prepare("UPDATE setup_tokens SET used_at=? WHERE user_id=? AND used_at IS NULL").bind(nowIso(), owner.id).run();
-  const setupUrl = await issueSetupToken(c.env, owner.id);
+  const setupUrl = await issueSetupToken(c.env, owner.id, new URL(c.req.url).origin);
   await audit(c.env.DB, c.var.user.id, id, "client.reset_login");
   return c.json({ setup_url: setupUrl });
 });

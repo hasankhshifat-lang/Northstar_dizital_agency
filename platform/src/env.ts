@@ -3,7 +3,8 @@ export interface Env {
   MEDIA: R2Bucket;
   ASSETS: Fetcher;
   BOOTSTRAP_TOKEN: string;
-  APP_URL: string;
+  /** Public base URL for setup links; when unset, the address the request came in on is used. */
+  APP_URL?: string;
   TEST?: string;
 }
 

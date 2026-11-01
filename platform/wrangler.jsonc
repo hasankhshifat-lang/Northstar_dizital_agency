@@ -11,10 +11,9 @@
     "run_worker_first": ["/api/*", "/p/*", "/media/*"]
   },
   "d1_databases": [
-    { "binding": "DB", "database_name": "northstar-platform", "database_id": "REPLACE_WITH_D1_ID", "migrations_dir": "migrations" }
+    { "binding": "DB", "database_name": "northstar-platform", "database_id": "1dd7a70e-6779-4e2e-8423-7deccf03a76f", "migrations_dir": "migrations" }
   ],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "northstar-platform-media" }],
   "triggers": { "crons": ["*/5 * * * *"] },
-  "vars": { "APP_URL": "https://app.northstardizital.com" },
   "observability": { "enabled": true }
 }

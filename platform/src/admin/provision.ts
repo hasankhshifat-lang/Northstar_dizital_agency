@@ -32,14 +32,14 @@ export async function presetSwitches(db: D1Database, label?: string | null): Pro
   return { features: [...FEATURES], channels: [...CHANNELS] };
 }
 
-export async function issueSetupToken(env: Env, userId: string): Promise<string> {
+export async function issueSetupToken(env: Env, userId: string, origin: string): Promise<string> {
   const token = randomToken(32);
   await env.DB.prepare("INSERT INTO setup_tokens (token_hash,user_id,expires_at) VALUES (?,?,?)")
     .bind(await sha256Hex(token), userId, addHours(nowIso(), SETUP_TOKEN_HOURS)).run();
-  return `${env.APP_URL.replace(/\/$/, "")}/setup/${token}`;
+  return `${(env.APP_URL || origin).replace(/\/$/, "")}/setup/${token}`;
 }
 
-export async function provisionTenant(env: Env, input: { business_name: string; owner_name: string; email: string; phone?: string; plan_label?: string | null }) {
+export async function provisionTenant(env: Env, input: { business_name: string; owner_name: string; email: string; phone?: string; plan_label?: string | null }, origin: string) {
   const db = env.DB;
   const email = input.email.toLowerCase().trim();
   if (await db.prepare("SELECT 1 FROM users WHERE email=?").bind(email).first()) {
@@ -62,5 +62,5 @@ export async function provisionTenant(env: Env, input: { business_name: string; 
     ...tenantSeeders.flatMap((s) => s(db, tenantId)),
   ];
   await db.batch(stmts);
-  return { tenantId, userId, setupUrl: await issueSetupToken(env, userId) };
+  return { tenantId, userId, setupUrl: await issueSetupToken(env, userId, origin) };
 }
