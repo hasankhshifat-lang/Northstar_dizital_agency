@@ -26,7 +26,11 @@ Current output (user, 2026-10-31): **Shorts only — 4 standalone story Shorts a
 "Confirm … with the user before scheduling" rule above does not apply.
 Format (user, 2026-11-01, latest): **every Short is a map Short in the GeoGlobeTales-learned style, WITH a voiceover**
 (Jesse), plus sound effects that never cover the voice (they are ducked under it). Each Short runs about **2 minutes**
-of interesting history and **opens with a hook of the main story**. Follow the RUNBOOK section "Map Shorts". Follow
+of interesting history and **opens with a hook of the main story**. The map **dives into ground scenes**: places, buildings,
+infrastructure and characters acting out what the voiceover says. Then it returns to the map.
+The user approved the Pony Express v3 sample on 2026-11-01 ("continue for future shorts like this"). Its code is
+`remotion/src/stories/ponyVoiced.tsx`, `remotion/src/sets/ponyScenes.tsx` and `remotion/pony_voiced_mix.py`.
+Follow the RUNBOOK sections "Map Shorts", "Voiced map Shorts" and "Ground scenes inside map Shorts". Follow
 `social/which-life-next/RUNBOOK.md`; publish slots are in `social/which-life-next/config.md`.
 The rotation rules above still apply to every post. Stop when the user says stop.
 
