@@ -1,0 +1,198 @@
+{
+ "type": "video",
+ "status": "draft",
+ "pillar": "Industry",
+ "angle": "ISP / internet provider: রাতে \"Internet চলছে না\" — AI ধাপে ধাপে troubleshoot করায়, না হলে technician ticket",
+ "voice": "Maksud",
+ "title": "রাত ১১টায় \"Internet চলছে না\" — AI নিজেই সমাধান করে",
+ "caption": "রাত ১১টায় একসাথে অনেকজন customer: \"ভাই, net চলে না!\" 📶😩\nআপনার support line তখন বন্ধ, আর customer রাগে অন্য ISP খুঁজছে।\n\nAI receptionist ধাপে ধাপে troubleshoot করায়, না হলে technician-এর ticket খুলে দেয়।\n👉 আপনার ISP-র জন্য জানতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
+ "design": {
+  "engine": "motion",
+  "palette": "lavender",
+  "cover_at": 2.5,
+  "beats": [
+   {
+    "type": "kinetic",
+    "small": "রাত ১১টা 🌙",
+    "text": "\"ভাই, *Internet* চলে না!\"",
+    "size": "s2",
+    "avatars": [
+     [
+      "man-blue-shirt-phone.png",
+      90,
+      520
+     ],
+     [
+      "woman-fcommerce-phone.png",
+      840,
+      560
+     ],
+     [
+      "shopkeeper-elder-phone.png",
+      120,
+      1300
+     ],
+     [
+      "man-laptop.png",
+      820,
+      1340
+     ]
+    ],
+    "say": "রাত এগারোটা। একসাথে অনেকগুলো message... ভাই, internet চলে না! কখন ঠিক হবে?",
+    "tone": "curious"
+   },
+   {
+    "type": "bigword",
+    "dark": true,
+    "trans": "wipe",
+    "text": "Support বন্ধ",
+    "after": "আর customer অন্য ISP খুঁজছে",
+    "say": "আপনার support line তখন বন্ধ। আর রাগী customer তখন অন্য ISP-র number খুঁজছে।",
+    "tone": "serious"
+   },
+   {
+    "type": "kinetic",
+    "text": "অনেক সমস্যাই *ছোট*",
+    "size": "s3",
+    "say": "অথচ অনেক সময় সমস্যাটা ছোট। Router restart, একটা cable... এটুকুই।"
+   },
+   {
+    "type": "chat",
+    "title": "AI নিজেই *troubleshoot* করায়",
+    "name": "Your ISP Support",
+    "initials": "IS",
+    "messages": [
+     {
+      "from": "me",
+      "text": "Net চলছে না ভাই"
+     },
+     {
+      "from": "ai",
+      "text": "Router-এর লাল বাতি জ্বলছে? 🔴"
+     },
+     {
+      "from": "me",
+      "text": "হ্যাঁ"
+     },
+     {
+      "from": "ai",
+      "text": "১০ সেকেন্ড বন্ধ রেখে আবার চালু করুন 🔄"
+     },
+     {
+      "from": "me",
+      "text": "চলছে এখন! 🙌"
+     }
+    ],
+    "chips": [
+     [
+      "🛠️",
+      "ধাপে ধাপে",
+      80,
+      560
+     ],
+     [
+      "⚡",
+      "সাথে সাথে",
+      620,
+      1500
+     ]
+    ],
+    "say": "AI receptionist ধাপে ধাপে জিজ্ঞেস করে... বাতি কোন রঙের? Router restart দিয়েছেন? আর অনেক সময় ওখানেই সমাধান।",
+    "tone": "warmly"
+   },
+   {
+    "type": "dashboard",
+    "title": "না মিটলে *ticket* খুলে দেয়",
+    "head": "AI Receptionist · Support",
+    "rows": [
+     [
+      "📶",
+      "\"Net চলে না\"",
+      "রাত ১১:০২ · Messenger",
+      "✓ Solved"
+     ],
+     [
+      "🔌",
+      "Cable সমস্যা",
+      "রাত ১১:১০ · WhatsApp",
+      "✓ Ticket খোলা"
+     ],
+     [
+      "💳",
+      "\"Bill কত?\"",
+      "রাত ১১:২০ · Messenger",
+      "✓ উত্তর দিয়েছে"
+     ],
+     [
+      "📦",
+      "নতুন connection",
+      "রাত ১১:৪৫ · Website",
+      "✓ তথ্য নেওয়া"
+     ]
+    ],
+    "say": "আর যেটা নিজে সমাধান হয় না? Customer-এর নাম, area, সমস্যা লিখে technician-এর জন্য ticket খুলে দেয়।"
+   },
+   {
+    "type": "person",
+    "title": "Technician সকালে *সোজা কাজে*",
+    "size": "s2",
+    "person": "it-support-call.png",
+    "chips": [
+     [
+      "📋",
+      "Ticket ready",
+      70,
+      820
+     ],
+     [
+      "📍",
+      "Area + সমস্যা লেখা",
+      560,
+      1000
+     ]
+    ],
+    "button": [
+     "🛠️ Ticket দেখুন",
+     90,
+     1120
+    ],
+    "say": "সকালে আপনার technician সোজা কাজে যায়। আবার phone করে জিজ্ঞেস করতে হয় না।",
+    "tone": "warmly"
+   },
+   {
+    "type": "cards",
+    "title": "Bill, package, *নতুন connection*",
+    "items": [
+     [
+      "💳",
+      "Bill-এর প্রশ্ন",
+      "সাথে সাথে"
+     ],
+     [
+      "📦",
+      "Package-এর তথ্য",
+      "আপনার দেওয়া"
+     ],
+     [
+      "🆕",
+      "নতুন connection",
+      "তথ্য নেয়"
+     ],
+     [
+      "🗣️",
+      "Bangla, Banglish",
+      "যেভাবে লেখে"
+     ]
+    ],
+    "say": "Bill-এর প্রশ্ন, package-এর তথ্য, নতুন connection... সব প্রশ্নের উত্তর দেয়, চব্বিশ ঘণ্টা।"
+   },
+   {
+    "type": "cta",
+    "text": "আপনার ISP-র *AI receptionist*",
+    "sub": "মাসিক, usage অনুযায়ী খরচ",
+    "say": "NorthStar Dizital আপনার ISP-র জন্য AI receptionist সেট করে দেয়। খরচ মাসিক, usage অনুযায়ী। জানতে আজই WhatsApp করুন!",
+    "tone": "excited"
+   }
+  ]
+ }
+}
