@@ -45,8 +45,8 @@
     "type": "bigword",
     "dark": true,
     "trans": "wipe",
-    "text": "Support বন্ধ",
-    "after": "আর customer অন্য ISP খুঁজছে",
+    "text": "বন্ধ",
+    "after": "Support line বন্ধ… customer অন্য ISP খুঁজছে",
     "say": "আপনার support line তখন বন্ধ। আর রাগী customer তখন অন্য ISP-র number খুঁজছে।",
     "tone": "serious"
    },
