@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { api, taka, toPoisha } from "../../api";
 import { useT } from "../../i18n";
 import { useSession } from "../../auth/session";
+import { Link2 } from "lucide-react";
 import { Badge, Button, Card, ErrorText, Field, Input, Modal, PageHeader, Select, Table, Textarea, useApi } from "../../ui";
 
 export interface Variant { id?: string; label: string; stock: number }
@@ -17,9 +18,11 @@ export function ProductsPage() {
   const [q, setQ] = useState("");
   const { data, error, reload } = useApi<{ products: Product[] }>(`/api/products?q=${encodeURIComponent(q)}`);
   const [importOpen, setImportOpen] = useState(false);
+  const [linkOpen, setLinkOpen] = useState(false);
   return (
     <>
-      <PageHeader title={t("products")} actions={<div className="flex gap-2">
+      <PageHeader title={t("products")} actions={<div className="flex flex-wrap justify-end gap-2">
+        <Button variant="secondary" onClick={() => setLinkOpen(true)}><Link2 size={15} className="mr-1 inline" />{t("import_link")}</Button>
         <Button variant="secondary" onClick={() => setImportOpen(true)}>{t("import_csv")}</Button>
         <a href="/api/reports/products.csv"><Button variant="secondary">{t("download_csv")}</Button></a>
         <Link to="/app/products/new"><Button>+ {t("new_product")}</Button></Link>
@@ -42,7 +45,123 @@ export function ProductsPage() {
         </Table>
       </Card>
       <ImportModal open={importOpen} onClose={() => { setImportOpen(false); reload(); }} />
+      {linkOpen && <ImportLinkModal onClose={(changed) => { setLinkOpen(false); if (changed) reload(); }} />}
     </>
+  );
+}
+
+interface Found {
+  name: string; description: string | null; category: string | null; price: number; sale_price: number | null; sku: string | null;
+  images: string[]; url: string | null; variants: { label: string; in_stock: boolean | null }[];
+}
+
+/** Find products at a link (or in a catalog file), pick which to keep, and import them in batches of 10. */
+function ImportLinkModal({ onClose }: { onClose: (changed: boolean) => void }) {
+  const { t } = useT();
+  const [url, setUrl] = useState("");
+  const [found, setFound] = useState<Found[] | null>(null);
+  const [picked, setPicked] = useState<Set<number>>(new Set());
+  const [stock, setStock] = useState("10");
+  const [status, setStatus] = useState("active");
+  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
+  const [result, setResult] = useState<{ imported: number; skipped: { name: string; reason: string }[] } | null>(null);
+  const [error, setError] = useState<unknown>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const preview = async (init: { json?: unknown; body?: BodyInit }) => {
+    setBusy(true); setError(null); setFound(null); setResult(null);
+    try {
+      const r = await api<{ products: Found[] }>("/api/products/import-link/preview", init);
+      setFound(r.products);
+      setPicked(new Set(r.products.map((_, i) => i)));
+    } catch (e) { setError(e); } finally { setBusy(false); }
+  };
+  const save = async () => {
+    if (!found) return;
+    const chosen = found.filter((_, i) => picked.has(i));
+    setBusy(true); setError(null);
+    const total = { imported: 0, skipped: [] as { name: string; reason: string }[] };
+    try {
+      for (let i = 0; i < chosen.length; i += 10) {
+        setProgress({ done: i, total: chosen.length });
+        const r = await api<{ imported: unknown[]; skipped: { name: string; reason: string }[] }>("/api/products/import-link/save", {
+          json: { products: chosen.slice(i, i + 10).map(({ url: _u, ...p }) => p), stock: Math.max(0, Number(stock) || 0), status },
+        });
+        total.imported += r.imported.length;
+        total.skipped.push(...r.skipped);
+      }
+      setResult(total);
+      setFound(null);
+    } catch (e) { setError(e); } finally { setBusy(false); setProgress(null); }
+  };
+  const toggle = (i: number) => { const n = new Set(picked); if (n.has(i)) n.delete(i); else n.add(i); setPicked(n); };
+
+  return (
+    <Modal open title={t("import_link")} onClose={() => onClose(!!result?.imported)}>
+      {!found && !result && (
+        <div className="space-y-3">
+          <p className="text-sm text-slate-600">{t("import_link_help")}</p>
+          <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); if (url.trim()) preview({ json: { url } }); }}>
+            <Input aria-label={t("product_link")} placeholder="https://yourshop.com/collections/all" value={url} onChange={(e) => setUrl(e.target.value)} inputMode="url" name="import_url" />
+            <Button type="submit" disabled={busy || !url.trim()} className="shrink-0">{busy ? t("finding") : t("find_products")}</Button>
+          </form>
+          <p className="rounded-xl bg-blue-50 px-3 py-2 text-xs text-blue-800">{t("import_fb_help")}</p>
+          <div>
+            <p className="mb-1 text-sm font-medium text-slate-700">{t("or_upload_catalog")}</p>
+            <input ref={fileRef} type="file" accept=".csv,.tsv,.txt,.xml,text/csv,text/xml,application/xml" hidden
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) { const fd = new FormData(); fd.append("file", f); preview({ body: fd }); } e.target.value = ""; }} />
+            <Button variant="secondary" size="sm" disabled={busy} onClick={() => fileRef.current?.click()}>{t("upload")}</Button>
+          </div>
+        </div>
+      )}
+      {found && (
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-medium text-emerald-700">{t("found_n", { n: found.length })}</p>
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={picked.size === found.length} onChange={(e) => setPicked(new Set(e.target.checked ? found.map((_, i) => i) : []))} />{t("select_all")}</label>
+          </div>
+          <ul className="max-h-[45vh] divide-y divide-slate-100 overflow-y-auto rounded-xl ring-1 ring-slate-200">
+            {found.map((p, i) => (
+              <li key={i}>
+                <label className="flex cursor-pointer items-center gap-3 px-3 py-2 hover:bg-slate-50">
+                  <input type="checkbox" checked={picked.has(i)} onChange={() => toggle(i)} />
+                  {p.images[0] ? <img src={p.images[0]} alt="" className="h-10 w-10 shrink-0 rounded object-cover" referrerPolicy="no-referrer" loading="lazy" /> : <div className="h-10 w-10 shrink-0 rounded bg-slate-100" />}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium">{p.name}</span>
+                    <span className="block truncate text-xs text-slate-500">{[p.sku, p.category, p.variants.length ? t("n_options", { n: p.variants.length }) : null].filter(Boolean).join(" · ")}</span>
+                  </span>
+                  <span className="shrink-0 text-sm">{p.sale_price != null ? <><b>{taka(p.sale_price)}</b> <s className="text-slate-400">{taka(p.price)}</s></> : taka(p.price)}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label={t("stock_each")}><Input type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} /></Field>
+            <Field label={t("import_as")}><Select value={status} onChange={(e) => setStatus(e.target.value)}><option value="active">{t("visible")}</option><option value="hidden">{t("hidden")}</option></Select></Field>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button disabled={busy || picked.size === 0} onClick={save}>{progress ? t("importing_progress", progress) : t("import_n", { n: picked.size })}</Button>
+            <Button variant="ghost" disabled={busy} onClick={() => setFound(null)}>{t("back")}</Button>
+          </div>
+        </div>
+      )}
+      {result && (
+        <div className="space-y-3">
+          <p className="font-medium text-emerald-700">{t("import_done", { n: result.imported })}</p>
+          {result.skipped.length > 0 && (
+            <>
+              <p className="text-sm text-slate-600">{t("skipped_n", { n: result.skipped.length })}</p>
+              <Table head={[t("name"), t("error")]}>
+                {result.skipped.map((s, i) => <tr key={i}><td className="px-3 py-1">{s.name}</td><td className="px-3 py-1 text-amber-700">{s.reason}</td></tr>)}
+              </Table>
+            </>
+          )}
+          <Button onClick={() => onClose(true)}>{t("close")}</Button>
+        </div>
+      )}
+      <div className="mt-3"><ErrorText error={error} /></div>
+    </Modal>
   );
 }
 

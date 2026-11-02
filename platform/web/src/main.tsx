@@ -10,6 +10,7 @@ import { AdminLayout } from "./admin/AdminLayout";
 import { ClientsPage } from "./admin/Clients";
 import { ClientNewPage } from "./admin/ClientNew";
 import { ClientDetailPage } from "./admin/ClientDetail";
+import { ClientTrainPage } from "./admin/ClientTrain";
 import { AuditPage, EngineJobsPage, PresetsPage } from "./admin/AdminMisc";
 import { ClientLayout, FeatureGate } from "./client/ClientLayout";
 import { clientRoutes } from "./client/clientRoutes";
@@ -62,6 +63,7 @@ createRoot(document.getElementById("root")!).render(
               <Route index element={<ClientsPage />} />
               <Route path="clients/new" element={<ClientNewPage />} />
               <Route path="clients/:id" element={<ClientDetailPage />} />
+              <Route path="clients/:id/train" element={<ClientTrainPage />} />
               <Route path="presets" element={<PresetsPage />} />
               <Route path="audit" element={<AuditPage />} />
               <Route path="engine-jobs" element={<EngineJobsPage />} />

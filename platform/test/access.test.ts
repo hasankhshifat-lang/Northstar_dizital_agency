@@ -57,6 +57,7 @@ function sampleRow(table: string, parents: { product: string; order: string }): 
     followup_rules: { id, type: "win_back", delay_minutes: 1, message_template: "m" },
     broadcasts: { id, audience: "{}", message: "m", scheduled_for: now, created_at: now },
     followup_sends: { id, customer_id: "c", channel: "website", scheduled_for: now },
+    knowledge_sources: { id, kind: "text", title: "t", added_by: "client", created_at: now, updated_at: now },
   };
   if (!rows[table]) throw new Error("no sample for " + table);
   return rows[table];

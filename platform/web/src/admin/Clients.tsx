@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { Bot, MessagesSquare, PauseCircle, ShoppingBag, Users } from "lucide-react";
+import { Bot, BrainCircuit, MessagesSquare, PauseCircle, ShoppingBag, Users } from "lucide-react";
 import { fmtDate } from "../api";
 import { useT } from "../i18n";
 import { Avatar, Badge, Button, Card, ErrorText, Input, PageHeader, Stat, Table, cx, useApi } from "../ui";
 
 export interface ClientSummary {
   id: string; business_name: string; status: string; plan_label: string | null; owner_email: string; last_login_at: string | null;
-  features: string[]; usage: { ai_replies: number; conversations: number; outbound_messages: number; orders: number };
+  features: string[]; knowledge_sources: number; usage: { ai_replies: number; conversations: number; outbound_messages: number; orders: number };
 }
 
 export function ClientsPage() {
@@ -44,7 +44,7 @@ export function ClientsPage() {
           <Input placeholder={t("search")} value={q} onChange={(e) => setQ(e.target.value)} className="max-w-xs" />
         </div>
         <ErrorText error={error} />
-        <Table empty={data?.clients.length === 0} head={[t("business_name"), t("status"), t("plan"), t("features"), <MessagesSquare key="c" size={14} />, t("ai_replies"), t("orders_count"), t("last_login")]}>
+        <Table empty={data?.clients.length === 0} head={[t("business_name"), t("status"), t("plan"), t("features"), <MessagesSquare key="c" size={14} />, t("ai_replies"), t("orders_count"), t("last_login"), t("ai_training")]}>
           {data?.clients.map((c) => (
             <tr key={c.id}>
               <td className="px-3 py-3">
@@ -63,6 +63,11 @@ export function ClientsPage() {
               <td className="px-3 py-3">{c.usage.ai_replies}</td>
               <td className="px-3 py-3">{c.usage.orders}</td>
               <td className="px-3 py-3 whitespace-nowrap text-slate-500">{fmtDate(c.last_login_at)}</td>
+              <td className="px-3 py-3">
+                <Link to={`/admin/clients/${c.id}/train`} title={t("train_ai")}>
+                  <Button size="sm" variant="secondary" className="whitespace-nowrap"><BrainCircuit size={15} className="mr-1 inline" />{t("train_ai")}{c.knowledge_sources ? ` · ${c.knowledge_sources}` : ""}</Button>
+                </Link>
+              </td>
             </tr>
           ))}
         </Table>

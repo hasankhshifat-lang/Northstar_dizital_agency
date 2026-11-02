@@ -34,7 +34,7 @@ export function AppShell({ brand, subtitle, nav, helpCard, searchTo, searchPlace
     <div className="app-frame flex h-screen overflow-hidden p-2 sm:p-3">
       <aside className="flex w-[4.5rem] shrink-0 flex-col py-3 pl-2 text-white lg:w-60 lg:pl-3">
         <Link to={nav[0].to} className="mb-8 flex items-center gap-3 px-2">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#fff] text-lg font-bold text-[#4b36c9] shadow-lg">N</span>
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#fff] p-1.5 shadow-lg"><img src="/logo.png" alt="Northstar" className="h-full w-full object-contain" /></span>
           <span className="hidden min-w-0 lg:block">
             <span className="block truncate text-base font-semibold leading-tight" title={brand}>{brand}</span>
             <span className="block truncate text-xs text-white/60">{subtitle}</span>

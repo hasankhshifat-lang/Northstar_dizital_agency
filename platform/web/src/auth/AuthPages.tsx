@@ -16,7 +16,7 @@ function Shell({ title, children }: { title: string; children: ReactNode }) {
       <div className="relative w-full max-w-sm rounded-4xl bg-white p-8 shadow-lift">
         <div className="mb-7 flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-[#8b7bff] to-[#5b45e0] text-lg font-bold text-white">N</span>
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#fff] p-1.5 shadow-soft ring-1 ring-slate-200/70"><img src="/logo.png" alt="Northstar" className="h-full w-full object-contain" /></span>
             <div>
               <div className="text-xs font-semibold uppercase tracking-wider text-brand-600">{t("app_name")}</div>
               <h1 className="text-xl font-bold text-slate-900">{title}</h1>

@@ -107,7 +107,10 @@ export function Modal({ open, title, onClose, children }: { open: boolean; title
 
 export function ErrorText({ error }: { error: unknown }) {
   if (!error) return null;
-  const msg = error instanceof ApiError || error instanceof Error ? error.message : String(error);
+  const issues: { message?: string }[] = error instanceof ApiError && Array.isArray(error.body?.issues) ? error.body.issues : [];
+  // Field messages from the server are specific ("Facebook only shows…"); prefer them to the generic one.
+  const specific = issues.map((i) => i.message).filter((m): m is string => !!m && !/^(Invalid|Required|Too|Expected)/.test(m));
+  const msg = specific.length ? specific.join(" ") : error instanceof ApiError || error instanceof Error ? error.message : String(error);
   return <p role="alert" className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700">{msg}</p>;
 }
 

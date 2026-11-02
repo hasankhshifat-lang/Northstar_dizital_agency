@@ -178,7 +178,7 @@ export class DemoEngine implements ChatEngine {
         return `${p.name} — দাম ৳${price.toLocaleString("en-IN")}`;
       }
     }
-    return FALLBACK_REPLY;
+    return answerFromKnowledge(q, cfg.knowledge ?? []) ?? FALLBACK_REPLY;
   }
 
   /** Demo-only helper: simulate a customer message arriving (used by demo webhook & tests). */
@@ -196,4 +196,25 @@ function toConversation(r: any): Conversation {
     id: r.id, channel: r.channel, customerName: r.customer_name, customerRef: r.customer_ref,
     lastMessage: r.last_text ?? "", lastAt: r.last_at, lastFrom: r.last_from ?? "customer", unread: r.unread, handler: r.handler,
   };
+}
+
+const STOP = new Set(["the", "and", "for", "you", "your", "are", "what", "how", "can", "does", "do", "is", "it", "of", "to", "in", "on", "a", "an", "i", "we", "my", "me", "with", "about", "have", "has", "কি", "কী", "কত", "আছে", "আমি", "আপনার", "আপনি", "এর", "কিভাবে", "করে", "হয়", "না"]);
+
+/** Demo stand-in for a real AI: the training passage sharing the most words with the question. */
+export function answerFromKnowledge(q: string, knowledge: { content: string }[]): string | null {
+  const words = [...new Set(q.split(" ").filter((w) => w.length > 1 && !STOP.has(w)))];
+  if (!words.length) return null;
+  let best: { score: number; text: string } | null = null;
+  for (const k of knowledge) {
+    for (const para of k.content.split(/\n{2,}|\n(?=•)|(?<=[.!?।])\s+(?=[A-Z\u0980-\u09FF])/)) {
+      const text = para.replace(/^#.*$/m, "").trim();
+      if (text.length < 15) continue;
+      const hay = normalize(text);
+      const hits = words.filter((w) => hay.includes(w)).length;
+      const score = hits / words.length;
+      if (hits && (!best || score > best.score || (score === best.score && text.length < best.text.length))) best = { score, text };
+    }
+  }
+  if (!best || best.score < 0.5) return null;
+  return best.text.length > 400 ? best.text.slice(0, 400).replace(/\s\S*$/, "") + "…" : best.text;
 }

@@ -9,6 +9,8 @@ import { ApiError } from "../lib/errors";
 import { monthKey, nowIso } from "../lib/time";
 import { loadTenantContext } from "../lib/tenant";
 import { parseBody, parseValue } from "../lib/validate";
+import { knowledgeRoutes } from "../knowledge/routes";
+import { runTestChat, testChatSchema } from "../agent/routes";
 import { audit } from "./audit";
 import { issueSetupToken, provisionTenant } from "./provision";
 
@@ -37,6 +39,7 @@ adminRoutes.get("/clients", async (c) => {
   const rows = (await c.env.DB.prepare(
     `SELECT t.id, t.business_name, t.slug, t.status, t.plan_label, t.created_at, u.email AS owner_email, u.name AS owner_name, u.last_login_at,
        (SELECT group_concat(feature) FROM tenant_features f WHERE f.tenant_id=t.id AND f.enabled=1) AS features,
+       (SELECT count(*) FROM knowledge_sources k WHERE k.tenant_id=t.id) AS knowledge_sources,
        COALESCE(m.ai_replies,0) AS ai_replies, COALESCE(m.conversations,0) AS conversations,
        COALESCE(m.outbound_messages,0) AS outbound_messages, COALESCE(m.orders,0) AS orders
      FROM tenants t
@@ -49,6 +52,7 @@ adminRoutes.get("/clients", async (c) => {
       id: r.id, business_name: r.business_name, slug: r.slug, status: r.status, plan_label: r.plan_label, created_at: r.created_at,
       owner_email: r.owner_email, owner_name: r.owner_name, last_login_at: r.last_login_at,
       features: r.features ? String(r.features).split(",").sort() : [],
+      knowledge_sources: r.knowledge_sources,
       usage: { ai_replies: r.ai_replies, conversations: r.conversations, outbound_messages: r.outbound_messages, orders: r.orders },
     })),
   });
@@ -66,6 +70,24 @@ adminRoutes.post("/clients", async (c) => {
   await audit(c.env.DB, c.var.user.id, tenantId, "client.create", { business_name: body.business_name, email: body.email });
   await enqueueEngineJob(c.env, tenantId, "createWorkspace", {});
   return c.json({ client: await clientView(c.env.DB, tenantId), setup_url: setupUrl });
+});
+
+/** Agency trains a client's chatbot: same sources API as the client's own AI page. */
+const trainableTenant = async (db: D1Database, id: string) => {
+  const t = await loadTenantContext(db, id);
+  if (!t || t.status === "deleted") throw new ApiError(404, "NOT_FOUND");
+  return t;
+};
+adminRoutes.route("/clients/:id/knowledge", knowledgeRoutes({
+  by: "agency",
+  tenantId: async (c) => (await trainableTenant(c.env.DB, c.req.param("id")!)).id,
+  onChange: (c, t, action, details) => audit(c.env.DB, c.var.user.id, t, action, details),
+}));
+
+adminRoutes.post("/clients/:id/test-chat", async (c) => {
+  const t = await trainableTenant(c.env.DB, c.req.param("id"));
+  const { messages } = await parseBody(c, testChatSchema);
+  return c.json({ reply: await runTestChat(c.env, t, messages) });
 });
 
 adminRoutes.get("/clients/:id", async (c) => c.json({ client: await clientView(c.env.DB, c.req.param("id")) }));

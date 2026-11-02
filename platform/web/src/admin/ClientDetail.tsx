@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
+import { BrainCircuit } from "lucide-react";
 import { api, fmtDate } from "../api";
 import { useT } from "../i18n";
 import { Badge, Button, Card, CopyButton, ErrorText, Field, Input, Modal, PageHeader, Select, Table, Toggle, useApi } from "../ui";
@@ -89,6 +90,13 @@ export function ClientDetailPage() {
                 <Toggle label={t("ch_" + ch)} checked={c.channels.includes(ch)} onChange={(v) => act(`/channels/${ch}`, { method: "PUT", json: { enabled: v } })} />
               </div>
             ))}
+          </div>
+        </Card>
+
+        <Card title={t("ai_training")} className="lg:col-span-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="max-w-2xl text-sm text-slate-600">{t("training_intro")}</p>
+            <Link to={`/admin/clients/${c.id}/train`}><Button><BrainCircuit size={16} className="mr-1.5 inline" />{t("train_ai")}</Button></Link>
           </div>
         </Card>
 

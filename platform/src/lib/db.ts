@@ -6,7 +6,7 @@
 export const ID_TABLES = [
   "engine_jobs", "faqs", "unanswered_questions", "conversation_state", "quick_replies", "products",
   "product_variants", "product_images", "customers", "orders", "order_items", "followup_rules",
-  "broadcasts", "followup_sends",
+  "broadcasts", "followup_sends", "knowledge_sources",
 ] as const;
 
 export const TENANT_TABLES = [

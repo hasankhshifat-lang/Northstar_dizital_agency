@@ -53,7 +53,9 @@ export interface AgentConfig {
   tone: Record<string, unknown>;
   rules: Record<string, unknown>;
   faqs: { question: string; answer: string }[];
-  catalog: { code: string; name: string; price: number; sale_price: number | null; variants: { label: string; stock: number }[] }[];
+  catalog: { code: string; name: string; price: number; sale_price: number | null; variants: { label: string; stock: number }[]; description?: string | null }[];
+  /** Training material the client or agency added: website/Facebook text, PDFs, pasted notes. */
+  knowledge?: { kind: string; title: string; url: string | null; content: string }[];
 }
 
 export interface UsageCounts {

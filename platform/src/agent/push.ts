@@ -19,12 +19,14 @@ export async function buildAgentConfig(db: D1Database, tenantId: string): Promis
   const row = await tdb.first<{ profile: string; tone: string; rules: string }>("SELECT profile, tone, rules FROM agent_config WHERE tenant_id=?1");
   const faqs = await tdb.all<{ question: string; answer: string }>("SELECT question, answer FROM faqs WHERE tenant_id=?1 ORDER BY created_at");
   const products = await loadProducts(tdb, "p.status='active'");
+  const knowledge = await tdb.all<{ kind: string; title: string; url: string | null; content: string }>("SELECT kind, title, url, content FROM knowledge_sources WHERE tenant_id=?1 ORDER BY created_at");
   return {
     profile: row ? JSON.parse(row.profile) : {},
     tone: row ? JSON.parse(row.tone) : {},
     rules: row ? JSON.parse(row.rules) : {},
     faqs,
-    catalog: products.map((p) => ({ code: p.code, name: productName(p), price: p.price, sale_price: p.sale_price, variants: p.variants.map((v) => ({ label: v.label, stock: v.stock })) })),
+    catalog: products.map((p) => ({ code: p.code, name: productName(p), price: p.price, sale_price: p.sale_price, variants: p.variants.map((v) => ({ label: v.label, stock: v.stock })), description: p.description })),
+    knowledge,
   };
 }
 

@@ -6,6 +6,8 @@ This is a multi-client dashboard that Northstar's clients use to automate their 
 - AI agent settings
 - products, orders and returns
 - follow-ups and offers
+- AI training: website or Facebook page links, PDFs and pasted text, which the chatbot uses to answer questions
+- product import from a link (shop/category/product pages, Shopify, WooCommerce, Facebook/Google catalog feeds, Google Sheets) or a catalog file
 
 The agency admin panel lets you create clients, suspend or reactivate them, and switch features and channels on or off for each client.
 
@@ -83,4 +85,5 @@ npm run e2e          # Playwright: builds, starts a fresh local worker on :8788,
 | Change what a client gets | Client page → Feature / Channel switches, or set up Plan presets. |
 | Client forgot password | Client page → Reset login (new setup link). |
 | Something didn't reach the chat engine | Admin → Failed engine jobs → Retry. |
+| Train a client's chatbot | Clients list → **Train AI** (or client page → AI training). Add links, PDFs or text, then try it in the test chat. Clients see the same sources under AI settings → Training. |
 | Monthly invoicing | Clients list shows this month's AI replies, conversations, messages sent and orders. The client page shows 12 months. |

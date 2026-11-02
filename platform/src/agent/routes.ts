@@ -8,10 +8,13 @@ import { tenantDb } from "../lib/db";
 import { ApiError } from "../lib/errors";
 import { nowIso } from "../lib/time";
 import { parseBody } from "../lib/validate";
+import { knowledgeRoutes } from "../knowledge/routes";
+import type { Env, TenantContext } from "../env";
 import { pushNow, schedulePush } from "./push";
 
 export const agentRoutes = new Hono<AppEnv>();
 agentRoutes.use("*", ...clientGroup("ai_agent"));
+agentRoutes.route("/knowledge", knowledgeRoutes({ tenantId: async (c) => c.var.tenant.id, by: "client" }));
 
 const str = (max = 1000) => z.string().trim().max(max).optional();
 const configSchema = z.object({
@@ -95,12 +98,17 @@ agentRoutes.post("/unanswered/:id/teach", async (c) => {
   return c.json({ faq });
 });
 
+export const testChatSchema = z.object({ messages: z.array(z.object({ role: z.enum(["user", "assistant"]), text: z.string().max(2000) })).min(1).max(50) });
+
+/** Ask the tenant's AI, after pushing any pending changes so the test reflects the latest saved settings. */
+export async function runTestChat(env: Env, t: TenantContext, messages: z.infer<typeof testChatSchema>["messages"]) {
+  const pending = await tenantDb(env.DB, t.id).first<{ push_due_at: string | null }>("SELECT push_due_at FROM agent_config WHERE tenant_id=?1");
+  if (pending?.push_due_at) await pushNow(env, t.id);
+  const { engine, ref } = engineFor(env, t);
+  return engine.testChat(ref, messages);
+}
+
 agentRoutes.post("/test-chat", async (c) => {
-  const { messages } = await parseBody(c, z.object({ messages: z.array(z.object({ role: z.enum(["user", "assistant"]), text: z.string().max(2000) })).min(1).max(50) }));
-  const t = c.var.tenant;
-  // Make the test reflect the latest saved settings.
-  const pending = await tenantDb(c.env.DB, t.id).first<{ push_due_at: string | null }>("SELECT push_due_at FROM agent_config WHERE tenant_id=?1");
-  if (pending?.push_due_at) await pushNow(c.env, t.id);
-  const { engine, ref } = engineFor(c.env, t);
-  return c.json({ reply: await engine.testChat(ref, messages) });
+  const { messages } = await parseBody(c, testChatSchema);
+  return c.json({ reply: await runTestChat(c.env, c.var.tenant, messages) });
 });

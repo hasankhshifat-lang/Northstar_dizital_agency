@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { api, fmtDate } from "../../api";
 import { useT } from "../../i18n";
+import { TrainingPanel } from "../../shared/Training";
 import { Button, Card, ErrorText, Field, Input, PageHeader, Select, Table, Textarea, Toggle, cx, useApi } from "../../ui";
 
-const TABS = ["profile", "tone", "faqs", "rules", "unanswered", "test"] as const;
+const TABS = ["profile", "training", "tone", "faqs", "rules", "unanswered", "test"] as const;
 type Cfg = { profile: Record<string, any>; tone: Record<string, any>; rules: Record<string, any> };
 
 export function AgentPage() {
@@ -28,9 +29,9 @@ export function AgentPage() {
   return (
     <>
       <PageHeader title={t("ai_settings")} />
-      <div className="mb-4 flex flex-wrap gap-1 border-b border-slate-200">
+      <div className="mb-4 flex gap-1 overflow-x-auto border-b border-slate-200">
         {TABS.map((k) => (
-          <button key={k} onClick={() => setSp({ tab: k })} className={cx("-mb-px border-b-2 px-3 py-2 text-sm font-medium", tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-600 hover:text-slate-900")}>{t("tab_" + k)}</button>
+          <button key={k} onClick={() => setSp({ tab: k })} className={cx("-mb-px shrink-0 whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium", tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-600 hover:text-slate-900")}>{t("tab_" + k)}</button>
         ))}
       </div>
       <ErrorText error={cfg.error ?? err} />
@@ -89,6 +90,7 @@ export function AgentPage() {
       )}
       {tab === "faqs" && <Faqs />}
       {tab === "unanswered" && <Unanswered />}
+      {tab === "training" && <TrainingPanel base="/api/agent/knowledge" />}
       {tab === "test" && <TestChat />}
     </>
   );
@@ -147,7 +149,7 @@ function Unanswered() {
   );
 }
 
-function TestChat() {
+export function TestChat({ endpoint = "/api/agent/test-chat" }: { endpoint?: string }) {
   const { t } = useT();
   const [msgs, setMsgs] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [text, setText] = useState("");
@@ -158,7 +160,7 @@ function TestChat() {
     setMsgs(next);
     setText("");
     setErr(null);
-    try { const r = await api<{ reply: string }>("/api/agent/test-chat", { json: { messages: next } }); setMsgs([...next, { role: "assistant", text: r.reply }]); } catch (e) { setErr(e); }
+    try { const r = await api<{ reply: string }>(endpoint, { json: { messages: next } }); setMsgs([...next, { role: "assistant", text: r.reply }]); } catch (e) { setErr(e); }
   };
   return (
     <Card title={t("tab_test")} className="max-w-2xl">

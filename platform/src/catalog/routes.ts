@@ -9,6 +9,8 @@ import { tenantDb } from "../lib/db";
 import { ApiError } from "../lib/errors";
 import { nowIso } from "../lib/time";
 import { parseBody } from "../lib/validate";
+import { fetchUrl, fieldError, parsePublicUrl } from "../lib/fetch";
+import { fromFeedText, scrapeProducts } from "./scrape";
 import { loadProduct, loadProducts } from "./service";
 
 export const catalogRoutes = new Hono<AppEnv>();
@@ -57,6 +59,91 @@ catalogRoutes.post("/", async (c) => {
   ]);
   await schedulePush(c.env.DB, c.var.tenant.id);
   return c.json({ product: await loadProduct(tdb, id) });
+});
+
+// ---------- Import from a link (website, Shopify/WooCommerce, catalog feed, Google Sheet) or a catalog file ----------
+
+catalogRoutes.post("/import-link/preview", async (c) => {
+  if ((c.req.header("content-type") ?? "").includes("multipart/form-data")) {
+    const form = await c.req.formData().catch(() => null);
+    const file = form?.get("file");
+    if (!file || typeof file === "string") throw fieldError("file", "Choose a catalog file");
+    if (file.size > 8 * 1024 * 1024) throw fieldError("file", "File must be 8 MB or smaller");
+    const products = fromFeedText(await file.text());
+    if (!products.length) throw fieldError("file", "No products found. The file needs at least title and price columns (Facebook / Google catalog format).");
+    return c.json({ source: "file", products: products.slice(0, 300) });
+  }
+  const { url } = await parseBody(c, z.object({ url: z.string().trim().min(3).max(1000) }));
+  return c.json(await scrapeProducts(url));
+});
+
+const foundSchema = z.object({
+  name: z.string().trim().min(1).max(200),
+  description: z.string().max(4000).nullish(),
+  category: z.string().trim().max(80).nullish(),
+  price: z.number().int().min(0),
+  sale_price: z.number().int().min(0).nullish(),
+  sku: z.string().trim().max(40).nullish(),
+  images: z.array(z.string().max(1000)).max(8).default([]),
+  variants: z.array(z.object({ label: z.string().trim().max(80), in_stock: z.boolean().nullish() })).max(100).default([]),
+});
+const IMAGES_PER_PRODUCT = 3;
+const IMAGE_BUDGET = 24;
+
+function imageExt(type: string, b: Uint8Array): [string, string] | null {
+  if (IMAGE_TYPES[type]) return [IMAGE_TYPES[type], type];
+  if (b[0] === 0xff && b[1] === 0xd8) return ["jpg", "image/jpeg"];
+  if (b[0] === 0x89 && b[1] === 0x50) return ["png", "image/png"];
+  if (b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50) return ["webp", "image/webp"];
+  return null;
+}
+
+const hasBangla = (s: string) => /[\u0980-\u09FF]/.test(s);
+const cleanCode = (s: string) => s.replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+
+/** Save confirmed products (at most 10 per call, so the browser sends large imports in batches). Copies up to 3 photos each. */
+catalogRoutes.post("/import-link/save", async (c) => {
+  const body = await parseBody(c, z.object({
+    products: z.array(foundSchema).min(1).max(10),
+    stock: z.number().int().min(0).max(100000).default(10),
+    status: z.enum(["active", "hidden"]).default("active"),
+  }));
+  const tdb = tenantDb(c.env.DB, c.var.tenant.id);
+  const imported: { id: string; code: string; name: string }[] = [];
+  const skipped: { name: string; reason: string }[] = [];
+  let budget = IMAGE_BUDGET;
+  for (const p of body.products) {
+    if (await tdb.first("SELECT 1 FROM products WHERE tenant_id=?1 AND (name_en=?2 OR name_bn=?2)", p.name)) { skipped.push({ name: p.name, reason: "Already in your products" }); continue; }
+    let code = p.sku ? cleanCode(p.sku) : "";
+    if (code && (await tdb.first("SELECT 1 FROM products WHERE tenant_id=?1 AND code=?2", code))) { skipped.push({ name: p.name, reason: `Code ${code} already exists` }); continue; }
+    while (!code || (await tdb.first("SELECT 1 FROM products WHERE tenant_id=?1 AND code=?2", code))) code = "WEB-" + crypto.randomUUID().slice(0, 5).toUpperCase();
+    const id = newId();
+    const variants = p.variants.filter((v) => v.label).length
+      ? p.variants.filter((v) => v.label).map((v) => ({ label: v.label, stock: v.in_stock === false ? 0 : body.stock }))
+      : [{ label: "Default", stock: body.stock }];
+    await c.env.DB.batch([
+      tdb.insertStmt("products", {
+        id, code, name_bn: hasBangla(p.name) ? p.name : null, name_en: hasBangla(p.name) ? null : p.name, description: p.description ?? null,
+        category: p.category ?? null, price: p.price, sale_price: p.sale_price ?? null, status: body.status, created_at: nowIso(),
+      }),
+      ...variants.map((v) => tdb.insertStmt("product_variants", { id: newId(), product_id: id, label: v.label, stock: v.stock })),
+    ]);
+    let sort = 0;
+    for (const src of p.images.slice(0, IMAGES_PER_PRODUCT)) {
+      if (budget-- <= 0) break;
+      try {
+        const f = await fetchUrl(parsePublicUrl(src), { maxBytes: MAX_IMAGE_BYTES, accept: "image/webp,image/jpeg,image/png,image/*;q=0.8", timeoutMs: 10000 });
+        const t = imageExt(f.contentType.split(";")[0].trim(), f.bytes);
+        if (!t) continue;
+        const key = `tenants/${c.var.tenant.id}/products/${id}/${newId()}.${t[0]}`;
+        await c.env.MEDIA.put(key, f.bytes, { httpMetadata: { contentType: t[1] } });
+        await tdb.insert("product_images", { id: newId(), product_id: id, r2_key: key, sort: sort++ });
+      } catch { /* a photo that can't be copied doesn't stop the import */ }
+    }
+    imported.push({ id, code, name: p.name });
+  }
+  if (imported.length) await schedulePush(c.env.DB, c.var.tenant.id);
+  return c.json({ imported, skipped });
 });
 
 catalogRoutes.get("/:id", async (c) => {
