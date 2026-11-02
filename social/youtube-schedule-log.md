@@ -25,3 +25,9 @@ Note 2026-11-01: the locust long video was uploaded manually by the user as `NtC
 Note 2026-11-01 19:40 SGT: the four 2026-11-02 Shorts were re-rendered full screen (no black bars, user request)
 and swapped in place in Metricool. Updating a Metricool post changes its id; the ids above are the current ones
 (uuids unchanged: 7095003926368964501, 406502206951016623, -3275628932150116193, -8626886603209879974).
+
+Note 2026-11-02 11:01 SGT (user: "cancel scheduled shorts, only publish Pony Express-style videos from now"):
+- 21:00 SGT "Trapped Underground for 14 Days (1925)": CANCELLED. The Metricool post is now a draft with auto-publish off and privacy private (new id #413496816, uuid -8626886603209879974).
+- 11:00 SGT "The Fever That Emptied America's Capital (1793)": could not cancel. It was already uploading at 11:00 (Metricool 409 "already being published").
+- 06:00 and 08:00 SGT old-style Shorts had already published (YouTube qL-ohGQCXDA, Fh02fn61e-w).
+- Kept: 2026-11-03 06:00 SGT Pony Express (Metricool #413119675), which is the approved style.

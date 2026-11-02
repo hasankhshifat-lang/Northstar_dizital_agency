@@ -15,6 +15,9 @@ Slots last changed: 2026-10-31 (late) — user: **pause long videos; Shorts only
 target is reached.** 4 standalone story Shorts a day (own script, real history, ≤ 2 min, cold-open hook, Kit v2).
 Long videos resume only when the user says so.
 
+## Format rule (user, 2026-11-02)
+Publish ONLY Pony Express-style voiced map Shorts. Never schedule or publish any other style.
+
 ## Slots already taken (check before scheduling)
 - 2026-11-03 06:00 SGT: Pony Express (Metricool #413119675). The 2026-11-02 daily run makes only **3** new Shorts, for the 08:00, 11:00 and 21:00 slots on Nov 3.
 
