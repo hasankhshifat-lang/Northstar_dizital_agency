@@ -32,6 +32,7 @@ The user approved the Pony Express v3 sample on 2026-11-01 ("continue for future
 `remotion/src/stories/ponyVoiced.tsx`, `remotion/src/sets/ponyScenes.tsx` and `remotion/pony_voiced_mix.py`.
 Follow the RUNBOOK sections "Map Shorts", "Voiced map Shorts" and "Ground scenes inside map Shorts". Follow
 `social/which-life-next/RUNBOOK.md`; publish slots are in `social/which-life-next/config.md`.
+**Publish only Pony Express-style Shorts (user, 2026-11-02). Never schedule any other style.**
 The rotation rules above still apply to every post. Stop when the user says stop.
 
 Comment replies: the user gave standing approval (2026-10-31) to reply to comments on the channel
