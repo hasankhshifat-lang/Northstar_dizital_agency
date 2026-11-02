@@ -1,0 +1,23 @@
+{
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "duration": 6,
+  "background": null,
+  "audio": null,
+  "output": "example.mp4",
+  "captions": [
+    { "start": 0.0, "end": 6.0, "text": "In 1847, <span class=\"hl\">Brigham Young</span> led the first pioneers west." }
+  ],
+  "pops": [
+    {
+      "kind": "person",
+      "name": "Brigham Young",
+      "sub": "1801–1877",
+      "image": "example-img/brigham.jpg",
+      "focus": "50% 20%",
+      "start": 0.9,
+      "end": 4.6
+    }
+  ]
+}

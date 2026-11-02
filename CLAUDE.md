@@ -43,12 +43,15 @@ battlefield, and so on), show a real image of it in a pop-up in one corner of th
    similar archives. If no authentic portrait of a person exists, use the best-known historical
    portrait and caption it "Portrait"; if there is no authentic image at all, skip the pop-up and
    tell the user which mention was skipped.
-3. **Pop-up style.**
+3. **Pop-up style.** Use the saved template in `social/video-templates/history-popup/`
+   (`overlay.html` + `render.js`; see its README). It is the style the user approved on
+   2026-11-02. Do not restyle it unless the user asks. In short:
    - Where: the top-left corner for Shorts (9:16), clear of the YouTube buttons on the right and
      the title area at the bottom (about 220 px from the top and 60 px from the left at
      1080×1920). The top-right corner for long videos (16:9).
-   - Size: about 30% of the frame width for Shorts and 22% for long videos. Rounded corners, a
-     thin white border and a soft shadow.
+   - Size: about 30% of the frame width for Shorts and 22% for long videos. A white card with
+     rounded corners and a soft shadow, a springy pop-in, and burned-in captions with the spoken
+     name highlighted in yellow.
    - Label: a name strip under the image with the name and years, for example
      "Brigham Young (1801–1877)" or "Fort Laramie, 1834".
    - Timing: pop in (quick scale-up, about 250 ms) on the first word of the name, stay on screen
@@ -56,7 +59,7 @@ battlefield, and so on), show a real image of it in a pop-up in one corner of th
      When two names come close together, replace the first pop-up with the second.
    - Do not cover burned-in captions or the main subject of the shot.
 4. **Keep a source list.** Save the images and a `sources.md` in
-   `social/video-assets/<video-slug>/`, with one row per pop-up: name, timestamp, image file,
+   `social/video-assets/<video-slug>/` (with the render `config.json`), with one row per pop-up: name, timestamp, image file,
    source URL and license. Commit and push it with the rest of the video work.
 5. **Confirm before rendering.** Show the user the list of mentions, the image chosen for each
    and the timestamps, and render only after they approve it.
