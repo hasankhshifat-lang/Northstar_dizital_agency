@@ -1,0 +1,26 @@
+{
+ "type": "photo",
+ "status": "draft",
+ "pillar": "Missed customers",
+ "angle": "Friday / ছুটির দিন / ঈদে দোকান বন্ধ — customer-এর প্রশ্নের উত্তর কে দেয়? AI ছুটি নেয় না",
+ "caption": "শুক্রবার দোকান বন্ধ, কিন্তু customer-এর প্রশ্ন বন্ধ হয় না। 🤷‍♂️\n\"কাল খোলা?\" \"এটা আছে?\" — উত্তর না পেলে সে অন্য দোকানে যায়।\n\nAI receptionist ছুটির দিনেও উত্তর দেয়, order আর booking লিখে রাখে।\n👉 আপনার দোকানের জন্য জানতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
+ "design": {
+  "theme": "layout",
+  "layout": "bignum",
+  "palette": "blue",
+  "head": [
+   {
+    "t": "শুক্রবার, ঈদ, ছুটির দিন…"
+   },
+   {
+    "t": "দোকান বন্ধ, *AI* খোলা"
+   }
+  ],
+  "big": "ছুটি নেই",
+  "sub": "ছুটির দিনেও উত্তর দেয়, order আর booking লিখে রাখে",
+  "person": "social/facebook/people/shopkeeper-elder-phone.png",
+  "cta": "WhatsApp করুন",
+  "bigSize": 190,
+  "bigTop": 250
+ }
+}

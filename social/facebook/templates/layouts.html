@@ -171,7 +171,7 @@ const LAYOUTS = {
     ${(P.icons || []).map(i => `<span class="chipicon" style="${at(i.pos, `transform:rotate(${i.rotate || 0}deg)`)}">${i.e}</span>`).join('')}${cards()}${emoji()}`,
   question: () => glows + `<div class="code">${P.code || ''}</div><div class="head">${line(0, 'q1')}${line(1, 'q2 baloo')}${line(2, 'q3')}${line(3, 'q4')}</div>
     <span class="robot">🤖</span>${person()}${cards()}${emoji()}`,
-  bignum: () => glows + `${line(0, 'lead')}<div class="num">${P.big || '২৪/৭'}</div>
+  bignum: () => glows + `${line(0, 'lead')}<div class="num"${P.bigSize ? ` style="font-size:${P.bigSize}px;top:${P.bigTop || 190}px"` : ''}>${P.big || '২৪/৭'}</div>
     ${H[1] ? `<div class="t tail">${hl(H[1].t)}</div>` : ''}${P.sub ? `<div class="note">${P.sub}</div>` : ''}
     ${person()}${cards()}${emoji()}`,
   sketch: () => `<svg class="city" viewBox="0 0 1080 600" fill="none" stroke="#2a2a3a" stroke-width="2">

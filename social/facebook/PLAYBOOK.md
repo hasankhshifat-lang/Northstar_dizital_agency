@@ -97,7 +97,7 @@ the `ad` (classic) and `chat` themes. Starting files for each are in `templates/
 | `trio` | three phones fanned, person in front | multi-channel (Messenger, WhatsApp, website) |
 | `laptop` | dashboard mockup + floating icons | owner sees everything in one place, setup |
 | `question` | "AI কি …?" hook, robot, person | myths, objections, curiosity |
-| `bignum` | giant number/keyword (`big`) + person | ২৪/৭, ০ মিস, ১০০ জন একসাথে |
+| `bignum` | giant number/keyword (`big`) + person | ২৪/৭, ০ মিস — for a word like "ছুটি নেই" set `bigSize: 190, bigTop: 250` |
 | `sketch` | line-art city, big word behind person | "for everyone", offline shops |
 
 Rules: never repeat a layout within the last 5 photo posts or a palette within the last 2; never
