@@ -1,11 +1,15 @@
+> **POSTING TOOL (user, 2026-11-03): YouTube is managed ONLY through Google Cloud (YouTube Data API,
+> `.claude/skills/youtube-automation/SKILL.md`). Never Clawlink or Metricool.** Any Clawlink/Metricool
+> instructions below (scheduling, Drive relay, view counts, analytics) are retired; use `yt.py` instead.
+
 > **CURRENT MODE (user, 2026-10-31): SHORTS ONLY.** Long videos are paused until the 10M Shorts-views target is
 > **FORMAT (user, 2026-11-01, latest): ALL Shorts are map Shorts WITH a voiceover. About 2 minutes, opening on a hook of the main story.**
 > - Visuals: the "Map Shorts" section below (continuous camera over a real map, Kit v2 on the map).
 > - Narration: Jesse (`4N8zjn9tVNuDEBFWVHAq`, eleven_v4), as in the voiceover sections.
 > - Sound effects must NEVER cover the voice. `pony_mix.py` with `VOICE=` ducks effects to −14 dB and music to −20 dB under speech; they come back up between lines.
 > reached or the user says to resume. Each day: step 0 (report, story-type ranking, comments) → 4 standalone story
-> Shorts ("Standalone story Shorts" section; 3 from the best type, 1 test) → Drive → schedule (config.md slots,
-> Clawlink/Metricool rotation) → logs. Skip the long-video steps, thumbnails and the cut-from-long Short.
+> Shorts ("Standalone story Shorts" section; 3 from the best type, 1 test) → schedule (config.md slots,
+> Google Cloud YouTube Data API via `.claude/skills/youtube-automation`) → logs. Skip the long-video steps, thumbnails and the cut-from-long Short.
 
 # Which Life Next — daily video job
 

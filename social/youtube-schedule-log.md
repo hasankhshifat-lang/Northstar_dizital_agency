@@ -31,3 +31,4 @@ Note 2026-11-02 11:01 SGT (user: "cancel scheduled shorts, only publish Pony Exp
 - 11:00 SGT "The Fever That Emptied America's Capital (1793)": could not cancel. It was already uploading at 11:00 (Metricool 409 "already being published").
 - 06:00 and 08:00 SGT old-style Shorts had already published (YouTube qL-ohGQCXDA, Fh02fn61e-w).
 - Kept: 2026-11-03 06:00 SGT Pony Express (Metricool #413119675), which is the approved style.
+| 2026-11-03 | 2026-11-03 (public immediately, test) | Northstar Dizital – Upload Test #Shorts | Google Cloud (YouTube Data API) | video QehsAzlfOzI (uploaded public; gone by 15:00 SGT check, 404) |

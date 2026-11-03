@@ -19,6 +19,7 @@ Long videos resume only when the user says so.
 Publish ONLY Pony Express-style voiced map Shorts. Never schedule or publish any other style.
 
 ## Slots already taken (check before scheduling)
+Check with `python3 .claude/skills/youtube-automation/yt.py scheduled` and `social/youtube-schedule-log.md` (not Metricool).
 - 2026-11-03 06:00 SGT: Pony Express (Metricool #413119675). The 2026-11-02 daily run makes only **3** new Shorts, for the 08:00, 11:00 and 21:00 slots on Nov 3.
 
 ## Rules for changing slots
