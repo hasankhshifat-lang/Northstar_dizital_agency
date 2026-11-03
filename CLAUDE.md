@@ -19,9 +19,8 @@ Confirm the title, description, publish time, and video file with the user befor
 
 For any YouTube analysis (channel or video performance, keyword and topic research, competitor
 channels, titles, tags, best posting times, outlier videos), use the **vidIQ** connector first.
-- Fall back to YouTube Analytics through Clawlink (`youtube` / `query_analytics`), or Metricool
-  analytics, only when vidIQ is not connected or has no tool for the question. Say which source
-  was used.
+- Fall back to the YouTube Data API (`yt.py recent` / `stats`, Google Cloud) only when vidIQ is
+  not connected or has no tool for the question. Never Clawlink or Metricool. Say which source was used.
 - If vidIQ is not connected, tell the user it needs to be authorized in claude.ai connector
   settings before using a fallback.
 
