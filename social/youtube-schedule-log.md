@@ -1,6 +1,6 @@
 # YouTube schedule log
 
-Rotation: Clawlink → Metricool → Clawlink → … (see `CLAUDE.md`). Next post uses the tool not in the last row.
+Default: direct YouTube API (`.claude/skills/youtube-upload/SKILL.md`, tool `YouTube API`). Fallback rotation: Clawlink → Metricool → Clawlink → … (see `CLAUDE.md`); the next fallback post uses the tool not in the last Clawlink/Metricool row.
 
 | Scheduled on | Publish time | Title | Tool | Post / video ID |
 |---|---|---|---|---|

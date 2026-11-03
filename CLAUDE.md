@@ -1,8 +1,19 @@
 # Northstar Digital Agency — Claude instructions
 
-## YouTube scheduled posts: rotate Clawlink and Metricool
+## YouTube uploads: use the youtube-upload skill (direct YouTube API)
 
-Every YouTube post that is scheduled goes through **one** of two tools, taking turns:
+Every YouTube upload or scheduled post goes through `.claude/skills/youtube-upload/SKILL.md`:
+the YouTube Data API called directly with the `YT_CLIENT_ID` / `YT_CLIENT_SECRET` /
+`YT_REFRESH_TOKEN` environment secrets. Log it with tool `YouTube API`.
+- Never delete an uploaded video unless the user explicitly asks.
+- Only if those secrets are missing, the channel check fails, or the API upload fails (including
+  videos locked to private because the API project isn't audited yet): say so with the error,
+  then use the Clawlink/Metricool rotation below.
+
+## Fallback: rotate Clawlink and Metricool
+
+When the fallback applies, the YouTube post goes through **one** of two tools, taking turns
+(ignore `YouTube API` rows when deciding whose turn it is):
 
 1. Open `social/youtube-schedule-log.md` and check the last row's **Tool**.
 2. Use the other tool for this post. If the log is empty, start with **Clawlink**.
