@@ -24,7 +24,9 @@ Stop all work on the TikTok account Which Life Next (@whichlifenext): no posts, 
 was deleted). Manage the user's other TikTok account, **Liberty Lore**, connected through **Higgsfield**
 (`tiktok_accounts`, connector label `liberty-lore`). Higgsfield can attach licensed trending sounds
 (`tiktok_music_trending`, picked in the `tiktok_prepare_publish` form, DIRECT_POST only) and needs media hosted on
-Higgsfield (`media_upload`). The user reviews and submits every post in that form. The Which Life Next rules
+Higgsfield (`media_upload`). The user reviews and submits every post in that form. Plan (user said yes, 2026-11-03): same American-history content as the YouTube channel; post the day's
+**3 YouTube Shorts per day** to Liberty Lore after each is live on YouTube, with short captions, a chosen cover
+and a trending sound, each submitted by the user in the publish form. The Which Life Next rules
 below are kept for reference only.
 
 ## TikTok: repost every YouTube video right after it goes public
