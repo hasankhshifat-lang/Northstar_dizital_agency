@@ -29,7 +29,11 @@ Which Life Next). Higgsfield: not connected. Metricool brand 7727550 still has *
 do not post TikTok through Metricool until the user switches it to Liberty Lore.
 Plan (user said yes, 2026-11-03): same American-history content as the YouTube channel; post the day's
 **3 YouTube Shorts per day** to Liberty Lore after each is live on YouTube, with short captions, a chosen cover
-and a trending sound, each submitted by the user in the publish form. The Which Life Next rules
+and a trending sound, each submitted by the user in the publish form. Liberty Lore settings chosen by the user (2026-11-03): Everyone · comments on · duet on · stitch on · no branded
+content · AI-generated label on. A daily scheduled task (05:43 SGT, "Liberty Lore daily TikTok posts") sends one
+summary of the day's 3 Shorts; after the user's yes it sets a check-in ~5 min after each YouTube publish time and
+posts via Clawlink `upload_video` from the Metricool media URL, with a cover frame picked by ffmpeg.
+The Which Life Next rules
 below are kept for reference only.
 
 ## TikTok: repost every YouTube video right after it goes public
