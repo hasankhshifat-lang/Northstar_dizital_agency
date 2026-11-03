@@ -27,3 +27,11 @@ channels, titles, tags, best posting times, outlier videos), use the **vidIQ** c
   was used.
 - If vidIQ is not connected, tell the user it needs to be authorized in claude.ai connector
   settings before using a fallback.
+
+## Facebook Page: always use the facebook-page-automation skill
+
+For any NorthStar Dizital Facebook Page task (uploading videos/Reels, posting, scheduling,
+deleting, timed takedowns, checking status), use `.claude/skills/facebook-page-automation/SKILL.md`.
+- Call the Graph API directly (`graph.facebook.com` / `graph-video.facebook.com`, credential
+  injected by the proxy). Do not use Clawlink or Metricool for the Facebook Page.
+- Log every action in `social/facebook-page-log.md`, then commit and push.
