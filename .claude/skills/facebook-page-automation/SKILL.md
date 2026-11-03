@@ -1,6 +1,6 @@
 ---
 name: facebook-page-automation
-description: "Manage the NorthStar Dizital Facebook Page directly through the Graph API: upload videos/Reels, post photos, text and links, schedule posts for a later time, delete posts after a delay (timed takedowns), and check post/video status. Use for ANY Facebook Page task: 'upload to FB page', 'post on Facebook', 'schedule a Facebook post', 'delete the FB post', 'delete after N minutes', 'FB page automation'. Never route Facebook Page work through Clawlink or Metricool."
+description: "Manage the NorthStar Dizital Facebook Page directly through the Graph API: upload videos/Reels, post photos, text and links, schedule posts for a later time, delete posts only when explicitly asked, and check post/video status. Use for ANY Facebook Page task: 'upload to FB page', 'post on Facebook', 'schedule a Facebook post', 'delete the FB post', 'delete after N minutes', 'FB page automation'. Never route Facebook Page work through Clawlink or Metricool."
 ---
 
 # Facebook Page automation (direct Graph API)
@@ -17,6 +17,12 @@ Metricool or any other posting tool for the Page.
 - Check the connection first if anything looks off:
   `curl -sS "https://graph.facebook.com/v21.0/me?fields=id,name"`
 - API version: `v21.0`.
+
+## Never delete on your own
+
+Uploaded videos and posts **stay up**. Do not delete anything, and do not set up a timed
+takedown, unless the user explicitly asks to delete that specific post in the current request.
+(The 2026-11-03 "delete after 2 minutes" run was a one-off test, not a standard step.)
 
 ## Before posting
 
@@ -56,11 +62,11 @@ List scheduled posts: `GET /$PAGE/scheduled_posts`.
 - `POST /$PAGE/feed` with `message=...` (and `link=...`).
 - `POST /$PAGE/photos` with `source=@file.jpg` and `caption=...`.
 
-### Delete
+### Delete (only when the user explicitly asks)
 `curl -sS -X DELETE "https://graph.facebook.com/v21.0/OBJECT_ID"` → `{"success":true}`.
 Verify: `GET /OBJECT_ID?fields=id` must now return error code 100 / subcode 33.
 
-### Timed takedown ("delete after N minutes")
+### Timed takedown (only when the user explicitly asks, e.g. "delete after N minutes")
 Run in the background so the session stays free, and report the result when it finishes:
 ```bash
 sleep $((N*60)); curl -sS -X DELETE "https://graph.facebook.com/v21.0/OBJECT_ID"; date -u; \

@@ -34,4 +34,5 @@ For any NorthStar Dizital Facebook Page task (uploading videos/Reels, posting, s
 deleting, timed takedowns, checking status), use `.claude/skills/facebook-page-automation/SKILL.md`.
 - Call the Graph API directly (`graph.facebook.com` / `graph-video.facebook.com`, credential
   injected by the proxy). Do not use Clawlink or Metricool for the Facebook Page.
+- Never delete an uploaded video or post unless the user explicitly asks for that deletion.
 - Log every action in `social/facebook-page-log.md`, then commit and push.
