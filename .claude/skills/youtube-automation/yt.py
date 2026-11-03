@@ -13,6 +13,12 @@ Usage:
   yt.py scheduled            # own uploads that are private with a future publishAt
   yt.py recent [N]           # last N uploads with status, publishAt and view counts
   yt.py stats ID [ID ...]    # views/likes/comments for videos
+  yt.py scopes               # which permissions the refresh token has
+  --- need the youtube.force-ssl scope ---
+  yt.py update ID [--title T] [--description-file D] [--tags a,b] [--publish-at UTC] [--privacy public|private|unlisted]
+  yt.py delete ID --confirm  # ONLY when the user explicitly asked to delete that video
+  yt.py comments [N]         # newest comment threads on the channel (with thread IDs)
+  yt.py reply THREAD_ID "text"
 """
 import argparse, json, os, sys, urllib.error, urllib.parse, urllib.request, datetime
 
@@ -38,7 +44,28 @@ def token():
         "refresh_token": os.environ["YT_REFRESH_TOKEN"], "grant_type": "refresh_token"}).encode())
     if s != 200:
         sys.exit(f"ERROR: token refresh failed ({s}): {json.loads(b).get('error_description', b[:200])}")
-    return json.loads(b)["access_token"]
+    j = json.loads(b)
+    global SCOPES
+    SCOPES = j.get("scope", "")
+    return j["access_token"]
+
+
+SCOPES = ""
+FULL = ("https://www.googleapis.com/auth/youtube.force-ssl", "https://www.googleapis.com/auth/youtube")
+
+
+def need_full():
+    if not any(x in SCOPES.split() for x in FULL):
+        sys.exit("ERROR: this needs the youtube.force-ssl scope. The current refresh token only has: " + SCOPES +
+                 "\nRe-authorise (see SKILL.md 'Re-authorising') and update YT_REFRESH_TOKEN in the environment settings.")
+
+
+def send(url, tok, body=None, method="PUT"):
+    s, _, b = _req(url, data=json.dumps(body).encode() if body is not None else None, method=method,
+                   headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json"})
+    if s not in (200, 204):
+        sys.exit(f"ERROR {s}: {b[:800]}")
+    return json.loads(b) if b.strip() else {}
 
 
 def get(path, tok, **params):
@@ -85,6 +112,12 @@ def main():
     sub.add_parser("scheduled")
     r = sub.add_parser("recent"); r.add_argument("n", nargs="?", type=int, default=20)
     s = sub.add_parser("stats"); s.add_argument("ids", nargs="+")
+    sub.add_parser("scopes")
+    up = sub.add_parser("update"); up.add_argument("id"); up.add_argument("--title"); up.add_argument("--description-file")
+    up.add_argument("--tags"); up.add_argument("--publish-at"); up.add_argument("--privacy", choices=["public", "private", "unlisted"])
+    d = sub.add_parser("delete"); d.add_argument("id"); d.add_argument("--confirm", action="store_true")
+    c = sub.add_parser("comments"); c.add_argument("n", nargs="?", type=int, default=20)
+    rp = sub.add_parser("reply"); rp.add_argument("thread"); rp.add_argument("text")
     a = ap.parse_args()
     tok = token()
 
@@ -137,6 +170,43 @@ def main():
     elif a.cmd == "stats":
         for v in get("videos", tok, part="snippet,status,statistics", id=",".join(a.ids))["items"]:
             print(json.dumps({**row(v), **v.get("statistics", {})}))
+
+    elif a.cmd == "scopes":
+        print(SCOPES)
+    elif a.cmd == "update":
+        need_full()
+        v = get("videos", tok, part="snippet,status", id=a.id)["items"]
+        if not v:
+            sys.exit("ERROR: video not found")
+        v = v[0]; sn, st = v["snippet"], v["status"]
+        if a.title: sn["title"] = a.title[:100]
+        if a.description_file: sn["description"] = open(a.description_file).read()[:5000]
+        if a.tags is not None: sn["tags"] = [x.strip() for x in a.tags.split(",") if x.strip()]
+        if a.publish_at:
+            st["privacyStatus"] = "private"; st["publishAt"] = a.publish_at
+        elif a.privacy:
+            st["privacyStatus"] = a.privacy; st.pop("publishAt", None)
+        body = {"id": a.id, "snippet": {k: sn[k] for k in ("title", "description", "tags", "categoryId", "defaultLanguage", "defaultAudioLanguage") if k in sn},
+                "status": {k: st[k] for k in ("privacyStatus", "publishAt", "selfDeclaredMadeForKids", "embeddable", "license", "containsSyntheticMedia") if k in st}}
+        r = send(f"{API}/videos?part=snippet,status", tok, body)
+        print(json.dumps({"id": r["id"], "title": r["snippet"]["title"], "privacy": r["status"]["privacyStatus"], "publishAt": r["status"].get("publishAt")}))
+    elif a.cmd == "delete":
+        need_full()
+        if not a.confirm:
+            sys.exit("ERROR: pass --confirm, and only when the user explicitly asked to delete this video")
+        send(f"{API}/videos?id={a.id}", tok, method="DELETE")
+        print(json.dumps({"deleted": a.id}))
+    elif a.cmd == "comments":
+        need_full()
+        j = get("commentThreads", tok, part="snippet", allThreadsRelatedToChannelId=CHANNEL, maxResults=min(a.n, 100), order="time")
+        for t in j.get("items", []):
+            c = t["snippet"]["topLevelComment"]["snippet"]
+            print(json.dumps({"thread": t["id"], "video": t["snippet"].get("videoId"), "author": c.get("authorDisplayName"),
+                              "text": c.get("textOriginal"), "published": c.get("publishedAt"), "replies": t["snippet"].get("totalReplyCount")}))
+    elif a.cmd == "reply":
+        need_full()
+        r = send(f"{API}/comments?part=snippet", tok, {"snippet": {"parentId": a.thread, "textOriginal": a.text}}, method="POST")
+        print(json.dumps({"reply_id": r["id"]}))
 
 
 if __name__ == "__main__":
