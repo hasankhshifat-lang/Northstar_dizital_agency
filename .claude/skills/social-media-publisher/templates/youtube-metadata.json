@@ -1,0 +1,12 @@
+{
+  "title": "Researched SEO title (max 100 characters)",
+  "description": "Detailed description with timestamps, links and context.\n\n#hashtag1 #hashtag2",
+  "tags": ["keyword one", "keyword two"],
+  "hashtags": ["#hashtag1", "#hashtag2"],
+  "category_id": "22",
+  "language": "en",
+  "privacy": "public",
+  "made_for_kids": false,
+  "ai_disclosure": {"contains_synthetic_media": false, "reason": "No realistic altered or synthetic content"},
+  "approved": false
+}

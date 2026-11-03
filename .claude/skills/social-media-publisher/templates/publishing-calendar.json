@@ -1,0 +1,33 @@
+{
+  "timezone": "Asia/Singapore",
+  "mode": "APPROVAL",
+  "tasks": [
+    {
+      "id": "yt-2026-11-04-video01",
+      "platform": "youtube",
+      "media": "youtube/videos/video01.mp4",
+      "thumbnail": "youtube/thumbnails/video01.jpg",
+      "metadata": "youtube/metadata/video01.json",
+      "publish_at": "2026-11-04T08:00:00",
+      "status": "PENDING"
+    },
+    {
+      "id": "fb-2026-11-04-video01",
+      "platform": "facebook",
+      "format": "reel",
+      "media": "facebook/videos/video01.mp4",
+      "metadata": "facebook/metadata/video01.json",
+      "publish_at": "2026-11-04T09:00:00",
+      "status": "PENDING"
+    },
+    {
+      "id": "tt-2026-11-04-video01",
+      "platform": "tiktok",
+      "format": "direct",
+      "media": "tiktok/videos/video01.mp4",
+      "metadata": "tiktok/metadata/video01.json",
+      "publish_at": "2026-11-04T10:00:00",
+      "status": "PENDING"
+    }
+  ]
+}

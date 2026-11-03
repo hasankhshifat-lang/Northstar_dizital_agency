@@ -1,0 +1,13 @@
+{
+  "caption": "Short hook caption #hashtag1 #hashtag2",
+  "hashtags": ["#hashtag1", "#hashtag2"],
+  "privacy_level": "PUBLIC_TO_EVERYONE",
+  "disable_comment": false,
+  "disable_duet": false,
+  "disable_stitch": false,
+  "cover_timestamp_ms": 1000,
+  "is_aigc": false,
+  "brand_content": false,
+  "brand_organic": false,
+  "approved": false
+}

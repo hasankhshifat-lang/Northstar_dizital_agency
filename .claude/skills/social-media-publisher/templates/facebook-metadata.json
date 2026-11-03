@@ -1,0 +1,9 @@
+{
+  "page_id": "YOUR_PAGE_ID",
+  "caption": "Engagement-focused caption that invites comments.",
+  "hashtags": ["#hashtag1", "#hashtag2"],
+  "title": "Optional video title",
+  "link": null,
+  "ai_disclosure": {"ai_generated": false},
+  "approved": false
+}
