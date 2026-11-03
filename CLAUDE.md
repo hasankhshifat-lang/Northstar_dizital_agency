@@ -18,6 +18,15 @@ Every YouTube post that is scheduled goes through **one** of two tools, taking t
 
 Confirm the title, description, publish time, and video file with the user before scheduling.
 
+## TikTok: use Liberty Lore, not Which Life Next (user rule, 2026-11-03)
+
+Stop all work on the TikTok account Which Life Next (@whichlifenext): no posts, no checks (its daily views check
+was deleted). Manage the user's other TikTok account, **Liberty Lore**, connected through **Higgsfield**
+(`tiktok_accounts`, connector label `liberty-lore`). Higgsfield can attach licensed trending sounds
+(`tiktok_music_trending`, picked in the `tiktok_prepare_publish` form, DIRECT_POST only) and needs media hosted on
+Higgsfield (`media_upload`). The user reviews and submits every post in that form. The Which Life Next rules
+below are kept for reference only.
+
 ## TikTok: repost every YouTube video right after it goes public
 
 Account: Which Life Next (@whichlifenext), via Clawlink `tiktok`. Log: `social/tiktok-post-log.md`.
