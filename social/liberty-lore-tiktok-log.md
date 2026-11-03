@@ -10,5 +10,7 @@ Source: the day's YouTube Shorts (Metricool brand 7727550 media URLs). One user 
 
 ## Pending today (approved 2026-11-03)
 
-- Donner Party Short: check-in 2026-11-03 03:05 UTC
-- Lincoln manhunt Short: check-in 2026-11-03 13:05 UTC
+- Donner Party Short: 2026-11-03 03:05 UTC (10:05pm ET Nov 2)
+- Lincoln manhunt Short: 2026-11-04 01:30 UTC (8:30pm ET Nov 3), moved to US prime time
+
+Posting slots from now on: 7:00pm, 8:30pm, 10:00pm ET.

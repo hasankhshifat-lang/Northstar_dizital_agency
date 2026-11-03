@@ -31,8 +31,9 @@ Plan (user said yes, 2026-11-03): same American-history content as the YouTube c
 **3 YouTube Shorts per day** to Liberty Lore after each is live on YouTube, with short captions, a chosen cover
 and a trending sound, each submitted by the user in the publish form. Liberty Lore settings chosen by the user (2026-11-03): Everyone · comments on · duet on · stitch on · no branded
 content · AI-generated label on. A daily scheduled task (05:43 SGT, "Liberty Lore daily TikTok posts") sends one
-summary of the day's 3 Shorts; after the user's yes it sets a check-in ~5 min after each YouTube publish time and
-posts via Clawlink `upload_video` from the Metricool media URL, with a cover frame picked by ffmpeg.
+summary of the day's 3 Shorts; after the user's yes it posts them at **US prime time**: 7:00pm, 8:30pm and 10:00pm
+America/New_York on the Shorts' SGT date (08:00/09:30/11:00 SGT next day while US is on EST), and only once each is
+live on YouTube. It posts via Clawlink `upload_video` from the Metricool media URL, with a cover frame picked by ffmpeg.
 The Which Life Next rules
 below are kept for reference only.
 
