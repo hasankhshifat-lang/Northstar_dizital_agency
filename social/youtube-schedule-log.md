@@ -6,4 +6,4 @@ Rotation: Clawlink → Metricool → Clawlink → … (see `CLAUDE.md`). Next po
 |---|---|---|---|---|
 | 2026-10-29 | 2026-10-30 10:00 ET (14:00 UTC) | POV: Miss July 4th on the Oregon Trail and Winter Wins (Short C) | Metricool | post 410019578 · video pGNi9O6MFIA (published) |
 | 2026-10-29 | 2026-10-29 16:00 ET (20:00 UTC) | POV: You Have $300 to Survive the Oregon Trail (Short B) | Metricool (Clawlink failed: YouTube daily upload quota) | post 410019506 · video XiUBmGYlWOE (published) |
-| 2026-11-03 | 2026-11-03 (published immediately, public) | Northstar Dizital – Upload Test #Shorts | Google Cloud (YouTube Data API, own OAuth client) | video QehsAzlfOzI (public, processing) |
+| 2026-11-03 | 2026-11-03 (published immediately, public) | Northstar Dizital – Upload Test #Shorts | Google Cloud (YouTube Data API) | video QehsAzlfOzI (uploaded public; gone by 15:00 SGT check, 404) |
