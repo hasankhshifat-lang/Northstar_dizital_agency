@@ -16,11 +16,14 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
 
 ## YouTube thumbnails: always the map-style thumbnail
 
-Every new video gets a custom thumbnail made with `social/thumbnails/make_thumbnails.py`, in the
+Every new video gets a custom thumbnail. Follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
+read the full script first (`social/scripts/<VIDEO_ID>.md`, or ask for it), pick one story angle, write three
+heading options and choose the clearest. Render it with `social/thumbnails/make_thumbnails.py` in the
 channel's illustrated map style (the same look as the maps inside the Shorts):
 - Parchment/cream land, teal water and rivers, thin state lines, the story's state filled in tan,
   rust-red route with white waypoint dots, red teardrop pins, dark label tags, dark date tag with gold text.
-- A short custom hook heading (2–4 words, Anton font, white + gold) that adds to the title and never repeats it.
+- A clear, specific heading (2–6 words, Anton font, white + gold) that adds to the title and never repeats it.
+  Don't force dramatic words; curiosity about the actual story, never a misleading claim.
 - **Shorts: 9:16, 1080×1920** (`--vertical`, file `<VIDEO_ID>_9x16.jpg`): date tag and hook at the top,
   map focus in the middle, bottom ~400 px kept clear for YouTube's title overlay.
 - Long-form videos: 16:9, 1280×720 (`<VIDEO_ID>.jpg`), hook on the left, map on the right.
