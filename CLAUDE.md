@@ -14,6 +14,20 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
 - Log uploads/schedules/edits in `social/youtube-schedule-log.md` and comment replies in
   `social/youtube-comments-log.md`, then commit and push.
 
+## YouTube thumbnails: always the map-style thumbnail
+
+Every new video gets a custom thumbnail made with `social/thumbnails/make_thumbnails.py`, in the
+channel's illustrated map style (the same look as the maps inside the Shorts):
+- Parchment/cream land, teal water and rivers, thin state lines, the story's state filled in tan,
+  rust-red route with white waypoint dots, red teardrop pins, dark label tags, dark date tag with gold text.
+- A short custom hook heading (2–4 words, Anton font, white + gold) that adds to the title and never repeats it.
+- **Shorts: 9:16, 1080×1920** (`--vertical`, file `<VIDEO_ID>_9x16.jpg`): date tag and hook at the top,
+  map focus in the middle, bottom ~400 px kept clear for YouTube's title overlay.
+- Long-form videos: 16:9, 1280×720 (`<VIDEO_ID>.jpg`), hook on the left, map on the right.
+- Add a function for the new video in `make_thumbnails.py` (`VERTICAL` for Shorts, `VIDEOS` for long-form),
+  render it, look at the result, then set it with `yt.py thumbnail VIDEO_ID FILE` and log it in
+  `social/youtube-schedule-log.md`. Update `social/thumbnails/README.md`, then commit and push.
+
 ## YouTube analysis: use vidIQ
 
 For any YouTube analysis (channel or video performance, keyword and topic research, competitor
