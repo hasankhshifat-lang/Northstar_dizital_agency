@@ -1,6 +1,6 @@
 {
  "type": "video",
- "status": "draft",
+ "status": "scheduled",
  "pillar": "Trust & setup",
  "angle": "\"AI ভুল উত্তর দিলে?\" — শুধু আপনার দেওয়া তথ্য থেকে উত্তর দেয়, না জানলে আপনাকে/team-কে দেয়",
  "voice": "Swati",
@@ -156,5 +156,7 @@
     "tone": "excited"
    }
   ]
- }
+ },
+ "facebook_video_id": "2054292635273386",
+ "scheduled_for": "2026-11-04 20:30 Asia/Dhaka"
 }
