@@ -27,7 +27,8 @@ description: "Story-driven YouTube thumbnail creator for the Which Life Next cha
 - **Output:** save to `social/thumbnails/`, add the video's row (heading + map) to
   `social/thumbnails/README.md`. Setting it on YouTube follows the youtube-channel-automation skill
   (`yt.py thumbnail`), is logged in `social/youtube-schedule-log.md`, then commit and push.
-- **Report:** when delivering, show the three heading options, which one won and why (one line), and the image.
+- **Report:** when delivering, show the story beats with their share of the script and thumbnail direction, the
+  three heading options, which one won and why (one line), and the image.
 
 ---
 
@@ -123,6 +124,24 @@ Before designing, evaluate these potential angles:
 Choose ONE dominant angle. Do not try to include the entire storyline in one thumbnail.
 The thumbnail must communicate one powerful idea.
 
+### Main event vs. strongest curiosity hook
+
+The story's **main event** and its **strongest curiosity hook** are not always the same thing. Before
+writing headings, list the story's key beats and give each one its own thumbnail direction. Example
+(Lincoln's assassination and the manhunt):
+
+| Story element | Thumbnail direction |
+|---|---|
+| Lincoln was assassinated | THE PRESIDENT'S FINAL NIGHT |
+| His killer escaped | AMERICA'S MOST WANTED MAN |
+| Authorities pursued him | THE MANHUNT BEGINS |
+| Authorities finally caught him | HOW THEY CAUGHT HIM |
+
+The strongest choice depends on **which part receives the most attention in the actual script**. Estimate
+how much of the script each beat takes up (lines or seconds) and favour the beat the video spends the most
+time on, so the thumbnail promises what the viewer will mostly watch. Choose a different beat only when
+the script clearly builds toward it as the payoff, and say why.
+
 ## 5. Visual storytelling
 
 Create a visual that communicates the story even before viewers read the heading.
@@ -200,7 +219,9 @@ Follow this workflow every time:
 
 1. **Find script:** locate the complete video script (section 0 for where).
 2. **Understand story:** read the entire script and identify the main storyline.
-3. **Find the hook:** identify the most interesting, surprising, mysterious, or dramatic angle.
+3. **Find the hook:** list the key story beats, note how much of the script each one takes up, and give each a
+   thumbnail direction. Separate the main event from the strongest curiosity hook, then pick the beat the
+   script spends the most attention on (section 4).
 4. **Create heading options:** develop three possible thumbnail headings.
 5. **Select the winner:** choose the strongest heading based on clarity, curiosity, relevance, and visual potential.
 6. **Design:** add the video's function to `make_thumbnails.py` (`VERTICAL` for Shorts, `VIDEOS` for
