@@ -5,6 +5,7 @@ of where the story happened (Esri World Imagery, credited on the image), with th
 and a 2–4 word hook that adds to the title and doesn't repeat it.
 
 Re-render: `python3 social/thumbnails/make_thumbnails.py [VIDEO_ID ...]` (writes `<VIDEO_ID>.jpg` + `contact-sheet.jpg`).
+Vertical Shorts versions: `python3 social/thumbnails/make_thumbnails.py --vertical` (writes `<VIDEO_ID>_9x16.jpg`, 1080×1920, + `contact-sheet-9x16.jpg`).
 Apply: `python3 .claude/skills/youtube-channel-automation/yt.py thumbnail VIDEO_ID social/thumbnails/VIDEO_ID.jpg`
 
 | Video ID | Title | Hook | Map |
@@ -30,3 +31,21 @@ Apply: `python3 .claude/skills/youtube-channel-automation/yt.py thumbnail VIDEO_
 
 Note: on Shorts, YouTube shows the custom thumbnail in search, the channel page and suggested videos;
 the Shorts feed itself still shows a frame from the video.
+
+## 9:16 Shorts thumbnails (public Shorts only)
+
+1080×1920, same hook and map as the 16:9 version. The heading sits at the top and the map focus is in the middle;
+the bottom ~400 px is kept clear for YouTube's title overlay.
+
+| Video ID | Length | File |
+|---|---|---|
+| A7IMwfCRwjg | 1:53 | A7IMwfCRwjg_9x16.jpg |
+| bwhHw3tLIDQ | 1:54 | bwhHw3tLIDQ_9x16.jpg |
+| ctoVTthJ_2w | 1:59 | ctoVTthJ_2w_9x16.jpg |
+| pXOy92KjJt4 | 0:31 | pXOy92KjJt4_9x16.jpg |
+| qbtwhG8IDL8 | 0:54 | qbtwhG8IDL8_9x16.jpg |
+| J5rJThy08hk | 0:51 | J5rJThy08hk_9x16.jpg |
+| HyqmpcvzHKI | 0:50 | HyqmpcvzHKI_9x16.jpg |
+| 7kxCubu2UdI | 0:40 | 7kxCubu2UdI_9x16.jpg |
+
+Not included: Dd6icXr-dW0 (3:09), NtC-QGdCfG0 and kQzq9g26F6Q (8:39) are long-form; the other 7 videos are private.

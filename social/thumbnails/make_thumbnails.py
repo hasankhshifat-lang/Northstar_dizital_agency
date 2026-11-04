@@ -5,8 +5,9 @@ Each thumbnail = satellite map (Esri World Imagery) of where the story happened,
 graded and darkened, with US state lines, the route / place pins, and a short
 custom hook heading (0-4 words, never a copy of the video title).
 
-Usage:  python3 social/thumbnails/make_thumbnails.py [VIDEO_ID ...]
+Usage:  python3 social/thumbnails/make_thumbnails.py [--vertical] [VIDEO_ID ...]
 Output: social/thumbnails/<VIDEO_ID>.jpg  (+ contact-sheet.jpg)
+        --vertical: 1080x1920 Shorts versions <VIDEO_ID>_9x16.jpg (+ contact-sheet-9x16.jpg)
 Fonts, tiles and state borders are downloaded once to ~/.cache/wln-thumbs.
 """
 import io, json, math, os, sys, urllib.request
@@ -57,8 +58,9 @@ def world_px(lat, lon, z):
 
 
 class MapView:
-    def __init__(self, lat, lon, zoom, anchor=(W / 2, H / 2)):
+    def __init__(self, lat, lon, zoom, anchor=None):
         """(lat, lon) lands on image point `anchor` at fractional `zoom`."""
+        anchor = anchor or (W / 2, H / 2)
         self.z = math.ceil(zoom)
         self.scale = 2 ** (zoom - self.z)  # <= 1, downscale for crispness
         cw, ch = W / self.scale, H / self.scale
@@ -112,7 +114,7 @@ def grade(img, tint, darken=0.55, sat=0.55):
     return Image.blend(img, Image.composite(tint_layer, img, ImageOps.invert(img.convert("L"))), 0.35)
 
 
-def vignette(img, left_dark=True):
+def vignette(img, left_dark=True, top_dark=False):
     radial = Image.radial_gradient("L").resize((W, H))  # 0 center -> 255 edge
     radial = radial.point(lambda v: int(min(255, v * 0.9)))
     black = Image.new("RGB", (W, H), (0, 0, 0))
@@ -121,6 +123,10 @@ def vignette(img, left_dark=True):
         grad = Image.linear_gradient("L").rotate(90, expand=True).resize((W, H))  # 255 left -> 0 right
         grad = grad.point(lambda v: int(max(0, (v - 70)) * 1.15))
         img = Image.composite(black, img, grad.point(lambda v: min(225, v)))
+    if top_dark:  # vertical: dark band behind the heading at the top
+        grad = Image.linear_gradient("L").rotate(180).resize((W, H))  # 255 top -> 0 bottom
+        grad = grad.point(lambda v: int(max(0, (v - 95)) * 1.4))
+        img = Image.composite(black, img, grad.point(lambda v: min(215, v)))
     return img
 
 
@@ -299,10 +305,10 @@ def P(view, pts):
 
 
 def base(lat, lon, zoom, tint, states=True, darken=0.78, sat=0.8, left_dark=True, state_alpha=80,
-         fit=None, box=(600, 150, 1210, 590), anchor=(W / 2, H / 2), max_zoom=12.0):
+         fit=None, box=(600, 150, 1210, 590), anchor=None, max_zoom=12.0, top_dark=False):
     v = MapView.fit(fit, box, max_zoom) if fit else MapView(lat, lon, zoom, anchor)
     img = grade(v.render(), tint, darken, sat)
-    img = vignette(img, left_dark)
+    img = vignette(img, left_dark, top_dark)
     data = draw_states(img, v, (255, 255, 255, state_alpha)) if states else None
     return v, img.convert("RGB"), data
 
@@ -639,23 +645,162 @@ VIDEOS = {
 }
 
 
+# ---------- vertical 9:16 (1080x1920) versions for Shorts ----------
+VB = (110, 1060, 970, 1500)   # map focus box: below the heading, above the bottom title overlay
+LS = 40                      # label size
+
+
+def vbase(tint, **kw):
+    kw.setdefault("left_dark", False)
+    kw.setdefault("top_dark", True)
+    return base(0, 0, 0, tint, **kw)
+
+
+def vhook(img, lines, size=240):
+    hook(img, lines, x=70, y_top=270, max_w=940, size=size)
+
+
+def vbadge(img, text, color):
+    badge(img, text, color, xy=(70, 120), size=60)
+
+
+def v_booth():
+    v, img, _ = vbase((10, 30, 70), fit=BOOTH, box=(300, 1060, 780, 1560), max_zoom=10.4)
+    pts = P(v, BOOTH)
+    glow_line(img, pts, ORANGE, dash=True, width=10, glow=28)
+    pin(img, pts[0], WHITE, r=15, ring=False)
+    label(img, pts[0], "FORD'S THEATRE", "l", dx=30, size=LS)
+    pin(img, pts[-1], BLOOD, r=18)
+    label(img, pts[-1], "GARRETT FARM, VA", "c", dy=80, size=LS)
+    vbadge(img, "APRIL 1865", YELLOW)
+    vhook(img, [[("WHERE IS", WHITE)], [("BOOTH?", YELLOW)]], 250)
+    return img
+
+
+def v_donner():
+    v, img, _ = vbase((40, 60, 110), fit=DONNER_MAIN + DONNER_CUTOFF, box=VB)
+    glow_line(img, P(v, DONNER_MAIN), (230, 230, 230), width=6, glow=14)
+    glow_line(img, P(v, DONNER_CUTOFF), BLOOD, width=11, glow=32)
+    end = v.to_img(39.32, -120.24)
+    pin(img, end, ICE, r=18)
+    label(img, end, "TRAPPED BY SNOW", "c", dy=80, dx=60, size=LS)
+    label(img, v.to_img(40.72, -113.6), "HASTINGS CUTOFF", "c", dy=-75, bg=(140, 0, 0), size=LS)
+    vbadge(img, "1846", YELLOW)
+    vhook(img, [[("THE", WHITE)], [("DEADLY", YELLOW)], [("SHORTCUT", WHITE)]], 230)
+    return img
+
+
+def v_pony():
+    v, img, _ = vbase((60, 40, 10), fit=PONY, box=VB)
+    pts = P(v, PONY)
+    glow_line(img, pts, YELLOW, width=10, glow=28)
+    for p in pts[1:-1]:
+        ImageDraw.Draw(img).ellipse([p[0] - 8, p[1] - 8, p[0] + 8, p[1] + 8], fill=WHITE, outline=(0, 0, 0), width=2)
+    pin(img, pts[0], ORANGE, r=16, ring=False)
+    label(img, pts[0], "ST. JOSEPH", "c", dy=75, size=LS)
+    pin(img, pts[-1], ORANGE, r=16)
+    label(img, pts[-1], "SACRAMENTO", "c", dy=80, size=LS)
+    vbadge(img, "1860", YELLOW)
+    vhook(img, [[("NEVER", WHITE)], [("STOP", YELLOW)], [("RIDING", WHITE)]], 240)
+    return img
+
+
+def v_vanished():
+    v, img, _ = vbase((50, 40, 0), fit=SWARM_L + SWARM_R + [(40, -104), (40, -92)], box=(140, 1000, 940, 1760), sat=0.6)
+    swarm_band(v, img, AMBER, 150)
+    label(img, v.to_img(40.0, -98.4), "TRILLIONS", "c", bg=(140, 80, 0), size=LS)
+    vbadge(img, "LAST SEEN 1902", YELLOW)
+    vhook(img, [[("WHERE", WHITE)], [("DID THEY", WHITE)], [("GO?", YELLOW)]], 240)
+    return img
+
+
+def vsnow_base(**kw):
+    v, img, data = vbase((40, 110, 180), sat=0.35, **kw)
+    img = Image.blend(img, Image.new("RGB", (W, H), (190, 225, 255)), 0.14)
+    return v, img, data
+
+
+def v_rope():
+    v, img, _ = vsnow_base(fit=[(46.0, -100.5), (42.5, -96.5)], box=VB)
+    house, barn = (330, 1300), (760, 1080)
+    glow_line(img, [house, (560, 1230), barn], YELLOW, width=9, glow=22)
+    pin(img, house, WHITE, r=16, ring=False)
+    label(img, house, "HOUSE", "c", dy=64, size=LS)
+    pin(img, barn, WHITE, r=16, ring=False)
+    label(img, barn, "BARN", "c", dy=-64, size=LS)
+    snow(img, 2600, 3)
+    vbadge(img, "JAN 12, 1888", ICE)
+    vhook(img, [[("TIE THE", WHITE)], [("ROPE.", YELLOW)]], 260)
+    return img
+
+
+def v_minnie():
+    v, img, _ = vsnow_base(fit=[(43.0, -101.0), (40.2, -96.9)], box=VB)
+    o = v.to_img(41.60, -98.93)
+    pin(img, o, YELLOW, r=18)
+    label(img, o, "VALLEY COUNTY, NEBRASKA", "c", dy=80, size=LS)
+    snow(img, 2800, 11)
+    vbadge(img, "JAN 12, 1888", ICE)
+    vhook(img, [[("WALK", WHITE)], [("OR", WHITE), (" FREEZE", ICE)]], 250)
+    return img
+
+
+def v_drop():
+    v, img, _ = vsnow_base(fit=[(45.8, -100.3), (42.9, -96.2)], box=VB)
+    h = v.to_img(44.3633, -98.2143)
+    pin(img, h, ICE, r=18)
+    label(img, h, "HURON, DAKOTA TERRITORY", "c", dy=80, size=LS)
+    snow(img, 2200, 5)
+    vbadge(img, "JAN 12, 1888", ICE)
+    vhook(img, [[("A ", WHITE), ("77°", ICE)], [("DROP", WHITE)]], 280)
+    return img
+
+
+def v_cholera():
+    v, img, _ = vbase((40, 60, 20), fit=OREGON_TRAIL[:8], box=(110, 980, 970, 1380))
+    pts = P(v, OREGON_TRAIL[:8])
+    glow_line(img, pts, TOXIC, width=10, glow=28)
+    d = ImageDraw.Draw(img)
+    for lat, lon in ((40.75, -99.6), (41.0, -100.5), (41.2, -101.5), (41.45, -102.6), (41.75, -103.6)):
+        c = v.to_img(lat + 0.12, lon)
+        d.line([c[0] - 14, c[1] - 14, c[0] + 14, c[1] + 14], fill=BLOOD, width=8)
+        d.line([c[0] - 14, c[1] + 14, c[0] + 14, c[1] - 14], fill=BLOOD, width=8)
+    label(img, v.to_img(40.9, -100.6), "PLATTE RIVER ROAD", "c", dy=90, size=LS)
+    vbadge(img, "1850", TOXIC)
+    vhook(img, [[("FINE AT", WHITE)], [("BREAKFAST", TOXIC)]], 240)
+    return img
+
+
+VERTICAL = {
+    "A7IMwfCRwjg": v_booth, "bwhHw3tLIDQ": v_donner, "ctoVTthJ_2w": v_pony, "pXOy92KjJt4": v_vanished,
+    "qbtwhG8IDL8": v_rope, "J5rJThy08hk": v_minnie, "HyqmpcvzHKI": v_drop, "7kxCubu2UdI": v_cholera,
+}
+
+
 def main():
-    ids = sys.argv[1:] or list(VIDEOS)
+    global W, H
+    args = sys.argv[1:]
+    vertical = "--vertical" in args
+    args = [x for x in args if x != "--vertical"]
+    table, suffix, sheet_name, cols, tw, th = VIDEOS, "", "contact-sheet.jpg", 3, 640, 360
+    if vertical:
+        W, H = 1080, 1920
+        table, suffix, sheet_name, cols, tw, th = VERTICAL, "_9x16", "contact-sheet-9x16.jpg", 4, 360, 640
+    ids = args or list(table)
     outs = []
     for vid in ids:
-        img = VIDEOS[vid]()
+        img = table[vid]()
         credit(img)
-        p = os.path.join(HERE, f"{vid}.jpg")
+        p = os.path.join(HERE, f"{vid}{suffix}.jpg")
         img.convert("RGB").save(p, "JPEG", quality=90, optimize=True)
         outs.append(p)
         print(p, os.path.getsize(p) // 1024, "KB")
     if len(outs) > 1:
-        cols, tw, th = 3, 640, 360
         rows = math.ceil(len(outs) / cols)
         sheet = Image.new("RGB", (cols * tw + (cols + 1) * 12, rows * th + (rows + 1) * 12), (18, 18, 18))
         for i, p in enumerate(outs):
             sheet.paste(Image.open(p).resize((tw, th), Image.LANCZOS), (12 + (i % cols) * (tw + 12), 12 + (i // cols) * (th + 12)))
-        sheet.save(os.path.join(HERE, "contact-sheet.jpg"), quality=85)
+        sheet.save(os.path.join(HERE, sheet_name), quality=85)
 
 
 if __name__ == "__main__":
