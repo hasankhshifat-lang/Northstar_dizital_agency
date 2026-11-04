@@ -1,6 +1,6 @@
 ---
 name: facebook-page-automation
-description: "Manage the NorthStar Dizital Facebook Page directly through the Graph API: upload videos/Reels, post photos, text and links, schedule posts for a later time, delete posts only when explicitly asked, and check post/video status. Use for ANY Facebook Page task: 'upload to FB page', 'post on Facebook', 'schedule a Facebook post', 'delete the FB post', 'delete after N minutes', 'FB page automation'. Never route Facebook Page work through Clawlink or Metricool."
+description: "Manage the Facebook Pages (Which Life Next, NorthStar Dizital and any other Page assigned to the KH Shifat system user) directly through the Graph API: upload videos/Reels, post photos, text and links, schedule posts for a later time, delete posts only when explicitly asked, and check post/video status. Use for ANY Facebook Page task: 'upload to FB page', 'post on Facebook', 'schedule a Facebook post', 'delete the FB post', 'delete after N minutes', 'FB page automation'. Never route Facebook Page work through Clawlink or Metricool."
 ---
 
 # Facebook Page automation (direct Graph API)
@@ -8,15 +8,35 @@ description: "Manage the NorthStar Dizital Facebook Page directly through the Gr
 All Facebook Page work goes **straight to the Graph API** with `curl`. Do not use Clawlink,
 Metricool or any other posting tool for the Page.
 
-## Connection
+## Connection (System User token, multiple Pages)
 
-- The agent proxy injects the credential for `graph.facebook.com`, `graph-video.facebook.com`
-  and `rupload.facebook.com`. Never put an `access_token` in the request and never ask the user for one.
-- The injected token is a **Page token** for **NorthStar Dizital**, Page ID `1390585830800081`.
-  `/me/accounts` does not work with it (there is no user behind it); use `/me` or the Page ID.
-- Check the connection first if anything looks off:
-  `curl -sS "https://graph.facebook.com/v21.0/me?fields=id,name"`
+- The agent proxy injects a **System User token** ("KH Shifat", ID `122097505353541636`,
+  app Northstar Dizital Automation `2118347298772895`) for `graph.facebook.com`,
+  `graph-video.facebook.com` and `rupload.facebook.com`. Never ask the user for a token.
+- Managed Pages (whatever is assigned to the system user in Business Settings):
+
+  | Page | Page ID | Log |
+  |---|---|---|
+  | Which Life Next (same name as the YouTube channel) | `1342776542260801` | `social/facebook-whichlifenext-log.md` |
+  | NorthStar Dizital | `1390585830800081` | `social/facebook-page-log.md` (needs to be assigned to the system user again) |
+
+  List what is reachable right now: `curl -sS "https://graph.facebook.com/v21.0/me/accounts?fields=id,name,tasks"`.
+  Ask which Page if the user does not name one.
+- **Page actions need that Page's own token.** The system token alone gets
+  `User access token is not supported` (code 190 / subcode 2069032). Fetch the Page token at
+  runtime into a shell variable and pass it as `access_token` (the proxy leaves it alone):
+  ```bash
+  PAGE=1342776542260801
+  PT=$(curl -sS "https://graph.facebook.com/v21.0/$PAGE?fields=access_token" \
+       | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
+  ```
+  **Never print, log, echo or commit `$PT`.** Fetch it again in each new shell.
+- Check the connection: `curl -sS "https://graph.facebook.com/v21.0/me?fields=id,name&access_token=$PT"`
+  should return the Page name.
 - API version: `v21.0`.
+
+In every command below, add `access_token=$PT` (as `-F "access_token=$PT"` for POST forms,
+or `?access_token=$PT` / `&access_token=$PT` in GET/DELETE URLs).
 
 ## Never delete on your own
 
@@ -32,7 +52,7 @@ If no title is given, use a clean version of the file name and say so.
 
 ## Actions
 
-Set `PAGE=1390585830800081`.
+Set `PAGE` to the chosen Page ID and fetch `$PT` as above.
 
 ### Upload a video (published now)
 ```bash
@@ -84,7 +104,7 @@ processing, it was most likely never visible to the public).
 
 ## Log every action
 
-Add a row to `social/facebook-page-log.md` for each upload, scheduled post and deletion
+Add a row to that Page's log (see the table above) for each upload, scheduled post and deletion
 (date, action, title, object ID, publish/delete time, result), then commit and push.
 
 ## Report back
