@@ -20,6 +20,11 @@ Confirm the title, description, publish time, and video file with the user befor
 
 ## TikTok: use Liberty Lore, not Which Life Next (user rule, 2026-11-03)
 
+**ON HOLD since 2026-11-04 (user):** Liberty Lore TikTok posting is paused until the user says to resume. The
+daily task ("Liberty Lore daily TikTok posts") and the Lincoln Short check-in are disabled, not deleted. Do not
+post to TikTok. On resume, re-enable them and solve where the day's Shorts come from (YouTube now uploads directly,
+not through Metricool).
+
 Stop all work on the TikTok account Which Life Next (@whichlifenext): no posts, no checks (its daily views check
 was deleted). Manage the user's other TikTok account, **Liberty Lore**, connected through **Higgsfield**
 (`tiktok_accounts`, connector label `liberty-lore`). Higgsfield can attach licensed trending sounds
