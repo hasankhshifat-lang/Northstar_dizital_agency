@@ -1,8 +1,9 @@
 # YouTube thumbnails (map view + hook heading)
 
-1280×720 JPGs for every Which Life Next video, built by `make_thumbnails.py`. Each one is a satellite map
-of where the story happened (Esri World Imagery, credited on the image), with the route or place pinned
-and a 2–4 word hook that adds to the title and doesn't repeat it.
+1280×720 JPGs for every Which Life Next video, built by `make_thumbnails.py`. Each one uses the same
+illustrated map style as the channel's Shorts (parchment land, teal water, thin state lines, the story's
+state highlighted in tan, a rust-red route with white waypoints, red teardrop pins, dark label tags), drawn
+from Natural Earth vector data (public domain), plus a 2–4 word hook that adds to the title and doesn't repeat it.
 
 Re-render: `python3 social/thumbnails/make_thumbnails.py [VIDEO_ID ...]` (writes `<VIDEO_ID>.jpg` + `contact-sheet.jpg`).
 Vertical Shorts versions: `python3 social/thumbnails/make_thumbnails.py --vertical` (writes `<VIDEO_ID>_9x16.jpg`, 1080×1920, + `contact-sheet-9x16.jpg`).

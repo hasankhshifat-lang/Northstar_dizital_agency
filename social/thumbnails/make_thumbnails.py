@@ -17,7 +17,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.expanduser("~/.cache/wln-thumbs")
 W, H = 1280, 720
 TILE = 256
-YELLOW = (255, 212, 0)
+YELLOW = (242, 196, 72)
 WHITE = (255, 255, 255)
 
 FONTS = {
@@ -25,7 +25,65 @@ FONTS = {
     "oswald": "https://raw.githubusercontent.com/google/fonts/main/ofl/oswald/Oswald%5Bwght%5D.ttf",
 }
 STATES_URL = "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json"
-TILE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+NE = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/{}.geojson"
+
+# Map palette matched to the illustrated maps in the channel's Shorts
+OCEAN = (62, 128, 130)
+RIVER = (58, 122, 126)
+LAND = (236, 224, 194)
+LAND_OTHER = (222, 205, 168)
+BORDER = (186, 166, 128)
+HILITE = (233, 184, 112)
+HILITE_EDGE = (176, 118, 58)
+INK = (36, 30, 26)          # dark tag / outline colour
+ROUTE = (178, 72, 52)       # rust-red route
+PIN = (196, 58, 46)
+SS = 2                      # supersampling for the vector map
+
+_GEO = {}
+
+
+def geo(name):
+    """Natural Earth layer as a list of (bbox, properties, geometry), cached."""
+    if name not in _GEO:
+        data = json.load(open(fetch(NE.format(name), f"{CACHE}/ne/{name}.geojson")))
+        feats = []
+        for f in data["features"]:
+            g = f["geometry"]
+            if not g:
+                continue
+            xs, ys = [], []
+
+            def walk(c):
+                if not c:
+                    return
+                if isinstance(c[0], (int, float)):
+                    xs.append(c[0]); ys.append(c[1])
+                else:
+                    for k in c:
+                        walk(k)
+            walk(g["coordinates"])
+            if not xs:
+                continue
+            feats.append(((min(xs), min(ys), max(xs), max(ys)), f["properties"], g))
+        _GEO[name] = feats
+    return _GEO[name]
+
+
+def polygons(g):
+    if g["type"] == "Polygon":
+        return [g["coordinates"]]
+    if g["type"] == "MultiPolygon":
+        return g["coordinates"]
+    return []
+
+
+def lines(g):
+    if g["type"] == "LineString":
+        return [g["coordinates"]]
+    if g["type"] == "MultiLineString":
+        return g["coordinates"]
+    return []
 
 
 def fetch(url, path):
@@ -52,7 +110,7 @@ def font(name, size):
 def world_px(lat, lon, z):
     n = TILE * 2 ** z
     x = (lon + 180.0) / 360.0 * n
-    s = math.sin(math.radians(lat))
+    s = math.sin(math.radians(max(-85.0, min(85.0, lat))))
     y = (0.5 - math.log((1 + s) / (1 - s)) / (4 * math.pi)) * n
     return x, y
 
@@ -84,7 +142,65 @@ class MapView:
         x, y = world_px(lat, lon, self.z)
         return ((x - self.x0) * self.scale, (y - self.y0) * self.scale)
 
+    def lonlat_bounds(self):
+        n = TILE * 2 ** self.z
+
+        def inv(x, y):
+            lon = x / n * 360 - 180
+            lat = math.degrees(math.atan(math.sinh(math.pi * (1 - 2 * y / n))))
+            return lon, lat
+        lon0, lat1 = inv(self.x0, self.y0)
+        lon1, lat0 = inv(self.x0 + self.cw, self.y0 + self.ch)
+        mx, my = (lon1 - lon0) * 0.1, (lat1 - lat0) * 0.1
+        return lon0 - mx, lat0 - my, lon1 + mx, lat1 + my
+
     def render(self):
+        """Flat illustrated map: parchment land, teal water, thin state lines, paper grain."""
+        zoom = self.z + math.log2(self.scale)
+        b = self.lonlat_bounds()
+        img = Image.new("RGB", (W * SS, H * SS), OCEAN)
+        d = ImageDraw.Draw(img)
+
+        def pr(ring):
+            return [(px * SS, py * SS) for px, py in (self.to_img(lat, lon) for lon, lat in ring)]
+
+        def hit(bb):
+            return not (bb[2] < b[0] or bb[0] > b[2] or bb[3] < b[1] or bb[1] > b[3])
+
+        detail = "10m" if zoom >= 6.5 else "50m"
+        for bb, _, g in geo(f"ne_{detail}_land"):
+            if hit(bb):
+                for poly in polygons(g):
+                    d.polygon(pr(poly[0]), fill=LAND)
+                    for hole in poly[1:]:
+                        d.polygon(pr(hole), fill=OCEAN)
+        if zoom < 6.5:  # neighbouring countries a shade darker, like the Shorts maps
+            for bb, p, g in geo("ne_50m_admin_0_countries"):
+                if hit(bb) and p.get("ADMIN") != "United States of America":
+                    for poly in polygons(g):
+                        d.polygon(pr(poly[0]), fill=LAND_OTHER)
+        for bb, _, g in geo(f"ne_{detail}_lakes"):
+            if hit(bb):
+                for poly in polygons(g):
+                    d.polygon(pr(poly[0]), fill=OCEAN)
+        maxrank = 4 if zoom < 5.5 else (6 if zoom < 8 else 10)
+        for bb, p, g in geo("ne_10m_rivers_lake_centerlines"):
+            rank = p.get("scalerank", 10) or 10
+            if hit(bb) and rank <= maxrank:
+                w = max(2, int((zoom - 2.5) * 1.3 * (1.25 - rank / 12))) * SS
+                for ln in lines(g):
+                    d.line(pr(ln), fill=RIVER, width=w, joint="curve")
+        for bb, p, g in geo("ne_50m_admin_1_states_provinces_lines"):
+            if hit(bb):
+                for ln in lines(g):
+                    d.line(pr(ln), fill=BORDER, width=2 * SS, joint="curve")
+        img = img.resize((W, H), Image.LANCZOS)
+        # paper grain + faint speckle
+        grain = Image.effect_noise((W, H), 18).convert("L")
+        img = Image.blend(img, Image.merge("RGB", (grain, grain, grain)), 0.06)
+        return img
+
+    def render_tiles(self):
         canvas = Image.new("RGB", (self.cw, self.ch), (20, 24, 30))
         tx0, ty0 = int(self.x0 // TILE), int(self.y0 // TILE)
         tx1, ty1 = int((self.x0 + self.cw) // TILE), int((self.y0 + self.ch) // TILE)
@@ -117,8 +233,8 @@ def grade(img, tint, darken=0.55, sat=0.55):
 def vignette(img, left_dark=True, top_dark=False):
     radial = Image.radial_gradient("L").resize((W, H))  # 0 center -> 255 edge
     radial = radial.point(lambda v: int(min(255, v * 0.9)))
-    black = Image.new("RGB", (W, H), (0, 0, 0))
-    img = Image.composite(black, img, radial.point(lambda v: int(v * 0.6)))
+    black = Image.new("RGB", (W, H), (24, 19, 14))  # warm dark brown, like the Shorts' frame
+    img = Image.composite(black, img, radial.point(lambda v: int(v * 0.4)))
     if left_dark:
         grad = Image.linear_gradient("L").rotate(90, expand=True).resize((W, H))  # 255 left -> 0 right
         grad = grad.point(lambda v: int(max(0, (v - 70)) * 1.15))
@@ -145,15 +261,13 @@ def draw_states(img, view, color=(255, 255, 255, 70), width=2):
     return data
 
 
-def state_outline(img, view, data, name, color, width=4, fill=None, dash=False):
+def state_outline(img, view, data, name, color=HILITE_EDGE, width=4, fill=HILITE + (255,), dash=False):
     layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
-    for f in data["features"]:
-        if f["properties"]["name"] != name:
+    for _, p, g in geo("ne_50m_admin_1_states_provinces"):
+        if p.get("name") != name or p.get("iso_a2") != "US":
             continue
-        g = f["geometry"]
-        polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
-        for poly in polys:
+        for poly in polygons(g):
             pts = [view.to_img(lat, lon) for lon, lat in poly[0]]
             if fill:
                 d.polygon(pts, fill=fill)
@@ -183,8 +297,8 @@ def dashed(d, pts, color, width, on=18, off=12):
 
 def glow_line(img, pts, color, width=7, glow=22, dash=False):
     g = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(g).line(pts, fill=color + (190,), width=glow, joint="curve")
-    g = g.filter(ImageFilter.GaussianBlur(glow / 2))
+    ImageDraw.Draw(g).line([(x + 2, y + 4) for x, y in pts], fill=INK + (90,), width=width + 4, joint="curve")
+    g = g.filter(ImageFilter.GaussianBlur(4))
     img.paste(g, (0, 0), g)
     l = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(l)
@@ -192,8 +306,13 @@ def glow_line(img, pts, color, width=7, glow=22, dash=False):
         dashed(d, pts, color + (255,), width)
     else:
         d.line(pts, fill=color + (255,), width=width, joint="curve")
-        d.line(pts, fill=(255, 255, 255, 200), width=max(2, width // 3), joint="curve")
     img.paste(l, (0, 0), l)
+
+
+def waypoints(img, pts, r=7):
+    d = ImageDraw.Draw(img)
+    for x, y in pts:
+        d.ellipse([x - r, y - r, x + r, y + r], fill=(250, 246, 236), outline=INK, width=max(2, r // 3))
 
 
 def blob(img, pts, color, alpha=150, blur=18):
@@ -203,21 +322,24 @@ def blob(img, pts, color, alpha=150, blur=18):
     img.paste(b, (0, 0), b)
 
 
-def pin(img, xy, color, r=13, ring=True):
+def pin(img, xy, color=PIN, r=13, ring=True):
+    """Teardrop map marker whose tip sits on xy (the Shorts' red location pin)."""
     x, y = xy
-    g = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    gd = ImageDraw.Draw(g)
-    if ring:
-        for rr, a in ((r * 4.2, 60), (r * 3, 110)):
-            gd.ellipse([x - rr, y - rr, x + rr, y + rr], outline=color + (a,), width=4)
-    gd.ellipse([x - r * 1.8, y - r * 1.8, x + r * 1.8, y + r * 1.8], fill=color + (120,))
-    g = g.filter(ImageFilter.GaussianBlur(2))
-    img.paste(g, (0, 0), g)
+    R = r * 1.7
+    cy = y - R * 2.2
+    sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(sh)
+    sd.ellipse([x - R * 0.9, y - R * 0.3, x + R * 0.9, y + R * 0.3], fill=INK + (110,))
+    sh = sh.filter(ImageFilter.GaussianBlur(3))
+    img.paste(sh, (0, 0), sh)
     d = ImageDraw.Draw(img)
-    d.ellipse([x - r, y - r, x + r, y + r], fill=color, outline=WHITE, width=4)
+    body = [(x, y)] + [(x + R * math.cos(math.radians(a)), cy + R * math.sin(math.radians(a)))
+                       for a in range(150, 391, 6)]
+    d.polygon(body, fill=color, outline=INK, width=3)
+    d.ellipse([x - R * 0.38, cy - R * 0.38, x + R * 0.38, cy + R * 0.38], fill=(250, 246, 236), outline=INK, width=2)
 
 
-def label(img, xy, text, anchor="l", size=30, bg=(0, 0, 0), fg=WHITE, dx=24, dy=0):
+def label(img, xy, text, anchor="l", size=30, bg=INK, fg=WHITE, dx=24, dy=0):
     f = font("oswald", size)
     d = ImageDraw.Draw(img)
     tw = d.textlength(text, font=f)
@@ -275,13 +397,12 @@ def badge(img, text, color, xy=(64, 52), fg=(0, 0, 0), size=46):
     ImageDraw.Draw(sh).rounded_rectangle([x + 4, y + 6, x + tw + 40, y + size * 1.45 + 6], 12, fill=(0, 0, 0, 150))
     sh = sh.filter(ImageFilter.GaussianBlur(6))
     img.paste(sh, (0, 0), sh)
-    d.rounded_rectangle([x, y, x + tw + 36, y + size * 1.45], 12, fill=color)
-    d.text((x + 18, y + size * 0.12), text, font=f, fill=fg)
+    d.rounded_rectangle([x, y, x + tw + 36, y + size * 1.45], 12, fill=INK, outline=color, width=3)
+    d.text((x + 18, y + size * 0.12), text, font=f, fill=color)
 
 
 def credit(img):
-    f = font("oswald", 15)
-    ImageDraw.Draw(img).text((W - 12, 8), "Imagery: Esri, Maxar", font=f, fill=(255, 255, 255, 150), anchor="ra")
+    pass  # Natural Earth vector data is public domain; no credit needed on the image
 
 
 # ---------- geography ----------
@@ -304,13 +425,15 @@ def P(view, pts):
     return [view.to_img(a, b) for a, b in pts]
 
 
-def base(lat, lon, zoom, tint, states=True, darken=0.78, sat=0.8, left_dark=True, state_alpha=80,
-         fit=None, box=(600, 150, 1210, 590), anchor=None, max_zoom=12.0, top_dark=False):
+def base(lat, lon, zoom, tint, states=True, darken=1.0, sat=1.0, left_dark=True, state_alpha=80,
+         fit=None, box=(600, 150, 1210, 590), anchor=None, max_zoom=12.0, top_dark=False, tint_amt=0.08):
     v = MapView.fit(fit, box, max_zoom) if fit else MapView(lat, lon, zoom, anchor)
-    img = grade(v.render(), tint, darken, sat)
+    img = v.render()
+    img = Image.blend(img, Image.new("RGB", (W, H), tint), tint_amt)
+    if darken != 1.0:
+        img = ImageEnhance.Brightness(img).enhance(darken)
     img = vignette(img, left_dark, top_dark)
-    data = draw_states(img, v, (255, 255, 255, state_alpha)) if states else None
-    return v, img.convert("RGB"), data
+    return v, img.convert("RGB"), None
 
 
 ORANGE = (255, 122, 26)
@@ -325,10 +448,10 @@ BLOOD = (235, 40, 40)
 def t_booth():
     v, img, _ = base(0, 0, 0, (10, 30, 70), fit=BOOTH, box=(700, 120, 1150, 600), max_zoom=10.2)
     pts = P(v, BOOTH)
-    glow_line(img, pts, ORANGE, dash=True, width=8)
-    pin(img, pts[0], WHITE, r=11, ring=False)
+    glow_line(img, pts, ROUTE, dash=True, width=8)
+    pin(img, pts[0], PIN, r=11, ring=False)
     label(img, pts[0], "FORD'S THEATRE", "l")
-    pin(img, pts[-1], BLOOD, r=14)
+    pin(img, pts[-1], PIN, r=14)
     label(img, pts[-1], "GARRETT FARM, VA", "c", dy=62, dx=0)
     badge(img, "APRIL 1865", YELLOW)
     hook(img, [[("WHERE IS", WHITE)], [("BOOTH?", YELLOW)]], y_bottom=650, max_w=560, size=190)
@@ -337,10 +460,11 @@ def t_booth():
 
 def t_donner():
     v, img, _ = base(0, 0, 0, (40, 60, 110), fit=DONNER_MAIN + DONNER_CUTOFF, box=(700, 260, 1200, 520))
-    glow_line(img, P(v, DONNER_MAIN), (230, 230, 230), width=5, glow=12)
-    glow_line(img, P(v, DONNER_CUTOFF), BLOOD, width=9, glow=28)
+    state_outline(img, v, None, "California", width=3)
+    glow_line(img, P(v, DONNER_MAIN), (140, 120, 92), width=5, glow=12)
+    glow_line(img, P(v, DONNER_CUTOFF), PIN, width=9, glow=28)
     end = v.to_img(39.32, -120.24)
-    pin(img, end, ICE, r=15)
+    pin(img, end, PIN, r=15)
     label(img, end, "TRAPPED BY SNOW", "c", dy=64, dx=40)
     label(img, v.to_img(40.72, -113.6), "HASTINGS CUTOFF", "c", dy=-58, dx=0, bg=(140, 0, 0))
     badge(img, "1846", YELLOW)
@@ -351,12 +475,12 @@ def t_donner():
 def t_pony():
     v, img, _ = base(0, 0, 0, (60, 40, 10), fit=PONY, box=(590, 200, 1210, 560))
     pts = P(v, PONY)
-    glow_line(img, pts, YELLOW, width=8, glow=24)
+    glow_line(img, pts, ROUTE, width=8, glow=24)
     for p in pts[1:-1]:
         ImageDraw.Draw(img).ellipse([p[0] - 6, p[1] - 6, p[0] + 6, p[1] + 6], fill=WHITE, outline=(0, 0, 0), width=2)
-    pin(img, pts[0], ORANGE, r=13, ring=False)
+    pin(img, pts[0], PIN, r=13, ring=False)
     label(img, pts[0], "ST. JOSEPH", "c", dy=56, dx=-20)
-    pin(img, pts[-1], ORANGE, r=13)
+    pin(img, pts[-1], PIN, r=13)
     label(img, pts[-1], "SACRAMENTO", "c", dy=60, dx=20)
     badge(img, "1860", YELLOW)
     hook(img, [[("NEVER", WHITE)], [("STOP", YELLOW)], [("RIDING", WHITE)]], x=56, y_top=150, max_w=470, size=150)
@@ -371,7 +495,7 @@ def t_fever():
         ImageDraw.Draw(b).ellipse([c[0] - r, c[1] - r, c[0] + r, c[1] + r], fill=TOXIC + (a // 3,), outline=TOXIC + (a,), width=4)
         b = b.filter(ImageFilter.GaussianBlur(4))
         img.paste(b, (0, 0), b)
-    pin(img, c, TOXIC, r=15)
+    pin(img, c, PIN, r=15)
     label(img, c, "PHILADELPHIA, U.S. CAPITAL", "c", dy=64, dx=0)
     badge(img, "1793", TOXIC)
     hook(img, [[("20,000", TOXIC)], [("FLED", WHITE)]], y_bottom=660, max_w=500, size=200)
@@ -383,11 +507,11 @@ def t_johnstown():
                 (40.35, -78.88), (40.34, -78.90), (40.3267, -78.9220)]
     v, img, _ = base(0, 0, 0, (0, 50, 110), fit=river_ll, box=(680, 220, 1160, 470))
     river = P(v, river_ll)
-    glow_line(img, river, CYAN, width=12, glow=40)
+    glow_line(img, river, RIVER, width=12, glow=40)
     dam, town = river[0], river[-1]
-    pin(img, dam, CYAN, r=14, ring=False)
+    pin(img, dam, PIN, r=14, ring=False)
     label(img, dam, "SOUTH FORK DAM", "c", dy=60, dx=-30)
-    pin(img, town, BLOOD, r=16)
+    pin(img, town, PIN, r=16)
     label(img, town, "JOHNSTOWN", "c", dy=-62, dx=0)
     badge(img, "MAY 31, 1889", CYAN)
     hook(img, [[("57 MINUTES", WHITE)], [("TO IMPACT", CYAN)]], y_bottom=670, max_w=560, size=150)
@@ -397,11 +521,11 @@ def t_johnstown():
 def t_shelley():
     v, img, _ = base(42.022, -93.958, 10.6, (0, 40, 90), anchor=(910, 370))
     river = P(v, [(42.20, -93.98), (42.10, -93.95), (42.03, -93.96), (41.98, -93.92), (41.90, -93.95)])
-    glow_line(img, river, CYAN, width=10, glow=30)
+    glow_line(img, river, RIVER, width=10, glow=30)
     rail = P(v, [(42.02, -94.30), (42.023, -94.1), (42.022, -93.96), (42.02, -93.80)])
-    glow_line(img, rail, YELLOW, width=6, glow=14, dash=True)
+    glow_line(img, rail, INK, width=6, glow=14, dash=True)
     b = v.to_img(42.022, -93.958)
-    pin(img, b, BLOOD, r=15)
+    pin(img, b, PIN, r=15)
     label(img, b, "DES MOINES RIVER BRIDGE", "c", dy=-64, dx=0)
     badge(img, "JULY 6, 1881", YELLOW)
     hook(img, [[("MIDNIGHT", WHITE)], [("TRAIN", YELLOW), (" DUE", WHITE)]], y_bottom=670, max_w=520, size=170)
@@ -439,7 +563,7 @@ def swarm_band(v, img, color=AMBER, alpha=150):
 
 def t_vanished():
     v, img, _ = base(0, 0, 0, (50, 40, 0), fit=SWARM_L + SWARM_R + [(40, -106), (40, -90)], box=(640, 50, 1220, 680), sat=0.6)
-    swarm_band(v, img, AMBER, 150)
+    swarm_band(v, img, (110, 70, 25), 130)
     label(img, v.to_img(41.0, -98.4), "TRILLIONS", "c", dx=0, dy=0, bg=(140, 80, 0), size=30)
     badge(img, "LAST SEEN 1902", YELLOW)
     hook(img, [[("WHERE", WHITE)], [("DID THEY", WHITE)], [("GO?", YELLOW)]], x=56, y_top=150, max_w=470, size=150)
@@ -471,7 +595,7 @@ def t_skydark():
     v, img, _ = base(38.5, -98.4, 6.5, (60, 45, 0), anchor=(880, 440), sat=0.6)
     locust_cloud(img)
     k = v.to_img(38.5, -98.4)
-    pin(img, k, AMBER, r=14)
+    pin(img, k, PIN, r=14)
     label(img, k, "KANSAS FARM", "c", dx=0, dy=60)
     badge(img, "JULY 1874", YELLOW)
     hook(img, [[("WHAT IS", WHITE)], [("THAT", WHITE)], [("CLOUD?", YELLOW)]], x=56, y_top=150, max_w=470, size=150)
@@ -483,7 +607,7 @@ NEBRASKA = [(43.0, -104.05), (40.0, -95.3)]
 
 def t_corn():
     v, img, data = base(0, 0, 0, (40, 55, 0), fit=NEBRASKA, box=(620, 170, 1210, 560))
-    state_outline(img, v, data, "Nebraska", YELLOW, width=5, fill=(255, 190, 0, 50))
+    state_outline(img, v, data, "Nebraska", width=5)
     locust_cloud(img)
     label(img, v.to_img(41.5, -99.8), "NEBRASKA CORN", "c", dx=0, dy=0, size=32)
     badge(img, "JULY 1874", YELLOW)
@@ -494,8 +618,8 @@ def t_corn():
 def t_bigswarm():
     v, img, data = base(0, 0, 0, (50, 40, 0), fit=SWARM_L + SWARM_R + [(42.0, -124.4), (32.5, -114.1)],
                         box=(560, 60, 1120, 670), sat=0.6)
-    swarm_band(v, img, AMBER, 150)
-    state_outline(img, v, data, "California", WHITE, width=4, fill=(255, 255, 255, 45), dash=True)
+    swarm_band(v, img, (110, 70, 25), 130)
+    state_outline(img, v, data, "California", width=4)
     label(img, v.to_img(36.8, -119.6), "CALIFORNIA", "c", dx=0, dy=0, size=26)
     label(img, v.to_img(40.5, -97.6), "THE 1875 SWARM", "c", dx=0, dy=0, bg=(140, 80, 0), size=28)
     badge(img, "1875", YELLOW)
@@ -517,19 +641,20 @@ def snow(img, n=1300, seed=3):
 
 
 def blizzard_base(lat=0, lon=0, zoom=0, **kw):
-    v, img, data = base(lat, lon, zoom, (40, 110, 180), sat=0.35, **kw)
+    v, img, data = base(lat, lon, zoom, (50, 80, 115), tint_amt=0.32, darken=0.95, **kw)
     wash = Image.new("RGB", (W, H), (190, 225, 255))
-    img = Image.blend(img, wash, 0.14)
+    img = Image.blend(img, wash, 0.08)
     return v, img, data
 
 
 def t_rope():
     v, img, data = blizzard_base(44.36, -98.21, 6.6, anchor=(1000, 360))
+    state_outline(img, v, None, "South Dakota", width=3)
     house, barn = (900, 420), (1150, 300)
-    glow_line(img, [house, (1030, 395), barn], YELLOW, width=6, glow=16)
-    pin(img, house, WHITE, r=12, ring=False)
+    glow_line(img, [house, (1030, 395), barn], ROUTE, width=6, glow=16)
+    pin(img, house, PIN, r=12, ring=False)
     label(img, house, "HOUSE", "c", dx=0, dy=46, size=26)
-    pin(img, barn, WHITE, r=12, ring=False)
+    pin(img, barn, PIN, r=12, ring=False)
     label(img, barn, "BARN", "c", dx=0, dy=-46, size=26)
     snow(img)
     badge(img, "JAN 12, 1888", ICE)
@@ -539,8 +664,9 @@ def t_rope():
 
 def t_minnie():
     v, img, data = blizzard_base(41.60, -98.93, 7.4, anchor=(900, 330))
+    state_outline(img, v, None, "Nebraska", width=3)
     o = v.to_img(41.60, -98.93)
-    pin(img, o, YELLOW, r=14)
+    pin(img, o, PIN, r=14)
     label(img, o, "VALLEY COUNTY, NEBRASKA", "c", dx=0, dy=62, size=28)
     snow(img, 1500, 11)
     badge(img, "JAN 12, 1888", ICE)
@@ -550,8 +676,9 @@ def t_minnie():
 
 def t_drop():
     v, img, data = blizzard_base(44.3633, -98.2143, 6.8, anchor=(900, 330))
+    state_outline(img, v, None, "South Dakota", width=3)
     h = v.to_img(44.3633, -98.2143)
-    pin(img, h, ICE, r=15)
+    pin(img, h, PIN, r=15)
     label(img, h, "HURON, DAKOTA TERRITORY", "c", dx=0, dy=64, size=28)
     snow(img, 1100, 5)
     badge(img, "JAN 12, 1888", ICE)
@@ -561,8 +688,8 @@ def t_drop():
 
 def t_homestead():
     v, img, data = blizzard_base(fit=[(49.0, -104.05), (42.5, -96.4)], box=(700, 70, 1180, 650))
-    state_outline(img, v, data, "South Dakota", YELLOW, width=4)
-    state_outline(img, v, data, "North Dakota", YELLOW, width=4)
+    state_outline(img, v, data, "South Dakota", width=4)
+    state_outline(img, v, data, "North Dakota", width=4)
     c = v.to_img(44.0, -98.0)
     d = ImageDraw.Draw(img)
     d.rectangle([c[0] - 18, c[1] - 18, c[0] + 18, c[1] + 18], outline=YELLOW, width=5)
@@ -582,12 +709,12 @@ def oregon_base(**kw):
 def t_july4():
     v, img, _ = oregon_base()
     pts = P(v, OREGON_TRAIL)
-    glow_line(img, pts, ORANGE, width=7)
+    glow_line(img, pts, ROUTE, width=7)
     mt = v.to_img(45.0, -118.3)
     blob(img, [(mt[0] - 70, mt[1] - 60), (mt[0] + 90, mt[1] - 70), (mt[0] + 110, mt[1] + 50), (mt[0] - 60, mt[1] + 60)], ICE, 110, 22)
     label(img, mt, "SNOW", "c", dx=0, dy=-78, size=28, bg=(20, 60, 110))
     ir = v.to_img(42.494, -107.131)
-    pin(img, ir, YELLOW, r=15)
+    pin(img, ir, PIN, r=15)
     label(img, ir, "INDEPENDENCE ROCK: JULY 4", "c", dx=0, dy=62, size=28)
     badge(img, "1850", YELLOW)
     hook(img, [[("BEAT", WHITE)], [("THE SNOW", ICE)]], y_bottom=670, max_w=500, size=150)
@@ -597,10 +724,10 @@ def t_july4():
 def t_300():
     v, img, _ = oregon_base()
     pts = P(v, OREGON_TRAIL)
-    glow_line(img, pts, ORANGE, width=7)
-    pin(img, pts[0], YELLOW, r=13)
+    glow_line(img, pts, ROUTE, width=7)
+    pin(img, pts[0], PIN, r=13)
     label(img, pts[0], "START: $300", "c", dy=58, dx=-70)
-    pin(img, pts[-1], YELLOW, r=13, ring=False)
+    pin(img, pts[-1], PIN, r=13, ring=False)
     label(img, pts[-1], "OREGON", "c", dy=-50, dx=0)
     badge(img, "1850", YELLOW)
     hook(img, [[("600 LB", YELLOW)], [("OF FLOUR?", WHITE)]], y_bottom=670, max_w=520, size=160)
@@ -609,27 +736,28 @@ def t_300():
 
 def t_cholera():
     v, img, _ = base(0, 0, 0, (40, 60, 20), fit=OREGON_TRAIL[:8], box=(620, 230, 1200, 520))
+    state_outline(img, v, None, "Nebraska", width=3)
     pts = P(v, OREGON_TRAIL[:8])
-    glow_line(img, pts, TOXIC, width=7)
+    glow_line(img, pts, ROUTE, width=7)
     d = ImageDraw.Draw(img)
     for lat, lon in ((40.75, -99.6), (41.0, -100.5), (41.2, -101.5), (41.45, -102.6), (41.75, -103.6)):
         c = v.to_img(lat + 0.12, lon)
         d.line([c[0] - 10, c[1] - 10, c[0] + 10, c[1] + 10], fill=BLOOD, width=6)
         d.line([c[0] - 10, c[1] + 10, c[0] + 10, c[1] - 10], fill=BLOOD, width=6)
     label(img, v.to_img(40.9, -100.6), "PLATTE RIVER ROAD", "c", dx=0, dy=64, size=28)
-    badge(img, "1850", TOXIC)
-    hook(img, [[("FINE AT", WHITE)], [("BREAKFAST", TOXIC)]], y_bottom=670, max_w=520, size=150)
+    badge(img, "1850", YELLOW)
+    hook(img, [[("FINE AT", WHITE)], [("BREAKFAST", YELLOW)]], y_bottom=670, max_w=520, size=150)
     return img
 
 
 def t_30days():
     v, img, _ = oregon_base()
     pts = P(v, OREGON_TRAIL)
-    glow_line(img, pts[2:], (210, 210, 210), width=4, glow=8, dash=True)
-    glow_line(img, pts[:3], ORANGE, width=9, glow=28)
-    pin(img, pts[0], YELLOW, r=12, ring=False)
+    glow_line(img, pts[2:], (140, 120, 92), width=5, glow=8, dash=True)
+    glow_line(img, pts[:3], ROUTE, width=9, glow=28)
+    pin(img, pts[0], PIN, r=12, ring=False)
     label(img, pts[0], "DAY 1", "c", dy=50, dx=0)
-    pin(img, pts[2], BLOOD, r=15)
+    pin(img, pts[2], PIN, r=15)
     label(img, pts[2], "DAY 30", "c", dy=-58, dx=0)
     badge(img, "1850", YELLOW)
     hook(img, [[("WHAT", WHITE)], [("KILLS YOU", WHITE)], [("FIRST?", YELLOW)]], x=56, y_top=150, max_w=470, size=150)
@@ -667,10 +795,10 @@ def vbadge(img, text, color):
 def v_booth():
     v, img, _ = vbase((10, 30, 70), fit=BOOTH, box=(300, 1060, 780, 1560), max_zoom=10.4)
     pts = P(v, BOOTH)
-    glow_line(img, pts, ORANGE, dash=True, width=10, glow=28)
-    pin(img, pts[0], WHITE, r=15, ring=False)
+    glow_line(img, pts, ROUTE, dash=True, width=10, glow=28)
+    pin(img, pts[0], PIN, r=15, ring=False)
     label(img, pts[0], "FORD'S THEATRE", "l", dx=30, size=LS)
-    pin(img, pts[-1], BLOOD, r=18)
+    pin(img, pts[-1], PIN, r=18)
     label(img, pts[-1], "GARRETT FARM, VA", "c", dy=80, size=LS)
     vbadge(img, "APRIL 1865", YELLOW)
     vhook(img, [[("WHERE IS", WHITE)], [("BOOTH?", YELLOW)]], 250)
@@ -679,10 +807,11 @@ def v_booth():
 
 def v_donner():
     v, img, _ = vbase((40, 60, 110), fit=DONNER_MAIN + DONNER_CUTOFF, box=VB)
-    glow_line(img, P(v, DONNER_MAIN), (230, 230, 230), width=6, glow=14)
-    glow_line(img, P(v, DONNER_CUTOFF), BLOOD, width=11, glow=32)
+    state_outline(img, v, None, "California", width=3)
+    glow_line(img, P(v, DONNER_MAIN), (140, 120, 92), width=6, glow=14)
+    glow_line(img, P(v, DONNER_CUTOFF), PIN, width=11, glow=32)
     end = v.to_img(39.32, -120.24)
-    pin(img, end, ICE, r=18)
+    pin(img, end, PIN, r=18)
     label(img, end, "TRAPPED BY SNOW", "c", dy=80, dx=60, size=LS)
     label(img, v.to_img(40.72, -113.6), "HASTINGS CUTOFF", "c", dy=-75, bg=(140, 0, 0), size=LS)
     vbadge(img, "1846", YELLOW)
@@ -693,12 +822,12 @@ def v_donner():
 def v_pony():
     v, img, _ = vbase((60, 40, 10), fit=PONY, box=VB)
     pts = P(v, PONY)
-    glow_line(img, pts, YELLOW, width=10, glow=28)
+    glow_line(img, pts, ROUTE, width=10, glow=28)
     for p in pts[1:-1]:
         ImageDraw.Draw(img).ellipse([p[0] - 8, p[1] - 8, p[0] + 8, p[1] + 8], fill=WHITE, outline=(0, 0, 0), width=2)
-    pin(img, pts[0], ORANGE, r=16, ring=False)
+    pin(img, pts[0], PIN, r=16, ring=False)
     label(img, pts[0], "ST. JOSEPH", "c", dy=75, size=LS)
-    pin(img, pts[-1], ORANGE, r=16)
+    pin(img, pts[-1], PIN, r=16)
     label(img, pts[-1], "SACRAMENTO", "c", dy=80, size=LS)
     vbadge(img, "1860", YELLOW)
     vhook(img, [[("NEVER", WHITE)], [("STOP", YELLOW)], [("RIDING", WHITE)]], 240)
@@ -707,7 +836,7 @@ def v_pony():
 
 def v_vanished():
     v, img, _ = vbase((50, 40, 0), fit=SWARM_L + SWARM_R + [(40, -104), (40, -92)], box=(140, 1000, 940, 1760), sat=0.6)
-    swarm_band(v, img, AMBER, 150)
+    swarm_band(v, img, (110, 70, 25), 130)
     label(img, v.to_img(40.0, -98.4), "TRILLIONS", "c", bg=(140, 80, 0), size=LS)
     vbadge(img, "LAST SEEN 1902", YELLOW)
     vhook(img, [[("WHERE", WHITE)], [("DID THEY", WHITE)], [("GO?", YELLOW)]], 240)
@@ -715,18 +844,19 @@ def v_vanished():
 
 
 def vsnow_base(**kw):
-    v, img, data = vbase((40, 110, 180), sat=0.35, **kw)
-    img = Image.blend(img, Image.new("RGB", (W, H), (190, 225, 255)), 0.14)
+    v, img, data = vbase((50, 80, 115), tint_amt=0.32, darken=0.95, **kw)
+    img = Image.blend(img, Image.new("RGB", (W, H), (190, 225, 255)), 0.08)
     return v, img, data
 
 
 def v_rope():
     v, img, _ = vsnow_base(fit=[(46.0, -100.5), (42.5, -96.5)], box=VB)
+    state_outline(img, v, None, "South Dakota", width=3)
     house, barn = (330, 1300), (760, 1080)
-    glow_line(img, [house, (560, 1230), barn], YELLOW, width=9, glow=22)
-    pin(img, house, WHITE, r=16, ring=False)
+    glow_line(img, [house, (560, 1230), barn], ROUTE, width=9, glow=22)
+    pin(img, house, PIN, r=16, ring=False)
     label(img, house, "HOUSE", "c", dy=64, size=LS)
-    pin(img, barn, WHITE, r=16, ring=False)
+    pin(img, barn, PIN, r=16, ring=False)
     label(img, barn, "BARN", "c", dy=-64, size=LS)
     snow(img, 2600, 3)
     vbadge(img, "JAN 12, 1888", ICE)
@@ -736,8 +866,9 @@ def v_rope():
 
 def v_minnie():
     v, img, _ = vsnow_base(fit=[(43.0, -101.0), (40.2, -96.9)], box=VB)
+    state_outline(img, v, None, "Nebraska", width=3)
     o = v.to_img(41.60, -98.93)
-    pin(img, o, YELLOW, r=18)
+    pin(img, o, PIN, r=18)
     label(img, o, "VALLEY COUNTY, NEBRASKA", "c", dy=80, size=LS)
     snow(img, 2800, 11)
     vbadge(img, "JAN 12, 1888", ICE)
@@ -747,8 +878,9 @@ def v_minnie():
 
 def v_drop():
     v, img, _ = vsnow_base(fit=[(45.8, -100.3), (42.9, -96.2)], box=VB)
+    state_outline(img, v, None, "South Dakota", width=3)
     h = v.to_img(44.3633, -98.2143)
-    pin(img, h, ICE, r=18)
+    pin(img, h, PIN, r=18)
     label(img, h, "HURON, DAKOTA TERRITORY", "c", dy=80, size=LS)
     snow(img, 2200, 5)
     vbadge(img, "JAN 12, 1888", ICE)
@@ -758,16 +890,17 @@ def v_drop():
 
 def v_cholera():
     v, img, _ = vbase((40, 60, 20), fit=OREGON_TRAIL[:8], box=(110, 980, 970, 1380))
+    state_outline(img, v, None, "Nebraska", width=3)
     pts = P(v, OREGON_TRAIL[:8])
-    glow_line(img, pts, TOXIC, width=10, glow=28)
+    glow_line(img, pts, ROUTE, width=10, glow=28)
     d = ImageDraw.Draw(img)
     for lat, lon in ((40.75, -99.6), (41.0, -100.5), (41.2, -101.5), (41.45, -102.6), (41.75, -103.6)):
         c = v.to_img(lat + 0.12, lon)
         d.line([c[0] - 14, c[1] - 14, c[0] + 14, c[1] + 14], fill=BLOOD, width=8)
         d.line([c[0] - 14, c[1] + 14, c[0] + 14, c[1] - 14], fill=BLOOD, width=8)
     label(img, v.to_img(40.9, -100.6), "PLATTE RIVER ROAD", "c", dy=90, size=LS)
-    vbadge(img, "1850", TOXIC)
-    vhook(img, [[("FINE AT", WHITE)], [("BREAKFAST", TOXIC)]], 240)
+    vbadge(img, "1850", YELLOW)
+    vhook(img, [[("FINE AT", WHITE)], [("BREAKFAST", YELLOW)]], 240)
     return img
 
 
