@@ -54,6 +54,18 @@ Playlist: `yt.py playlist-add PLAYLIST_ID VIDEO_ID`.
 Check: `yt.py videos --max 10`, `yt.py video VIDEO_ID`.
 Log every edit in the log file.
 
+## Thumbnails (always, for every new video)
+
+Follow `.claude/skills/youtube-thumbnail-creator/SKILL.md` (read the full script first, three heading
+options, pick the clearest). Summary:
+Use the map-style thumbnail from `social/thumbnails/make_thumbnails.py` (same illustrated map look as the
+Shorts: parchment land, teal water, tan state highlight, rust route, red pins, dark tags, 2–6 word heading in
+white + gold that doesn't repeat the title).
+- Shorts: 9:16 1080×1920 → add a `v_*` function to `VERTICAL`, run `make_thumbnails.py --vertical VIDEO_ID`.
+- Long-form: 16:9 1280×720 → add a `t_*` function to `VIDEOS`, run `make_thumbnails.py VIDEO_ID`.
+- Check the image, then `yt.py thumbnail VIDEO_ID social/thumbnails/<file>.jpg`, log it, update
+  `social/thumbnails/README.md`, commit and push. After an upload, do this as part of the same task.
+
 ## Comment replies (manual or in a scheduled task)
 
 1. `yt.py comments --unanswered` lists top-level comments on the channel that the channel has
