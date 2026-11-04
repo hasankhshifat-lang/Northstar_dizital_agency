@@ -122,7 +122,7 @@ Examples: `templates/examples/motion-a.json`, `motion-b.json`. A video is 7–10
 | beat `type` | what it shows |
 |---|---|
 | `kinetic` | 1–2 lines of big Bangla type, words blur/slide in, `*keyword*` gradient + underline; optional `small`/`after` lines and `avatars` (people cut-outs as round bubbles: `[file, x, y]`) |
-| `bigword` | one huge word filling the frame (auto-fit), optional `after` line — good with `dark: true` |
+| `bigword` | one huge word filling the frame, optional `after` line — good with `dark: true`. Use ONE short word (বন্ধ, তথ্য, ৩ ঘণ্টা); two Bangla words overflow |
 | `typing` | label + search/chat box that types `query` letter by letter, send pulse, AI `reply` bubble with typing dots |
 | `chat` | 3D phone turning, messages pop in one by one, orbit ring, floating `chips` |
 | `dashboard` | perspective inbox card, rows slide in, pills flip from "অপেক্ষায়" to done |
