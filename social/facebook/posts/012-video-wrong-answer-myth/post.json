@@ -1,0 +1,160 @@
+{
+ "type": "video",
+ "status": "draft",
+ "pillar": "Trust & setup",
+ "angle": "\"AI ভুল উত্তর দিলে?\" — শুধু আপনার দেওয়া তথ্য থেকে উত্তর দেয়, না জানলে আপনাকে/team-কে দেয়",
+ "voice": "Swati",
+ "title": "AI ভুল উত্তর দিলে কী হবে?",
+ "caption": "\"AI যদি customer-কে ভুল দাম বলে দেয়?\" — এই ভয়টা অনেকেরই। 😟\nআমাদের AI শুধু আপনার দেওয়া তথ্য থেকেই উত্তর দেয়।\n\nনা জানলে বানিয়ে বলে না, সোজা আপনার team-কে জানিয়ে দেয়।\n👉 নিজে test করে দেখতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
+ "design": {
+  "engine": "motion",
+  "palette": "sky",
+  "cover_at": 2.5,
+  "beats": [
+   {
+    "type": "kinetic",
+    "small": "সবচেয়ে বড় ভয় 😟",
+    "text": "AI যদি *ভুল* বলে?",
+    "size": "s3",
+    "avatars": [
+     [
+      "shopkeeper-elder-phone.png",
+      90,
+      520
+     ],
+     [
+      "salon-owner-thumbsup.png",
+      840,
+      560
+     ],
+     [
+      "doctor-tablet.png",
+      120,
+      1300
+     ],
+     [
+      "man-blue-shirt-phone.png",
+      820,
+      1340
+     ]
+    ],
+    "say": "AI receptionist-এর কথা শুনলে অনেকেই বলেন... ভাই, AI যদি customer-কে ভুল কিছু বলে দেয়?",
+    "tone": "curious"
+   },
+   {
+    "type": "typing",
+    "label": "Customer জিজ্ঞেস করলো",
+    "icon": "💬",
+    "query": "Delivery charge কত?",
+    "reply": "ঢাকার ভিতরে আপনার দেওয়া charge-টাই বলি 😊",
+    "say": "ধরুন customer জিজ্ঞেস করলো, delivery charge কত? AI ঠিক সেটাই বলে, যেটা আপনি আগে থেকে দিয়ে রেখেছেন।"
+   },
+   {
+    "type": "bigword",
+    "dark": true,
+    "trans": "wipe",
+    "text": "আপনার তথ্য",
+    "after": "শুধু এখান থেকেই উত্তর — বানিয়ে বলে না",
+    "say": "কারণ AI শুধু আপনার দেওয়া তথ্য থেকেই উত্তর দেয়। নিজে থেকে কিছু বানিয়ে বলে না।",
+    "tone": "serious"
+   },
+   {
+    "type": "chat",
+    "title": "না জানলে? *Team-কে দেয়*",
+    "name": "Your Business",
+    "initials": "YB",
+    "messages": [
+     {
+      "from": "me",
+      "text": "Custom design করে দিবেন?"
+     },
+     {
+      "from": "ai",
+      "text": "এটা আমাদের team ভালো বলতে পারবে 🙏"
+     },
+     {
+      "from": "ai",
+      "text": "আপনার number দিন, তারা call দিবে ✅"
+     }
+    ],
+    "chips": [
+     [
+      "🤝",
+      "Team-কে জানানো হলো",
+      80,
+      560
+     ],
+     [
+      "📞",
+      "Callback",
+      660,
+      1500
+     ]
+    ],
+    "say": "আর যেটা জানে না? সেটা বানিয়ে বলে না। Customer-এর number নিয়ে সাথে সাথে আপনার team-কে জানিয়ে দেয়।",
+    "tone": "warmly"
+   },
+   {
+    "type": "person",
+    "title": "Test-এ আপনি *নিজে* দেখে নিন",
+    "size": "s2",
+    "person": "receptionist-headset.png",
+    "chips": [
+     [
+      "🧪",
+      "Live-এর আগে test",
+      70,
+      820
+     ],
+     [
+      "✍️",
+      "দরকারে ঠিক করে নিন",
+      560,
+      1000
+     ]
+    ],
+    "button": [
+     "🧪 Test শুরু",
+     90,
+     1120
+    ],
+    "say": "আর live করার আগে আপনি নিজে কথা বলে test করে নেন। কোথাও পছন্দ না হলে, আমরা ঠিক করে দিই।",
+    "tone": "warmly"
+   },
+   {
+    "type": "cards",
+    "title": "আপনার *নিয়ন্ত্রণে*",
+    "items": [
+     [
+      "💰",
+      "দাম",
+      "আপনি ঠিক করেন"
+     ],
+     [
+      "🕘",
+      "খোলার সময়",
+      "আপনার মতো"
+     ],
+     [
+      "📋",
+      "Service list",
+      "আপনার দেওয়া"
+     ],
+     [
+      "🤝",
+      "কঠিন প্রশ্ন",
+      "team-কে যায়"
+     ]
+    ],
+    "say": "দাম, সময়, service list... সব আপনার হাতে। AI শুধু সেটাই মেনে চলে।"
+   },
+   {
+    "type": "cta",
+    "text": "নিজে *test* করে দেখুন",
+    "sub": "মাসিক, usage অনুযায়ী খরচ",
+    "say": "NorthStar Dizital-এর AI receptionist নিজে test করে দেখতে চান? আজই WhatsApp করুন!",
+    "tone": "excited"
+   }
+  ]
+ }
+}

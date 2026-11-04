@@ -1,0 +1,88 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "laptop",
+  "palette": "yellow",
+  "head": [
+   {
+    "t": "AI receptionist বসানো"
+   },
+   {
+    "t": "মাত্র *৪ ধাপে*",
+    "cls": "baloo"
+   }
+  ],
+  "kpis": [
+   [
+    "ধাপ ১",
+    "তথ্য"
+   ],
+   [
+    "ধাপ ২",
+    "Training"
+   ],
+   [
+    "ধাপ ৩",
+    "Test"
+   ]
+  ],
+  "rows": [
+   [
+    "১ · আপনার service, দাম, সময়",
+    "✓ আপনি দেন"
+   ],
+   [
+    "২ · AI-কে training",
+    "✓ আমরা করি"
+   ],
+   [
+    "৩ · আপনি নিজে test করেন",
+    "✓ মিলিয়ে নেন"
+   ],
+   [
+    "৪ · Messenger, WhatsApp-এ live",
+    "🚀 চালু"
+   ]
+  ],
+  "icons": [
+   {
+    "e": "💬",
+    "pos": [
+     60,
+     420
+    ],
+    "rotate": -8
+   },
+   {
+    "e": "📞",
+    "pos": [
+     930,
+     440
+    ],
+    "rotate": 8
+   },
+   {
+    "e": "🛒",
+    "pos": [
+     80,
+     700
+    ],
+    "rotate": 6
+   },
+   {
+    "e": "📅",
+    "pos": [
+     920,
+     720
+    ],
+    "rotate": -6
+   }
+  ],
+  "cta": "WhatsApp করুন",
+  "theme": "layout"
+ },
+ "status": "draft",
+ "pillar": "Trust & setup",
+ "angle": "Setup কীভাবে হয়: আপনার তথ্য → training → test → live (৪ ধাপ)",
+ "caption": "\"AI বসানো মানে তো অনেক ঝামেলা, technical লোক লাগবে…\" 🤔\nআসলে না। আপনি শুধু আপনার ব্যবসার তথ্য দেন, বাকিটা আমরা করি।\n\nতথ্য → training → test → live। Test-এ আপনি নিজে কথা বলে দেখে নেন।\n👉 শুরু করতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital"
+}
