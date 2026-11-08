@@ -7,8 +7,8 @@ target **10M views in 60 days** (2026-11-09 → 2027-01-07). Research topics, sc
 
 - **vidIQ: not usable today.** 4 credits left, every call costs 5; credits renew 2026-11-30
   (150/month on the current plan). A daily vidIQ step needs a bigger plan.
-- **YouTube Analytics API: enabled on 2026-11-08** (it was disabled when this plan was written, so retention / CTR /
-  traffic sources are not available.
+- **YouTube Analytics API:** disabled when this plan was written, so the research below used public data only.
+  **Enabled on 2026-11-08**: retention, swipe-away and traffic sources are now available for our own Shorts.
 - **Used instead:** YouTube Data API search through our own client: 18 history queries, US region,
   English, Shorts published since 2026-08-10, top 25 by views each → **430 Shorts from 361 channels**.
   Raw data: `research/history-shorts-2026-11-08.json`.
