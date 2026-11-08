@@ -84,6 +84,12 @@ CHAR_NAMES.forEach(name => {
   const head = inner.querySelector('.head');
   const armL = inner.querySelector('.armL');
   const armR = inner.querySelector('.armR');
+  const foreL = inner.querySelector('.foreL');
+  const foreR = inner.querySelector('.foreR');
+  const face = inner.querySelector('.face');
+  const hairF = inner.querySelector('.hairF');
+  const earL = inner.querySelector('.earL');
+  const earR = inner.querySelector('.earR');
   const browL = inner.querySelector('.browL');
   const browR = inner.querySelector('.browR');
   const brows = inner.querySelector('.brows');
@@ -98,8 +104,8 @@ CHAR_NAMES.forEach(name => {
   };
 
   charNodes[name] = {
-    wrap, inner, svg, head, armL, armR, browL, browR, brows,
-    headP: getP(head), armLP: getP(armL), armRP: getP(armR),
+    wrap, inner, svg, head, armL, armR, foreL, foreR, face, hairF, earL, earR, browL, browR, brows,
+    headP: getP(head), armLP: getP(armL), armRP: getP(armR), foreLP: getP(foreL), foreRP: getP(foreR),
     browLC: getCenter(browL), browRC: getCenter(browR),
     eyesOpen: inner.querySelector('.eyes-open'),
     eyesClosed: inner.querySelector('.eyes-closed'),
@@ -152,28 +158,66 @@ function render(t) {
   // Active speaking line check
   const activeLine = (D.lines || []).find(l => t >= l.start && t <= l.end);
 
+  // Helper to compute un-smoothed target turn for character 'name' at sample time 'st'
+  function getTurnTarget(name, st) {
+    if (shot.turn && typeof shot.turn[name] === 'number') {
+      return shot.turn[name];
+    }
+    const sampleLine = (D.lines || []).find(l => st >= l.start && st <= l.end);
+    const myX = shot.chars[name][0];
+    if (sampleLine && sampleLine.speaker && visNames.includes(sampleLine.speaker)) {
+      if (sampleLine.speaker !== name) {
+        const speakerX = shot.chars[sampleLine.speaker][0];
+        return 0.7 * Math.sign(speakerX - myX);
+      } else {
+        const other = visNames.find(n => n !== name);
+        if (other) {
+          const otherX = shot.chars[other][0];
+          return 0.35 * Math.sign(otherX - myX);
+        }
+      }
+    }
+    return 0;
+  }
+
   // 4. Update each visible character
   visNames.forEach(name => {
     const node = charNodes[name];
     if (!node) return;
     const cPos = shot.chars[name];
+    const isFlipped = !!cPos[3];
     const mood = (shot.mood && shot.mood[name]) || 'neutral';
     const isSpeaking = activeLine && activeLine.speaker === name;
     const phase = PHASES[name] || 0;
+
+    // Head turn computation with 5-sample smoothing
+    let sumTurn = 0;
+    const offsets = [0, 0.08, 0.16, 0.24, 0.32];
+    offsets.forEach(off => {
+      sumTurn += getTurnTarget(name, t - off);
+    });
+    const turn = sumTurn / offsets.length;
+    const svgTurn = isFlipped ? -turn : turn;
+
+    // Apply face/hair/ears transform & visibility
+    if (node.face) node.face.setAttribute('transform', `translate(${svgTurn * 11}, 0)`);
+    if (node.hairF) node.hairF.setAttribute('transform', `translate(${svgTurn * 4}, 0)`);
+    if (node.earR) node.earR.style.display = svgTurn > 0.45 ? 'none' : '';
+    if (node.earL) node.earL.style.display = svgTurn < -0.45 ? 'none' : '';
 
     // Position feet at (x,y)
     const w = parseFloat(node.wrap.style.width) || 300;
     const h = parseFloat(node.wrap.style.height) || 600;
     node.wrap.style.left = (cPos[0] - w / 2) + 'px';
     node.wrap.style.top = (cPos[1] - h) + 'px';
-    node.wrap.style.transform = `scale(${cPos[2]})`;
+    node.wrap.style.transform = `scale(${cPos[2]})` + (isFlipped ? ' scaleX(-1)' : '');
 
     // Breathing
     const breath = 1 + 0.012 * Math.sin(2 * Math.PI * t / 3.2 + phase);
     node.inner.style.transform = `scaleY(${breath})`;
 
     // Head rotation
-    let hRot = 1.5 * Math.sin(2 * Math.PI * t / 4.1 + phase);
+    let hRot = 1.5 * Math.sin(2 * Math.PI * t / 4.1 + phase) + svgTurn * 2.5;
     if (isSpeaking) {
       hRot += 3 * Math.sin(2 * Math.PI * t / 1.7 + phase) + 2 * Math.sin(2 * Math.PI * t / 0.9);
     }
@@ -181,25 +225,46 @@ function render(t) {
       node.head.setAttribute('transform', `rotate(${hRot} ${node.headP[0]} ${node.headP[1]})`);
     }
 
-    // Arms rotation
+    // Arms rotation (elbows & upper arms)
     let aLRot = 2 * Math.sin(2 * Math.PI * t / 3.7 + phase);
+    let foreLRot = -6 - 3 * Math.sin(2 * Math.PI * t / 2.9 + phase);
     let aRRot = -2 * Math.sin(2 * Math.PI * t / 3.7 + phase);
+    let foreRRot = 6 + 3 * Math.sin(2 * Math.PI * t / 2.9 + phase);
+
     if (isSpeaking) {
-      const talkArm = (name === 'bithi') ? 'L' : 'R';
-      const gAngle = name === 'mama' ? -35 : (name === 'boltu' ? -55 : 40);
       const lDur = Math.max(0.001, activeLine.end - activeLine.start);
       const lTime = t - activeLine.start;
       let easeArm = 1;
       if (lTime < 0.35) easeArm = lTime / 0.35;
       else if (lTime > lDur - 0.35) easeArm = (lDur - lTime) / 0.35;
       easeArm = Math.max(0, Math.min(1, easeArm));
-      const gRot = gAngle * easeArm + 6 * Math.sin(2 * Math.PI * t / 1.3);
 
-      if (talkArm === 'L') aLRot = gRot;
-      else aRRot = gRot;
+      let tUpper = 0, tFore = 0;
+      let talkArm = 'R';
+      if (name === 'mama') { talkArm = 'R'; tUpper = -18; tFore = 75; }
+      else if (name === 'boltu') { talkArm = 'R'; tUpper = -70; tFore = -25; }
+      else if (name === 'bithi') { talkArm = 'L'; tUpper = 14; tFore = 128; }
+
+      const wobbleUpper = 4 * Math.sin(2 * Math.PI * t / 1.6 + phase);
+      const wobbleFore = 8 * Math.sin(2 * Math.PI * t / 1.1 + phase);
+
+      if (talkArm === 'L') {
+        const idleUpper = 2 * Math.sin(2 * Math.PI * t / 3.7 + phase);
+        const idleFore = -6 - 3 * Math.sin(2 * Math.PI * t / 2.9 + phase);
+        aLRot = idleUpper + (tUpper - idleUpper) * easeArm + wobbleUpper;
+        foreLRot = idleFore + (tFore - idleFore) * easeArm + wobbleFore;
+      } else {
+        const idleUpper = -2 * Math.sin(2 * Math.PI * t / 3.7 + phase);
+        const idleFore = 6 + 3 * Math.sin(2 * Math.PI * t / 2.9 + phase);
+        aRRot = idleUpper + (tUpper - idleUpper) * easeArm + wobbleUpper;
+        foreRRot = idleFore + (tFore - idleFore) * easeArm + wobbleFore;
+      }
     }
+
     if (node.armL) node.armL.setAttribute('transform', `rotate(${aLRot} ${node.armLP[0]} ${node.armLP[1]})`);
     if (node.armR) node.armR.setAttribute('transform', `rotate(${aRRot} ${node.armRP[0]} ${node.armRP[1]})`);
+    if (node.foreL) node.foreL.setAttribute('transform', `rotate(${foreLRot} ${node.foreLP[0]} ${node.foreLP[1]})`);
+    if (node.foreR) node.foreR.setAttribute('transform', `rotate(${foreRRot} ${node.foreRP[0]} ${node.foreRP[1]})`);
 
     // Blinking
     const isBlinking = blinks[name].some(bt => t >= bt && t < bt + 0.125);

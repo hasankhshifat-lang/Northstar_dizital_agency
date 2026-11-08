@@ -56,20 +56,29 @@ def mouths(cx, cy, w=30):
             f'<g class="m-a"{hide}>{a}</g><g class="m-e"{hide}>{e}</g><g class="m-o"{hide}>{o}</g></g>')
 
 def ear(x, y, sx):
-    return P(f"M{x} {y-22} Q{x+sx*22} {y-26} {x+sx*20} {y} Q{x+sx*18} {y+22} {x} {y+20}Z", SKIN, 3.5) + L(f"M{x+sx*6} {y-10} Q{x+sx*14} {y} {x+sx*6} {y+10}", 2.5)
+    return f'<g class="{"earL" if sx<0 else "earR"}">' + P(f"M{x} {y-22} Q{x+sx*22} {y-26} {x+sx*20} {y} Q{x+sx*18} {y+22} {x} {y+20}Z", SKIN, 3.5) + L(f"M{x+sx*6} {y-10} Q{x+sx*14} {y} {x+sx*6} {y+10}", 2.5) + "</g>"
 
 def hand(x, y, sx=1, s=1.0):
     return (P(f"M{x-14*s} {y-6*s} Q{x-18*s} {y+16*s} {x-6*s} {y+26*s} Q{x+6*s} {y+32*s} {x+14*s} {y+22*s} Q{x+20*s} {y+8*s} {x+14*s} {y-8*s} Z", SKIN, 3.5)
             + P(f"M{x+sx*12*s} {y+2*s} Q{x+sx*24*s} {y+4*s} {x+sx*20*s} {y+14*s} Q{x+sx*14*s} {y+16*s} {x+sx*10*s} {y+12*s}", SKIN, 3))
 
 def arm(px, py, length, sleeve_col, sleeve_s, sleeve_len, sx, w=30, cls="armL"):
-    """Hanging arm from shoulder pivot (px,py) downward; slight outward bow."""
-    ex = px + sx * 10; ey = py + length
-    sleeve = (P(f"M{px-w*0.62} {py-6} Q{px+sx*4} {py-16} {px+w*0.62} {py-6} L{px+w*0.55+sx*6} {py+sleeve_len} L{px-w*0.55+sx*6} {py+sleeve_len} Z", sleeve_col, SW)
-              + S(f"M{px+sx*w*0.15} {py} L{px+sx*w*0.55} {py-4} L{px+sx*w*0.5+sx*6} {py+sleeve_len-2} L{px+sx*w*0.1+sx*6} {py+sleeve_len-2}Z", sleeve_s, 0.8))
-    fore = (P(f"M{px-w*0.4+sx*6} {py+sleeve_len-4} Q{px-w*0.42+sx*10} {py+length*0.6} {ex-w*0.24} {ey-10} L{ex+w*0.24} {ey-10} Q{px+w*0.42+sx*10} {py+length*0.6} {px+w*0.4+sx*6} {py+sleeve_len-4}Z", SKIN, SW)
-            + S(f"M{px+sx*w*0.05+sx*6} {py+sleeve_len} L{ex+sx*w*0.02} {ey-12} L{ex+sx*w*0.28} {ey-12} L{px+sx*w*0.36+sx*6} {py+sleeve_len}Z", SKIN_S, 0.55))
-    return f'<g class="{cls}" data-p="{px},{py}">{fore}{sleeve}{hand(ex, ey-6, sx)}</g>'
+    """Arm hanging from shoulder pivot (px,py). Upper arm + forearm with an elbow joint:
+    <g class=armL data-p=shoulder> upper skin, <g class=foreL data-p=elbow> forearm+hand </g>, sleeve </g>."""
+    elx, ely = px + sx * 6, py + length * 0.52          # elbow
+    wx, wy = px + sx * 10, py + length - 10             # wrist
+    uw, fw, ww = w * 0.40, w * 0.33, w * 0.24
+    upper = (P(f"M{px-uw} {py+sleeve_len-6} L{elx-fw-1} {ely} L{elx+fw+1} {ely} L{px+uw} {py+sleeve_len-6}Z", SKIN, SW)
+             + S(f"M{px+sx*uw*0.2} {py+sleeve_len} L{elx+sx*fw*0.25} {ely} L{elx+sx*fw} {ely} L{px+sx*uw} {py+sleeve_len}Z", SKIN_S, .55))
+    fore = (f'<circle cx="{elx}" cy="{ely}" r="{fw+1}" fill="{SKIN}" stroke="{O}" stroke-width="{SW}"/>'
+            + P(f"M{elx-fw} {ely} Q{elx-fw+sx*2} {(ely+wy)/2} {wx-ww} {wy} L{wx+ww} {wy} Q{elx+fw+sx*2} {(ely+wy)/2} {elx+fw} {ely}Z", SKIN, SW)
+            + S(f"M{elx+sx*fw*0.2} {ely+2} L{wx+sx*ww*0.1} {wy-2} L{wx+sx*ww} {wy-2} L{elx+sx*fw} {ely+2}Z", SKIN_S, .55)
+            + f'<circle cx="{elx}" cy="{ely}" r="{fw-2}" fill="{SKIN}" stroke="none"/>'
+            + hand(wx, wy + 4, sx))
+    fcls = "foreL" if cls == "armL" else "foreR"
+    sleeve = (P(f"M{px-w*0.62} {py-6} Q{px+sx*4} {py-16} {px+w*0.62} {py-6} L{px+w*0.55+sx*4} {py+sleeve_len} L{px-w*0.55+sx*4} {py+sleeve_len} Z", sleeve_col, SW)
+              + S(f"M{px+sx*w*0.15} {py} L{px+sx*w*0.55} {py-4} L{px+sx*w*0.5+sx*4} {py+sleeve_len-2} L{px+sx*w*0.1+sx*4} {py+sleeve_len-2}Z", sleeve_s, 0.8))
+    return f'<g class="{cls}" data-p="{px},{py}">{upper}<g class="{fcls}" data-p="{elx},{ely}">{fore}</g>{sleeve}</g>'
 
 def svg(w, h, body):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h+60}" viewBox="0 -60 {w} {h+60}">'
@@ -112,6 +121,7 @@ def bithi():
     hd += ear(cx-60, 150, -1) + ear(cx+60, 150, 1)
     face = f"M{cx-60} 110 Q{cx-64} 190 {cx-26} 222 Q{cx} 238 {cx+26} 222 Q{cx+64} 190 {cx+60} 110 Q{cx} 70 {cx-60} 110Z"
     hd += P(face, SKIN, SW) + S(f"M{cx+30} 100 Q{cx+64} 120 {cx+58} 170 Q{cx+50} 210 {cx+20} 226 Q{cx+44} 190 {cx+42} 140Z", SKIN_S, .55)
+    hd += '<g class="face">'
     hd += f'<ellipse cx="{cx-38}" cy="182" rx="12" ry="7" fill="#E77A7A" opacity=".45"/><ellipse cx="{cx+38}" cy="182" rx="12" ry="7" fill="#E77A7A" opacity=".45"/>'
     eo, ec = eyes(cx, 152, 27, 21, 15, lash=5)
     hd += eo + ec + brows(cx, 124, 28, 20, 6, 6)
@@ -121,9 +131,12 @@ def bithi():
     for sx in (-1, 1):
         hd += f'<rect x="{cx+sx*27-22}" y="136" width="44" height="34" rx="14" fill="#BFE6FF" fill-opacity=".18" stroke="{O}" stroke-width="3.5"/>'
     hd += L(f"M{cx-5} 150 Q{cx} 146 {cx+5} 150", 3.5) + L(f"M{cx-49} 148 L{cx-60} 144 M{cx+49} 148 L{cx+60} 144", 3)
+    hd += '</g>'
     # hair front: side-parted fringe + top highlight
+    hd += '<g class="hairF">'
     hd += P(f"M{cx-66} 128 Q{cx-74} 60 {cx-10} 52 Q{cx+50} 46 {cx+68} 100 Q{cx+70} 120 {cx+64} 132 Q{cx+50} 96 {cx+12} 88 Q{cx-30} 92 {cx-50} 118 Q{cx-58} 128 {cx-66} 128Z", HAIR, SW)
     hd += L(f"M{cx-40} 70 Q{cx-6} 56 {cx+30} 62", 5, HAIR_H) + L(f"M{cx+38} 70 Q{cx+52} 78 {cx+58} 92", 4, HAIR_H)
+    hd += '</g>'
     b += f'<g class="head" data-p="{cx},{250}"><g transform="translate({cx} 250) scale(1.22) translate({-cx} -250)">{hd}</g></g>'
     return svg(W, H, b)
 
@@ -150,13 +163,17 @@ def boltu():
     hd += ear(cx-64, 160, -1) + ear(cx+64, 160, 1)
     face = f"M{cx-64} 120 Q{cx-68} 200 {cx-30} 230 Q{cx} 244 {cx+30} 230 Q{cx+68} 200 {cx+64} 120 Q{cx} 76 {cx-64} 120Z"
     hd += P(face, SKIN, SW) + S(f"M{cx+30} 110 Q{cx+68} 130 {cx+62} 180 Q{cx+54} 218 {cx+22} 234 Q{cx+46} 196 {cx+44} 150Z", SKIN_S, .55)
+    hd += '<g class="face">'
     eo, ec = eyes(cx, 160, 29, 23, 17, lash=5)
     hd += eo + ec + brows(cx, 132, 30, 21, 7, 4)
     hd += L(f"M{cx-2} 170 Q{cx-9} 192 {cx-1} 196 Q{cx+6} 198 {cx+9} 193", 3)
     hd += mouths(cx, 212, 22)
+    hd += '</g>'
     # spiky hair with highlight
+    hd += '<g class="hairF">'
     hd += P(f"M{cx-70} 140 Q{cx-84} 96 {cx-62} 70 L{cx-70} 44 L{cx-36} 56 L{cx-30} 22 L{cx-2} 46 L{cx+12} 14 L{cx+30} 48 L{cx+58} 30 L{cx+56} 64 L{cx+84} 70 Q{cx+76} 104 {cx+70} 140 Q{cx+58} 108 {cx+30} 100 L{cx+20} 118 L{cx+2} 98 L{cx-18} 116 L{cx-30} 98 Q{cx-56} 108 {cx-70} 140Z", HAIR, SW)
     hd += L(f"M{cx-40} 70 L{cx-24} 52 M{cx-2} 62 L{cx+12} 36 M{cx+30} 66 L{cx+50} 50", 4, HAIR_H)
+    hd += '</g>'
     b += f'<g class="head" data-p="{cx},{258}"><g transform="translate({cx} 258) scale(1.2) translate({-cx} -258)">{hd}</g></g>'
     return svg(W, H, b)
 
@@ -197,11 +214,13 @@ def mama():
     hd += P(f"M{cx+82} 160 Q{cx+96} 96 {cx+56} 76 Q{cx+30} 70 {cx+20} 78 Q{cx+50} 90 {cx+60} 120 Q{cx+66} 140 {cx+68} 160Z", HAIR, 3)
     hd += L(f"M{cx-44} 84 Q{cx} 70 {cx+44} 84 M{cx-36} 92 Q{cx} 80 {cx+40} 90", 3, HAIR)
     hd += S(f"M{cx-30} 100 Q{cx} 92 {cx+30} 100 Q{cx} 98 {cx-30} 104Z", "#fff", .35)
+    hd += '<g class="face">'
     eo, ec = eyes(cx, 160, 32, 21, 14, lash=5)
     hd += eo + ec + brows(cx, 130, 33, 25, 9, 4)
     hd += P(f"M{cx-6} 166 Q{cx-16} 196 {cx-4} 202 Q{cx+10} 206 {cx+14} 198 Q{cx+10} 190 {cx+4} 166Z", SKIN_S, 2.5)     # bigger nose
     hd += mouths(cx, 228, 24)
     hd += P(f"M{cx} 208 Q{cx-30} 202 {cx-56} 218 Q{cx-62} 230 {cx-46} 226 Q{cx-24} 216 {cx} 220 Q{cx+24} 216 {cx+46} 226 Q{cx+62} 230 {cx+56} 218 Q{cx+30} 202 {cx} 208Z", HAIR, 3)  # mustache
+    hd += '</g>'
     b += f'<g class="head" data-p="{cx},{262}"><g transform="translate({cx} 262) scale(1.15) translate({-cx} -262)">{hd}</g></g>'
     return svg(W, H, b)
 
