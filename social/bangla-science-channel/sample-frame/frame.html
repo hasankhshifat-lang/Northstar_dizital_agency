@@ -1,0 +1,101 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Baloo;src:url(fonts/baloo-da-2-bengali-800-normal.woff2);font-weight:800}
+@font-face{font-family:Baloo;src:url(fonts/baloo-da-2-latin-800-normal.woff2);font-weight:800}
+@font-face{font-family:Atma;src:url(fonts/atma-bengali-600-normal.woff2);font-weight:600}
+@font-face{font-family:Atma;src:url(fonts/atma-latin-600-normal.woff2);font-weight:600}
+@font-face{font-family:Hind;src:url(fonts/hind-siliguri-bengali-700-normal.woff2);font-weight:700}
+@font-face{font-family:Hind;src:url(fonts/hind-siliguri-latin-700-normal.woff2);font-weight:700}
+:root{--red:#D7263D;--pink:#F72585;--teal:#00A6A6;--yel:#FFC300;--grn:#2BA84A;--sky:#4CC9F0;--ink:#1A1A1A;--paper:#FFF6E5;--pencil:#2B4C8C}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1080px;height:1920px;background:var(--teal);position:relative;overflow:hidden;font-family:Hind}
+/* rickshaw-style patterned backdrop */
+.bg{position:absolute;inset:0;background:
+ radial-gradient(circle at 20px 20px,var(--yel) 7px,transparent 8px) 0 0/80px 80px,
+ radial-gradient(circle at 60px 60px,var(--pink) 7px,transparent 8px) 0 0/80px 80px,var(--teal)}
+/* title plate */
+.plate{position:absolute;top:34px;left:50%;transform:translateX(-50%) rotate(-1.5deg);width:760px;height:150px;
+ background:var(--red);border:7px solid var(--ink);border-radius:40px 40px 70px 70px/40px 40px 90px 90px;
+ box-shadow:0 10px 0 var(--ink);display:flex;align-items:center;justify-content:center;gap:26px}
+.plate h1{font-family:Baloo;font-weight:800;font-size:88px;line-height:1;color:var(--yel);padding-top:14px;
+ -webkit-text-stroke:5px var(--ink);paint-order:stroke fill;text-shadow:5px 5px 0 var(--ink)}
+.flower{width:64px;height:64px}
+/* story panel */
+.story{position:absolute;top:212px;left:36px;width:1008px;height:900px;border:8px solid var(--ink);border-radius:28px;overflow:hidden;background:#fff}
+.story img{width:100%;height:100%;object-fit:cover;object-position:center 60%}
+.bubble{position:absolute;top:250px;left:420px;background:#fff;border:6px solid var(--ink);border-radius:46px;padding:18px 30px 10px;
+ font-family:Hind;font-weight:700;font-size:44px;color:var(--ink);box-shadow:6px 6px 0 var(--ink);max-width:560px;line-height:1.25}
+.bubble:after{content:"";position:absolute;bottom:-34px;left:110px;border:18px solid transparent;border-top:22px solid var(--ink)}
+.sfx{position:absolute;top:385px;left:735px;font-family:Baloo;font-weight:800;font-size:96px;color:var(--yel);transform:rotate(-12deg);
+ -webkit-text-stroke:6px var(--ink);paint-order:stroke fill;text-shadow:6px 6px 0 var(--pink)}
+/* floral divider */
+.divider{position:absolute;top:1122px;left:0;width:1080px;height:46px;display:flex;justify-content:center;gap:10px}
+.divider svg{width:46px;height:46px}
+/* notebook panel */
+.note{position:absolute;top:1178px;left:36px;width:1008px;height:420px;background:
+ linear-gradient(90deg,transparent 104px,#E8A0A8 104px,#E8A0A8 108px,transparent 108px),
+ repeating-linear-gradient(180deg,var(--paper) 0,var(--paper) 63px,#B9D3E8 63px,#B9D3E8 66px);
+ border:8px solid var(--ink);border-radius:22px;box-shadow:0 10px 0 var(--ink);overflow:hidden}
+.note .h{position:absolute;top:14px;left:132px;font-family:Atma;font-weight:600;font-size:52px;color:var(--red)}
+.note .rows{position:absolute;top:96px;left:132px;right:30px;display:flex;gap:34px}
+.col{flex:1;text-align:center;font-family:Atma;font-weight:600;color:var(--pencil);font-size:38px;line-height:1.3}
+.col svg{display:block;margin:0 auto 4px}
+.res{display:inline-block;margin-top:6px;padding:2px 22px 0;border:4px solid var(--teal);border-radius:30px;color:var(--teal);font-size:40px}
+.res.sink{border-color:var(--red);color:var(--red)}
+.logo{position:absolute;right:22px;bottom:18px;width:88px;height:88px}
+/* safe zone marker (for review only) */
+.safe{position:absolute;left:0;right:0;bottom:0;height:300px;}
+.subtitle{position:absolute;top:1024px;left:50%;transform:translateX(-50%);white-space:nowrap;text-align:center;font-family:Hind;font-weight:700;font-size:44px;line-height:1.25;color:#fff;
+ background:rgba(26,26,26,.82);border:4px solid var(--yel);border-radius:40px;padding:12px 34px 6px}
+</style></head><body>
+<div class="bg"></div>
+<svg width="0" height="0" style="position:absolute"><defs>
+<g id="fl"><g fill="var(--pink)" stroke="#1A1A1A" stroke-width="3">
+<ellipse cx="32" cy="14" rx="9" ry="13"/><ellipse cx="32" cy="50" rx="9" ry="13"/><ellipse cx="14" cy="32" rx="13" ry="9"/><ellipse cx="50" cy="32" rx="13" ry="9"/></g>
+<circle cx="32" cy="32" r="9" fill="var(--yel)" stroke="#1A1A1A" stroke-width="3"/></g>
+<g id="fl2"><g fill="var(--yel)" stroke="#1A1A1A" stroke-width="3">
+<ellipse cx="32" cy="14" rx="9" ry="13"/><ellipse cx="32" cy="50" rx="9" ry="13"/><ellipse cx="14" cy="32" rx="13" ry="9"/><ellipse cx="50" cy="32" rx="13" ry="9"/></g>
+<circle cx="32" cy="32" r="9" fill="var(--red)" stroke="#1A1A1A" stroke-width="3"/></g>
+</defs></svg>
+<div class="plate"><svg class="flower" viewBox="0 0 64 64"><use href="#fl2"/></svg><h1>লঞ্চ ডুববে?</h1><svg class="flower" viewBox="0 0 64 64"><use href="#fl2"/></svg></div>
+<div class="story"><img src="story.png"><div class="sfx">টুং!</div><div class="bubble">একই রাংতা, একই ওজন!</div></div>
+<div class="divider"><svg viewBox="0 0 64 64"><use href="#fl2"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl2"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl2"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl2"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl2"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl2"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl2"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl2"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl2"/></svg>
+<svg viewBox="0 0 64 64"><use href="#fl"/></svg></div>
+<div class="note">
+ <div class="h">প্লবতা = পানির ঊর্ধ্বমুখী ধাক্কা</div>
+ <div class="rows">
+  <div class="col"><svg width="250" height="150" viewBox="0 0 250 150">
+   <rect x="10" y="80" width="230" height="62" fill="#4CC9F0" opacity=".55" stroke="#2B4C8C" stroke-width="3"/>
+   <path d="M55 72 L195 72 L170 98 L80 98 Z" fill="#cfd6dc" stroke="#1A1A1A" stroke-width="4"/>
+   <path d="M125 14 L125 60" stroke="#D7263D" stroke-width="5"/><path d="M114 48 L125 64 L136 48" fill="none" stroke="#D7263D" stroke-width="5"/>
+   <path d="M125 146 L125 104" stroke="#00A6A6" stroke-width="9"/><path d="M107 120 L125 100 L143 120" fill="none" stroke="#00A6A6" stroke-width="9"/>
+   </svg>রাংতার নৌকা<br><span class="res">ভাসে 🚢</span></div>
+  <div class="col"><svg width="250" height="150" viewBox="0 0 250 150">
+   <rect x="10" y="40" width="230" height="102" fill="#4CC9F0" opacity=".55" stroke="#2B4C8C" stroke-width="3"/>
+   <circle cx="125" cy="122" r="16" fill="#cfd6dc" stroke="#1A1A1A" stroke-width="4"/>
+   <path d="M125 50 L125 98" stroke="#D7263D" stroke-width="9"/><path d="M107 84 L125 104 L143 84" fill="none" stroke="#D7263D" stroke-width="9"/>
+   <path d="M160 140 L160 122" stroke="#00A6A6" stroke-width="5"/><path d="M152 130 L160 118 L168 130" fill="none" stroke="#00A6A6" stroke-width="5"/>
+   </svg>চাপা রাংতার গুলি<br><span class="res sink">ডোবে 🔩</span></div>
+ </div>
+ <svg class="logo" viewBox="0 0 88 88"><circle cx="44" cy="44" r="40" fill="var(--yel)" stroke="#1A1A1A" stroke-width="5"/>
+  <rect x="34" y="14" width="20" height="50" rx="10" fill="#fff" stroke="#1A1A1A" stroke-width="4"/>
+  <path d="M36 44 h16 v10 a8 8 0 0 1 -16 0z" fill="var(--teal)"/>
+  <path d="M22 66 q11 -10 22 -2 q11 -8 22 2 q-11 4 -22 -1 q-11 5 -22 1z" fill="#1A1A1A"/></svg>
+</div>
+<div class="subtitle">নৌকার আকার ছড়ানো, তাই বেশি পানি সরায়</div>
+</body></html>
