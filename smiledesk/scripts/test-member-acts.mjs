@@ -1,11 +1,11 @@
 // Tests for what a member with Write did in a shared workspace, as the owner's Mac takes it (lib/server/member-acts.ts
-// memberEvent, a "member" event Bops Cloud queued: cloud/members.ts act). It's checked again against this Mac's state
+// memberEvent, a "member" event SmileDesk Cloud queued: cloud/members.ts act). It's checked again against this Mac's state
 // (the workspace, the member's access there now, for every bot it touches; an app thread's only for Orgo's team while
 // apps are open to the owner; never a reply, Nothing to add or an answer for a thread on the owner's Mac, nor an answer
 // to an ask to use the owner's Connected apps or keys; their name made plain; not too late; never on a bot's computer)
 // and done through the ways in the owner's own
 // taps use, with the member named: chat.ts handleMessage (once per key; without Use its computer their words and a note,
-// no turn), chat.ts answerMessage for a message Bops Cloud wrote already (once), sessions.ts replyToSession (never a
+// no turn), chat.ts answerMessage for a message SmileDesk Cloud wrote already (once), sessions.ts replyToSession (never a
 // watch), stopSession and dismissWaiting, permission.ts replyToAsk.
 //
 // The store, the chat, the threads and the asks are stand-ins that record what was asked of them: nothing reaches a
@@ -191,7 +191,7 @@ globalThis.__fake = {
     keysProject: (wsId) => (wsId === "ws_acme" ? "proj_acme" : undefined),
     listKeys: async (o) => {
       did.push(["vault", !!o?.fresh]);
-      if (!vault) throw new Error("Bops couldn't reach Orgo.");
+      if (!vault) throw new Error("SmileDesk couldn't reach Orgo.");
       return vault;
     },
     keysOf: (all, wsId) => all.filter((k) => !k.workspaceId || (wsId === "ws_acme" && (k.workspaceId === "proj_acme" || (k.workspaceId === "proj_north" && k.name === "PLAIN_API_KEY")))),
@@ -215,7 +215,7 @@ const kept = [];
 let appFails = null;
 
 const { memberEvent, resetAdmins } = await import(`${root}/lib/server/member-acts.ts`);
-// `computer`: Bops Cloud vouched for their Use its computer (as orgo-web keeps it), unless `computer: false`.
+// `computer`: SmileDesk Cloud vouched for their Use its computer (as orgo-web keeps it), unless `computer: false`.
 const event = (act, o = {}) => ({
   projectId: "proj_acme",
   wsId: o.wsId ?? "ws_acme",
@@ -278,7 +278,7 @@ await check("a member's file is named by the bot whose computer it's on as this 
   const file = { id: "file_1", name: "Q3 report.pdf", size: 2048, path: "~/Desktop/Q3 report.pdf", botId: "max", hostId: "max", hostName: "Someone else" };
   fresh();
   await memberEvent(event({ act: "chat", chatId: "bot:max", text: "Read this", files: [file] }), "e_named");
-  assert.deepEqual(did.at(-1).at(-1), [{ ...file, hostName: "Max" }], "never the name their Bops sent");
+  assert.deepEqual(did.at(-1).at(-1), [{ ...file, hostName: "Max" }], "never the name their SmileDesk sent");
   // The owner set Max to work on this Mac while the file went up: words go without it; files alone don't go at all.
   fresh();
   state.bots.find((b) => b.id === "max").runsOn = "mac";
@@ -302,13 +302,13 @@ await check("without Use its computer their words stay, with a note that the bot
     ["add", "user", "Run the backup", "key_00000001"],
     ["add", "system", "Alex hasn't let Sam use Max's computer, so Max won't answer this.", null],
   ]);
-  // Bops Cloud didn't vouch for it (orgo-web, which keeps it, says no): off, whatever this state keeps.
+  // SmileDesk Cloud didn't vouch for it (orgo-web, which keeps it, says no): off, whatever this state keeps.
   fresh();
   await memberEvent(event({ act: "chat", chatId: "bot:max", text: "hi" }, { computer: false }), "e_nouse2");
   assert.deepEqual(did.map((d) => d.slice(0, 2)), [["add", "user"], ["add", "system"]], "kept as on here, but orgo-web says no");
   await memberEvent(event({ act: "reply", sessionId: "t-max", text: "go on" }, { key: "key_reply0009", computer: false }), "e_nouse3");
   assert.ok(warned.some((w) => w.includes("e_nouse3") && w.includes("no computer")));
-  // Not kept here (never set on this Mac) while Bops Cloud vouched: orgo-web's word stands.
+  // Not kept here (never set on this Mac) while SmileDesk Cloud vouched: orgo-web's word stands.
   fresh();
   delete state.workspaces[1].memberAccess["sam@example.com"].computer;
   await memberEvent(event({ act: "chat", chatId: "bot:max", text: "hi" }, { key: "key_00000002" }), "e_nouse4");
@@ -334,15 +334,15 @@ await check("without Use its computer: no reply, Nothing to add, folding up or a
   assert.equal(did[0]?.[0], "chat");
 });
 
-await check("a member's chat queued before the workspace was switched to Bops Cloud: never added here (only Bops Cloud stamps their words there)", async () => {
+await check("a member's chat queued before the workspace was switched to SmileDesk Cloud: never added here (only SmileDesk Cloud stamps their words there)", async () => {
   fresh();
   state.workspaces[1].chatOn = "cloud";
   await memberEvent(event({ act: "chat", chatId: "bot:max", text: "hi" }), "e_sw");
   assert.deepEqual(did, []);
-  assert.ok(warned.some((w) => w.includes("e_sw") && w.includes("through Bops Cloud")));
+  assert.ok(warned.some((w) => w.includes("e_sw") && w.includes("through SmileDesk Cloud")));
 });
 
-await check("a workspace whose owner chose the Mac, or that Bops Cloud may move later, is still the Mac's: a queued chat is answered here", async () => {
+await check("a workspace whose owner chose the Mac, or that SmileDesk Cloud may move later, is still the Mac's: a queued chat is answered here", async () => {
   for (const ws of [{ chatOn: "mac" }, { chatAuto: true }]) {
     fresh();
     Object.assign(state.workspaces[1], ws);
@@ -351,17 +351,17 @@ await check("a workspace whose owner chose the Mac, or that Bops Cloud may move 
   }
 });
 
-await check("a message Bops Cloud wrote already is answered only while they still may: Use its computer turned off since (a group with a computer), or Write taken away", async () => {
+await check("a message SmileDesk Cloud wrote already is answered only while they still may: Use its computer turned off since (a group with a computer), or Write taken away", async () => {
   fresh({ samComputer: "none" });
   state.messages.push({ id: "msg_m_sam_g1", chatId: "g-max", role: "user", text: "hi", at: 5, member: { ...SAM, ref: "key_00000001" } });
-  // (Bops Cloud took it while they had Use; the owner turned it off before this Mac opened.)
+  // (SmileDesk Cloud took it while they had Use; the owner turned it off before this Mac opened.)
   await memberEvent({ ...event({ act: "chat", chatId: "g-max", text: "hi" }), stored: true, messageId: "msg_m_sam_g1" }, "e_st1");
   await new Promise((r) => setTimeout(r, 10));
   assert.deepEqual(did, []);
   assert.ok(warned.some((w) => w.includes("e_st1") && w.includes("no computer")));
 });
 
-await check("a message Bops Cloud wrote already (its chat through Bops Cloud, a bot on this Mac) is read until it's here and answered once, never added", async () => {
+await check("a message SmileDesk Cloud wrote already (its chat through SmileDesk Cloud, a bot on this Mac) is read until it's here and answered once, never added", async () => {
   fresh();
   pulls = 0;
   onPull = () => pulls === 2 && state.messages.push({ id: "msg_m_sam_k1", chatId: "bot:max", role: "user", text: "hi", at: 5, member: { ...SAM, ref: "key_00000001" } });
@@ -387,7 +387,7 @@ await check("a group with Write on every bot is theirs; one with a Read bot, a R
   assert.equal(did.length, 1, "nothing else done");
 });
 
-await check("Bops Cloud said yes but this state says no: a bot taken down to Read, access from before they joined, too late, another workspace", async () => {
+await check("SmileDesk Cloud said yes but this state says no: a bot taken down to Read, access from before they joined, too late, another workspace", async () => {
   fresh({ maxLevel: "read" });
   await memberEvent(event({ act: "chat", chatId: "bot:max", text: "hi" }), "e4");
   fresh();
@@ -658,7 +658,7 @@ await check("an Admin with no entry chats with every bot, replies, answers and u
   await memberEvent(event({ act: "reply", sessionId: "t-max", text: "Window seat" }, { member: ADA, role: "admin", key: "key_admin_002", computer: false }), "e_ad2");
   await memberEvent(event({ act: "answer", askId: "ask-1", reply: "once" }, { member: ADA, role: "admin", key: "key_admin_003" }), "e_ad3");
   await memberEvent(event({ act: "chat", chatId: "g-both", text: "Both of you" }, { member: ADA, role: "admin", key: "key_admin_004" }), "e_ad4");
-  assert.deepEqual(did.map((d) => d[0]), ["chat", "reply", "answer", "chat"], "Use its computer too, whatever Bops Cloud's flag says");
+  assert.deepEqual(did.map((d) => d[0]), ["chat", "reply", "answer", "chat"], "Use its computer too, whatever SmileDesk Cloud's flag says");
   assert.equal(did[3][4].role, "admin", "a group's turn too");
   assert.equal(did[1][5].role, undefined, "a reply in a thread is kept without the role");
   // The owner's own logins and the asks of a thread on their Mac, and telling that thread more: an Admin's too
@@ -810,7 +810,7 @@ await check("an Admin's Publish from Your Apps (env prod): what the Preview serv
     ["deploy", "prod", true, "Ada"],
     ["rollback", "prod", true, "Ada"],
   ]);
-  // A Member with Your Apps at Write, sent with env prod (Bops Cloud refuses it first): refused here too, said where they'll see it.
+  // A Member with Your Apps at Write, sent with env prod (SmileDesk Cloud refuses it first): refused here too, said where they'll see it.
   fresh({ ownerEmail: "owner@orgo.ai" });
   kept.length = 0;
   await memberEvent(TOM_EV({ act: "deploy", app: "shop", env: "prod" }), "e_pub4");
@@ -860,7 +860,7 @@ await check("a bot's key, switched by someone with Keys: on, only one of the wor
   // The workspace's own: LINEAR_API_KEY (one by that name for all workspaces too: the workspace's is the one bots use).
   vault = [{ name: "GITHUB_TOKEN", workspaceId: null }, { name: "LINEAR_API_KEY", workspaceId: "proj_acme" }, { name: "LINEAR_API_KEY", workspaceId: null }, { name: "STRIPE_SECRET_KEY", workspaceId: "proj_other" }, { name: "PLAIN_API_KEY", workspaceId: "proj_north" }];
   const ivy = () => state.bots.find((b) => b.id === "ivy");
-  // Sam: Ivy at Read, Keys as Bops Cloud vouched.
+  // Sam: Ivy at Read, Keys as SmileDesk Cloud vouched.
   await memberEvent(event({ act: "key", botId: "ivy", name: "LINEAR_API_KEY", on: true }, { keys: true, key: "key_key_01" }), "e_k1");
   await later();
   assert.deepEqual(ivy().keys, ["LINEAR_API_KEY"]);
@@ -888,7 +888,7 @@ await check("a bot's key, switched by someone with Keys: on, only one of the wor
   await later();
   assert.deepEqual(state.bots.find((b) => b.id === "zed").keys, ["LINEAR_API_KEY"]);
   for (const [i, [o, act, why, v]] of [
-    // Bops Cloud didn't vouch for Keys (an Admin orgo-web said no for, too): not theirs.
+    // SmileDesk Cloud didn't vouch for Keys (an Admin orgo-web said no for, too): not theirs.
     [{}, { act: "key", botId: "ivy", name: "LINEAR_API_KEY", on: true }, "no Keys"],
     [{ member: ADA, role: "admin" }, { act: "key", botId: "zed", name: "LINEAR_API_KEY", on: true }, "no Keys"],
     [{ keys: true }, { act: "key", botId: "boppy", name: "LINEAR_API_KEY", on: true }, "no such bot"],
@@ -947,7 +947,7 @@ await check("an Admin's change goes through the owner's own route as their windo
   await settled();
   assert.deepEqual(routed[1], { route: "bots", method: "PATCH", body: { botId: "zed", autoApprove: true }, window: "tok_window" });
   assert.ok(state.messages.some((m) => m.chatId === "bot:zed" && m.text === "Ada changed Zed's settings"));
-  // A group renamed by the key Bops Cloud sent it by: the computer's own id, as this Mac names it.
+  // A group renamed by the key SmileDesk Cloud sent it by: the computer's own id, as this Mac names it.
   await memberEvent(event(change({ id: "@ws", computerName: { computer: groupKeyOf("ws_acme", "c1"), name: "Shop" } }), { member: ADA, role: "admin", key: "key_chg_03" }), "e_chg3");
   await settled();
   assert.deepEqual(routed[2].body, { id: "ws_acme", computerName: { computer: "c1", name: "Shop" } });

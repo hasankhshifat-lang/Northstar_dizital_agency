@@ -1,10 +1,10 @@
-// Tests for the owner's own messages through Bops Cloud (lib/server/cloud-chat.ts): which go (a plain message in a one
+// Tests for the owner's own messages through SmileDesk Cloud (lib/server/cloud-chat.ts): which go (a plain message in a one
 // bot chat of a workspace switched to it, whose bot works on a computer; never pictures, an app beside the chat, Select's
 // picks, a group, a bot with no computer or on the Mac, or on a runner), and how: written there ("sent", and the state is
-// read now), answered here only when the request never went out or Bops Cloud says the chat isn't its, sent again with
+// read now), answered here only when the request never went out or SmileDesk Cloud says the chat isn't its, sent again with
 // the same key when it went and got no answer, and "failed" after that.
 //
-// The store, Bops Cloud and the network are fakes (below). The people and ids are made up.
+// The store, SmileDesk Cloud and the network are fakes (below). The people and ids are made up.
 // Usage: node --conditions=react-server scripts/test-cloud-chat.mjs
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
@@ -77,7 +77,7 @@ globalThis.__fake = {
 };
 
 const C = await import(`${root}/lib/server/cloud-chat.ts`);
-/** Each request to Bops Cloud, and what the next ones do (a Response, or an error thrown). */
+/** Each request to SmileDesk Cloud, and what the next ones do (a Response, or an error thrown). */
 const asked = [];
 let next = [];
 C.cloudChatForTests({
@@ -90,7 +90,7 @@ C.cloudChatForTests({
 });
 const failedWith = (code) => Object.assign(new TypeError("fetch failed"), { cause: { code } });
 
-await check("which messages go through Bops Cloud", () => {
+await check("which messages go through SmileDesk Cloud", () => {
   assert.equal(C.sendsThroughCloud("bot:max", {}), true, "Max's chat in a switched workspace");
   assert.equal(C.sendsThroughCloud("bot:dana", {}), true, "Dana works on Max's computer");
   assert.equal(C.sendsThroughCloud("bot:boppy", {}), false, "a workspace not switched");
@@ -99,7 +99,7 @@ await check("which messages go through Bops Cloud", () => {
   assert.equal(C.sendsThroughCloud("bot:nobody", {}), false);
   for (const extra of [{ images: 1 }, { lookingAt: "app_1" }, { appNote: true }, { picks: true }]) assert.equal(C.sendsThroughCloud("bot:max", extra), false, JSON.stringify(extra));
   online = false;
-  assert.equal(C.sendsThroughCloud("bot:max", {}), false, "not signed in to Bops Cloud");
+  assert.equal(C.sendsThroughCloud("bot:max", {}), false, "not signed in to SmileDesk Cloud");
   online = true;
   runner = true;
   assert.equal(C.sendsThroughCloud("bot:max", {}), false, "never on a runner");
@@ -129,14 +129,14 @@ await check("never went out: answered here, at once; went out and no answer: sen
   next = [failedWith("UND_ERR_HEADERS_TIMEOUT"), { status: 503, body: { error: "busy" } }, { status: 200, body: { ok: true, message: {} } }];
   assert.equal(await C.sendThroughCloud("bot:max", "slow"), "sent");
   assert.equal(asked.length, 3);
-  assert.equal(new Set(asked.map((a) => a.body.key)).size, 1, "one key: Bops Cloud takes it once");
+  assert.equal(new Set(asked.map((a) => a.body.key)).size, 1, "one key: SmileDesk Cloud takes it once");
   // A refused connection after one that may have landed: never answered here (it may be there).
   asked.length = 0;
   next = [failedWith("UND_ERR_SOCKET"), failedWith("ECONNREFUSED"), failedWith("ECONNREFUSED")];
   assert.equal(await C.sendThroughCloud("bot:max", "maybe"), "failed");
 });
 
-await check("Bops Cloud says the chat isn't its: answered here; refused otherwise: it didn't go", async () => {
+await check("SmileDesk Cloud says the chat isn't its: answered here; refused otherwise: it didn't go", async () => {
   next = [{ status: 409, body: { code: "chat_not_in_cloud" } }];
   assert.equal(await C.sendThroughCloud("bot:max", "x"), "here");
   next = [{ status: 403, body: { error: "no" } }];
@@ -151,7 +151,7 @@ await check("a workspace whose owner chose the Mac (chatOn \"mac\") isn't the cl
   state.workspaces[1].chatOn = "cloud";
 });
 
-await check("the owner's switch goes to Bops Cloud as the owner, and the state is read after; refused, Bops Cloud's words", async () => {
+await check("the owner's switch goes to SmileDesk Cloud as the owner, and the state is read after; refused, SmileDesk Cloud's words", async () => {
   asked.length = 0;
   pulls = 0;
   next = [{ status: 200, body: { ok: true, cloud: false, allowHourly: false } }];
@@ -159,13 +159,13 @@ await check("the owner's switch goes to Bops Cloud as the owner, and the state i
   assert.equal(asked[0].url, "https://bops-cloud.test/v1/chat-routing");
   assert.deepEqual([asked[0].headers.Authorization, asked[0].headers["x-bops-user"], asked[0].body], ["Bearer key-owner", "u_owner", { wsId: "ws_acme", mode: "mac" }]);
   assert.equal(pulls, 1);
-  next = [{ status: 409, body: { error: "Update Bops to 0.0.36 or newer on every Mac first.", code: "chat_needs_update" } }];
-  assert.deepEqual(await C.setChatRouting("ws_acme", "auto"), { error: "Update Bops to 0.0.36 or newer on every Mac first.", status: 409 });
+  next = [{ status: 409, body: { error: "Update SmileDesk to 0.0.36 or newer on every Mac first.", code: "chat_needs_update" } }];
+  assert.deepEqual(await C.setChatRouting("ws_acme", "auto"), { error: "Update SmileDesk to 0.0.36 or newer on every Mac first.", status: 409 });
   assert.equal(asked[1].body.mode, "auto");
   next = [failedWith("ECONNREFUSED")];
   assert.equal((await C.setChatRouting("ws_acme", "auto")).status, 502);
   online = false;
-  assert.equal((await C.setChatRouting("ws_acme", "auto")).status, 409, "not signed in to Bops Cloud");
+  assert.equal((await C.setChatRouting("ws_acme", "auto")).status, 409, "not signed in to SmileDesk Cloud");
   online = true;
 });
 

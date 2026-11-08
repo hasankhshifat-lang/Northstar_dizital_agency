@@ -9,7 +9,7 @@ import { registerHooks } from "node:module";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-// The state in a throwaway file store, as a self-hosted install keeps it (the Mac app keeps it in Bops Cloud, per user: test-profiles.mjs).
+// The state in a throwaway file store, as a self-hosted install keeps it (the Mac app keeps it in SmileDesk Cloud, per user: test-profiles.mjs).
 process.env.BOPS_SELF_HOSTED = "1";
 for (const k of ["TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_VERIFY_SERVICE_SID", "TWILIO_API_KEY_SID", "TWILIO_API_KEY_SECRET", "BOPS_VERIFY_EMAIL", "BOPS_VERIFY_COUNTRIES"]) delete process.env[k];
 // The state goes to a throwaway file store, never a database, a real .data or a mail domain from the shell.
@@ -254,7 +254,7 @@ process.env.TWILIO_API_KEY_SECRET = "secret";
 const E = "me@example.com";
 const MIN = 60_000;
 // GET Services/VAtest: the service, with an email sender (a mailer) attached or not.
-const service = (mailer) => json(200, { sid: "VAtest", friendly_name: "Bops", ...(mailer === undefined ? {} : { mailer_sid: mailer }) });
+const service = (mailer) => json(200, { sid: "VAtest", friendly_name: "SmileDesk", ...(mailer === undefined ? {} : { mailer_sid: mailer }) });
 // A service with a sender, whose sends and checks answer `then`.
 const withSender = (then) => (c) => (c.method === "GET" ? service("MDtest") : then(c));
 const since = (n) => calls.length - n;

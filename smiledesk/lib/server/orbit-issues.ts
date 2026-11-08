@@ -37,7 +37,7 @@ const STALE_MS = 60_000;
 /** Signed in, with memory set up (where the window and the bots can use them). */
 export const issuesOn = () => memoryOn() && categoriesOpen(getState());
 
-/** Who did it: the user, a bot (on a routine's run, the routine too), or Bops itself. */
+/** Who did it: the user, a bot (on a routine's run, the routine too), or SmileDesk itself. */
 export type IssueBy = { botId?: string; routineId?: string };
 const nameOf = (by: IssueBy) => (by.botId ? (bot(by.botId)?.name ?? "A bot") : ownerName());
 
@@ -179,7 +179,7 @@ function urlOf(u: unknown) {
   }
 }
 
-/** An account's id as Bops keeps one (AppAccount.id: Composio's "ca_…"), or nothing. */
+/** An account's id as SmileDesk keeps one (AppAccount.id: Composio's "ca_…"), or nothing. */
 const accountIdOf = (v: unknown) => (typeof v === "string" && /^[A-Za-z0-9_:.-]{1,120}$/.test(v) ? v : undefined);
 
 /** Who it's for, and their item in Orbit (a person or a company there by that name). */
@@ -280,7 +280,7 @@ async function historyOf(session: HonchoSession): Promise<IssueEvent[]> {
   const out: IssueEvent[] = [];
   for await (const m of page) {
     const md = m.metadata ?? {};
-    out.push({ at: Date.parse(m.createdAt) || 0, who: typeof md.by === "string" ? md.by : "Bops", text: m.content, kind: (typeof md.event === "string" ? md.event : "note") as IssueEvent["kind"] });
+    out.push({ at: Date.parse(m.createdAt) || 0, who: typeof md.by === "string" ? md.by : "SmileDesk", text: m.content, kind: (typeof md.event === "string" ? md.event : "note") as IssueEvent["kind"] });
     if (out.length >= 500) break;
   }
   return out.sort((a, b) => a.at - b.at);
@@ -331,7 +331,7 @@ function rowOf(issue: Issue, bank: string, by: IssueBy, note?: string) {
 
 const msOf = (v: unknown) => (typeof v === "string" && Number.isFinite(Date.parse(v)) ? Date.parse(v) : undefined);
 
-/** An issue from its row in Orgo (only one of Bops's: its session an issue-<uuid>), keeping what only this Mac knows of it. */
+/** An issue from its row in Orgo (only one of SmileDesk's: its session an issue-<uuid>), keeping what only this Mac knows of it. */
 function fromRow(ws: string, r: unknown, prev?: Issue): Issue | null {
   const x = (r ?? {}) as Record<string, unknown>;
   if (!isIssueId(x.honchoSessionId) || typeof x.id !== "string") return null;

@@ -6,7 +6,7 @@
 // /etc/environment, ~/.claude, ~/.codex, OpenCode's or Gemini's own folders); switching an agent clears its
 // folder and stops its gate; and a bot on the default (no profile) runs exactly as before.
 //
-// The computer is a throwaway folder here: the real scripts, as Bops installs them, with fake claude, codex
+// The computer is a throwaway folder here: the real scripts, as SmileDesk installs them, with fake claude, codex
 // and opencode that write down what they were run with (their environment, what claude, codex, opencode and
 // agy resolve to, a nested call of each, and what their base address answers), a fake provider on 127.0.0.1
 // behind the gate, and a fake terminal. No real CLI, provider or key is used: the keys are planted fakes.
@@ -49,7 +49,7 @@ const d = {
   fakebin: join(scratch, "fakebin"),
 };
 for (const p of Object.values(d)) mkdirSync(p, { recursive: true });
-// What Bops installs on a computer (brains.ts BRAIN_TOOLS), copied as it is.
+// What SmileDesk installs on a computer (brains.ts BRAIN_TOOLS), copied as it is.
 for (const f of ["bops-brain", "bops-agent", "bops-ai-gate", "bops-exec"]) copyFileSync(join(repo, "vm/bin", f), join(d.bin, f));
 for (const f of readdirSync(d.bin)) chmodSync(join(d.bin, f), 0o755);
 // The computer's own /root/.bashrc reads /root/.env, where Orgo keeps the computer's key: a bot's shell never sources it.
@@ -58,7 +58,7 @@ const BASHRC = `echo "BASHRC_WAS_READ bot=\${BOPS_BOT:-}" >> ${join(d.rec, "bash
 const bashrcRead = () => existsSync(join(d.rec, "bashrc-hits")) && /bot=\S/.test(readFileSync(join(d.rec, "bashrc-hits"), "utf8"));
 writeFileSync(join(d.home, ".bashrc"), BASHRC);
 
-/** The planted keys: the Vault's, as Bops would reveal them, and the executor's. They must never show up anywhere on the computer. */
+/** The planted keys: the Vault's, as SmileDesk would reveal them, and the executor's. They must never show up anywhere on the computer. */
 const KEYS = { anthropic: "sk-ant-test-PLANTED-anthropic-key-0001", openai: "sk-test-PLANTED-openai-key-0002", exec: "sk-test-PLANTED-executor-0003" };
 
 /* A fake CLI: writes down what it was run with, then acts as the CLI does in a thread. */
@@ -220,7 +220,7 @@ const threads = {
 const MCP = JSON.stringify({ mcpServers: { screen: { type: "stdio", command: "/bin/echo", args: ["screen"], env: { DISPLAY: ":3" } } } });
 async function start(t, display) {
   await ok(`bops-agent put ${t.id} mcp.json`, MCP);
-  await ok(`bops-agent put ${t.id} prompt.md`, "You are a bot for Bops.");
+  await ok(`bops-agent put ${t.id} prompt.md`, "You are a bot for SmileDesk.");
   if (t.key) await ok(`bops-agent put ${t.id} key`, t.key);
   const out = await ok(`bops-agent start ${t.id} ${t.brain} ${t.kind} ${display} pc_1 ${t.session} ${t.prof}`);
   assert.match(out, /started (fresh|resumed)/);
@@ -270,7 +270,7 @@ try {
   assert.equal(sc.nested.opencode.code, 127);
   assert.match(sc.nested.opencode.said, /This bot doesn't run OpenCode/);
   assert.equal(sc.nested.agy.code, 127);
-  assert.match(sc.nested.agy.said, /agy isn't in Bops yet/);
+  assert.match(sc.nested.agy.said, /agy isn't in SmileDesk yet/);
   console.log("ok Claude plan thread: its account's folder and model, no key, nested claude is the same, codex and opencode say why not");
 
   // 3. Sam's Codex thread.
@@ -485,7 +485,7 @@ try {
   assert.ok(!existsSync(join(d.bots, "boppy")));
   console.log("ok default bot: today's executor, byte for byte the same environment; nothing of it under bots/");
 
-  // Sam's Bops agent: its bin first on the executor's PATH, so claude there is Sam's plan.
+  // Sam's SmileDesk agent: its bin first on the executor's PATH, so claude there is Sam's plan.
   const samBin = (await ok(`bops-brain bin sam --also ${SAM_ALSO}`)).trim();
   assert.equal(samBin, bin("sam", "bops"));
   writeFileSync(join(d.bops, "executor-key-7"), KEYS.exec, { mode: 0o600 });
@@ -497,13 +497,13 @@ try {
   assert.match(readFileSync(join(samBin, "codex"), "utf8"), /Codex runs on this bot's key only in a thread with Codex/);
   const bad = await sh(`bops-exec 7 'env_sam' 'wss://cloud.test/exec' '/tmp/evil'`);
   assert.notEqual(bad.code, 0);
-  console.log("ok Bops agent on a bot with a profile: its executor's claude is the bot's, and nothing else goes first on its PATH");
+  console.log("ok SmileDesk agent on a bot with a profile: its executor's claude is the bot's, and nothing else goes first on its PATH");
 
   // A Claude key listed ahead of a Claude plan: the plan is still claude in the bot's other agents' threads.
   const pipBin = (await ok(`bops-brain bin pip --also claude:key:brain_k:claude-sonnet-5-5,claude:plan:brain_p:claude-haiku-5-5`)).trim();
   assert.match(readFileSync(join(pipBin, "claude"), "utf8"), /CLAUDE_CONFIG_DIR='[^']*brain_p'.*ANTHROPIC_MODEL='claude-haiku-5-5'/s);
   await ok(`bops-brain bot-clear pip`);
-  // Sam's Claude plan agent goes: every one of Sam's agents' bins (its Bops agent's, its Codex's) has its claude
+  // Sam's Claude plan agent goes: every one of Sam's agents' bins (its SmileDesk agent's, its Codex's) has its claude
   // rewritten in place, while the Claude agent's own wrapper stays its own.
   const ownClaude = readFileSync(join(bin("sam", "ag_samclaude1"), "claude"), "utf8");
   assert.match(readFileSync(join(bin("sam", "ag_samcodex01"), "claude"), "utf8"), /brain_x/, "before: Sam's Codex threads run claude on its plan");

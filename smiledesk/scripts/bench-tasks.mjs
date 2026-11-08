@@ -1,11 +1,11 @@
-// A benchmark of how bots work, on the Bops running on this Mac: real tasks and chat questions, one at a
+// A benchmark of how bots work, on the SmileDesk running on this Mac: real tasks and chat questions, one at a
 // time, for the main bot. For each: how long it took, its steps by kind (the screen, a page script or the
 // browser tools, web search, the shell, apps and data), what it answered, and the model tokens it used
-// (Bops' own count, before and after; nothing else should run meanwhile). The tasks only read, or write
+// (SmileDesk's own count, before and after; nothing else should run meanwhile). The tasks only read, or write
 // to test sites and the bot's own computer: nothing is booked, sent or bought.
 //
 // It uses real AI credit and the user's real bot and computer, so run it only when they've said so.
-// Results go to .data/bench/<time>.json (and a table here), to compare one build of Bops with another.
+// Results go to .data/bench/<time>.json (and a table here), to compare one build of SmileDesk with another.
 // Usage: node scripts/bench-tasks.mjs [--only hn,form] [--tasks-only | --chat-only] [--bot <id>] [--minutes 20]
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -15,7 +15,7 @@ const BASE = process.env.BOPS_URL ?? "http://127.0.0.1:3210";
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(`--${name}`);
 const value = (name) => (args.includes(`--${name}`) ? args[args.indexOf(`--${name}`) + 1] : undefined);
-const token = readFileSync(join(homedir(), "Library/Application Support/Bops/window-token"), "utf8").trim();
+const token = readFileSync(join(homedir(), "Library/Application Support/SmileDesk/window-token"), "utf8").trim();
 const LIMIT_MS = Number(value("minutes") ?? 20) * 60_000;
 
 /**
@@ -30,7 +30,7 @@ const CASES = [
   { id: "research", kind: "research", title: "Bench: Daytona facts", goal: "Find who the CEO of Daytona (daytona.io, the sandbox company) is, about how many people work there, and their latest funding round. Say where each fact comes from." },
   { id: "hotel", kind: "search", title: "Bench: Spokane hotels", goal: "Find three hotels in Spokane, WA under $180 a night for next Friday to Sunday, with their prices. Only look: don't book or sign in to anything." },
   { id: "flight", kind: "search", title: "Bench: SFO to Seattle", goal: "On Google Flights, find the cheapest nonstop flight from SFO to Seattle next Friday morning, with its time and price. Only look: don't book or sign in to anything." },
-  { id: "form", kind: "form", title: "Bench: test form", goal: "Go to https://httpbin.org/forms/post (a test form that goes nowhere). Fill in the pizza order: customer name Bops Bench, telephone 555-0100, email bench@example.com, size small, topping bacon, delivery time 19:00, comments 'benchmark'. Submit it, then tell me what the page that comes back shows for custname and size." },
+  { id: "form", kind: "form", title: "Bench: test form", goal: "Go to https://httpbin.org/forms/post (a test form that goes nowhere). Fill in the pizza order: customer name SmileDesk Bench, telephone 555-0100, email bench@example.com, size small, topping bacon, delivery time 19:00, comments 'benchmark'. Submit it, then tell me what the page that comes back shows for custname and size." },
   { id: "gui", kind: "app", title: "Bench: Calc sheet", goal: "On your own computer, open LibreOffice Calc, put the numbers 1 to 5 in cells A1 to A5 and a sum of them in A6, and save it as /workspace/bench.ods. Tell me what A6 shows." },
 ].filter((c) => {
   const only = value("only")?.split(",");
@@ -47,7 +47,7 @@ const api = async (path, init = {}) => {
   return body;
 };
 const state = async () => (await api("/api/state")).state;
-/** Bops' own count of model tokens this month, by what they were for (lib/server/usage.ts, the account page). */
+/** SmileDesk's own count of model tokens this month, by what they were for (lib/server/usage.ts, the account page). */
 const tokens = async () => (await api("/api/account")).usage?.thisMonth?.tokensBySource ?? {};
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const live = (s) => ["queued", "starting", "running"].includes(s.status);
@@ -137,16 +137,16 @@ async function runCase(c, botId) {
 }
 
 const st = await state();
-// The main bot of the workspace open in Bops (bots of the first workspace have none set).
+// The main bot of the workspace open in SmileDesk (bots of the first workspace have none set).
 const botId = value("bot") ?? st.bots.find((b) => b.isMain && (b.workspaceId ?? "ws_main") === (st.workspace ?? "ws_main"))?.id;
 if (!botId) throw new Error("No main bot found.");
 const busy = st.sessions.filter(live);
 if (busy.length && !flag("force")) {
-  console.error(`Not now: ${busy.length} task(s) running (${busy.map((s) => s.title).join(", ")}). Run it when Bops is idle, or pass --force.`);
+  console.error(`Not now: ${busy.length} task(s) running (${busy.map((s) => s.title).join(", ")}). Run it when SmileDesk is idle, or pass --force.`);
   process.exit(1);
 }
 const version = await fetch(`${BASE}/api/health`).then((r) => r.json()).then((h) => h.version ?? h.build ?? null).catch(() => null);
-console.log(`Bench on ${BASE} (Bops ${version ?? "?"}), bot ${botId}: ${CASES.length} case(s), one at a time, up to ${LIMIT_MS / 60_000} min each.`);
+console.log(`Bench on ${BASE} (SmileDesk ${version ?? "?"}), bot ${botId}: ${CASES.length} case(s), one at a time, up to ${LIMIT_MS / 60_000} min each.`);
 
 const results = [];
 for (const c of CASES) {

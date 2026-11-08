@@ -1,5 +1,5 @@
 /**
- * Sites Bops knows how to watch: what to call them, what to watch for by default, and quick picks
+ * Sites SmileDesk knows how to watch: what to call them, what to watch for by default, and quick picks
  * for the watch setup card. Shared by the server (lib/server/watches.ts) and the app.
  */
 
@@ -17,7 +17,7 @@ const SITES: Site[] = [
 
 const GENERIC = { lookFor: "anything new that needs a reply or a decision from me", picks: ["Anything new", "Big price moves", "New items in the list", "Status changes"] };
 
-/** True when Bops has its own picks for this address; other pages get theirs read from the page. */
+/** True when SmileDesk has its own picks for this address; other pages get theirs read from the page. */
 export function knownSite(url: string) {
   try {
     const host = new URL(url).hostname.replace(/^www\./, "");

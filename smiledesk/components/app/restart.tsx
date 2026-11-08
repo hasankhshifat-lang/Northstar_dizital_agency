@@ -4,7 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { AskInPlace } from "./ui";
 
 /*
- * Restart Bops, for when something's off: in the account menu, in Settings, This Mac (the badge on your initials
+ * Restart SmileDesk, for when something's off: in the account menu, in Settings, This Mac (the badge on your initials
  * opens it) and on the Screen Recording card. It asks first, in place, then the Mac app restarts
  * cleanly through its bridge (window.bopsMac.relaunch, desktop/main.cjs): the state is saved, the
  * cached sessions go, the server starts again, and the window opens again. You stay signed
@@ -15,10 +15,10 @@ type Bridge = { relaunch?: () => Promise<void> };
 const bridge = () => (window as unknown as { bopsMac?: Bridge }).bopsMac;
 
 const noop = () => () => {};
-/** Whether this page can restart Bops: it's in the Mac app (false while rendering on the server, so the page hydrates cleanly). */
+/** Whether this page can restart SmileDesk: it's in the Mac app (false while rendering on the server, so the page hydrates cleanly). */
 export const useCanRestart = () => useSyncExternalStore(noop, () => !!bridge()?.relaunch, () => false);
 
-/** The circular arrow on Restart Bops. */
+/** The circular arrow on Restart SmileDesk. */
 export function RestartIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 16 16" className="shrink-0" aria-hidden>
@@ -29,7 +29,7 @@ export function RestartIcon() {
 }
 
 /**
- * "Restart Bops?", asked in place of the button that asked (ui.tsx AskInPlace): Restart hands over to the Mac app,
+ * "Restart SmileDesk?", asked in place of the button that asked (ui.tsx AskInPlace): Restart hands over to the Mac app,
  * which closes the window; Cancel (or Esc) puts the button back. `compact`: in a menu or a card's row.
  */
 export function RestartAsk({ onCancel, compact = false }: { onCancel: () => void; compact?: boolean }) {
@@ -48,18 +48,18 @@ export function RestartAsk({ onCancel, compact = false }: { onCancel: () => void
   return (
     <AskInPlace
       compact={compact}
-      title="Restart Bops?"
+      title="Restart SmileDesk?"
       line="Your bots pause for a few seconds."
       action="Restart"
       busy={busy}
-      error={failed ? "Couldn't restart. Quit Bops and open it again." : null}
+      error={failed ? "Couldn't restart. Quit SmileDesk and open it again." : null}
       onConfirm={() => void restart()}
       onCancel={onCancel}
     />
   );
 }
 
-/** Restart Bops as a button (`className`, `children`) that turns into its question where it is. */
+/** Restart SmileDesk as a button (`className`, `children`) that turns into its question where it is. */
 export function RestartButton({ className, compact, children }: { className: string; compact?: boolean; children: React.ReactNode }) {
   const [asking, setAsking] = useState(false);
   if (asking) return <RestartAsk compact={compact} onCancel={() => setAsking(false)} />;

@@ -1,8 +1,8 @@
 /*
  * Apps a workspace builds and runs on the web. Each app is an Ingot repo (Orgo's own source control, not
  * git: ingot/docs/hosted-api.md) in the central Ingot, under the workspace's Orgo project, where everyone
- * signs in with their Orgo key. A bot works on it on its Bops computer, in a working folder at
- * /workspace/apps/<name> made with `ingot clone`, through its brain (Claude Code, Codex, or Bops agent),
+ * signs in with their Orgo key. A bot works on it on its SmileDesk computer, in a working folder at
+ * /workspace/apps/<name> made with `ingot clone`, through its brain (Claude Code, Codex, or SmileDesk agent),
  * committing with `ingot commit` or the Ingot MCP tools; two people committing at once can't overwrite
  * each other (a commit names its base; a stale one is refused and `ingot pull` merges). Several bots of the
  * workspace on its computer can work on it at once, each in a copy of its own (/workspace/apps/<name>.<copy>,
@@ -19,7 +19,7 @@ export type DeployState = "queued" | "running" | "succeeded" | "failed" | "cance
 /**
  * Where an app is worked on and runs, kept on its workspace (Workspace.hostedApps, by repo name): the bot
  * whose computer holds its working folder and runs its site, and once it was first deployed (or its
- * variables were first saved), its Published deploy project there. `url`: what Bops 0.0.32 and before kept
+ * variables were first saved), its Published deploy project there. `url`: what SmileDesk 0.0.32 and before kept
  * of its address; never written now (Published lives on its domains only), kept as it is when there.
  */
 export type AppHosting = {
@@ -36,20 +36,20 @@ export type AppHosting = {
   /** When this Mac last queued a deploy of it (a bot's, or the window's), so a window showing it reads it again. */
   queuedAt?: number;
   /**
-   * Its own site's Local's port on its computer as Bops last read it (LocalSite.port: http://localhost:<it>), a
-   * hint for a bot's prompt (hostedAppsLine: no computer is asked for one) and for other Macs. Bops 0.0.34 and
+   * Its own site's Local's port on its computer as SmileDesk last read it (LocalSite.port: http://localhost:<it>), a
+   * hint for a bot's prompt (hostedAppsLine: no computer is asked for one) and for other Macs. SmileDesk 0.0.34 and
    * before neither read nor keep it.
    */
   localPort?: number;
   /**
-   * Its own site's Local addresses Bops already told the owner to add to Google sign in (http://localhost:<port>),
+   * Its own site's Local addresses SmileDesk already told the owner to add to Google sign in (http://localhost:<port>),
    * each told once, in its bot's chat, the first time its Local runs there and the app signs in.
    */
   toldGoogle?: string[];
-  /** The owner turned its own site's Preview password off (PreviewSite.protected): Bops sets none for it until they turn it on. */
+  /** The owner turned its own site's Preview password off (PreviewSite.protected): SmileDesk sets none for it until they turn it on. */
   passwordOff?: true;
   /**
-   * When Bops last set its own site's Preview password, and the Preview deploy live then (null: none yet): one that
+   * When SmileDesk last set its own site's Preview password, and the Preview deploy live then (null: none yet): one that
    * goes live after it gets a new password. Orgo keeps the password itself.
    */
   passwordSet?: PasswordSet;
@@ -140,7 +140,7 @@ export type AppProjectBehind = { site: string; computerId: string; projectId: st
  */
 export type AppSiteHosting = { name: string; projectId?: string; url?: string; preview?: string; localPort?: number; toldGoogle?: string[]; passwordOff?: true; passwordSet?: PasswordSet };
 
-/** When Bops set a Preview's password (ms), and the id of the Preview deploy live then (null: none yet). */
+/** When SmileDesk set a Preview's password (ms), and the id of the Preview deploy live then (null: none yet). */
 export type PasswordSet = { at: number; live: string | null };
 
 /**
@@ -164,8 +164,8 @@ export const MAX_SITES = 5;
  *   https://<label>.orgo.dev: one link per site, chosen once and never changed, so Google sign in is set up for
  *   it once. Deploy goes here. Found on Orgo by the label's seal (lib/server/app-labels.ts).
  * - "prod" (Published): each site's own deploy project (AppHosting.projectId), served only on its domains
- *   (Cloudflare first), never on an orgo.dev name Bops shows. Publish puts on it the changeset its Preview serves.
- * Of Local, Bops' state keeps only hints (each site's port, and the addresses told for Google sign in); of
+ *   (Cloudflare first), never on an orgo.dev name SmileDesk shows. Publish puts on it the changeset its Preview serves.
+ * Of Local, SmileDesk's state keeps only hints (each site's port, and the addresses told for Google sign in); of
  * Preview, only a copy of its label.
  */
 export type AppEnv = "local" | "preview" | "prod";
@@ -178,14 +178,14 @@ export const appEnvOf = (v: unknown): AppEnv | undefined => (v === "staging" ? "
  * A site's Preview as Orgo says it: its deploy project on the app's computer (null: none yet), its link (from
  * its public URL, so it shows before its first deploy; null: none yet), its label, what it serves, its newest
  * deploy, and `off` when Orgo turned its link off. `protected`: its link asks for a password (absent: Orgo can't
- * tell); `passwordAt`: when Bops last set that password, so a window showing it reads it again (PreviewPassword).
+ * tell); `passwordAt`: when SmileDesk last set that password, so a window showing it reads it again (PreviewPassword).
  */
 export type PreviewSite = { projectId: string | null; url: string | null; label: string | null; serving: string | null; live: HostedApp["live"]; off?: true; protected?: boolean; passwordAt?: number };
 
 /**
- * A site's Preview password (GET /api/hosted-apps/[name]/password?ws=&site=, the Bops window's alone): its link, whether
+ * A site's Preview password (GET /api/hosted-apps/[name]/password?ws=&site=, the SmileDesk window's alone): its link, whether
  * it asks for one (null: Orgo can't tell, or there's no link yet), the password, the cookie that opens the link
- * without asking (PASS_COOKIE), which only Bops' own preview view gets (desktop/preview-frames.cjs), and when Bops set
+ * without asking (PASS_COOKIE), which only SmileDesk's own preview view gets (desktop/preview-frames.cjs), and when SmileDesk set
  * it (`at`, as PreviewSite.passwordAt: a window holding an older one reads it again). The password can be null while
  * it asks for one: Orgo kept only the cookie's check of it (a new one shows), or the user's key can't read it (`why`,
  * in words). POST { ws, site?,
@@ -199,7 +199,7 @@ export type PreviewPassword = { url: string | null; on: boolean | null; password
 /** The cookie orgo-web gives a browser that typed a Preview's password. */
 export const PASS_COOKIE = "__Host-orgo_pass";
 
-/** A deploy project of the app's repo on its computer that's no site's Published or Preview (an older Bops's, a test's): listed, never deployed to. */
+/** A deploy project of the app's repo on its computer that's no site's Published or Preview (an older SmileDesk's, a test's): listed, never deployed to. */
 export type LeftOver = { id: string; name: string; port: number | null; url: string | null };
 
 /**
@@ -349,7 +349,7 @@ export type HostedApp = {
 export type HostedSite = {
   name: string;
   projectId: string | null;
-  /** What Bops 0.0.32 kept of its address (never shown for Published now: `domain` is). */
+  /** What SmileDesk 0.0.32 kept of its address (never shown for Published now: `domain` is). */
   url: string | null;
   serving: string | null;
   live: HostedApp["live"];
@@ -492,7 +492,7 @@ export type AppDomain = {
   where?: string | null;
   /**
    * One bought elsewhere whose DNS is in the user's own Cloudflare account (the zone it's in, as Cloudflare
-   * names it, and its id there), read with the Cloudflare key in their Orgo vault: Bops can set its records
+   * names it, and its id there), read with the Cloudflare key in their Orgo vault: SmileDesk can set its records
    * there (CloudflarePlan). Not there without that key, or when its zone isn't in that account.
    */
   cloudflare?: { zone: string; zoneId: string };
@@ -577,7 +577,7 @@ export type AppDeploy = {
  * PATCH …/settings { ws, site?, port?, install?, build?, start?, health? } changes them (answers this again);
  * a new port moves its domains with it. PATCH …/env { ws, site?, env: { NAME: value | null } } sets or
  * removes variables (answers { env } names), making its deploy project first when it has none yet, so its
- * first build has them; their values go to Orgo alone, never into Bops' state or its logs.
+ * first build has them; their values go to Orgo alone, never into SmileDesk's state or its logs.
  */
 export type AppSettingsAnswer = {
   url: string | null;
@@ -630,7 +630,7 @@ export type Registrant = Partial<Record<RegistrantField, string>>;
  * workspace); `owned`: every one of the workspace's bought domains (active ones), each with the names under
  * it that point somewhere already (`inUse`: the app that serves it when it's on this app's computer, else
  * `where`, the computer's name), so one is used as it is, or with a name under it; `contact`: who the user
- * registered their last domain to, as Orgo keeps it, to fill the form (never kept by Bops).
+ * registered their last domain to, as Orgo keeps it, to fill the form (never kept by SmileDesk).
  */
 export type AppDomainOptions = { buy: { open: boolean; why?: string }; owned: OwnedDomain[]; contact: Registrant | null; cloudflare?: CloudflareOptions };
 
@@ -649,10 +649,10 @@ export type CloudflareOptions = { zones: CloudflareZone[]; more?: true; why?: un
 export type CloudflareZone = { id: string; domain: string; account?: string; inUse: OwnedDomain["inUse"] };
 
 /**
- * One line of what Bops would change in Cloudflare for a domain: `op` add, change (the record `was` before),
+ * One line of what SmileDesk would change in Cloudflare for a domain: `op` add, change (the record `was` before),
  * remove, same (set already: nothing to do) or blocked (`note` says why, and nothing is written). `name` in
- * full, `host` as the zone names it (@ for the zone itself). `theirs`: a record Bops didn't set, changed only
- * after the user said so (Replace and add); `stale`: one Bops set for a domain that's gone.
+ * full, `host` as the zone names it (@ for the zone itself). `theirs`: a record SmileDesk didn't set, changed only
+ * after the user said so (Replace and add); `stale`: one SmileDesk set for a domain that's gone.
  */
 export type CloudflareChange = {
   op: "add" | "change" | "remove" | "same" | "blocked";
@@ -667,7 +667,7 @@ export type CloudflareChange = {
 };
 
 /**
- * What Bops would set in Cloudflare for one of the app's domains, before anything is written
+ * What SmileDesk would set in Cloudflare for one of the app's domains, before anything is written
  * (GET /api/hosted-apps/[name]/domains/[domainId]/cloudflare?ws=&site=): the zone and its id there, every
  * change, whether one needs the user's OK (`ask`), why it can't be (`blocked`), and the plan's fingerprint,
  * which the apply sends back so only this very plan is written.
@@ -678,7 +678,7 @@ export type CloudflarePlan = { zone: string; zoneId: string; domain: string; dom
  * POST …/domains/[domainId]/cloudflare { ws, site?, plan, replace? }: the plan written in one Cloudflare batch
  * (all of it or none), then Orgo asked to check the domain. Answers it as checked, and how many records were
  * written; refused with { error, code }: STALE with the plan as it is now (`cloudflare`), NEEDS_OK when it
- * replaces records Bops didn't set and `replace` wasn't sent, BLOCKED, NO_EDIT, UNKNOWN (Cloudflare didn't
+ * replaces records SmileDesk didn't set and `replace` wasn't sent, BLOCKED, NO_EDIT, UNKNOWN (Cloudflare didn't
  * answer, so whether it went in isn't known).
  */
 export type CloudflareApplied = AppDomainChecked & { written: number };
@@ -708,12 +708,12 @@ export type AppDomainAdd = (
 ) & { site?: string };
 /**
  * `cloudflare` and `fresh`: one added from the user's Cloudflare ({ action: "cloudflare", zone, subdomain? },
- * the zone by its Cloudflare id), with what Bops would set there for it; it was just pointed here, so Cancel
+ * the zone by its Cloudflare id), with what SmileDesk would set there for it; it was just pointed here, so Cancel
  * takes it off again.
  */
 export type AppDomainAdded = { domains: AppDomainsAnswer; domain: AppDomain | null; bought?: string; error?: string; cloudflare?: CloudflarePlan; fresh?: true };
 export type AppDomainChecked = { domain: AppDomain; said?: string };
-/** DELETE …/domains/[id]: its domains as they are now; `said`, what Bops couldn't take off in Cloudflare too, in words. */
+/** DELETE …/domains/[id]: its domains as they are now; `said`, what SmileDesk couldn't take off in Cloudflare too, in words. */
 export type AppDomainRemoved = AppDomainsAnswer & { said?: string };
 
 /**
@@ -754,7 +754,7 @@ export type WorkspaceDomain = { id: string; domain: string; status: "pending" | 
 
 /**
  * GET /api/domains?ws= (Settings, Domains; the window only). `open` false with why: nothing of domains
- * here (not signed in, not on Orgo, closed to the account, Bops on a bot's computer). `buy` and `contact`
+ * here (not signed in, not on Orgo, closed to the account, SmileDesk on a bot's computer). `buy` and `contact`
  * as in AppDomainOptions; `domains` newest first, as Orgo lists them.
  */
 export type WorkspaceDomainsAnswer = { open: boolean; why?: string; buy: { open: boolean; why?: string }; contact: Registrant | null; domains: WorkspaceDomain[] };
@@ -796,7 +796,7 @@ export type AppForMembers = {
    * Every site, its own first: HostedSite without its project id. `url`: its Published address (its first
    * active domain, or null; never an orgo.dev name), `preview`: its Preview link (null: none yet), where members
    * deploy, with its newest deploy (`previewLive`) and what it serves (`previewServing`). `previewProtected`: that
-   * link asks for a password; `previewPassword`: the password, only while someone has Your Apps at Write (Bops
+   * link asks for a password; `previewPassword`: the password, only while someone has Your Apps at Write (SmileDesk
    * Cloud sends it to them alone: cloud/ws-slice.ts appsFor). Never in a bot's chat or prompt.
    */
   sites: {

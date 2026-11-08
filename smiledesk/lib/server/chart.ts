@@ -40,13 +40,13 @@ export function handOffRefused(from: string, to: string): string | null {
 export const namesList = (names: string[]) => (names.length <= 1 ? (names[0] ?? "") : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`);
 
 /**
- * The first Bops release whose turns follow the team chart. A Mac or a computer's runner on an older one runs
+ * The first SmileDesk release whose turns follow the team chart. A Mac or a computer's runner on an older one runs
  * turns by the rules from before until it updates, which the chart says (olderBopsOnAccount).
  */
 export const CHART_SINCE = "0.0.33";
 
 /**
- * Whether a Mac or a runner on the account runs a Bops older than the team chart's (CHART_SINCE; this one's own
+ * Whether a Mac or a runner on the account runs a SmileDesk older than the team chart's (CHART_SINCE; this one's own
  * version when this one is older still, as a build in development is, so it never counts itself): a runner set up
  * or running one (state.runners), or an app Orgo saw lately (orgo.ts bopsAppVersions). False when it can't be told.
  */

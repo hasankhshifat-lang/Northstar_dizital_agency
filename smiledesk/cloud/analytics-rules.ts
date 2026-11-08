@@ -1,14 +1,14 @@
 /**
- * Bops' usage events (README, Privacy): the one list of what may be sent to PostHog, by whom, with
+ * SmileDesk's usage events (README, Privacy): the one list of what may be sent to PostHog, by whom, with
  * which properties, and the code that cleans every event against it before it leaves. The window
- * (lib/analytics.ts), the Mac's server (lib/server/analytics.ts) and Bops Cloud (cloud/analytics.ts)
+ * (lib/analytics.ts), the Mac's server (lib/server/analytics.ts) and SmileDesk Cloud (cloud/analytics.ts)
  * all send through it: anything not listed here is dropped.
  *
- * It is orgo-web's PostHog setup (the same project, host and person: the Orgo user id), with Bops'
+ * It is orgo-web's PostHog setup (the same project, host and person: the Orgo user id), with SmileDesk's
  * events named bops_* and tagged app: "bops". Nothing here ever carries what a user or a bot wrote,
- * said or saw: only enums, counts, durations, versions and Bops' own random task ids.
+ * said or saw: only enums, counts, durations, versions and SmileDesk's own random task ids.
  *
- * Bops Cloud runs this file directly in Node and the app imports it, so it must stay erasable
+ * SmileDesk Cloud runs this file directly in Node and the app imports it, so it must stay erasable
  * TypeScript with no imports.
  */
 
@@ -20,14 +20,14 @@ export const POSTHOG_PROJECT = "phc_8yOV40FgnXKKKAJTdbPOoPdbWi9nP44h6BqZyqRo76H"
 export const POSTHOG_HOST = "https://us.i.posthog.com";
 export const POSTHOG_UI_HOST = "https://us.posthog.com";
 
-/** Who sends an event: the app's window, the Mac's Next server, or Bops Cloud. */
+/** Who sends an event: the app's window, the Mac's Next server, or SmileDesk Cloud. */
 export type Sender = "app" | "mac_server" | "cloud";
 
 type OneOf = { readonly one: readonly string[] };
 type SomeOf = { readonly some: readonly string[] };
 type Rule = "bool" | "count" | "ms" | "cents" | "version" | "task" | "slug" | "route" | OneOf | SomeOf;
 
-/** A Bops plan, or "usage" for a user billed by use (cloud/plans.ts planLabel): the plan a user is on as events name it. */
+/** A SmileDesk plan, or "usage" for a user billed by use (cloud/plans.ts planLabel): the plan a user is on as events name it. */
 const TIER = { one: ["free_bops", "pro_bops", "max_bops", "usage"] } as const;
 const OUTCOME = {
   one: ["done", "failed", "stopped", "paused_for_takeover", "out_of_credit", "short_of_credit", "free_hours_used", "computer_out_of_credit", "not_started", "computer_failed"],
@@ -43,7 +43,7 @@ export const EVENTS = {
   bops_add_credit_clicked: { by: "app", props: { surface: { one: ["account", "chat", "computer"] } } },
   bops_members_opened: { by: "app", props: { people: "count" } },
 
-  // The Mac's server (posthog-node): what the user does in Bops.
+  // The Mac's server (posthog-node): what the user does in SmileDesk.
   bops_signed_in: { by: "mac_server", props: { method: { one: ["google", "email", "orgo"] }, switched_user: "bool" } },
   bops_signed_out: { by: "mac_server", props: {} },
   bops_bot_created: { by: "mac_server", props: { own_computer: "bool", workspace_bots: "count" } },
@@ -86,7 +86,7 @@ export const EVENTS = {
     props: { code: { one: ["UPGRADE_REQUIRED", "SEAT_LIMIT", "PLAN_UNAVAILABLE", "INVITE_RATE_LIMITED", "FULL_ACCESS_OFF", "FULL_ACCESS_NOT_YET"] } },
   },
 
-  // Bops Cloud (posthog-node): what only the cloud knows.
+  // SmileDesk Cloud (posthog-node): what only the cloud knows.
   bops_signup_completed: { by: "cloud", props: {} },
   bops_plan_changed: { by: "cloud", props: { from_plan: TIER, to_plan: TIER, heard_via: { one: ["notice", "session"] } } },
   bops_ai_credit_ran_out: { by: "cloud", props: {} },
@@ -94,7 +94,7 @@ export const EVENTS = {
   bops_email_address_claimed: { by: "cloud", props: { auto: "bool" } },
   bops_owner_contact_verified: { by: "cloud", props: { channel: { one: ["sms", "email"] } } },
 
-  // Errors in Bops' own code, from all three, scrubbed (cleanExceptionList).
+  // Errors in SmileDesk's own code, from all three, scrubbed (cleanExceptionList).
   $exception: { by: "any", props: { surface: { one: ["window", "mac_server", "cloud"] }, route_path: "route" } },
 } as const;
 
@@ -108,7 +108,7 @@ const SUPER = {
   plan: TIER,
 } as const;
 
-/** The only person properties Bops sets. orgo.ai already set the person's email and name. */
+/** The only person properties SmileDesk sets. orgo.ai already set the person's email and name. */
 const PERSON = { is_internal: "bool", bops_plan: TIER, bops_app_version: "version" } as const;
 
 /**
@@ -162,7 +162,7 @@ export type BopsEvent = Exclude<keyof Events, "$exception">;
 export type BopsEventProps = { [E in BopsEvent]: { -readonly [K in keyof Events[E]["props"]]: RuleValue<Events[E]["props"][K]> } };
 /** The events one sender may send. */
 export type EventsBy<S extends Sender> = { [E in BopsEvent]: Events[E]["by"] extends S ? E : never }[BopsEvent];
-/** The person properties Bops sets. */
+/** The person properties SmileDesk sets. */
 export type BopsPersonProps = Partial<{ -readonly [K in keyof typeof PERSON]: RuleValue<(typeof PERSON)[K]> }>;
 
 const DAY = 86_400_000;
@@ -214,7 +214,7 @@ type Frame = Record<string, unknown>;
 const str = (v: unknown) => (typeof v === "string" ? v : undefined);
 const home = (v: unknown) => (typeof v === "string" ? v.replace(/\/Users\/[^/]+/g, "/Users/<user>") : undefined);
 
-/** One stack frame, with only where it is in Bops' code (never the source lines around it). */
+/** One stack frame, with only where it is in SmileDesk's code (never the source lines around it). */
 function cleanFrame(f: unknown): Frame | null {
   if (!f || typeof f !== "object") return null;
   const x = f as Frame;
@@ -248,7 +248,7 @@ function cleanExceptionList(list: unknown): unknown[] {
   });
 }
 
-/** Only Bops' person properties, each fitting its rule; null when none is left. */
+/** Only SmileDesk's person properties, each fitting its rule; null when none is left. */
 function cleanPerson(set: unknown): Record<string, unknown> | null {
   if (!set || typeof set !== "object") return null;
   const out: Record<string, unknown> = {};
@@ -307,7 +307,7 @@ export function cleanWindowEvent<T extends { event: string; properties: Record<s
   return out;
 }
 
-/** posthog-node's before_send, for the Mac's server and for Bops Cloud. */
+/** posthog-node's before_send, for the Mac's server and for SmileDesk Cloud. */
 export function cleanNodeEvent<T extends { event: string; properties?: Record<string | number, unknown> }>(msg: T | null, sender: "mac_server" | "cloud"): T | null {
   if (!msg) return null;
   const properties = cleanProperties(msg.event, msg.properties as Record<string, unknown> | undefined, sender);
@@ -319,7 +319,7 @@ type FetchResponse = { status: number; text: () => Promise<string>; json: () => 
 let quietSince = 0;
 
 /**
- * posthog-node's fetch for the Mac's server and Bops Cloud. posthog-node logs every failed send with
+ * posthog-node's fetch for the Mac's server and SmileDesk Cloud. posthog-node logs every failed send with
  * a full stack (once per event here), which floods the log of a Mac behind a firewall or offline:
  * a send that fails is dropped quietly instead, with one line in the log at most every 10 minutes.
  */

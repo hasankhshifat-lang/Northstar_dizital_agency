@@ -1,25 +1,25 @@
 // Tests for each site's Preview password (lib/server/hosted-apps.ts passwordNow, previewPassword, changePreviewPassword,
 // newPassword; the public URL password calls in lib/server/orgo.ts; app/api/hosted-apps/[name]/password): a password is
 // 7 characters of letters and digits without look-alikes, case sensitive, with a letter and a digit, crypto random; a new
-// Preview link gets one at once from the Bops that made it, and one found without one gets one on the next read of the
+// Preview link gets one at once from the SmileDesk that made it, and one found without one gets one on the next read of the
 // Apps page, once (two reads at once ask once), but not while it's just made; an orgo-web that can't tell (no `protected`)
 // is never asked, read after read; one Orgo turned down isn't asked again in a loop, nor for an hour when Orgo can't take
 // one yet (503 PASSWORD_UNAVAILABLE) or the key can't (403), and one Orgo answered 5xx is sent again once, the same; a
 // key that can't read it gets none with why, never an error, and one Orgo keeps only the cookie's check of answers no
-// password with its cookie; the owner's off choice is kept on the site's record and Bops sets none then, on a read or a
+// password with its cookie; the owner's off choice is kept on the site's record and SmileDesk sets none then, on a read or a
 // deploy, until they turn it on again; a read of the link only ever sets a first one, never a new one because another
-// deploy went live; a Preview deploy this Bops queued gets a new one once, as it goes live (watchPreview), never onto a
+// deploy went live; a Preview deploy this SmileDesk queued gets a new one once, as it goes live (watchPreview), never onto a
 // link with none whose record says one was set, one that fails or is stopped gets none, a newer deploy takes over from an
 // older one's watch, a set Orgo didn't take is tried again at a later look, a Published deploy never touches it, and a
 // site that's off is skipped; each site has its own; New password keeps the link; whoever sets a password shares the
-// very one it sent to Orgo with Bops Cloud (preview-password-share.ts: New, on and off too), for the account it was set
+// very one it sent to Orgo with SmileDesk Cloud (preview-password-share.ts: New, on and off too), for the account it was set
 // in, one site's posts one at a time and in order, a newer one in place of one waiting, sent again for about 20 minutes
-// while Bops Cloud doesn't take it; the owner's Mac tells Bops Cloud what Orgo has where its copy is another and older
-// (apps-for-members.ts); the routes are the Bops window's alone, refused while a shared workspace is open and for an
+// while SmileDesk Cloud doesn't take it; the owner's Mac tells SmileDesk Cloud what Orgo has where its copy is another and older
+// (apps-for-members.ts); the routes are the SmileDesk window's alone, refused while a shared workspace is open and for an
 // account apps aren't open to; and a bot's words (its deploy answer, its note of the workspace's apps) say a Preview asks
 // for a password but never carry it, nor does any log line. Nothing a person reads has a dash.
 //
-// orgo-web (deploy projects and their deploys, public URLs with passwords), the central Ingot and Bops Cloud are a fake
+// orgo-web (deploy projects and their deploys, public URLs with passwords), the central Ingot and SmileDesk Cloud are a fake
 // fetch on made-up origins, the Keychain a fake `security`, and the state lives in a throwaway folder: nothing reaches a
 // real service. The keys in it are made up.
 // Usage: node --conditions=react-server scripts/test-preview-password.mjs
@@ -39,7 +39,7 @@ const UI = "ui-token-test-preview-password";
 process.env.BOPS_UI_TOKEN = UI;
 const ORGO = "http://orgo.test";
 const INGOT = "http://ingot.test";
-/** Bops Cloud, for the one check that sends a share on the wire (`cloudGot`: each post it got, with its sign in and account). */
+/** SmileDesk Cloud, for the one check that sends a share on the wire (`cloudGot`: each post it got, with its sign in and account). */
 const CLOUD = "http://cloud.test";
 const cloudGot = [];
 process.env.BOPS_ORGO_ORIGIN = ORGO;
@@ -210,7 +210,7 @@ clearInterval(globalThis.__bopsRoutines);
 await Auth.signIn(KEY, alex);
 
 const REPO = `${PA}/recipe-box`;
-/** What Bops Cloud was told (preview-password-share.ts), each post as sent; `answers`: what it answers the next ones (204 when none is left). */
+/** What SmileDesk Cloud was told (preview-password-share.ts), each post as sent; `answers`: what it answers the next ones (204 when none is left). */
 const shares = [];
 const shareAnswers = [];
 /** Every password shared in any check (the log check at the end). */
@@ -267,7 +267,7 @@ async function until(ok, what = "it", ms = 3_000) {
   }
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-/** Every watch of a Preview deploy done, and every post to Bops Cloud settled. */
+/** Every watch of a Preview deploy done, and every post to SmileDesk Cloud settled. */
 const watched = async () => {
   await until(() => H.previewWatchForTests.now().size === 0, "the watches to end");
   await Share.previewShareForTests.settled();
@@ -339,7 +339,7 @@ await check("newPassword: 7 characters of letters and digits without look alikes
   assert.match(readFileSync(`${root}/lib/server/hosted-apps.ts`, "utf8"), /import \{ createHash, randomInt \} from "node:crypto";/);
 });
 
-await check("Bops Cloud's rule for a Preview password (cloud/protocol.ts) is newPassword's: the same 56 characters, the same length, a letter and a digit, and nothing else", async () => {
+await check("SmileDesk Cloud's rule for a Preview password (cloud/protocol.ts) is newPassword's: the same 56 characters, the same length, a letter and a digit, and nothing else", async () => {
   assert.equal(P.PREVIEW_PASSWORD_LENGTH, H.PASSWORD_LENGTH);
   assert.equal(P.PREVIEW_PASSWORD_ABC, "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"); // gitleaks:allow (an alphabet, not a key)
   for (let i = 0; i < 2000; i++) assert.match(H.newPassword(), P.PREVIEW_PASSWORD);
@@ -371,7 +371,7 @@ await check("a new Preview link gets a password at once, before its first deploy
   assert.equal(record().passwordOff, undefined);
   assert.equal(JSON.stringify(S.getState()).includes(link.password), false, "the password itself is never kept");
   await Share.previewShareForTests.settled();
-  assert.deepEqual(shares, [{ ws: "ws_main", app: "recipe-box", site: "recipe-box", url: `https://${link.label}.orgo.dev`, password: link.password }], "shared with Bops Cloud, exactly as it went to Orgo");
+  assert.deepEqual(shares, [{ ws: "ws_main", app: "recipe-box", site: "recipe-box", url: `https://${link.label}.orgo.dev`, password: link.password }], "shared with SmileDesk Cloud, exactly as it went to Orgo");
   assert.deepEqual([...H.previewWatchForTests.now().values()], [previewProject().deployments.at(-1).id], "its deploy watched until it's live");
   assert.equal(app.preview.protected, true);
   assert.equal(app.preview.passwordAt, record().passwordSet.at);
@@ -383,7 +383,7 @@ await check("a new Preview link gets a password at once, before its first deploy
 
 await check("an existing Preview with no password gets one on the next read of the Apps page, once; two reads at once ask once", async () => {
   await deployPreview("succeeded");
-  // (As a Preview from before passwords: its password gone, Bops' record of it too.)
+  // (As a Preview from before passwords: its password gone, SmileDesk's record of it too.)
   previewLink().password = null;
   S.update((s) => void delete s.workspaces[0].hostedApps["recipe-box"].passwordSet);
   const n = web.calls.length;
@@ -502,13 +502,13 @@ await check("a key that can't read the password (403 key_permission) gets none, 
   const h = await passGet();
   assert.equal(h.status, 200);
   assert.equal(h.body.password, null);
-  assert.equal(h.body.cookie.name, "__Host-orgo_pass", "Bops' own view still opens it");
+  assert.equal(h.body.cookie.name, "__Host-orgo_pass", "SmileDesk's own view still opens it");
   assert.equal(h.body.why, undefined);
 });
 
 /* ---------------- The owner's choice ---------------- */
 
-await check("turned off: Orgo's password removed, the choice kept on the site's record, and Bops sets none on a read or a deploy that goes live; turned on again, a new one", async () => {
+await check("turned off: Orgo's password removed, the choice kept on the site's record, and SmileDesk sets none on a read or a deploy that goes live; turned on again, a new one", async () => {
   await deployPreview("succeeded");
   await list();
   const off = await passPost({ action: "off" });
@@ -567,7 +567,7 @@ await check("a read of the link sets only a first password: never a new one beca
   const first = previewLink().password;
   const n = web.calls.length;
   const m = shares.length;
-  // Another deploy went live that this Bops never watched (a bot's computer deployed it, or this Bops quit before it was live).
+  // Another deploy went live that this SmileDesk never watched (a bot's computer deployed it, or this SmileDesk quit before it was live).
   const pv = previewProject();
   pv.deployments.push({ id: randomUUID(), project_id: pv.id, state: "succeeded", source_version: HEAD, created_at: iso(), finished_at: iso() });
   for (let i = 0; i < 3; i++) await list();
@@ -583,7 +583,7 @@ await check("a read of the link sets only a first password: never a new one beca
   assert.match(previewLink().password, SHAPE);
 });
 
-await check("a Preview deploy this Bops queued gets a new password once, as it goes live, and shares exactly that one; still on its way, failed or stopped, none; a Published deploy never touches it; a site that's off is skipped", async () => {
+await check("a Preview deploy this SmileDesk queued gets a new password once, as it goes live, and shares exactly that one; still on its way, failed or stopped, none; a Published deploy never touches it; a site that's off is skipped", async () => {
   fast();
   await deployPreview();
   // Still queued, then running: watched, nothing set.
@@ -672,14 +672,14 @@ await check("a newer Preview deploy takes over from an older one's watch: only t
   assert.equal(record().passwordSet.live, newer.id);
   assert.equal(shares.length, m + 1);
   assert.equal(shares.at(-1).password, previewLink().password);
-  // A newer one live while this one's watch still runs (another Bops queued it, after this one): this one's ends with none.
+  // A newer one live while this one's watch still runs (another SmileDesk queued it, after this one): this one's ends with none.
   await deployPreview();
   const k = web.calls.length;
   const mine = pv().deployments.at(-1);
   mine.state = "succeeded";
   pv().deployments.push({ id: randomUUID(), project_id: pv().id, state: "succeeded", source_version: HEAD, created_at: iso(), finished_at: iso() });
   await watched();
-  assert.equal(passwordCalls(k).length, 0, "this one's watch ends with none: the newer one's Bops sets it");
+  assert.equal(passwordCalls(k).length, 0, "this one's watch ends with none: the newer one's SmileDesk sets it");
 });
 
 await check("a Preview rollback gets a new password once the release it puts back is live", async () => {
@@ -706,12 +706,12 @@ await check("a Preview rollback gets a new password once the release it puts bac
   assert.equal(shares.at(-1).password, previewLink().password);
 });
 
-await check("a link just made is left to the Bops that made it: it sets one at once, and a read (the Apps page, the window's) sets none for its first minute", async () => {
+await check("a link just made is left to the SmileDesk that made it: it sets one at once, and a read (the Apps page, the window's) sets none for its first minute", async () => {
   web.young = true;
   await deployPreview();
-  assert.equal(passwordCalls().length, 1, "the Bops that made it set one at once");
+  assert.equal(passwordCalls().length, 1, "the SmileDesk that made it set one at once");
   assert.match(previewLink().password, SHAPE);
-  // As another Bops sees a link just made whose first password isn't set yet.
+  // As another SmileDesk sees a link just made whose first password isn't set yet.
   previewLink().password = null;
   S.update((s) => void delete s.workspaces[0].hostedApps["recipe-box"].passwordSet);
   const n = web.calls.length;
@@ -727,12 +727,12 @@ await check("a link just made is left to the Bops that made it: it sets one at o
   assert.deepEqual(shares.slice(m).map((x) => x.password), [previewLink().password]);
 });
 
-await check("a deploy going live never sets a password on a link that has none while this Bops's record says one was set (turned off on another of the owner's Bops, its choice not here yet), nor shares one", async () => {
+await check("a deploy going live never sets a password on a link that has none while this SmileDesk's record says one was set (turned off on another of the owner's SmileDesk, its choice not here yet), nor shares one", async () => {
   fast();
   await deployPreview("succeeded");
   await watched();
   await deployPreview();
-  // Off on the owner's other Mac: Orgo has none now, and Bops Cloud none; this Bops's record still says one was set.
+  // Off on the owner's other Mac: Orgo has none now, and SmileDesk Cloud none; this SmileDesk's record still says one was set.
   previewLink().password = null;
   assert.ok(record().passwordSet && !record().passwordOff);
   const n = web.calls.length;
@@ -740,7 +740,7 @@ await check("a deploy going live never sets a password on a link that has none w
   ends(previewProject(), "succeeded");
   await watched();
   assert.equal(passwordCalls(n).length, 0, "no rotation onto a link with none");
-  assert.equal(shares.length, m, "nothing shared that would put Bops Cloud's copy back");
+  assert.equal(shares.length, m, "nothing shared that would put SmileDesk Cloud's copy back");
   assert.equal(previewLink().password, null);
 });
 
@@ -819,14 +819,14 @@ await check("each site has its own: a new link for each, a deploy of one renews 
 
 /* ---------------- The routes ---------------- */
 
-await check("the routes are the Bops window's alone, refused while a shared workspace is open and for an account apps aren't open to; a site with no link yet has none", async () => {
+await check("the routes are the SmileDesk window's alone, refused while a shared workspace is open and for an account apps aren't open to; a site with no link yet has none", async () => {
   // No link yet: nothing to read, nothing to change.
   assert.deepEqual((await passGet()).body, { url: null, on: null, password: null, cookie: null });
   const none = await passPost({ action: "new" });
   assert.equal(none.status, 409);
   assert.equal(none.body.error, "It has no preview link yet. Deploy a preview first.");
   await deployPreview();
-  // From a page that isn't the Bops window (a bot's browser on this Mac, say): no.
+  // From a page that isn't the SmileDesk window (a bot's browser on this Mac, say): no.
   for (const r of [await passGet({ window: false }), await passPost({ action: "new" }, { window: false }), await passPost({ action: "off" }, { window: false })]) {
     assert.equal(r.status, 403);
     assert.equal(r.body.password, undefined);
@@ -865,17 +865,17 @@ await check("a bot is told a Preview asks for a password, where the owner sees i
   const pw = previewLink().password;
   assert.notEqual(pw, first);
   assert.equal(said.includes(first), false);
-  assert.match(said, /It asks for a password, a new one once this deploy is live, shown beside its Preview link in Bops\./);
+  assert.match(said, /It asks for a password, a new one once this deploy is live, shown beside its Preview link in SmileDesk\./);
   assert.equal(said.includes(pw), false);
   const note = H.hostedAppsLine("boppy");
   hear(note);
-  assert.match(note, /It asks for a password unless Alex turned it off \(Alex sees it beside the Preview link in Bops; you never have it, so never write one in this chat or ask for it\)\./);
+  assert.match(note, /It asks for a password unless Alex turned it off \(Alex sees it beside the Preview link in SmileDesk; you never have it, so never write one in this chat or ask for it\)\./);
   assert.match(note, /Never open a Preview link to check it \(its password page answers 401\): check your work on Local\./);
   assert.equal(note.includes(pw), false);
   await passPost({ action: "off" });
   assert.match(H.hostedAppsLine("boppy"), /preview at https:\/\/[a-z0-9]{12}\.orgo\.dev, with no password;/);
   const chat = readFileSync(`${root}/lib/server/chat.ts`, "utf8");
-  assert.match(chat, /It asks for a password \(a new one with each deploy\) unless \$\{owner\} turned that off: \$\{owner\} sees it beside the Preview link in Bops, and you never have it, so never write one in this chat; check your work on Local\./);
+  assert.match(chat, /It asks for a password \(a new one with each deploy\) unless \$\{owner\} turned that off: \$\{owner\} sees it beside the Preview link in SmileDesk, and you never have it, so never write one in this chat; check your work on Local\./);
   const skills = readFileSync(`${root}/lib/builtin-skills.ts`, "utf8");
   assert.match(skills, /You never have it: never write a password in the chat or ask for it/);
   assert.equal(JSON.stringify(S.getState().messages).includes(pw), false);
@@ -885,9 +885,9 @@ await check("a bot is told a Preview asks for a password, where the owner sees i
   for (const x of [first, pw]) assert.equal(again.includes(x) || H.hostedAppsLine("boppy").includes(x), false);
 });
 
-/* ---------------- Shared with Bops Cloud ---------------- */
+/* ---------------- Shared with SmileDesk Cloud ---------------- */
 
-await check("New, on and off share with Bops Cloud: the new password, exactly as Orgo has it, or none once it's off", async () => {
+await check("New, on and off share with SmileDesk Cloud: the new password, exactly as Orgo has it, or none once it's off", async () => {
   await deployPreview("succeeded");
   const url = `https://${previewLink().label}.orgo.dev`;
   const at = (n) => shares.slice(n);
@@ -913,7 +913,7 @@ await check("New, on and off share with Bops Cloud: the new password, exactly as
   assert.equal(shares.length, n);
 });
 
-await check("one site's posts to Bops Cloud go one at a time, in order, a newer one in place of one not sent yet; one not taken is sent again for about 20 minutes (a 401 once more); a body it can't take, or another account's, isn't", async () => {
+await check("one site's posts to SmileDesk Cloud go one at a time, in order, a newer one in place of one not sent yet; one not taken is sent again for about 20 minutes (a 401 once more); a body it can't take, or another account's, isn't", async () => {
   const body = (password, site = "recipe-box") => ({ ws: "ws_main", app: "recipe-box", site, url: "https://k7p2qxm4wr3d.orgo.dev", password });
   // The real waits: 10 tries over about 20 minutes, each wait no shorter than the one before.
   const waits = Share.previewShareForTests.waits();
@@ -961,7 +961,7 @@ await check("one site's posts to Bops Cloud go one at a time, in order, a newer 
     const b = Share.sharePreviewPassword(body("Ab3cdej"));
     const c = Share.sharePreviewPassword(body("Ab3cdes"));
     const other = Share.sharePreviewPassword(body("Ab3cdek", "recipe-admin"));
-    // The owner's Mac's check of Bops Cloud's copy, while this site's shares are going: dropped (they're as new).
+    // The owner's Mac's check of SmileDesk Cloud's copy, while this site's shares are going: dropped (they're as new).
     const check = Share.sharePreviewPassword({ ...body("Ab3cdet"), seen: 5 });
     await sleep(20);
     assert.deepEqual(order, ["start Ab3cdei", "start Ab3cdek", "end Ab3cdek"], "the site's next waits for the one going; another site's doesn't");
@@ -986,7 +986,7 @@ await check("one site's posts to Bops Cloud go one at a time, in order, a newer 
   }
 });
 
-await check("a post is for the account whose state it was set in: that account named to Bops Cloud on each try, and dropped once another account's state is here", async () => {
+await check("a post is for the account whose state it was set in: that account named to SmileDesk Cloud on each try, and dropped once another account's state is here", async () => {
   let who = "u_alex";
   const users = [];
   try {
@@ -995,7 +995,7 @@ await check("a post is for the account whose state it was set in: that account n
     Share.previewShareForTests.retryMs([40]);
     const p = Share.sharePreviewPassword({ ws: "ws_main", app: "recipe-box", site: "recipe-box", url: "https://k7p2qxm4wr3d.orgo.dev", password: "Ab3cdew" });
     await sleep(10);
-    // Signed out, and another account signed in on this Bops, before its next try.
+    // Signed out, and another account signed in on this SmileDesk, before its next try.
     who = "u_other";
     assert.equal(await p, false);
     assert.deepEqual(users, ["u_alex"], "sent once, as Alex's; never on the other account's sign in");
@@ -1004,7 +1004,7 @@ await check("a post is for the account whose state it was set in: that account n
     Share.previewShareForTests.send(recordShare);
     Share.previewShareForTests.retryMs([5, 5]);
   }
-  // On the wire (Bops Cloud, signed in): POST /v1/apps/preview-password on the sign in, the account in x-bops-user, the body alone.
+  // On the wire (SmileDesk Cloud, signed in): POST /v1/apps/preview-password on the sign in, the account in x-bops-user, the body alone.
   const was = { self: process.env.BOPS_SELF_HOSTED, url: process.env.BOPS_CLOUD_URL };
   try {
     process.env.BOPS_SELF_HOSTED = "0";
@@ -1024,9 +1024,9 @@ await check("a post is for the account whose state it was set in: that account n
   }
 });
 
-/* ---------------- The owner's Mac puts Bops Cloud's copy right ---------------- */
+/* ---------------- The owner's Mac puts SmileDesk Cloud's copy right ---------------- */
 
-await check("the owner's Mac, reading Orgo for members, tells Bops Cloud what Orgo has where its copy for that link is another and older than the read (only over the entry it saw); never over a fresh one, one the same, or one for another link; none for a link that asks for none", async () => {
+await check("the owner's Mac, reading Orgo for members, tells SmileDesk Cloud what Orgo has where its copy for that link is another and older than the read (only over the entry it saw); never over a fresh one, one the same, or one for another link; none for a link that asks for none", async () => {
   const F = await import(`${root}/lib/server/apps-for-members.ts`);
   const GRACE = F.CLOUD_FIX_AFTER_MS;
   const orgo = { on: true, password: "Nw3pass" };
@@ -1079,12 +1079,12 @@ await check("the owner's Mac, reading Orgo for members, tells Bops Cloud what Or
     assert.equal(asked, n + 1, "read again");
     assert.deepEqual(shares, [{ ws: "ws_main", app: "recipe-box", site: "recipe-box", url: "https://jjjj6666kkkk.orgo.dev", password: "Nw3pass", seen: fresh }]);
     shares.length = 0;
-    // A link that asks for none now (turned off where its share never got there): Bops Cloud's old copy goes, over the entry seen.
+    // A link that asks for none now (turned off where its share never got there): SmileDesk Cloud's old copy goes, over the entry seen.
     cloudHas("https://mmmm7777nnnn.orgo.dev", "Old2pas", old);
     await see("https://mmmm7777nnnn.orgo.dev", false);
     assert.deepEqual(shares, [{ ws: "ws_main", app: "recipe-box", site: "recipe-box", url: "https://mmmm7777nnnn.orgo.dev", password: null, seen: old }]);
     shares.length = 0;
-    // Nobody at Write: nothing told (Bops Cloud shows it to nobody).
+    // Nobody at Write: nothing told (SmileDesk Cloud shows it to nobody).
     S.update((s) => void (s.workspaces[0].memberAccess = { "sam@example.com": { others: "none", bots: {}, apps: "read", at: 1 } }));
     cloudHas("https://pppp8888qqqq.orgo.dev", "Old2pas", old);
     await see("https://pppp8888qqqq.orgo.dev");

@@ -1,21 +1,21 @@
-// Tests for putting two Bops's changes to a routine or a thread together (lib/server/state-merge.ts
+// Tests for putting two SmileDesk's changes to a routine or a thread together (lib/server/state-merge.ts
 // merge3): a routine changed on both sides goes field by field, its clock (next and last times, the last
 // run, a late run, a meeting routine's progress) as one from the side that ran it last, whichever side is
 // merging, and the times it's skipping from both. A pause on the Mac during a run on a computer's runner
 // keeps both; an edit made offline over a runner's advance, or a Run now just after a runner's run, never
 // brings back a time that already ran; a skip on the Mac while a runner ran it stands. A copy an older
-// Bops kept never gives a routine its clock, even where only it changed the routine. Two records of one run that name
+// SmileDesk kept never gives a routine its clock, even where only it changed the routine. Two records of one run that name
 // different threads (a move to the Mac on one side, a runner's end of the thread it left on the other) never mix: the
 // moved one goes whole. An ask for the user's OK is shared, and keeps the furthest it got on either side, never going
-// back to waiting. A thread changed on both sides is the copy of the Bops
+// back to waiting. A thread changed on both sides is the copy of the SmileDesk
 // that runs it (Session.by), with the replies and steps of both and a stop, a move to the Mac or a dismiss
 // asked from elsewhere. A thread, routine or watch kept between us (secret) on either side stays so,
 // whichever side's copy wins: a merge never takes the mark back. A bot's How I work changed on one side only is that side's
-// (an Admin's that Bops Cloud kept never loses to the Mac's older words), and so is a Preview password only Bops Cloud
+// (an Admin's that SmileDesk Cloud kept never loses to the Mac's older words), and so is a Preview password only SmileDesk Cloud
 // writes (Workspace.previewPasswords), which the Mac's next save carries as it was. Anything else changed on both sides
 // still keeps the merging side's copy whole.
 //
-// Pure functions: nothing reaches Bops Cloud.
+// Pure functions: nothing reaches SmileDesk Cloud.
 // Usage: node scripts/test-state-merge.mjs
 import assert from "node:assert/strict";
 
@@ -155,9 +155,9 @@ check("anything else changed on both sides keeps this side's copy whole", () => 
   assert.deepEqual(M.merge3({ watches: [deep] }, { watches: [deepHere] }, { watches: [deepThere] }).watches, [deepHere]);
 });
 
-check("a bot's How I work changed on one side only is that side's, whatever else either side changed on the bot (an Admin's, kept by Bops Cloud while the Mac was away)", () => {
+check("a bot's How I work changed on one side only is that side's, whatever else either side changed on the bot (an Admin's, kept by SmileDesk Cloud while the Mac was away)", () => {
   const was = { id: "max", name: "Max", persona: "Sign off as Tara.", computerStatus: "ready" };
-  // This Mac's own change to the bot meanwhile, and the Admin's words Bops Cloud kept (cloud/members.ts personaHere).
+  // This Mac's own change to the bot meanwhile, and the Admin's words SmileDesk Cloud kept (cloud/members.ts personaHere).
   const here = { ...was, computerStatus: "error" };
   const by = { name: "Sam", ownerText: "Sign off as Tara." };
   const there = { ...was, persona: "Keep replies short.", personaBy: by };
@@ -206,10 +206,10 @@ check("a reply on the Mac to a runner's live thread reaches the runner, and its 
   for (const got of threadBothWays(base2, mac2, runner2)) assert.deepEqual(got.replies, [{ ...reply, delivered: true }, more]);
 });
 
-check("a thread's status and screen go together, from the Bops that runs it", () => {
+check("a thread's status and screen go together, from the SmileDesk that runs it", () => {
   // Marked failed on the Mac (a sign-in from before threads said whose) while the runner worked on: the runner's stands.
   const base = thread();
-  const mac = { ...base, status: "failed", error: "Bops restarted while this was running", display: undefined };
+  const mac = { ...base, status: "failed", error: "SmileDesk restarted while this was running", display: undefined };
   const runner = { ...base, steps: [...base.steps, { at: 7, tool: "type", detail: "Hello" }] };
   for (const got of threadBothWays(base, mac, runner)) {
     assert.deepEqual([got.status, got.display, got.error], ["running", 99, undefined]);
@@ -225,7 +225,7 @@ check("a thread's status and screen go together, from the Bops that runs it", ()
   }
 });
 
-check("Stop on another Bops's thread is asked for, and that Bops's stop is the thread's", () => {
+check("Stop on another SmileDesk's thread is asked for, and that SmileDesk's stop is the thread's", () => {
   const base = thread();
   const mac = { ...base, stopAsked: "Stopped by you" };
   const runner = { ...base, activity: "typing" };
@@ -299,7 +299,7 @@ check("a thread kept between us on the Mac while a runner works on it stays kept
   }
 });
 
-check("a mark is never taken back by a merge: a side whose copy left it out (an older Bops) doesn't clear it", () => {
+check("a mark is never taken back by a merge: a side whose copy left it out (an older SmileDesk) doesn't clear it", () => {
   const base = thread({ secret: true });
   const runner = { ...thread(), steps: [...base.steps, { at: 6, tool: "type", detail: "Hello" }] };
   delete runner.secret;
@@ -308,7 +308,7 @@ check("a mark is never taken back by a merge: a side whose copy left it out (an 
   assert.equal(M.merge3(sessions(base), sessions(runner), sessions(base), { device: RUNNER, runner: true }).sessions[0].secret, true);
   // Changed on both.
   for (const got of threadBothWays(base, { ...base, title: "Inbox (work)" }, runner)) assert.equal(got.secret, true);
-  // Both sides' copies left it out (written by Bops from before the mark): the mark it had stays.
+  // Both sides' copies left it out (written by SmileDesk from before the mark): the mark it had stays.
   const mac = { ...runner, title: "Inbox (work)" };
   for (const got of threadBothWays(base, mac, runner)) assert.equal(got.secret, true);
   // Nothing else is marked, and nothing gone comes back.
@@ -348,15 +348,15 @@ check("a run moved to the Mac while the runner, not yet told, wrote the end of t
   for (const got of bothWays(base, sent, done)) assert.deepEqual(got.last, { ...base.last, status: "ok", delivery: sent.last.delivery });
 });
 
-/* ---------------- Asks for the user's OK, shared by every Bops ---------------- */
+/* ---------------- Asks for the user's OK, shared by every SmileDesk ---------------- */
 
-check("asks for the user's OK are shared (never kept to one Bops): every Bops of theirs sees them in the blob", () => {
+check("asks for the user's OK are shared (never kept to one SmileDesk): every SmileDesk of theirs sees them in the blob", () => {
   assert.ok(!M.NEVER_SYNCED.includes("appApprovals"));
   const ask = { id: "apr_1", botId: "boppy", sessionId: "ses_r", by: "dev_runner_c1", app: "email", action: "send_email", title: "Email Dana", detail: "to: dana@acme.example", at: T0, status: "waiting" };
   const blob = M.toShared({ owner: { name: "Sam" }, appApprovals: [ask], connecting: [{ id: "c" }] }, "dev_mac");
   assert.deepEqual(blob.appApprovals, [ask], "in the blob");
   assert.equal(blob.connecting, undefined, "a sign in under way still isn't");
-  assert.deepEqual(M.fromShared(blob, "dev_mac").appApprovals, [ask], "and read back on every Bops");
+  assert.deepEqual(M.fromShared(blob, "dev_mac").appApprovals, [ask], "and read back on every SmileDesk");
   // applyShared takes them from the merged blob like anything shared.
   const target = { appApprovals: [] };
   M.applyShared(target, { appApprovals: [{ ...ask, status: "allowed" }] });
@@ -379,14 +379,14 @@ check("a request changed on both sides keeps its reply, never back to unanswered
   // At the same moment: a reject over a yes.
   const sameNo = { ...reject, reply: { ...reject.reply, at: once.reply.at } };
   for (const [m, t] of [[once, sameNo], [sameNo, once]]) assert.deepEqual(merged(m, t).reply, sameNo.reply);
-  // Taken out by the Bops that asked once it read the reply, and unchanged on the other side: gone, both ways.
+  // Taken out by the SmileDesk that asked once it read the reply, and unchanged on the other side: gone, both ways.
   for (const [m, t] of [[[], [once]], [[once], []]]) assert.deepEqual(M.merge3({ appApprovals: [once] }, { appApprovals: m }, { appApprovals: t }).appApprovals, []);
-  // Taken out by the Bops that asked once it read the first reply, while a second Mac that hadn't seen it yet answered too,
-  // or Stop met it: still gone, whichever side merges, so the Bops that asked never reads that request again (it would
+  // Taken out by the SmileDesk that asked once it read the first reply, while a second Mac that hadn't seen it yet answered too,
+  // or Stop met it: still gone, whichever side merges, so the SmileDesk that asked never reads that request again (it would
   // do its call a second time, or lose a later Stop).
   for (const late of [reject, stopped, { ...once, reply: { ...once.reply, by: "dev_mac3", at: T0 + 9_000 } }])
     for (const [m, t] of [[[], [late]], [[late], []]]) assert.deepEqual(M.merge3({ appApprovals: [ask] }, { appApprovals: m }, { appApprovals: t }).appApprovals, [], `${late.reply.reason ?? late.reply.reply}: not brought back`);
-  // Older Bops's copy (Me.older) alike.
+  // Older SmileDesk's copy (Me.older) alike.
   assert.deepEqual(M.merge3({ appApprovals: [ask] }, { appApprovals: [once] }, { appApprovals: [] }, { device: "dev_mac", older: true }).appApprovals, []);
   // A merge never touches a request otherwise: unanswered on both sides, it stays as it is, and so does its resume.
   assert.deepEqual(M.merge3({ appApprovals: [ask] }, { appApprovals: [ask] }, { appApprovals: [ask] }).appApprovals, [ask]);
@@ -447,11 +447,11 @@ check("Run now on the Mac just after a runner ran the 9 AM: the 9 AM doesn't com
   }
 });
 
-/* ---------------- A copy kept by an older Bops (persist-cloud.ts buildKept) ---------------- */
+/* ---------------- A copy kept by an older SmileDesk (persist-cloud.ts buildKept) ---------------- */
 
 const OLD = { device: "dev_old_mac", older: true, nextRunOf };
 
-check("an older Bops's kept copy never undoes a bot's rename, own computer or access made since", () => {
+check("an older SmileDesk's kept copy never undoes a bot's rename, own computer or access made since", () => {
   const was = { id: "sam", name: "Sam", computer: "shared", access: {}, computerStatus: "ready" };
   // The newer Mac renamed Sam, gave it its own computer and Gmail; the older one only saw it go to sleep.
   const cloud = { ...was, name: "Samantha", computer: "c2", access: { ca_gmail: "act" } };
@@ -465,11 +465,11 @@ check("an older Bops's kept copy never undoes a bot's rename, own computer or ac
   assert.deepEqual(M.merge3({ bots: [was] }, { bots: [kept] }, { bots: [cloud] }, { device: MAC }).bots, [kept]);
 });
 
-check("an older Bops's kept copy never gives a routine its clock: an edit made since runs at its time", () => {
+check("an older SmileDesk's kept copy never gives a routine its clock: an edit made since runs at its time", () => {
   const base = daily();
   const cloud = { ...base, schedule: { kind: "daily", time: "17:00" }, nextRunAt: D + 17 * H };
   // The older Mac ran it from memory at 9 AM and was refused.
-  const kept = { ...base, lastRunAt: D + 9 * H, nextRunAt: D + 33 * H, last: { at: D + 9 * H, status: "failed", error: "Bops Cloud answered 426 (state_too_new)" } };
+  const kept = { ...base, lastRunAt: D + 9 * H, nextRunAt: D + 33 * H, last: { at: D + 9 * H, status: "failed", error: "SmileDesk Cloud answered 426 (state_too_new)" } };
   const got = M.merge3(state(base), state(kept), state(cloud), OLD).routines[0];
   assert.deepEqual(got.schedule, { kind: "daily", time: "17:00" });
   assert.equal(got.nextRunAt, D + 17 * H, "today's 5 PM still runs");
@@ -480,20 +480,20 @@ check("an older Bops's kept copy never gives a routine its clock: an edit made s
   assert.equal(quiet.quiet, true);
 });
 
-check("an older Bops's kept copy never gives a routine its clock, even where only it changed the routine", () => {
+check("an older SmileDesk's kept copy never gives a routine its clock, even where only it changed the routine", () => {
   const base = daily();
-  // The 9 AM ran on the older Mac while Bops Cloud refused it, and failed; nothing newer changed the routine.
-  const kept = { ...base, lastRunAt: D + 9 * H, nextRunAt: D + 33 * H, last: { at: D + 9 * H, status: "failed", error: "Another of your Macs is on a newer Bops. Update this one." } };
+  // The 9 AM ran on the older Mac while SmileDesk Cloud refused it, and failed; nothing newer changed the routine.
+  const kept = { ...base, lastRunAt: D + 9 * H, nextRunAt: D + 33 * H, last: { at: D + 9 * H, status: "failed", error: "Another of your Macs is on a newer SmileDesk. Update this one." } };
   const other = routine({ id: "rtn_other", title: "Other" });
   const otherNow = { ...other, title: "Other, renamed" };
   // The routines untouched in the cloud, and the cloud having changed another one.
   for (const [was, cloud] of [[[base], [base]], [[base, other], [base, otherNow]]]) {
     const got = M.merge3({ routines: was }, { routines: [kept, ...was.slice(1)] }, { routines: cloud }, OLD).routines[0];
-    assert.equal(got.nextRunAt, D + 9 * H, "today's 9 AM still runs, late, on the newer Bops");
+    assert.equal(got.nextRunAt, D + 9 * H, "today's 9 AM still runs, late, on the newer SmileDesk");
     assert.equal(got.lastRunAt, D - 15 * H);
     assert.equal(got.last.status, "ok", "the refused run isn't its last");
   }
-  // A one-off that came due on the older Mac: still on, and still due, so the newer Bops reminds.
+  // A one-off that came due on the older Mac: still on, and still due, so the newer SmileDesk reminds.
   const once = routine({ id: "rtn_bank", title: "Call the bank before 3", reminder: true, schedule: { kind: "once", at: D + 14 * H }, nextRunAt: D + 14 * H, lastRunAt: undefined, last: undefined });
   const fired = { ...once, enabled: false, lastRunAt: D + 14 * H, last: { at: D + 14 * H, status: "ok" } };
   delete fired.nextRunAt;
@@ -525,7 +525,7 @@ check("an older Bops's kept copy never gives a routine its clock, even where onl
   assert.deepEqual(M.merge3(state(base), { routines: [base, added] }, state(base), OLD).routines[1], added);
 });
 
-check("an older Bops's kept copy: what it added goes in, what the newer one removed stays gone, the newer order stands", () => {
+check("an older SmileDesk's kept copy: what it added goes in, what the newer one removed stays gone, the newer order stands", () => {
   const a = { id: "a", name: "Ava" };
   const b = { id: "b", name: "Max" };
   const c = { id: "c", name: "Dana" };
@@ -540,7 +540,7 @@ check("an older Bops's kept copy: what it added goes in, what the newer one remo
   assert.deepEqual(got.sessions.map((x) => x.id), ["ses_new"]);
   // A thread the older Mac ran stays its copy (by who runs it), with a stop asked from the newer one.
   const run = thread({ id: "ses_old", by: "dev_old_mac", status: "running" });
-  const keptRun = { ...run, status: "failed", error: "Bops Cloud answered 426" };
+  const keptRun = { ...run, status: "failed", error: "SmileDesk Cloud answered 426" };
   const asked = { ...run, stopAsked: "Stopped by you" };
   const merged = M.merge3({ sessions: [run] }, { sessions: [keptRun] }, { sessions: [asked] }, OLD).sessions[0];
   assert.equal(merged.status, "failed");
@@ -564,7 +564,7 @@ check("a workspace's team chart is one field: changed on both Macs, the one savi
   assert.deepEqual(M.merge3(none, none, here).workspaces[0].chain, here.workspaces[0].chain);
 });
 
-check("an older Bops's kept copy keeps the team chart it doesn't know, and never undoes one made since", () => {
+check("an older SmileDesk's kept copy keeps the team chart it doesn't know, and never undoes one made since", () => {
   const ws = (chain) => ({ id: "ws_acme", name: "Acme", ...(chain ? { chain } : {}) });
   const chain = { sideways: "closed", bots: { juno: { memory: "own" } }, at: 7 };
   // The older app read the state with the chart in it and wrote it back as it was (a field it doesn't know): it stays.
@@ -588,7 +588,7 @@ check("a bot's settings page settings (Workspace.botSettings): two Macs setting 
   // What v0.0.32 does with them: scripts/test-compat-0032.mjs, with its own merge3.
 });
 
-/* ---------------- Your Apps: a person's level kept, and put back where an older Bops dropped it ---------------- */
+/* ---------------- Your Apps: a person's level kept, and put back where an older SmileDesk dropped it ---------------- */
 
 {
   const clone = (x) => JSON.parse(JSON.stringify(x));
@@ -599,19 +599,19 @@ check("a bot's settings page settings (Workspace.botSettings): two Macs setting 
   const entry = (apps, bots = { boppy: "read" }) => ({ others: "none", bots, at: 100, ...(apps ? { apps } : {}) });
   const blob = (map, extra) => ({ owner: { name: "Ava" }, workspace: "ws_main", workspaces: [ws(map, extra)], bots: [{ id: "boppy", isMain: true, name: "Boppy" }], chats: [] });
   const appsOf = (b, who = AVA) => b.workspaces[0].memberAccess?.[who]?.apps;
-  // What an older Bops's People sheet (or its look at who's still there) keeps for a person: { ...cleanAccess, at, invite? }, its cleanAccess { others, bots }.
+  // What an older SmileDesk's People sheet (or its look at who's still there) keeps for a person: { ...cleanAccess, at, invite? }, its cleanAccess { others, bots }.
   const oldSet = (state, key, access, how = {}) => {
     const s = clone(state);
     s.workspaces[0].memberAccess = { ...s.workspaces[0].memberAccess, [key]: { others: access.others, bots: access.bots, at: how.at ?? 200, ...(how.invite ? { invite: true } : {}) } };
     return s;
   };
-  check("Your Apps: an older Bops saving something else keeps the level", () => {
+  check("Your Apps: an older SmileDesk saving something else keeps the level", () => {
     const base = blob({ [AVA]: entry("write") });
     const mine = clone(base);
     mine.owner.name = "Ava B";
     assert.equal(appsOf(M.merge3(clone(base), mine, clone(base))), "write");
   });
-  check("Your Apps: an older Bops saving while this one set the level keeps it", () => {
+  check("Your Apps: an older SmileDesk saving while this one set the level keeps it", () => {
     const base = blob({ [AVA]: entry(undefined) });
     const mine = clone(base);
     mine.owner.name = "Ava B";
@@ -621,7 +621,7 @@ check("a bot's settings page settings (Workspace.botSettings): two Macs setting 
     const base = blob({ [AVA]: entry("write"), [JUNO]: entry("read") });
     assert.equal(appsOf(M.merge3(clone(base), oldSet(base, JUNO, { others: "read", bots: {} }), clone(base))), "write");
   });
-  check("Your Apps: an older Bops deleting a bot (its entry spread) keeps it", () => {
+  check("Your Apps: an older SmileDesk deleting a bot (its entry spread) keeps it", () => {
     const base = blob({ [AVA]: entry("write", { boppy: "read", gone: "write" }) });
     const mine = clone(base);
     mine.workspaces[0].memberAccess[AVA] = { ...mine.workspaces[0].memberAccess[AVA], bots: { boppy: "read" } };
@@ -632,7 +632,7 @@ check("a bot's settings page settings (Workspace.botSettings): two Macs setting 
     assert.equal(appsOf(back), "write");
     assert.deepEqual(back.workspaces[0].appsForMembers, SEEN);
   });
-  check("Your Apps: an older Bops renaming the workspace keeps appsForMembers", () => {
+  check("Your Apps: an older SmileDesk renaming the workspace keeps appsForMembers", () => {
     const base = blob({ [AVA]: entry("read") }, { appsForMembers: SEEN });
     const mine = clone(base);
     mine.workspaces = mine.workspaces.map((w) => ({ ...w, name: "Renamed" }));
@@ -643,20 +643,20 @@ check("a bot's settings page settings (Workspace.botSettings): two Macs setting 
   check("Your Apps: an older sheet rewriting this person drops it; this Mac's next pull puts it back", () => {
     const base = blob({ [AVA]: { ...entry("write"), invite: true } });
     const older = oldSet(base, AVA, base.workspaces[0].memberAccess[AVA], { at: 150 });
-    // Merged where the older Bops saves: the merge here puts it back from the copy before.
+    // Merged where the older SmileDesk saves: the merge here puts it back from the copy before.
     const there = M.merge3(clone(base), older, clone(base));
-    assert.equal(appsOf(there), "write", "even the older Bops's save keeps it when this merge3 runs it");
-    // This Mac pulls what Bops Cloud kept from the older Bops (no level): put back, its new `at` kept.
+    assert.equal(appsOf(there), "write", "even the older SmileDesk's save keeps it when this merge3 runs it");
+    // This Mac pulls what SmileDesk Cloud kept from the older SmileDesk (no level): put back, its new `at` kept.
     const r = M.merge3(clone(base), clone(base), older);
     assert.deepEqual(r.workspaces[0].memberAccess[AVA], { others: "none", bots: { boppy: "read" }, at: 150, apps: "write" });
   });
-  check("Your Apps: removed on an older Bops stays removed", () => {
+  check("Your Apps: removed on an older SmileDesk stays removed", () => {
     const base = blob({ [AVA]: entry("write") });
     const mine = clone(base);
     delete mine.workspaces[0].memberAccess[AVA];
     assert.equal(M.merge3(clone(base), clone(base), mine).workspaces[0].memberAccess[AVA], undefined);
   });
-  check("Your Apps: removed and invited again on an older Bops starts fresh (no level from before)", () => {
+  check("Your Apps: removed and invited again on an older SmileDesk starts fresh (no level from before)", () => {
     const base = blob({ [AVA]: entry("write") });
     const older = oldSet(base, AVA, { others: "none", bots: { boppy: "read" } }, { invite: true, at: 300 });
     const r = M.merge3(clone(base), clone(base), older);
@@ -666,25 +666,25 @@ check("a bot's settings page settings (Workspace.botSettings): two Macs setting 
 }
 
 {
-  // Workspace.previewPasswords: only Bops Cloud writes it (cloud/preview-passwords.ts); the owner's Mac carries it along.
+  // Workspace.previewPasswords: only SmileDesk Cloud writes it (cloud/preview-passwords.ts); the owner's Mac carries it along.
   const clone = (x) => JSON.parse(JSON.stringify(x));
   const kept = { "shop/shop": { url: "https://k7p2qxm4wr3d.orgo.dev", password: "Kq7mZ3x", at: 5 } };
   const blob = (extra = {}) => ({ owner: { name: "Ava" }, workspace: "ws_main", workspaces: [{ id: "ws_main", name: "Main", createdAt: 1, hostedApps: { shop: { botId: "boppy", computerId: "c1" } }, ...extra }], bots: [{ id: "boppy", isMain: true, name: "Boppy" }], chats: [] });
-  check("a Preview password Bops Cloud kept lands on the Mac's merge, and goes back up as it was with the Mac's next save", () => {
+  check("a Preview password SmileDesk Cloud kept lands on the Mac's merge, and goes back up as it was with the Mac's next save", () => {
     const base = blob();
     const mine = clone(base);
     mine.workspaces[0].name = "Renamed here";
     mine.owner.name = "Ava B";
-    // Bops Cloud wrote it meanwhile (a version by "cloud"): the Mac's 409, or its read, merges it in.
+    // SmileDesk Cloud wrote it meanwhile (a version by "cloud"): the Mac's 409, or its read, merges it in.
     const merged = M.merge3(clone(base), mine, blob({ previewPasswords: kept }));
     assert.deepEqual(merged.workspaces[0].previewPasswords, kept);
     assert.equal(merged.workspaces[0].name, "Renamed here");
-    // Its next save over that (the merged blob is its base now): still there, as Bops Cloud wrote it.
+    // Its next save over that (the merged blob is its base now): still there, as SmileDesk Cloud wrote it.
     const later = clone(merged);
     later.owner.name = "Ava C";
     const up = M.toShared(M.fromShared(later, "mac_a"), "mac_a");
     assert.deepEqual(up.workspaces[0].previewPasswords, kept);
-    // A newer one from Bops Cloud over the Mac's copy of the older one: the newer one.
+    // A newer one from SmileDesk Cloud over the Mac's copy of the older one: the newer one.
     const newer = { "shop/shop": { ...kept["shop/shop"], password: "Wq4tY7p", at: 9 } };
     assert.deepEqual(M.merge3(clone(merged), clone(merged), blob({ previewPasswords: newer })).workspaces[0].previewPasswords, newer);
     // Taken out there (turned off): out here too.
@@ -701,7 +701,7 @@ check("a bot's settings page settings (Workspace.botSettings): two Macs setting 
     const off = M.keepAppsLevels(ws({ others: "none", bots: { boppy: "write" }, at: 150, computer: "none" }), [ws({ others: "none", bots: { boppy: "write" }, at: 100, computer: "use" })]);
     assert.equal(off[0].memberAccess[AVA].computer, "none", "off is never taken for one dropped");
     const fresh = M.keepAppsLevels(ws({ others: "none", bots: {}, invite: true, at: 300 }), [ws({ others: "none", bots: {}, at: 100, computer: "use" })]);
-    assert.equal(fresh[0].memberAccess[AVA].computer, undefined, "invited again on an older Bops starts fresh");
+    assert.equal(fresh[0].memberAccess[AVA].computer, undefined, "invited again on an older SmileDesk starts fresh");
     const both = M.keepAppsLevels(ws({ others: "none", bots: {}, at: 150 }), [ws({ others: "none", bots: {}, at: 100, apps: "read", computer: "use" })]);
     assert.deepEqual([both[0].memberAccess[AVA].apps, both[0].memberAccess[AVA].computer], ["read", "use"], "Your Apps and it, both");
   });

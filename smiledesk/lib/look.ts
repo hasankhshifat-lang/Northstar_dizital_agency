@@ -1,6 +1,6 @@
 import type { Bot } from "./types";
 
-/* Bot colors as the UI paints them, shared by the app and the computers Bops dresses (lib/server/desktop). */
+/* Bot colors as the UI paints them, shared by the app and the computers SmileDesk dresses (lib/server/desktop). */
 
 export const DESKTOP_BG =
   "linear-gradient(160deg in oklab, oklab(96.8% -0.056 0.130) 0%, oklab(95.2% -0.090 0.182) 45%, oklab(86% -0.087 0.168) 100%)";

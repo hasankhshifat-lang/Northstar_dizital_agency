@@ -32,10 +32,10 @@ export async function GET(request: Request, ctx: { params: Promise<{ name: strin
 
 /**
  * Change its port, its install, build and start commands and its health check's path (AppSettingsChange): what its site runs, so only
- * from the Bops window (ui-token.ts), as a deploy is. Answers its settings as they are now.
+ * from the SmileDesk window (ui-token.ts), as a deploy is. Answers its settings as they are now.
  */
 export async function PATCH(request: Request, ctx: { params: Promise<{ name: string }> }) {
-  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "An app's settings can only be changed in the Bops app." }, { status: 403 }));
+  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "An app's settings can only be changed in the SmileDesk app." }, { status: 403 }));
   if (unready) return unready;
   if (!appsOpen(getState())) return Response.json({ error: "Not found" }, { status: 404 });
   const { name } = await ctx.params;

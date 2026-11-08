@@ -18,7 +18,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/chats/[chat
   const { chatId } = await ctx.params;
   const { text, replyTo, images, files, lookingAt, agent, appNote, picks } = (await request.json()) as {
     text?: string;
-    /** The agent picked in the message box for the threads this message starts (Message.agent): from the Bops window only. */
+    /** The agent picked in the message box for the threads this message starts (Message.agent): from the SmileDesk window only. */
     agent?: string;
     replyTo?: string;
     images?: { id: string; type: string; w?: number; h?: number }[];
@@ -28,7 +28,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/chats/[chat
     lookingAt?: string;
     /**
      * About one of the owner's apps on the web (Message.appNote): Fix it on its Preview tab, or what its Select and
-     * Draw put in the message box (components/app/preview-tab.tsx). Only the owner's, from the Bops window, where
+     * Draw put in the message box (components/app/preview-tab.tsx). Only the owner's, from the SmileDesk window, where
      * they see their apps: a shared workspace's members without them are never shown it.
      */
     appNote?: unknown;
@@ -39,18 +39,18 @@ export async function POST(request: Request, ctx: RouteContext<"/api/chats/[chat
   if (!c) return Response.json({ error: "no such chat" }, { status: 404 });
   const pics = (images ?? []).filter((i) => uploadPath(i.id)).slice(0, 10);
   const named = (Array.isArray(files) ? files : []).filter((f): f is string => typeof f === "string");
-  // One that isn't here anymore (Bops restarted, or it was added a day ago) is on the Desktop with nothing telling the bot: said, never sent without it.
+  // One that isn't here anymore (SmileDesk restarted, or it was added a day ago) is on the Desktop with nothing telling the bot: said, never sent without it.
   if (named.some((f) => !addedFile(f))) return Response.json({ error: "A file you added isn't ready anymore. Add it again." }, { status: 409 });
   const added = named.flatMap((f) => addedFile(f) ?? []).filter((f) => c.botIds.includes(f.botId)).slice(0, 10);
   if (!text?.trim() && !pics.length && !added.length) return Response.json({ error: "empty message" }, { status: 400 });
   const picked = typeof agent === "string" && fromBopsWindow(request) ? agent : undefined;
   const aboutApp = appNote === true && fromBopsWindow(request) && !sharedOpen() && appsOwnShown(getState());
-  // A workspace whose chat goes through Bops Cloud: written there, and answered on the bot's computer (lib/server/cloud-chat.ts).
+  // A workspace whose chat goes through SmileDesk Cloud: written there, and answered on the bot's computer (lib/server/cloud-chat.ts).
   const words = text?.trim() ?? "";
   if (words && !sharedOpen() && sendsThroughCloud(chatId, { images: pics.length, files: added.length, lookingAt: typeof lookingAt === "string" ? lookingAt : undefined, appNote: aboutApp, picks: picks !== undefined })) {
     const how = await sendThroughCloud(chatId, words, replyTo);
     if (how === "sent") return Response.json({ ok: true });
-    if (how === "failed") return Response.json({ error: "That didn't reach Bops Cloud. Try again." }, { status: 502 });
+    if (how === "failed") return Response.json({ error: "That didn't reach SmileDesk Cloud. Try again." }, { status: 502 });
   }
   void handleMessage(chatId, text?.trim() ?? "", replyTo, pics, undefined, undefined, undefined, undefined, typeof lookingAt === "string" ? lookingAt : undefined, undefined, picked, aboutApp, aboutApp ? picksOf(picks, text?.trim() ?? "") : undefined, added);
   return Response.json({ ok: true });

@@ -1,11 +1,11 @@
 // Tests for Ingot on a computer's runner (lib/server/ingot.ts, BOPS_RUNNER=1): it signs in to Ingot only with the
-// token its computer has for the workspace (root's tokens folder there, which the owner's Bops wrote), never with an
+// token its computer has for the workspace (root's tokens folder there, which the owner's SmileDesk wrote), never with an
 // Orgo key (Ingot takes a computer's own Orgo sign in for nothing); with no token there, or one Ingot turned away, it
 // says so in plain words and changes nothing; getting the computer ready there never makes, lists or revokes a token
 // (only the owner's account can); and a token is never dropped from a runner.
 //
 // The store and Orgo's client are fakes (a state with one workspace, and the computer's commands answered here), and
-// Ingot is a fake on localhost, so nothing reaches Orgo, Bops Cloud or Ingot.
+// Ingot is a fake on localhost, so nothing reaches Orgo, SmileDesk Cloud or Ingot.
 // Usage: node --conditions=react-server scripts/test-runner-ingot.mjs
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
@@ -41,7 +41,7 @@ const ingotServer = createServer((req, res) => {
 await new Promise((r) => ingotServer.listen(0, "127.0.0.1", r));
 process.env.BOPS_INGOT_URL = `http://127.0.0.1:${ingotServer.address().port}`;
 
-// The fakes: the state (one workspace on Orgo, whose token on this computer the owner's Bops made), and Orgo's client
+// The fakes: the state (one workspace on Orgo, whose token on this computer the owner's SmileDesk made), and Orgo's client
 // (no Orgo key is ever asked for Ingot; the computer's commands answered by `bash`).
 const state = { bots: [], workspaces: [{ id: "ws_main", orgoProjectId: PROJECT, ingotTokens: { [COMPUTER]: { id: "7", sum: "x", at: 1 } } }] };
 const ran = [];

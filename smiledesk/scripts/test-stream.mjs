@@ -100,7 +100,7 @@ const token = `token=${encodeURIComponent(orgo.password)}`;
 
 /* ---------------- The boot screen: Orgo's WebRTC first, its VNC proxy second ---------------- */
 
-// On unless BOPS_WEBRTC=0. Nobody chose for this computer (Orgo forgets on a stop): Bops turns WebRTC on,
+// On unless BOPS_WEBRTC=0. Nobody chose for this computer (Orgo forgets on a stop): SmileDesk turns WebRTC on,
 // then streams over it, with the screen's real size so the app can tell a stream Orgo shrank it for.
 let p = await plan(99);
 assert.equal(p.status, 200);
@@ -135,7 +135,7 @@ orgo.webrtc = true;
 p = await plan(99);
 assert.ok(p.rtc);
 assert.equal(asked("POST", "/api/computers/c1/webrtc"), 2);
-// Someone turned it off on Orgo: Bops leaves it off, and the screen streams over VNC.
+// Someone turned it off on Orgo: SmileDesk leaves it off, and the screen streams over VNC.
 orgo.webrtc = false;
 p = await plan(99);
 assert.deepEqual([p.rtc, p.vnc], [undefined, `wss://orgo.test/desktops/c1/ws/websockify?${token}`]);
@@ -148,7 +148,7 @@ assert.deepEqual([p.rtc, !!p.vnc], [undefined, true]);
 await plan(99);
 await plan(99);
 assert.equal(asked("POST", "/api/computers/c1/webrtc"), 3, "refused once, then not asked for a while");
-// Turned off in Bops (BOPS_WEBRTC=0): VNC as before, and nothing asked of Orgo.
+// Turned off in SmileDesk (BOPS_WEBRTC=0): VNC as before, and nothing asked of Orgo.
 process.env.BOPS_WEBRTC = "0";
 orgo.refuse = null;
 p = await plan(99);
@@ -160,7 +160,7 @@ assert.equal(O.webrtcWanted(), true, "unset is on");
 process.env.BOPS_WEBRTC = "1";
 assert.equal(O.webrtcWanted(), true);
 delete process.env.BOPS_WEBRTC;
-// Orgo's WebRTC shrank the screen (its gateway's limit is under 1280x960): the app says so, Bops puts the
+// Orgo's WebRTC shrank the screen (its gateway's limit is under 1280x960): the app says so, SmileDesk puts the
 // screen back to its real size, and the computer streams over VNC for a day, without Orgo asked about WebRTC.
 orgo.webrtc = true;
 assert.ok((await plan(99)).rtc);
@@ -226,7 +226,7 @@ assert.equal(asked("POST", "/api/computers/c1/webrtc"), rtcAsked, "nothing turne
 assert.equal(asked("GET", "/api/computers/c1/screens"), 1, "the screen's id: Orgo's list, read once and kept a minute (screensOf)");
 p = await plan(99);
 assert.deepEqual([p.vnc, p.screen], [`wss://orgo.test/desktops/c1/ws/websockify?${token}`, undefined], "the boot screen's stream is as it was");
-for (const d of [98, 5, NaN]) assert.equal((await plan(d)).status, 409, `display ${d}: not one of Bops' screens`);
+for (const d of [98, 5, NaN]) assert.equal((await plan(d)).status, 409, `display ${d}: not one of SmileDesk's screens`);
 assert.ok(!JSON.stringify(await plan(101)).includes("sk_test_one"), "still no Orgo key in the plan");
 // Orgo's own id for the screen from its list (read before a stream and kept a minute, and read by a click
 // without the tailnet too; the computer view never reads it); screen-<display> for one the list doesn't have.

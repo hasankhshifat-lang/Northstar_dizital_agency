@@ -54,19 +54,19 @@ import { dropUploads, uploadsDir } from "./uploads";
  * Settings → Your data, on the server (the window's side and the rules are lib/privacy.ts; Recently deleted
  * is deleted.ts).
  *
- * Keep chats and calls (AppState.privacy.keepDays): every hour, and once soon after Bops starts or someone
- * signs in, the Mac (never a computer's runner, a hosted server, or a Bops signed out or older than the
+ * Keep chats and calls (AppState.privacy.keepDays): every hour, and once soon after SmileDesk starts or someone
+ * signs in, the Mac (never a computer's runner, a hosted server, or a SmileDesk signed out or older than the
  * state: sweepHere) deletes the chat messages older than that in every workspace's chats, and the finished
  * threads that last did anything before it (lib/privacy.ts expiredThreads), through the deletes a user's own
- * go through (remove.ts deleteMessages, deleteThreads), so they go from Bops Cloud and every Mac and the
- * iPhone hear it; for good, never into Recently deleted. A batch at a time, each in Bops Cloud before the
+ * go through (remove.ts deleteMessages, deleteThreads), so they go from SmileDesk Cloud and every Mac and the
+ * iPhone hear it; for good, never into Recently deleted. A batch at a time, each in SmileDesk Cloud before the
  * next goes, so a first sweep over years of chats is many small writes, not one that floods it (and stops,
  * to go on at the next hour, when the cloud doesn't take one). The same sweep prunes what only this Mac
  * keeps: the call notes (phone-calls.jsonl) and the router's notes (routes.jsonl) older than that, the last
  * frames of threads, and the images and pages older than that which no message left in the chats shows.
  * What's still in use stays until it isn't (lib/privacy.ts heldBack).
  *
- * It deletes only by choices this Mac knows are the user's latest (choicesCurrent): the state read from Bops Cloud
+ * It deletes only by choices this Mac knows are the user's latest (choicesCurrent): the state read from SmileDesk Cloud
  * under 40 seconds ago, with no sleep since, read again first when it's older. A Mac offline, or just awake
  * and not back online, could hold a keep the user has since made longer on another Mac, and what it deleted
  * by it would go from every Mac when it's back: so offline it deletes nothing, and waits for the next hour.
@@ -86,7 +86,7 @@ export const privacyTiming = { batch: 500, pauseMs: 2_000, flushMs: 60_000, firs
 
 /**
  * The store as the sweep asks it whether this Mac's state is current (choicesCurrent), and whether what a batch
- * deleted is in Bops Cloud (inBatches: its messages' removal, its threads gone from the cloud's copy); tests
+ * deleted is in SmileDesk Cloud (inBatches: its messages' removal, its threads gone from the cloud's copy); tests
  * stand in for it.
  */
 export const privacyStore = { inCloud: stateInCloud, pulledAt: statePulledAt, pull: pullState, messagesUp: removalsUp, threadsUp };
@@ -104,13 +104,13 @@ export type SweepResult = { messages: number; threads: number; files: number; li
 type Heard = { dir: string | null; keepDays: KeepDays; deletedDays: DeletedDays };
 const heardNow = (): Heard => ({ dir: userDir(), ...privacyOf(getState()) });
 
-/** Whether this Bops sweeps: the Mac's (never a computer's runner, nor a hosted server), signed in, with a state no newer Bops wrote. */
+/** Whether this SmileDesk sweeps: the Mac's (never a computer's runner, nor a hosted server), signed in, with a state no newer SmileDesk wrote. */
 const sweepHere = () => loopHere("privacy") && !onPostgres() && stateReady() && !stateTooNew() && !!getState().account;
 const warn = (e: Error) => console.warn(`[privacy] ${e.message}`);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Whether this Mac's state, and so the user's choices in it, is current with Bops Cloud as it stands, without
+ * Whether this Mac's state, and so the user's choices in it, is current with SmileDesk Cloud as it stands, without
  * reading it again: read in full under freshMs ago with no sleep since. A store that keeps the state nowhere
  * else (a self-hosted install) is current. What Settings does as it opens goes by this (Recently deleted's
  * copies whose time is up go first only when it's true: privacyInfo, the route's restore): a window opened on
@@ -124,7 +124,7 @@ export function choicesFresh(): boolean {
 }
 
 /**
- * Whether this Mac's state is current with Bops Cloud (choicesFresh), read again now when it isn't. False
+ * Whether this Mac's state is current with SmileDesk Cloud (choicesFresh), read again now when it isn't. False
  * offline (the read fails), and then the sweep deletes nothing.
  */
 export async function choicesCurrent(): Promise<boolean> {
@@ -146,7 +146,7 @@ const routeLog = () => {
  * This Mac's files older than `cutoff` that the sweep deletes: images (uploads.ts) and pages (pages.ts) no
  * message in `kept` shows or links to (nor, for images, a busy thread works from: busyImages; for pages, a
  * thread's own words), and threads' last frames (frames.ts), but a busy thread's; nor any named in `spare`. Only
- * files named as Bops names them: nothing else in those folders is ever touched.
+ * files named as SmileDesk names them: nothing else in those folders is ever touched.
  */
 function oldFiles(cutoff: number, kept: readonly Message[], state: Pick<AppState, "sessions" | "appApprovals">, spare: ReadonlySet<string> = new Set()): string[] {
   const busy = busyThreads(state);
@@ -235,7 +235,7 @@ async function pruneLog(file: string | null, cutoff: number): Promise<number> {
  * Recently deleted's copies whose time is up, then (with a Keep chats and calls set) the messages older than
  * it and the finished threads that last did anything before it, a batch at a time, then this Mac's files and
  * log lines older than it. One sweep at a time: a second ask while one runs gets that one. Null when this
- * Bops doesn't sweep (sweepHere).
+ * SmileDesk doesn't sweep (sweepHere).
  */
 export function sweepKept(now = Date.now()): Promise<SweepResult | null> {
   if (!sweepHere()) return Promise.resolve(null);
@@ -245,11 +245,11 @@ export function sweepKept(now = Date.now()): Promise<SweepResult | null> {
   return g.__bopsPrivacySweep;
 }
 
-/** What a batch deleted: how many, and whether that's in Bops Cloud now (null: the store doesn't say, flushState does). */
+/** What a batch deleted: how many, and whether that's in SmileDesk Cloud now (null: the store doesn't say, flushState does). */
 type Dropped = { count: number; up: () => boolean | null };
 
 /**
- * Delete a batch at a time (`next`: the next batch, by id; `drop`: deletes it for good), each in Bops Cloud
+ * Delete a batch at a time (`next`: the next batch, by id; `drop`: deletes it for good), each in SmileDesk Cloud
  * before the next goes. Landed is judged by what the batch itself deleted (Dropped.up), never by whether
  * anything else changed meanwhile (a bot's turn, a thread's steps: flushState says those aren't up yet).
  * When it isn't up (offline, the cloud down), it waits in the save's own retries, and the rest wait for the
@@ -270,7 +270,7 @@ async function inBatches(keepDays: KeepDays, ours: () => boolean, next: () => st
   }
 }
 
-/** A batch of messages deleted for good: up once Bops Cloud took their removal. */
+/** A batch of messages deleted for good: up once SmileDesk Cloud took their removal. */
 function dropMessages(ids: string[]): Dropped {
   return { count: deleteMessages(ids, { forGood: true }), up: () => privacyStore.messagesUp(ids) };
 }
@@ -306,7 +306,7 @@ async function sweep(now: number): Promise<SweepResult> {
   if (went === "done") went = await inBatches(keepDays, ours, () => expiredThreads(getState(), keepDays, now).map((s) => s.id), dropThreads, threads);
   out.messages = messages.count;
   out.threads = threads.count;
-  // Bops Cloud not taking them stops only what goes from it: this Mac's own still go, by the same current choice.
+  // SmileDesk Cloud not taking them stops only what goes from it: this Mac's own still go, by the same current choice.
   if (went === "stop" || !ours()) return out;
   const st = getState();
   for (const p of oldFiles(cutoff, st.messages, st))
@@ -325,7 +325,7 @@ async function sweep(now: number): Promise<SweepResult> {
 }
 
 /**
- * The sweep's clock: every hour while Bops is open, and once soon after each start or sign in (a state
+ * The sweep's clock: every hour while SmileDesk is open, and once soon after each start or sign in (a state
  * loaded whole: its hour may be far off). Started with the app's state polls (app/api/state); the Mac's
  * alone (persist.ts MAC_LOOPS), so never on a computer's runner.
  */
@@ -463,7 +463,7 @@ export const forgetHere = () => void (g.__bopsPrivacyHere = undefined);
 
 /**
  * What choosing `keepDays` deletes now, everything the sweep it starts takes (lib/privacy.ts KeepGoes): the
- * messages and threads (from Bops Cloud and every Mac), and this Mac's files, the lines of its two logs, and
+ * messages and threads (from SmileDesk Cloud and every Mac), and this Mac's files, the lines of its two logs, and
  * the copies in its Recently deleted that go whole or in part.
  */
 async function goesWith(keepDays: KeepDays, now: number): Promise<KeepGoes> {
@@ -525,7 +525,7 @@ export type ClearResult = { messages: number; threads: number; files: number; li
 /**
  * Delete now (POST /api/privacy { clear }), as the user asked, once the window said what it takes (clearGoes):
  * the messages and threads (remove.ts deleteChats: one copy under Recently deleted when the user keeps one,
- * else for good), so from Bops Cloud and every Mac with the next save; for every bot, this Mac's own as the
+ * else for good), so from SmileDesk Cloud and every Mac with the next save; for every bot, this Mac's own as the
  * sweep deletes them, older than its cutoff: the files no message left shows and the lines of its call notes
  * and model choices (never into a copy). Not by any choice this Mac holds, so it needs no current state: it's
  * what the user asked now, of what this Mac has (another Mac's newest, not here yet, stays).
@@ -576,7 +576,7 @@ export function setPrivacy(change: { keepDays?: KeepDays; deletedDays?: DeletedD
   update((s) => {
     s.privacy = { ...s.privacy, ...change };
   });
-  // Known here first: the same choice coming back from Bops Cloud does nothing again.
+  // Known here first: the same choice coming back from SmileDesk Cloud does nothing again.
   g.__bopsPrivacyHeard = heardNow();
   if (change.deletedDays === 0) purgeAllDeleted();
   else if (change.deletedDays !== undefined) purgeExpiredDeleted(Date.now(), { deletedDays: change.deletedDays, keepDays: null });

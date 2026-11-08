@@ -9,7 +9,7 @@ import { bot, getState, session, stateReady, userDir, watchChanges } from "./sto
 import { outbox } from "./sync-outbox";
 
 /**
- * Who may use what, and what they used. Bops keeps which bot may use which Connected App account, API key
+ * Who may use what, and what they used. SmileDesk keeps which bot may use which Connected App account, API key
  * and login (Bot.access, Bot.keys, VaultLogin.bots); this mirrors each workspace's whole effective set to
  * its Orgo project (orgo-web public.bops_access), so Orgo can show each agent's permissions: every bot
  * of the workspace times every account, key and login, with its level and whether it's the default.
@@ -17,13 +17,13 @@ import { outbox } from "./sync-outbox";
  * Mac (<userDir>/access-log.json, for the Vault's "last used" line), and each one to Orgo
  * (public.bops_access_log).
  *
- * The same rules as routine-sync.ts: Bops stays the source and nothing waits on Orgo. A change is sent
+ * The same rules as routine-sync.ts: SmileDesk stays the source and nothing waits on Orgo. A change is sent
  * SYNC_DEBOUNCE_MS after the last one in a burst (PUT /api/projects/{id}/access, the whole set), and
  * logged uses go with it (POST /api/projects/{id}/access/log, LOG_BATCH at a time). A batch Orgo didn't
  * take for now (no answer, 401, 403, 408, 429, 5xx) is sent again after a backoff; one it refused (a 400)
  * is held and goes with the next change. One flush per workspace at a time. An Orgo without the routes
  * (404 or 405) is asked again at most once every 6 hours. Runs on the signed-in Orgo key; signed out,
- * nothing is sent. The set is the Mac's to send: a computer's Bops runner (runner.ts) sends only the uses
+ * nothing is sent. The set is the Mac's to send: a computer's SmileDesk runner (runner.ts) sends only the uses
  * its routines' threads made. Logged uses Orgo hasn't taken yet wait in an outbox kept with the user's
  * folder (sync-outbox.ts), so a quit while Orgo is away loses none: what's left goes after the next start.
  * Orgo takes MAX_GRANTS grants a call and replaces the whole set with them: a workspace with more has the
@@ -313,7 +313,7 @@ export function accessChanged() {
   }
 }
 
-/** Uses left in the outbox by a run of Bops before this one: queued again, once (queue and look call this first). */
+/** Uses left in the outbox by a run of SmileDesk before this one: queued again, once (queue and look call this first). */
 function restoreUses() {
   const back = usesOutbox.restore();
   if (!back.length) return;
@@ -405,7 +405,7 @@ export function logUse(u: Omit<AccessUse, "at">) {
     const wsId = workspaceOf(b);
     const projectId = projectOf(wsId);
     if (!projectId || routesMissing(projectId)) return;
-    // What an earlier run of Bops left waiting first, so this one isn't handed back with it.
+    // What an earlier run of SmileDesk left waiting first, so this one isn't handed back with it.
     restoreUses();
     const oid = usesOutbox.add(wsId, use);
     queue(wsId, (p) => {

@@ -6,7 +6,7 @@ import { notReady } from "@/lib/server/ready";
 export const dynamic = "force-dynamic";
 
 /**
- * Events from Bops' own Slack app. Signed in with Orgo, Bops Cloud takes them for every user
+ * Events from SmileDesk's own Slack app. Signed in with Orgo, SmileDesk Cloud takes them for every user
  * (/hooks/slack), checks Slack's signature (it keeps the secret) and replays the ones for this Mac's
  * bots here over its tunnel, with the token only this server knows (lib/server/cloud-tunnel.ts): that
  * request counts as checked. Self-hosted, the self-hoster's front door (edge/, /hooks/slack) relays

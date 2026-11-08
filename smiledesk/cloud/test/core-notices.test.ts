@@ -46,12 +46,12 @@ after(async () => {
 
 test("live notices come newest first, for everyone or only apps older than their version; ended and later ones don't", async () => {
   const everyone = await post({ title: "Maintenance tonight", link: ["https://bops.bot/status", "Status"] });
-  const update = await post({ title: "Update Bops", below: "0.0.19", link: ["https://bops.bot", "Download"] });
+  const update = await post({ title: "Update SmileDesk", below: "0.0.19", link: ["https://bops.bot", "Download"] });
   await post({ title: "Over", ends: new Date(Date.now() - 60_000).toISOString() });
   await post({ title: "Later", starts: new Date(Date.now() + 3_600_000).toISOString() });
   // An app older than 0.0.19 gets both, newest first, with their links.
   assert.deepEqual(await notices(alice, "0.0.18"), [
-    { id: update, title: "Update Bops", body: "A few lines.", link: { url: "https://bops.bot", label: "Download" } },
+    { id: update, title: "Update SmileDesk", body: "A few lines.", link: { url: "https://bops.bot", label: "Download" } },
     { id: everyone, title: "Maintenance tonight", body: "A few lines.", link: { url: "https://bops.bot/status", label: "Status" } },
   ]);
   // 0.0.19 and newer get only the one for everyone (0.0.100 is newer than 0.0.19).

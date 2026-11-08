@@ -17,27 +17,27 @@ import { addMessage, bot, chat, getState, ownerName, pullState, session, update 
 import type { OrgoMember } from "./orgo";
 
 /**
- * What a member with Write did in one of the owner's shared workspaces from their own Bops (cloud/members.ts
- * act: POST /v1/ws/<id>/act), handed to this Mac by the tunnel as a "member" event (app/api/cloud/event). Bops
+ * What a member with Write did in one of the owner's shared workspaces from their own SmileDesk (cloud/members.ts
+ * act: POST /v1/ws/<id>/act), handed to this Mac by the tunnel as a "member" event (app/api/cloud/event). SmileDesk
  * Cloud checked it: who they are with orgo-web, and the owner's access for every bot it touches. This checks it
  * again against this state, which may be newer (the owner took a bot down to Read, or removed them, since), and
  * then does it as the owner's own taps would, through the same ways in (chat.ts handleMessage, sessions.ts
  * replyToSession, stopSession, dismissWaiting and compactThread, chat-summary.ts compactChat, permission.ts
  * replyToAsk), with the member named as who said it: the turn is theirs (chat.ts TurnOptions.member), and the owner
  * sees who said what. A chat from someone the owner hasn't let use the bots' computers (Use its computer) is kept with a
- * note that the bot won't answer it, and no turn runs for them, as Bops Cloud does in a workspace whose chat goes through
+ * note that the bot won't answer it, and no turn runs for them, as SmileDesk Cloud does in a workspace whose chat goes through
  * it; telling work on a computer more, or answering its asks, is refused (cloud/members.ts says so first). Bots with no
- * computer, or set to work on this Mac, answer as before. In a workspace whose chat goes through Bops Cloud, a message
+ * computer, or set to work on this Mac, answer as before. In a workspace whose chat goes through SmileDesk Cloud, a message
  * for a bot on this Mac comes written already (MemberActPayload.stored): it's answered, never added; and this Mac never
- * adds a member's words there itself (only Bops Cloud stamps them).
+ * adds a member's words there itself (only SmileDesk Cloud stamps them).
  *
  * An Admin (Orgo's role, MemberActPayload.role) has every bot, Your Apps at Write and Use its computer, whatever this
- * state keeps for them (adminOf): Bops Cloud asked orgo-web afresh as it took the act. One older than MEMBER_ACT_MS (a
+ * state keeps for them (adminOf): SmileDesk Cloud asked orgo-web afresh as it took the act. One older than MEMBER_ACT_MS (a
  * stored message, up to a day) is an Admin only while orgo-web's list says so now, so a demotion whose notice was lost
  * isn't honored a day late; else their entry counts, as for anyone. An Admin also answers the owner's own asks (their
  * Connected apps and keys, a thread on this Mac), picks where an undecided thread runs (the bot's computer, never this
  * Mac), publishes an app or rolls back what's Published (MemberAppAct env "prod"), and changes a bot's "How I work" as the
- * owner's own Save does: member-access.ts ADMIN_POWERS. Someone with Keys (as Bops Cloud found orgo-web says it:
+ * owner's own Save does: member-access.ts ADMIN_POWERS. Someone with Keys (as SmileDesk Cloud found orgo-web says it:
  * MemberActPayload.keys) lets a bot they see use a key this workspace sees, or stops it (the "key" act), as the owner's own
  * switch does (keys.ts grantKey), checked against the vault as it is then. Only the owner deletes the workspace, tells a thread on this Mac
  * more, or spends their money: no act does. An answer waits as long as its ask (STORED_ACT_MS), as the run does.
@@ -50,7 +50,7 @@ import type { OrgoMember } from "./orgo";
 
 const short = (v: unknown, max: number) => typeof v === "string" && v.length > 0 && v.length <= max;
 
-/** The act as Bops Cloud checked it (cloud/members.ts cleanAct), or null: the tunnel is trusted, a payload of another shape isn't done. */
+/** The act as SmileDesk Cloud checked it (cloud/members.ts cleanAct), or null: the tunnel is trusted, a payload of another shape isn't done. */
 function actOf(a: unknown): MemberAct | null {
   if (!a || typeof a !== "object") return null;
   const x = a as Record<string, unknown>;
@@ -67,7 +67,7 @@ function actOf(a: unknown): MemberAct | null {
   if (x.act === "dismiss") return short(x.sessionId, 120) ? (x as MemberAct) : null;
   if (x.act === "where") return short(x.sessionId, 120) && (x.to === "mac" || x.to === "cloud") ? { act: "where", sessionId: x.sessionId as string, to: x.to } : null;
   if (x.act === "compact") return short(x.chatId, 120) !== short(x.sessionId, 120) ? (x as MemberAct) : null;
-  // (Empty clears it. One longer than Bops Cloud lets through is cut as the owner's own Save cuts it: keptPersona.)
+  // (Empty clears it. One longer than SmileDesk Cloud lets through is cut as the owner's own Save cuts it: keptPersona.)
   if (x.act === "persona")
     return short(x.botId, 120) && [x.text, x.was].every((v) => typeof v === "string" && v.length <= MEMBER_MAX_TEXT) ? { act: "persona", botId: x.botId as string, text: x.text as string, was: x.was as string } : null;
   if (x.act === "key") return short(x.botId, 120) && typeof x.name === "string" && KEY_NAME.test(x.name) && typeof x.on === "boolean" ? { act: "key", botId: x.botId as string, name: x.name, on: x.on } : null;
@@ -99,7 +99,7 @@ function appActOf(x: Record<string, unknown>): MemberAct | null {
 }
 
 /**
- * Who did it, as Bops Cloud vouched for them, or null. Their name made plain here too (cleanName), whatever sent it:
+ * Who did it, as SmileDesk Cloud vouched for them, or null. Their name made plain here too (cleanName), whatever sent it:
  * it goes into the bot's instructions and the chat as they read them.
  */
 function whoOf(m: unknown): MemberWho | null {
@@ -148,7 +148,7 @@ export function resetAdmins(o: { list?: ListMembers; key?: () => Promise<string 
 }
 
 /**
- * Whether the member is an Admin for this act: as Bops Cloud said it (MemberActPayload.role) on an act as fresh as any
+ * Whether the member is an Admin for this act: as SmileDesk Cloud said it (MemberActPayload.role) on an act as fresh as any
  * (MEMBER_ACT_MS); on an older one (a stored message), only while orgo-web's list says so now (adminNow).
  */
 export async function adminOf(p: MemberActPayload, who: MemberWho): Promise<boolean> {
@@ -158,7 +158,7 @@ export async function adminOf(p: MemberActPayload, who: MemberWho): Promise<bool
 }
 
 /**
- * Whether orgo-web's list says `who` is an Admin of workspace `wsId` now (with this Bops' own key, kept ADMINS_MS), never
+ * Whether orgo-web's list says `who` is an Admin of workspace `wsId` now (with this SmileDesk's own key, kept ADMINS_MS), never
  * when it can't be asked (no key, no workspace in Orgo, no answer). Also how a member's thread is briefed (sessions.ts
  * memberNote): a role is never kept on a thread, so it's read where the thread is told who asked.
  */
@@ -187,9 +187,9 @@ function accessFor(p: MemberActPayload, who: MemberWho, admin: boolean): MemberA
   return currentFor(kept, p.joinedAt) ? kept : null;
 }
 
-/** Why it's not done, or null when it may be: worked out from this state, as Bops Cloud did from its copy. */
+/** Why it's not done, or null when it may be: worked out from this state, as SmileDesk Cloud did from its copy. */
 function refused(p: MemberActPayload, act: MemberAct, who: MemberWho, admin = false): string | null {
-  // A message Bops Cloud wrote already waits longer for this Mac: the chat says the bot answers once it opens. So does an
+  // A message SmileDesk Cloud wrote already waits longer for this Mac: the chat says the bot answers once it opens. So does an
   // answer: its run waits for it as long as the ask does (an Admin's that old goes by orgo-web's list now: adminOf).
   if (!Number.isFinite(p.at) || Date.now() - p.at > (p.stored || act.act === "answer" ? STORED_ACT_MS : MEMBER_ACT_MS)) return "too late";
   const ws = getState().workspaces?.find((w) => w.id === p.wsId);
@@ -244,7 +244,7 @@ function refused(p: MemberActPayload, act: MemberAct, who: MemberWho, admin = fa
     }
     case "stop":
       return as.sessionIds.every(threadOk) ? null : "not at Write";
-    // A bot's keys: Keys, as Bops Cloud vouched for them as it took it (MemberActPayload.keys, from orgo-web), for a bot of
+    // A bot's keys: Keys, as SmileDesk Cloud vouched for them as it took it (MemberActPayload.keys, from orgo-web), for a bot of
     // this workspace they see. Which keys the workspace sees is checked against the vault as the act is done (keyEvent).
     case "key": {
       if (p.keys !== true) return "no Keys";
@@ -312,13 +312,13 @@ export async function memberEvent(p: MemberActPayload, eventId: string): Promise
   const warn = (e: Error) => console.warn(`[members] event ${eventId}: ${e.message}`);
   switch (act.act) {
     case "chat": {
-      // Written by Bops Cloud already (a workspace whose chat goes through it, a bot on this Mac): answered, never added.
+      // Written by SmileDesk Cloud already (a workspace whose chat goes through it, a bot on this Mac): answered, never added.
       if (p.stored && typeof p.messageId === "string") return void answerStored(p, who, act.chatId, p.messageId, said, eventId, admin).catch(warn);
       // The same act again (an ack that was lost): their words are there already.
       if (getState().messages.some((m) => m.chatId === act.chatId && m.member?.ref === p.key)) return;
-      // Switched to Bops Cloud since it was queued: only Bops Cloud stamps a member's words there now (it would refuse this
+      // Switched to SmileDesk Cloud since it was queued: only SmileDesk Cloud stamps a member's words there now (it would refuse this
       // Mac's row, MEMBER_STAMP), so it's dropped, and their window says it didn't go.
-      if (cloudChatHere(p.wsId)) return void console.warn(`[members] event ${eventId}: not done (the workspace's chat goes through Bops Cloud now)`);
+      if (cloudChatHere(p.wsId)) return void console.warn(`[members] event ${eventId}: not done (the workspace's chat goes through SmileDesk Cloud now)`);
       // Their files as this state has them (filesFor): only ones on the computer a bot of the chat works on now.
       const files = filesFor(act.chatId, act.files);
       // Files alone, none of them there anymore (the owner set the bot to work on this Mac meanwhile): nothing to say to
@@ -394,7 +394,7 @@ export async function memberEvent(p: MemberActPayload, eventId: string): Promise
 }
 
 /**
- * A bot's key switched on or off by someone with Keys, as the owner's own switch does (keys.ts grantKey): on, a key Bops
+ * A bot's key switched on or off by someone with Keys, as the owner's own switch does (keys.ts grantKey): on, a key SmileDesk
  * can call that this workspace has of its own now (the vault read afresh: one just added on orgo-web is there), never one
  * it sees only as the owner's (for all their workspaces, or another workspace's of theirs switched on here: their personal
  * or company keys, which only the owner gives a bot). Off goes for any, with no read: it only ever takes away. Said in the
@@ -428,14 +428,14 @@ function hasComputer(botId: string): boolean {
 /** Whether a chat's answer would use a bot's computer (any of its bots has one). */
 const chatUsesComputer = (chatId: string) => (chat(chatId)?.botIds ?? []).some(hasComputer);
 
-/** Whether a workspace's chat goes through Bops Cloud (Workspace.chatOn, mirrored from its switch). */
+/** Whether a workspace's chat goes through SmileDesk Cloud (Workspace.chatOn, mirrored from its switch). */
 const cloudChatHere = (wsId: string) => getState().workspaces?.some((w) => w.id === wsId && w.chatOn === "cloud") ?? false;
 
 /**
- * Whether the member may have their words run on the bots' computers (Use its computer): as Bops Cloud vouched for them
+ * Whether the member may have their words run on the bots' computers (Use its computer): as SmileDesk Cloud vouched for them
  * (MemberActPayload.computer, from what orgo-web keeps: cloud/ws-slice.ts computerUseOf), unless this state has it
  * turned off for them since, on their entry for their membership now ("none": the owner's Mac turned it off in
- * orgo-web, and this state may be newer than Bops Cloud's word).
+ * orgo-web, and this state may be newer than SmileDesk Cloud's word).
  */
 function mayUse(p: MemberActPayload, who: MemberWho, admin = false): boolean {
   // An Admin always (adminOf): orgo-web never keeps one off either.
@@ -446,15 +446,15 @@ function mayUse(p: MemberActPayload, who: MemberWho, admin = false): boolean {
   return !(currentFor(kept, p.joinedAt) && kept.computer === "none");
 }
 
-/** Messages Bops Cloud wrote that this Mac answered (or is answering) since it started: an event handed again isn't answered twice. */
+/** Messages SmileDesk Cloud wrote that this Mac answered (or is answering) since it started: an event handed again isn't answered twice. */
 const answered = new Set<string>();
 /** Each chat's stored answers, one after another (two side by side would each read the other's reply as its own). */
 const inChat = new Map<string, Promise<void>>();
 
 /**
- * A member's message Bops Cloud wrote already, for a bot on this Mac or a group (a workspace whose chat goes through
- * Bops Cloud): read until it's here, then answered as theirs (chat.ts answerMessage), once, one at a time per chat.
- * Checked again here: Bops Cloud took it up to a day ago, and the owner may have changed who may since.
+ * A member's message SmileDesk Cloud wrote already, for a bot on this Mac or a group (a workspace whose chat goes through
+ * SmileDesk Cloud): read until it's here, then answered as theirs (chat.ts answerMessage), once, one at a time per chat.
+ * Checked again here: SmileDesk Cloud took it up to a day ago, and the owner may have changed who may since.
  */
 function answerStored(p: MemberActPayload, who: MemberWho, chatId: string, messageId: string, said: NonNullable<Message["member"]>, eventId: string, admin = false): Promise<void> {
   if (answered.has(messageId)) return Promise.resolve();
@@ -480,9 +480,9 @@ async function answerOne(p: MemberActPayload, who: MemberWho, chatId: string, me
 }
 
 /**
- * A member's files for a chat as this state has it (Bops Cloud checked them against it too: cloud/members.ts filesFit):
+ * A member's files for a chat as this state has it (SmileDesk Cloud checked them against it too: cloud/members.ts filesFit):
  * each for a bot of the chat, on the computer that bot works on now, named by that computer's bot as this state names
- * it (never as the member's Bops sent it: it's shown to everyone, and told to the bot). One that isn't is left out,
+ * it (never as the member's SmileDesk sent it: it's shown to everyone, and told to the bot). One that isn't is left out,
  * never told to the bot.
  */
 function filesFor(chatId: string, files: readonly AddedFile[] | undefined): AddedFile[] | undefined {

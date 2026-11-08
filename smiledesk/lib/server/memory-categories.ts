@@ -24,7 +24,7 @@ import { currentWorkspaceId } from "./workspaces";
  * the same person or meeting get the same key and merge). Each item keeps the facts it came from, so
  * the app can say where it was learned, and forgetting it forgets them in memory too.
  *
- * When: while Bops is open (its server runs only then). A look reads the newest facts (free) and
+ * When: while SmileDesk is open (its server runs only then). A look reads the newest facts (free) and
  * stops at the first page it has seen all of. It runs on opening and every 15 minutes, 4 and 10
  * minutes after a chat or task is saved (Honcho needs that long to work out new facts), seconds after a
  * fact is saved by hand or by a bot, and on Refresh. Sorting costs AI credit, so other new facts wait
@@ -37,17 +37,17 @@ import { currentWorkspaceId } from "./workspaces";
  *
  * Orbit lives in memory (Honcho): this index is only a cache of how its facts were sorted, kept per
  * workspace in the user's folder on this Mac, never in the app state (which goes to the window every few
- * seconds and to Bops Cloud): <userDir>/memory-categories/ws-<workspace>.json. Workspaces can share a
+ * seconds and to SmileDesk Cloud): <userDir>/memory-categories/ws-<workspace>.json. Workspaces can share a
  * bank; each one's Orbit sorts only what was learned in its own chats, calls and tasks (and the facts it
- * saved), and the bank's card and what came from no Bops chat go to the workspace whose bank it is. An
+ * saved), and the bank's card and what came from no SmileDesk chat go to the workspace whose bank it is. An
  * index kept per bank before is moved to that workspace on first load.
  *
  * Forget deletes the facts and card lines an item was learned from in memory, for good, and checks that
  * memory no longer has them (tried again until it doesn't). What's kept of a forgotten item is hashes
  * only, never its text: of its key, and of its key with each fact's words, so that a fact memory works
  * out again from the old chats is deleted when it comes in, and the item stays gone. Delete everywhere
- * also deletes the memory copy of the chats and calls in Bops its facts came from (never a session
- * Bops has no copy of: the user's other agents', a chat deleted from Bops).
+ * also deletes the memory copy of the chats and calls in SmileDesk its facts came from (never a session
+ * SmileDesk has no copy of: the user's other agents', a chat deleted from SmileDesk).
  *
  * The hashes are keyed: HMAC-SHA256 under the workspace's own secret (Workspace.orbitKey, made once and
  * synced to the user's other Macs with the state, never sent to Orgo), so a list of names can't reverse
@@ -76,7 +76,7 @@ const SWEEP_MS = 6 * 60 * 60_000;
 const PURGE_RETRY_MS = [5_000, 30_000, 2 * 60_000, 10 * 60_000, 30 * 60_000];
 /** Said once deleting has failed this many times in a row. */
 const PURGE_SAY_AFTER = 3;
-const PURGE_ERROR = "Some of what you forgot is still in memory. Bops keeps trying to delete it.";
+const PURGE_ERROR = "Some of what you forgot is still in memory. SmileDesk keeps trying to delete it.";
 /** Forgotten items and facts kept (hashes), the newest. */
 const TOMB_ITEMS = 2000;
 const TOMB_FACTS = 10_000;
@@ -168,7 +168,7 @@ type SyncOpts = { mode?: Mode; now?: boolean };
 
 type Fact = { items: string[]; at: number; wrote?: Record<string, Said>; s?: string | null; h?: string };
 
-/** One workspace's Orbit while Bops runs. */
+/** One workspace's Orbit while SmileDesk runs. */
 type Space = {
   index?: Index;
   /** The file the index was read from: an index is only ever written back there (another account's sign-in has another folder). */
@@ -673,7 +673,7 @@ export function dropFacts(bank: string, ids: string[]) {
 
 /**
  * Which facts a workspace's Orbit sorts: those learned in its own chats, calls and tasks, and what it
- * saved; the bank's own workspace also gets what came from no Bops chat of a workspace on this bank (the
+ * saved; the bank's own workspace also gets what came from no SmileDesk chat of a workspace on this bank (the
  * user's other agents, a fact saved by hand) and the card. An issue's session (orbit-issues.ts) makes no facts.
  */
 function scopeOf(ws: string, bank: string) {
@@ -982,13 +982,13 @@ async function run(ws: string, bank: string, index: Index, opts: SyncOpts, ours:
       return void (stopped = true);
     }
     if (got === "down") {
-      index.error = "Couldn't sort new things just now. Bops tries again on its own.";
+      index.error = "Couldn't sort new things just now. SmileDesk tries again on its own.";
       return void (stopped = true);
     }
     // Refused with nothing answered this look, down to a single fact: a wrong setting (every request is
     // refused), not the fact. Stopped, nothing counted against it, tried again later.
     if (got === "refused" && batch.length === 1 && !answered) {
-      index.error = "Couldn't sort new things just now. Bops tries again on its own.";
+      index.error = "Couldn't sort new things just now. SmileDesk tries again on its own.";
       return void (stopped = true);
     }
     if (got === "unusable" || got === "refused") {
@@ -1081,7 +1081,7 @@ function later(ws: string, why: string, ms: number, opts: SyncOpts, keep = false
   b.timers.set(why, t);
 }
 
-/** While Bops is open: every 15 minutes, a look at the workspace in use, unless one ran meanwhile. */
+/** While SmileDesk is open: every 15 minutes, a look at the workspace in use, unless one ran meanwhile. */
 function ensureTimer() {
   // Memory is sorted on the Mac: a computer's runner leaves it for when the Mac is open.
   if (live.timer || !loopHere("categories")) return;
@@ -1097,7 +1097,7 @@ function ensureTimer() {
 /**
  * Memory changed (memory.ts): a fact was saved just now (sorted in a few seconds); a chat or task was
  * saved (Honcho works out its facts over the next minutes, about 4 when measured: quick looks in 4 and
- * in 10 sort what they find at once, which is what fills the sections as the user chats); or Bops
+ * in 10 sort what they find at once, which is what fills the sections as the user chats); or SmileDesk
  * noted a fact on its own (a quick look in 3 that leaves it waiting for the next few). The next message
  * saved doesn't set a look again or push it back.
  */
@@ -1376,11 +1376,11 @@ export function purge(ws: string): Promise<void> {
 /** A chat or call in memory that Delete everywhere would delete, and the other items it also taught Orbit. */
 export type DeleteSession = { id: string; name: string; at: number; facts: number; alsoFor: string[] };
 
-/** Only these sessions are ever deleted everywhere: a chat or call, or a task, in Bops. */
+/** Only these sessions are ever deleted everywhere: a chat or call, or a task, in SmileDesk. */
 const deletable = (s: string | null | undefined): s is string => !!s && (s.startsWith("bops-chat-") || s.startsWith("bops-task-"));
 
 /**
- * What Delete everywhere would delete with an item: the sessions in memory its facts came from that Bops
+ * What Delete everywhere would delete with an item: the sessions in memory its facts came from that SmileDesk
  * still has the chat or task of (its copy there, every message in it), each with the other items in this Orbit learned from it
  * too, so none goes unsaid. Where a fact was learned is asked of memory for facts sorted before that was kept.
  */
@@ -1402,8 +1402,8 @@ export async function deletePreview(ws: string, id: string): Promise<DeleteSessi
   if (unknown.length) save(ws, index);
   const out = new Map<string, DeleteSession>();
   for (const f of Object.values(index.facts)) {
-    // Only a chat, a call or a task still in Bops (its copy in memory goes, the chat stays): never the
-    // user's other agents' sessions or a chat deleted from Bops, whose only copy is memory's. Not an issue,
+    // Only a chat, a call or a task still in SmileDesk (its copy in memory goes, the chat stays): never the
+    // user's other agents' sessions or a chat deleted from SmileDesk, whose only copy is memory's. Not an issue,
     // not a workspace's saved facts.
     if (!f.items.includes(id) || !deletable(f.s) || !sessionWorkspace(f.s)) continue;
     const x = out.get(f.s) ?? { id: f.s, name: factSource(f.s), at: 0, facts: 0, alsoFor: [] };
@@ -1420,7 +1420,7 @@ export async function deletePreview(ws: string, id: string): Promise<DeleteSessi
     }
   }
   // The workspace's Orbit in Orgo knows the sessions the user's other Macs learned it from too (the same
-  // rule: a chat, call or task still in Bops), and how many other items they taught.
+  // rule: a chat, call or task still in SmileDesk), and how many other items they taught.
   const theirs = await orbitPreview(ws, id);
   if (!ours()) throw new Error("Another account signed in.");
   for (const s of theirs ?? []) {
@@ -1435,7 +1435,7 @@ export async function deletePreview(ws: string, id: string): Promise<DeleteSessi
 
 /**
  * Delete everywhere: Forget, and delete from memory the sessions its facts came from (deletePreview, all
- * of them, or of `only` those the user was shown: never one deletePreview leaves out). The chats stay in Bops; their copy in memory goes.
+ * of them, or of `only` those the user was shown: never one deletePreview leaves out). The chats stay in SmileDesk; their copy in memory goes.
  * Answers what was deleted.
  */
 export async function deleteEverywhere(ws: string, id: string, only?: string[]) {

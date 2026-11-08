@@ -10,14 +10,14 @@ import { loopHere, onExit } from "./persist";
 import { pullState, stateReady, stateUser } from "./store";
 
 /**
- * The tunnel to Bops Cloud (cloud/README.md, "The tunnel"): while the app works through the cloud
+ * The tunnel to SmileDesk Cloud (cloud/README.md, "The tunnel"): while the app works through the cloud
  * (cloudOn in cloud.ts), one WebSocket to <cloud>/v1/connect on the user's Orgo key. Webhooks for
- * the user's numbers and Bops' Slack app's events for the user's bots come down it as requests,
+ * the user's numbers and SmileDesk's Slack app's events for the user's bots come down it as requests,
  * which are replayed against this server (only those webhook routes: anything else is turned down
  * here). What waited while the Mac was away comes down as events, handed to /api/cloud/event one at
  * a time and acknowledged once handled. Dropped, the tunnel comes back after 1 second, then 2, 4… up
  * to a minute; a sign-in starts it over on the new key; a sign-out or the server stopping closes it.
- * When a newer connection of the same user's takes over (another Mac, or another Bops on this one),
+ * When a newer connection of the same user's takes over (another Mac, or another SmileDesk on this one),
  * the cloud closes this one as replaced: it stays closed until the next sign-in or start, so two
  * Macs don't keep taking it from each other.
  *
@@ -39,7 +39,7 @@ type Tunnel = {
   /** A newer connection of the same user's took over: closed until the next sign-in or start. */
   replaced?: boolean;
   /**
-   * The key a sign-out (or a restart) closed Bops Cloud on: nothing opens on it again until the next
+   * The key a sign-out (or a restart) closed SmileDesk Cloud on: nothing opens on it again until the next
    * sign-in, however long the sign-out takes to let the key go (the state's poll would bring it all back).
    */
   stoppedKey?: string | null;
@@ -210,7 +210,7 @@ function connect() {
     tunnel.socket = undefined;
     if (!tunnel.want) return;
     if (replaced || code === 4000) {
-      console.warn("[cloud] another Bops signed in as this user took over the tunnel: this one stays closed until the next sign-in or start");
+      console.warn("[cloud] another SmileDesk signed in as this user took over the tunnel: this one stays closed until the next sign-in or start");
       tunnel.want = false;
       tunnel.replaced = true;
       return;
@@ -245,7 +245,7 @@ function closeTunnel() {
 }
 
 /**
- * What the app runs on Bops Cloud while it works through it: the session and the tunnel. Called once
+ * What the app runs on SmileDesk Cloud while it works through it: the session and the tunnel. Called once
  * the signed-in user's state has loaded (a sign-in, or the server starting with the key in the
  * Keychain: orgo-sign-in.ts) with `signedIn` after a sign-in (the session is asked afresh and the
  * tunnel starts over on the new key). Nothing happens signed out, self-hosting, or before the state
@@ -266,14 +266,14 @@ export async function startCloud({ signedIn = false } = {}) {
   }
 }
 
-/** Bops Cloud running whenever it should be, even with a key the Keychain only gave later. The state route calls it on every poll, so it's cheap when it already is. */
+/** SmileDesk Cloud running whenever it should be, even with a key the Keychain only gave later. The state route calls it on every poll, so it's cheap when it already is. */
 export function ensureCloud() {
   if (stopped()) return;
   if (cloudOn() && stateReady() && loopHere("tunnel") && !tunnel.want && !tunnel.replaced) void startCloud();
   ensureLive();
 }
 
-/** Whether Bops Cloud was stopped on the key signed in now (stopCloud), so it stays closed until a sign-in. */
+/** Whether SmileDesk Cloud was stopped on the key signed in now (stopCloud), so it stays closed until a sign-in. */
 const stopped = () => !!tunnel.stoppedKey && tunnel.stoppedKey === orgoKey();
 
 /**

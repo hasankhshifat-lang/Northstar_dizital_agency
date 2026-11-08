@@ -56,8 +56,8 @@ import { actLine } from "./shared-apps";
 import type { MemberAppAct } from "@/lib/hosted-apps";
 
 /*
- * Apps the workspace runs on the web (lib/hosted-apps.ts), in Bops' right panel. Each one is an Ingot repo,
- * worked on on a bot's Bops computer. The Apps page's "On the web" list has one line per app: its state, its public
+ * Apps the workspace runs on the web (lib/hosted-apps.ts), in SmileDesk's right panel. Each one is an Ingot repo,
+ * worked on on a bot's SmileDesk computer. The Apps page's "On the web" list has one line per app: its state, its public
  * address, the short id of the changeset its site serves, and Deploy; and Add app, which has the workspace's
  * main bot build one (app-settings.tsx). An app's tab is one page: its title line (name, address, "Work on
  * it": its bot's chat with words typed in, Deploy); its Address on orgo.dev; its Domains (each with how it's
@@ -1450,7 +1450,7 @@ const CHECKS = 30;
  * doing, and Remove (asked once more first); one bought elsewhere has its DNS greyed out under it (the
  * records to set where it's kept, each value to copy, and Verify). Add a domain (AddDomain) under
  * them, once it's on the web. Then the DNS records of each one bought through Orgo (DnsZone), with its
- * renewal. A domain just pointed here whose records Orgo writes itself, or whose records Bops just set in the
+ * renewal. A domain just pointed here whose records Orgo writes itself, or whose records SmileDesk just set in the
  * user's Cloudflare, is checked every few seconds until it's live (a couple of minutes at most), its line
  * saying so. Each line is one 32px line, so what's read comes in under it a line at a time.
  */
@@ -1497,7 +1497,7 @@ function Domains({
   // The domain whose plan for Cloudflare is open in Add a domain: its line doesn't offer the same again.
   const [addPlan, setAddPlan] = useState<string | null>(null);
   const planIn = adding ? addPlan : null;
-  // The ones Bops couldn't set in Cloudflare just now: their records to copy again.
+  // The ones SmileDesk couldn't set in Cloudflare just now: their records to copy again.
   const [cantSet, setCantSet] = useState<string[]>([]);
   const cant = (id: string) => setCantSet((x) => (x.includes(id) ? x : [...x, id]));
   const watch = (id: string) => setWatching((w) => [...w.filter((x) => x !== id), id]);
@@ -1654,7 +1654,7 @@ function DomainLine({
   onRemovedSaid?: (text: string | null) => void;
   /** Its plan for Cloudflare is open in Add a domain, below: not offered here as well. */
   planElsewhere?: boolean;
-  /** Bops couldn't set it in Cloudflare just now (OutsideDns), so its records are to copy again. */
+  /** SmileDesk couldn't set it in Cloudflare just now (OutsideDns), so its records are to copy again. */
   cantSet?: boolean;
   onCantSet?: () => void;
 }) {
@@ -1729,7 +1729,7 @@ function DomainLine({
       {removing && (
         <div className="px-2 pb-1" onKeyDown={(e) => e.key === "Escape" && e.stopPropagation()}>
           <InlineConfirm
-            text={d.cloudflare ? `Remove ${d.domain} from this app? Bops also takes off the records it set for it in Cloudflare.` : `Remove ${d.domain} from this app?${d.managed ? " The domain stays yours." : ""}`}
+            text={d.cloudflare ? `Remove ${d.domain} from this app? SmileDesk also takes off the records it set for it in Cloudflare.` : `Remove ${d.domain} from this app?${d.managed ? " The domain stays yours." : ""}`}
             action="Remove"
             doing="Removing…"
             busy={busy === "remove"}
@@ -1779,8 +1779,8 @@ function DomainLine({
  * where it's kept (once it's live, what routes it there), each value to copy, with what Orgo found of each,
  * and Verify, which looks again (and turns it live once they answer). One whose zone is in the user's own
  * Cloudflare account (AppDomain.cloudflare) has Set it in Cloudflare in place of copying, while any record
- * isn't found as it should be: what Bops would set there, read then, inside the box (CloudflarePlanBox); not
- * while that plan is open in Add a domain (`planElsewhere`). Once Bops can't set it there (its plan not read,
+ * isn't found as it should be: what SmileDesk would set there, read then, inside the box (CloudflarePlanBox); not
+ * while that plan is open in Add a domain (`planElsewhere`). Once SmileDesk can't set it there (its plan not read,
  * blocked, or not written: `cantSet`, kept by Domains), each value is to copy again.
  */
 function OutsideDns({
@@ -1825,7 +1825,7 @@ function OutsideDns({
         : "Orgo doesn't change its DNS. This is what's set at Cloudflare."
       : allFound
         ? "These are set in Cloudflare. Orgo turns it on once they answer."
-        : "Its DNS is at Cloudflare, in your account. Bops can set these for you."
+        : "Its DNS is at Cloudflare, in your account. SmileDesk can set these for you."
     : live
       ? `Orgo doesn't change its DNS.${d.publish.length ? ` This is what's set ${there}.` : ""}`
       : `Orgo can't set these. Add them ${there}, then Verify.`;
@@ -1861,7 +1861,7 @@ function OutsideDns({
           <span title={r.value} className="min-w-0 flex-1 truncate font-mono text-[11.5px] leading-4 text-[#6B6B6B]">
             {r.value}
           </span>
-          {/* Nothing to copy where Bops sets them itself, but when it can't. */}
+          {/* Nothing to copy where SmileDesk sets them itself, but when it can't. */}
           {(!cf || cantSet) && <CopyLink url={r.value} label={`Copy the ${r.type} value`} />}
           {r.found && FOUND[r.found] && <span className={`shrink-0 text-[12px] leading-4 ${FOUND[r.found].look}`}>{FOUND[r.found].word}</span>}
         </div>

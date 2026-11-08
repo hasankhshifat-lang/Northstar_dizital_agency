@@ -33,7 +33,7 @@
  * a feed's views, likes and comments tick on nearly every look, and each change there would cost a
  * model read every half minute.
  *
- * Used for web page watches and screen watches on the Mac (lib/server/watches.ts), and by Bops Cloud
+ * Used for web page watches and screen watches on the Mac (lib/server/watches.ts), and by SmileDesk Cloud
  * when it runs monitors later: so it stays erasable TypeScript with no imports.
  */
 

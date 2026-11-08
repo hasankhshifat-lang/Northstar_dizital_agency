@@ -1,8 +1,8 @@
 // Tests for the bot's browser relay (lib/browser-relay.ts), the part that runs where the bot's Chrome is: on a headless
-// Chrome of its own (throwaway profile, spare port) and a fake Bops Cloud on localhost.
+// Chrome of its own (throwaway profile, spare port) and a fake SmileDesk Cloud on localhost.
 //
 // - What a person in control may send (cleanInput): only BROWSER_METHODS, each with its parameters checked; a page to
-//   go to is http or https only. Anything else is refused on the relay, whatever Bops Cloud passed on.
+//   go to is http or https only. Anything else is refused on the relay, whatever SmileDesk Cloud passed on.
 // - Capture only while watched: frames go out while someone watches, none once they leave, and the capture itself stops
 //   LINGER_MS (5 s) after the last viewer left (still on just before it), counted frame by frame.
 // - Take over: one person at a time; someone else's take is refused naming who has it; input from anyone but them is
@@ -86,7 +86,7 @@ await test("only the nine methods, each with its parameters checked, and only ht
   assert.deepEqual(cleanInput("Target.activateTarget", { targetId: "A1B2C3D4E5F6", extra: 1 }), { targetId: "A1B2C3D4E5F6" });
   assert.deepEqual(cleanInput("Target.closeTarget", { targetId: "A1B2C3D4E5F6" }), { targetId: "A1B2C3D4E5F6" });
   for (const targetId of ["", "../json/close/x", "a b", 7, "F".repeat(65)]) assert.equal(cleanInput("Target.activateTarget", { targetId }), null, `${JSON.stringify(targetId)} is no tab id`);
-  // Never a page on this computer's own DevTools, Bops' or the relay's port (they'd act on the browser past these rules).
+  // Never a page on this computer's own DevTools, SmileDesk's or the relay's port (they'd act on the browser past these rules).
   // Whatever name reaches it: localhost. and its subdomains, any 127 address, an IPv4 in IPv6, or a public name pointed here.
   for (const url of ["http://127.0.0.1:9300/json/close/AB12", "http://localhost:9222/json/list", "http://[::1]:9399/", "http://0.0.0.0:8897/", "http://127.0.0.1:3210/api/state", "http://localhost.:9301/json/list", "http://a.localhost:9301/", "http://127.0.0.2:9301/", "http://[::ffff:127.0.0.1]:9301/", "http://2130706433:9301/", "http://here.example:9301/json/list"])
     for (const m of ["Page.navigate", "Target.createTarget"]) assert.equal(cleanInput(m, { url }), null, `${m} ${url} is refused`);
@@ -138,7 +138,7 @@ const cleanup = async () => {
   removeTemp(dir);
 };
 
-// Bops Cloud, faked: a socket the relay connects to, which remembers what it sent.
+// SmileDesk Cloud, faked: a socket the relay connects to, which remembers what it sent.
 const got = [];
 let sock = null;
 wss = new WebSocketServer({ port: 0, host: "127.0.0.1" });
@@ -437,10 +437,10 @@ try {
     assert.equal(relay.heldBy(100), null);
   });
 
-  await test("someone in control cut off with Bops Cloud: back and watching, they keep it; nobody back, it's handed back, a reconnect alone isn't enough", async () => {
+  await test("someone in control cut off with SmileDesk Cloud: back and watching, they keep it; nobody back, it's handed back, a reconnect alone isn't enough", async () => {
     say({ t: "take", bot: "boppy", who: sam });
     await until(() => relay.heldBy(100)?.id === "u-sam", "Sam to have control");
-    // Bops Cloud restarts, and Sam's stream comes back with it.
+    // SmileDesk Cloud restarts, and Sam's stream comes back with it.
     let was = sock;
     was.terminate();
     await until(() => sock !== was && sock.readyState === 1, "the relay to reconnect", 10_000);

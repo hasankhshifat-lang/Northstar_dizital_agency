@@ -36,13 +36,13 @@ export const dynamic = "force-dynamic";
 /**
  * A workspace's skills and apps (lib/server/workspace-skills.ts): listed, read, made, changed, published,
  * rolled back, deleted, given to bots, imported from a folder on this Mac, and drafted from a chat ("Save as
- * skill"). They change how the bots work, so like a bot's other settings only from the Bops window
+ * skill"). They change how the bots work, so like a bot's other settings only from the SmileDesk window
  * (ui-token.ts): a page a bot's Chrome reached this server with mustn't teach a bot steps or approve a script.
  * Which labels each bot has (Who has what), a label's name and about line, Suggest labels with AI, and a bot's proposed change
  * (skill-proposals.ts: accept, reject, or its diff on what the skill is now) are the owner's too: never while a
  * workspace shared with the user is open.
  */
-const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Skills can only be changed in the Bops app." }, { status: 403 }));
+const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Skills can only be changed in the SmileDesk app." }, { status: 403 }));
 
 const str = (v: unknown) => (typeof v === "string" ? v : undefined);
 const kindOf = (v: unknown): SkillKind => (v === "app" ? "app" : "skill");

@@ -16,7 +16,7 @@ import { post } from "./ui";
 
 /* ---------------- What's folded, in this window ---------------- */
 
-/** A group's fold, kept per window (localStorage, guarded: without it, as the user left it until Bops reloads). */
+/** A group's fold, kept per window (localStorage, guarded: without it, as the user left it until SmileDesk reloads). */
 const FOLD = "computer";
 export const groupFolded = (key: string, user: string, ws: string) => !readGroupOpen(`${FOLD}.${key}`, user, ws);
 export const keepGroupFolded = (key: string, user: string, ws: string, folded: boolean) => writeGroupOpen(`${FOLD}.${key}`, user, ws, !folded);
@@ -183,7 +183,7 @@ const read = new Map<string, { at: number; links: string; domains: Record<string
 /**
  * The domain each of the open workspace's bots that works on a site shows (app/api/bots/sites), by bot id, as this
  * window last read it: {} until then. Only in the owner's own workspace, with apps open to them; in one shared with
- * them, Bops Cloud sends its apps' domains (lib/bot-groups.ts siteLabel).
+ * them, SmileDesk Cloud sends its apps' domains (lib/bot-groups.ts siteLabel).
  */
 export function useSiteDomains(state: AppState): Record<string, string | null> {
   const ws = state.workspace ?? state.workspaces?.[0]?.id ?? "";
@@ -267,7 +267,7 @@ export function WorksOnRow({ state, bot: b, readOnly, className = "" }: { state:
       const res = await post("/api/bots", { botId: b.id, site: app ? { app, site } : null }, "PATCH");
       if (!res.ok) setError(((await res.json().catch(() => ({}))) as { error?: string }).error ?? "That didn't save. Try again.");
     } catch {
-      setError("Couldn't reach Bops. Try again.");
+      setError("Couldn't reach SmileDesk. Try again.");
     } finally {
       setBusy(false);
     }

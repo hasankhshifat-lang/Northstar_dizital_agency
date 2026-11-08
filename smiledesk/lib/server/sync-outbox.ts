@@ -10,7 +10,7 @@ import * as store from "./store";
  * (<userDir>/outbox/<name>.json), so a quit or a crash while Orgo is away loses none of it: routine-sync.ts
  * keeps its finished runs here, access-sync.ts its logged uses, workspace-skills.ts its deletes. Each
  * entry is added when it's queued and taken out once Orgo took it (or said it never will); what's left
- * when Bops starts is handed back once (restore) and queued again. At most `max` per workspace (the
+ * when SmileDesk starts is handed back once (restore) and queued again. At most `max` per workspace (the
  * newest). Another account's folder has its own. Never throws: an outbox that can't be written is only
  * in memory, as before it existed. Written half a second after a change, and at once on the way out
  * (persist.ts onExit), so a quit right after Orgo took something doesn't send it again at the next start
@@ -40,7 +40,7 @@ export type Outbox<T> = {
   done(ids: Iterable<string | undefined>): void;
   /** What's waiting, oldest first (`wsId` for one workspace's). */
   waiting(wsId?: string): OutboxEntry<T>[];
-  /** Once per account folder and run of Bops: what was left waiting before this run, to queue again. */
+  /** Once per account folder and run of SmileDesk: what was left waiting before this run, to queue again. */
   restore(): OutboxEntry<T>[];
 };
 

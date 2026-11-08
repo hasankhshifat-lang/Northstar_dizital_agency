@@ -17,7 +17,7 @@ const readInfo = async (): Promise<AnalyticsInfo | null> => {
 /**
  * The window's usage events (lib/analytics.ts): started, switched to another person, or stopped
  * whenever who's signed in or the account's switch changes. Read again when the window comes back
- * to the front, and a few times at first while the Mac is still asking Bops Cloud for the plan, so
+ * to the front, and a few times at first while the Mac is still asking SmileDesk Cloud for the plan, so
  * the window's `plan` is the one the user has now.
  */
 export function useAnalytics(state: AppState | null) {
@@ -77,7 +77,7 @@ export function UsageData() {
         <div className="flex flex-1 flex-col gap-0.5">
           <span className="text-[13px] font-medium">Share usage data</span>
           <span className="text-[12px] leading-4 text-[#6B6B6B]">
-            Sends Orgo counts of what you do in Bops, like bots made and tasks run, and error reports. Never your messages, files, screens, contacts or keys.
+            Sends Orgo counts of what you do in SmileDesk, like bots made and tasks run, and error reports. Never your messages, files, screens, contacts or keys.
             {info.locked && " Turned off on this Mac."}
           </span>
         </div>

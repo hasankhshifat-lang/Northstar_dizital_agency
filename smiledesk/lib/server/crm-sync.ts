@@ -25,7 +25,7 @@ import { outbox } from "./sync-outbox";
  *   goes to .trash. A file here that Orgo never had is sent.
  * - The sample (crm.ts seedOnce) is written here only once a read of Orgo's copy found nothing there, not
  *   even a deleted file (crmMaySeed), so a Mac that can't reach Orgo, or reads it slowly, never writes a
- *   second one where another Mac set the CRM up, nor brings back one deleted there. A sample Bops wrote
+ *   second one where another Mac set the CRM up, nor brings back one deleted there. A sample SmileDesk wrote
  *   that Orgo never agreed on never goes over Orgo's: Orgo's copy stands (live) or it goes (deleted
  *   there), the one here into .trash.
  * - What the two last agreed on is kept in the folder (.orgo.json: each file's Orgo id, name, sha256, and
@@ -33,7 +33,7 @@ import { outbox } from "./sync-outbox";
  * - Only the Mac, and only where there's a CRM (crm.ts crmOn); never a computer's runner.
  */
 
-/** `sample`: the sample as Bops wrote it here, never agreed with Orgo (Orgo's sample stands over it). */
+/** `sample`: the sample as SmileDesk wrote it here, never agreed with Orgo (Orgo's sample stands over it). */
 type Op = { op: "put" | "rename" | "delete"; pid: string; name: string; to?: string; sample?: boolean };
 type Result = "done" | "later";
 type Answer<T> = { status: number; json: T } | null;
@@ -42,7 +42,7 @@ export type RemoteFile = { id: string; name: string; columns: string[]; rows: nu
 type Known = { id: string; name: string; sha: string; at: string; size: number; mtimeMs: number };
 /**
  * `fresh`: the last read of Orgo's copy found nothing there (no file, none deleted): the sample may be
- * written here. `hadSample`: Orgo has or had a sample (live or deleted): one Bops wrote here never goes over it.
+ * written here. `hadSample`: Orgo has or had a sample (live or deleted): one SmileDesk wrote here never goes over it.
  */
 type Side = { pid: string; since?: string; files: Record<string, Known>; fresh?: boolean; hadSample?: boolean };
 
@@ -118,7 +118,7 @@ const knownOf = (side: Side, name: string) => side.files[fold(name)];
 /* ---------------- What changed here, to send ---------------- */
 
 /**
- * A file made or changed here (`put`; `sample`: the sample Bops wrote, crm.ts seedOnce), renamed
+ * A file made or changed here (`put`; `sample`: the sample SmileDesk wrote, crm.ts seedOnce), renamed
  * (`rename`), or deleted (`del`): it goes to Orgo, in order.
  */
 export function crmChanged(ws: string, change: { put: string; sample?: boolean } | { rename: [string, string] } | { del: string }) {
@@ -191,7 +191,7 @@ async function keepTheirs(dir: string, side: Side, f: RemoteFile, bytes: Buffer,
 }
 
 /**
- * The sample Bops wrote here, never agreed with Orgo, where Orgo has (or had) one: Orgo's stands. Its copy
+ * The sample SmileDesk wrote here, never agreed with Orgo, where Orgo has (or had) one: Orgo's stands. Its copy
  * is written here (this one into .trash when it isn't the same), or, deleted there, this one goes to .trash.
  */
 async function orgoSampleStands(key: string, dir: string, side: Side, pid: string, name: string, got?: Awaited<ReturnType<typeof download>>): Promise<Result> {
@@ -221,7 +221,7 @@ async function sendPut(key: string, ws: string, dir: string, side: Side, pid: st
   const known = knownOf(side, here.name);
   if (known?.sha === sha && known.name === here.name) return "done";
   const sample = isSampleName(here.name) ? "?sample=1" : "";
-  // The sample Bops wrote, never agreed with Orgo: never over Orgo's (live, or deleted there).
+  // The sample SmileDesk wrote, never agreed with Orgo: never over Orgo's (live, or deleted there).
   const ours = bopsSample && !known && !!sample;
   if (ours && side.hadSample) return orgoSampleStands(key, dir, side, pid, here.name);
   const put = (match?: string) =>
@@ -482,7 +482,7 @@ async function pullOnce(ws: string): Promise<boolean> {
       continue;
     }
     const unchangedHere = !here || (known && here === known.sha);
-    // The sample Bops wrote here that Orgo never agreed on, where Orgo has one: Orgo's stands.
+    // The sample SmileDesk wrote here that Orgo never agreed on, where Orgo has one: Orgo's stands.
     const oursUnagreed = !!here && !known && isSample(f) && isSampleName(name);
     const mtime = crmFolder.files(dir).find((x) => fold(x.name) === fold(name))?.mtimeMs ?? 0;
     if (unchangedHere || oursUnagreed || (Date.parse(f.updatedAt) || 0) > mtime) {
@@ -522,7 +522,7 @@ async function pullOnce(ws: string): Promise<boolean> {
   });
   if (typeof r.json.at === "string") side.since = r.json.at;
   // Whether the sample may be written here: only where Orgo has nothing, not even a deleted file. And
-  // whether Orgo has or had a sample, before one Bops wrote here goes (it never goes over Orgo's). A full
+  // whether Orgo has or had a sample, before one SmileDesk wrote here goes (it never goes over Orgo's). A full
   // list has only the live files, so what was deleted is read too, while it isn't known.
   const nothingThere = !remote.length && !Object.keys(side.files).length;
   if (!nothingThere) side.fresh = false;
@@ -537,7 +537,7 @@ async function pullOnce(ws: string): Promise<boolean> {
     } else deletedKnown = false;
   }
   writeSide(dir, side);
-  // A file here Orgo never had from this Mac, or not as it is now: sent (the sample Bops wrote as that,
+  // A file here Orgo never had from this Mac, or not as it is now: sent (the sample SmileDesk wrote as that,
   // once it's known whether Orgo had one).
   for (const x of crmFolder.files(dir)) {
     if (busy.has(fold(x.name)) || toSend.includes(x.name)) continue;

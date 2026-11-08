@@ -187,9 +187,9 @@ function github(wsId: string) {
     const r = await call(method, path, body, query);
     const j = jsonOf(r);
     const said = typeof objOf(j)?.message === "string" ? `: ${String(objOf(j)!.message).slice(0, 200)}` : "";
-    if (r.status === 401 || r.status === 403) throw new MirrorError(`GitHub turned the key down while Bops tried to ${step} (${r.status}${said}). Check the GitHub key in Keys can write to the repo.`, 409);
-    if (r.status >= 400 || !(array ? Array.isArray(j) : objOf(j))) throw new MirrorError(`GitHub didn't let Bops ${step} (${r.status}${said}).`, 502);
-    if (r.truncated) throw new MirrorError(`GitHub's answer was too big for Bops to read while it tried to ${step}.`, 502);
+    if (r.status === 401 || r.status === 403) throw new MirrorError(`GitHub turned the key down while SmileDesk tried to ${step} (${r.status}${said}). Check the GitHub key in Keys can write to the repo.`, 409);
+    if (r.status >= 400 || !(array ? Array.isArray(j) : objOf(j))) throw new MirrorError(`GitHub didn't let SmileDesk ${step} (${r.status}${said}).`, 502);
+    if (r.truncated) throw new MirrorError(`GitHub's answer was too big for SmileDesk to read while it tried to ${step}.`, 502);
     return j as Record<string, unknown>;
   };
   return { call, need };
@@ -210,7 +210,7 @@ async function ghHead(gh: GitHub, repo: string, branch: string): Promise<string>
 async function ghSide(gh: GitHub, repo: string, commit: string, folder: string): Promise<GhSide> {
   const c = await gh.need("read a commit", "GET", `/repos/${repo}/git/commits/${commit}`);
   const root = String(objOf(c.tree)?.sha ?? "");
-  if (!/^[0-9a-f]{40}$/.test(root)) throw new MirrorError("GitHub sent a commit Bops couldn't read.", 502);
+  if (!/^[0-9a-f]{40}$/.test(root)) throw new MirrorError("GitHub sent a commit SmileDesk couldn't read.", 502);
   let at = root;
   for (const seg of folder ? folder.split("/") : []) {
     const t = await gh.need("read its folders", "GET", `/repos/${repo}/git/trees/${at}`);
@@ -377,7 +377,7 @@ async function bringIn(
       left = real.slice(batch.length);
       stale = 0;
     } else if ("empty" in r) left = real.slice(batch.length);
-    else if (++stale > 2) throw new MirrorError("Ingot kept moving while Bops brought GitHub's changes in. Publish again.", 409);
+    else if (++stale > 2) throw new MirrorError("Ingot kept moving while SmileDesk brought GitHub's changes in. Publish again.", 409);
   }
   return { to: to ?? (await ingot.head(wsId, name)) ?? null, brought };
 }
@@ -456,7 +456,7 @@ export async function mirrorPublish(wsId: string, name: string, at: string, cfg:
   // What goes up: none too big, each read and checked now.
   const puts = [...ours].filter(([, f]) => f).map(([p]) => p);
   const big = puts.filter((p) => (ours.get(p)?.size ?? 0) > BLOB_MAX);
-  if (big.length) throw new MirrorError(`Too big to send to GitHub through Bops (${Math.round(BLOB_MAX / 1000)} KB a file at most): ${list(big)}. Nothing was published.`, 413, { code: "TOO_BIG", paths: big });
+  if (big.length) throw new MirrorError(`Too big to send to GitHub through SmileDesk (${Math.round(BLOB_MAX / 1000)} KB a file at most): ${list(big)}. Nothing was published.`, 413, { code: "TOO_BIG", paths: big });
   const bytes = await ingotBytes(wsId, name, at, puts);
 
   // 1. GitHub's changes into Ingot (checked again against whatever is on top then).
@@ -502,7 +502,7 @@ async function pushUp(
   if (entries.length) {
     const tree = await gh.need("put the files together", "POST", `/repos/${cfg.repo}/git/trees`, { base_tree: now.root, tree: entries });
     const changed = entries.map((e) => e.path.slice(prefix.length));
-    const message = `Publish ${name} from Bops (Ingot ${short(at)})\n\n${changed.slice(0, 20).map((p) => `- ${p}`).join("\n")}${changed.length > 20 ? `\n- and ${changed.length - 20} more` : ""}\n\nIngot-Changeset: ${at}`;
+    const message = `Publish ${name} from SmileDesk (Ingot ${short(at)})\n\n${changed.slice(0, 20).map((p) => `- ${p}`).join("\n")}${changed.length > 20 ? `\n- and ${changed.length - 20} more` : ""}\n\nIngot-Changeset: ${at}`;
     const commit = await gh.need("make the commit", "POST", `/repos/${cfg.repo}/git/commits`, { message, tree: String(tree.sha), parents: [head] });
     const sha = String(commit.sha);
     // An answer lost on the way (the broker timed out) may still have moved it: GitHub is asked where it is.
@@ -511,7 +511,7 @@ async function pushUp(
       throw e;
     });
     if (moved.status === 422 || moved.status === 409)
-      throw new MirrorError(`Someone pushed to ${cfg.branch} on GitHub while Bops was publishing, so nothing went there. Publish again.`, 409, { code: "GITHUB_MOVED", brought });
+      throw new MirrorError(`Someone pushed to ${cfg.branch} on GitHub while SmileDesk was publishing, so nothing went there. Publish again.`, 409, { code: "GITHUB_MOVED", brought });
     if (moved.status >= 400) throw new MirrorError(`GitHub didn't move ${cfg.branch} to the new commit (${moved.status}). Nothing went live.`, 502, { brought });
     tip = sha;
     pushed = { sha, url: `https://github.com/${cfg.repo}/commit/${sha}`, files: entries.length };

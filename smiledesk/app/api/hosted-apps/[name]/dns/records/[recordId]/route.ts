@@ -11,11 +11,11 @@ export const dynamic = "force-dynamic";
  * Change (PATCH, the whole record as it becomes: { ws, zone, type, name, value, priority?, weight?,
  * port? }) or remove (DELETE { ws, zone }) one DNS record of the zone of a domain bought through Orgo that
  * points at the app, by the id the records were read with. Each answers the zone's records as written.
- * Only from the Bops window (ui-token.ts), as a deploy is.
+ * Only from the SmileDesk window (ui-token.ts), as a deploy is.
  */
 type Ctx = { params: Promise<{ name: string; recordId: string }> };
 
-const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "DNS can only be changed in the Bops app." }, { status: 403 }));
+const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "DNS can only be changed in the SmileDesk app." }, { status: 403 }));
 
 /** What the window sent: the body, else (a DELETE without one) the query. */
 async function asked(request: Request): Promise<Record<string, unknown>> {

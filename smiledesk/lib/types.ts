@@ -1,4 +1,4 @@
-/** Shared shapes for the Bops app state, used by both the server and the UI. */
+/** Shared shapes for the SmileDesk app state, used by both the server and the UI. */
 
 import type { SharedKey } from "@/cloud/protocol";
 import type { AddedFile } from "./added-files";
@@ -22,26 +22,26 @@ export type Bot = {
   computerId?: string;
   /**
    * That computer's memory in GB, as Orgo last said (a copy of it is as big, which the plan must have
-   * room for). Unknown until Bops has seen it up; only meaningful while computerId is set.
+   * room for). Unknown until SmileDesk has seen it up; only meaningful while computerId is set.
    */
   computerRam?: number;
   /**
    * Which computer it works on: the main bot's ("shared", the default for new bots: no computer of
    * its own to pay for or set up) or its own. Unset on bots from before the choice: they keep the
    * computer they have, and share if they have none. See sharesComputer. A main bot has its own,
-   * except one that shares the user's free Bops computer with another workspace's main bot, for want
+   * except one that shares the user's free SmileDesk computer with another workspace's main bot, for want
    * of room on the user's Orgo plan ("shared").
    */
   computer?: "shared" | "own";
   /**
-   * Its computer is the user's one free Bops computer (orgo-web's bops_free): made by Bops from the
-   * Bops template for a main bot, off the user's Orgo plan. One per Orgo account; only a main bot has it.
+   * Its computer is the user's one free SmileDesk computer (orgo-web's bops_free): made by SmileDesk from the
+   * SmileDesk template for a main bot, off the user's Orgo plan. One per Orgo account; only a main bot has it.
    */
   freeComputer?: boolean;
   computerStatus: "none" | "cloning" | "ready" | "error";
   /**
-   * Its computer's id while Bops has made it and never had it ready: nothing has run on it, so a setup
-   * that fails may delete it (ensureComputer). Cleared once it's ready. A computer Bops didn't make (the
+   * Its computer's id while SmileDesk has made it and never had it ready: nothing has run on it, so a setup
+   * that fails may delete it (ensureComputer). Cleared once it's ready. A computer SmileDesk didn't make (the
    * user's free one taken up again, one from another Mac) or once had working never has it: a failed
    * setup never deletes that one, whatever Orgo says about it.
    */
@@ -53,12 +53,12 @@ export type Bot = {
   email?: string;
   /**
    * Its AgentPhone line (lib/server/phone.ts): the number, and the AgentPhone agent it's attached to.
-   * `plan`: it came with the user's Pro or Max plan (Bops Cloud set it up, lib/server/cloud-plan.ts);
+   * `plan`: it came with the user's Pro or Max plan (SmileDesk Cloud set it up, lib/server/cloud-plan.ts);
    * `paused`: that plan ended, so calls and texts to it go unanswered until the user upgrades again,
    * or (with `unpaid`, billing by use) its month couldn't be paid from the user's Orgo credit, until it is.
    */
   phoneLine?: { numberId: string; agentId: string; plan?: boolean; paused?: boolean; unpaid?: boolean };
-  /** The voice it speaks in on calls (voiceFor in lib/server/call.ts), kept so Bops Cloud answers its calls in the same one while the Mac is away. */
+  /** The voice it speaks in on calls (voiceFor in lib/server/call.ts), kept so SmileDesk Cloud answers its calls in the same one while the Mac is away. */
   voice?: string;
   /**
    * Its AgentMail inbox (lib/server/mail.ts): the current one, and older ones (mail to them still
@@ -66,7 +66,7 @@ export type Bot = {
    */
   mail?: { inboxId: string; podId: string; past?: string[]; seenAt?: number; plan?: boolean; paused?: boolean };
   /**
-   * The user asked for this bot's email (Get an email, on Max): with Bops Cloud's plan limits on, a bot
+   * The user asked for this bot's email (Get an email, on Max): with SmileDesk Cloud's plan limits on, a bot
    * besides the plan's main bot gets an inbox only then, while the plan has room (lib/server/mail.ts).
    */
   mailWanted?: boolean;
@@ -78,9 +78,9 @@ export type Bot = {
   access?: Record<string, AppAccess>;
   /** This bot's Composio session (its allowed apps and actions), and the access it was made for. */
   composio?: { sessionId: string; access: string };
-  /** The secret this bot's threads use to reach its apps through Bops (/api/apps/call). */
+  /** The secret this bot's threads use to reach its apps through SmileDesk (/api/apps/call). */
   appsKey?: string;
-  /** Its Orgo computer's address on the user's tailnet, once it has joined. Bops reaches the screens' Chrome there. */
+  /** Its Orgo computer's address on the user's tailnet, once it has joined. SmileDesk reaches the screens' Chrome there. */
   tailnet?: { ip: string; name: string };
   /** How hard it thinks on its threads. "auto" (the default) lets Jev judge each task: high for hard ones, medium otherwise. */
   effort?: Effort;
@@ -95,7 +95,7 @@ export type Bot = {
   /**
    * What this bot may do without asking the user, as rules (lib/permission.ts): Always allow on a request for
    * their OK saves one for that action, so that action never asks again, whoever it's for. Only the user's own
-   * Bops writes them (a computer never may: cloud/computer-scope.ts).
+   * SmileDesk writes them (a computer never may: cloud/computer-scope.ts).
    */
   permissions?: PermissionRule[];
   /**
@@ -108,11 +108,11 @@ export type Bot = {
   /**
    * "How I work": what the user wrote about how this bot should work (tone, habits, what to check first),
    * up to MAX_PERSONA_CHARS. Given to it in its chat, tasks and calls as the user's preferences; it never
-   * overrides Bops' own rules (approvals, text on pages being information).
+   * overrides SmileDesk's own rules (approvals, text on pages being information).
    */
   persona?: string;
   /**
-   * Who wrote `persona` when the owner didn't (an Admin, from their own Bops: lib/server/member-acts.ts), and the owner's
+   * Who wrote `persona` when the owner didn't (an Admin, from their own SmileDesk: lib/server/member-acts.ts), and the owner's
    * own last words then (`ownerText`), which work on the owner's Mac keeps to (personaOf). The owner's Save clears it.
    */
   personaBy?: { name: string; ownerText?: string };
@@ -122,22 +122,22 @@ export type Bot = {
    */
   keys?: string[];
   /**
-   * Its brain (Brain.id, lib/server/brains.ts): the agent its tasks run on, when it isn't Bops' own. Unset is
-   * Bops agent, on AI credit. One that names a brain this bot isn't on any more, or one that's gone, is Bops
+   * Its brain (Brain.id, lib/server/brains.ts): the agent its tasks run on, when it isn't SmileDesk's own. Unset is
+   * SmileDesk agent, on AI credit. One that names a brain this bot isn't on any more, or one that's gone, is SmileDesk
    * agent too (brainOf).
    */
   brain?: string;
   /**
    * Its AI profile (lib/agents.ts): the agents its threads may run on, each with how it pays and the account
-   * it uses, and its Default. Unset is Bops agent only, on AI credit, exactly as before: a profile equal to
-   * that is never stored. Only the owner's own Bops changes it (a computer never may: cloud/computer-scope.ts).
-   * `brain` above is kept in step with it for older Bops (the Default's account, when that's Claude Code or Codex).
+   * it uses, and its Default. Unset is SmileDesk agent only, on AI credit, exactly as before: a profile equal to
+   * that is never stored. Only the owner's own SmileDesk changes it (a computer never may: cloud/computer-scope.ts).
+   * `brain` above is kept in step with it for older SmileDesk (the Default's account, when that's Claude Code or Codex).
    */
   ai?: BotAi;
   /**
    * The labels of its workspace's skills it has (lib/skill-labels.ts botHasSkill): unset is every label
    * (as every bot had before), an empty list none. A skill whose own bot list names bots goes by that list
-   * instead. Bops' own skills are every bot's whatever this says. Set in Who has what, in Skills, and in
+   * instead. SmileDesk's own skills are every bot's whatever this says. Set in Who has what, in Skills, and in
    * the bot's own Skills; sent to orgo-web as bops_bots.skill_labels where it takes it (bops-sync.ts).
    */
   skillLabels?: string[];
@@ -145,14 +145,14 @@ export type Bot = {
 
 /**
  * What a bot's settings page set (components/app/bot-settings.tsx), kept on its workspace by bot id
- * (Workspace.botSettings) rather than on the bot: a Bops from before that changes the bot (an email noted, its voice
+ * (Workspace.botSettings) rather than on the bot: a SmileDesk from before that changes the bot (an email noted, its voice
  * kept) before it has the newer state puts back its whole copy of the bot (state-merge.ts merge3), which would take
- * these with it; a workspace merges field by field, and a Bops from before never writes this one. Unset: as before.
+ * these with it; a workspace merges field by field, and a SmileDesk from before never writes this one. Unset: as before.
  */
 export type BotSettings = {
   /**
    * The voice it speaks in on calls, picked from CALL_VOICES. Unset: voiceFor's pick for its name, kept in Bot.voice.
-   * Never written into Bot.voice: a Bops from before rewrites that on every call, and Bops Cloud reads it.
+   * Never written into Bot.voice: a SmileDesk from before rewrites that on every call, and SmileDesk Cloud reads it.
    */
   callVoice?: CallVoice;
   /** false: calls to its number hear a short no and are hung up (phone-voice.ts). Unset: it answers, as before. */
@@ -164,7 +164,7 @@ export type BotSettings = {
   sequencesOff?: { othersMail?: true; othersCalls?: true };
   /**
    * Replies to others is Never (lib/permission.ts mailRule): it emails nobody but the user, and doesn't ask. Its
-   * "Send an email" rule says ask meanwhile, which is what a Bops from before does with it.
+   * "Send an email" rule says ask meanwhile, which is what a SmileDesk from before does with it.
    */
   mailNever?: true;
 };
@@ -228,16 +228,16 @@ export type Workspace = {
   /** Where its memory lives (lib/server/memory.ts): unset is its own bank; set when it shares another workspace's. */
   memory?: { bank: string; peer: string };
   /**
-   * Its part of every bot's email address (sam@<slug>.bops.bot), unique across every Bops install.
-   * On Bops Cloud it's the handle the workspace claimed there (`mailClaimed`; cloud/handles.ts):
+   * Its part of every bot's email address (sam@<slug>.bops.bot), unique across every SmileDesk install.
+   * On SmileDesk Cloud it's the handle the workspace claimed there (`mailClaimed`; cloud/handles.ts):
    * one from before handles is kept for the bots that have it, and new bots get the claimed one.
    */
   mailSlug?: string;
-  /** `mailSlug` is this workspace's handle in Bops Cloud (bops.mail_handles), claimed once across every user. */
+  /** `mailSlug` is this workspace's handle in SmileDesk Cloud (bops.mail_handles), claimed once across every user. */
   mailClaimed?: boolean;
   /**
-   * The "Pick your Bops address" step (components/app/mail-address.tsx): waiting for the user to pick
-   * the workspace's handle before its first inbox (`offer` unset), or offering to change one Bops
+   * The "Pick your SmileDesk address" step (components/app/mail-address.tsx): waiting for the user to pick
+   * the workspace's handle before its first inbox (`offer` unset), or offering to change one SmileDesk
    * picked for them (`offer`: they chose later, or a plan set it up while the Mac was closed).
    * Unset once they've picked, kept it, or chosen later.
    */
@@ -264,8 +264,8 @@ export type Workspace = {
   /**
    * Its Orgo project's name as Orgo has it, last seen or set here; `orgoUpdatedAt` its updated_at then. A
    * list that names the project otherwise was renamed on orgo.ai, and the name comes here too
-   * (syncWorkspaceNames). It may differ from `name`: "orgo (Bops)" for a workspace named "orgo" here, or
-   * "bops" for a default the user renamed while an older Bops app is still on the account.
+   * (syncWorkspaceNames). It may differ from `name`: "orgo (SmileDesk)" for a workspace named "orgo" here, or
+   * "bops" for a default the user renamed while an older SmileDesk app is still on the account.
    */
   orgoName?: string;
   orgoUpdatedAt?: string;
@@ -311,35 +311,35 @@ export type Workspace = {
   /**
    * What each person the owner added may do with this workspace's bots, by email (lib/member-access.ts):
    * none, read or write per bot, and for the bots not named (new ones too). Someone not here sees no
-   * bot. Bops Cloud reads it from the owner's state to build a member's view; it never goes to them.
+   * bot. SmileDesk Cloud reads it from the owner's state to build a member's view; it never goes to them.
    */
   memberAccess?: MemberAccessMap;
   /**
-   * Whose chat goes through Bops Cloud first: "cloud" when every message here, the owner's and their people's, is
-   * taken by Bops Cloud, which checks who may, keeps it and has the bot's computer answer. Then only Bops Cloud writes
+   * Whose chat goes through SmileDesk Cloud first: "cloud" when every message here, the owner's and their people's, is
+   * taken by SmileDesk Cloud, which checks who may, keeps it and has the bot's computer answer. Then only SmileDesk Cloud writes
    * a member's stamp on a message here (cloud/computer-scope.ts cloudChatOn, memberStampKept). "mac": the owner (or
-   * Orgo) chose the owner's Mac, which answers as before. Unset: the Mac answers for now. Bops Cloud writes it, from
+   * Orgo) chose the owner's Mac, which answers as before. Unset: the Mac answers for now. SmileDesk Cloud writes it, from
    * its switch (cloud/turns.ts), and puts it back on every save; only "cloud" means the cloud path.
    */
   chatOn?: "cloud" | "mac";
   /**
-   * Bops Cloud moves this workspace's chat by itself (cloud/turns.ts autoRoute): to it once every computer its bots
+   * SmileDesk Cloud moves this workspace's chat by itself (cloud/turns.ts autoRoute): to it once every computer its bots
    * work on has a runner that answers, back to the Mac whenever one can't. Unset: it doesn't (someone chose, or it
-   * isn't on for this account). Bops Cloud writes it; a computer someone else can use gets a runner for it too
+   * isn't on for this account). SmileDesk Cloud writes it; a computer someone else can use gets a runner for it too
    * (lib/server/runner-install.ts sharedRunnerOk), and Settings, General says so.
    */
   chatAuto?: boolean;
   /**
-   * Bops Cloud refuses to give this workspace's switch back to it ({mode: "auto"}: 409 chat_auto_off, outside
-   * BOPS_CHAT_AUTO), so once it's off it can't be turned back on here. Bops Cloud writes it where the switch shows
+   * SmileDesk Cloud refuses to give this workspace's switch back to it ({mode: "auto"}: 409 chat_auto_off, outside
+   * BOPS_CHAT_AUTO), so once it's off it can't be turned back on here. SmileDesk Cloud writes it where the switch shows
    * (chatOn); Settings, General shows the switch off and disabled with why, and asks before turning it off. Unset: as
-   * before (a Bops Cloud from before says nothing).
+   * before (a SmileDesk Cloud from before says nothing).
    */
   chatAutoOff?: boolean;
   /**
    * The team chart (lib/chain.ts): who each bot answers to, who may ask whom, who takes work handed down,
    * which bots keep their memory to themselves and whom each works for. Unset: every bot answers to the main
-   * bot and may ask every other, as before. Only the owner's own Bops writes it (workspaces.ts setChain), for
+   * bot and may ask every other, as before. Only the owner's own SmileDesk writes it (workspaces.ts setChain), for
    * them or for someone with the Org chart switch (a "change" act: lib/server/change-acts.ts); it goes to someone
    * with that switch who sees every bot (cloud/ws-slice.ts sharedSlice), never to anyone else.
    */
@@ -347,26 +347,26 @@ export type Workspace = {
   /**
    * What the owner's Mac did with the last changes people made from their own windows (the "change" act:
    * lib/server/change-acts.ts), newest last, at most CHANGES_KEPT: each by their act's key and who made it (their
-   * Orgo user id), done or why not. Bops Cloud shows each person their own (cloud/ws-slice.ts changedFor).
+   * Orgo user id), done or why not. SmileDesk Cloud shows each person their own (cloud/ws-slice.ts changedFor).
    */
   changesDone?: { key: string; by: string; ok: boolean; error?: string; at: number }[];
   /**
    * When this Mac gave everyone already here Your Apps at Read (workspaces.ts giveAppsRead): once, so an entry an older
-   * Bops rewrote later is never given Read again by that.
+   * SmileDesk rewrote later is never given Read again by that.
    */
   appsScopeAt?: number;
   /**
    * What people with Your Apps at Read or more are shown of its apps on the web (lib/server/apps-for-members.ts), as this
-   * Mac last read Ingot and Orgo. Only there while someone has Read or more. Bops Cloud sends parts of it to them
+   * Mac last read Ingot and Orgo. Only there while someone has Read or more. SmileDesk Cloud sends parts of it to them
    * (cloud/ws-slice.ts appsFor); never variables, tokens, keys, logs or error text.
    */
   appsForMembers?: AppsForMembers;
   /**
    * Each site's newest Preview password, by "<app>/<site>" (the app's own site named as the app): the link it's for, the
-   * password, and when Bops Cloud took it, by its clock. Only Bops Cloud writes it, as whoever set the password tells it
+   * password, and when SmileDesk Cloud took it, by its clock. Only SmileDesk Cloud writes it, as whoever set the password tells it
    * (cloud/preview-passwords.ts: this Mac, or the app's own computer's runner, which can set one but never read one
    * back: lib/server/preview-password-share.ts), so people with Your Apps at Write get each new one whether this Mac is
-   * on or not (cloud/ws-slice.ts appsFor). This Mac only carries it along, and tells Bops Cloud what Orgo has where a
+   * on or not (cloud/ws-slice.ts appsFor). This Mac only carries it along, and tells SmileDesk Cloud what Orgo has where a
    * share missed (lib/server/apps-for-members.ts fixCloudCopy): never in a bot's chat or prompt, never read
    * by a computer (cloud/computer-scope.ts forComputer), and never in a window that doesn't show apps (lib/apps-access.ts).
    */
@@ -374,7 +374,7 @@ export type Workspace = {
   /**
    * The keys this workspace's bots see (lib/server/keys.ts keysOf), by name and whose, as this Mac last read the vault:
    * what people with Keys are shown (cloud/ws-slice.ts keyNamesOf), so they switch bots on and off for any of them. Only
-   * there while anyone else is in the workspace (lib/server/keys.ts seeKeysFor); never a value. A Bops from before never
+   * there while anyone else is in the workspace (lib/server/keys.ts seeKeysFor); never a value. A SmileDesk from before never
    * writes it, and merges it as a workspace field.
    */
   keysForMembers?: KeysForMembers;
@@ -384,7 +384,7 @@ export type Workspace = {
    * The voice each of its phone lines speaks in on calls to its number, by AgentPhone agent id (lib/server/phone.ts
    * voiceToAgent): the call voice it was set for and AgentPhone's voice closest to it (`exact`: the same voice by name).
    * Written only once AgentPhone took it, so the settings page says what calls to the number sound like. Unset: the
-   * line's own voice. A Bops from before never writes it, and merges it as a workspace field.
+   * line's own voice. A SmileDesk from before never writes it, and merges it as a workspace field.
    */
   lineVoices?: Record<string, LineVoice>;
   /**
@@ -392,7 +392,7 @@ export type Workspace = {
    * loginKey: a Connected App by its account ("app:<id>"), a key of another workspace by its Orgo project and name
    * ("key:<project>:<NAME>"). Here a Connected App has the same default as where it was connected (Read & act for
    * every bot, unless only the bots given it have it), and a key may be given to the bots here (Bot.keys). Kept on the
-   * workspace that uses it, never on the login: a Bops from before (v0.0.32) merges a workspace field by field and
+   * workspace that uses it, never on the login: a SmileDesk from before (v0.0.32) merges a workspace field by field and
    * never writes this one, and its syncApps rebuilds or drops accounts. Lost, a login is back to its own workspace and
    * the bots given it: less access, never more. Site logins have none: their bots (VaultLogin.bots) say where.
    */
@@ -400,7 +400,7 @@ export type Workspace = {
   /**
    * The names the owner gave its computers, by computer id (lib/bot-groups.ts): the sidebar shows the bots that work on
    * one computer together under it. Unset for one: a name from the apps on it, else its bot's ("Sam's computer"). Only
-   * the owner's own Bops writes it; a Bops from before never writes it and merges it as a workspace field, name by name.
+   * the owner's own SmileDesk writes it; a SmileDesk from before never writes it and merges it as a workspace field, name by name.
    */
   computerNames?: Record<string, string>;
   /** The site each of its bots works on, by bot id (BotSite, read with siteOf). None for a bot that works on none. */
@@ -424,7 +424,7 @@ export type WorkspaceTag = { name: string; description: string };
  */
 export type RoutineSource = { app: string; template: string; account?: string };
 
-/** A skill (how a bot does a kind of job) or an app (a tool Bops builds and bots run). */
+/** A skill (how a bot does a kind of job) or an app (a tool SmileDesk builds and bots run). */
 export type SkillKind = "skill" | "app";
 export type SkillRisk = "read" | "write" | "destructive";
 
@@ -443,7 +443,7 @@ export type SkillRef = {
   label?: string;
   /**
    * Who chose its label: the owner here ("user"), the skill itself (its SKILL.md, a bot's create_skill, Orgo),
-   * or Bops ("auto": from its words or a small model, lib/server/workspace-skills.ts suggestLabels), a
+   * or SmileDesk ("auto": from its words or a small model, lib/server/workspace-skills.ts suggestLabels), a
    * suggestion shown with Confirm and Change that stays out of its SKILL.md and Orgo until it's confirmed,
    * changed or published. Unset with a label: one kept from before this, as chosen.
    */
@@ -457,7 +457,7 @@ export type SkillRef = {
   runsOn?: string;
   /** The bots that have it. Empty: every bot in the workspace. */
   botIds: string[];
-  /** Where it came from: written in Bops, imported from a folder, made in Orgo, or a procedure from before. */
+  /** Where it came from: written in SmileDesk, imported from a folder, made in Orgo, or a procedure from before. */
   source: "bops" | "import" | "orgo" | "procedure";
   createdAt: number;
   updatedAt: number;
@@ -493,7 +493,7 @@ export type ScriptApproval = {
   /** Orgo has it (sent from here, or made on orgo.ai): one it no longer lists was revoked there (lib/server/workspace-skills.ts). */
   synced?: boolean;
   /**
-   * Made in a Bops window by the person signed in (approveScript), not taken from Orgo. One taken from
+   * Made in a SmileDesk window by the person signed in (approveScript), not taken from Orgo. One taken from
    * Orgo counts only while Orgo says that person made it: another member's approval never runs a script here.
    */
   inBops?: boolean;
@@ -504,7 +504,7 @@ export type WorkspaceLine = {
   numberId: string;
   agentId: string;
   type: "imessage" | "sms";
-  /** Which AgentPhone account holds it: the parent account, or the Bops sub-account. */
+  /** Which AgentPhone account holds it: the parent account, or the SmileDesk sub-account. */
   scope: "parent" | "sub";
   previous?: { agentId: string | null; webhookUrl?: string | null };
   at: number;
@@ -523,7 +523,7 @@ export const pairChatId = (a: string, b: string) => `pair:${[a, b].sort().join("
 export const MAIN_WORKSPACE = "ws_main";
 
 /**
- * The first Bops release that finds its default workspace by bops_ws_id rather than by the name "bops"
+ * The first SmileDesk release that finds its default workspace by bops_ws_id rather than by the name "bops"
  * (lib/server/workspaces.ts). An app before it looks for a project named "bops", so the default's project
  * keeps that name until every app on the account is at least this one (lib/server/orgo.ts bopsAppsGate),
  * and the switcher says so (sidebar.tsx heldNameNote).
@@ -533,17 +533,17 @@ export const workspaceOf = (b: { workspaceId?: string } | undefined) => b?.works
 
 /**
  * Whether a bot works on another bot's computer rather than its own: a bot on its workspace's main
- * bot's, or a main bot on the free Bops computer another workspace's main bot has (when the user's
+ * bot's, or a main bot on the free SmileDesk computer another workspace's main bot has (when the user's
  * Orgo plan has no room for one of its own; lib/server/plan.ts makeMainComputer).
  */
 export const sharesComputer = (b: Pick<Bot, "isMain" | "computer" | "computerId">) =>
   b.isMain ? b.computer === "shared" && !b.computerId : (b.computer ?? (b.computerId ? "own" : "shared")) === "shared";
 
-/** The main bot that has the user's free Bops computer, if one of them does (other than `except`). */
+/** The main bot that has the user's free SmileDesk computer, if one of them does (other than `except`). */
 export const freeComputerBot = (bots: Bot[], except?: string) => bots.find((x) => x.isMain && x.freeComputer && x.computerId && x.id !== except);
 
 /**
- * The free Bops computer when the workspace `wsId` is deleted: null when no bot of it holds it. It sits in
+ * The free SmileDesk computer when the workspace `wsId` is deleted: null when no bot of it holds it. It sits in
  * the default's "bops" project, so Orgo's preview of the workspace never lists it, and main bots of other
  * workspaces may work on it (computer "shared", lib/server/plan.ts shareFree) or have it on record too. Then
  * it stays (`kept`): `heir` is the main bot of another workspace that takes it up, none when another bot
@@ -561,12 +561,12 @@ export function freeComputerOnDelete(bots: Bot[], wsId: string): { id: string; h
 
 /**
  * The bot whose Orgo computer `b` works on: itself, or its main bot when it shares (and that main
- * bot's own host, when it shares the free Bops computer). Anything about the machine (its id, status,
+ * bot's own host, when it shares the free SmileDesk computer). Anything about the machine (its id, status,
  * tailnet address, screens) comes from this bot; the work stays `b`'s.
  */
 /**
  * A chat as the window shows who's typing in it: its own (Chat.typing), and each of its bots thinking or writing in it
- * elsewhere (AppState.liveMoods with this chat: on another device, or on its computer answering a turn Bops Cloud owes
+ * elsewhere (AppState.liveMoods with this chat: on another device, or on its computer answering a turn SmileDesk Cloud owes
  * it, cloud/turns.ts), or whose computer is waking to answer. The same chat when there's none to add.
  */
 export function withRemoteTyping<C extends Pick<Chat, "id" | "botIds" | "typing">>(c: C, moods: AppState["liveMoods"]): C {
@@ -584,38 +584,38 @@ export function workBot(b: Bot, bots: Bot[]): Bot {
 }
 
 /**
- * The coding agents a user can bring for their bots' tasks instead of Bops agent (lib/server/brains.ts):
- * Claude Code, the unmodified one Bops installs on the bot's computer, and Codex. They run on the user's
- * own account, never on Bops' AI credit.
+ * The coding agents a user can bring for their bots' tasks instead of SmileDesk agent (lib/server/brains.ts):
+ * Claude Code, the unmodified one SmileDesk installs on the bot's computer, and Codex. They run on the user's
+ * own account, never on SmileDesk's AI credit.
  */
 export type BrainKind = "claude" | "codex";
-/** The agents a thread can run on (lib/agents.ts AGENTS). "bops" is Bops' own agent, on OpenAI. */
+/** The agents a thread can run on (lib/agents.ts AGENTS). "bops" is SmileDesk's own agent, on OpenAI. */
 export type AgentKind = "bops" | "claude" | "codex" | "opencode" | "agy";
 /** The CLI agents this build drives on a bot's computer (lib/server/cli-agents.ts DRIVERS). */
 export type CliKind = "claude" | "codex" | "opencode";
-/** Who pays for a thread's AI: Bops AI credit, the user's own plan signed in on the computer, or their own key from the Vault. */
+/** Who pays for a thread's AI: SmileDesk AI credit, the user's own plan signed in on the computer, or their own key from the Vault. */
 export type AgentPays = "credit" | "plan" | "key";
 /**
  * One agent in a bot's AI profile: what runs, how it pays, the account it runs on, and the model new threads on
  * it start with. Never secret: a key stays in the Vault, a plan's login stays in its folder on the computer.
  */
 export type BotAgent = {
-  /** "bops" for Bops agent; else "ag_" and 10 letters or digits. A thread names its agent by this. */
+  /** "bops" for SmileDesk agent; else "ag_" and 10 letters or digits. A thread names its agent by this. */
   id: string;
   kind: AgentKind;
   pays: AgentPays;
-  /** The AI account (Brain.id) for Claude Code and Codex. Never for Bops agent or OpenCode. */
+  /** The AI account (Brain.id) for Claude Code and Codex. Never for SmileDesk agent or OpenCode. */
   account?: string;
-  /** For new threads (lib/agents.ts MODELS). Unset: the kind's default (Bops agent: Auto). */
+  /** For new threads (lib/agents.ts MODELS). Unset: the kind's default (SmileDesk agent: Auto). */
   model?: string;
 };
-/** A bot's AI profile. Unset: Bops agent only, as its Default, exactly as before. */
+/** A bot's AI profile. Unset: SmileDesk agent only, as its Default, exactly as before. */
 export type BotAi = { agents: BotAgent[]; default: string };
 /**
  * Whether this build has brains: NEXT_PUBLIC_BOPS_BRAINS=1 where it's built (or where `next dev` starts,
  * .env.local too). Next writes the value into the server and the window alike as it builds them, and a
  * release builds with it 0 (scripts/release.sh). Without brains nothing about them shows (Settings, a bot's
- * profile, a thread's badge and Open in terminal), every bot is on Bops agent (brainOf) and every task runs
+ * profile, a thread's badge and Open in terminal), every bot is on SmileDesk agent (brainOf) and every task runs
  * there, a thread a brain ran included (sessions.ts brainRecord), and the brain routes answer 404. The brains
  * saved in the state stay as they are, for a build that has them.
  */
@@ -632,10 +632,10 @@ export const BRAIN_KEYS: Record<BrainKind, string> = { claude: "ANTHROPIC_API_KE
 export type BrainAuth = "plan" | "key";
 
 /**
- * Claude Code signed in with a plan on one computer, as its own `claude auth status --json` said when Bops
+ * Claude Code signed in with a plan on one computer, as its own `claude auth status --json` said when SmileDesk
  * last asked: how it signed in ("claude.ai") and whose account it is (the email, the organization, the
  * plan: "max", "pro", "team"). Never the login itself: that stays in the brain's folder on that computer,
- * which Bops never reads, copies or sends anywhere.
+ * which SmileDesk never reads, copies or sends anywhere.
  */
 export type BrainSignIn = { computerId: string; at: number; method?: string; account?: { email?: string; orgName?: string; plan?: string } };
 
@@ -662,7 +662,7 @@ export type Brain = {
   signIns?: BrainSignIn[];
   /**
    * A plan brain signing in now: Claude Code's own sign-in is open in a terminal on `display` of that
-   * computer, the user drives that screen, and Bops asks Claude Code until it says it's signed in.
+   * computer, the user drives that screen, and SmileDesk asks Claude Code until it says it's signed in.
    * `failed`: it didn't finish, and why (kept until the next try).
    */
   signingIn?: { botId: BotId; computerId: string; display: number; at: number; failed?: string };
@@ -671,7 +671,7 @@ export type Brain = {
 /** "Max plan", "Pro plan": a Claude plan as Claude Code names it (BrainSignIn's plan); "Claude plan" when it didn't say. */
 export const planName = (plan?: string) => (plan ? `${plan.charAt(0).toUpperCase()}${plan.slice(1)} plan` : "Claude plan");
 
-/** A bot's brain, or undefined for Bops agent: one it picked that still lets it in, and is still there, in a build with brains (BRAINS_ON). */
+/** A bot's brain, or undefined for SmileDesk agent: one it picked that still lets it in, and is still there, in a build with brains (BRAINS_ON). */
 export function brainOf(b: Pick<Bot, "id" | "brain">, state: Pick<AppState, "brains">): Brain | undefined {
   if (!BRAINS_ON || !b.brain) return undefined;
   const x = state.brains?.find((y) => y.id === b.brain);
@@ -692,8 +692,8 @@ export function brainReady(x: Brain, b: Bot, state: Pick<AppState, "bots" | "hos
 
 /**
  * Who runs a thread now (sessions.ts brainFor): its brain's CLI once that began it (Session.brainRun), until
- * Bops agent runs any of it (its agent session or response chain, or the user had it finish there), from when
- * on it stays Bops agent's ("agent"), which knows what it did; nobody yet while nothing has run it.
+ * SmileDesk agent runs any of it (its agent session or response chain, or the user had it finish there), from when
+ * on it stays SmileDesk agent's ("agent"), which knows what it did; nobody yet while nothing has run it.
  */
 export function threadRunner(s: Pick<Session, "brainRun" | "onBopsAgent" | "agentSessionId" | "responseId">): CliKind | "agent" | undefined {
   if (s.onBopsAgent || s.agentSessionId || s.responseId) return "agent";
@@ -702,8 +702,8 @@ export function threadRunner(s: Pick<Session, "brainRun" | "onBopsAgent" | "agen
 
 /**
  * Whether a thread's brain can be asked to compact what it has so far (Compact: lib/server/sessions.ts compactThread),
- * once it ran: Claude Code (its own /compact), and Bops agent on the Responses API's computer tool (a compaction of its
- * response chain). Not Codex or OpenCode as Bops runs them (a `codex exec` or `opencode run` for each message, and
+ * once it ran: Claude Code (its own /compact), and SmileDesk agent on the Responses API's computer tool (a compaction of its
+ * response chain). Not Codex or OpenCode as SmileDesk runs them (a `codex exec` or `opencode run` for each message, and
  * neither compacts), nor an Agents API session (OpenAI compacts it itself, and takes no request to). Each compacts by
  * itself too, as it always did.
  */
@@ -725,7 +725,7 @@ export function threadCompactBlocked(s: Session): string | null {
 export const COMPACTED = "compacted";
 
 /**
- * Which of a bot's tasks its brain runs (sessions.ts run: a task on the user's Mac always runs on Bops agent):
+ * Which of a bot's tasks its brain runs (sessions.ts run: a task on the user's Mac always runs on SmileDesk agent):
  * all of them, those in the cloud when it picks per task and this Mac can take some ("some"), or none, when
  * its tasks all run on this Mac (bots in this Mac's browsers, or a bot set to work on the user's Mac).
  */
@@ -754,7 +754,7 @@ export type TaskRoute = {
   router?: { model: string; effort: TaskEffort; tier: RouteTier; why: string };
   bumps?: number;
   long?: boolean;
-  /** The bot's AI profile picked Bops agent's model (lib/agents.ts): every turn runs on it, a bump included. */
+  /** The bot's AI profile picked SmileDesk agent's model (lib/agents.ts): every turn runs on it, a bump included. */
   pinned?: true;
 };
 
@@ -856,7 +856,7 @@ export type Message = {
    * Posted by a routine's run in the chat (Routine.run "chat"), or a reminder: which routine. `manual`:
    * a run someone asked for (Run now), so a turn in Slack or by text that asked for it sends it back there.
    * `at`: when that run began (its RoutineRun.at), so its report goes with that run (lib/routine-reports.ts);
-   * unset on what was posted before Bops kept it.
+   * unset on what was posted before SmileDesk kept it.
    */
   routine?: { id: string; manual?: true; at?: number };
   /**
@@ -867,19 +867,19 @@ export type Message = {
   /** An inline reply (like iMessage's): the message it starts from. Replies to a reply join the same one. */
   replyTo?: string;
   /**
-   * Said by someone the owner gave Write on this chat's bots, from their own Bops (cloud/members.ts act), not by
+   * Said by someone the owner gave Write on this chat's bots, from their own SmileDesk (cloud/members.ts act), not by
    * the owner: `ref` is their key for it, so a retry isn't added twice and their window swaps its own copy for this one.
    */
   member?: MemberSaid;
   /**
-   * Written by a computer's runner as its answer to a message Bops Cloud took (cloud/turns.ts): that turn's id. Bops
+   * Written by a computer's runner as its answer to a message SmileDesk Cloud took (cloud/turns.ts): that turn's id. SmileDesk
    * Cloud takes such a row only from the device that holds or held the turn, and never before the message it answers.
    */
   turn?: string;
   /**
-   * In the window only, never synced: one the viewer of a shared workspace sent that the owner's Bops hasn't
+   * In the window only, never synced: one the viewer of a shared workspace sent that the owner's SmileDesk hasn't
    * written yet (lib/server/shared-core.ts viewState makes it), and how it stands: on its way, waiting for the
-   * owner's Bops to open, or not sent (`error`). `key` sends it again as the same act.
+   * owner's SmileDesk to open, or not sent (`error`). `key` sends it again as the same act.
    */
   memberSend?: MemberSend;
   /** Tapbacks on this message, the user's and the bots'. One each. */
@@ -891,7 +891,7 @@ export type Message = {
   signIn?: { url: string };
   /** Replies the bot offered, shown as buttons the user can tap to answer. */
   options?: string[];
-  /** Worth interrupting the user for (a finished task they're waiting on): a chime, and a notification if Bops is behind. */
+  /** Worth interrupting the user for (a finished task they're waiting on): a chime, and a notification if SmileDesk is behind. */
   ping?: boolean;
   /** A thread's result that asked the user something (lib/asks.ts): kept in the chat when the thread moves on, with how it was answered. */
   needed?: boolean;
@@ -926,7 +926,7 @@ export type Message = {
    */
   madeApp?: { appId: string; version: number };
   /**
-   * Set on Bops' note about an app a bot couldn't make, change or work on (chat.ts: "Couldn't work on the
+   * Set on SmileDesk's note about an app a bot couldn't make, change or work on (chat.ts: "Couldn't work on the
    * app: …"), so a shared workspace never shows it to anyone but its owner (cloud/ws-slice.ts sharedMessage).
    */
   appNote?: true;
@@ -937,16 +937,16 @@ export type Message = {
    */
   picks?: { line: string; code: string }[];
   /**
-   * Set on Bops' card about what a task on an app on the web changed (lib/server/hosted-apps.ts changeCardAfterTask),
+   * Set on SmileDesk's card about what a task on an app on the web changed (lib/server/hosted-apps.ts changeCardAfterTask),
    * posted as the bot with appNote: the workspace and the app, the changeset it was at before (`from`; null when it had
    * none yet) and the bot's newest (`to`), that one's first line, how many changesets that is in all and whose they
    * are, and `restored` once the app was put back as it was at `from` (Restore to before this change). The owner's
    * alone: a shared workspace never gets it (cloud/ws-slice.ts keeps only the fields it names; shared-core.ts
-   * viewState drops it too), and an older Bops shows the text, which says the same.
+   * viewState drops it too), and an older SmileDesk shows the text, which says the same.
    */
   appChange?: { ws: string; app: string; from: string | null; to: string; title: string; count: number; authors: string[]; restored?: true };
   /**
-   * Bops' own words in the bot's voice (a line it fills in: why a thread stopped, where to run one, a plan's
+   * SmileDesk's own words in the bot's voice (a line it fills in: why a thread stopped, where to run one, a plan's
    * limit), never the model's: a shared workspace reads it in the owner's voice (lib/server/shared-core.ts viewState).
    */
   bops?: true;
@@ -1040,7 +1040,7 @@ export type SkillProposal = {
   botId: BotId;
   chatId: string;
   routineId?: string;
-  /** Whose words the turn read from outside Bops (an email's sender, a page's site, an app account), and who started it when that wasn't the owner. */
+  /** Whose words the turn read from outside SmileDesk (an email's sender, a page's site, an app account), and who started it when that wasn't the owner. */
   read?: string[];
   at: number;
   /**
@@ -1056,7 +1056,7 @@ export type SkillProposal = {
 
 /**
  * An app a bot made for the user (lib/server/made-apps.ts): a small React app that runs in a tab of
- * Bops' right panel, locked down, and keeps its own data. Each change is a new version; going back
+ * SmileDesk's right panel, locked down, and keeps its own data. Each change is a new version; going back
  * to one is a change too.
  */
 export type MadeApp = {
@@ -1140,14 +1140,14 @@ export type ThreadReply = {
   /** Set on messages the app sends the bot for the user (like handing a screen back): shown as this quiet line, not as their words. */
   note?: string;
   /**
-   * Passed on by the bot from outside Bops, on a turn someone else started ("an email from
+   * Passed on by the bot from outside SmileDesk, on a turn someone else started ("an email from
    * desk@hotel.example"): the task gets it as information from them, not as the user's words, and the
    * thread shows who it came from.
    */
   from?: string;
-  /** A member's words to the task, from their own Bops (someone the owner gave Write on its bot): instructions, not information like `from`. */
+  /** A member's words to the task, from their own SmileDesk (someone the owner gave Write on its bot): instructions, not information like `from`. */
   member?: MemberSaid;
-  /** In the window only, never synced: a reply the viewer sent that the owner's Bops hasn't written yet (Message.memberSend). */
+  /** In the window only, never synced: a reply the viewer sent that the owner's SmileDesk hasn't written yet (Message.memberSend). */
   memberSend?: MemberSend;
 };
 
@@ -1157,7 +1157,7 @@ export type ThreadReply = {
  */
 export type MemberSaid = MemberWho & { ref?: string; noUse?: true };
 /**
- * A member as their turn goes by them (chat.ts TurnOptions.member): MemberSaid, and `role` "admin" when Bops Cloud or
+ * A member as their turn goes by them (chat.ts TurnOptions.member): MemberSaid, and `role` "admin" when SmileDesk Cloud or
  * the owner's Mac found them an Admin as it took what they said (cloud/protocol.ts TurnMember.role, member-acts.ts
  * adminOf). An Admin's turn has every bot at Write and Your Apps at Write, whatever Workspace.memberAccess keeps for
  * them. Never kept on a Message, a thread or a session (saidOf): a role is orgo-web's, asked afresh each time.
@@ -1169,7 +1169,7 @@ export function saidOf(m: MemberTurn): MemberSaid {
   delete said.role;
   return said;
 }
-/** How one of the viewer's own acts in a shared workspace stands, until the owner's Bops has written it (Message.memberSend). */
+/** How one of the viewer's own acts in a shared workspace stands, until the owner's SmileDesk has written it (Message.memberSend). */
 export type MemberSend = { state: "sending" | "waiting" | "failed"; error?: string; key: string };
 
 /** A session is a long-running task on one screen of a bot's computer, shown as a thread. */
@@ -1183,12 +1183,12 @@ export type Session = {
   /** The exact window on the user's Mac this task last worked in (from its tools: window id, process id). */
   macWindow?: { windowId: number; pid?: number; at: number };
   /**
-   * Started on a turn someone else began (an email, a text or a call from outside Bops: StartOptions.outside).
+   * Started on a turn someone else began (an email, a text or a call from outside SmileDesk: StartOptions.outside).
    * Such a task gets none of the user's CRM (no crm_* tools, no CRM note), as a chat turn like that doesn't:
    * a stranger's words, or a page it opens, can't have it read the user's customers out.
    */
   fromOutside?: true;
-  /** Started on a member's turn (someone the owner gave Write on its bot, from their own Bops): shown as Asked by them. */
+  /** Started on a member's turn (someone the owner gave Write on its bot, from their own SmileDesk): shown as Asked by them. */
   member?: MemberWho;
   /**
    * Started for a message the user kept "between us" (Message.secret): kept between us too, and so is
@@ -1234,14 +1234,14 @@ export type Session = {
    * a copy of the bot's own when it isn't the app's own bot: /workspace/apps/<name>.<copy>), and a brain's thread gets
    * Ingot's MCP tools.
    * `deployAfter`: the user asked for it to go live too (work_on_app's deploy), so once the task ends done
-   * with a new commit, Bops deploys the app itself and says how it went in the chat (hosted-apps.ts
+   * with a new commit, SmileDesk deploys the app itself and says how it went in the chat (hosted-apps.ts
    * deployAfterTask). It's taken off as that deploy goes, so one ask deploys it once at most. `from`: the
    * app's newest commit as the task first started with that ask (null: nothing committed yet), or the one
-   * Bops then deployed, which a new commit is told from; unset when Ingot couldn't say.
+   * SmileDesk then deployed, which a new commit is told from; unset when Ingot couldn't say.
    * `site`: the site of it the task works on (its bot's Works on when that's this app's, else the app's own,
    * named as the app): the Local it runs and checks. `startHead`: the app's newest commit as the task first ran
    * (null: nothing committed yet), what its changes are told from (hosted-apps.ts changeCardAfterTask); unset when Ingot couldn't say. Both unset on
-   * a task from Bops 0.0.34 or before.
+   * a task from SmileDesk 0.0.34 or before.
    */
   app?: { wsId: string; name: string; deployAfter?: true; from?: string | null; site?: string; startHead?: string | null };
   host: Host;
@@ -1270,20 +1270,20 @@ export type Session = {
   owed?: { id: string; type: "computer" | "function"; output?: string; checks?: { id: string; code?: string | null; message?: string | null }[] }[];
   /**
    * The Agents API environment its executor connects to, and the workspace (and Full access on this Mac, MacState.fullAccess, its browser tools' sockets folder, and whether it had the user's apps there; on a computer, the screen its browser tools drive) it was made with, kept so a finished thread can pick up again.
-   * `ui`: it had the Mac tools (Cua Driver), through Bops' own MCP server ("bops"; true was Cua's own, which a thread doesn't pick up again).
-   * `fn`: its apps and business data are function tools Bops answers (sessions.ts agentTool), so a call that needs the user's OK
+   * `ui`: it had the Mac tools (Cua Driver), through SmileDesk's own MCP server ("bops"; true was Cua's own, which a thread doesn't pick up again).
+   * `fn`: its apps and business data are function tools SmileDesk answers (sessions.ts agentTool), so a call that needs the user's OK
    * pauses it; one from before had them as MCP tools, and starts a fresh agent session.
    */
   env?: { id: string; remoteUrl: string; workspace?: string; fullAccess?: boolean; sockets?: string; apps?: boolean; data?: boolean; ui?: boolean | "bops"; display?: number; fn?: true };
   /**
-   * Run by a CLI agent of its bot's (lib/server/cli-agents.ts) rather than Bops agent: which account (Brain.id;
+   * Run by a CLI agent of its bot's (lib/server/cli-agents.ts) rather than SmileDesk agent: which account (Brain.id;
    * "-" for OpenCode, which has none) and agent, on which computer, and the CLI's own session there (`cli`:
    * Claude Code's session id, Codex's thread, OpenCode's "ses_" session), which a later turn, or a
    * restart of the CLI, picks back up. `started`: the CLI has that session (it said so as it began).
    * `waits`: it can't go on until the user does something: sign the brain in on that computer ("sign_in"),
    * or say what's next after the CLI stopped at its plan's usage limit or its sign-in or key was turned
-   * down ("limit": Finish on Bops agent, or Wait), its model isn't allowed ("model") or its provider is down
-   * ("down"), or the Vault has given all the keys it allows this hour ("vault"). `said` is what Bops told them then (not the bot's own
+   * down ("limit": Finish on SmileDesk agent, or Wait), its model isn't allowed ("model") or its provider is down
+   * ("down"), or the Vault has given all the keys it allows this hour ("vault"). `said` is what SmileDesk told them then (not the bot's own
    * answer). The replies that turn took are marked not delivered again, so they go in when it carries on.
    */
   brainRun?: { brainId: string; agentId?: string; kind: CliKind; computerId: string; cli: string; started?: true; waits?: "sign_in" | "limit" | "model" | "down" | "vault"; said?: string };
@@ -1300,7 +1300,7 @@ export type Session = {
    * Unset on a thread from before: its brainRun's account, else its bot's Default.
    */
   agent?: { id: string; kind: AgentKind; model?: string };
-  /** The user had Bops agent finish it after its brain stopped (brainRun.waits "limit"): it runs on Bops agent from then on. */
+  /** The user had SmileDesk agent finish it after its brain stopped (brainRun.waits "limit"): it runs on SmileDesk agent from then on. */
   onBopsAgent?: true;
   steps: SessionStep[];
   replies: ThreadReply[];
@@ -1324,16 +1324,16 @@ export type Session = {
   /** Where it runs: the bot's cloud computer (also when unset, as older threads are), or a Chrome of its own on the user's Mac. */
   runsOn?: "cloud" | "mac";
   /**
-   * The Bops that runs it, as the user's state knows it (persist-cloud.ts deviceIdFor): the Mac it was
+   * The SmileDesk that runs it, as the user's state knows it (persist-cloud.ts deviceIdFor): the Mac it was
    * started on, or a computer's runner (lib/server/runner.ts). Only that one starts it, picks it up again,
    * stops it, or marks it failed when it restarts. Unset on threads from before: the Mac's, never a runner's.
    */
   by?: string;
-  /** Stop asked for on another Bops than the one that runs it (sessions.ts stopSession), and why: that one stops it when it hears. */
+  /** Stop asked for on another SmileDesk than the one that runs it (sessions.ts stopSession), and why: that one stops it when it hears. */
   stopAsked?: string;
-  /** Bops is still deciding where it runs. */
+  /** SmileDesk is still deciding where it runs. */
   routing?: boolean;
-  /** Bops couldn't tell where it should run, so it's asking the user. */
+  /** SmileDesk couldn't tell where it should run, so it's asking the user. */
   askWhere?: boolean;
   /** A last step to do on the user's Mac once the cloud part is done, given its result ("…then text Maria the summary"). */
   thenOnMac?: string;
@@ -1353,7 +1353,7 @@ export type Session = {
   partOf?: string;
   /** Jev's read too: what it waits on is the user approving something on another device (a sign-in prompt on their phone). */
   approveElsewhere?: boolean;
-  /** The answer Bops texted the user about, after it waited unanswered (sessions.ts textIfUnanswered): once per question. */
+  /** The answer SmileDesk texted the user about, after it waited unanswered (sessions.ts textIfUnanswered): once per question. */
   askTexted?: string;
   /** Something on its screen only the user can get past (a sign-in, a code, a captcha). */
   blocker?: Blocker;
@@ -1366,7 +1366,7 @@ export type Session = {
 /**
  * When a routine runs. Times ("HH:MM", 24h) are wall clock times in the routine's zone (Routine.timeZone),
  * else the user's (Owner.timeZone), else the Mac's. The math lives in cloud/schedule.ts (ScheduleLike is
- * the same shape), so Bops Cloud can run the same schedules later. Every older shape is still one.
+ * the same shape), so SmileDesk Cloud can run the same schedules later. Every older shape is still one.
  */
 export type Schedule =
   /** `times`: several a day ("HH:MM", sorted, each once, at most 6); `time` is times[0]. */
@@ -1395,7 +1395,7 @@ export type Schedule =
 export const MIN_EVERY_MINUTES = 15;
 
 /**
- * Where a routine's result goes besides the bot's chat in Bops (which always gets it): a text to the
+ * Where a routine's result goes besides the bot's chat in SmileDesk (which always gets it): a text to the
  * user from the bot's number, an email to the user from the bot's inbox, or a Slack, Telegram or Discord
  * place the bot was added to (a ChannelLink; `chat` is the channel or DM there, unset is the DM with the
  * person paired).
@@ -1454,10 +1454,10 @@ export type Routine = {
    * clears them; each goes once its time has passed.
    */
   skips?: number[];
-  /** Where its task runs (as the user asked); auto lets Bops decide each time. */
+  /** Where its task runs (as the user asked); auto lets SmileDesk decide each time. */
   where?: "auto" | "cloud" | "mac";
   /**
-   * For a task left to Bops (where auto), where the Mac would send its runs, worked out on the Mac ahead
+   * For a task left to SmileDesk (where auto), where the Mac would send its runs, worked out on the Mac ahead
    * of them for its goal then (routines.ts pickWhere, as where.ts chooseWhere decides a run: the user's
    * app rules, then Jev). "mac" keeps it the Mac's in Cloud while its goal is still `goal` (runner.ts
    * pinnedToMac): a computer's runner can't tell, having no Mac.
@@ -1487,7 +1487,7 @@ export type Routine = {
    */
   eventsThrough?: number;
   /**
-   * Set up on a turn someone else started (an email, a text or a call from outside Bops): who it came
+   * Set up on a turn someone else started (an email, a text or a call from outside SmileDesk): who it came
    * from ("an email from desk@hotel.example"). Such a routine runs as a task in the cloud, marked as from
    * outside (Session.fromOutside), never as a chat run with the user's data; its reminder is a note, not
    * the bot's own words; and the user sees who set it up.
@@ -1501,7 +1501,7 @@ export type Routine = {
 
 /**
  * A one-off whose time has passed: done. It's turned off as it fires (lib/server/routines.ts tick), on the one
- * Bops that runs it start to finish, so nothing runs it twice; a run of it that fails shows failed, with Run
+ * SmileDesk that runs it start to finish, so nothing runs it twice; a run of it that fails shows failed, with Run
  * now to run it again. Run now before its time doesn't finish it (it can still be paused and resumed).
  */
 export const onceDone = (r: Routine, now = Date.now()) => !r.enabled && r.schedule.kind === "once" && r.schedule.at <= now;
@@ -1562,8 +1562,8 @@ export type Takeover = { botId: BotId; sessionId?: string; found?: "left"; since
 
 /**
  * A screen of a bot's computer the user drives from this Mac (its Takeover, which isn't synced), said to their other
- * Bops and to the computer's runner, so none of them puts a run on it: this Mac's own (AppState.driving, under
- * macs[deviceId] in Bops Cloud). Said again every few minutes while the takeover lasts (`at`), so one left by a Mac
+ * SmileDesk and to the computer's runner, so none of them puts a run on it: this Mac's own (AppState.driving, under
+ * macs[deviceId] in SmileDesk Cloud). Said again every few minutes while the takeover lasts (`at`), so one left by a Mac
  * that quit or crashed meanwhile counts no longer than a few minutes more (sessions.ts drivenElsewhere).
  */
 export type Driving = { botId: BotId; display: number; at: number };
@@ -1586,7 +1586,7 @@ export const WAITING_FOR_OK = "Waiting for your OK";
 
 export type PageKind = "email_compose" | "article" | "checkout" | "results" | "other";
 
-/** A field on the bot's page that the user can fill from a Bops card. Only its label leaves the page, never a value. */
+/** A field on the bot's page that the user can fill from a SmileDesk card. Only its label leaves the page, never a value. */
 export type FormField = { id: string; label: string; secret: boolean };
 
 /** How a thread chip says what it's waiting on: "needs you to sign in". */
@@ -1622,7 +1622,7 @@ export type ScreenRead = {
   targetId?: string;
 };
 
-/** The person this install of Bops works for: what the bots call them, and what they should know about them (Settings → You). */
+/** The person this install of SmileDesk works for: what the bots call them, and what they should know about them (Settings → You). */
 export type Owner = {
   name: string;
   about?: string;
@@ -1675,7 +1675,7 @@ export type AppState = {
   watches?: Watch[];
   /** Logins bots can sign in with. Only what's safe to show is here; secrets live in the Keychain. */
   vault?: VaultLogin[];
-  /** The brains the user added for their bots (Brain, lib/server/brains.ts). Bops agent is every bot without one. */
+  /** The brains the user added for their bots (Brain, lib/server/brains.ts). SmileDesk agent is every bot without one. */
   brains?: Brain[];
   /** The user's own Mac, where bots can work in a Chrome of their own. */
   mac?: MacState;
@@ -1685,12 +1685,12 @@ export type AppState = {
   connecting?: AppConnecting[];
   /** Where the user added bots like a teammate: a Slack channel, a Telegram bot, a Discord bot (lib/server/channels.ts). */
   channels?: ChannelLink[];
-  /** Actions a bot wants to take that change something (send, create, pay): waiting for the user, or answered a moment ago. Shared by every Bops of the user's (AppApproval). */
+  /** Actions a bot wants to take that change something (send, create, pay): waiting for the user, or answered a moment ago. Shared by every SmileDesk of the user's (AppApproval). */
   appApprovals?: AppApproval[];
   /** Teams the user keeps apart, and the one they're looking at. */
   workspaces?: Workspace[];
   workspace?: string;
-  /** Apps the bots made for the user (lib/server/made-apps.ts): recorded in Orgo, with a copy on this Mac (made-apps-sync.ts); never in Bops Cloud's shared state. */
+  /** Apps the bots made for the user (lib/server/made-apps.ts): recorded in Orgo, with a copy on this Mac (made-apps-sync.ts); never in SmileDesk Cloud's shared state. */
   madeApps?: MadeApp[];
   /**
    * The user's own mobile numbers (Settings, How your bots reach you): when they agreed to get texts
@@ -1699,7 +1699,7 @@ export type AppState = {
    * for texts to it. One saved before verification existed has no verifiedAt, and Settings asks to
    * verify it. `userId` is the Orgo user who verified it: another account signed in on this Mac
    * doesn't inherit it (ofThisUser in lib/server/store.ts). `claimedVia`: it became theirs by being
-   * the first to call or text one of their bots' new numbers (Bops Cloud's bops.phone_lines), not
+   * the first to call or text one of their bots' new numbers (SmileDesk Cloud's bops.phone_lines), not
    * by a code; verifiedAt is then when it did.
    */
   ownerPhones?: { number: string; consentAt: number; verifiedAt?: number; userId?: string; claimedVia?: "call" | "text" }[];
@@ -1719,30 +1719,30 @@ export type AppState = {
   signInEmailCounted?: string;
   /** Numbers that texted STOP to a bot's number: no bot texts them until they text START. */
   smsOptOut?: string[];
-  /** This install of Bops, so the services shared by every install (AgentMail…) keep each one's things apart. */
+  /** This install of SmileDesk, so the services shared by every install (AgentMail…) keep each one's things apart. */
   installId?: string;
   /** News held while the user was busy, told together when they're free (lib/server/attention.ts). */
   digest?: { botId: string; text: string; watchId?: string; at: number }[];
-  /** The Orgo account signed in to this Bops (a Bops user is an Orgo user). The key is in the Keychain. */
+  /** The Orgo account signed in to this SmileDesk (a SmileDesk user is an Orgo user). The key is in the Keychain. */
   account?: { user: { id: string; email?: string; name?: string }; signedInAt: number };
   /**
    * Settings → You → Share usage data turned off: no usage events from this account, from any Mac or
-   * from Bops Cloud (which reads it here). Unset: on (README, Privacy).
+   * from SmileDesk Cloud (which reads it here). Unset: on (README, Privacy).
    */
   analyticsOff?: boolean;
   /**
    * Settings → Your data (lib/privacy.ts, lib/server/privacy.ts): how long chats and calls are kept, and what
    * a delete leaves behind. Shared by every Mac of the user's, like any setting (each field merges on its
-   * own: state-merge.ts). `keepDays`: chat messages older than this many days are deleted, from Bops Cloud
+   * own: state-merge.ts). `keepDays`: chat messages older than this many days are deleted, from SmileDesk Cloud
    * and every Mac, by an hourly sweep on the Mac, with this Mac's call notes, router notes, last screens and
    * the images and pages no kept message refers to; unset or null, they're kept until the user deletes them.
-   * `deletedDays`: a message, thread or group chat the user deletes still goes from the chat and from Bops
+   * `deletedDays`: a message, thread or group chat the user deletes still goes from the chat and from SmileDesk
    * Cloud at once, but a copy stays on the Mac it was deleted on (and only there) this many days, under
    * Recently deleted, to restore; unset or 0, it's gone at once, its images on this Mac too.
    */
   privacy?: { keepDays?: KeepDays; deletedDays?: DeletedDays };
   /**
-   * The user's AI credit ran out: Bops Cloud refused a call that would spend it (402 ai_credit_empty).
+   * The user's AI credit ran out: SmileDesk Cloud refused a call that would spend it (402 ai_credit_empty).
    * The bots stop asking the cloud for AI work and the chat shows it with Upgrade, until a read of
    * the plan (GET /api/plan, /api/account) shows credit again. Unset otherwise.
    * `usage`: the user is billed by use, so it's their Orgo credit, and the chat says Add credit.
@@ -1751,7 +1751,7 @@ export type AppState = {
    */
   credits?: { out: boolean; at: number; usage?: true; computer?: true };
   /**
-   * Billed by use, the size of the user's free Bops computer (lib/bops-billing.ts ComputerSize): the one it
+   * Billed by use, the size of the user's free SmileDesk computer (lib/bops-billing.ts ComputerSize): the one it
    * is, as Orgo's plan read last said, or the one they picked before there was one, which it's made at
    * (lib/server/plan.ts makeFree). Shared by every Mac of theirs, so a computer made again (deleted on
    * Orgo's site) comes back the same size. Unset: none known yet, and a new one is made at Orgo's default.
@@ -1768,7 +1768,7 @@ export type AppState = {
    * dismissed (POST /api/routines/suggestions, /api/routines/suggestions/dismiss).
    */
   suggest?: { app: string; botId: BotId; at: number };
-  /** What running Bops cost, as it happened (lib/server/usage.ts); the account page totals it. */
+  /** What running SmileDesk cost, as it happened (lib/server/usage.ts); the account page totals it. */
   usage?: UsageEvent[];
   /** The Orgo user whose account the bots' computers are in (lib/server/orgo-sign-in.ts adoptComputers). */
   computersOf?: string;
@@ -1786,14 +1786,14 @@ export type AppState = {
   relayRoutes?: Record<string, RelayRoute>;
   /**
    * What's each of the user's other Macs' own (routing through it, whether bots can work on it, its setup), by device
-   * id, as Bops Cloud keeps the state (lib/server/state-merge.ts). This Mac's own is at the top level
+   * id, as SmileDesk Cloud keeps the state (lib/server/state-merge.ts). This Mac's own is at the top level
    * (relay, relayRoutes, mac, setup, driving) and goes up under its id.
    */
   macs?: Record<string, { relay?: AppState["relay"]; relayRoutes?: AppState["relayRoutes"]; mac?: MacState; setup?: AppState["setup"]; driving?: Driving }>;
-  /** The screen of a bot's computer the user drives from this Mac, for their other Bops and its runner (Driving). */
+  /** The screen of a bot's computer the user drives from this Mac, for their other SmileDesk and its runner (Driving). */
   driving?: Driving;
   /**
-   * The Bops runner on each of the bots' computers, by Orgo computer id (lib/server/runner.ts): a Bops of
+   * The SmileDesk runner on each of the bots' computers, by Orgo computer id (lib/server/runner.ts): a SmileDesk of
    * its own there that runs the routines of the bots working on that computer while the user's Mac is
    * closed (where their bots work: Cloud). Shared by every Mac and runner of the user's, so each knows
    * whose routines are whose.
@@ -1809,7 +1809,7 @@ export type AppState = {
   businessData?: boolean;
   /**
    * What the user's bots are doing on their other devices right now (thinking, working…; and the chat,
-   * when typing), by bot id, from Bops Cloud's live stream (lib/server/live.ts). Filled in by /api/state
+   * when typing), by bot id, from SmileDesk Cloud's live stream (lib/server/live.ts). Filled in by /api/state
    * for the app; never stored or synced.
    */
   liveMoods?: Record<BotId, { mood: "thinking" | "writing" | "speaking" | "working"; chatId?: string; waking?: true }>;
@@ -1829,18 +1829,18 @@ export type AppState = {
 };
 
 /**
- * A computer's Bops runner (AppState.runners). `status`: being set up, up (its health check passed: it
+ * A computer's SmileDesk runner (AppState.runners). `status`: being set up, up (its health check passed: it
  * runs that computer's routines, and the Mac leaves them to it), couldn't start (`error` says why: those
  * routines stay on the Mac), or being stopped (where the bots work switched to This Mac, the computer was
- * deleted, its bots moved off). `version` and `buildId`: the Bops it runs, set up by the Mac `by` (its
+ * deleted, its bots moved off). `version` and `buildId`: the SmileDesk it runs, set up by the Mac `by` (its
  * device id). The runner signs in with its computer's own Orgo key (ORGO_API_KEY, which Orgo writes on
- * it). `keyMade`: Bops gave the computer that key (PUT orgo-web /api/computers/{id}/orgo-key, from the
- * Mac that set the runner up on a computer without one), so Bops takes it back when it stops the runner
+ * it). `keyMade`: SmileDesk gave the computer that key (PUT orgo-web /api/computers/{id}/orgo-key, from the
+ * Mac that set the runner up on a computer without one), so SmileDesk takes it back when it stops the runner
  * (DELETE, from any Mac of the user's); `keyId` is its id, to show. A computer that came with its key (a
  * template that asks for one: bops-base 0.1.9 on) keeps it: it's the computer's, and Orgo revokes it with
  * the computer. An entry from before keyMade that has a keyId (made by the old bops-runner-key route)
  * counts as keyMade (runnerKeyMade), and its old `keyBy` is ignored. `at`: when the status was set.
- * `upgrading`: one that's up being set up again with a newer Bops by the Mac `by` since `at`: it stays up
+ * `upgrading`: one that's up being set up again with a newer SmileDesk by the Mac `by` since `at`: it stays up
  * and keeps its routines meanwhile (runner-install.ts). `auth`: what it said it signs in with at its last
  * health check or look (its log's `[runner] auth:` line): its computer's Orgo identity, its key, or
  * nothing yet. `down`: a Mac's look found its computer down and not coming back by itself (stopped,
@@ -1872,15 +1872,15 @@ export const MAC_WORDS = /\b(on|from|using|use|with) my (mac|macbook|laptop|comp
  * A routine that needs no computer: a reminder, or a chat run (a turn with the bot's tools; someone else's
  * routine is never one: lib/server/routines.ts run). It's always the Mac's (routineOnMac), as before runners:
  * a runner never runs one, whether a Mac is up or not, and Orgo never wakes a computer for one nor keeps one up
- * for it (the routines mirror's onMac). Bops Cloud can't run a turn with the bot's tools yet (cloud/agent.ts
+ * for it (the routines mirror's onMac). SmileDesk Cloud can't run a turn with the bot's tools yet (cloud/agent.ts
  * answers the phone with none), so one due while no Mac is up runs once a Mac is up again, late.
  */
 export const needsNoComputer = (r: Pick<Routine, "reminder" | "run" | "fromOutside">) => !!r.reminder || (r.run === "chat" && !r.fromOutside);
 
 /**
  * The bot has skills or apps of its workspace published for it (lib/server/workspace-skills.ts skillsFor, read
- * from the state alone so every Bops agrees): their files are synced to the Mac alone. Bops' own built-in
- * skills come with every Bops, a runner too.
+ * from the state alone so every SmileDesk agrees): their files are synced to the Mac alone. SmileDesk's own built-in
+ * skills come with every SmileDesk, a runner too.
  */
 function skillsOnMac(s: Pick<AppState, "bots" | "workspaces">, botId: string): boolean {
   const b = s.bots?.find((x) => x.id === botId);
@@ -1891,18 +1891,18 @@ function skillsOnMac(s: Pick<AppState, "bots" | "workspaces">, botId: string): b
 
 /**
  * Whether a routine's runs need the user's Mac (lib/server/runner.ts pinnedToMac), decided before a run starts
- * from what every Bops of theirs sees alike in the state (never a Mac's own rules, state.mac, but what a Mac
+ * from what every SmileDesk of theirs sees alike in the state (never a Mac's own rules, state.mac, but what a Mac
  * picked and kept with the routine), and never changed by how a run went:
  * - a reminder or a chat run (needsNoComputer), always for now: chat is the backend's, and a bot's computer
  *   is only for work that needs one (a chat run that needs a computer starts a task, which runs on its bot's);
  * - any whose result goes to Slack, Telegram or Discord (a runner can't post there: their tokens are in
- *   the Mac's Keychain, and Bops Cloud gives a computer no raw Composio calls), or that follows a skill
+ *   the Mac's Keychain, and SmileDesk Cloud gives a computer no raw Composio calls), or that follows a skill
  *   (skills' files are synced to the Mac alone);
  * - a task whose bot has skills or apps of its workspace published for it: on a runner its instructions
  *   would lack their steps, and read_skill finds none;
- * - a task set to run there, or one left to Bops whose bot works on the Mac, whose job says so ("on my
+ * - a task set to run there, or one left to SmileDesk whose bot works on the Mac, whose job says so ("on my
  *   Mac", "locally"), or that the Mac would send there (Routine.macPick for its goal now: the user's app
- *   rules, an app only on their Mac; only while its bot is left to Bops too, as a bot's own setting comes
+ *   rules, an app only on their Mac; only while its bot is left to SmileDesk too, as a bot's own setting comes
  *   first: where.ts chooseWhere).
  * A task that reaches something only the user can give on its computer (their OK, a sign in) waits for it
  * there, its status saying so: it's never the Mac's for that.
@@ -1937,7 +1937,7 @@ export function computerWait(state: Pick<AppState, "bots" | "runners" | "workspa
   return `${w.name}'s computer is ${st === "error" ? "broken" : st === "suspended" ? "asleep" : st}`;
 }
 
-/** Whether Bops gave the computer its Orgo key, and takes it back when it stops the runner: keyMade, or an entry from before keyMade with a keyId. */
+/** Whether SmileDesk gave the computer its Orgo key, and takes it back when it stops the runner: keyMade, or an entry from before keyMade with a keyId. */
 export const runnerKeyMade = (x: Pick<RunnerState, "keyMade" | "keyId"> | undefined): boolean => !!x && (x.keyMade ?? !!x.keyId);
 
 /** Why a runner couldn't start, when it was its key: it came up but couldn't sign in, or Orgo didn't give its computer one (runner-install.ts). */
@@ -2003,7 +2003,7 @@ export type MacState = {
   /** Why not, in plain words, when it isn't. */
   reason?: string;
   /**
-   * The one thing it waits on when it isn't ready (lib/server/mac.ts checkMac): the Codex CLI (Bops
+   * The one thing it waits on when it isn't ready (lib/server/mac.ts checkMac): the Codex CLI (SmileDesk
    * installs it by itself; `installing` while it does), or Chrome. "elsewhere": this server isn't on
    * the user's Mac, so there's nothing to do here.
    */
@@ -2013,7 +2013,7 @@ export type MacState = {
   /** Words that mean a task belongs on the Mac (apps like Messages or Notes, "my desktop"…). */
   rules: string[];
   /**
-   * Full access: bots' tasks here run outside Bops' sandbox (lib/server/executor-sandbox.ts), as the
+   * Full access: bots' tasks here run outside SmileDesk's sandbox (lib/server/executor-sandbox.ts), as the
    * user, with a shell, their files and their apps, and every browser tool. Off by default.
    */
   fullAccess?: boolean;
@@ -2021,7 +2021,7 @@ export type MacState = {
 
 /**
  * One of the user's accounts in an app (Composio calls it a connected account), e.g. their work Gmail.
- * No token is ever stored in Bops: Composio keeps them. `app` is Composio's toolkit slug ("gmail", "notion").
+ * No token is ever stored in SmileDesk: Composio keeps them. `app` is Composio's toolkit slug ("gmail", "notion").
  * Apps that need no sign-in (Hacker News…) get one account with id `open:<app>`.
  */
 export type AppAccount = {
@@ -2033,7 +2033,7 @@ export type AppAccount = {
   name?: string;
   /** The user's own label for it ("Work", "Personal"), when they gave one. */
   label?: string;
-  /** "expired": the app signed Bops out (a password change, revoked access); it works again after signing in again. */
+  /** "expired": the app signed SmileDesk out (a password change, revoked access); it works again after signing in again. */
   status: "active" | "expired";
   at: number;
   /** When a bot last used it (lib/server/composio.ts runAppAction), for the Vault's "not used lately". */
@@ -2045,13 +2045,13 @@ export type AppAccount = {
   workspaceId?: string;
   /**
    * Connected before every bot had every app by default (lib/server/store.ts set its workspace when it
-   * loaded it), or found in Composio connected where Bops didn't see who was picked for it (syncApps): only
+   * loaded it), or found in Composio connected where SmileDesk didn't see who was picked for it (syncApps): only
    * the bots the user gave it may use it, as there.
    */
   onlyGiven?: boolean;
 };
 
-/** An account being connected: its sign-in page is open, and Bops waits for it to finish. */
+/** An account being connected: its sign-in page is open, and SmileDesk waits for it to finish. */
 export type AppConnecting = {
   id: string;
   app: string;
@@ -2081,7 +2081,7 @@ export const APP_LEVELS: { id: AppLevel; name: string; hint: string }[] = [
 export type AppAccess = AppLevel | "none";
 
 /**
- * Connections that put bots somewhere rather than apps they use: Bops' Slack app ("slackbot"), how bots
+ * Connections that put bots somewhere rather than apps they use: SmileDesk's Slack app ("slackbot"), how bots
  * get into Slack (lib/server/channels.ts). No bot gets one by default, only when the user gives it.
  */
 export const CHANNEL_APPS = new Set(["slackbot"]);
@@ -2164,7 +2164,7 @@ export const accessIsDefault = (b: Pick<Bot, "access">, a: Pick<AppAccount, "id"
 /**
  * One use of an app account or an API key by a bot, or a thread of its (lib/server/access-sync.ts): which
  * one, the action (GMAIL_SEND_EMAIL, "GET /v1/balance"), where it ran, and how it ended. `approvedBy`: who
- * said yes to it (the user, or Bops itself for a low risk one or "Just do it"); unset when it needed no yes.
+ * said yes to it (the user, or SmileDesk itself for a low risk one or "Just do it"); unset when it needed no yes.
  */
 export type AccessUse = {
   bot: BotId;
@@ -2209,7 +2209,7 @@ export type ChannelLink = {
   pairCode: string;
   /** When the code was made (links from before: `at`). It pairs for PAIR_CODE_MS. */
   pairCodeAt?: number;
-  /** Wrong codes sent since; at PAIR_CODE_TRIES the code stops working and the user gets a new one in Bops. */
+  /** Wrong codes sent since; at PAIR_CODE_TRIES the code stops working and the user gets a new one in SmileDesk. */
   pairTries?: number;
   status: "live" | "error";
   error?: string;
@@ -2224,7 +2224,7 @@ export type ChannelLink = {
   slack?: { accountId: string; teamId?: string; botUserId?: string; channels: { id: string; name: string }[]; dm?: string };
 };
 
-/** How long a pairing code pairs, and how many wrong codes it takes before it stops (a new one is a tap away in Bops). */
+/** How long a pairing code pairs, and how many wrong codes it takes before it stops (a new one is a tap away in SmileDesk). */
 export const PAIR_CODE_MS = 60 * 60_000;
 export const PAIR_CODE_TRIES = 5;
 
@@ -2239,17 +2239,17 @@ export type ChannelPlace = { linkId: string; chat: string; messageId?: string; t
  * A request for the user's OK (OpenCode's permission request, Codex's approval): a bot's run reached a tool call
  * that changes something (an app action, an email to someone else, a key's call that changes something, a dear
  * lookup, a tool its brain may not use by itself) and its rules don't allow it (lib/permission.ts). A plain record
- * in the state every Bops of the user's shares, so every Bops of theirs shows the card, wherever the run runs:
+ * in the state every SmileDesk of the user's shares, so every SmileDesk of theirs shows the card, wherever the run runs:
  * - `threadId`: the run's thread (a chat turn has `chatId` only); `routineId`, the routine whose run it is;
- *   `askedBy`, the device running the run (its Bops, as Session.by), the only one that resumes it and that
+ *   `askedBy`, the device running the run (its SmileDesk, as Session.by), the only one that resumes it and that
  *   takes the record out, once it has read the reply;
  * - `action`: what kind of thing ("Send an email", "Send Message in Slack (work)"), what Always allow saves a rule
- *   for (lib/permission.ts); `resources`: to whom or what, as best Bops can tell from its inputs (recipients, a
+ *   for (lib/permission.ts); `resources`: to whom or what, as best SmileDesk can tell from its inputs (recipients, a
  *   channel, a URL), for the user to read; `preview`: exactly what will happen, as the card shows it; `kind` and
  *   `api`, how the card shows it;
  * - `resume`: what carries the run on from where it paused (lib/server/permission.ts), held by OpenAI, not by
- *   a Bops process: nothing in memory matters while it waits, and a restart of the device that asked loses nothing;
- * - `reply`: the user's answer, from one of their own Bops (`by` its device): once, always (a rule saved too) or
+ *   a SmileDesk process: nothing in memory matters while it waits, and a restart of the device that asked loses nothing;
+ * - `reply`: the user's answer, from one of their own SmileDesk (`by` its device): once, always (a rule saved too) or
  *   reject (`message`, what to do instead, the bot is told); Stop on its thread writes reject with reason
  *   "stopped". Set once, never taken back (state-merge.ts mergeApproval). Nothing else resolves it.
  */
@@ -2298,7 +2298,7 @@ export type FileChange = { repo: string; branch: string; base?: string; at: stri
 
 /** How the user answers a request (OpenCode's reply, Codex's ReviewDecision approved / approved_for_session / denied). */
 export type AskReply = "once" | "always" | "reject";
-/** `member`: answered by a member with Write, from their own Bops (the Mac that took it is `by`). */
+/** `member`: answered by a member with Write, from their own SmileDesk (the Mac that took it is `by`). */
 export type AskAnswer = { reply: AskReply; message?: string; reason?: "stopped"; by?: string; at: number; member?: MemberWho };
 /** The tool call a run paused at, as the model made it: its name and its arguments (JSON). */
 export type AskCall = { name: string; arguments: string };
@@ -2317,28 +2317,28 @@ export type AskCall = { name: string; arguments: string };
 export type AskResume =
   | { engine: "responses"; responseId: string; callId: string; call: AskCall }
   | { engine: "agents"; sessionId: string; turnId: string; callId: string; call: AskCall }
-  /** `cloudTurn`: asked on a chat turn Bops Cloud owed a computer (cloud/turns.ts): the turn goes on only through Bops Cloud (runner-chat.ts resumeAsTurn). */
+  /** `cloudTurn`: asked on a chat turn SmileDesk Cloud owed a computer (cloud/turns.ts): the turn goes on only through SmileDesk Cloud (runner-chat.ts resumeAsTurn). */
   | { engine: "chat"; responseId: string; callId: string; call: AskCall; outputs: { callId: string; output: string }[]; later?: unknown[]; turn?: unknown; cloudTurn?: string }
   | { engine: "held" };
 
 /**
  * A rule for what a bot does without asking (lib/permission.ts): one action, whatever the recipients or details. The
- * last for an action wins. `resource`: "*" in one Always allow saves (a Bops from before reads rules by action and
+ * last for an action wins. `resource`: "*" in one Always allow saves (a SmileDesk from before reads rules by action and
  * resource); a rule saved before with one resource reads as a rule for its action all the same.
  */
 export type PermissionRule = { action: string; resource?: string; effect: "allow" | "ask" };
 
 /**
- * Whether request `a` is of the run thread `s` is now: asked by the Bops that runs it (Session.by). One another Bops
+ * Whether request `a` is of the run thread `s` is now: asked by the SmileDesk that runs it (Session.by). One another SmileDesk
  * asked before the thread became this one's (a runner whose run was ended for it, its computer deleted) waits on
- * nothing. Where either isn't said (a thread from before Session.by, a self-hosted Bops, a member's copy, which has
+ * nothing. Where either isn't said (a thread from before Session.by, a self-hosted SmileDesk, a member's copy, which has
  * neither), it is.
  */
 export const askedByRunner = (a: Pick<AppApproval, "askedBy">, s: Pick<Session, "by">) => !a.askedBy || !s.by || a.askedBy === s.by;
 
 /**
  * The requests still waiting on the user, of one thread when `threadId` is given: unanswered, and of a thread
- * that's still going (one that ended some other way, its computer deleted, waits on nothing), asked by the Bops
+ * that's still going (one that ended some other way, its computer deleted, waits on nothing), asked by the SmileDesk
  * that runs it now (askedByRunner).
  */
 export const waitingAsks = (state: Pick<AppState, "appApprovals"> & Partial<Pick<AppState, "sessions">>, threadId?: string) =>
@@ -2347,15 +2347,15 @@ export const waitingAsks = (state: Pick<AppState, "appApprovals"> & Partial<Pick
   );
 
 /**
- * Whether thread `s` is Waiting for your OK: a request of its, asked by the Bops that runs it now (askedByRunner), is
+ * Whether thread `s` is Waiting for your OK: a request of its, asked by the SmileDesk that runs it now (askedByRunner), is
  * unanswered. Derived from the request alone, wherever the run runs.
  */
 export const waitsForOk = (s: Pick<Session, "id" | "status" | "by">, state: Pick<AppState, "appApprovals">) =>
   live(s as Session) && (state.appApprovals ?? []).some((a) => a.threadId === s.id && !a.reply && askedByRunner(a, s));
 
 /**
- * Whether thread `s`'s run is paused at a request its own Bops made (AppApproval.askedBy, Session.by), answered
- * or not, until that Bops reads the reply: nothing of it is held anywhere but in the request and at OpenAI, so
+ * Whether thread `s`'s run is paused at a request its own SmileDesk made (AppApproval.askedBy, Session.by), answered
+ * or not, until that SmileDesk reads the reply: nothing of it is held anywhere but in the request and at OpenAI, so
  * nothing sweeps it up (store.ts leftBehind, routines.ts strayRun, runner-install.ts, a restart): only the
  * user's reply carries it on, and Stop ends it. A brain's held call (resume "held") is a run going, not a pause.
  */
@@ -2364,7 +2364,7 @@ export const pausedForOk = (s: Pick<Session, "id" | "by">, state: Pick<AppState,
 
 /**
  * A saved login. The password and 2FA setup key are in the Mac's Keychain (lib/server/keychain.ts);
- * Bops fills them straight into the sign-in page, so no model ever sees them.
+ * SmileDesk fills them straight into the sign-in page, so no model ever sees them.
  */
 export type VaultLogin = {
   id: string;
@@ -2372,7 +2372,7 @@ export type VaultLogin = {
   site: string;
   username: string;
   hasPassword: boolean;
-  /** Bops makes the 6-digit codes itself from the site's 2FA setup key. */
+  /** SmileDesk makes the 6-digit codes itself from the site's 2FA setup key. */
   hasTotp: boolean;
   /** Which bots may use it. */
   bots: "all" | BotId[];
@@ -2402,7 +2402,7 @@ export type Watch = {
    */
   alert?: { text: string; at: number; level?: "now" | "quiet" | "later" };
   /**
-   * What Bops told the user about (newest last, the last 30). A screen or a Mac window never tells the
+   * What SmileDesk told the user about (newest last, the last 30). A screen or a Mac window never tells the
    * same words twice (the same DM never pings twice); a web page only skips the words its alert still
    * shows, so a status that comes back is told again.
    */
@@ -2421,7 +2421,7 @@ export type Watch = {
   /** The starter it was made from (lib/routine-catalog.ts), when it was one. */
   source?: RoutineSource;
   /**
-   * A web page watched with no screen (then `display` is 0): Bops fetches `url` every `everyMin` minutes,
+   * A web page watched with no screen (then `display` is 0): SmileDesk fetches `url` every `everyMin` minutes,
    * keeps a fingerprint of every line with what's certainly noise taken out (a "5m ago", an "Updated 3:45
    * PM": `digests`, in order, and the page's `hash`; cloud/page-diff.ts) and the text of some lines
    * (`lines`, capped: the ones that changed lately first, so a model can see what a new line replaced),
@@ -2476,7 +2476,7 @@ export const DISPLAYS = [100, 101, 102, 99];
 
 /**
  * The screen Orgo streams by default: its WebRTC video reaches the boot screen only, and so does its
- * VNC proxy unless asked for another screen by ?screen= (app/api/vnc), which Bops does only with
+ * VNC proxy unless asked for another screen by ?screen= (app/api/vnc), which SmileDesk does only with
  * BOPS_SCREEN_STREAM=1 for now. Otherwise the other screens stream live only over the tailnet
  * (TAILSCALE_AUTH_KEY, a developer's setup), and the app shows them as screenshots.
  */
@@ -2506,7 +2506,7 @@ export const computerAsleep = (status: string | undefined) => status === "suspen
 const STAYS_DOWN: ReadonlySet<string> = new Set(["error", "stopped", "frozen", "deleted"]);
 /**
  * An Orgo computer that's down and doesn't come back by itself: in error, stopped or frozen (a Stop on
- * orgo.ai, or a Bops Max computer parked when the plan ended), or deleted (one that's been deleted isn't
+ * orgo.ai, or a SmileDesk Max computer parked when the plan ended), or deleted (one that's been deleted isn't
  * usually listed at all). Unlike one asleep, nothing wakes it for a task: a setup there ends saying so
  * (sessions.ts), and its runner runs nothing, so its routines wait for it, saying why (runner-install.ts).
  */
@@ -2542,7 +2542,7 @@ export type OrgoMigration = {
   /** A workspace renamed because the user's Orgo already had that name: shown until the user dismisses it. */
   renamed?: { wsId: string; from: string; to: string }[];
   /**
-   * The default workspace is `to` here, and its Orgo project keeps the name "bops" until every Bops app on
+   * The default workspace is `to` here, and its Orgo project keeps the name "bops" until every SmileDesk app on
    * the account is new enough (orgo.ts bopsAppsGate); `reason` is the gate's last answer, `checkedAt` when
    * it was asked, `at` when the user gave the name (a wish kept before `at` was goes by `checkedAt`). The
    * default's name here is `to` for as long as it waits (workspaces.ts holdDefaultName puts it back when
@@ -2568,7 +2568,7 @@ export const sentByBot = (s: SentBy): BotId | undefined => (ownerSent(s) || rout
 export const live = (s: Session) => s.status === "queued" || s.status === "starting" || s.status === "running";
 
 /**
- * Whether a thread is someone else's work as far as what's the owner's own goes: one someone outside Bops started
+ * Whether a thread is someone else's work as far as what's the owner's own goes: one someone outside SmileDesk started
  * (Session.fromOutside: an email, a text or a call to a bot), one a member with Write started (Session.member), one a
  * member has told something (ThreadReply.member: their words are instructions there too), or a part of one of those
  * (split_task: Session.partOf), whether or not the part was marked so. It gets nothing that's the owner's alone,
@@ -2580,7 +2580,7 @@ export function othersThread(s: Session | undefined, find: (id: string) => Sessi
 }
 
 /**
- * Whether a thread is a stranger's: one someone outside Bops started (Session.fromOutside: an email, a text or a call
+ * Whether a thread is a stranger's: one someone outside SmileDesk started (Session.fromOutside: an email, a text or a call
  * to a bot), or a part of one. It gets none of the owner's logins, whatever its bot may use: no Connected apps, API keys
  * or saved site logins, as on their turns in the chat.
  */
@@ -2606,10 +2606,10 @@ export function memberOf(s: Session | undefined, find: (id: string) => Session |
 }
 
 /**
- * When the Bops that runs thread `s` (Session.by: a Mac, a computer's runner) last showed a sign of work (a
+ * When the SmileDesk that runs thread `s` (Session.by: a Mac, a computer's runner) last showed a sign of work (a
  * thread begun, a step, a frame, a reply) on `s` or on any of its live threads in `sessions`. One queued there
- * waits behind its others (all its bot's screens busy), so that Bops at work on them says it's still there,
- * never the queued one's own quiet: how a thread another Bops runs is told from one it left behind
+ * waits behind its others (all its bot's screens busy), so that SmileDesk at work on them says it's still there,
+ * never the queued one's own quiet: how a thread another SmileDesk runs is told from one it left behind
  * (store.ts leftBehind, routines.ts strayRun).
  */
 export function lastWorkOf(s: Session, sessions: Session[]): number {

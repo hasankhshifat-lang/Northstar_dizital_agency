@@ -1,7 +1,7 @@
 /*
  * The team chart: who answers to whom in a workspace, and who may ask whom (Workspace.chain). Kept on the
- * workspace in the synced state, so Bops Cloud, the Mac server and the window read the same rules. Imported
- * by Bops Cloud and, through lib/chain.ts, the window and the Mac server, so it imports nothing.
+ * workspace in the synced state, so SmileDesk Cloud, the Mac server and the window read the same rules. Imported
+ * by SmileDesk Cloud and, through lib/chain.ts, the window and the Mac server, so it imports nothing.
  *
  * The rule bots live by: up and down a line is always open; sideways is up to the owner. Each bot answers
  * to one lead, the chief of staff (the workspace's main bot) on top. A bot may ask a bot in its line (above
@@ -9,7 +9,7 @@
  * owner made an exception between the two (one way). A bot hands work only to the bots under it, and the
  * chief sees what every bot is doing.
  *
- * Unset, or empty, is exactly what Bops did before: every bot answers to the chief, sideways "open", so
+ * Unset, or empty, is exactly what SmileDesk did before: every bot answers to the chief, sideways "open", so
  * everyone may ask everyone and only the chief hands off (to everyone).
  *
  * People keep their None, Read or Write per bot (cloud/member-access.ts): `for` only names the person a bot
@@ -66,7 +66,7 @@ export const MAX_CHAIN_PAIRS = 400;
 /** The default workspace's id (lib/types.ts MAIN_WORKSPACE): a bot with no workspaceId is in it. */
 const MAIN = "ws_main";
 
-/** What the rules read of a bot and a workspace: the app's state, Bops Cloud's blob, or a test's. */
+/** What the rules read of a bot and a workspace: the app's state, SmileDesk Cloud's blob, or a test's. */
 export type ChainBotRef = { id: string; isMain?: boolean; workspaceId?: string };
 export type ChainWorkspace = { id: string; chain?: Chain; memberAccess?: Record<string, { others?: unknown; bots?: Record<string, unknown> }> };
 export type ChainState = { bots: readonly ChainBotRef[]; workspaces?: readonly ChainWorkspace[] };

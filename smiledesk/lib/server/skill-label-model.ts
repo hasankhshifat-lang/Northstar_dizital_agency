@@ -7,9 +7,9 @@ import { setting } from "./models";
 import { recordTokens, usageTags } from "./usage";
 
 /**
- * A label for each of a few skills, by one call of a small model (routing.ts LIGHT, through Bops Cloud, as
+ * A label for each of a few skills, by one call of a small model (routing.ts LIGHT, through SmileDesk Cloud, as
  * memory-categories.ts sorts facts): it reads each skill's name and description and picks one of the
- * workspace's labels or Bops' preset ones, Unsorted when none fits, or one new short label for skills none
+ * workspace's labels or SmileDesk's preset ones, Unsorted when none fits, or one new short label for skills none
  * fits that belong together (workspace-skills.ts suggestLabels takes one new label a call at most). Not
  * stored by the provider, a fixed shape, low effort. Null when it couldn't be asked or didn't answer usably
  * (out of credit, down, slow): the caller keeps what it had.

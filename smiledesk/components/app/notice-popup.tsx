@@ -3,20 +3,20 @@
 import { useState, useSyncExternalStore } from "react";
 import type { CloudNotice } from "@/cloud/protocol";
 
-/** How often Bops asks for new notices while it's open; coming back to its window asks too, at most once a minute. */
+/** How often SmileDesk asks for new notices while it's open; coming back to its window asks too, at most once a minute. */
 const EVERY_MS = 15 * 60_000;
 const AT_MOST_MS = 60_000;
 
 /*
  * Notices from Orgo (lib/server/notices.ts, cloud/notices.ts), one at a time, newest first: a card in the sidebar above
- * its footer (sidebar.tsx), like a newer Bops (update-notice.tsx), never a pop-up over the app. On the folded sidebar,
+ * its footer (sidebar.tsx), like a newer SmileDesk (update-notice.tsx), never a pop-up over the app. On the folded sidebar,
  * a round button with a blue dot opens the sidebar to it. OK (or Esc in the card) puts it away for good, on all the
  * user's Macs. Its link, when it has one, opens in the browser (the Mac app sends a new window there: desktop/main.cjs).
  */
 
 /** What's waiting, read once for every card and button on the page (both sidebars show the same one). */
 let notices: CloudNotice[] = [];
-// What the first look found, there as Bops opened: it shows as it is. A notice that comes later rises in.
+// What the first look found, there as SmileDesk opened: it shows as it is. A notice that comes later rises in.
 let first: Set<string> | null = null;
 let lookedAt = 0;
 const listeners = new Set<() => void>();
@@ -54,7 +54,7 @@ const subscribe = (f: () => void) => {
 };
 const none: CloudNotice[] = [];
 
-/** The newest notice waiting (none while there's nothing, or nothing read yet), and whether it came after Bops opened. */
+/** The newest notice waiting (none while there's nothing, or nothing read yet), and whether it came after SmileDesk opened. */
 function useNotice() {
   const all = useSyncExternalStore(subscribe, () => notices, () => none);
   const n = all[0];
@@ -72,7 +72,7 @@ async function putAway(id: string) {
 export function NoticeCard() {
   const { n, late } = useNotice();
   const [closing, setClosing] = useState(false);
-  // Decided as each notice first shows: one that turned up while Bops was open rises in.
+  // Decided as each notice first shows: one that turned up while SmileDesk was open rises in.
   const [rises, setRises] = useState<{ id: string; late: boolean } | null>(null);
   if (n && rises?.id !== n.id) setRises({ id: n.id, late });
   if (!n) return null;

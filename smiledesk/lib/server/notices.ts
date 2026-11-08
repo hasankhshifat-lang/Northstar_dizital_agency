@@ -4,7 +4,7 @@ import { cloudJson, cloudOn } from "./cloud";
 
 /**
  * Notices from Orgo for the signed-in user (cloud/notices.ts), newest first: the app shows each once as
- * a pop-up (components/app/notice-popup.tsx). None when Bops isn't on Bops Cloud (self-hosted).
+ * a pop-up (components/app/notice-popup.tsx). None when SmileDesk isn't on SmileDesk Cloud (self-hosted).
  */
 export async function readNotices(): Promise<CloudNotice[]> {
   if (!cloudOn()) return [];

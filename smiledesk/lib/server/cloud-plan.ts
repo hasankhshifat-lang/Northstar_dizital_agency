@@ -7,7 +7,7 @@ import { tellCloudLine } from "./phone-lines";
 import { addMessage, bot, getState, sameState, update } from "./store";
 
 /**
- * What the user's plan brings the main bot, set up by Bops Cloud (cloud/plans.ts, cloud/provision.ts)
+ * What the user's plan brings the main bot, set up by SmileDesk Cloud (cloud/plans.ts, cloud/provision.ts)
  * whether or not this Mac was open: a "plan" event from the tunnel (app/api/cloud/event) says the
  * number and inbox as they stand now, and this takes them into the app's state as if the app had made
  * them (Bot.phone and Bot.phoneLine, Bot.email and Bot.mail), with a line in the bot's chat:
@@ -15,8 +15,8 @@ import { addMessage, bot, getState, sameState, update } from "./store";
  * - ready (or still being set up): the bot has them. The number's 15 minutes for its first caller
  *   open here, when the user is shown it (the cloud never opens them itself: the Mac may have been
  *   closed, and a stranger texting a new number would become its owner), as for a number the app
- *   buys. The inbox is on the workspace's handle; when Bops picked that handle, the app offers to
- *   change it ("Your Bops address").
+ *   buys. The inbox is on the workspace's handle; when SmileDesk picked that handle, the app offers to
+ *   change it ("Your SmileDesk address").
  * - paused (the plan ended): they stay on the bot, marked paused. The cloud doesn't answer calls and
  *   texts to the number, and the app doesn't read the inbox, until the user upgrades again.
  * - released (30 days after the pause): they're gone from the bot.

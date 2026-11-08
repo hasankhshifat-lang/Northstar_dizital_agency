@@ -5,7 +5,7 @@
 // sequences with their steps, switches and today's counts; Replies to others; the voice menu with its samples; Answers
 // calls; Contact for a bot nobody can call; and every word plain: no dashes, Knowledge never its old name.
 //
-// Rendered into a DOM (linkedom) and clicked, against a fake Bops: nothing reaches a server, and no sound plays. The
+// Rendered into a DOM (linkedom) and clicked, against a fake SmileDesk: nothing reaches a server, and no sound plays. The
 // .tsx files are compiled with the TypeScript in node_modules as they load.
 // Usage: node scripts/test-bot-settings-ui.mjs   (not with --conditions=react-server: these are client components)
 import assert from "node:assert/strict";
@@ -61,7 +61,7 @@ globalThis.matchMedia = () => ({ matches: false });
 Object.defineProperty(globalThis, "navigator", { configurable: true, value: { userAgent: "test", clipboard: { writeText: async () => {} } } });
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-/** Bops, faked: every PATCH and POST, the chart's save refused as not the owner's, and the state it keeps. */
+/** SmileDesk, faked: every PATCH and POST, the chart's save refused as not the owner's, and the state it keeps. */
 const bops = { sent: [], chartStatus: 200, botsStatus: 200, setState: null, hold: null, botsReply: null };
 const json = (j, status = 200) => ({ ok: status < 400, status, json: async () => j });
 globalThis.fetch = async (url, init = {}) => {
@@ -234,9 +234,9 @@ const mountPage = (o = {}) => {
   const collapse = calls();
   return mount(h(PageHarness, { start: o.state ?? baseState(), botId: o.bot ?? "juno", at: o.at, onBack: back, onCollapse: collapse, l })).then((m) => ({ ...m, l, back, collapse }));
 };
-/** A bot change as Bops keeps it (the window gets it with the state). */
+/** A bot change as SmileDesk keeps it (the window gets it with the state). */
 const keep = (botId, patch) => act(async () => (bops.setState((st) => ({ ...st, bots: st.bots.map((b) => (b.id === botId ? { ...b, ...patch } : b)) })), await settle()));
-/** A bot's settings page settings as Bops keeps them: on its workspace, by bot id (Workspace.botSettings). */
+/** A bot's settings page settings as SmileDesk keeps them: on its workspace, by bot id (Workspace.botSettings). */
 const keepSet = (botId, patch) =>
   act(async () => (bops.setState((st) => ({ ...st, workspaces: st.workspaces.map((w) => (w.id === "ws_acme" ? { ...w, botSettings: { ...w.botSettings, [botId]: { ...w.botSettings?.[botId], ...patch } } } : w)) })), await settle()));
 /** What its workspace keeps of each line's voice (Workspace.lineVoices, phone.ts voiceToAgent), by agent id. */
@@ -290,7 +290,7 @@ await test("the panel's rows: AI, Team, Sequences after the contact card and bef
   const m = await mount(h(Panel.BotPanel, { state: st, bot: JUNO, section: "details", onSection: noop, ...links(), onClose: noop, onExpand: expand }));
   const rows = [...m.box.querySelectorAll("[data-page-row]")];
   assert.deepEqual(rows.map((r) => r.getAttribute("data-page-row")), ["AI", "Team", "Sequences"]);
-  assert.match(rows[0].textContent, /Bops agent by default/);
+  assert.match(rows[0].textContent, /SmileDesk agent by default/);
   assert.match(rows[1].textContent, /Reports to Sam · can ask 3 bots · own memory/);
   assert.equal(m.box.querySelector("[data-chart-line]").textContent, "Reports to Sam · can ask 3 bots", "the line under its name says it the same way");
   assert.match(rows[2].textContent, /Email: 2 on · Phone: 2 on/);
@@ -370,7 +370,7 @@ await test("cards close to their line; Back, X, Collapse and Esc", async () => {
   assert.equal(team.querySelector("[data-summary]").textContent, "Reports to Sam · can ask 3 bots · own memory");
   assert.equal(card(m.box, "email").querySelector("[data-summary]").textContent, "juno@acme.bops.bot · 2 sequences on");
   assert.equal(card(m.box, "phone").querySelector("[data-summary]").textContent, "+1 (415) 555 0142 · Ballad voice · 2 sequences on");
-  assert.equal(card(m.box, "ai").querySelector("[data-summary]").textContent, "Bops agent by default");
+  assert.equal(card(m.box, "ai").querySelector("[data-summary]").textContent, "SmileDesk agent by default");
   assert.equal(card(m.box, "skills").querySelector("[data-summary]").textContent, "No skills yet");
   assert.equal(card(m.box, "routines").querySelector("[data-summary]").textContent, "No routines yet");
   assert.equal(card(m.box, "memory").querySelector("[data-summary]").textContent, "Keeps its memory to itself");
@@ -455,7 +455,7 @@ await test("AI: the panel's AI profile, then Works on and Approvals, saving at o
   assert.ok(profile, "the panel's own AI profile (bot-ai.tsx)");
   assert.notEqual(profile.firstElementChild?.tagName, "BUTTON", "with no header of its own: the card folds");
   assert.match(profile.textContent, /Agents it can run/);
-  assert.match(profile.textContent, /Bops agent/);
+  assert.match(profile.textContent, /SmileDesk agent/);
   assert.match(profile.textContent, /Threads now/);
   await click([...ai.querySelectorAll('[role="group"][aria-label="Thinking"] button')].find((b) => b.textContent === "high"));
   assert.deepEqual(lastBots(), { botId: "juno", effort: "high" });
@@ -478,7 +478,7 @@ await test("Email: the built in sequences, Everyone else off, Replies to others,
   assert.equal(locked.getAttribute("aria-checked"), "true");
   assert.equal(locked.getAttribute("data-tip"), "Always on: this is you talking to it.");
   assert.equal(rows[1].textContent, "Everyone elseBuilt in2 todayFrom anyone else→Reads the thread→Tells you in chat→Replies in the thread with your OK", "yesterday's and automatic mail not counted; the chain in its steps");
-  // Only what Bops does: no placeholder for sequences of your own until they're built.
+  // Only what SmileDesk does: no placeholder for sequences of your own until they're built.
   assert.doesNotMatch(body.textContent, /New sequence|Soon/, "no New sequence placeholder");
   assert.match(body.textContent, /Sequences 2 on/);
   await click(rows[1].querySelector('[role="switch"]'));
@@ -525,19 +525,19 @@ await test("Phone and voice: the voice menu, samples, Answers calls, Someone els
   const body = () => m.box.querySelector("[data-phone-body]");
   assert.match(body().textContent, /\+1 \(415\) 555 0142/);
   assert.equal(m.box.querySelector("[data-voice-button]").textContent, "Picked for its name (Ballad)");
-  assert.match(body().textContent, /Calls in Bops use this voice\. Calls to \+1 \(415\) 555 0142 use the line's own voice for now\./);
+  assert.match(body().textContent, /Calls in SmileDesk use this voice\. Calls to \+1 \(415\) 555 0142 use the line's own voice for now\./);
   // Once its line speaks the voice shown (Workspace.lineVoices, by its agent): the same voice, or AgentPhone's closest by name.
   const note = () => m.box.querySelector("[data-voice-note]").textContent;
   await keepLineVoice("a1", { for: "ballad", id: "v_anthony", name: "Anthony" });
-  assert.equal(note(), "Calls in Bops use this voice. Calls to +1 (415) 555 0142 use Anthony, the closest phone voice.");
+  assert.equal(note(), "Calls in SmileDesk use this voice. Calls to +1 (415) 555 0142 use Anthony, the closest phone voice.");
   await keepLineVoice("a1", { for: "ballad", id: "openai-Ballad", name: "Ballad", exact: true });
-  assert.equal(note(), "Calls in Bops and calls to +1 (415) 555 0142 use this voice.");
+  assert.equal(note(), "Calls in SmileDesk and calls to +1 (415) 555 0142 use this voice.");
   await keepLineVoice("a2", { for: "sage", id: "v_x", name: "Nina" });
-  assert.equal(note(), "Calls in Bops and calls to +1 (415) 555 0142 use this voice.", "another line's voice says nothing about this one");
+  assert.equal(note(), "Calls in SmileDesk and calls to +1 (415) 555 0142 use this voice.", "another line's voice says nothing about this one");
   await keepSet("juno", { callVoice: "sage" });
-  assert.equal(note(), "Calls in Bops use this voice. Calls to +1 (415) 555 0142 use the line's own voice for now.", "a new pick: the line's own until AgentPhone takes it");
+  assert.equal(note(), "Calls in SmileDesk use this voice. Calls to +1 (415) 555 0142 use the line's own voice for now.", "a new pick: the line's own until AgentPhone takes it");
   await keepLineVoice("a1", { for: "sage", id: "v_x", name: "Nina" });
-  assert.equal(note(), "Calls in Bops use this voice. Calls to +1 (415) 555 0142 use Nina, the closest phone voice.");
+  assert.equal(note(), "Calls in SmileDesk use this voice. Calls to +1 (415) 555 0142 use Nina, the closest phone voice.");
   await keepSet("juno", { callVoice: undefined });
   await keepLineVoice("a1", undefined);
   await click(m.box.querySelector("[data-voice-button]"));
@@ -597,7 +597,7 @@ await test("Phone and voice: the voice menu, samples, Answers calls, Someone els
   await click(answers);
   assert.deepEqual(lastBots(), { botId: "juno", answersCalls: false });
   await keepSet("juno", { answersCalls: false });
-  assert.match(m.box.querySelector("[data-answers]").textContent, /When you call, you hear that Juno isn't taking calls and can text instead\. Anyone else hears a short no\. While your Mac is away, Bops Cloud still answers\./);
+  assert.match(m.box.querySelector("[data-answers]").textContent, /When you call, you hear that Juno isn't taking calls and can text instead\. Anyone else hears a short no\. While your Mac is away, SmileDesk Cloud still answers\./);
   assert.match(card(m.box, "phone").querySelector("[data-summary]").textContent, / · not taking calls$/);
   // The sequences.
   const rows = [...m.box.querySelectorAll("[data-sequences=phone] [data-seq]")];

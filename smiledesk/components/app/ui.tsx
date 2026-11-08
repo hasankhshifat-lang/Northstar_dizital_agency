@@ -309,7 +309,7 @@ export const teamOf = (state: AppState) => state.bots.filter((b) => workspaceOf(
 export const chatInWorkspace = (state: AppState, c: Chat) => (c.workspaceId ?? workspaceOf(state.bots.find((b) => b.id === c.botIds[0]))) === currentWorkspace(state);
 
 /**
- * Whether this is a self-hosted install (/api/config): Bops runs every service for you otherwise, so
+ * Whether this is a self-hosted install (/api/config): SmileDesk runs every service for you otherwise, so
  * Settings shows only what's yours to set, and there are no usage events to mention.
  */
 export function useSelfHosted() {

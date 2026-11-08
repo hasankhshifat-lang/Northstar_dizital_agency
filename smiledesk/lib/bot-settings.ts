@@ -13,8 +13,8 @@ export type SettingsSection = "team" | "ai" | "email" | "phone" | "skills" | "ro
 export const SETTINGS_SECTIONS: readonly SettingsSection[] = ["team", "ai", "email", "phone", "skills", "routines", "memory", "computer"];
 
 /**
- * Whether Bops Cloud turns calls away as this Mac does (cloud/voice.ts turnedAway) while the Mac is away. False until a
- * Bops Cloud deploy carries that change; the release that deploys it flips this, and the "Bops Cloud still answers"
+ * Whether SmileDesk Cloud turns calls away as this Mac does (cloud/voice.ts turnedAway) while the Mac is away. False until a
+ * SmileDesk Cloud deploy carries that change; the release that deploys it flips this, and the "SmileDesk Cloud still answers"
  * lines go.
  */
 export const CLOUD_HONOURS_CALL_SETTINGS = false;
@@ -104,14 +104,14 @@ export const SETTINGS_WORDS = {
   voiceFailed: "Couldn't change the voice. Try again.",
   // Calls to the number: until its line has a voice set for this one (Workspace.lineVoices), the line's own; then the
   // same voice, or AgentPhone's closest by name (lineVoiceNote).
-  voiceNote: (number: string) => `Calls in Bops use this voice. Calls to ${number} use the line's own voice for now.`,
-  voiceNoteSame: (number: string) => `Calls in Bops and calls to ${number} use this voice.`,
-  voiceNoteClosest: (number: string, name: string) => `Calls in Bops use this voice. Calls to ${number} use ${name}, the closest phone voice.`,
+  voiceNote: (number: string) => `Calls in SmileDesk use this voice. Calls to ${number} use the line's own voice for now.`,
+  voiceNoteSame: (number: string) => `Calls in SmileDesk and calls to ${number} use this voice.`,
+  voiceNoteClosest: (number: string, name: string) => `Calls in SmileDesk use this voice. Calls to ${number} use ${name}, the closest phone voice.`,
   answersCalls: "Answers calls",
   answersOn: (number: string) => `Picks up when anyone calls ${number}.`,
   answersOnYou: (number: string) => `Picks up when you call ${number}. Someone else calls is off, so anyone else hears a short no.`,
   answersOff: (name: string) => `When you call, you hear that ${name} isn't taking calls and can text instead. Anyone else hears a short no.`,
-  cloudStillAnswers: "While your Mac is away, Bops Cloud still answers.",
+  cloudStillAnswers: "While your Mac is away, SmileDesk Cloud still answers.",
   // Contact
   phone: "Phone",
   noneYet: "None yet",
@@ -125,8 +125,8 @@ export const SETTINGS_WORDS = {
   memoryTeam: "Uses the team's memory",
   // Saving
   failed: "That didn't save. Try again.",
-  offline: "Couldn't reach Bops. Try again.",
-  olderBops: "One of your Macs runs an older Bops. These settings hold there once it updates.",
+  offline: "Couldn't reach SmileDesk. Try again.",
+  olderBops: "One of your Macs runs an older SmileDesk. These settings hold there once it updates.",
 };
 
 /** "+15551230142" → "+1 (555) 123 0142": the page writes numbers with spaces, as its mockups do. */

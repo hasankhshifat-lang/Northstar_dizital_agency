@@ -9,7 +9,7 @@ import { recordDecide, usageTags } from "./usage";
  * TypeSafe's Jev: typed answers with calibrated probabilities in ~200 ms, for a fraction of a
  * cent per thousand. Text only, read literally, so questions spell out exactly what each answer
  * means. Swap the backend here (e.g. OpenAI's Decisions API) without touching callers. Signed in
- * with Orgo it goes through Bops Cloud (lib/server/cloud.ts), when the cloud runs it; self-hosting,
+ * with Orgo it goes through SmileDesk Cloud (lib/server/cloud.ts), when the cloud runs it; self-hosting,
  * on TYPESAFE_API_KEY. Each call is counted as a quick check (usage.ts recordDecide), at the tokens
  * Typesafe says it read, for the bot it's about when the caller says (`opts.botId`); through the
  * cloud, the cloud counts and prices it too (what AI credit pays).

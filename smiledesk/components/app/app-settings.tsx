@@ -72,7 +72,7 @@ const refusedOf = (j: Record<string, unknown>, fallback: string): Refused => {
   for (const k of ["price", "renewal", "years", "available"] as const) if (n(j[k]) !== undefined) out[k] = n(j[k]);
   // Only a page of Orgo's, opened in the browser.
   if (typeof j.topUp === "string" && /^https:\/\//.test(j.topUp)) out.topUp = j.topUp;
-  // What Bops would set in Cloudflare as it is now, when the one shown changed.
+  // What SmileDesk would set in Cloudflare as it is now, when the one shown changed.
   if (j.cloudflare && typeof j.cloudflare === "object" && Array.isArray((j.cloudflare as CloudflarePlan).changes)) out.cloudflare = j.cloudflare as CloudflarePlan;
   return out;
 };
@@ -126,16 +126,16 @@ export const checkDomain = async (ws: string, name: string, id: string, site?: s
   );
 export const removeDomain = (ws: string, name: string, id: string, site?: string) =>
   write<AppDomainRemoved>(`${at(name)}/domains/${encodeURIComponent(id)}`, site ? { ws, site } : { ws }, "DELETE", "Couldn't remove it. Try again.");
-/** What Bops would set in Cloudflare for one of its domains, read now (nothing is written). */
+/** What SmileDesk would set in Cloudflare for one of its domains, read now (nothing is written). */
 export const readCloudflarePlan = (ws: string, name: string, id: string, site?: string) =>
   read<CloudflarePlan>(`${at(name)}/domains/${encodeURIComponent(id)}/cloudflare?${wsQuery(ws)}${siteQuery(site)}`, "Couldn't read Cloudflare just now. Try again.");
-/** The plan the user saw written in Cloudflare (`replace`: their OK for records Bops didn't set), then the domain checked. */
+/** The plan the user saw written in Cloudflare (`replace`: their OK for records SmileDesk didn't set), then the domain checked. */
 export const applyCloudflare = (ws: string, name: string, id: string, plan: string, replace: boolean, site?: string) =>
   write<CloudflareApplied>(
     `${at(name)}/domains/${encodeURIComponent(id)}/cloudflare`,
     { ws, plan, ...(replace ? { replace: true } : {}), ...(site ? { site } : {}) },
     "POST",
-    "It isn't known whether the records went in. Try again in a minute. Bops looks first, so nothing is set twice.",
+    "It isn't known whether the records went in. Try again in a minute. SmileDesk looks first, so nothing is set twice.",
   );
 export const setAutoRenew = (ws: string, name: string, zone: string, on: boolean, site?: string) =>
   write<{ renewal: AppRenewal | null }>(`${at(name)}/domains`, { ws, zone, autoRenew: on, ...(site ? { site } : {}) }, "PATCH", "Couldn't change auto-renew. Try again.");
@@ -293,7 +293,7 @@ export function AppAddress({ url, published }: { url: string | null; published?:
 
 /**
  * An app's left overs on its computer (HostedApp.leftOver): projects of its repo that are no site's Published or
- * Preview (made by an older Bops or a test), and Preview links no site has. Bops never deploys to them; Remove
+ * Preview (made by an older SmileDesk or a test), and Preview links no site has. SmileDesk never deploys to them; Remove
  * takes one off, asked once more inline.
  */
 export function LeftOvers({ ws, app, onChanged }: { ws: string; app: HostedApp; onChanged: (app: HostedApp) => void }) {
@@ -315,7 +315,7 @@ export function LeftOvers({ ws, app, onChanged }: { ws: string; app: HostedApp; 
   return (
     <div data-left-overs className="flex flex-col">
       <span className={HEAD}>Left over on its computer</span>
-      <span className={HINT}>Made by an older Bops or a test. Bops never deploys to these.</span>
+      <span className={HINT}>Made by an older SmileDesk or a test. SmileDesk never deploys to these.</span>
       <div className="-mx-2 flex flex-col">
         {list.map((x) => (
           <div key={x.id} data-left-over={x.name} className="flex flex-col gap-1 rounded-lg px-2 py-1">
@@ -682,17 +682,17 @@ export function DomainShop<T>({
  * Add a domain, under its domains: Your domains, every one the workspace bought, each to use here in one tap
  * (the domain itself, when nothing points at it yet; else a name typed under it, like www); then From
  * Cloudflare, the user's own Cloudflare domains when their Orgo vault has a Cloudflare key, each used the
- * same way, after which Bops says what it would set there for it (CloudflarePlanBox) and sets it on their
+ * same way, after which SmileDesk says what it would set there for it (CloudflarePlanBox) and sets it on their
  * word; then two ways. Get a new domain: DomainShop, which buys one for this app (then it's pointed here). Use a
  * domain I own: typed, then pointed here, with the records to set shown on its line. `onAdded`: the app's
  * domains as they are now, and the one added (null: bought but not pointed here, with why). `onSaid`: words
  * for the line of one added (its records in Cloudflare couldn't be read); `onApplied`: its records were set
  * in Cloudflare, and Orgo checked it. `onPlan`: the domain whose plan is open here (null: none), so its own
- * line doesn't offer the same again; `onCantSet`: Bops couldn't set that one there, so its line offers its
+ * line doesn't offer the same again; `onCantSet`: SmileDesk couldn't set that one there, so its line offers its
  * records to copy again.
  */
 /**
- * Where a Published site's domain comes from (Add a domain): the user's own Cloudflare first (Bops sets its records
+ * Where a Published site's domain comes from (Add a domain): the user's own Cloudflare first (SmileDesk sets its records
  * there, DNS only), then one they own elsewhere (its records to copy). Buying one and Your domains (bought through
  * Orgo) aren't offered there now; their code stays, and a domain already added from them keeps working.
  */
@@ -736,7 +736,7 @@ export function AddDomain({
   const [reads, setReads] = useState(0);
   // Which of Your domains a Use went from, so why it was refused shows on its line.
   const [using, setUsing] = useState<string | null>(null);
-  // A Cloudflare domain just used: what Bops would set there for it, in place of the rest.
+  // A Cloudflare domain just used: what SmileDesk would set there for it, in place of the rest.
   const [cfPlan, setCfPlan] = useState<{ plan: CloudflarePlan; fresh: boolean } | null>(null);
   // While it writes there (or takes the domain off again), Esc leaves the panel open.
   const [cfBusy, setCfBusy] = useState(false);
@@ -765,7 +765,7 @@ export function AddDomain({
   /** What a buy or a Use answered: closed once it's pointed here; else why (it's among the workspace's own now, to use from there). */
   const done = (r: AppDomainAdded) => {
     onAdded(r.domains, r.domain);
-    // From Cloudflare: what Bops would set there, before anything is (blocked, or not read: its records to copy too).
+    // From Cloudflare: what SmileDesk would set there, before anything is (blocked, or not read: its records to copy too).
     if (r.domain && r.cloudflare) {
       if (r.cloudflare.blocked) onCantSet?.(r.domain.id);
       setCfPlan({ plan: r.cloudflare, fresh: !!r.fresh });
@@ -841,7 +841,7 @@ export function AddDomain({
             {sendingOwn ? "Connecting…" : "Connect"}
           </button>
         </div>
-        <span className={HINT}>{cf?.zones?.length ? "One in your Cloudflare is set there by Bops. Anywhere else, you set its DNS records where it's kept: they show here once it's connected." : "You set its DNS records where the domain is kept. They show here once it's connected."}</span>
+        <span className={HINT}>{cf?.zones?.length ? "One in your Cloudflare is set there by SmileDesk. Anywhere else, you set its DNS records where it's kept: they show here once it's connected." : "You set its DNS records where the domain is kept. They show here once it's connected."}</span>
         {using === null && why}
       </form>
     );
@@ -931,7 +931,7 @@ export function AddDomain({
                   />
                 ))}
                 {cf.more && <span className={`${HINT} pb-1`}>Showing your first 200 Cloudflare domains.</span>}
-                <span className={HINT}>Bops sets its records in Cloudflare as DNS only.</span>
+                <span className={HINT}>SmileDesk sets its records in Cloudflare as DNS only.</span>
               </div>
             )}
           </>
@@ -947,7 +947,7 @@ export function AddDomain({
     );
   return (
     <div data-add-domain-panel onKeyDown={escCloses(busy, onClose)} className={`mt-1 ${BOX}`}>
-      {/* Cloudflare first: Bops sets a domain there itself (DNS only), so it's offered above the rest. */}
+      {/* Cloudflare first: SmileDesk sets a domain there itself (DNS only), so it's offered above the rest. */}
       {cf?.why && (
         <span data-cloudflare className={HINT}>
           {cf.why}
@@ -1110,19 +1110,19 @@ const proxyOnly = (c: CloudflareChange) => c.op === "change" && c.was === "proxi
 
 /**
  * What's said in grey at a change's end: one in the way, the proxy turned off (whoever set it: what it points at
- * stays), a record Bops didn't set, one it set before for a domain that's gone.
+ * stays), a record SmileDesk didn't set, one it set before for a domain that's gone.
  */
 const cfNote = (c: CloudflareChange) =>
-  c.op === "blocked" ? "In the way" : proxyOnly(c) ? "Turns off Cloudflare's proxy" : c.theirs ? "Not set by Bops" : c.stale && c.op === "remove" ? "Bops set this before" : null;
+  c.op === "blocked" ? "In the way" : proxyOnly(c) ? "Turns off Cloudflare's proxy" : c.theirs ? "Not set by SmileDesk" : c.stale && c.op === "remove" ? "SmileDesk set this before" : null;
 
 /** What a change makes of a record: what it was, then what it becomes (a proxied one keeps its value, said in its note). */
 const cfValue = (c: CloudflareChange) => (c.was && c.was !== "proxied" ? `${c.was} → ${c.value}` : c.value);
 
 /**
- * What Bops would set in Cloudflare for one of the app's domains, before anything is written: one line a change
+ * What SmileDesk would set in Cloudflare for one of the app's domains, before anything is written: one line a change
  * (Add, Change, Replace, Remove, Already set; what it was, then what it becomes), what it means under them, and
  * the one button that writes it all (Add 2 records, Make 3 changes; Replace and add, the only one that sends the
- * user's OK for records Bops didn't set; Verify, when it's all set already). Blocked: why, and only Pick another
+ * user's OK for records SmileDesk didn't set; Verify, when it's all set already). Blocked: why, and only Pick another
  * name (from Add a domain) or Close. A plan that changed meanwhile comes back as it is now, said so. `fresh`: the
  * domain was just pointed here from Add a domain, so Cancel (and Pick another name) takes it off again.
  */
@@ -1148,7 +1148,7 @@ export function CloudflarePlanBox({
   onRemoved?: (a: AppDomainRemoved) => void;
   /** Whether it's writing (or taking the domain off), for what holds it open. */
   onBusy?: (busy: boolean) => void;
-  /** Bops can't set it there now (the write refused or not answered, or the plan as it is now blocked): its records to copy again. */
+  /** SmileDesk can't set it there now (the write refused or not answered, or the plan as it is now blocked): its records to copy again. */
   onCantSet?: () => void;
 }) {
   const site = useContext(AppSite);
@@ -1176,8 +1176,8 @@ export function CloudflarePlanBox({
       ? "Everything is set in Cloudflare already."
       : theirs.length
         ? theirs.every(proxyOnly)
-          ? `Bops didn't set ${theirsSaid}. ${theirs.length === 1 ? "It goes" : "They go"} to Orgo already, so only Cloudflare's proxy turns off.`
-          : `Bops didn't set ${theirsSaid}. Replacing means ${plan.domain} stops going where it goes now.`
+          ? `SmileDesk didn't set ${theirsSaid}. ${theirs.length === 1 ? "It goes" : "They go"} to Orgo already, so only Cloudflare's proxy turns off.`
+          : `SmileDesk didn't set ${theirsSaid}. Replacing means ${plan.domain} stops going where it goes now.`
         : `Nothing else in ${plan.zone} changes.`;
   const set = () => {
     setBusy("set");

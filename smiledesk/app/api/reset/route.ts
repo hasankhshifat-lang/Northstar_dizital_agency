@@ -10,16 +10,16 @@ import { getState, resetState, update } from "@/lib/server/store";
 import { notReady } from "@/lib/server/ready";
 
 /**
- * Start Bops over from the beginning: stop all work, delete the bots' computers, and reset to Sam
+ * Start SmileDesk over from the beginning: stop all work, delete the bots' computers, and reset to Sam
  * alone. The old state is backed up first.
  *
- * Only computers Bops knows it made go (a bot's, and in the "bops" workspace). The workspace is the
+ * Only computers SmileDesk knows it made go (a bot's, and in the "bops" workspace). The workspace is the
  * user's own on Orgo and may hold computers they put there themselves; those stay, listed in `kept`.
  */
 export async function POST() {
   const unready = notReady();
   if (unready) return unready;
-  stopAllSessions("Stopped: Bops was reset");
+  stopAllSessions("Stopped: SmileDesk was reset");
   update((state) => (state.takeover = undefined));
   const ours = new Set(getState().bots.flatMap((b) => (b.computerId ? [b.computerId] : [])));
   const computers = await orgo.bopsComputers();

@@ -73,7 +73,7 @@ assert.equal(A.needsYou(okAfterReply), false, "the thread asks nothing itself: i
 assert.equal(T.waitsForOk(okAfterReply, { appApprovals: [{ ...ask, reply: { reply: "once", at: now } }] }), false, "answered: its run carries on");
 assert.deepEqual(T.waitingAsks(okState).map((a) => a.id), ["apr_1"]);
 assert.deepEqual(T.waitingAsks({ ...okState, sessions: [{ ...okAfterReply, status: "failed" }] }), [], "a thread that ended some other way waits on nothing");
-assert.equal(T.pausedForOk({ ...okAfterReply, by: "dev_runner_c1" }, { appApprovals: [{ ...ask, reply: { reply: "once", at: now } }] }), true, "paused there until the Bops that asked reads the reply");
+assert.equal(T.pausedForOk({ ...okAfterReply, by: "dev_runner_c1" }, { appApprovals: [{ ...ask, reply: { reply: "once", at: now } }] }), true, "paused there until the SmileDesk that asked reads the reply");
 assert.equal(T.pausedForOk({ ...okAfterReply, by: "dev_runner_c1" }, { appApprovals: [{ ...ask, resume: { engine: "held" } }] }), false, "a brain's held call is a run going, not a pause");
 assert.equal(A.needsYou(thread({ status: "failed", error: "Connection error." })), true);
 assert.equal(A.needsYou(thread({ status: "failed", error: "Stopped by you" })), false);

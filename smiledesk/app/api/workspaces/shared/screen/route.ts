@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * How the window streams the screen of a bot of the shared workspace open, for an Admin: the boot screen of the
- * computer Bops Cloud named for that bot (lib/server/shared.ts sharedScreen, never one of the user's own bots of that
+ * computer SmileDesk Cloud named for that bot (lib/server/shared.ts sharedScreen, never one of the user's own bots of that
  * id), read with the user's own Orgo key. orgo-web hands its password only to the owner and Admins, so anyone else
  * gets 403. WebRTC only when Orgo has it on for that computer already: this never turns anything on for the owner's
  * computer. Answers only the app on this Mac, since the reply carries the computer's password.

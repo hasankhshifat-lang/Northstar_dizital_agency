@@ -526,7 +526,7 @@ await check("one flush per workspace at a time: a change during a slow PUT goes 
   assert.deepEqual(puts[1].body.routines.map((r) => r.bopsId), ["rtn_s0", "rtn_new"], "the newer state goes last");
 });
 
-await check("more than 500 routines: 500 a call, none with deleteMissing, then what Orgo has that Bops doesn't is deleted one by one; ones that can't go don't count", async () => {
+await check("more than 500 routines: 500 a call, none with deleteMissing, then what Orgo has that SmileDesk doesn't is deleted one by one; ones that can't go don't count", async () => {
   reset();
   state.routines = [routine({ id: "rtn_bad0", schedule: { kind: "daily", time: "nope" } }), ...Array.from({ length: 500 }, (_, i) => routine({ id: `rtn_${i}` }))];
   Sync.routineChanged("bot_main", { deleted: true });
@@ -537,7 +537,7 @@ await check("more than 500 routines: 500 a call, none with deleteMissing, then w
   reset();
   state.routines = Array.from({ length: 501 }, (_, i) => routine({ id: `rtn_${i}` }));
   const base = `/api/projects/${PID}/routines`;
-  // Orgo has two Bops no longer has (deleted here), and the 501.
+  // Orgo has two SmileDesk no longer has (deleted here), and the 501.
   const there = [...state.routines.map((r) => r.id), "rtn_gone1", "rtn_gone2"].map((bopsId) => ({ id: orgoId(bopsId), bopsId }));
   answer = (m, path, body) => (m === "GET" && path === base ? { status: 200, json: { routines: there } } : m === "DELETE" ? { status: 200, json: { deleted: true } } : ORGO(m, path, body));
   Sync.routineChanged("bot_main", { deleted: true });
@@ -546,7 +546,7 @@ await check("more than 500 routines: 500 a call, none with deleteMissing, then w
   assert.deepEqual(puts.map((c) => c.body.routines.length), [500, 1], "every routine goes, 500 a call");
   assert.ok(puts.every((c) => c.body.deleteMissing === undefined), "a part of the set never deletes the rest");
   assert.deepEqual(calls.filter((c) => c.method === "GET").map((c) => c.path), [base]);
-  assert.deepEqual(calls.filter((c) => c.method === "DELETE").map((c) => c.path).sort(), [`${base}/${orgoId("rtn_gone1")}`, `${base}/${orgoId("rtn_gone2")}`].sort(), "only the two gone from Bops");
+  assert.deepEqual(calls.filter((c) => c.method === "DELETE").map((c) => c.path).sort(), [`${base}/${orgoId("rtn_gone1")}`, `${base}/${orgoId("rtn_gone2")}`].sort(), "only the two gone from SmileDesk");
   // A delete Orgo doesn't answer: the whole full sync goes again after a backoff.
   reset();
   state.routines = Array.from({ length: 501 }, (_, i) => routine({ id: `rtn_${i}` }));
@@ -575,7 +575,7 @@ await check("finished runs wait in an outbox on disk: a quit while Orgo is away 
     outboxForTests.writeAll();
     assert.ok(existsSync(file), "kept on disk");
     assert.equal(JSON.parse(readFileSync(file, "utf8")).entries.length, 1);
-    // Bops quits (everything in memory gone) and starts again, with Orgo back.
+    // SmileDesk quits (everything in memory gone) and starts again, with Orgo back.
     T.reset();
     outboxForTests.restart();
     answer = ORGO;
@@ -705,7 +705,7 @@ await check("what a run said goes in its POST, and waits in the outbox on disk w
     assert.equal(kept.length, 2, "both wait");
     assert.ok(kept[0].said.startsWith("The digest: ") && kept[0].said.length <= 2000, "kept cut, not whole");
     assert.equal(kept[1].said, undefined, "a quiet run's words aren't kept: its record says it");
-    // Bops starts again with Orgo back: each goes with what it said.
+    // SmileDesk starts again with Orgo back: each goes with what it said.
     T.reset();
     outboxForTests.restart();
     answer = ORGO;
@@ -766,7 +766,7 @@ await check("a routine's runs read back: by the Orgo id the PUT answered, else O
   // A workspace with no Orgo project: nothing to read, nothing asked.
   calls.length = 0;
   assert.deepEqual(await Sync.routineRuns(other.id), { orgo: "none", runs: null });
-  assert.equal(await Sync.routineRuns("rtn_nope"), undefined, "a routine Bops hasn't");
+  assert.equal(await Sync.routineRuns("rtn_nope"), undefined, "a routine SmileDesk hasn't");
   assert.deepEqual(calls, []);
 });
 

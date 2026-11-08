@@ -8,9 +8,9 @@
 //   Read & act, No access; Can use it, No access), Who reaches it (people, through which bots, from memberAccess), It
 //   asks first, Rename and Disconnect; each control sending what lib/server/logins.ts and the routes take;
 // - a workspace shared with the viewer: their own logins, and plainly that the owner's reach them only through bots;
-// - the Also signed in on screens note only where Bops knows of a sign in; every word plain: no dashes, never Orbit.
+// - the Also signed in on screens note only where SmileDesk knows of a sign in; every word plain: no dashes, never Orbit.
 //
-// Rendered into a DOM (linkedom) and clicked, against a fake Bops: nothing reaches a server. The .tsx files are
+// Rendered into a DOM (linkedom) and clicked, against a fake SmileDesk: nothing reaches a server. The .tsx files are
 // compiled with the TypeScript in node_modules as they load. The people and places are made up.
 // Usage: node scripts/test-logins-ui.mjs   (not with --conditions=react-server: these are client components)
 import assert from "node:assert/strict";
@@ -66,7 +66,7 @@ globalThis.EventSource = class {
 };
 
 const NORTH_PROJECT = "66666666-2222-4333-8444-555555555555";
-/** Bops, faked: what each request sent, and the keys, members and uses it answers with. */
+/** SmileDesk, faked: what each request sent, and the keys, members and uses it answers with. */
 const bops = { sent: [], keys: [], providers: [], keysInfo: {}, patch: null };
 const json = (j, status = 200) => ({ ok: status < 400, status, json: async () => j });
 globalThis.fetch = async (url, init = {}) => {
@@ -538,7 +538,7 @@ await test("Keys form: a pasted key picks its service by how it starts, a hand p
   assert.equal(serviceOfKey("sk_live_abc", all, "STRIPE_API_KEY"), "STRIPE_API_KEY", "a Stripe pick stays");
   assert.equal(serviceOfKey("sk_other", all), null, "sk_ isn't OpenAI's");
   assert.equal(serviceOfKey("plain-token", all), null);
-  assert.equal(serviceOfKey("ghp_abc", ["STRIPE_SECRET_KEY"]), null, "only a service Bops can call");
+  assert.equal(serviceOfKey("ghp_abc", ["STRIPE_SECRET_KEY"]), null, "only a service SmileDesk can call");
   // The owner's case: GitHub saved for all workspaces, the form open there, a GitHub token pasted.
   bops.providers = PROVIDERS;
   bops.keys = [row("GITHUB_TOKEN", "all"), row("OPENAI_API_KEY", "workspace")];
@@ -578,7 +578,7 @@ await test("Keys form: a pasted key picks its service by how it starts, a hand p
   }
 });
 
-await test("Also signed in on screens: only where Bops knows of a sign in on a bot's computer, naming who can use it", async () => {
+await test("Also signed in on screens: only where SmileDesk knows of a sign in on a bot's computer, naming who can use it", async () => {
   const st = stateOf();
   assert.deepEqual(Logins.screenSignIns(st, "ws_fern"), [], "none known: no note");
   const m0 = await mount(settings(st));

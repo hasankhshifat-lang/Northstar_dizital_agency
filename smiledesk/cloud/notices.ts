@@ -5,21 +5,21 @@ import type { CloudNotice } from "./protocol.ts";
 import { stateTooNew } from "./state.ts";
 
 /**
- * What Orgo tells Bops users: notices in bops.notices, each shown once to each user as a pop-up in the
+ * What Orgo tells SmileDesk users: notices in bops.notices, each shown once to each user as a pop-up in the
  * app (0.0.19 on: components/app/notice-popup.tsx) until they put it away, on whichever Mac. A notice can
- * be for apps older than a version only (below_version: "update Bops"), and runs from starts_at until
+ * be for apps older than a version only (below_version: "update SmileDesk"), and runs from starts_at until
  * ends_at. Posted and ended with Orgo's scripts/notices.sh (OrgoAI/bops-secrets).
  *
  * A Mac older than the one that wrote the user's state (state.ts stateTooNew) gets one more, first, from
- * the cloud itself: update Bops on this Mac. Its state's calls are refused, and otherwise nothing would
+ * the cloud itself: update SmileDesk on this Mac. Its state's calls are refused, and otherwise nothing would
  * say so while it runs. It's in no table, so putting it away lasts until the app asks again.
  */
 
 /** The cloud's own notice for a Mac that can't be given the user's state any more. Its id names no notice in bops.notices. */
 export const UPDATE_THIS_MAC: CloudNotice = {
   id: "0",
-  title: "Update Bops on this Mac",
-  body: "Another of your Macs is on a newer Bops, so this one can't keep your chats, bots and routines in sync any more. Update it to keep going: what you do here meanwhile goes up once it's updated.",
+  title: "Update SmileDesk on this Mac",
+  body: "Another of your Macs is on a newer SmileDesk, so this one can't keep your chats, bots and routines in sync any more. Update it to keep going: what you do here meanwhile goes up once it's updated.",
   link: { url: "https://bops.bot", label: "Get the update" },
 };
 

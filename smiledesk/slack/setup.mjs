@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 /**
- * Bops' own Slack app, wired to Composio, so Slack shows "Bops" (and each bot under its own name and
+ * SmileDesk's own Slack app, wired to Composio, so Slack shows "SmileDesk" (and each bot under its own name and
  * picture) instead of Composio's shared app. Run from the repo root; it reads and writes .env.local.
  *
  *   SLACK_CONFIG_TOKEN=xoxe.xoxp-… node slack/setup.mjs create
  *     Makes the app from slack/manifest.json (Slack's App Manifest API), then a Composio Slackbot auth
- *     config with the app's credentials (redirect through api.bops.bot), so connecting Slack in Bops
- *     shows "Bops". The config token comes from api.slack.com/apps → "Your App Configuration Tokens" →
- *     Generate Token. Saves the app's id and credentials to .env.local (BOPS_SLACK_*); Bops checks
+ *     config with the app's credentials (redirect through api.bops.bot), so connecting Slack in SmileDesk
+ *     shows "SmileDesk". The config token comes from api.slack.com/apps → "Your App Configuration Tokens" →
+ *     Generate Token. Saves the app's id and credentials to .env.local (BOPS_SLACK_*); SmileDesk checks
  *     Slack's events with BOPS_SLACK_SIGNING_SECRET.
  *
  *   SLACK_CONFIG_TOKEN=xoxe.xoxp-… node slack/setup.mjs events
- *     Turns on the app's events, sent to api.bops.bot/hooks/slack (relayed to Bops). Slack checks the
- *     URL on the spot, so Bops must be running and reachable through the relay.
+ *     Turns on the app's events, sent to api.bops.bot/hooks/slack (relayed to SmileDesk). Slack checks the
+ *     URL on the spot, so SmileDesk must be running and reachable through the relay.
  *
  * Nothing secret is printed.
  */
@@ -80,7 +80,7 @@ if (step === "create") {
     ac = await cx.authConfigs.create("slackbot", {
       type: "use_custom_auth",
       authScheme: "OAUTH2",
-      name: "Bops Slack app",
+      name: "SmileDesk Slack app",
       credentials: {
         client_id: clientId,
         client_secret: get("BOPS_SLACK_CLIENT_SECRET"),
@@ -93,7 +93,7 @@ if (step === "create") {
   } else console.log(`Composio auth config already made: ${ac.id}`);
 
   save({ BOPS_SLACK_AUTH_CONFIG: ac.id });
-  console.log(`Next: run the "events" step (Bops running), and upload the app icon at https://api.slack.com/apps/${appId}/general (edge/public/brand/bops-1024.png).`);
+  console.log(`Next: run the "events" step (SmileDesk running), and upload the app icon at https://api.slack.com/apps/${appId}/general (edge/public/brand/smiledesk-1024.png).`);
 } else if (step === "events") {
   const config = get("SLACK_CONFIG_TOKEN");
   if (!config) throw new Error("Set SLACK_CONFIG_TOKEN");

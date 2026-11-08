@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 
 /*
- * A newer Bops. The Mac app asks bops.bot for the newest release at launch and every hour and
+ * A newer SmileDesk. The Mac app asks bops.bot for the newest release at launch and every hour and
  * downloads it itself (desktop/main.cjs, "New versions"): quietly with "Download updates
  * automatically" on (Settings → This Mac, UpdateSettings below), so the notice only turns up once it's
  * ready, with Restart to install it (quitting installs it too). With the switch off it says the version
  * is out, with Download, then that it's downloading, then ready. A download the user waited for that
  * didn't finish says so, with Try again; one that ran out of disk space says that, and how much to free,
- * whether the user waited for it or not (desktop/updates.cjs, SPACE_NEEDED). A copy of Bops that can't replace itself (opened from the DMG
+ * whether the user waited for it or not (desktop/updates.cjs, SPACE_NEEDED). A copy of SmileDesk that can't replace itself (opened from the DMG
  * or Downloads) sends the user to bops.bot, as before. What's new in it shows under the line when the
  * release says (docs/releases); put away, it stays away for that version. In a browser there's no Mac
  * app to ask, so it never shows.
@@ -40,7 +40,7 @@ export function UpdateNotice() {
 /**
  * The notice on the folded sidebar (sidebar-rail.tsx): one round button with a blue dot, its tooltip
  * saying where the update is at. It unfolds the sidebar (`onOpen`), where the card has Restart and the
- * rest: one click on an icon never restarts Bops. Shown when the card would be.
+ * rest: one click on an icon never restarts SmileDesk. Shown when the card would be.
  */
 export function UpdateButton({ onOpen }: { onOpen: () => void }) {
   const { info } = useUpdate();
@@ -49,14 +49,14 @@ export function UpdateButton({ onOpen }: { onOpen: () => void }) {
   if (phase === "downloading" && !info.asked) return null;
   const tip =
     phase === "ready"
-      ? `Bops ${info.version} is ready to install`
+      ? `SmileDesk ${info.version} is ready to install`
       : phase === "downloading"
-        ? `Bops ${info.version} is downloading`
+        ? `SmileDesk ${info.version} is downloading`
         : phase === "available" && info.failed && info.why === "space"
           ? "Not enough space on this Mac to update"
           : phase === "available" && info.failed
             ? "The download didn't finish"
-          : `Bops ${info.version} is out`;
+          : `SmileDesk ${info.version} is out`;
   return (
     <button
       onClick={onOpen}
@@ -73,7 +73,7 @@ export function UpdateButton({ onOpen }: { onOpen: () => void }) {
 
 /** Where a newer release is at, as the Mac app says (nothing in a browser), and putting the notice away. */
 function useUpdate() {
-  // `late`: the card turned up while Bops was open (a check after launch), so it rises in; what launch
+  // `late`: the card turned up while SmileDesk was open (a check after launch), so it rises in; what launch
   // already knew just shows. Set as the card appears and kept while it stays, so a later check never replays it.
   const [{ info, late }, setShown] = useState<{ info: UpdateInfo; late: boolean }>({ info: null, late: false });
   useEffect(() => {
@@ -107,20 +107,20 @@ export function UpdateCard({ info, late, onDismiss }: { info: UpdateInfo; late: 
         {/* Read out as it changes (ready, or the download didn't finish), without taking focus. */}
         <span role="status" className="min-w-0 flex-1 text-[12.5px] leading-[17px] text-[#6B6B6B]">
           {phase === "ready" ? (
-            <span className="font-medium text-ink">Bops {info.version} is ready.</span>
+            <span className="font-medium text-ink">SmileDesk {info.version} is ready.</span>
           ) : phase === "downloading" ? (
-            <span className="font-medium text-ink">Bops {info.version} is downloading.</span>
+            <span className="font-medium text-ink">SmileDesk {info.version} is downloading.</span>
           ) : phase === "available" && info.failed && info.why === "space" ? (
             <>
-              <span className="font-medium text-ink">Not enough space on this Mac to update.</span> Bops needs about 2 GB free.
+              <span className="font-medium text-ink">Not enough space on this Mac to update.</span> SmileDesk needs about 2 GB free.
             </>
           ) : phase === "available" && info.failed ? (
             <span className="font-medium text-ink">The download didn&apos;t finish.</span>
           ) : phase === "available" ? (
-            <span className="font-medium text-ink">Bops {info.version} is out.</span>
+            <span className="font-medium text-ink">SmileDesk {info.version} is out.</span>
           ) : (
             <>
-              <span className="font-medium text-ink">Bops {info.version} is out.</span> Get it at bops.bot
+              <span className="font-medium text-ink">SmileDesk {info.version} is out.</span> Get it at bops.bot
             </>
           )}
         </span>
@@ -150,7 +150,7 @@ export function UpdateCard({ info, late, onDismiss }: { info: UpdateInfo; late: 
       {notes.length > 0 && (
         <div className="mt-1.5 pb-0.5 pr-1.5">
           <span className="text-[11.5px] font-medium leading-4 text-[#9A9A98]">What&apos;s new</span>
-          <ul aria-label={`What's new in Bops ${info.version}`} className="mt-0.5 flex flex-col gap-0.5">
+          <ul aria-label={`What's new in SmileDesk ${info.version}`} className="mt-0.5 flex flex-col gap-0.5">
             {notes.map((note, i) => (
               <li key={i} className="flex gap-1.5 text-[12px] leading-4 text-[#6B6B6B]">
                 <span aria-hidden="true" className="mt-[7px] size-[3px] shrink-0 rounded-full bg-[#9A9A98]" />
@@ -193,7 +193,7 @@ export function UpdateSettings() {
     <div className="flex items-center gap-3 rounded-[14px] p-3.5 shadow-[0_0_0_1px_#E6E6E3]">
       <div className="flex flex-1 flex-col gap-0.5">
         <span className="text-[13px] font-medium">Download updates automatically</span>
-        <span className="text-[12px] leading-4 text-[#6B6B6B]">New versions download in the background. Restart Bops to use one.</span>
+        <span className="text-[12px] leading-4 text-[#6B6B6B]">New versions download in the background. Restart SmileDesk to use one.</span>
       </div>
       <button
         type="button"

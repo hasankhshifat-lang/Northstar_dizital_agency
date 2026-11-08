@@ -8,7 +8,7 @@
 
 export type SourceApp = "gmail" | "slack" | "discord";
 
-/** The app an issue's sourceApp names, when Bops can show its thread; null for any other (Plain, a web page). */
+/** The app an issue's sourceApp names, when SmileDesk can show its thread; null for any other (Plain, a web page). */
 export function sourceAppOf(app?: string | null): SourceApp | null {
   const a = (app ?? "").trim().toLowerCase().replace(/[\s_-]+/g, "");
   if (a === "gmail" || a === "googlemail" || a === "googleworkspace" || a === "email") return "gmail";
@@ -108,19 +108,19 @@ export function sourceError(code: SourceCode, app: SourceApp, account?: string):
     case "no_account":
       return app === "discord" ? "No Discord bot is connected. Connect one in Logins to see the thread here." : `No ${name} account is connected. Connect one in Logins to see the ${noun} here.`;
     case "gone":
-      return app === "gmail" ? "This email isn't in your Gmail anymore." : `Bops can't find this thread in ${name}. It may be deleted, or in a channel your account can't see.`;
+      return app === "gmail" ? "This email isn't in your Gmail anymore." : `SmileDesk can't find this thread in ${name}. It may be deleted, or in a channel your account can't see.`;
     case "down":
       return `Couldn't reach ${name} just now.`;
     case "unparsed":
-      return `Bops can't tell which ${app === "gmail" ? "email" : `${name} thread`} this is.`;
+      return `SmileDesk can't tell which ${app === "gmail" ? "email" : `${name} thread`} this is.`;
     case "shared":
       return `Only the workspace's owner can see the original ${noun}.`;
     case "window":
-      return `Only the Bops app can show the ${noun}.`;
+      return `Only the SmileDesk app can show the ${noun}.`;
     case "runner":
-      return `Open Bops on your Mac to see the ${noun}.`;
+      return `Open SmileDesk on your Mac to see the ${noun}.`;
     default:
-      return `Bops can't show the ${noun} from ${name}.`;
+      return `SmileDesk can't show the ${noun} from ${name}.`;
   }
 }
 

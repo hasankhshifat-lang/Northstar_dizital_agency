@@ -7,8 +7,8 @@ import { MAIN_WORKSPACE } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-/** Domains are bought and pointed only from the Bops window (ui-token.ts), never a page a bot's browser reached. */
-const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Domains can only be added in the Bops app." }, { status: 403 }));
+/** Domains are bought and pointed only from the SmileDesk window (ui-token.ts), never a page a bot's browser reached. */
+const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Domains can only be added in the SmileDesk app." }, { status: 403 }));
 
 const answer = (e: unknown) =>
   e instanceof HostedAppError ? Response.json({ error: e.message, ...e.extra }, { status: e.status }) : Response.json({ error: (e as Error).message }, { status: 500 });
@@ -37,7 +37,7 @@ export async function GET(request: Request, ctx: { params: Promise<{ name: strin
 /**
  * Add a domain to the app (AppDomainAdd): "buy" one at the price the user saw, then point it here, or
  * "connect" one the user owns, or one the workspace bought (or a name under it), or "cloudflare" one of the user's
- * Cloudflare domains (or a name under it), with what Bops would set there for it. Answers AppDomainAdded, or why not.
+ * Cloudflare domains (or a name under it), with what SmileDesk would set there for it. Answers AppDomainAdded, or why not.
  */
 export async function POST(request: Request, ctx: { params: Promise<{ name: string }> }) {
   const unready = notReady() ?? notFromWindow(request);

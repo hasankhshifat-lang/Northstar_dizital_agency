@@ -52,7 +52,7 @@ const wsKey = () => randomBytes(16).toString("base64");
 
 const alive = async () => (await fetch(`http://127.0.0.1:${port}/health`)).status;
 
-test("/health says what this Bops Cloud does (CLOUD_CAPS): roles, which the owner's Mac waits for before it offers Admin", async () => {
+test("/health says what this SmileDesk Cloud does (CLOUD_CAPS): roles, which the owner's Mac waits for before it offers Admin", async () => {
   const res = await fetch(`http://127.0.0.1:${port}/health`);
   const body = (await res.json()) as { ok: boolean; caps?: string[] };
   assert.equal(res.status, 200);

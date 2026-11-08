@@ -1,5 +1,5 @@
 // Tests for apps on the web in the window (components/app/hosted-apps.tsx), each one an Ingot repo worked
-// on on a bot's Bops computer: the Apps page's "On the web" list, one line per app with its state (live,
+// on on a bot's SmileDesk computer: the Apps page's "On the web" list, one line per app with its state (live,
 // deploying, failed, never deployed), its public address as a link that opens in the browser, the short
 // id of the changeset its site serves and Deploy, greyed with why when it can't be pressed (deploying
 // isn't open here, nothing committed, a deploy running), one quiet line when there are none, and nothing
@@ -1453,7 +1453,7 @@ await test("Add a domain without a Cloudflare key is as it was: no From Cloudfla
   }
 });
 
-await test("Add a domain from Cloudflare: From Cloudflare first, above Your domains, each zone's line (its account's name when there are more, a name to type under one in use), Use sending it, then what Bops would set there with Add 2 records; set, the panel closes and its line is checked until it's live", async () => {
+await test("Add a domain from Cloudflare: From Cloudflare first, above Your domains, each zone's line (its account's name when there are more, a name to type under one in use), Use sending it, then what SmileDesk would set there with Add 2 records; set, the panel closes and its line is checked until it's live", async () => {
   const sent = [];
   const t = await settingsTab({
     "/api/hosted-apps/shop/domains": (url, init) => {
@@ -1487,7 +1487,7 @@ await test("Add a domain from Cloudflare: From Cloudflare first, above Your doma
     await submit(zone().querySelector("form"));
     assert.deepEqual(sent.at(-1), { ws: sent.at(-1).ws, action: "cloudflare", zone: CF_Z, subdomain: "shop" });
     const plan = panel().querySelector('[data-cloudflare-plan="shop.acme.test"]');
-    assert.ok(plan, "what Bops would set, in the panel");
+    assert.ok(plan, "what SmileDesk would set, in the panel");
     assert.ok(!panel().querySelector("[data-cloudflare]") && !panel().querySelector('[role="tablist"]'), "in place of the rest");
     assert.ok(plan.textContent.startsWith("Set shop.acme.test in Cloudflare"));
     assert.deepEqual(changesIn(plan.outerHTML), ["add", "add"]);
@@ -1509,7 +1509,7 @@ await test("Add a domain from Cloudflare: From Cloudflare first, above Your doma
 
 SRC.domainSources.now = SRC.PROD_DOMAIN_SOURCES;
 
-await test("Published's Add a domain: Its domain, From Cloudflare first, then Use a domain I own as a small link; no buying, no Your domains; Bops sets its records in Cloudflare as DNS only", async () => {
+await test("Published's Add a domain: Its domain, From Cloudflare first, then Use a domain I own as a small link; no buying, no Your domains; SmileDesk sets its records in Cloudflare as DNS only", async () => {
   const t = await settingsTab({
     "/api/hosted-apps/shop/domains": { body: { buy: { open: true }, owned: [{ id: "9f9f9f9f-1111-4222-8333-444455556666", domain: "spare.example", inUse: [] }], contact: AVA, cloudflare: { zones: [{ id: "a".repeat(32), domain: "acme.test", inUse: [] }] } } },
   });
@@ -1518,7 +1518,7 @@ await test("Published's Add a domain: Its domain, From Cloudflare first, then Us
     await act(settle);
     const panel = t.box.querySelector("[data-add-domain-panel]");
     assert.equal(panel.getAttribute("data-domain-sources"), "cloudflare own");
-    assert.ok(panel.textContent.includes("Its domain") && panel.textContent.includes("From Cloudflare:") && panel.textContent.includes("Bops sets its records in Cloudflare as DNS only."));
+    assert.ok(panel.textContent.includes("Its domain") && panel.textContent.includes("From Cloudflare:") && panel.textContent.includes("SmileDesk sets its records in Cloudflare as DNS only."));
     assert.ok(panel.querySelector('[data-cloudflare-domain="acme.test"]'), "its Cloudflare domains");
     assert.ok(!panel.querySelector("[data-owned-domain]") && !panel.textContent.includes("Get a new domain"), "no buying, no Your domains");
     assert.ok(panel.querySelector("[data-own-link]"), "Use a domain I own, a small link");
@@ -1529,7 +1529,7 @@ await test("Published's Add a domain: Its domain, From Cloudflare first, then Us
   }
 });
 
-await test("The plan's lines and words, by what it does: Replace and add for records Bops didn't set (Not set by Bops), Make 2 changes for its own (the proxy turned off, one it set before), Verify when all is set, blocked with only Pick another name or Close", () => {
+await test("The plan's lines and words, by what it does: Replace and add for records SmileDesk didn't set (Not set by SmileDesk), Make 2 changes for its own (the proxy turned off, one it set before), Verify when all is set, blocked with only Pick another name or Close", () => {
   const theirs = planBox(
     cfPlanOf([
       cfAdd("TXT", "_orgo-verify", "tok-cf"),
@@ -1540,20 +1540,20 @@ await test("The plan's lines and words, by what it does: Replace and add for rec
   seen(theirs);
   assert.deepEqual(changesIn(theirs), ["add", "change", "remove"]);
   assert.ok(text(theirs).includes("Replace") && text(theirs).includes("192.0.2.4 → 203.0.113.10"), "what it was, then what it becomes");
-  assert.equal((theirs.match(/Not set by Bops/g) ?? []).length, 2);
-  assert.ok(text(theirs).includes("Bops didn't set 2 of these. Replacing means acme.test stops going where it goes now."));
+  assert.equal((theirs.match(/Not set by SmileDesk/g) ?? []).length, 2);
+  assert.ok(text(theirs).includes("SmileDesk didn't set 2 of these. Replacing means acme.test stops going where it goes now."));
   assert.deepEqual(buttonsIn(theirs), ["Cancel", "Replace and add"]);
   const one = planBox(cfPlanOf([{ ...cfAdd("CNAME", "shop", "edge.orgo.dev"), op: "change", was: "192.0.2.4", theirs: true }]));
-  assert.ok(text(one).includes("Bops didn't set the CNAME record at shop."));
+  assert.ok(text(one).includes("SmileDesk didn't set the CNAME record at shop."));
   // Theirs, at Orgo already, only proxied: it stays where it goes, only the proxy turns off, said so.
   const proxiedTheirs = seen(planBox(cfPlanOf([ADDS[0], { ...cfAdd("CNAME", "shop", "edge.orgo.dev"), op: "change", was: "proxied", theirs: true, note: "Turns off Cloudflare's proxy. Orgo needs DNS only." }])));
-  assert.ok(text(proxiedTheirs).includes("Turns off Cloudflare's proxy") && !proxiedTheirs.includes("Not set by Bops"), "the proxy on its line");
-  assert.ok(text(proxiedTheirs).includes("Bops didn't set the CNAME record at shop. It goes to Orgo already, so only Cloudflare's proxy turns off."));
+  assert.ok(text(proxiedTheirs).includes("Turns off Cloudflare's proxy") && !proxiedTheirs.includes("Not set by SmileDesk"), "the proxy on its line");
+  assert.ok(text(proxiedTheirs).includes("SmileDesk didn't set the CNAME record at shop. It goes to Orgo already, so only Cloudflare's proxy turns off."));
   assert.ok(!text(proxiedTheirs).includes("stops going where it goes now"));
   assert.deepEqual(buttonsIn(proxiedTheirs), ["Cancel", "Replace and add"], "still only with the user's OK");
   // With one of theirs that does move it, what moving means is said.
   const both = planBox(cfPlanOf([{ ...cfAdd("A", "@", "203.0.113.10"), op: "change", was: "proxied", theirs: true }, { op: "remove", type: "A", name: "acme.test", host: "@", value: "192.0.2.5", theirs: true }], { domain: "acme.test" }));
-  assert.ok(text(both).includes("Bops didn't set 2 of these. Replacing means acme.test stops going where it goes now."));
+  assert.ok(text(both).includes("SmileDesk didn't set 2 of these. Replacing means acme.test stops going where it goes now."));
   const own = planBox(
     cfPlanOf([
       { ...cfAdd("CNAME", "shop", "edge.orgo.dev"), op: "change", was: "proxied", note: "Turns off Cloudflare's proxy. Orgo needs DNS only." },
@@ -1561,7 +1561,7 @@ await test("The plan's lines and words, by what it does: Replace and add for rec
     ]),
   );
   seen(own);
-  assert.ok(text(own).includes("Turns off Cloudflare's proxy") && text(own).includes("Bops set this before"));
+  assert.ok(text(own).includes("Turns off Cloudflare's proxy") && text(own).includes("SmileDesk set this before"));
   assert.ok(!text(own).includes("proxied →"), "a proxied one keeps its value, said in its note");
   assert.deepEqual(buttonsIn(own), ["Cancel", "Make 2 changes"]);
   assert.ok(text(own).includes("Nothing else in acme.test changes."));
@@ -1622,10 +1622,10 @@ await test("The plan, clicked: a stale answer puts the plan as it is now in its 
     await n.done();
   }
   // Cloudflare not answering the write: said, and the button that sends it is there to press again (no other named).
-  const UNKNOWN_WORDS = "Cloudflare didn't answer, so it isn't known whether the records went in. Try again in a minute. Bops looks first, so nothing is set twice.";
+  const UNKNOWN_WORDS = "Cloudflare didn't answer, so it isn't known whether the records went in. Try again in a minute. SmileDesk looks first, so nothing is set twice.";
   for (const [answer, words] of [
     [{ status: 504, body: { error: UNKNOWN_WORDS, code: "UNKNOWN" } }, UNKNOWN_WORDS],
-    [{ status: 502, body: {} }, "It isn't known whether the records went in. Try again in a minute. Bops looks first, so nothing is set twice."],
+    [{ status: 502, body: {} }, "It isn't known whether the records went in. Try again in a minute. SmileDesk looks first, so nothing is set twice."],
   ]) {
     routes = { [CF_PATH]: answer };
     const u = await mount(h(AS.CloudflarePlanBox, { ws: "ws_main", name: "shop", plan: cfPlanOf(ADDS), fresh: true, from: "add", onApplied: noop, onCancel: noop }));
@@ -1654,7 +1654,7 @@ await test("The plan, clicked: a stale answer puts the plan as it is now in its 
 await test("The greyed box of a domain whose zone is in the user's Cloudflare: Set it in Cloudflare in place of copying while a record isn't there (with Verify), none once they all are; live and right, as it was; live and off, said; without it, the box as it was", () => {
   const box = (d) => between(withDomains({ ...DOMAINS, domains: [d] }), "data-outside-dns", "data-zone=");
   const waiting = seen(box(CF_DOMAIN));
-  assert.ok(text(waiting).includes("Its DNS is at Cloudflare, in your account. Bops can set these for you."));
+  assert.ok(text(waiting).includes("Its DNS is at Cloudflare, in your account. SmileDesk can set these for you."));
   assert.match(waiting, /data-set-in-cloudflare="true"[^>]*>Set it in Cloudflare</);
   assert.match(waiting, /data-verify="true"[^>]*>Verify</);
   assert.ok(!waiting.includes("Copy the"), "nothing to copy");
@@ -1671,14 +1671,14 @@ await test("The greyed box of a domain whose zone is in the user's Cloudflare: S
   assert.ok(text(plain).includes("Orgo can't set these. Add them at Cloudflare, then Verify.") && plain.includes('aria-label="Copy the TXT value"') && !plain.includes("data-set-in-cloudflare"), "as it was");
 });
 
-await test("Set it in Cloudflare, clicked: what Bops would set is read then, inside the box; set, its line is checked until it's live; Remove on it says Bops takes its records off too, and what it couldn't is said under Domains once it's gone", async () => {
+await test("Set it in Cloudflare, clicked: what SmileDesk would set is read then, inside the box; set, its line is checked until it's live; Remove on it says SmileDesk takes its records off too, and what it couldn't is said under Domains once it's gone", async () => {
   const sent = [];
   const t = await settingsTab({
     "/api/hosted-apps/shop/dns": { body: { ...DOMAINS, domains: [...DOMAINS.domains, CF_DOMAIN] } },
     [CF_PATH]: (url, init) => ((init.method ?? "GET") === "GET" ? { body: cfPlanOf(ADDS) } : (sent.push(JSON.parse(init.body)), { body: { domain: { ...CF_DOMAIN, status: "verifying" }, said: "Set in Cloudflare. It can take a minute or two to answer.", written: 2 } })),
     "/api/hosted-apps/shop/domains/cd_cf": (url, init) =>
       init.method === "DELETE"
-        ? { body: { ...DOMAINS, said: "Removed from this app. Bops couldn't reach Cloudflare. If it set TXT _orgo-verify.shop and CNAME shop there, remove them." } }
+        ? { body: { ...DOMAINS, said: "Removed from this app. SmileDesk couldn't reach Cloudflare. If it set TXT _orgo-verify.shop and CNAME shop there, remove them." } }
         : { body: { domain: { ...CF_DOMAIN, status: "verifying" } } },
   });
   try {
@@ -1696,22 +1696,22 @@ await test("Set it in Cloudflare, clicked: what Bops would set is read then, ins
     // Remove: asked with what it does in Cloudflare; another one bought elsewhere isn't.
     await click(button(line(), "Remove shop.acme.test"));
     const ask = t.box.textContent;
-    assert.ok(ask.includes("Remove shop.acme.test from this app? Bops also takes off the records it set for it in Cloudflare."));
-    cfSeen.push("Remove shop.acme.test from this app? Bops also takes off the records it set for it in Cloudflare.");
+    assert.ok(ask.includes("Remove shop.acme.test from this app? SmileDesk also takes off the records it set for it in Cloudflare."));
+    cfSeen.push("Remove shop.acme.test from this app? SmileDesk also takes off the records it set for it in Cloudflare.");
     await click(button(t.box, "Remove"));
     assert.ok(!line(), "gone");
     const left = t.box.querySelector("[data-removed-said]");
-    assert.equal(left?.textContent, "Removed from this app. Bops couldn't reach Cloudflare. If it set TXT _orgo-verify.shop and CNAME shop there, remove them.");
+    assert.equal(left?.textContent, "Removed from this app. SmileDesk couldn't reach Cloudflare. If it set TXT _orgo-verify.shop and CNAME shop there, remove them.");
     cfSeen.push(left.textContent);
     const mine = t.box.querySelector('[data-domain="recipes.example.com"]');
     await click(button(mine, "Remove recipes.example.com"));
-    assert.ok(t.box.textContent.includes("Remove recipes.example.com from this app?") && !t.box.textContent.includes("Bops also takes off"), "not on one Bops doesn't set");
+    assert.ok(t.box.textContent.includes("Remove recipes.example.com from this app?") && !t.box.textContent.includes("SmileDesk also takes off"), "not on one SmileDesk doesn't set");
   } finally {
     await t.done();
   }
 });
 
-await test("When Bops can't set it in Cloudflare (its plan not read, blocked, or the write refused), each value is to copy again, from the box and from Add a domain; while the plan is open in Add a domain, its line doesn't offer it as well", async () => {
+await test("When SmileDesk can't set it in Cloudflare (its plan not read, blocked, or the write refused), each value is to copy again, from the box and from Add a domain; while the plan is open in Add a domain, its line doesn't offer it as well", async () => {
   const NO_READ = { status: 403, body: { error: "Your Cloudflare key can't read the DNS of acme.test. In Cloudflare, let it edit DNS for acme.test.", code: "NO_READ" } };
   const NO_EDIT = { status: 403, body: { error: "Your Cloudflare key can read acme.test but can't change its DNS. In Cloudflare, let the key edit DNS for acme.test, then try again. Nothing was changed.", code: "NO_EDIT" } };
   const why = "shop.acme.test has a TXT record in Cloudflare, so it can't also have the CNAME Orgo needs. Pick another name.";
@@ -2415,9 +2415,9 @@ await test("Settings, Domains: a row a domain in one card, as Settings' other se
   } finally {
     await none.done();
   }
-  const closed = await domainsSection({ "/api/domains": { body: { open: false, why: "Domains are changed from the Bops app on your Mac.", buy: { open: false }, contact: null, domains: [] } } });
+  const closed = await domainsSection({ "/api/domains": { body: { open: false, why: "Domains are changed from the SmileDesk app on your Mac.", buy: { open: false }, contact: null, domains: [] } } });
   try {
-    assert.equal(closed.box.querySelector("[data-domains-closed]").textContent.trim(), "Domains are changed from the Bops app on your Mac.");
+    assert.equal(closed.box.querySelector("[data-domains-closed]").textContent.trim(), "Domains are changed from the SmileDesk app on your Mac.");
     assert.ok(!button(closed.box, "Get a domain"), "nothing to buy with");
   } finally {
     await closed.done();
@@ -2737,7 +2737,7 @@ await test("Your Apps in a workspace shared with the user: the apps as the owner
   assert.match(read, /data-tip="Ask the owner for Write to deploy\."/);
   assert.match(read, /Juno deployed it · /, "what a member did, named");
   for (const no of ["Add app", "Not theirs", "Variables", "Buy", "DNS", "Remove app"]) assert.ok(!read.includes(no), `no ${no}`);
-  assert.match(read, /Only the owner sees its variables\. Build logs show in the owner&#x27;s Bops\. Only the owner buys domains\./);
+  assert.match(read, /Only the owner sees its variables\. Build logs show in the owner&#x27;s SmileDesk\. Only the owner buys domains\./);
   // Write: Deploy, and opened: Go back on one that can, settings, Use one of this workspace's domains.
   const html = (el) => renderToStaticMarkup(el);
   const write = html(h(SharedAppsPage, { state: sharedState("write") }));
@@ -2777,7 +2777,7 @@ await test("Your Apps in a workspace shared with the user: the apps as the owner
   }
 });
 
-await test("Your Apps shared with the user: each site's Preview, where their Deploy goes, its state and link (up top too); at Write its password with Copy, as the owner sees it, at Read who to ask; Go back on a Preview deploy only; an owner's Bops from before as it was", async () => {
+await test("Your Apps shared with the user: each site's Preview, where their Deploy goes, its state and link (up top too); at Write its password with Copy, as the owner sees it, at Read who to ask; Go back on a Preview deploy only; an owner's SmileDesk from before as it was", async () => {
   const { SharedAppsPage } = await import(pathToFileURL(`${root}/components/app/shared-apps.tsx`).href);
   const LINK = "https://k7p2qxm4wr3d.orgo.dev";
   const PASSWORD = "Mx4tR8q";
@@ -2816,7 +2816,7 @@ await test("Your Apps shared with the user: each site's Preview, where their Dep
   assert.equal(line.querySelector("[data-password-beside] [data-preview-password]").textContent, PASSWORD);
   assert.ok(line.querySelector('button[aria-label="Copy password"]'));
   assert.match(words(w.box.querySelector('[data-shared-app="shop"]')), /shop Published Not on the web yet/);
-  // Deploys say where each went, and Go back is on the Preview's only (the owner's Bops refuses a Published one).
+  // Deploys say where each went, and Go back is on the Preview's only (the owner's SmileDesk refuses a Published one).
   const back = [...w.box.querySelectorAll("button")].filter((b) => b.textContent === "Go back to this one");
   assert.equal(back.length, 1, "one Go back");
   assert.match(back[0].parentElement.textContent, /^Live · Preview · cs11111/);
@@ -2828,14 +2828,14 @@ await test("Your Apps shared with the user: each site's Preview, where their Dep
   assert.match(words(rl), /^Preview Deploying https:\/\/k7p2qxm4wr3d\.orgo\.dev Ask the owner for its password\.$/);
   assert.equal(rl.querySelector("[data-preview-password]"), null);
   await r.done();
-  // At Write when the owner's Bops couldn't read it: who to ask too. A link that asks for none: nothing said of a password.
+  // At Write when the owner's SmileDesk couldn't read it: who to ask too. A link that asks for none: nothing said of a password.
   const none = await opened(state("write", shop()));
   assert.match(words(none.box.querySelector("[data-shared-preview]")), /Ask the owner for its password\.$/);
   await none.done();
   const open = await opened(state("write", shop({ previewProtected: undefined })));
   assert.match(words(open.box.querySelector("[data-shared-preview]")), /^Preview Deploying https:\/\/k7p2qxm4wr3d\.orgo\.dev$/);
   await open.done();
-  // An owner's Bops from before Preview: Published's state and address up top, no Preview line, Go back as before.
+  // An owner's SmileDesk from before Preview: Published's state and address up top, no Preview line, Go back as before.
   const before = { name: "shop", url: "https://shop.orgo.dev", sites: [{ name: "shop", url: "https://shop.orgo.dev", serving: "cs22222", live: { id: "d2", state: "succeeded", when: 9 } }], deploys: [{ id: "d1", state: "succeeded", at: "cs11111", rollback: false, when: 8, live: false, canRollback: true, site: "shop" }] };
   assert.match(renderToStaticMarkup(h(SharedAppsPage, { state: state("write", before) })), /Live · cs22222 · https:\/\/shop\.orgo\.dev/);
   const old = await opened(state("write", before));
@@ -2845,7 +2845,7 @@ await test("Your Apps shared with the user: each site's Preview, where their Dep
   await old.done();
 });
 
-await test("Your Apps shared with an Admin, once the owner's Bops takes it (SharedOpen.adminPublish): Publish beside Deploy puts on Published what its Preview serves, and Go back works on Published's deploys too; never for a Member, nor while Bops Cloud doesn't say the owner's Bops takes it", async () => {
+await test("Your Apps shared with an Admin, once the owner's SmileDesk takes it (SharedOpen.adminPublish): Publish beside Deploy puts on Published what its Preview serves, and Go back works on Published's deploys too; never for a Member, nor while SmileDesk Cloud doesn't say the owner's SmileDesk takes it", async () => {
   const { SharedAppsPage, actLine } = await import(pathToFileURL(`${root}/components/app/shared-apps.tsx`).href);
   const shop = {
     name: "shop",
@@ -2879,8 +2879,8 @@ await test("Your Apps shared with an Admin, once the owner's Bops takes it (Shar
     const none = await mount(h(SharedAppsPage, { state: state("admin", true, { ...shop, sites: [{ ...shop.sites[0], previewServing: null, previewLive: null }] }) }));
     assert.equal(buttons(none.box, "Publish")[0].disabled, true);
     await none.done();
-    // A Member, and an Admin whose owner's Bops (or Bops Cloud) doesn't say it takes Publish: the Preview's only, as before.
-    for (const [why, st] of [["a Member", state("member", true)], ["an Admin, the owner's Bops older", state("admin", false)]]) {
+    // A Member, and an Admin whose owner's SmileDesk (or SmileDesk Cloud) doesn't say it takes Publish: the Preview's only, as before.
+    for (const [why, st] of [["a Member", state("member", true)], ["an Admin, the owner's SmileDesk older", state("admin", false)]]) {
       const x = await mount(h(SharedAppsPage, { state: st }));
       assert.equal(buttons(x.box, "Publish").length, 0, why);
       await click(x.box.querySelector("button[aria-expanded]"));

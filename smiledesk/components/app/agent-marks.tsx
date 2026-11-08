@@ -8,7 +8,7 @@ import { BRAINS_ON, type AgentKind, type BotAgent } from "@/lib/types";
  * The marks of the agents a bot's threads run on (lib/agents.ts), drawn here as rough shapes of their own: six
  * petals for OpenAI, twelve rays for Claude, a prompt for Codex, brackets for OpenCode, a four point star for agy.
  * They are drawings, not the companies' files, and show only in a build with brains (BRAINS_ON): a release
- * build shows a plain mark for Bops agent until the makers' brand rules are checked.
+ * build shows a plain mark for SmileDesk agent until the makers' brand rules are checked.
  */
 
 type Size = { size?: number };
@@ -70,7 +70,7 @@ export function AgyMark({ size = 16 }: Size) {
   );
 }
 
-/** Bops agent's plain mark, where the drawn ones don't show (a build without brains). */
+/** SmileDesk agent's plain mark, where the drawn ones don't show (a build without brains). */
 function PlainMark({ size = 16 }: Size) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden>
@@ -116,5 +116,5 @@ export function AgentChip({ agent, label, title, className = "bg-[#F2F2F0]" }: {
   );
 }
 
-/** An agent's name, as its tile says it ("Bops agent", "Claude Code"). */
+/** An agent's name, as its tile says it ("SmileDesk agent", "Claude Code"). */
 export const agentName = (kind: AgentKind) => AGENTS[kind].name;

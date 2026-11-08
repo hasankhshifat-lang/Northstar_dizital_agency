@@ -50,7 +50,7 @@ const ownerState = (ws: Record<string, unknown> = {}) => ({
   routines: [],
   watches: [],
 });
-/** What Bops Cloud keeps: the state as a real Mac uploads it. */
+/** What SmileDesk Cloud keeps: the state as a real Mac uploads it. */
 const uploaded = (ws?: Record<string, unknown>) => toShared(ownerState(ws), "mac-owner") as Record<string, unknown>;
 
 const member: SliceViewer = { role: "member", email: MEMBER_EMAIL, id: "user-member", joinedAt: 1_000, computerUse: true, ownerEmail: STAFF_OWNER };

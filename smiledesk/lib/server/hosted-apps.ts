@@ -108,7 +108,7 @@ import { PREVIEW_PASSWORD_ABC, PREVIEW_PASSWORD_LENGTH } from "@/cloud/protocol"
  * deployed). This Mac reads and makes repos there itself, with the user's Orgo key: no computer is asked.
  *
  * A bot works on one through work_on_app (chat.ts): a task on its computer, on whatever brain the bot has
- * (Claude Code, Codex, or Bops agent), in the app's working folder /workspace/apps/<name>. As the task
+ * (Claude Code, Codex, or SmileDesk agent), in the app's working folder /workspace/apps/<name>. As the task
  * starts, the folder is made ready there (readyAppForTask: the ingot command and its config there, with
  * the computer's own agent token for the workspace, the repo made if it's new, then `ingot clone` or
  * `ingot pull`), and a brain's thread gets Ingot's MCP tools (appMcp). The task commits with `ingot
@@ -176,7 +176,7 @@ const g = globalThis as unknown as {
   bopsPasswordsSetting?: Map<string, Promise<boolean | undefined>>;
   /** Until when a link Orgo turned a password down for isn't asked again, by the same key (passwordNow). */
   bopsPasswordRefused?: Map<string, number>;
-  /** The Preview deploys this Bops queued and watches until they go live, by "<computer>/<project>" (watchPreview). */
+  /** The Preview deploys this SmileDesk queued and watches until they go live, by "<computer>/<project>" (watchPreview). */
   bopsPreviewWatches?: Map<string, { deploy: string; stop: () => void }>;
   /** Tests: how often a watched Preview deploy is read, and for how long (watchPreview). */
   bopsPreviewWatchMs?: { every?: number; for?: number };
@@ -203,7 +203,7 @@ export const computerOf = (botId: string) => {
  */
 function keepHosting(wsId: string, name: string, fn: (h: AppHosting | undefined) => AppHosting | undefined) {
   // On a computer's runner, only what its computer may keep of an app (cloud/computer-scope.ts hostingChangeAllowed, as
-  // Bops Cloud and the owner's Mac judge its write): anything else is said now, before it's done, never kept here alone.
+  // SmileDesk Cloud and the owner's Mac judge its write): anything else is said now, before it's done, never kept here alone.
   if (onRunner()) {
     const was = hostingOf(wsId, name);
     const now = fn(was);
@@ -234,7 +234,7 @@ function keepHosting(wsId: string, name: string, fn: (h: AppHosting | undefined)
 
 /**
  * Why a computer's runner can't keep a change to an app's record (keepHosting): it lives on another computer, its
- * computer is gone, or the change is one only the owner's Bops makes (a site added or taken out, where it publishes).
+ * computer is gone, or the change is one only the owner's SmileDesk makes (a site added or taken out, where it publishes).
  */
 function notHere(name: string, was: AppHosting | undefined): string {
   const here = process.env.BOPS_RUNNER_COMPUTER?.toLowerCase();
@@ -352,7 +352,7 @@ const hostingAt = (wsId: string, name: string, site?: unknown): SiteHosting | un
 const sitesOf = (h: AppHosting, name: string): SiteHosting[] => [siteIn(h, name), ...(h.sites ?? []).map((s) => siteIn(h, name, s.name))];
 
 /**
- * A site's Published deploy project, the URL an older Bops kept of it (never written now: Published lives on its
+ * A site's Published deploy project, the URL an older SmileDesk kept of it (never written now: Published lives on its
  * domains), its Preview label's copy, and its Preview password's choice and when it was set, as one change keeps them.
  */
 type SiteKept = { projectId?: string; url?: string; preview?: string; passwordOff?: true; passwordSet?: PasswordSet };
@@ -554,7 +554,7 @@ async function reposOf(wsId: string): Promise<IngotRepo[] | null> {
 const AT_HAND_MS = 30 * 60_000;
 
 /**
- * The workspace's repos as Bops last read them (reposOf), when that was in the last half hour, without asking Ingot:
+ * The workspace's repos as SmileDesk last read them (reposOf), when that was in the last half hour, without asking Ingot:
  * what a bot's note says of them (hostedAppsLine) and what work_on_app takes by name (appWork), neither of which
  * waits on Ingot. Undefined when there's no such list at hand.
  */
@@ -576,10 +576,10 @@ export function readReposAhead(botId: string) {
 
 /* ---------------- Whether deploying can work ---------------- */
 
-/** Why deploying can't work from this Bops before Orgo is asked (undefined: it can, as far as Bops knows). */
+/** Why deploying can't work from this SmileDesk before Orgo is asked (undefined: it can, as far as SmileDesk knows). */
 export async function closedHere(): Promise<string | undefined> {
   if (await loadOrgoKey().catch(() => null)) return undefined;
-  return selfHosted() ? "This Bops runs on its own Orgo key. Sign in with Orgo to put apps on the web." : "Sign in with Orgo to put apps on the web.";
+  return selfHosted() ? "This SmileDesk runs on its own Orgo key. Sign in with Orgo to put apps on the web." : "Sign in with Orgo to put apps on the web.";
 }
 
 /** Orgo's answer to a probe of the workspace's main computer, kept a minute: whether hosting is open to this account. */
@@ -667,7 +667,7 @@ function domainsReader(): DomainsOn {
 const siteDomains = (all: OrgoCustomDomain[], port: unknown): SiteDomain[] =>
   typeof port === "number" ? all.filter((d) => d.target_port === port).map((d) => ({ domain: d.domain, status: d.status })) : [];
 
-/** The app's record as the window gets it: without the addresses an older Bops kept (Published shows its domains only). */
+/** The app's record as the window gets it: without the addresses an older SmileDesk kept (Published shows its domains only). */
 const shownHosting = (h: AppHosting): AppHosting => {
   const { url: _url, sites, ...rest } = h;
   void _url;
@@ -840,7 +840,7 @@ function deployName(name: string, n = 1): string {
 /** The first port a new deploy project takes (Published's and Preview's): 3000 to 3099 are Local's (vm/bin/bops-local). */
 const FIRST_PORT = 3100;
 
-/** Ports a computer keeps for itself (orgo-web checkDeployPort), and Bops' own on the Mac: never one an app's project takes. */
+/** Ports a computer keeps for itself (orgo-web checkDeployPort), and SmileDesk's own on the Mac: never one an app's project takes. */
 const keptPort = (p: number) => p === 22 || p === 3210 || p === 3389 || p === 8080 || p === 9000 || (p >= 5900 && p <= 5999) || (p >= 6080 && p <= 6099);
 
 /**
@@ -891,7 +891,7 @@ const previewLike = (h: AppHosting, name: string, repo: string, label: string) =
 /**
  * A site's Published project among its computer's (`projects`, oldest first as orgo-web lists them), found the
  * same from any Mac: the oldest of the repo named with a Published label sealed for this site; else the one its
- * record names (Bops 0.0.32's and before: the live sites keep theirs), or one named as 0.0.32 named them
+ * record names (SmileDesk 0.0.32's and before: the live sites keep theirs), or one named as 0.0.32 named them
  * (deployName), when it's no site's Preview, no old Staging, and no other site's Published. Never the repo's
  * first project as such (that may be a Preview or a left over). Undefined: none, so ensureProd makes one.
  */
@@ -930,7 +930,7 @@ async function urlsNow(computerId: string, ours: () => boolean): Promise<{ urls:
  * or made now when there's none (nothing deployed): named with a random Published label sealed for the site,
  * on the first port free from 3100, and with no public URL of its own (a Published site lives on its domains;
  * an orgo-web that doesn't know that flag gives it a random one, never shown). Made before a site's Preview is,
- * before a domain is connected, and on its first Local start, so a Bops 0.0.32 deploying it (which takes the
+ * before a domain is connected, and on its first Local start, so a SmileDesk 0.0.32 deploying it (which takes the
  * repo's oldest project when its record names none) always finds Published's. `env`: variables to make it
  * with, or to set on the one found.
  */
@@ -1173,7 +1173,7 @@ function urlsReader(): UrlsOn {
 
 /**
  * The label a site's Preview is known by besides its seal: its state copy (one sealed for it, or a name the owner
- * chose ahead, which has no seal); or, that copy lost (a Bops 0.0.32 kept its whole record), for an app with one
+ * chose ahead, which has no seal); or, that copy lost (a SmileDesk 0.0.32 kept its whole record), for an app with one
  * site, the one project of its repo named like a chosen name (12 letters and digits, the first a letter) that's
  * no Published, with a public URL of the same name: found again, so its link never changes.
  */
@@ -1212,7 +1212,7 @@ function previewIn(projects: OrgoDeployProject[], urls: OrgoPublicUrl[], repo: s
 
 /**
  * A site's Preview as the window shows it (`p`: its project as read on its own, with its deploys; `pass`: whether its
- * link asks for a password now, and when Bops set it last).
+ * link asks for a password now, and when SmileDesk set it last).
  */
 const previewView = (f: PreviewFound | undefined, p?: OrgoDeployProject | null, pass?: { on?: boolean; at?: number }): PreviewSite => {
   const project = p ?? f?.project;
@@ -1244,7 +1244,7 @@ function placesOf(h: AppHosting, name: string, repo: string, projects: OrgoDeplo
 /**
  * The app's left overs on its computer (HostedApp.leftOver): projects of its repo that are no site's Published or
  * Preview and not ones it left on another computer, and marked Preview URLs that are no site's. They come from an
- * older Bops (a <site>-staging, a <site> made when its record lost Published's id) or two Macs at once. Bops never
+ * older SmileDesk (a <site>-staging, a <site> made when its record lost Published's id) or two Macs at once. SmileDesk never
  * deploys to them, and removes one only when the user says so (removeLeftOver).
  */
 function leftOversOf(h: AppHosting, name: string, repo: string, projects: OrgoDeployProject[], urls: OrgoPublicUrl[], places: Map<string, SitePlaces>): LeftOver[] {
@@ -1582,7 +1582,7 @@ async function sendPreview(
       if (got instanceof Error) throw refused(got);
       if (!got.enabled) throw new HostedAppError(got.why, 403);
       deployed.push({ site, deployment: got.value, url: pv.url.url });
-      // Its link gets a new password once this deploy is live, from this Bops (watchPreview).
+      // Its link gets a new password once this deploy is live, from this SmileDesk (watchPreview).
       previewQueued(wsId, name, site, prod.computerId, pv.project.id, pv.url, got.value, ours);
     } catch (e) {
       if (deployed.length && ours()) keepHosting(wsId, name, (x) => x && { ...x, queuedAt: Date.now() });
@@ -1629,19 +1629,19 @@ async function previewOf(
 
 /*
  * Each site's Preview asks for a password (orgo-web's gate on its public URL: a browser without its cookie gets a
- * password page first), unless the owner turned it off for that site (AppHosting.passwordOff). Bops sets one as soon
- * as the link exists (the Bops that made it: passwordNow "made", in ensurePreview) or is found without one, on any Mac
+ * password page first), unless the owner turned it off for that site (AppHosting.passwordOff). SmileDesk sets one as soon
+ * as the link exists (the SmileDesk that made it: passwordNow "made", in ensurePreview) or is found without one, on any Mac
  * or runner (passwordNow "first": each read of the Apps page, the window's read of it, once it's a minute old), so a
  * Preview is never public; a read never makes a new one because another deploy went live. A new one comes once with
- * each Preview deploy, from the Bops that queued it, as it goes live (watchPreview: that deploy is the project's current
+ * each Preview deploy, from the SmileDesk that queued it, as it goes live (watchPreview: that deploy is the project's current
  * one; passwordNow "rotate", recorded on AppHosting.passwordSet; one Orgo didn't take is tried again at the watch's next
  * look); a deploy that fails or stops, or that a newer one replaced, leaves it as it was, and Published never has one. Orgo
- * keeps the password: Bops keeps only the owner's choice and when it set one. A link Orgo can't tell about
+ * keeps the password: SmileDesk keeps only the owner's choice and when it set one. A link Orgo can't tell about
  * (`protected` absent: an orgo-web from before passwords) is left alone, and one Orgo can't put a password on yet (503
  * PASSWORD_UNAVAILABLE, before its migration) or that the user's key can't change (403) is left alone for an hour,
  * so nothing is tried again and again.
  *
- * Whoever sets it shares it: each password set, the very one sent to Orgo, goes to Bops Cloud too (preview-password-share.ts),
+ * Whoever sets it shares it: each password set, the very one sent to Orgo, goes to SmileDesk Cloud too (preview-password-share.ts),
  * which keeps it for the people the owner gave Your Apps at Write, Admins too (cloud/preview-passwords.ts). A runner
  * signs in as its computer, which orgo-web lets set a public URL's password but never read it, so what a runner set
  * reaches them only that way, whether the owner's Mac is on or not. The password is the owner's to see beside the
@@ -1650,7 +1650,7 @@ async function previewOf(
 
 /**
  * A Preview password's characters: letters and digits, without the ones that look alike (0, O, o, 1, l, I), and how many
- * it has: Bops Cloud's rule for one (cloud/protocol.ts PREVIEW_PASSWORD), which takes no other.
+ * it has: SmileDesk Cloud's rule for one (cloud/protocol.ts PREVIEW_PASSWORD), which takes no other.
  */
 const PASSWORD_ABC = PREVIEW_PASSWORD_ABC;
 export const PASSWORD_LENGTH = PREVIEW_PASSWORD_LENGTH;
@@ -1695,9 +1695,9 @@ async function onePassword<T extends boolean | undefined>(key: string, fn: () =>
 }
 
 /**
- * How long a link just made is left to the Bops that made it (passwordNow "first"): that one sets its first password as
+ * How long a link just made is left to the SmileDesk that made it (passwordNow "first"): that one sets its first password as
  * soon as its project is made (ensurePreview), and a read elsewhere meanwhile (the owner's Apps page, another Mac of the
- * owner's) would set another, whose share to Bops Cloud could land after the one Orgo kept. By Orgo's created_at, either
+ * owner's) would set another, whose share to SmileDesk Cloud could land after the one Orgo kept. By Orgo's created_at, either
  * way from this clock, so one a little off only shortens or lengthens the wait.
  */
 const FIRST_WAIT_MS = 60_000;
@@ -1711,7 +1711,7 @@ const setMaybeMade = (e: unknown) => !(e instanceof OrgoError) || (e.status >= 5
 
 /**
  * A link's password set to `password` (null: none), sent once more, the same, when Orgo didn't answer or answered 5xx: it
- * may have made the first (a set that timed out after Orgo took it), and the same one again is harmless. So what Bops
+ * may have made the first (a set that timed out after Orgo took it), and the same one again is harmless. So what SmileDesk
  * shares is what the link has, rather than a password nobody knows (a runner can't read one back).
  */
 async function setPasswordSure(computerId: string, urlId: string, password: string | null) {
@@ -1725,9 +1725,9 @@ async function setPasswordSure(computerId: string, urlId: string, password: stri
 
 /**
  * How passwordNow goes. "first" (a read of the link: the Apps page, the window's password) sets one only when Orgo says
- * the link has none, and not while it's just made (FIRST_WAIT_MS: the Bops that made it sets it); "made" (ensurePreview,
+ * the link has none, and not while it's just made (FIRST_WAIT_MS: the SmileDesk that made it sets it); "made" (ensurePreview,
  * on the link it just made or found) the same, at once; neither ever sets one because another deploy went live.
- * "rotate" (watchPreview, once the Preview deploy this Bops queued is live) sets a new one in place of the one the link
+ * "rotate" (watchPreview, once the Preview deploy this SmileDesk queued is live) sets a new one in place of the one the link
  * has, unless one was set for that deploy already.
  */
 type PasswordMode = "first" | "made" | "rotate";
@@ -1738,7 +1738,7 @@ type PasswordDone = { on: boolean | undefined; again?: true };
 /**
  * A site's Preview password as it should be now, from its link as Orgo listed it (`url`) and the deploy live on its
  * Preview (`live`: its project's current one, null: none), by `mode`, the record kept (passwordSet: when, and for what
- * was live). Each password set goes to Bops Cloud too, exactly as it went to Orgo (sharePreviewPassword), for the people
+ * was live). Each password set goes to SmileDesk Cloud too, exactly as it went to Orgo (sharePreviewPassword), for the people
  * at Write. Nothing when the owner turned it off, Orgo can't tell, Orgo turned its link off, or Orgo turned a set down
  * lately (PASSWORD_AGAIN_MS, or PASSWORD_LATER_MS). Answers whether the link asks for one now (undefined: Orgo can't
  * tell). Best effort: it never throws.
@@ -1766,16 +1766,16 @@ async function passwordAsked(wsId: string, name: string, site: string, computerI
   const s = siteNow(wsId, name, site, computerId);
   if (!s || s.passwordOff || url.disabled || !ours()) return { on: url.protected };
   if (mode !== "rotate" && url.protected) {
-    // (One set before Bops kept when: taken as set for what's live now.)
+    // (One set before SmileDesk kept when: taken as set for what's live now.)
     if (!s.passwordSet) keepSite(wsId, name, site, (x) => ({ ...x, passwordSet: { at: Date.now(), live } }));
     return { on: true };
   }
-  // (Just made, here or by another Bops: the one that made it sets it.)
+  // (Just made, here or by another SmileDesk: the one that made it sets it.)
   if (mode === "first" && justMade(url)) return { on: false };
   if (mode === "rotate") {
     // (Set for this deploy already: the owner's New password as it went live, say.)
     if (live && s.passwordSet?.live === live) return { on: url.protected };
-    // A rotation replaces the password the link has. One that has none was turned off on another Bops of the owner's
+    // A rotation replaces the password the link has. One that has none was turned off on another SmileDesk of the owner's
     // whose choice hasn't reached this one yet (its record still says one was set): never set again here. Or its first
     // set never went through (none kept): set now, so a Preview going live is never public.
     if (!url.protected && s.passwordSet) return { on: false };
@@ -1815,7 +1815,7 @@ async function passwordAsked(wsId: string, name: string, site: string, computerI
 
 /* ---------------- A new Preview password as each Preview deploy goes live ---------------- */
 
-/** How often a Preview deploy this Bops queued is read until it's live, and how long at most. */
+/** How often a Preview deploy this SmileDesk queued is read until it's live, and how long at most. */
 const WATCH_EVERY_MS = 10_000;
 const WATCH_FOR_MS = 20 * 60_000;
 /** A deploy that will never go live. */
@@ -1826,7 +1826,7 @@ const watching = (g.bopsPreviewWatches ??= new Map<string, PreviewWatch>());
 const watchBox = (g.bopsPreviewWatchMs ??= {});
 
 /**
- * Watch a Preview deploy this Bops just queued (`deploy`, Orgo's answer to it: on site `site`'s Preview project
+ * Watch a Preview deploy this SmileDesk just queued (`deploy`, Orgo's answer to it: on site `site`'s Preview project
  * `projectId` on `computerId`, whose link is `urlId`) until it goes live, then give the link a new password, once
  * (passwordNow "rotate", shared as every set is). One watch a project, by its computer and project: a newer deploy's
  * replaces an older one's (Orgo replaces a deploy still queued with a newer one, and only the newest goes live). Its
@@ -1837,7 +1837,7 @@ const watchBox = (g.bopsPreviewWatchMs ??= {});
  * or off, or another account's state came in (`ours`). A set Orgo didn't take just now (it didn't answer, a 5xx) is
  * tried again at a later look, each wait twice the last, while this deploy is still the live one and the watch lasts.
  *
- * In memory only: one that dies with this process (Bops quit, the computer asleep) leaves that deploy with the
+ * In memory only: one that dies with this process (SmileDesk quit, the computer asleep) leaves that deploy with the
  * password it had, which everyone with Your Apps at Write has already, and the next Preview deploy gets a new one.
  */
 function watchPreview(o: { wsId: string; name: string; site: string; computerId: string; projectId: string; urlId: string; deploy: OrgoDeployment; release?: string; ours: () => boolean }) {
@@ -1908,7 +1908,7 @@ function watchPreview(o: { wsId: string; name: string; site: string; computerId:
 }
 
 /**
- * A Preview deploy this Bops queued (`deploy`, Orgo's answer: a deploy, a rollback putting `release` back, a build for a
+ * A Preview deploy this SmileDesk queued (`deploy`, Orgo's answer: a deploy, a rollback putting `release` back, a build for a
  * new port), on site `site`'s Preview project and its link `url`: watched until it's live (watchPreview), unless that
  * link can't have a password (an orgo-web from before passwords).
  */
@@ -1926,7 +1926,7 @@ export const previewWatchForTests = {
   },
 };
 
-/** When Bops last set a site's Preview password (PreviewSite.passwordAt), as kept now. */
+/** When SmileDesk last set a site's Preview password (PreviewSite.passwordAt), as kept now. */
 const passwordAtOf = (wsId: string, name: string, site: string) => {
   const h = hostingOf(wsId, name);
   return h ? sitesOf(h, name).find((x) => x.site === site)?.passwordSet?.at : undefined;
@@ -1954,7 +1954,7 @@ async function previewLinkOf(wsId: string, name: string, ours: () => boolean, si
 
 /**
  * A Preview's password as the window gets it: read from Orgo when its link asks for one (`on`), with the cookie that
- * opens it, and when Bops set it (`at`). A key that can't read it (403: one without write on computers) gets none,
+ * opens it, and when SmileDesk set it (`at`). A key that can't read it (403: one without write on computers) gets none,
  * with why, never an error to ask again about; Orgo may keep only the cookie's check of an older one (password null).
  */
 async function passwordAnswer(computerId: string, url: OrgoPublicUrl, on: boolean | undefined, at: number | undefined, ours: () => boolean): Promise<PreviewPassword> {
@@ -1998,7 +1998,7 @@ const PASSWORD_WORDS = {
  * POST /api/hosted-apps/[name]/password: a site's Preview password made new ("new": the link stays, a browser with
  * the old one asks again), or turned on (a new one) or off for that site, the owner's choice kept on its record.
  * Answers PreviewPassword. Refused while the app is being removed, for a site with no link yet, and where Orgo can't
- * put one on it. The new one (or none, turned off) goes to Bops Cloud too, for the people at Write (sharePreviewPassword).
+ * put one on it. The new one (or none, turned off) goes to SmileDesk Cloud too, for the people at Write (sharePreviewPassword).
  */
 export async function changePreviewPassword(wsId: string, name: string, action: unknown, site?: unknown): Promise<PreviewPassword> {
   const ours = sameState();
@@ -2167,7 +2167,7 @@ async function publishToGithub(wsId: string, name: string, now: AppHosting, at: 
 }
 
 /**
- * Set where an app's production is on GitHub (null: back to Publish on Orgo). Only the owner, from the Bops window,
+ * Set where an app's production is on GitHub (null: back to Publish on Orgo). Only the owner, from the SmileDesk window,
  * never while it's being published. A new repo, branch or folder needs linking again (its point goes); the same
  * ones keep it. Not for an app with more sites (one folder is one app).
  */
@@ -2216,7 +2216,7 @@ export async function linkGithubMirror(wsId: string, name: string): Promise<{ ap
   });
 }
 
-/** Bring in GitHub's changes (github-mirror.ts mirrorPull), GitHub's version winning where both changed a file: the owner's word, from the Bops window. */
+/** Bring in GitHub's changes (github-mirror.ts mirrorPull), GitHub's version winning where both changed a file: the owner's word, from the SmileDesk window. */
 export async function pullGithubMirror(wsId: string, name: string): Promise<{ app: HostedApp; said: string }> {
   const h = isRepoName(name) ? hostingOf(wsId, name) : undefined;
   if (!h) throw new HostedAppError(NO_APP, 404);
@@ -2277,7 +2277,7 @@ export async function makePreview(wsId: string, name: string, ask: { site?: unkn
 
 /**
  * A site's Preview projects on a computer the app left (its bot moved to another one that stays up): kept with
- * its Published ones left there (AppHosting.behind, which Remove app takes down, and which a Bops 0.0.32 knows
+ * its Published ones left there (AppHosting.behind, which Remove app takes down, and which a SmileDesk 0.0.32 knows
  * too), read after the move, never holding it up. Their links move with the next Preview deploy (ensurePreview).
  */
 async function previewLeft(wsId: string, name: string, was: AppHosting) {
@@ -2329,7 +2329,7 @@ export async function removeLeftOver(wsId: string, name: string, project: unknow
       if (r instanceof Error && !(r instanceof OrgoError && r.status === 404)) throw refused(r);
     } else {
       await takeDown(wsId, name, { botId: now.botId, computerId: now.computerId, projectId: x.id, site: name }, ours);
-      // (A link Bops made for it, which its project doesn't own, goes with it.)
+      // (A link SmileDesk made for it, which its project doesn't own, goes with it.)
       const u = urls.find((y) => y.label === x.name);
       if (u) await publicUrls.remove(now.computerId, u.id).catch(() => null);
     }
@@ -2455,7 +2455,7 @@ const publishedAt = (computerId: string, port: unknown) => domains.ofComputer(co
 /** A project's variables' names, as Orgo answers them (never their values). */
 const envNames = (p: OrgoDeployProject | undefined | null) => [...new Set((p?.env_keys ?? []).filter((k) => typeof k === "string"))].sort();
 
-/** Orgo's refusals of a settings change, in Bops' words where they name a field (its own words otherwise). */
+/** Orgo's refusals of a settings change, in SmileDesk's words where they name a field (its own words otherwise). */
 function settingsRefused(e: unknown) {
   if (!(e instanceof OrgoError)) return e;
   const status = e.status >= 400 && e.status < 500 ? e.status : 502;
@@ -2683,7 +2683,7 @@ async function firstEnv(wsId: string, name: string, site: unknown, out: Record<s
 
 const LOST = "Its computer is gone, so it needs a new home first: deploy it, or ask a bot to work on it.";
 
-/** Orgo's refusals of a rollback, in Bops' words. */
+/** Orgo's refusals of a rollback, in SmileDesk's words. */
 function rollbackRefused(e: unknown) {
   if (!(e instanceof OrgoError)) return e;
   if (e.code === "ALREADY_LIVE") return new HostedAppError("That one is live now.", 409);
@@ -2733,7 +2733,7 @@ export const RECORD_ID = /^[A-Za-z0-9_-]{16}$/;
 const NOT_HERE = "That domain doesn't point at this app, so its DNS isn't changed here.";
 export const STALE = "That record changed since it was read. Here are the records as they are now, so try again.";
 
-/** Orgo's DNS refusals by code, in Bops' words (Orgo's own are kept where they name the field or the name that's wrong). */
+/** Orgo's DNS refusals by code, in SmileDesk's words (Orgo's own are kept where they name the field or the name that's wrong). */
 const DNS_WORDS: Record<string, string> = {
   RECORD_EXISTS: "That record is there already.",
   RECORD_CONFLICT: "A CNAME needs its name to itself. Use another name.",
@@ -2818,7 +2818,7 @@ async function appTarget(wsId: string, name: string, ours: () => boolean, site?:
   // (orgo-web keeps both unique per computer), so the app's domains are the ones on its port. Nothing at
   // Orgo ties a domain to a project otherwise. A project that doesn't say its port has none of them.
   const mine = port === null ? [] : all.filter((d) => d.target_port === port);
-  // A bought domain is connected only to a computer in its own Orgo workspace, and a computer two Bops
+  // A bought domain is connected only to a computer in its own Orgo workspace, and a computer two SmileDesk
   // workspaces share is in one of them only: so its zone is under the computer's workspace, asked when
   // there's a bought one to read (else, or when Orgo doesn't say, this workspace's).
   const here = workspace(wsId)?.orgoProjectId;
@@ -2865,7 +2865,7 @@ function lockedWhy(t: Target, r: OrgoDnsRecord): string | null {
 /** Why a record is Orgo's, in words, or null for one of the user's own: the app's tab says it of its app, Settings of the workspace's. */
 export type LockOf = (r: OrgoDnsRecord) => string | null;
 
-/** A zone's records as the window shows them, each locked as `lock` says (only the types Bops shows). */
+/** A zone's records as the window shows them, each locked as `lock` says (only the types SmileDesk shows). */
 export const recordsOf = (records: OrgoDnsRecord[] | undefined, lock: LockOf): AppDnsRecord[] =>
   (records ?? [])
     .filter((r) => (DNS_TYPES as readonly string[]).includes(r.type))
@@ -2921,7 +2921,7 @@ async function domainOf(t: Target, d: OrgoCustomDomain, look = false, cfZonesNow
   return { ...out, ...cloudflareOf(d, zones) };
 }
 
-/** One bought elsewhere whose zone is in the user's Cloudflare account (`zones`, the key's, read once for the look): Bops can set its records there. */
+/** One bought elsewhere whose zone is in the user's Cloudflare account (`zones`, the key's, read once for the look): SmileDesk can set its records there. */
 const cloudflareOf = (d: OrgoCustomDomain, zones: CfZone[] | null | undefined): Pick<AppDomain, "cloudflare"> => {
   if (d.managed || d.status === "disabled" || !zones) return {};
   const z = zoneFor(d.domain, zones);
@@ -2953,7 +2953,7 @@ export async function appDomains(wsId: string, name: string, site?: unknown, { c
 /**
  * The app's domains as appDomains reads them, for the account the work began on; each zone with its renewal
  * (the workspace's bought domains, read once, when the target didn't read them already). `cloudflare`: each
- * one in the user's Cloudflare says so (AppDomain.cloudflare), read with their key: only for the Bops window.
+ * one in the user's Cloudflare says so (AppDomain.cloudflare), read with their key: only for the SmileDesk window.
  */
 async function domainsNow(wsId: string, name: string, ours: () => boolean, site?: unknown, cloudflare = true): Promise<AppDomainsAnswer> {
   const t = await appTarget(wsId, name, ours, site);
@@ -3085,7 +3085,7 @@ export const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 export const DOMAINS_UNREACHED = "Couldn't reach Orgo's domains just now.";
 
 /**
- * The Orgo workspace a Bops workspace's domains are listed, bought and pointed from, the same for an app's
+ * The Orgo workspace a SmileDesk workspace's domains are listed, bought and pointed from, the same for an app's
  * tab and for Settings: the one `computerId` is in (the app's computer, or for Settings the main bot's),
  * whose bought domains are the ones it can serve. Else the workspace's own project: when there's no computer
  * to ask about, Orgo doesn't say, or the computer isn't the user's to ask about any more (404 or 403: a new
@@ -3220,7 +3220,7 @@ export const QUERY = /^[a-z0-9][a-z0-9.-]{0,252}$/i;
 export const topUpUrl = () => `${orgoOrigin()}/settings/billing#credits`;
 
 /**
- * A buy that went out and came back with nothing Bops can read as Orgo's answer: whether it was bought
+ * A buy that went out and came back with nothing SmileDesk can read as Orgo's answer: whether it was bought
  * isn't known (orgo-web's registration can still be going), so never "Try again" (NO_ANSWER: the window
  * reads the domains again). `timedOut`: no answer at all within the buy's time.
  */
@@ -3235,7 +3235,7 @@ const buyNotKnown = (domain: string, timedOut: boolean) =>
  * Why a buy didn't go, from an app's tab or Settings: buyRefused's words for each of Orgo's refusals, and
  * NO_ANSWER for anything that leaves it unknown whether it went through: no answer in time, a connection
  * dropped, a 5xx without Orgo's code (a proxy or a restart in front of orgo-web answers so, mid
- * registration too), or an answer that can't be read. Bops' own refusals (BUYING) are as they are.
+ * registration too), or an answer that can't be read. SmileDesk's own refusals (BUYING) are as they are.
  */
 export function buyFailed(e: unknown, domain: string, here = false) {
   if (e instanceof HostedAppError) return e;
@@ -3245,7 +3245,7 @@ export function buyFailed(e: unknown, domain: string, here = false) {
 }
 
 /**
- * Orgo's refusals of a search or a buy, by code, in Bops' words (with the facts the window asks again
+ * Orgo's refusals of a search or a buy, by code, in SmileDesk's words (with the facts the window asks again
  * with). `here`: a buy from an app's tab, which can point the domain at that app once it's bought. A buy
  * goes through buyFailed first.
  */
@@ -3366,7 +3366,7 @@ export async function searchDomains(wsId: string, name: string, q: unknown, page
   return searchOrgo(asked.words, asked.page, ours);
 }
 
-/** Domains being bought now, by "<project>/<domain>" (one Bops server, so one set). */
+/** Domains being bought now, by "<project>/<domain>" (one SmileDesk server, so one set). */
 const buying = (g.bopsDomainBuys ??= new Set<string>());
 
 /**
@@ -3397,7 +3397,7 @@ export function domainTyped(v: unknown): string | null {
   return d.length <= 253 && /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{0,61}[a-z0-9]$/.test(d) ? d : null;
 }
 
-/** Orgo's refusals of pointing a domain at the app, in Bops' words. */
+/** Orgo's refusals of pointing a domain at the app, in SmileDesk's words. */
 function connectRefused(e: unknown) {
   if (!(e instanceof OrgoError)) return e;
   const status = e.status >= 400 && e.status < 500 ? e.status : 502;
@@ -3469,7 +3469,7 @@ export async function connectDomain(wsId: string, name: string, ask: { domain?: 
   if (typed) {
     const there = t.all.find((d) => d.domain.toLowerCase() === typed);
     if (there) throw new HostedAppError(t.mine.includes(there) ? "That domain points at this app already." : "That domain points at another app on this computer. Remove it there first.", 409, { field: "domain" });
-    // Cloudflare first: one whose zone is in the user's Cloudflare goes in from there, with what Bops would set
+    // Cloudflare first: one whose zone is in the user's Cloudflare goes in from there, with what SmileDesk would set
     // for it (its plan, set on their word); only one that isn't gets the records to copy where its DNS is kept.
     const cf = await within(cfZoneOfTyped(t, wsId, typed, ours).catch(() => null), CF_LOOK_MS);
     held(ours);
@@ -3560,7 +3560,7 @@ export async function checkDomain(wsId: string, name: string, domainId: string, 
 
 /**
  * checkDomain of one read already (`t`, `d`), each answer with `zones` (the user's Cloudflare ones, for
- * AppDomain.cloudflare, or the read of them under way). `justSet`: Bops just set its records in Cloudflare, so
+ * AppDomain.cloudflare, or the read of them under way). `justSet`: SmileDesk just set its records in Cloudflare, so
  * a check that doesn't find them yet says they take a minute or two there, never that they aren't set.
  */
 async function checkMine(t: Target, d: OrgoCustomDomain, ours: () => boolean, zones: CfZone[] | null | Promise<CfZone[] | null>, justSet = false): Promise<AppDomainChecked> {
@@ -3604,7 +3604,7 @@ async function checkMine(t: Target, d: OrgoCustomDomain, ours: () => boolean, zo
 /**
  * DELETE /api/hosted-apps/[name]/domains/[domainId]: one of its domains taken off the app (a bought one's
  * records Orgo wrote for it go too; the domain itself stays the workspace's). One in the user's Cloudflare:
- * once Orgo took it off, the records Bops set for it there go too (only those: by their tag), and when
+ * once Orgo took it off, the records SmileDesk set for it there go too (only those: by their tag), and when
  * they can't, `said` names them, to remove there. Answers its domains as they are now.
  */
 export async function removeDomain(wsId: string, name: string, domainId: string, site?: unknown): Promise<AppDomainRemoved> {
@@ -3646,7 +3646,7 @@ export async function setAutoRenew(wsId: string, name: string, zone: unknown, on
   return { renewal: renewalOf(r?.domain) ?? null };
 }
 
-/** Orgo's refusals of turning auto-renew on or off, in Bops' words. */
+/** Orgo's refusals of turning auto-renew on or off, in SmileDesk's words. */
 export function renewRefused(e: unknown) {
   if (e instanceof OrgoError && e.code === "ACCOUNT_KEY_REQUIRED") return new HostedAppError("Changing auto-renew needs your own Orgo sign in, not a key for one workspace.", 403);
   if (e instanceof OrgoError && e.code === "workspace_read_only") return new HostedAppError("Your access to this workspace is view only, so its renewals aren't yours to change.", 403);
@@ -3754,7 +3754,7 @@ async function cfZoneOf(t: Target, wsId: string, d: OrgoCustomDomain, ours: () =
 }
 
 /**
- * What Bops would set in Cloudflare for one of the app's domains (cloudflare.ts planRecords): the records Orgo
+ * What SmileDesk would set in Cloudflare for one of the app's domains (cloudflare.ts planRecords): the records Orgo
  * asks for (its own list for the domain, in full; once it's live, only what routes it), against what's at those
  * names in the zone now. Another domain on this computer is named by its app (its deploy projects read only then).
  */
@@ -3778,7 +3778,7 @@ async function planFor(t: Target, wsId: string, name: string, d: OrgoCustomDomai
 /**
  * POST /api/hosted-apps/[name]/domains "cloudflare": one of the user's Cloudflare domains (by its id there,
  * found again among the key's zones), or the name `subdomain` under it, pointed at the app as one the user
- * owns (Orgo answers the records to set), and what Bops would set in Cloudflare for it (`cloudflare`; `fresh`:
+ * owns (Orgo answers the records to set), and what SmileDesk would set in Cloudflare for it (`cloudflare`; `fresh`:
  * Cancel takes it off again). A name on this computer already is refused before Orgo is asked. Nothing is
  * written in Cloudflare here: that's the user's Add on the plan (cloudflareApply). The plan not read (Cloudflare
  * not answering): the domain is added all the same, said in `error`, and its line offers Set it in Cloudflare.
@@ -3821,7 +3821,7 @@ export async function connectFromCloudflare(wsId: string, name: string, ask: { z
   }
 }
 
-/** GET /api/hosted-apps/[name]/domains/[domainId]/cloudflare: what Bops would set in Cloudflare for one of its domains, read now. Nothing is written. */
+/** GET /api/hosted-apps/[name]/domains/[domainId]/cloudflare: what SmileDesk would set in Cloudflare for one of its domains, read now. Nothing is written. */
 export async function cloudflarePlan(wsId: string, name: string, domainId: string, site?: unknown): Promise<CloudflarePlan> {
   const ours = sameState();
   const { t, d } = await mineOf(wsId, name, domainId, ours, site);
@@ -3832,7 +3832,7 @@ export async function cloudflarePlan(wsId: string, name: string, domainId: strin
 /**
  * POST /api/hosted-apps/[name]/domains/[domainId]/cloudflare { plan, replace? }: the plan the user saw written,
  * only if it's still the plan (Cloudflare read again, and planned again: anything changed since is STALE, with
- * the plan as it is now, and nothing is written), only with their OK when it replaces a record Bops didn't set
+ * the plan as it is now, and nothing is written), only with their OK when it replaces a record SmileDesk didn't set
  * (`replace`, which only Replace and add sends), never when it's blocked. All of it in one Cloudflare batch,
  * then Orgo asked to check the domain (records just set can take a minute to answer: said so). Sent again after
  * a failure, it finds its own records and writes no second copy.
@@ -3866,16 +3866,16 @@ export async function cloudflareApply(wsId: string, name: string, domainId: stri
 }
 
 /**
- * What Bops couldn't take off in the user's Cloudflare for a domain gone from the app: its records there, by
- * type and name in full, and the zone they're in when it's known. `sure`: they were read, so they're Bops'
- * own; else they're the ones Orgo asked for, which Bops may or may not have set there.
+ * What SmileDesk couldn't take off in the user's Cloudflare for a domain gone from the app: its records there, by
+ * type and name in full, and the zone they're in when it's known. `sure`: they were read, so they're SmileDesk's
+ * own; else they're the ones Orgo asked for, which SmileDesk may or may not have set there.
  */
 type CfLeft = { records: { type: string; name: string }[]; zone: string | null; sure: boolean };
 
 /**
- * "Bops couldn't reach Cloudflare, so remove TXT _orgo-verify.shop and CNAME shop there.": what's left there,
+ * "SmileDesk couldn't reach Cloudflare, so remove TXT _orgo-verify.shop and CNAME shop there.": what's left there,
  * as a list in words (each as its zone names it when they're all in one, else in full). Not sure they're
- * Bops' own: "If it set … there, remove them."
+ * SmileDesk's own: "If it set … there, remove them."
  */
 function cfLeftWords(lefts: CfLeft[]): string | undefined {
   const rs = lefts.flatMap((l) => l.records);
@@ -3884,7 +3884,7 @@ function cfLeftWords(lefts: CfLeft[]): string | undefined {
   const zone = zones.size === 1 ? [...zones][0] : null;
   const w = rs.map((r) => `${r.type} ${zone ? hostIn(r.name, zone) : r.name}`);
   const list = w.length < 2 ? w[0] : `${w.slice(0, -1).join(", ")} and ${w.at(-1)}`;
-  return lefts.every((l) => l.sure) ? `Bops couldn't reach Cloudflare, so remove ${list} there.` : `Bops couldn't reach Cloudflare. If it set ${list} there, remove ${rs.length === 1 ? "it" : "them"}.`;
+  return lefts.every((l) => l.sure) ? `SmileDesk couldn't reach Cloudflare, so remove ${list} there.` : `SmileDesk couldn't reach Cloudflare. If it set ${list} there, remove ${rs.length === 1 ? "it" : "them"}.`;
 }
 
 /** The Cloudflare key a computer's domains use (cfScopeOf), read once however many of them go; null: none, or the vault not answering. */
@@ -3894,7 +3894,7 @@ const cfScopeOnce = (wsId: string, computerId: string, ours: () => boolean) => {
 };
 
 /**
- * Once Orgo took one of an app's domains off (Remove on its line, Remove site, Remove app), the records Bops
+ * Once Orgo took one of an app's domains off (Remove on its line, Remove site, Remove app), the records SmileDesk
  * set for it in the user's Cloudflare go too: only the ones its tag says are this domain's, in one batch.
  * When that can't be done, what's left there (CfLeft): the records read, else the ones Orgo asked for in the
  * zone it's in, else (the key's zones not read now, nor kept from before) in full.
@@ -3954,11 +3954,11 @@ export async function addSite(wsId: string, name: string, site: unknown): Promis
 
 /**
  * One site of app `name` taken off its computer: the domains there on its port first (a bought one's records Orgo
- * wrote go with it; the domain itself stays the workspace's; one in the user's Cloudflare, the records Bops set
+ * wrote go with it; the domain itself stays the workspace's; one in the user's Cloudflare, the records SmileDesk set
  * for it there too, cloudflareCleaned), then its deploy project (its runner, releases and public URL). One
  * Orgo has no more is gone already, and so is one that isn't of the app's own repo (ofRepo, prodIn's rule): a record
  * may name another's (a computer's runner keeps a site's deploy project: cloud/computer-scope.ts), which is never
- * taken down for it. Answers the domains Orgo wouldn't remove (one it turned off), and what Bops couldn't take off in
+ * taken down for it. Answers the domains Orgo wouldn't remove (one it turned off), and what SmileDesk couldn't take off in
  * Cloudflare, which are said; any other refusal stops it, nothing kept changed.
  */
 async function takeDown(wsId: string, name: string, s: SiteHosting, ours: () => boolean): Promise<TakenDown> {
@@ -3986,7 +3986,7 @@ async function takeDown(wsId: string, name: string, s: SiteHosting, ours: () => 
       held(ours);
       if (r instanceof OrgoError && r.status === 409) left.push(d.domain);
       else if (r && !(r instanceof OrgoError && r.status === 404)) throw connectRefused(r);
-      // Off Orgo (or gone already): one in the user's Cloudflare, what Bops set for it there too.
+      // Off Orgo (or gone already): one in the user's Cloudflare, what SmileDesk set for it there too.
       else if (!d.managed) {
         const x = await cloudflareCleaned(scopeOf, d, ours);
         if (x) cf.push(x);
@@ -4125,7 +4125,7 @@ async function takeAppDown(wsId: string, name: string, repo: boolean, ours: () =
   const left: TakenDown = { left: [], cf: [] };
   const add = (x: TakenDown) => void (left.left.push(...x.left), left.cf.push(...x.cf));
   // Every site's Preview first (found on its computer by its label), then each site's Published.
-  // (Not when Bops can't reach Orgo's hosting at all, signed out: then nothing of it can be read, and it never had a Preview from here.)
+  // (Not when SmileDesk can't reach Orgo's hosting at all, signed out: then nothing of it can be read, and it never had a Preview from here.)
   if (!h.lost && (sites.length || behind.length || repo || !(await closedHere()))) add(await previewDown(wsId, name, h, sitesOf(h, name).map((x) => x.site), ours));
   for (const s of sites) {
     add(await takeDown(wsId, name, s, ours));
@@ -4162,13 +4162,13 @@ async function takeAppDown(wsId: string, name: string, repo: boolean, ours: () =
 
 /* ---------------- Local: its working folder run as a dev server on its computer ---------------- */
 
-/** Where bops-local goes on a computer (vm/bin/bops-local), and this Bops' copy of it. */
+/** Where bops-local goes on a computer (vm/bin/bops-local), and this SmileDesk's copy of it. */
 export const LOCAL_BIN = "/usr/local/bin/bops-local";
 const localScript = () => readFileSync(process.env.BOPS_LOCAL_SCRIPT || join(/*turbopackIgnore: true*/ process.cwd(), "vm/bin/bops-local"));
 /** A bops-local's version, from its BOPS_LOCAL_VERSION line (0: one from before it had one). */
 export const localVersion = (body: string) => Number(/^BOPS_LOCAL_VERSION=(\d{1,6})$/m.exec(body)?.[1] ?? 0);
 /**
- * The computers whose bops-local this Bops found as new as its own, or put there, and when: looked at again after
+ * The computers whose bops-local this SmileDesk found as new as its own, or put there, and when: looked at again after
  * LOCAL_TOOL_MS, or as soon as an older one answers (localBash), since an older Mac (v0.0.32 to v0.0.34) puts its
  * own back whenever the file there isn't the same as its own.
  */
@@ -4176,8 +4176,8 @@ const localChecked = new Map<string, { version: number; at: number }>();
 const LOCAL_TOOL_MS = 3 * 60_000;
 
 /**
- * bops-local on the app's computer, at least as new as this Bops has it: put there when it's missing or older
- * (one quick command), never over a newer one another Mac put there (a newer one still takes what this Bops
+ * bops-local on the app's computer, at least as new as this SmileDesk has it: put there when it's missing or older
+ * (one quick command), never over a newer one another Mac put there (a newer one still takes what this SmileDesk
  * asks of it), so Macs on different builds never swap it back and forth.
  */
 async function localTool(computerId: string, ours: () => boolean) {
@@ -4203,16 +4203,16 @@ async function localTool(computerId: string, ours: () => boolean) {
 }
 
 /**
- * Whether bops-local's answer is an older one's, put back on its computer since this Bops last looked (localTool):
+ * Whether bops-local's answer is an older one's, put back on its computer since this SmileDesk last looked (localTool):
  * it refuses what only a newer one takes (usage: mark, forget only; bad-port: auto; bad-screen: a screen; bad-name: a
- * copy's <name>.<copy>, which Bops checks before it asks), or says a Local without the BOPS_LOCAL_MORE line a newer one
+ * copy's <name>.<copy>, which SmileDesk checks before it asks), or says a Local without the BOPS_LOCAL_MORE line a newer one
  * says after every BOPS_LOCAL line.
  */
 const olderLocal = (output: string) => /^BOPS_LOCAL_FAIL=(?:usage|bad-port|bad-screen|bad-name)$/m.test(output) || (/^BOPS_LOCAL \S/m.test(output) && !/^BOPS_LOCAL_MORE /m.test(output));
 
 /**
  * bops-local commands (`script`) on the app's computer, run once localTool put it there: when an older one
- * answers (olderLocal), this Bops' is put back and they're run once more, that answer the one that stands.
+ * answers (olderLocal), this SmileDesk's is put back and they're run once more, that answer the one that stands.
  */
 async function localBash(computerId: string, script: string, timeout: number, ours: () => boolean) {
   const r = await orgo.bash(computerId, script, timeout);
@@ -4259,7 +4259,7 @@ async function forgetLocals(wsId: string, name: string, computerId: string, fold
 /** bops-local's refusals, in words (port-held and port-taken say their port: localFailed). */
 const LOCAL_WORDS: Record<string, string> = {
   "no-folder": "Its working folder isn't on its computer yet. Ask its bot to work on it first.",
-  "no-command": "Bops couldn't tell how to run it. Type the command that starts it.",
+  "no-command": "SmileDesk couldn't tell how to run it. Type the command that starts it.",
   "no-port": "No port from 3000 to 3099 is free on its computer.",
   "bad-port": "Use a port from 1024 to 65535.",
   "bad-screen": "Couldn't open it on that screen.",
@@ -4268,7 +4268,7 @@ const LOCAL_WORDS: Record<string, string> = {
   "no-browser": "Couldn't open it on its computer's screen. Open its screen and go to it there.",
   "bad-env": "Couldn't save its variables there. Try again.",
   "bad-name": "There's no site by that name in this app.",
-  "bad-command": "Bops can't run that command.",
+  "bad-command": "SmileDesk can't run that command.",
   write: "Couldn't write to its computer. Try again.",
 };
 
@@ -4454,7 +4454,7 @@ const siteWord = (name: string, site: string) => (site === name ? name : site);
 const TOLD_KEPT = 20;
 
 /**
- * What Bops keeps of the Locals it just read from their computer: each site's port as a hint on its hosting
+ * What SmileDesk keeps of the Locals it just read from their computer: each site's port as a hint on its hosting
  * record (localPort, its own folder's: a bot's prompt says its address without asking the computer, and other Macs
  * see it), written only when it changed; and for a site whose app signs in (auth), running at an address it was never
  * told for (its own folder's Local or a copy's), a note in the chat of the bot whose Local it is with the two lines to
@@ -4543,14 +4543,14 @@ function localCommand(v: unknown): string | undefined {
 
 /**
  * A Local's port as it's typed (where its dev command listens, and its address here and on its computer): 1024
- * to 65535, never Bops' own 3210; "auto", the lowest free one there (its port field cleared); none, the one it has.
+ * to 65535, never SmileDesk's own 3210; "auto", the lowest free one there (its port field cleared); none, the one it has.
  */
 function devPortOf(v: unknown): number | "auto" | undefined {
   if (v === "auto") return "auto";
   if (v === undefined || v === null || v === "") return undefined;
   const n = typeof v === "number" ? v : typeof v === "string" && /^\s*\d{1,5}\s*$/.test(v) ? Number(v) : NaN;
   if (!Number.isInteger(n) || n < 1024 || n > 65535) throw new HostedAppError("Use a port from 1024 to 65535.", 400, { field: "port" });
-  if (n === 3210) throw new HostedAppError("Bops uses 3210 on this Mac. Pick another.", 400, { field: "port" });
+  if (n === 3210) throw new HostedAppError("SmileDesk uses 3210 on this Mac. Pick another.", 400, { field: "port" });
   return n;
 }
 
@@ -4581,7 +4581,7 @@ function screenFor(wsId: string, name: string, site: string, h: AppHosting, copy
  * `start`: started first when it isn't running), its preview closed (`unpreview`), or a Fix it press counted
  * (`fix`, the owner's: bops-local mark fix). Start, open and preview are the user's doing, so they wake an asleep
  * computer; stop and fix never do (nothing runs on one asleep). A site's first start makes its Published project
- * first when it has none (ensureProd: so an older Bops deploying it never makes one on the port Local holds).
+ * first when it has none (ensureProd: so an older SmileDesk deploying it never makes one on the port Local holds).
  * Answers every site's Local as it is then.
  */
 export async function localAct(wsId: string, name: string, ask: { action?: unknown; site?: unknown; bot?: unknown; command?: unknown; port?: unknown; start?: unknown }): Promise<LocalAnswer> {
@@ -4777,7 +4777,7 @@ function appNamed(wsId: string, words: string): string | undefined {
   return nameIn(words, (name) => !!apps[name]);
 }
 
-/** A repo in the workspace's Ingot by its name, or the name its words make, from the list Bops last read (reposAtHand). */
+/** A repo in the workspace's Ingot by its name, or the name its words make, from the list SmileDesk last read (reposAtHand). */
 function repoNamed(wsId: string, words: string): string | undefined {
   const names = new Set((reposAtHand(wsId) ?? []).map((r) => r.name));
   return nameIn(words, (name) => names.has(name));
@@ -4789,7 +4789,7 @@ function repoNamed(wsId: string, words: string): string | undefined {
  * token, as it does its other writes).
  */
 function gitAs(botId: string): string {
-  const name = (bot(botId)?.name ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").trim() || "Bops";
+  const name = (bot(botId)?.name ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").trim() || "SmileDesk";
   return `-c user.name='${name.replace(/'/g, `'\\''`)}' -c user.email=${botId.replace(/[^A-Za-z0-9_.]/g, "") || "bops"}@bops.invalid`;
 }
 
@@ -4802,7 +4802,7 @@ const short = (id: string) => id.slice(0, 7);
  * the computer as it starts when the bot has none yet). An app another bot of the workspace works on, on
  * another computer, is refused: its working folder and its site are on that computer. A workspace that
  * isn't on Orgo yet can't have apps (Ingot keeps its repos under its Orgo project). `deploy`: the user asked
- * for it to go live too, which Bops does itself once the task has committed (deployAfterTask), so the task is
+ * for it to go live too, which SmileDesk does itself once the task has committed (deployAfterTask), so the task is
  * told that rather than to have them deploy it. A repo in the workspace's Ingot that isn't one of its apps yet (its
  * code put there some other way) is taken by its name as an app: it gets its first home on this bot's computer, as
  * a new app does, under the repo's own name, and the task clones it (readyAppForTask: Ingot already has the repo).
@@ -4845,17 +4845,17 @@ export function appWork(botId: string, a: { app: string | null; name: string | n
   const site = siteFor(botId, name) ?? name;
   const goal = [
     copy
-      ? `Work on ${owner}'s app ${name}. It's the Ingot repo ${repo} (Ingot is Orgo's source control; name it in full wherever a command takes a repo), and your working folder on this computer is ${dir}, a copy of your own: Bops cloned it there, or pulled the newest main into it (merged with what you hadn't committed), as this task started.`
-      : `Work on ${owner}'s app ${name}. It's the Ingot repo ${repo} (Ingot is Orgo's source control; name it in full wherever a command takes a repo), and its working folder on this computer is ${dir}: Bops cloned it there, or pulled the newest into it, as this task started.`,
+      ? `Work on ${owner}'s app ${name}. It's the Ingot repo ${repo} (Ingot is Orgo's source control; name it in full wherever a command takes a repo), and your working folder on this computer is ${dir}, a copy of your own: SmileDesk cloned it there, or pulled the newest main into it (merged with what you hadn't committed), as this task started.`
+      : `Work on ${owner}'s app ${name}. It's the Ingot repo ${repo} (Ingot is Orgo's source control; name it in full wherever a command takes a repo), and its working folder on this computer is ${dir}: SmileDesk cloned it there, or pulled the newest into it, as this task started.`,
     `What to do: ${change}`,
     WHERE_THINGS_ARE(owner),
-    "1. Make the change in that folder. An app that runs a server listens on the port in $PORT, which Orgo sets when it deploys it and bops-local sets for its Local; a plain site needs only an index.html. Keep secrets out of the folder: .env files are never committed. Read its own address from AUTH_URL (or NEXTAUTH_URL) rather than writing one in: Bops sets it to its Local's address for its Local, its preview link for its Preview, and its domain once published.",
-    `2. Run it as its Local and leave it running: bops-local start ${word} ${site} (it runs its dev script, else its start script, with hot reload, and prints a BOPS_LOCAL line whose fourth word is its port). ${owner} watches it live in Bops beside this chat while you save. Check each change with curl -i http://127.0.0.1:<that port>/. If it fails, bops-local status ${word} and /root/.bops/local/${word}--${site}.log say why. Don't run another server on that port, and don't stop its Local when you're done.`,
+    "1. Make the change in that folder. An app that runs a server listens on the port in $PORT, which Orgo sets when it deploys it and bops-local sets for its Local; a plain site needs only an index.html. Keep secrets out of the folder: .env files are never committed. Read its own address from AUTH_URL (or NEXTAUTH_URL) rather than writing one in: SmileDesk sets it to its Local's address for its Local, its preview link for its Preview, and its domain once published.",
+    `2. Run it as its Local and leave it running: bops-local start ${word} ${site} (it runs its dev script, else its start script, with hot reload, and prints a BOPS_LOCAL line whose fourth word is its port). ${owner} watches it live in SmileDesk beside this chat while you save. Check each change with curl -i http://127.0.0.1:<that port>/. If it fails, bops-local status ${word} and /root/.bops/local/${word}--${site}.log say why. Don't run another server on that port, and don't stop its Local when you're done.`,
     `3. Commit it from the folder: ingot commit -m "<what changed, in one clear line>" (or the Ingot tools' repo_commit). ${SYNC_WORDS}`,
     ...(others ? [OTHERS_WORDS(name)] : []),
     `Plain git works too, if you'd rather, in a clone of its own (never inside ${dir}): git clone "$(ingot git-url ${repo})" ${dir}-git, make the change and commit there (${git} commit), and git push origin HEAD:main. Ingot's credential helper is set up on this computer already, so git asks no password. A push refused as stale means someone committed first: ${git} pull --no-rebase, fix any file it lists as a conflict, ${git} commit, then push again. Both ways land on the same history.`,
     a.deploy
-      ? `4. Say what you changed. Once you've committed and this task ends, Bops deploys its newest commit to its Preview itself and tells ${owner} the link, so don't deploy it or tell them to. If you couldn't commit it, say why.`
+      ? `4. Say what you changed. Once you've committed and this task ends, SmileDesk deploys its newest commit to its Preview itself and tells ${owner} the link, so don't deploy it or tell them to. If you couldn't commit it, say why.`
       : `4. Say what you changed. ${owner} sees it in its Local now; it goes to its Preview when they ask.`,
     "Never change it on GitHub (its repo, a branch, a pull request), even when its production is there: Ingot is its source, and Publish carries it there.",
   ].join("\n");
@@ -4867,7 +4867,7 @@ export function appWork(botId: string, a: { app: string | null; name: string | n
 /*
  * Every working folder of an app (its own, and each bot's copy) is a clone of its own (`ingot clone`, its own
  * .ingot/state.json and base: never a git worktree, nor a copy of another folder's files), and syncs with the others
- * only through main in the central Ingot: as a task starts, Bops readies it (readyWorkFolder: cloned the first time,
+ * only through main in the central Ingot: as a task starts, SmileDesk readies it (readyWorkFolder: cloned the first time,
  * else `ingot pull`, a three way merge of what it hasn't committed with main's newest, the parts both changed left
  * between conflict markers); the bot commits from it with `ingot commit` (onto main's newest only: refused as stale,
  * nothing written, when main moved on since its base, and while a pull's conflicts are still there), and when it's
@@ -4910,15 +4910,15 @@ const WHERE_THINGS_ARE = (owner: string) =>
   [
     `Where things are, in the words to use with ${owner}:`,
     "Screen: the screen of this computer this task works on (screen 1 to 4). Open pages only in your own screen's Chrome, never in another screen's.",
-    "Local: this site's dev server on this computer, with hot reload, at http://localhost:<its port>. Its address is the one bops-local prints, and it stays the same: the same on this computer's screens and in Bops beside this chat, and Bops sets AUTH_URL to it. Never start, stop or restart another site's Local, and never kill a process on a port that isn't your site's.",
-    "Preview: its fixed link, https://<12 letters and digits>.orgo.dev, to test and share (Bops deploys it there).",
+    "Local: this site's dev server on this computer, with hot reload, at http://localhost:<its port>. Its address is the one bops-local prints, and it stays the same: the same on this computer's screens and in SmileDesk beside this chat, and SmileDesk sets AUTH_URL to it. Never start, stop or restart another site's Local, and never kill a process on a port that isn't your site's.",
+    "Preview: its fixed link, https://<12 letters and digits>.orgo.dev, to test and share (SmileDesk deploys it there).",
     `Published: its own domain, only when ${owner} publishes it.`,
     `When you tell ${owner} where to look, say the place and its address: its Local, http://localhost:<its port>.`,
   ].join("\n");
 
 /**
  * The app a task works on (Session.app, which only work_on_app sets), or undefined. Never on a routine's
- * run or a task someone outside Bops started, nor for an account apps aren't open to (lib/apps-access.ts).
+ * run or a task someone outside SmileDesk started, nor for an account apps aren't open to (lib/apps-access.ts).
  */
 export function taskApp(s: Session | undefined): { wsId: string; name: string } | undefined {
   const b = s && bot(s.botId);
@@ -5072,7 +5072,7 @@ export async function addApp(wsId: string, ask: { name?: unknown; what?: unknown
 /**
  * A task on an app asked to put it live too (Session.app.deployAfter) ended a run (sessions.ts, also for one
  * whose computer couldn't be set up): done with a commit newer than the one it started from (or with any,
- * when Ingot couldn't say), Bops deploys the app's newest commit itself, as deploy_app does, and posts how it
+ * when Ingot couldn't say), SmileDesk deploys the app's newest commit itself, as deploy_app does, and posts how it
  * went in its chat as the bot, under the task's chip. Done with nothing new committed, or not done, it says the
  * app isn't live yet, and the ask stays for the task's next run (an answer to its question, Try again). The ask
  * is taken off the task, and saved, before Orgo is asked: a task picked up again, moved or rerun after a
@@ -5110,7 +5110,7 @@ export async function deployAfterTask(sessionId: string): Promise<void> {
   if (!mine) return;
   await flushState(5000).catch(() => false);
   if (!ours()) return;
-  // What changed, in the task's own one line: the commit's message (unsaid when Ingot can't say now), with no dashes, as Bops writes.
+  // What changed, in the task's own one line: the commit's message (unsaid when Ingot can't say now), with no dashes, as SmileDesk writes.
   const line = head
     ? await ingot.log(a.wsId, a.name, { limit: 1 }).then(
         (l) => {
@@ -5308,7 +5308,7 @@ async function previewForBot(wsId: string, name: string, id: string | undefined,
   // (Whether its link asks for one, as Orgo said in the read after the deploy.)
   const pv = (x: string) => (x === name ? now.preview : now.sites?.find((y) => y.name === x)?.preview);
   const locked = deployed.some((d) => pv(d.site)?.protected === true);
-  const after = `${locked ? "It asks for a password, a new one once this deploy is live, shown beside its Preview link in Bops. " : ""}Published is as it was: say publish, or press Publish in Your Apps, to put what Preview serves on its domain once it looks right.`;
+  const after = `${locked ? "It asks for a password, a new one once this deploy is live, shown beside its Preview link in SmileDesk. " : ""}Published is as it was: say publish, or press Publish in Your Apps, to put what Preview serves on its domain once it looks right.`;
   const more = said ? ` ${said}` : "";
   if (deployed.length > 1) {
     const each = deployed.map((d) => (d.url ? `${d.site} at ${d.url}` : d.site));
@@ -5356,10 +5356,10 @@ export async function localForBot(botId: string, app: string, action: "start" | 
 
 /**
  * The workspace's apps for a bot's prompt, with where each is: its Preview's link (its state copy: no Orgo call
- * in a prompt; that it asks for a password, never the password), whether it's published (Bops shows no orgo.dev
+ * in a prompt; that it asks for a password, never the password), whether it's published (SmileDesk shows no orgo.dev
  * name for Published), and the bot's own copy of it when it works on it in one (with how copies sync: SYNC_WORDS,
  * once any app has more bots working on it). Then the repos in its Ingot
- * that aren't apps yet (code put there some other way: work_on_app takes one by name), from the list Bops last read
+ * that aren't apps yet (code put there some other way: work_on_app takes one by name), from the list SmileDesk last read
  * (reposAtHand), never asked of Ingot here: with no list at hand, nothing is said of them. Empty when it has neither.
  */
 export function hostedAppsLine(botId: string): string {
@@ -5373,7 +5373,7 @@ export function hostedAppsLine(botId: string): string {
     : "";
   if (!apps.length) return repos;
   const base = previewBase();
-  // Each site's Local address from the hint Bops keeps as it reads one (localPort: no computer is asked here).
+  // Each site's Local address from the hint SmileDesk keeps as it reads one (localPort: no computer is asked here).
   const where = (x: { preview?: string; projectId?: string; localPort?: number; passwordOff?: true; github?: AppHosting["github"] }) =>
     `${x.localPort ? `Local at http://localhost:${x.localPort}; ` : ""}${x.preview ? `preview at https://${x.preview}.${base}${x.passwordOff ? ", with no password" : ""}` : "no preview yet"}; ${
       x.github
@@ -5397,12 +5397,12 @@ export function hostedAppsLine(botId: string): string {
   const copies = shared ? ` When more bots work on one app, each works in a copy of its own with Locals of its own, and all commit to the same main: ${SYNC_WORDS} Never change another bot's copy.` : "";
   return [
     `Your workspace's apps on the web, each an Ingot repo, its source: ${apps.map(one).join("; ")}.`,
-    `Each has the three environments Your Apps shows, and one command acts on each, the same as its buttons there: Local, the live view while you work (its working folder as a dev server with hot reload on its bot's computer, each site at its own http://localhost:<port>, the same on its computer's screens and beside this chat, where ${owner} watches it): local_app starts, stops or reads it. Preview, its fixed link to test and share (Deploy in Your Apps): deploy_app puts a commit there. It asks for a password unless ${owner} turned it off (${owner} sees it beside the Preview link in Bops; you never have it, so never write one in this chat or ask for it). Published, its production (Publish in Your Apps): deploy_app with where prod puts what Preview serves there, on its own domain, or for an app whose production is on GitHub, into its folder there, whose own workflow deploys it. Publish only when ${owner}'s or an Admin's own words ask for it.`,
+    `Each has the three environments Your Apps shows, and one command acts on each, the same as its buttons there: Local, the live view while you work (its working folder as a dev server with hot reload on its bot's computer, each site at its own http://localhost:<port>, the same on its computer's screens and beside this chat, where ${owner} watches it): local_app starts, stops or reads it. Preview, its fixed link to test and share (Deploy in Your Apps): deploy_app puts a commit there. It asks for a password unless ${owner} turned it off (${owner} sees it beside the Preview link in SmileDesk; you never have it, so never write one in this chat or ask for it). Published, its production (Publish in Your Apps): deploy_app with where prod puts what Preview serves there, on its own domain, or for an app whose production is on GitHub, into its folder there, whose own workflow deploys it. Publish only when ${owner}'s or an Admin's own words ask for it.`,
     `When ${owner} asks for any change to an app, call work_on_app at once, with no question first: it makes the change in its working folder, commits it to Ingot and deploys that commit to its Preview, then says the link and what changed, so ${owner} can test it there. Never ask whether you may use Ingot, make a draft or deploy a preview: only publishing waits for their words. Change an app only that way: never through GitHub (its API, a branch, a pull request, change_files) or by calling Orgo yourself, even when its production is on GitHub. Never open a Preview link to check it (its password page answers 401): check your work on Local. Say the environment and its address when you point ${owner} at one.${copies}${repos ? ` ${repos}` : ""}`,
   ].join("\n");
 }
 
-/** The domain Orgo's public links are under: orgo.dev, or staging.orgo.dev when this Bops uses Orgo's staging. */
+/** The domain Orgo's public links are under: orgo.dev, or staging.orgo.dev when this SmileDesk uses Orgo's staging. */
 const previewBase = () => (/staging/.test(orgoOrigin()) ? "staging.orgo.dev" : "orgo.dev");
 
 /* ---------------- What a task changed, and Restore ---------------- */
@@ -5454,7 +5454,7 @@ const carding = new Set<string>();
  * since, one card in its chat as the bot (Message.appChange, appNote: a shared workspace never shows it), told from
  * the newest card this task posted before (a later run's card has that run's changes only), else from startHead, to
  * the bot's newest changeset: its first line and short id, how many changesets that is in all (someone else's in
- * between too: Restore to before this change undoes them as well) and whose. Its text says it for an older Bops,
+ * between too: Restore to before this change undoes them as well) and whose. Its text says it for an older SmileDesk,
  * which shows only that: "Changed recipe-box: A search box (a1b2c3d)". None when the bot committed nothing since,
  * none twice for one changeset, and none once another account's state came in meanwhile, or while Ingot can't say.
  */
@@ -5543,7 +5543,7 @@ export async function restoreConfirm(wsId: string, name: string, to: unknown): P
 /**
  * POST /api/hosted-apps/[name] { action: "restore", to }, the owner's alone (the route refuses a shared workspace):
  * the whole app (every site shares its repo and working folder) put back as it was at changeset `to`, as a NEW
- * changeset on top of main ("Restore <app> to <short id>", by Bops: authorOf), so its history stays one line and
+ * changeset on top of main ("Restore <app> to <short id>", by SmileDesk: authorOf), so its history stays one line and
  * nothing is lost. Ingot makes it itself from the two changesets' files (ingot.ts changesTo: what `to` has that
  * main's newest hasn't, or has with other bytes or another executable bit, and what main's has that `to` hasn't,
  * deleted), naming blobs it has already, so no file goes from here or from the computer. Refused while a task works

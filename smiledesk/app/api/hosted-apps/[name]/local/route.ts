@@ -34,11 +34,11 @@ export async function GET(request: Request, ctx: { params: Promise<{ name: strin
  * Start, stop, open, preview or unpreview a site's Local ({ ws, action, site?, bot?, command?, port?, start? }: `bot`'s
  * copy's, none the app's own folder's), or count
  * a Fix it press on it ({ action: "fix", site }: the owner's alone, never a member's in a workspace shared with
- * them): it runs commands on the app's computer, and a preview opens a port of this Mac, so only from the Bops
+ * them): it runs commands on the app's computer, and a preview opens a port of this Mac, so only from the SmileDesk
  * window (ui-token.ts). Answers LocalAnswer; a preview this Mac can't open, { error, fallback: "screen" }.
  */
 export async function POST(request: Request, ctx: { params: Promise<{ name: string }> }) {
-  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "An app's Local can only be started in the Bops app." }, { status: 403 }));
+  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "An app's Local can only be started in the SmileDesk app." }, { status: 403 }));
   if (unready) return unready;
   if (!appsOpen(getState())) return Response.json({ error: "Not found" }, { status: 404 });
   const { name } = await ctx.params;

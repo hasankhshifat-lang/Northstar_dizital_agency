@@ -5,7 +5,7 @@ import type { Chat, Message } from "./types";
  * server agree on. Imported by both: no server imports here. Writing it is lib/server/chat-summary.ts.
  */
 
-/** Whether a chat's bots read a message (chat.ts history): what was said, an email, a text, an app's answer, a CRM save; not Bops' other notes, nor Compact's line. */
+/** Whether a chat's bots read a message (chat.ts history): what was said, an email, a text, an app's answer, a CRM save; not SmileDesk's other notes, nor Compact's line. */
 export const heard = (m: Message) => m.role !== "system" || !!m.email || !!m.sms || !!m.appResult || !!m.crm;
 
 /**

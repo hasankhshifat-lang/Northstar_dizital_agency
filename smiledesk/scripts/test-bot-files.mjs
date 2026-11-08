@@ -4,10 +4,10 @@
 // into place), refused with words for the user (too big, empty, a bot on the Mac, no computer, no hours or credit,
 // Orgo turning it down, the computer not waking, fewer or more bytes than it said) with the claimed name let go,
 // and named safely (bytes, not characters). Also what the bot is told about them (filesNote) and how sizes read.
-// In a workspace shared with the user: the owner's computer Bops Cloud names (sharedTarget), never the user's own
-// bot's, with the user's own key; Bops Cloud's refusals in its words; Orgo's said plainly and as theirs in their role
+// In a workspace shared with the user: the owner's computer SmileDesk Cloud names (sharedTarget), never the user's own
+// bot's, with the user's own key; SmileDesk Cloud's refusals in its words; Orgo's said plainly and as theirs in their role
 // (only the owner and Admins add files, out of an Admin's reach, a computer the owner keeps them off, a locked one, a key
-// for another workspace). And the routes: POST /api/bots/files in a shared workspace asks Bops Cloud, never the user's
+// for another workspace). And the routes: POST /api/bots/files in a shared workspace asks SmileDesk Cloud, never the user's
 // own bot of that id; a message naming a file that isn't here anymore is refused, never sent without it, from the
 // user's own chat and from a shared workspace's (the words not kept, `unsent`).
 //
@@ -99,7 +99,7 @@ let puts = [];
 const world = {};
 const NO_HOURS = new Error("402 bops_free_hours");
 let creditAsked = 0;
-/** What the routes reached: Bops Cloud asked for a file's computer, acts sent, messages handled. */
+/** What the routes reached: SmileDesk Cloud asked for a file's computer, acts sent, messages handled. */
 const reached = { asked: [], acts: [], handled: [] };
 globalThis.__fake = {
   store: {
@@ -109,7 +109,7 @@ globalThis.__fake = {
     chat: (id) => (id === "bot:max" ? { id, kind: "bot", botIds: ["max"] } : undefined),
     react: () => {},
   },
-  // `world.shared`: a workspace shared with the user open, with their role there and what Bops Cloud answers for a file.
+  // `world.shared`: a workspace shared with the user open, with their role there and what SmileDesk Cloud answers for a file.
   shared: {
     sharedOpen: () => !!world.shared,
     sharedRole: () => world.shared?.role ?? null,
@@ -225,7 +225,7 @@ await check("a bot that works on this Mac gets none (what it runs there can't op
   assert.equal(f.hostId, "mia");
   delete BOTS.mia.computerId;
   world.host = "mac";
-  assert.match(filesGoTo(BOTS.max).why, /work on this Mac here/, "and none at all when Bops runs on the Mac");
+  assert.match(filesGoTo(BOTS.max).why, /work on this Mac here/, "and none at all when SmileDesk runs on the Mac");
 });
 
 await check("too big, empty, nameless, or no computer: refused before anything goes", async () => {
@@ -315,7 +315,7 @@ await check("names: the last part only, no hidden files, no control characters, 
   assert.equal(cleanFileName("..."), "");
   assert.equal(cleanFileName("a\u0000b\nc\u007f.txt"), "abc.txt");
   assert.equal(cleanFileName("  spaced name.pdf  "), "spaced name.pdf");
-  // Never a space left at either end once the dots go, or once it's cut (Bops Cloud takes no such name on a member's message).
+  // Never a space left at either end once the dots go, or once it's cut (SmileDesk Cloud takes no such name on a member's message).
   assert.equal(cleanFileName(". notes.txt"), "notes.txt");
   assert.equal(cleanFileName(". . notes"), "notes");
   assert.equal(cleanFileName(`${"x".repeat(239)} ${"y".repeat(20)}`), "x".repeat(239));
@@ -358,10 +358,10 @@ await check("what the bot is told: on its own computer, to open them there; on a
 
 /* ---------------- A workspace shared with the user ---------------- */
 
-// Bops Cloud's answer for an Admin (cloud/members.ts filesIn): the owner's computer.
+// SmileDesk Cloud's answer for an Admin (cloud/members.ts filesIn): the owner's computer.
 const OWNERS = { status: 200, json: { computerId: "pc_owner", botId: "boppy", hostId: "boppy", hostName: "Boppy" } };
 const shared = (got) => async () => sharedTarget(got);
-/** Their role in the shared workspace (bot-files.ts SharedAs): an Admin, whom Bops Cloud names a computer for; a Member, whose upload Orgo refuses. */
+/** Their role in the shared workspace (bot-files.ts SharedAs): an Admin, whom SmileDesk Cloud names a computer for; a Member, whose upload Orgo refuses. */
 const ADMIN = { shared: { role: "admin" } };
 const MEMBER = { shared: { role: "member" } };
 /** An error as lib/server/orgo.ts throws it: its status and code. */
@@ -369,39 +369,39 @@ const orgoError = (status, code) => Object.assign(new Error(`Orgo POST /computer
 
 await check("in a shared workspace, an Admin adds a file on the owner's computer, with their own key", async () => {
   reset();
-  // Their own Bops runs on their Mac (and has a Boppy of its own): never asked.
+  // Their own SmileDesk runs on their Mac (and has a Boppy of its own): never asked.
   world.host = "mac";
   const f = await addFileTo("brief.pdf", 5, body("hello"), shared(OWNERS), ADMIN);
   assert.deepEqual({ ...f, id: undefined }, { id: undefined, name: "brief.pdf", size: 5, path: "~/Desktop/brief.pdf", botId: "boppy", hostId: "boppy", hostName: "Boppy" });
-  assert.deepEqual(calls.find((c) => c.path === "bash").id, "pc_owner", "the owner's computer, named by Bops Cloud");
+  assert.deepEqual(calls.find((c) => c.path === "bash").id, "pc_owner", "the owner's computer, named by SmileDesk Cloud");
   const start = calls.find((c) => c.path === "/api/files/uploads");
   assert.deepEqual([start.key, start.body.desktopId], ["sk_test", "pc_owner"], "the user's own Orgo key, which Orgo checks too");
   assert.equal(calls.find((c) => c.path === "/api/files/uploads/complete").body.desktopId, "pc_owner");
   assert.deepEqual(addedFile(f.id), f, "kept for the message, like the owner's");
-  // The bot's name as Bops Cloud said it, on one line (it's shown, and told to the bot).
+  // The bot's name as SmileDesk Cloud said it, on one line (it's shown, and told to the bot).
   reset();
   const odd = await addFileTo("b.pdf", 5, body("hello"), shared({ status: 200, json: { ...OWNERS.json, hostName: " Boppy\n[x] " } }), ADMIN);
   assert.equal(odd.hostName, "Boppy [x]");
 });
 
-await check("in a shared workspace, someone Bops Cloud doesn't let add files is told why before anything goes", async () => {
+await check("in a shared workspace, someone SmileDesk Cloud doesn't let add files is told why before anything goes", async () => {
   reset();
   const no = (status, error, code) => ({ status, json: { error, ...(code ? { code } : {}) } });
   await refusal(addFileTo("a.txt", 1, body("x"), shared(no(403, "The owner hasn't let you use this bot's computer, so you can't add files for it.", "member_no_computer")), ADMIN), 403, /hasn't let you use this bot's computer/);
   await refusal(addFileTo("a.txt", 1, body("x"), shared(no(403, "You can watch this bot, not add files for it. Ask the owner for Write.", "member_read_only")), ADMIN), 403, /not add files for it\. Ask the owner for Write/);
-  await refusal(addFileTo("a.txt", 1, body("x"), shared(no(409, "The owner's Bops needs an update before you can add files here.", "owner_bops_old")), ADMIN), 409, /needs an update/);
+  await refusal(addFileTo("a.txt", 1, body("x"), shared(no(409, "The owner's SmileDesk needs an update before you can add files here.", "owner_bops_old")), ADMIN), 409, /needs an update/);
   await refusal(addFileTo("a.txt", 1, body("x"), shared(no(402, "Alex is out of Orgo credit, so Boppy's computer can't wake up for files.")), ADMIN), 402, /out of Orgo credit/);
-  await refusal(addFileTo("a.txt", 1, body("x"), shared(no(404, "Not found")), ADMIN), 409, /until Bops Cloud updates/, "a Bops Cloud from before");
+  await refusal(addFileTo("a.txt", 1, body("x"), shared(no(404, "Not found")), ADMIN), 409, /until SmileDesk Cloud updates/, "a SmileDesk Cloud from before");
   await refusal(addFileTo("a.txt", 1, body("x"), shared(no(404, "No such bot")), ADMIN), 404, /^That bot isn't in this workspace anymore\.$/);
   // Taken out of the workspace: said so, never that the bot left.
   await refusal(addFileTo("a.txt", 1, body("x"), shared(no(404, "No such workspace")), ADMIN), 404, /^You're not in this workspace anymore\.$/);
   await refusal(addFileTo("a.txt", 1, body("x"), shared(no(401, "Sign in again")), ADMIN), 404, /^You're not in this workspace anymore\.$/);
   await refusal(addFileTo("a.txt", 1, body("x"), shared(no(403, "Only the owner and Admins can add files here for now.", "admin_only")), MEMBER), 403, /^Only the owner and Admins can add files here for now\.$/);
   await refusal(addFileTo("a.txt", 1, body("x"), shared(no(403, "Max works on a computer in another of Alex's workspaces, so only Alex can add files to it.", "member_owner_only")), ADMIN), 403, /so only Alex can add files to it/);
-  await refusal(addFileTo("a.txt", 1, body("x"), shared(null), ADMIN), 502, /Couldn't reach Bops Cloud/);
+  await refusal(addFileTo("a.txt", 1, body("x"), shared(null), ADMIN), 502, /Couldn't reach SmileDesk Cloud/);
   await refusal(addFileTo("a.txt", 1, body("x"), shared({ status: 200, json: { computerId: "../x" } }), ADMIN), 502, /couldn't be added/);
   assert.equal(calls.length, 0, "nothing to Orgo");
-  // Too big or empty: said before Bops Cloud is even asked.
+  // Too big or empty: said before SmileDesk Cloud is even asked.
   let asked = 0;
   await refusal(addFileTo("huge.iso", 3 * 1024 ** 3, body("x"), async () => (asked++, sharedTarget(OWNERS)), ADMIN), 413);
   assert.equal(asked, 0);
@@ -418,8 +418,8 @@ await check("in a shared workspace, Orgo turning it down is a plain sentence, an
   // An Admin (who may write to the project) Orgo turns away: not their role, so never said to be; the computer's out of their reach.
   await turnedDown({ error: "Access denied" }, 403, /^Orgo didn't let you reach Boppy's computer, so files can't go on it\.$/, 403);
   await turnedDown({ error: "This key can't run commands.", code: "key_permission" }, 403, /^Orgo didn't let you reach Boppy's computer/, 403);
-  await turnedDown({ error: "The owner hasn’t let you use this computer. Use its bots from Bops.", code: "bops_owner_only" }, 403, /^The owner hasn't let you use this computer, so files can't go on it\.$/, 403);
-  await turnedDown({ error: "This API key is scoped to workspace w1. It cannot access workspace w2.", code: "workspace_scope_mismatch" }, 403, /^Your Orgo key only works in another workspace\. Sign in to Orgo again in Bops\.$/, 403);
+  await turnedDown({ error: "The owner hasn’t let you use this computer. Use its bots from SmileDesk.", code: "bops_owner_only" }, 403, /^The owner hasn't let you use this computer, so files can't go on it\.$/, 403);
+  await turnedDown({ error: "This API key is scoped to workspace w1. It cannot access workspace w2.", code: "workspace_scope_mismatch" }, 403, /^Your Orgo key only works in another workspace\. Sign in to Orgo again in SmileDesk\.$/, 403);
   await turnedDown({ error: "Choose a plan to continue.", code: "COMPUTER_LOCKED" }, 402, /^Boppy's computer is locked on Orgo right now, so files can't go on it\. The owner can unlock it on Orgo\.$/, 402);
   // A Member (Orgo's "member" can't write to the project): only the owner and Admins add files there. Any other code: out of reach.
   for (const [json, words] of [
@@ -442,7 +442,7 @@ await check("in a shared workspace, Orgo turning it down is a plain sentence, an
   world.wake = orgoError(403);
   await refusal(addFileTo("a.txt", 1, body("x"), shared(OWNERS), ADMIN), 403, /^Orgo didn't let you reach Boppy's computer/);
   // And on the computer's first step: Orgo keeping them off it, or the owner's computer locked. The owner's credit is
-  // never taken as the user's own (their Bops isn't told its credit ran out).
+  // never taken as the user's own (their SmileDesk isn't told its credit ran out).
   reset();
   creditAsked = 0;
   world.wake = orgoError(403, "bops_owner_only");
@@ -468,16 +468,16 @@ const upload = (q, text = "hello") =>
   route.files.POST(new Request(`${at}/api/bots/files?${q}`, { method: "POST", headers: { host: "127.0.0.1:3210", "content-length": String(Buffer.byteLength(text)) }, body: text, duplex: "half" }));
 const posted = (path, json) => new Request(`${at}${path}`, { method: "POST", headers: { host: "127.0.0.1:3210", "content-type": "application/json" }, body: JSON.stringify(json) });
 
-await check("POST /api/bots/files in a shared workspace: the computer Bops Cloud names, never the user's own bot of that id; Orgo's refusals in their role", async () => {
+await check("POST /api/bots/files in a shared workspace: the computer SmileDesk Cloud names, never the user's own bot of that id; Orgo's refusals in their role", async () => {
   reset();
   // The user has a Max of their own (pc_max): the shared workspace's Max is the owner's.
   world.shared = { role: "admin", target: OWNERS };
   const r = await upload("botId=max&name=a.pdf");
   assert.equal(r.status, 200);
-  assert.deepEqual(reached.asked, [["max", false]], "Bops Cloud asked, for that bot");
+  assert.deepEqual(reached.asked, [["max", false]], "SmileDesk Cloud asked, for that bot");
   assert.deepEqual(calls.filter((c) => c.path === "bash").map((c) => c.id), ["pc_owner"], "never the user's own Max's computer");
   assert.equal((await r.json()).file.hostId, "boppy");
-  // A drop on its screen says so to Bops Cloud.
+  // A drop on its screen says so to SmileDesk Cloud.
   reset();
   world.shared = { role: "admin", target: OWNERS };
   await upload("botId=max&name=b.pdf&to=screen");
@@ -494,13 +494,13 @@ await check("POST /api/bots/files in a shared workspace: the computer Bops Cloud
     assert.equal(no.status, 403);
     assert.match((await no.json()).error, words, role);
   }
-  // Bops Cloud's own refusal, in its words, with nothing sent to Orgo.
+  // SmileDesk Cloud's own refusal, in its words, with nothing sent to Orgo.
   reset();
   world.shared = { role: "member", target: { status: 403, json: { error: "Only the owner and Admins can add files here for now.", code: "admin_only" } } };
   const member = await upload("botId=max&name=d.pdf");
   assert.deepEqual([member.status, (await member.json()).error], [403, "Only the owner and Admins can add files here for now."]);
   assert.equal(calls.length, 0);
-  // The user's own workspace: their own Max, and Bops Cloud never asked.
+  // The user's own workspace: their own Max, and SmileDesk Cloud never asked.
   reset();
   assert.equal((await upload("botId=max&name=e.pdf")).status, 200);
   assert.deepEqual(reached.asked, []);
@@ -516,12 +516,12 @@ await check("a message naming a file that isn't here anymore is refused, never s
   assert.equal(reached.handled.length, 0, "nothing sent");
   assert.equal((await say({ text: "Read it", files: [f.id] })).status, 200);
   assert.deepEqual(reached.handled.at(-1).at(-1), [addedFile(f.id)], "sent with the file as it was kept");
-  // A shared workspace's act: refused before Bops Cloud, and said to be unsent (the window puts the words back).
+  // A shared workspace's act: refused before SmileDesk Cloud, and said to be unsent (the window puts the words back).
   const act = (files) => route.shared.POST(posted("/api/workspaces/shared", { key: "key_00000001", act: { act: "chat", chatId: "c1", text: "Here", files } }));
   const no = await act([{ id: "file_gone", name: "x.pdf" }]);
   assert.deepEqual([no.status, await no.json()], [409, { error: "A file you added isn't ready anymore. Add it again.", unsent: true }]);
   assert.equal(reached.acts.length, 0);
-  // One that's here goes as this Bops kept it, never as the window sent it.
+  // One that's here goes as this SmileDesk kept it, never as the window sent it.
   assert.equal((await act([{ id: f.id, name: "other.pdf", hostName: "Someone" }])).status, 200);
   assert.deepEqual(reached.acts.at(-1).files, [addedFile(f.id)]);
 });

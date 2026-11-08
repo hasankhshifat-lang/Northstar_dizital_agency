@@ -145,7 +145,7 @@ test("a code that checks out makes the number the user's, and nobody else's", as
   const before = sends().length;
   const r = await start(second, to);
   assert.equal(r.status, 409);
-  assert.match(r.json.error, /already verified on another Bops account/);
+  assert.match(r.json.error, /already verified on another SmileDesk account/);
   assert.equal(sends().length, before);
   // And at the check, when someone else verified it while this code was out.
   const other = newNumber();

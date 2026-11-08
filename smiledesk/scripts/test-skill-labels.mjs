@@ -1,11 +1,11 @@
 // Tests for skills under labels (lib/skill-labels.ts, lib/server/workspace-skills.ts, lib/server/skill-bundle.ts):
 // a skill's label kept in its SKILL.md as metadata.label (written on create, a move and publish, read on an
 // import and a pull, so it syncs with Orgo unchanged, as orgo-web's YAML reads and writes it), a bot's labels
-// (Bops' own first, then its workspace's by how many skills, Unsorted last), the layered list in its prompts
+// (SmileDesk's own first, then its workspace's by how many skills, Unsorted last), the layered list in its prompts
 // (few skills: listed under their labels; many: one line per label), read_skill by label and by name (the
-// workspace's and Bops' own), create and update with a label (one already in use spelled as it is), labels
+// workspace's and SmileDesk's own), create and update with a label (one already in use spelled as it is), labels
 // from a skill's own words for one without (plain rules, once), and INDEX.md on a computer, by label, which a
-// brain thread reads first. Bops' own skills are a stand in here (lib/builtin-skills.ts as it's shaped), so
+// brain thread reads first. SmileDesk's own skills are a stand in here (lib/builtin-skills.ts as it's shaped), so
 // the expected text is fixed; the real file is checked for that shape when it's there. orgo-web is a fake
 // (a local server), the Keychain is never there, and the state and folders live in a throwaway folder:
 // nothing reaches a real service. The key in it is made up.
@@ -35,11 +35,11 @@ const work = join(scratch, "work");
 mkdirSync(work);
 process.chdir(work);
 
-/** Bops' own skills as lib/builtin-skills.ts shapes them: one label with two skills (one with a file), and a label with none yet. */
+/** SmileDesk's own skills as lib/builtin-skills.ts shapes them: one label with two skills (one with a file), and a label with none yet. */
 const BUILTINS = `import { APPS_LABEL, sameLabel } from ${JSON.stringify(pathToFileURL(`${root}/lib/skill-labels.ts`).href)};
 export const BUILTIN_LABELS = [
   { label: APPS_LABEL, about: "Building, versioning and deploying apps with Ingot: read one before you change an app." },
-  { label: "Bops basics", about: "Nothing in it yet." },
+  { label: "SmileDesk basics", about: "Nothing in it yet." },
 ];
 export const BUILTIN_SKILLS = [
   { slug: "bops-work-on-an-app", name: "Work on an app with Ingot", description: "Read before you change an app: ingot status, diff and commit.", label: APPS_LABEL, body: "# Work on an app with Ingot\\n\\n1. ingot clone <name>\\n2. ingot commit -m <message>\\n", files: [{ path: "examples/notes.md", content: "Notes on apps.\\n" }] },
@@ -154,7 +154,7 @@ const L = await import(`${root}/lib/skill-labels.ts`);
 
 S.update((s) => {
   s.owner = { name: "Tiger" };
-  // Bops' own skills for apps are open to an @orgo.ai account (lib/apps-access.ts); a check below signs in as someone else.
+  // SmileDesk's own skills for apps are open to an @orgo.ai account (lib/apps-access.ts); a check below signs in as someone else.
   s.account = { user: { id: "u_tiger", email: "ava@orgo.ai", name: "Tiger" }, signedInAt: 1 };
   s.workspaces = [
     { id: "ws_small", name: "Small", createdAt: 0 },
@@ -193,7 +193,7 @@ await check("The label in SKILL.md: metadata.label, written and read back the sa
   const md = B.renderSkillMd(moved, p.body);
   assert.equal(md, '---\nname: x\ndescription: X\nmetadata: {label: "Sales: calls, east", owner: sam}\n---\n\n# X\n');
   assert.equal(B.labelOf(B.parseSkillMd(md).frontmatter), "Sales: calls, east", "read back as written");
-  assert.deepEqual(B.validateFrontmatter(moved), [], "a key Bops' checks pass");
+  assert.deepEqual(B.validateFrontmatter(moved), [], "a key SmileDesk's checks pass");
   // A label written by hand at the top is read, and kept in metadata from the next write on.
   const hand = B.parseSkillMd("---\nname: x\ndescription: X\nlabel: Ops\n---\n").frontmatter;
   assert.equal(B.labelOf(hand), "Ops");
@@ -203,14 +203,14 @@ await check("The label in SKILL.md: metadata.label, written and read back the sa
   assert.deepEqual(B.withLabel({ name: "x" }, undefined), { name: "x" }, "no label: as it was");
 });
 
-await check("orgo-web's YAML (js-yaml) reads the label Bops writes, and Bops reads it as orgo-web writes it back", async () => {
+await check("orgo-web's YAML (js-yaml) reads the label SmileDesk writes, and SmileDesk reads it as orgo-web writes it back", async () => {
   for (const label of ["Email", "Apps and source control", "Sales: calls, east", "Q&A #2", "it's 'quoted'"]) {
     const md = B.renderSkillMd(B.withLabel({ name: "x", description: "X", version: "1.0.0" }, label), "# X\n");
     const fm = yamlOf(md);
     assert.equal(fm.metadata.label, label, `orgo-web reads ${label}`);
     // orgo-web stores it rendered again in its own key order, nested maps as blocks.
     const back = `---\n${yaml.dump({ name: fm.name, description: fm.description, version: fm.version, metadata: fm.metadata })}---\n# X\n`;
-    assert.equal(B.labelOf(B.parseSkillMd(back).frontmatter), label, `Bops reads ${label} back`);
+    assert.equal(B.labelOf(B.parseSkillMd(back).frontmatter), label, `SmileDesk reads ${label} back`);
   }
 });
 
@@ -229,7 +229,7 @@ await check("A skill without a label gets one from its name and description, by 
     ["Tweet the launch", "Post on Twitter and LinkedIn", "Social"],
     ["Ship the website", "Deploy the site after a commit", L.APPS_LABEL],
     ["Fix the merge conflict", "In the GitHub repo", L.APPS_LABEL],
-    // Bops' own label only for words that mean source control or deploying: a site, an app or a code alone isn't one.
+    // SmileDesk's own label only for words that mean source control or deploying: a site, an app or a code alone isn't one.
     ["Parking pass", 'When asked "a parking pass for X": book it on the garage site', L.UNSORTED],
     ["Discount code", "Find a discount code for the Uber app", L.UNSORTED],
     ["Bank branch", "Find the nearest branch and its hours", "Finance"],
@@ -269,7 +269,7 @@ await check("A new skill: a label given is kept in its SKILL.md and the state, o
   const news = make("ws_small", { name: "Newsletter draft", description: "Writes the Friday newsletter", label: "  email " });
   assert.equal(news.label, "Email", "the workspace's spelling");
   const deploy = make("ws_small", { name: "Deploy checklist", description: "Before a deploy of the site", label: "apps AND source control" });
-  assert.equal(deploy.label, L.APPS_LABEL, "Bops' own label, spelled as Bops spells it");
+  assert.equal(deploy.label, L.APPS_LABEL, "SmileDesk's own label, spelled as SmileDesk spells it");
   // Not Sam's: a draft, and one only Pip has.
   W.createSkill("ws_small", { name: "Draft thing", description: "Not yet", body: "# Draft\n", label: "Drafts" });
   make("ws_small", { name: "Pip's own", description: "Looks things up", label: "Research", botIds: ["pip"] });
@@ -295,7 +295,7 @@ await check("A folder imported with a label in its SKILL.md keeps it", async () 
 
 const APPS_ABOUT = "Building, versioning and deploying apps with Ingot: read one before you change an app.";
 
-await check("A bot's labels: Bops' own first (only one with a skill), then its workspace's by how many, Unsorted last", async () => {
+await check("A bot's labels: SmileDesk's own first (only one with a skill), then its workspace's by how many, Unsorted last", async () => {
   assert.deepEqual(W.skillGroups("sam"), [
     { label: L.APPS_LABEL, about: APPS_ABOUT, builtin: true, count: 3, slugs: ["bops-work-on-an-app", "bops-deploy-an-app", "deploy-checklist"] },
     { label: "Email", about: "Inbox sweep, Newsletter draft", builtin: false, count: 2, slugs: ["inbox-sweep", "newsletter-draft"] },
@@ -307,13 +307,13 @@ await check("A bot's labels: Bops' own first (only one with a skill), then its w
     [[L.APPS_LABEL, 3], ["Email", 2], ["Finance", 1], ["Research", 1], ["Unsorted", 1]],
     "Pip's own skill too",
   );
-  assert.deepEqual(W.skillGroups("nol"), [{ label: L.APPS_LABEL, about: APPS_ABOUT, builtin: true, count: 2, slugs: ["bops-work-on-an-app", "bops-deploy-an-app"] }], "a bot with none of its own has Bops'");
+  assert.deepEqual(W.skillGroups("nol"), [{ label: L.APPS_LABEL, about: APPS_ABOUT, builtin: true, count: 2, slugs: ["bops-work-on-an-app", "bops-deploy-an-app"] }], "a bot with none of its own has SmileDesk's");
   assert.deepEqual(W.skillGroups("nobody"), []);
 });
 
-const HEAD = "Your skills: how your workspace does jobs it was shown before, and Bops' own, under labels. When a job fits a label, open it with read_skill and label to see its skills, then read the one that fits with read_skill and name, and follow it.";
+const HEAD = "Your skills: how your workspace does jobs it was shown before, and SmileDesk's own, under labels. When a job fits a label, open it with read_skill and label to see its skills, then read the one that fits with read_skill and name, and follow it.";
 
-await check("The list in its prompts, a few skills: under their labels, Bops' labels one line each", async () => {
+await check("The list in its prompts, a few skills: under their labels, SmileDesk's labels one line each", async () => {
   assert.equal(
     hear(W.skillsNote("sam")),
     [
@@ -329,7 +329,7 @@ await check("The list in its prompts, a few skills: under their labels, Bops' la
       "- Water the plants: Every Monday, a reminder",
     ].join("\n"),
   );
-  assert.equal(hear(W.skillsNote("nol")), [`${HEAD} Tell the user if a step no longer works.`, `Apps and source control (2): ${APPS_ABOUT}`].join("\n"), "only Bops' own");
+  assert.equal(hear(W.skillsNote("nol")), [`${HEAD} Tell the user if a step no longer works.`, `Apps and source control (2): ${APPS_ABOUT}`].join("\n"), "only SmileDesk's own");
   assert.equal(W.skillsNote("nobody"), "");
 });
 
@@ -364,9 +364,9 @@ await check("The list in its prompts, many skills: one line per label, short, th
   assert.doesNotMatch(note, /long description/, "no skill's description in it");
   assert.ok(note.length < 1500, `short: ${note.length}`);
   assert.match(W.readSkill("bea", "", null, "topic s"), /^Topic S \(1\)\nRead the one that fits with read_skill and name, then follow it\.\n- Skill S: Does S$/, "a label not listed opens all the same");
-  // One of its own under Bops' label: named in that line, before Bops' words, so it's never out of sight.
+  // One of its own under SmileDesk's label: named in that line, before SmileDesk's words, so it's never out of sight.
   make("ws_big", { name: "Release notes", description: "After each deploy, writes what changed", label: L.APPS_LABEL });
-  assert.equal(hear(W.skillsNote("bea")).split("\n")[1], `- Apps and source control (3): Release notes, and Bops' own: ${APPS_ABOUT}`);
+  assert.equal(hear(W.skillsNote("bea")).split("\n")[1], `- Apps and source control (3): Release notes, and SmileDesk's own: ${APPS_ABOUT}`);
 });
 
 /* ---------------- read_skill ---------------- */
@@ -384,7 +384,7 @@ await check("read_skill's tool: strict, every property required, label and name 
 
 const LABELS_SAID = "Your labels: Apps and source control (3), Email (2), Finance (1), Unsorted (1). Open one with read_skill and label to see its skills.";
 
-await check("read_skill by label: its skills one line each, Bops' own included; a label as the name; one there isn't", async () => {
+await check("read_skill by label: its skills one line each, SmileDesk's own included; a label as the name; one there isn't", async () => {
   assert.equal(
     hear(W.readSkill("sam", "", null, "apps AND source control")),
     [
@@ -405,16 +405,16 @@ await check("read_skill by label: its skills one line each, Bops' own included; 
   assert.equal(W.findRef("ws_small", "skill", "inbox-sweep").uses, undefined, "opening a label isn't a use");
 });
 
-await check("read_skill by name: the workspace's as before (a use), Bops' own (its body, its files, one file); a name wins over a label", async () => {
+await check("read_skill by name: the workspace's as before (a use), SmileDesk's own (its body, its files, one file); a name wins over a label", async () => {
   assert.equal(W.readSkill("sam", "inbox SWEEP"), "Skill: Inbox sweep (version 0.1.0)\n\n# Inbox sweep\n\n1. Do it.");
   assert.equal(W.findRef("ws_small", "skill", "inbox-sweep").uses, 1);
   assert.equal(W.readSkill("sam", "Inbox sweep", null, "Finance"), "Skill: Inbox sweep (version 0.1.0)\n\n# Inbox sweep\n\n1. Do it.", "the skill named");
   assert.equal(
     hear(W.readSkill("sam", "Work on an app with Ingot")),
-    "Skill: Work on an app with Ingot (Bops' own)\n\n# Work on an app with Ingot\n\n1. ingot clone <name>\n2. ingot commit -m <message>\n\nIts files (read one with read_skill and file; on your computer they're in /workspace/capabilities/skills/bops-work-on-an-app/):\n- examples/notes.md",
+    "Skill: Work on an app with Ingot (SmileDesk's own)\n\n# Work on an app with Ingot\n\n1. ingot clone <name>\n2. ingot commit -m <message>\n\nIts files (read one with read_skill and file; on your computer they're in /workspace/capabilities/skills/bops-work-on-an-app/):\n- examples/notes.md",
   );
-  assert.equal(W.readSkill("sam", "bops-deploy-an-app"), "Skill: Deploy an app (Bops' own)\n\n# Deploy an app\n\n1. deploy_app with the app's name", "by slug");
-  assert.equal(W.readSkill("nol", "deploy an app", null, null), "Skill: Deploy an app (Bops' own)\n\n# Deploy an app\n\n1. deploy_app with the app's name", "every bot has them");
+  assert.equal(W.readSkill("sam", "bops-deploy-an-app"), "Skill: Deploy an app (SmileDesk's own)\n\n# Deploy an app\n\n1. deploy_app with the app's name", "by slug");
+  assert.equal(W.readSkill("nol", "deploy an app", null, null), "Skill: Deploy an app (SmileDesk's own)\n\n# Deploy an app\n\n1. deploy_app with the app's name", "every bot has them");
   assert.equal(W.readSkill("sam", "bops-work-on-an-app", "examples/notes.md"), "Work on an app with Ingot, examples/notes.md:\nNotes on apps.\n");
   assert.equal(hear(W.readSkill("sam", "bops-work-on-an-app", "../etc/passwd")), '"Work on an app with Ingot" has no file ../etc/passwd. Its files: examples/notes.md.');
   assert.match(W.readSkill("pip", "Pip's own"), /^Skill: Pip's own/);
@@ -521,7 +521,7 @@ function fakeComputer() {
   return { files, calls, bash, text: (p) => files.get(p)?.toString("utf8") };
 }
 
-await check("On a computer: Bops' own skills beside the workspace's, and INDEX.md listing them by label with their folders", async () => {
+await check("On a computer: SmileDesk's own skills beside the workspace's, and INDEX.md listing them by label with their folders", async () => {
   const c = fakeComputer();
   await W.copySkillsToComputer("sam", "c_sam", c.bash);
   const K = "/workspace/capabilities/skills";
@@ -530,7 +530,7 @@ await check("On a computer: Bops' own skills beside the workspace's, and INDEX.m
     [
       "# Skills, by label",
       "",
-      "How your workspace does jobs it was shown before, and Bops' own. Open the label that fits the job, then read that skill's SKILL.md in its folder and follow it. A script nobody approved yet says so when it runs: ask to have it approved in Skills, in Knowledge.",
+      "How your workspace does jobs it was shown before, and SmileDesk's own. Open the label that fits the job, then read that skill's SKILL.md in its folder and follow it. A script nobody approved yet says so when it runs: ask to have it approved in Skills, in Knowledge.",
       "",
       "## Apps and source control (3)",
       "",
@@ -573,7 +573,7 @@ await check("On a computer: Bops' own skills beside the workspace's, and INDEX.m
   assert.equal(c.text(`${K}/bops-work-on-an-app/examples/notes.md`), "Notes on apps.\n");
   assert.match(c.text(`${K}/inbox-sweep/SKILL.md`), /\nmetadata: \{label: Email, version: "0\.1\.0"\}\n/);
   assert.match(c.text(`${K}/weekly-invoice-summary/SKILL.md`), /\nmetadata: \{label: Finance, version: "0\.1\.0"\}\n/, "a published one carries its label");
-  // Nothing changed: not copied again. A bot with none of its own: Bops' own and the index all the same.
+  // Nothing changed: not copied again. A bot with none of its own: SmileDesk's own and the index all the same.
   const n = c.calls.length;
   await W.copySkillsToComputer("sam", "c_sam", c.bash);
   assert.equal(c.calls.length, n, "the same: nothing sent");
@@ -582,7 +582,7 @@ await check("On a computer: Bops' own skills beside the workspace's, and INDEX.m
   assert.match(none.text(`${K}/INDEX.md`), /^# Skills, by label\n[\s\S]*\n## Apps and source control \(2\)\n[\s\S]*Folder: \/workspace\/capabilities\/skills\/bops-deploy-an-app\/\n$/);
   assert.ok(none.text(`${K}/bops-deploy-an-app/SKILL.md`));
   // On a computer's runner, which has a skill's files only where it made them (they're synced to the Mac): one
-  // it hasn't leaves the folder as the Mac copied it, never cleared down to Bops' own.
+  // it hasn't leaves the folder as the Mac copied it, never cleared down to SmileDesk's own.
   process.env.BOPS_RUNNER = "1";
   const ws = () => S.getState().workspaces.find((w) => w.id === "ws_small");
   S.update(() => ws().skills.push({ slug: "synced-elsewhere", kind: "skill", name: "Synced elsewhere", description: "Only on the Mac", label: "Other", status: "published", version: "0.1.0", botIds: [], source: "bops", createdAt: 9, updatedAt: 9 }));
@@ -603,8 +603,8 @@ await check("A brain thread's brief: INDEX.md first, then the label that fits, t
   assert.equal(
     hear(W.skillsIndexNote("sam", "Tiger")),
     [
-      "Your skills: how your workspace does jobs it was shown before, and Bops' own, as folders on your computer under labels. Before a job, read /workspace/capabilities/skills/INDEX.md first, open the label that fits the job there, then read that skill's SKILL.md in its folder and follow it. Tell Tiger if a step no longer works.",
-      `- Apps and source control (3): Deploy checklist, and Bops' own: ${APPS_ABOUT}`,
+      "Your skills: how your workspace does jobs it was shown before, and SmileDesk's own, as folders on your computer under labels. Before a job, read /workspace/capabilities/skills/INDEX.md first, open the label that fits the job there, then read that skill's SKILL.md in its folder and follow it. Tell Tiger if a step no longer works.",
+      `- Apps and source control (3): Deploy checklist, and SmileDesk's own: ${APPS_ABOUT}`,
       "- Email (2): Inbox sweep, Newsletter draft",
       "- Finance (1): Weekly invoice summary",
       "- Unsorted (1): Water the plants",
@@ -616,7 +616,7 @@ await check("A brain thread's brief: INDEX.md first, then the label that fits, t
 
 /* ---------------- Someone apps aren't open to ---------------- */
 
-await check("Someone apps aren't open to (lib/apps-access.ts): Bops' own skills for apps aren't in their labels, read_skill, a brief or on a computer; the workspace's own keep their labels", async () => {
+await check("Someone apps aren't open to (lib/apps-access.ts): SmileDesk's own skills for apps aren't in their labels, read_skill, a brief or on a computer; the workspace's own keep their labels", async () => {
   const was = S.getState().account;
   S.update((s) => (s.account = { user: { id: "u_other", email: "tiger@example.com", name: "Tiger" }, signedInAt: 1 }));
   try {
@@ -629,20 +629,20 @@ await check("Someone apps aren't open to (lib/apps-access.ts): Bops' own skills 
     assert.deepEqual(W.skillGroups("nol"), [], "a bot with none of its own has none");
     assert.match(hear(W.readSkill("sam", "bops-deploy-an-app")), /^No skill called "bops-deploy-an-app"\./);
     assert.match(hear(W.readSkill("nol", "Work on an app with Ingot")), /^No skill called "Work on an app with Ingot"\./);
-    assert.ok(!W.skillsIndexNote("sam", "Tiger").includes("Bops' own:"), "the brief names none of them");
+    assert.ok(!W.skillsIndexNote("sam", "Tiger").includes("SmileDesk's own:"), "the brief names none of them");
     const c = fakeComputer();
     await W.copySkillsToComputer("sam", "c_sam", c.bash);
     const K = "/workspace/capabilities/skills";
     assert.ok(c.text(`${K}/deploy-checklist/SKILL.md`), "the workspace's own go");
-    assert.equal(c.text(`${K}/bops-work-on-an-app/SKILL.md`), undefined, "Bops' own for apps don't");
+    assert.equal(c.text(`${K}/bops-work-on-an-app/SKILL.md`), undefined, "SmileDesk's own for apps don't");
     assert.equal(c.text(`${K}/bops-deploy-an-app/SKILL.md`), undefined);
     assert.ok(!hear(c.text(`${K}/INDEX.md`) ?? "").includes("bops-"), "nor are they in INDEX.md");
-    // One nobody gave a label (from before labels): deploy and git words don't put it under Bops' own label for apps.
+    // One nobody gave a label (from before labels): deploy and git words don't put it under SmileDesk's own label for apps.
     assert.equal(W.guessLabel("Ship the website", "Deploy the site after a commit"), L.UNSORTED);
     assert.equal(W.guessLabel("Fix the merge conflict", "In the GitHub repo, then email the team"), "Email", "its other words decide");
     S.update((s) => s.workspaces.find((w) => w.id === "ws_old").skills.push({ slug: "old-deploy", kind: "skill", name: "Deploy the website", description: "push to GitHub, deploy on Vercel", status: "published", version: "0.1.0", botIds: [], source: "bops", createdAt: 3, updatedAt: 7 }));
     assert.equal(W.refsOf("ws_old", "skill").find((r) => r.slug === "old-deploy").label, undefined, "Unsorted: no label kept");
-    assert.equal(W.knownLabel("ws_old", "apps and source control"), "apps and source control", "nor spelled as Bops' own");
+    assert.equal(W.knownLabel("ws_old", "apps and source control"), "apps and source control", "nor spelled as SmileDesk's own");
   } finally {
     S.update((s) => {
       s.account = was;

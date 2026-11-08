@@ -5,12 +5,12 @@ import { cloudJson, cloudOn } from "./cloud";
 import { getState, update } from "./store";
 
 /**
- * Who owns each of the bots' numbers, kept by Bops Cloud (bops.phone_lines, cloud/lines.ts), never
+ * Who owns each of the bots' numbers, kept by SmileDesk Cloud (bops.phone_lines, cloud/lines.ts), never
  * here: on every call and text the cloud checks the caller against the line's owner and tells this
  * Mac (CallerVerdict), and this Mac follows it. Only through the cloud (signed in with Orgo); a
  * self-hoster's numbers keep counting only the verified numbers in Settings and BOPS_OWNER_PHONES.
  *
- * - When Bops gets a number for a bot or a workspace, the cloud gives the line 15 minutes: the first
+ * - When SmileDesk gets a number for a bot or a workspace, the cloud gives the line 15 minutes: the first
  *   phone to call or text it becomes the owner's ("first caller claims it"). The app says so ("Call
  *   or text … from your phone in the next 15 minutes to make it yours"), then "Linked to …".
  * - The user can unlink the owner (a fresh 15 minutes opens), or open a window for a line that has
@@ -19,7 +19,7 @@ import { getState, update } from "./store";
  *   `claimedVia`), so bots text it as they would a verified one.
  */
 
-/** Whether lines and their owners come from Bops Cloud here. */
+/** Whether lines and their owners come from SmileDesk Cloud here. */
 export const linesOn = () => cloudOn();
 
 const digits = (s: string) => s.replace(/\D/g, "").slice(-10);
@@ -84,7 +84,7 @@ export async function openLine(numberId: string) {
  * number leaves the user's own numbers too, unless another of their lines still has it as owner.
  */
 export async function unlinkLine(numberId: string) {
-  if (!linesOn()) throw new Error("numbers are linked through Bops Cloud");
+  if (!linesOn()) throw new Error("numbers are linked through SmileDesk Cloud");
   const before = (await cloudLines())?.find((l) => l.numberId === numberId);
   await cloudJson<{ line: PhoneLine }>("/v1/phone/lines/unlink", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ numberId }) });
   const gone = before?.owner?.number;
@@ -101,7 +101,7 @@ export async function forgetOwnerNumber(number: string) {
   await cloudJson("/v1/phone/owners/remove", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ number }) });
 }
 
-/** Each of the bots' numbers, told to the cloud with the bot it's for (once at start: lines from before Bops kept them get their bot). */
+/** Each of the bots' numbers, told to the cloud with the bot it's for (once at start: lines from before SmileDesk kept them get their bot). */
 export async function syncCloudLines() {
   if (!linesOn()) return;
   for (const l of localLines()) await tellCloudLine({ numberId: l.numberId, botId: l.botId, workspaceId: l.workspaceId }).catch((e: Error) => console.warn(`[phone] line ${l.numberId}: ${e.message}`));

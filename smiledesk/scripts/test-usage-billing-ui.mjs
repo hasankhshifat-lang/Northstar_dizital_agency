@@ -1,8 +1,8 @@
 // Tests for what the account sheet's Your plan shows (components/app/account.tsx PlanAndCredit) for each way of
-// paying for Bops (lib/bops-billing.ts): billed by use (the Orgo balance, Add credit on Orgo, one card, no
-// Bops plan, and the computer's size, Medium or Large, with a switch asked first; Pick your computer too,
+// paying for SmileDesk (lib/bops-billing.ts): billed by use (the Orgo balance, Add credit on Orgo, one card, no
+// SmileDesk plan, and the computer's size, Medium or Large, with a switch asked first; Pick your computer too,
 // components/app/computer-size.tsx), given a month more of a plan (that plan's credit, the day it ends, then what they'll pay), and
-// Bops' own plans while orgo-web still bills by them; never Free for an answer that didn't say. Every word
+// SmileDesk's own plans while orgo-web still bills by them; never Free for an answer that didn't say. Every word
 // plain: no dashes, never Orbit.
 //
 // Rendered into a DOM (linkedom) against a fake GET /api/account: nothing reaches a server. The .tsx files are
@@ -129,7 +129,7 @@ const button = (box, label) => [...box.querySelectorAll("button")].find((b) => b
 const base = { user: { id: "u_ava", email: "ava@fernway.example" }, orgo: { status: "ok" }, links: { billing: "https://orgo.test/account?tab=plan", usage: "https://orgo.test/account?tab=usage" }, reach: [] };
 const usage = (over = {}) => ({ balanceCents: 412, computer: { size: "Large", hourlyCents: 11, asleepFree: true }, numberMonthlyCents: 300, topUpUrl: "https://orgo.test/settings/billing", ...over });
 
-await test("billed by use: the Orgo balance, Add credit on Orgo, and one card in plain words; no Bops plan to buy", async () => {
+await test("billed by use: the Orgo balance, Add credit on Orgo, and one card in plain words; no SmileDesk plan to buy", async () => {
   const m = await show({ ...base, bops: { billing: "usage", tier: null, name: "Pay as you go", priceCents: 0, usage: usage() } });
   assert.match(m.text, /\$4\.12/);
   assert.match(m.text, /Orgo credit left/);
@@ -151,7 +151,7 @@ await test("billed by use with too little to wake the computer: it says the comp
   await m.done();
 });
 
-await test("billed by use with no answer from orgo-web: Bops Cloud's word stands, the card shows, no balance made up, never Free", async () => {
+await test("billed by use with no answer from orgo-web: SmileDesk Cloud's word stands, the card shows, no balance made up, never Free", async () => {
   const m = await show({ ...base, bops: null, billing: "usage" });
   assert.match(m.text, /Pay only for what you use/);
   assert.doesNotMatch(m.text, /Orgo credit left|Free|\bPro\b/);
@@ -172,7 +172,7 @@ await test("a month more of Pro: that plan's credit, the day it ends in plain wo
   await m.done();
 });
 
-await test("Bops' own plans while orgo-web still bills by them: the three cards, the user's marked; none marked when Orgo didn't say", async () => {
+await test("SmileDesk's own plans while orgo-web still bills by them: the three cards, the user's marked; none marked when Orgo didn't say", async () => {
   let m = await show({ ...base, bops: { billing: "plan", tier: "pro_bops", name: "Pro", priceCents: 2000, status: "active", credit: { leftMicros: 1, planLeftMicros: 1, freeLeftMicros: 0 } } });
   assert.match(m.text, /Free.*Pro.*Max/s);
   assert.ok(button(m.box, "Manage plan"));

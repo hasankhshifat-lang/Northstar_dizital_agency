@@ -47,14 +47,14 @@ const base = { version: "0.0.91", notes: [], asked: false, failed: false };
 
 test("ready: Restart", () => {
   const s = shown({ ...base, phase: "ready" });
-  assert.equal(s.line, "Bops 0.0.91 is ready.");
+  assert.equal(s.line, "SmileDesk 0.0.91 is ready.");
   assert.equal(s.button, "Restart");
   // The line is a live region (above: role="status"), so a screen reader hears it change.
 });
 
 test("out: Download", () => {
   const s = shown({ ...base, phase: "available" });
-  assert.equal(s.line, "Bops 0.0.91 is out.");
+  assert.equal(s.line, "SmileDesk 0.0.91 is out.");
   assert.equal(s.button, "Download");
 });
 
@@ -66,13 +66,13 @@ test("a download that didn't finish: Try again", () => {
 
 test("out of disk space: says so and how much to free, with Try again", () => {
   const s = shown({ ...base, phase: "available", failed: true, why: "space" });
-  assert.equal(s.line, "Not enough space on this Mac to update. Bops needs about 2 GB free.");
+  assert.equal(s.line, "Not enough space on this Mac to update. SmileDesk needs about 2 GB free.");
   assert.equal(s.button, "Try again");
 });
 
 test("downloading: shown only when asked, with no button", () => {
   const s = shown({ ...base, phase: "downloading", asked: true });
-  assert.equal(s.line, "Bops 0.0.91 is downloading.");
+  assert.equal(s.line, "SmileDesk 0.0.91 is downloading.");
   assert.equal(s.button, null);
   assert.match(s.html, /aria-label="Hide until the next version"/);
   assert.equal(shown({ ...base, phase: "downloading" }), null);
@@ -81,7 +81,7 @@ test("downloading: shown only when asked, with no button", () => {
 test("can't update itself, or an older app's info: bops.bot", () => {
   for (const info of [{ ...base, phase: "manual" }, { version: "0.0.91" }]) {
     const s = shown(info);
-    assert.equal(s.line, "Bops 0.0.91 is out. Get it at bops.bot");
+    assert.equal(s.line, "SmileDesk 0.0.91 is out. Get it at bops.bot");
     assert.equal(s.button, "Download");
   }
   assert.equal(shown(null), null);
@@ -90,7 +90,7 @@ test("can't update itself, or an older app's info: bops.bot", () => {
 test("what's new shows under the line in every phase", () => {
   for (const phase of ["ready", "available", "manual"]) {
     const s = shown({ ...base, phase, notes: ["Restart to update."] });
-    assert.match(s.html, /What&#x27;s new in Bops 0.0.91/);
+    assert.match(s.html, /What&#x27;s new in SmileDesk 0.0.91/);
     assert.match(s.html, /Restart to update\./);
   }
 });

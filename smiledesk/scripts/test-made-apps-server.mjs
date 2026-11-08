@@ -2,8 +2,8 @@
 // (streamed from a fake OpenAI) makes v1 under an id of 128 random bits; what an app keeps (bops.data);
 // bops.bot refused until the user allows it, and the allow gone with every new version (a build, a Go
 // back); a Go back mid-build refused; how much an app may ask in an hour (bops.ask too); a call too big for
-// the bridge route refused before it's read; the routes a 404 for an account apps aren't open to; a delete taking its files; a build cut off when Bops quit not
-// left building (store.ts); the list never in Bops Cloud's shared state (state-merge.ts NEVER_SYNCED); and the bot only
+// the bridge route refused before it's read; the routes a 404 for an account apps aren't open to; a delete taking its files; a build cut off when SmileDesk quit not
+// left building (store.ts); the list never in SmileDesk Cloud's shared state (state-merge.ts NEVER_SYNCED); and the bot only
 // reading for an app (chat.ts answerForApp).
 // OpenAI is a fake, and the state lives in a throwaway folder: nothing reaches a real service.
 // Usage: node --conditions=react-server scripts/test-made-apps-server.mjs
@@ -80,7 +80,7 @@ globalThis.fetch = async (input, init) => {
   throw new TypeError(`fetch failed (the test is offline: ${url.host})`);
 };
 
-// Bops stopped mid-build: the saved state still says the app is building.
+// SmileDesk stopped mid-build: the saved state still says the app is building.
 mkdirSync(join(work, ".data"), { recursive: true });
 writeFileSync(
   join(work, ".data", "state.json"),
@@ -119,10 +119,10 @@ const waitBuilt = async (id) => {
 };
 const chatId = botChatId("boppy");
 
-await check("a build cut off when Bops quit isn't left building, and says so", () => {
+await check("a build cut off when SmileDesk quit isn't left building, and says so", () => {
   const was = app("app_was");
   assert.equal(was.building, undefined);
-  assert.equal(was.error, "Bops closed before it was done. Ask again.");
+  assert.equal(was.error, "SmileDesk closed before it was done. Ask again.");
   assert.equal(was.version, 1, "the version it had stays");
 });
 
@@ -221,7 +221,7 @@ await check("the routes are a 404 for an account apps aren't open to (lib/apps-a
   assert.deepEqual(await all(), [200, 200, 200, 200]);
 });
 
-await check("the list is never in Bops Cloud's shared state: Orgo is its record, and this Mac keeps a copy", () => {
+await check("the list is never in SmileDesk Cloud's shared state: Orgo is its record, and this Mac keeps a copy", () => {
   const shared = M.toShared(S.getState(), "mac_a");
   assert.equal(shared.madeApps, undefined, "not for every Mac");
   assert.equal(shared.macs?.mac_a?.madeApps, undefined, "nor under this Mac");
@@ -242,7 +242,7 @@ await check("delete takes its files and its record", () => {
 
 await check("an app's bot only reads for it: no app action that changes anything, not even with Just do it on", () => {
   const chat = readFileSync(`${root}/lib/server/chat.ts`, "utf8");
-  const body = chat.slice(chat.indexOf("export async function answerForApp("), chat.indexOf("/** Thrown when another account's Bops came in"));
+  const body = chat.slice(chat.indexOf("export async function answerForApp("), chat.indexOf("/** Thrown when another account's SmileDesk came in"));
   assert.match(body, /runAppAction\(botId, a\.action \?\? "", a\.arguments \?\? \{\}, \{ chatId: app\.chatId \}, a\.account \?\? null, \{ readOnly: true \}\)/);
   assert.match(body, /Here you only read: you can't send, create or change anything/);
   const composio = readFileSync(`${root}/lib/server/composio.ts`, "utf8");

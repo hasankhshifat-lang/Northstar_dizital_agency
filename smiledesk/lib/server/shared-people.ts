@@ -12,9 +12,9 @@ import { sharedAdminOpen } from "./shared";
  * The People sheet of a workspace shared with the user, for an Admin there (app/api/workspaces/shared/people), and the
  * few settings of it an Admin changes (its name, where its chat is answered) and waking a bot's computer. Everything is
  * done with the user's own Orgo key, on the open shared workspace's project (never an id from the request): orgo-web
- * says who's in, their roles and Use its computer, and lets an Admin of a Bops workspace invite, change and remove
+ * says who's in, their roles and Use its computer, and lets an Admin of a SmileDesk workspace invite, change and remove
  * people on the owner's seats (never the owner, never Owner); the bots a Member has are kept on the owner's state by
- * Bops Cloud (POST /v1/ws/<id>/people), which checks who's who with orgo-web again. Neither waits for the owner's Mac.
+ * SmileDesk Cloud (POST /v1/ws/<id>/people), which checks who's who with orgo-web again. Neither waits for the owner's Mac.
  * What stays the owner's (deleting the workspace, its plan, credit, the hourly bill) is never offered here.
  */
 
@@ -37,7 +37,7 @@ function refused(got: Got, o: { invite?: boolean; email?: string } = {}): Answer
 }
 
 /**
- * The bots each Member has, as Bops Cloud keeps them for an Admin to read (GET /v1/ws/<id>/people), or null. An Admin's
+ * The bots each Member has, as SmileDesk Cloud keeps them for an Admin to read (GET /v1/ws/<id>/people), or null. An Admin's
  * (and an Admin invite's) is what they had as a Member, which they get back when made one again.
  */
 async function entriesOf(o: Open): Promise<MemberAccessMap | null> {
@@ -51,7 +51,7 @@ async function entriesOf(o: Open): Promise<MemberAccessMap | null> {
   return out;
 }
 
-/** Whether this Mac's Bops Cloud keeps an Admin's changes to people (cloud-caps.ts "admin_powers"). */
+/** Whether this Mac's SmileDesk Cloud keeps an Admin's changes to people (cloud-caps.ts "admin_powers"). */
 const cloudPeople = () => cloudDoes("admin_powers");
 
 type Sheet = { info: Extract<MembersInfo, { state: "ready" }>; json: Record<string, unknown>; entries: MemberAccessMap };
@@ -99,7 +99,7 @@ export async function readSharedPeople(): Promise<Answer> {
   return "status" in s ? s : ok(s.info);
 }
 
-/** The sheet for a change: only once orgo-web and Bops Cloud let the Admin make it. */
+/** The sheet for a change: only once orgo-web and SmileDesk Cloud let the Admin make it. */
 async function changeSheet(o: Open): Promise<Sheet | Answer> {
   const s = await sheetOf(o);
   if ("status" in s) return s.body && "state" in s.body ? no(401, "SIGNED_OUT", WORDS.rejected) : s;
@@ -107,11 +107,11 @@ async function changeSheet(o: Open): Promise<Sheet | Answer> {
   return s;
 }
 
-/** Keep the bots a Member (or a Member's invite) has, on the owner's state (Bops Cloud), or why not. */
+/** Keep the bots a Member (or a Member's invite) has, on the owner's state (SmileDesk Cloud), or why not. */
 async function keepBots(o: Open, who: { memberId: string } | { invite: string }, access: MemberAccess | null): Promise<Answer | null> {
   const got = await o.cloud("POST", "people", { who, access });
   if (got && got.status === 200) return null;
-  if (!got) return no(502, "UNREACHABLE", "Couldn't reach Bops Cloud. Try again.");
+  if (!got) return no(502, "UNREACHABLE", "Couldn't reach SmileDesk Cloud. Try again.");
   return no(got.status === 404 ? 404 : got.status === 409 ? 409 : 502, String(got.json.code ?? "ORGO_ERROR").toUpperCase(), str(got.json.error) ?? "Couldn't change their bots. Try again.");
 }
 
@@ -148,7 +148,7 @@ export async function inviteShared(body: { email?: unknown; role?: unknown; acce
 
 /**
  * PATCH {memberId, role?, access?} or {invite, role?, access?}: change someone's role (Member or Admin, never the
- * owner's), their Use its computer (orgo-web first), or a Member's bots (Bops Cloud), as the owner's sheet does it.
+ * owner's), their Use its computer (orgo-web first), or a Member's bots (SmileDesk Cloud), as the owner's sheet does it.
  * {memberId, keys}: a Member's Keys, on its own (orgo-web keeps it: keysInOrgo); an Admin always has it.
  */
 export async function changeShared(body: { memberId?: unknown; invite?: unknown; role?: unknown; access?: unknown; keys?: unknown }): Promise<Answer> {
@@ -180,7 +180,7 @@ export async function changeShared(body: { memberId?: unknown; invite?: unknown;
       const got = (await orgoMembers.setInviteRole(o.key, o.projectId, email, role)) as Got;
       if (!done(got)) return refused(got, { invite: true, email });
     }
-    // An Admin's invite made a Member with no bots sent: what was kept for it (Bops Cloud gives it), else Read on every
+    // An Admin's invite made a Member with no bots sent: what was kept for it (SmileDesk Cloud gives it), else Read on every
     // bot, as a new invite starts (the owner's sheet does the same: lib/server/members.ts).
     const had = Object.hasOwn(s.entries, email);
     const next = access ?? (role === "viewer" && waiting.role === "admin" && !had ? inviteDefault(o.botIds) : undefined);
@@ -194,12 +194,12 @@ export async function changeShared(body: { memberId?: unknown; invite?: unknown;
   if (!memberId) return no(400, "BAD_REQUEST", WORDS.whatToSend);
   if (memberId === s.info.you.id) return no(400, "SELF", ADMIN_SHEET_WORDS.ownerRow);
   // Their own row: Leave only. Made a Member by themselves, the bots and Use its computer after it would be written with a
-  // Member's key, which neither orgo-web nor Bops Cloud takes.
+  // Member's key, which neither orgo-web nor SmileDesk Cloud takes.
   if (memberId === o.you) return no(400, "SELF", ADMIN_SHEET_WORDS.ownRole);
   const person = s.info.people.find((p) => p.id === memberId);
   if (!person) return no(404, "GONE", WORDS.gone);
   const key = accessKey(person);
-  // What Bops Cloud keeps for them (under the sheet's key: lib/server/members.ts listOf): for an Admin, what they had as a Member.
+  // What SmileDesk Cloud keeps for them (under the sheet's key: lib/server/members.ts listOf): for an Admin, what they had as a Member.
   const had: MemberAccess | undefined = key && Object.hasOwn(s.entries, key) ? accessOf(s.entries, person) : undefined;
   if (role) {
     if (access !== undefined) return no(400, "BAD_REQUEST", WORDS.whatToSend);
@@ -233,7 +233,7 @@ export async function changeShared(body: { memberId?: unknown; invite?: unknown;
 
 /**
  * DELETE {memberId} or {email}: take someone's access away, or cancel an invite (orgo-web: never the owner). Their bots
- * go first, while orgo-web still lists them (Bops Cloud checks who's who there): less access, whatever happens next.
+ * go first, while orgo-web still lists them (SmileDesk Cloud checks who's who there): less access, whatever happens next.
  */
 export async function removeShared(body: { memberId?: unknown; email?: unknown }): Promise<Answer> {
   const o = opened();
@@ -263,8 +263,8 @@ export async function removeShared(body: { memberId?: unknown; email?: unknown }
 const NAME_MAX = 40;
 
 /**
- * PATCH {name} or {chat: "mac" | "cloud" | "auto"}: rename the workspace (orgo-web, whose name every Bops follows:
- * the owner's Mac and every viewer's), or say where its chat is answered (Bops Cloud, kept as an Admin's choice).
+ * PATCH {name} or {chat: "mac" | "cloud" | "auto"}: rename the workspace (orgo-web, whose name every SmileDesk follows:
+ * the owner's Mac and every viewer's), or say where its chat is answered (SmileDesk Cloud, kept as an Admin's choice).
  */
 export async function changeSharedSettings(body: { name?: unknown; chat?: unknown }): Promise<Answer> {
   const o = opened();
@@ -279,21 +279,21 @@ export async function changeSharedSettings(body: { name?: unknown; chat?: unknow
   }
   if (body.chat === "mac" || body.chat === "cloud" || body.chat === "auto") {
     const got = await o.cloud("PATCH", "routing", { mode: body.chat });
-    if (!got) return no(502, "UNREACHABLE", "Couldn't reach Bops Cloud. Try again.");
+    if (!got) return no(502, "UNREACHABLE", "Couldn't reach SmileDesk Cloud. Try again.");
     if (got.status !== 200) return no(got.status, String(got.json.code ?? "CLOUD_ERROR").toUpperCase(), str(got.json.error) ?? "That didn't change. Try again.");
     return after(o, ok({ ok: true }));
   }
   return no(400, "BAD_REQUEST", "Send {name} or {chat}.");
 }
 
-/** POST {botId}: wake a bot's computer (Bops Cloud, as a message to it would): `{ok, state, why?}`. */
+/** POST {botId}: wake a bot's computer (SmileDesk Cloud, as a message to it would): `{ok, state, why?}`. */
 export async function wakeShared(body: { botId?: unknown }): Promise<Answer> {
-  // An Admin, or a Member with Write on the bot and Use its computer: Bops Cloud checks which.
+  // An Admin, or a Member with Write on the bot and Use its computer: SmileDesk Cloud checks which.
   const o = sharedAdminOpen({ anyRole: true });
   if (!o) return no(409, "NOT_OPEN", "Open the workspace again.");
   if (typeof body.botId !== "string" || !o.botIds.includes(body.botId)) return no(404, "GONE", "That bot isn't here.");
   const got = await o.cloud("POST", "wake", { botId: body.botId });
-  if (!got) return no(502, "UNREACHABLE", "Couldn't reach Bops Cloud. Try again.");
+  if (!got) return no(502, "UNREACHABLE", "Couldn't reach SmileDesk Cloud. Try again.");
   if (got.status !== 200) return no(got.status, String(got.json.code ?? "CLOUD_ERROR").toUpperCase(), str(got.json.error) ?? "Couldn't wake it. Try again.");
   return { status: 200, body: got.json as Answer["body"] };
 }

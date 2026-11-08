@@ -1,4 +1,4 @@
-// Tests for the map of each workspace's Bops in Orgo (lib/server/bops-sync.ts): the PUT orgo-web takes
+// Tests for the map of each workspace's SmileDesk in Orgo (lib/server/bops-sync.ts): the PUT orgo-web takes
 // (lib/bops-map/body.ts) with each bot and the computer it works on (its main bot's when it shares; none
 // while the bots work in browsers on this Mac), what's the workspace's and what's each bot's own, and the
 // watches; names and ids only (no key, token, password or pairing code), text cut to orgo-web's limits and
@@ -430,7 +430,7 @@ await check("no answer or a 5xx: sent again; a 400 waits for the next change; si
   assert.equal(calls.length, 0, "signed out");
 });
 
-await check("nothing before the state is ready, while a newer Bops wrote it, or when the state breaks", async () => {
+await check("nothing before the state is ready, while a newer SmileDesk wrote it, or when the state breaks", async () => {
   reset();
   ready = false;
   T.look();
@@ -456,12 +456,12 @@ await check("nothing before the state is ready, while a newer Bops wrote it, or 
   }
 });
 
-await check("a map that couldn't go when it was due (a newer Bops wrote the state then) goes on the next look", async () => {
+await check("a map that couldn't go when it was due (a newer SmileDesk wrote the state then) goes on the next look", async () => {
   reset();
   T.look();
   tooNew = true;
   await T.flushAll();
-  assert.equal(calls.length, 0, "not while a newer Bops wrote the state");
+  assert.equal(calls.length, 0, "not while a newer SmileDesk wrote the state");
   tooNew = false;
   T.look();
   await T.flushAll();

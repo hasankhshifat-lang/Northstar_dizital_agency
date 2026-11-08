@@ -3,7 +3,7 @@ import { decide, yes } from "./decide";
 import { ownerName } from "./store";
 
 /**
- * Quick calls Jev makes so Bops feels faster and asks less (see decide.ts): whether a message needs
+ * Quick calls Jev makes so SmileDesk feels faster and asks less (see decide.ts): whether a message needs
  * the user's memory, and whether an action is low-stakes enough to just do.
  */
 
@@ -37,7 +37,7 @@ export async function lowRisk(what: string, details: string) {
   const act = `${what}${details ? ` (${details.slice(0, 600)})` : ""}`;
   const owner = ownerName();
   const a = await decide(
-    { app: `Bops: AI assistants act in ${owner}'s apps` },
+    { app: `SmileDesk: AI assistants act in ${owner}'s apps` },
     {
       reach: {
         type: "noul",
@@ -65,7 +65,7 @@ export async function movesMoney(what: string, details: string) {
   const act = `${what}${details ? ` (${details.slice(0, 600)})` : ""}`;
   const owner = ownerName();
   const a = await decide(
-    { app: `Bops: AI assistants act in ${owner}'s apps` },
+    { app: `SmileDesk: AI assistants act in ${owner}'s apps` },
     {
       money: {
         type: "noul",

@@ -13,7 +13,7 @@ import { getState, stateEpoch, stateReady, update } from "./store";
 /**
  * Route the bots' computers through this Mac. Orgo's personal-device egress: this Mac is paired with
  * the user's Orgo account as a device, the relay agent (orgo-relay) runs here and holds one outbound
- * connection to Orgo's rendezvous, and each Bops computer's browser goes out through it, so the sites
+ * connection to Orgo's rendezvous, and each SmileDesk computer's browser goes out through it, so the sites
  * the bots visit see the user's own internet address.
  *
  * - Pairing: POST /api/egress-devices once per Orgo user on this Mac. The pairing code it returns is
@@ -23,12 +23,12 @@ import { getState, stateEpoch, stateReady, update } from "./store";
  *   turned off (once every computer is switched back) and on sign-out.
  * - Switching a computer: POST egress/upstream {mode: "device"}. Orgo applies it right away. When the
  *   computer's proxy was off that restarts its Chrome (every screen); when it was already on, only the
- *   route underneath changes, and Bops restarts Chrome itself, so pages already open and the
+ *   route underneath changes, and SmileDesk restarts Chrome itself, so pages already open and the
  *   connections Chrome keeps go out the new way too. Either way a computer switches only while no task
- *   runs on it and the user isn't driving it, and Bops puts each screen's page back afterwards
+ *   runs on it and the user isn't driving it, and SmileDesk puts each screen's page back afterwards
  *   (vm/bin/bops-keep-screens). How it was before is kept in state.relayRoutes, and put back when
  *   routing stops (Chrome restarts then too).
- * - On by default: once Orgo offers routing to the signed-in user (and this copy of Bops has the
+ * - On by default: once Orgo offers routing to the signed-in user (and this copy of SmileDesk has the
  *   relay), it turns on by itself after sign-in and every bot computer, new ones too, goes through
  *   this Mac, unless the user turned it off. Their "off" stays (state.relay.turnedOff), across
  *   restarts and sign-ins, until they turn it on again.
@@ -143,7 +143,7 @@ async function ensurePaired(): Promise<{ deviceId: string; name: string; code: s
     update((s) => (s.relay = { ...s.relay, on: s.relay?.on ?? false, deviceId: known.id, deviceName: known.name }));
     return { deviceId: known.id, name: known.name, code: saved.code, rendezvous };
   }
-  const paired = await egress.pair(`${await macName()} (Bops)`);
+  const paired = await egress.pair(`${await macName()} (SmileDesk)`);
   await setSecret(codeAccount(user.id), JSON.stringify({ deviceId: paired.id, code: paired.pairing_code }));
   stillTheirs();
   update((s) => (s.relay = { ...s.relay, on: s.relay?.on ?? false, deviceId: paired.id, deviceName: paired.name }));
@@ -273,20 +273,20 @@ const routed = () =>
 export async function relayStatus(fresh = false): Promise<RelayStatus> {
   const relay = getState().relay;
   const base = { on: !!relay?.on, running: running(), routedComputers: routed(), ...(relay?.deviceId ? { device: { id: relay.deviceId, name: relay.deviceName ?? "This Mac" } } : {}) };
-  if (onPostgres()) return { ...base, available: false, reason: "Routing through your Mac works in the Bops app on your Mac." };
+  if (onPostgres()) return { ...base, available: false, reason: "Routing through your Mac works in the SmileDesk app on your Mac." };
   if (!(await loadOrgoKey())) return { ...base, available: false, reason: "Sign in to Orgo first." };
-  if (!relayBin()) return { ...base, available: false, reason: "This copy of Bops doesn't include the relay yet." };
+  if (!relayBin()) return { ...base, available: false, reason: "This copy of SmileDesk doesn't include the relay yet." };
   const a = await availability(fresh);
   if (!a.ok) return { ...base, available: false, reason: a.reason };
   const here = await agentConnected();
   const online = here ?? a.online ?? undefined;
-  const reason = relay?.on && !running() && sup.lastError ? `The relay on this Mac stopped (${sup.lastError}). Bops is starting it again.` : undefined;
+  const reason = relay?.on && !running() && sup.lastError ? `The relay on this Mac stopped (${sup.lastError}). SmileDesk is starting it again.` : undefined;
   return { ...base, on: !!relay?.on || !relay?.turnedOff, available: true, ...(online === undefined ? {} : { online }), ...(reason ? { reason } : {}) };
 }
 
 // ── Switching computers ─────────────────────────────────────────────────────────────────────
 
-/** Every Bops computer: the ones the bots in state have (a bot that shares has none of its own). */
+/** Every SmileDesk computer: the ones the bots in state have (a bot that shares has none of its own). */
 const computers = () => [...new Set(getState().bots.flatMap((b) => (b.computerId && b.computerStatus === "ready" ? [b.computerId] : [])))];
 
 /** Whether something is using a computer right now: a task on it, or the user driving one of its screens. */
@@ -363,7 +363,7 @@ const maybeGone = (computerId: string, e: unknown) =>
 /** The HTTP status in an Orgo error (0: not an answer from Orgo). */
 const statusOf = (e: unknown) => Number(/ → (\d{3}):/.exec((e as Error)?.message ?? "")?.[1] ?? 0);
 const MAX_TRIES = 6;
-const SCREENS_DOWN = "Its screens' browsers didn't come back. Bops is starting them again.";
+const SCREENS_DOWN = "Its screens' browsers didn't come back. SmileDesk is starting them again.";
 
 /**
  * A route after a try that went wrong: it waits longer before each next try (20s, 40s, ... up to
@@ -396,7 +396,7 @@ async function routeOne(computerId: string, deviceId: string) {
     setRoute(computerId, route);
   }
   const before = route.before;
-  // Chrome restarts either way: by Orgo when the proxy was off, else by Bops (see withScreensKept).
+  // Chrome restarts either way: by Orgo when the proxy was off, else by SmileDesk (see withScreensKept).
   const r = await withScreensKept(computerId, () => egress.setUpstream(computerId, "device", deviceId), !!route.screensDown);
   const down = r.back ? {} : { screensDown: true };
   if (!("error" in r)) setRoute(computerId, { before, applied: true, ...down, ...(r.back ? {} : { error: SCREENS_DOWN }) });
@@ -559,7 +559,7 @@ async function switchOn() {
 const DEFAULT_RETRY_MS = 10 * 60_000;
 
 /**
- * On by default: once Orgo offers routing to the signed-in user and this copy of Bops has the relay,
+ * On by default: once Orgo offers routing to the signed-in user and this copy of SmileDesk has the relay,
  * it turns on by itself, unless the user turned it off. Says whether it did.
  */
 async function turnOnByDefault() {

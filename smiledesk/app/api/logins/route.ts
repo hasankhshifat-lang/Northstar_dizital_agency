@@ -7,11 +7,11 @@ export const dynamic = "force-dynamic";
 
 /**
  * Used in: one of the owner's logins switched on or off in one of their workspaces (lib/server/logins.ts). Only from
- * the Bops window (ui-token.ts): a page a bot's Chrome reached this server with mustn't give a login to more bots.
+ * the SmileDesk window (ui-token.ts): a page a bot's Chrome reached this server with mustn't give a login to more bots.
  * `kind` app (`id` its account), site (`id` its saved login) or key (`id` "<Orgo project>:<NAME>", a key of one workspace).
  */
 export async function PATCH(request: Request) {
-  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "Logins can only be changed in the Bops app." }, { status: 403 }));
+  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "Logins can only be changed in the SmileDesk app." }, { status: 403 }));
   if (unready) return unready;
   const b = (await request.json().catch(() => ({}))) as { kind?: unknown; id?: unknown; workspaceId?: unknown; on?: unknown };
   if (typeof b.id !== "string" || !b.id || typeof b.workspaceId !== "string" || typeof b.on !== "boolean") return Response.json({ error: "which login, which workspace, and on or off?" }, { status: 400 });

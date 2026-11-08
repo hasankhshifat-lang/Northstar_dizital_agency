@@ -20,10 +20,10 @@ import { getState, stateReady, stateTooNew, update } from "./store";
 
 /*
  * What the people a workspace is shared with see of its apps on the web (Workspace.appsForMembers), kept by the owner's
- * Mac as it reads them for its own Your Apps page: Bops Cloud can't read Ingot or Orgo for them, so it sends members
+ * Mac as it reads them for its own Your Apps page: SmileDesk Cloud can't read Ingot or Orgo for them, so it sends members
  * parts of this (cloud/ws-slice.ts appsFor). Only while someone has Your Apps at Read or more; never a variable's name
  * or value, an Ingot token, a key, a deploy's log or error text, who a domain is registered to, DNS records, or a
- * computer's or deploy project's id. A site's Preview password only while someone has Your Apps at Write (Bops Cloud
+ * computer's or deploy project's id. A site's Preview password only while someone has Your Apps at Write (SmileDesk Cloud
  * sends it to them alone), and never in a bot's chat or prompt. Written only when what's shown changed, or an hour
  * after the last write, so an idle workspace changes the synced state at most once an hour.
  */
@@ -76,7 +76,7 @@ export const anyoneIn = (wsId: string) => {
 /**
  * Whether anyone the workspace is shared with may be shown its apps (`level`: at that level or more): someone with Your
  * Apps there, or (as orgo-web's list said) an Admin, who has Write with no entry, and for Read anyone in it at all:
- * Bops Cloud shows each viewer only what's theirs (cloud/ws-slice.ts appsFor).
+ * SmileDesk Cloud shows each viewer only what's theirs (cloud/ws-slice.ts appsFor).
  */
 export const anyoneSeesApps = (wsId: string, level: "read" | "write" = "read") => {
   const p = people.get(wsId);
@@ -90,12 +90,12 @@ const canonical = (v: unknown) => JSON.stringify(v, (_k, x) => (x && typeof x ==
 const cut = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
 /**
- * Each site's Preview password as last read for members, by "<ws>\n<app>\n<site>", with the link, when Bops set it then,
+ * Each site's Preview password as last read for members, by "<ws>\n<app>\n<site>", with the link, when SmileDesk set it then,
  * and when that read began (`readAt`, this Mac's clock: fixCloudCopy).
  */
 const passwordsRead = new Map<string, { url: string; at: number | undefined; password: string | null; readAt: number }>();
 
-/** When Bops last set a site's Preview password, as the state says now (AppHosting.passwordSet; undefined: it doesn't say). */
+/** When SmileDesk last set a site's Preview password, as the state says now (AppHosting.passwordSet; undefined: it doesn't say). */
 function setAtNow(wsId: string, name: string, site: string | undefined): number | undefined {
   const h = getState().workspaces?.find((w) => w.id === wsId)?.hostedApps?.[name];
   const s = !h ? undefined : !site || site === name ? h : h.sites?.find((x) => x.name === site);
@@ -103,23 +103,23 @@ function setAtNow(wsId: string, name: string, site: string | undefined): number 
 }
 
 /*
- * Bops Cloud's copy of each Preview password (Workspace.previewPasswords: whoever set one shared it) is what Write
- * viewers are shown over this Mac's (cloud/ws-slice.ts appsFor). A share can miss: Bops Cloud away for longer than its
- * sender kept trying, an older Bops that sets one and never shares, two sets whose shares crossed. So as this Mac reads
- * Orgo for members, it tells Bops Cloud what Orgo has where its copy for that link differs (sharePreviewPassword, with
+ * SmileDesk Cloud's copy of each Preview password (Workspace.previewPasswords: whoever set one shared it) is what Write
+ * viewers are shown over this Mac's (cloud/ws-slice.ts appsFor). A share can miss: SmileDesk Cloud away for longer than its
+ * sender kept trying, an older SmileDesk that sets one and never shares, two sets whose shares crossed. So as this Mac reads
+ * Orgo for members, it tells SmileDesk Cloud what Orgo has where its copy for that link differs (sharePreviewPassword, with
  * `seen`: only in place of the entry seen here, so never over a share that landed since). Only a copy older than the
- * read by CLOUD_FIX_AFTER_MS (Bops Cloud's clock against this Mac's): a share that came after the read began, its
+ * read by CLOUD_FIX_AFTER_MS (SmileDesk Cloud's clock against this Mac's): a share that came after the read began, its
  * password made after Orgo answered, never loses to it, nor does one whose clock is a little off.
  */
 export const CLOUD_FIX_AFTER_MS = 2 * 60_000;
 
-/** Bops Cloud's copy of a site's Preview password as this Mac's state has it, for link `url` alone (one for another link is never shown). */
+/** SmileDesk Cloud's copy of a site's Preview password as this Mac's state has it, for link `url` alone (one for another link is never shown). */
 function cloudCopy(wsId: string, name: string, site: string | undefined, url: string) {
   const p = getState().workspaces?.find((w) => w.id === wsId)?.previewPasswords?.[`${name}/${site ?? name}`];
   return p && p.url === url ? p : undefined;
 }
 
-/** Tell Bops Cloud what Orgo has for link `url` (`password`; null: it asks for none), read from `readAt`, where its copy is another and older than that read. */
+/** Tell SmileDesk Cloud what Orgo has for link `url` (`password`; null: it asks for none), read from `readAt`, where its copy is another and older than that read. */
 function fixCloudCopy(wsId: string, name: string, site: string | undefined, url: string, password: string | null, readAt: number) {
   const kept = cloudCopy(wsId, name, site, url);
   if (!kept || kept.password === password || kept.at > readAt - CLOUD_FIX_AFTER_MS) return;
@@ -128,18 +128,18 @@ function fixCloudCopy(wsId: string, name: string, site: string | undefined, url:
 
 /**
  * A site's Preview password for members with Your Apps at Write (null: none to show: Orgo kept only its cookie's check,
- * or the user's key can't read it), read from Orgo again only once its link or when Bops set it is another, or once
- * Bops Cloud's copy differs from it and a read now would be well after that copy (fixCloudCopy). When it was set is the
+ * or the user's key can't read it), read from Orgo again only once its link or when SmileDesk set it is another, or once
+ * SmileDesk Cloud's copy differs from it and a read now would be well after that copy (fixCloudCopy). When it was set is the
  * state's own, read after Orgo answered (the page's `at` may be older than a set made since, by this read or by a deploy
  * going live meanwhile), and a read that couldn't answer never stands in an older password once that moved.
- * (This copy is what members get only where Bops Cloud has none: whoever sets a password shares it there,
+ * (This copy is what members get only where SmileDesk Cloud has none: whoever sets a password shares it there,
  * preview-password-share.ts, and that one is shown over this one: cloud/ws-slice.ts appsFor.)
  */
 async function passwordFor(wsId: string, name: string, site: string | undefined, url: string, at: number | undefined, r: AppsReaders): Promise<string | null> {
   const key = `${wsId}\n${name}\n${site ?? name}`;
   const was = passwordsRead.get(key);
   const kept = cloudCopy(wsId, name, site, url);
-  // (Bops Cloud's copy says another, and is old enough to be told what Orgo has, while the read kept here isn't new enough to: read again.)
+  // (SmileDesk Cloud's copy says another, and is old enough to be told what Orgo has, while the read kept here isn't new enough to: read again.)
   const doubt = !!was && !!kept && kept.password !== was.password && kept.at <= Date.now() - CLOUD_FIX_AFTER_MS && kept.at > was.readAt - CLOUD_FIX_AFTER_MS;
   if (was && was.url === url && was.at === (setAtNow(wsId, name, site) ?? at) && !doubt) {
     fixCloudCopy(wsId, name, site, url, was.password, was.readAt);
@@ -152,7 +152,7 @@ async function passwordFor(wsId: string, name: string, site: string | undefined,
   if (!got) return was && was.url === url && was.at === after ? was.password : null;
   const password = got.on && got.url === url && typeof got.password === "string" && got.password ? got.password : null;
   // None to show is asked for again next time, not kept until the next deploy; nor is one read while another was set
-  // (the read's own time isn't the state's after it), which may be the older one, and Bops Cloud isn't told that one.
+  // (the read's own time isn't the state's after it), which may be the older one, and SmileDesk Cloud isn't told that one.
   const settled = got.at === undefined || got.at === after;
   if (password && settled) passwordsRead.set(key, { url, at: after, password, readAt });
   else passwordsRead.delete(key);
@@ -182,7 +182,7 @@ async function appFor(wsId: string, a: HostedApp, r: AppsReaders, acts: MemberAp
     // Its Preview's password, while it asks for one and someone has Your Apps at Write.
     const pass = writers && s.preview?.url && s.preview.protected === true ? await passwordFor(wsId, a.name, site, s.preview.url, s.preview.passwordAt, r) : null;
     if (pass) passwords[s.name] = pass;
-    // (One that asks for none now, turned off where its share never got to Bops Cloud: its copy there goes too.)
+    // (One that asks for none now, turned off where its share never got to SmileDesk Cloud: its copy there goes too.)
     if (writers && s.preview?.url && s.preview.protected === false) fixCloudCopy(wsId, a.name, site, s.preview.url, null, readAt);
   }
   return {

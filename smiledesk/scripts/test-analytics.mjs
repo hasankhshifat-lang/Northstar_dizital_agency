@@ -1,12 +1,12 @@
-// Tests for Bops' usage events (README, Privacy; cloud/analytics-rules.ts): the rules every event is
+// Tests for SmileDesk's usage events (README, Privacy; cloud/analytics-rules.ts): the rules every event is
 // cleaned against (only listed events and properties leave, error messages and stacks scrubbed, never
 // an orgo-web funnel name), the window's posthog-js setup (lib/analytics.ts: nothing that records the
 // screen, identify by the Orgo user id only, reset on sign-out and on another user), the Mac's server
 // (lib/server/analytics.ts, /api/analytics: who may send, the switch, the header to the cloud, exceptions),
-// Bops Cloud's sender (cloud/analytics.ts: the off header, the user's switch from their state), and that
+// SmileDesk Cloud's sender (cloud/analytics.ts: the off header, the user's switch from their state), and that
 // the catalog matches the code. The real posthog-node runs; only fetch is fake, and PostHog's batch
 // endpoint is recorded: nothing reaches the network. The state is a throwaway file store, the
-// Keychain, the cloud's tunnel and the relay are stand-ins, and Bops Cloud's database is a fake query.
+// Keychain, the cloud's tunnel and the relay are stand-ins, and SmileDesk Cloud's database is a fake query.
 // Usage: node --conditions=react-server scripts/test-analytics.mjs
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
@@ -50,9 +50,9 @@ registerHooks({
   },
   load(url, context, next) {
     if (!url.startsWith(project) || url.includes("/node_modules/") || !/\.tsx?$/.test(url)) return next(url, context);
-    // Bops Cloud's database: the fake below.
+    // SmileDesk Cloud's database: the fake below.
     if (url.endsWith("/cloud/db.ts")) return { format: "module", shortCircuit: true, source: "export const query = (...a) => globalThis.__cloudQuery(...a);" };
-    // The Mac app's state in Bops Cloud: a file store here, so the state is ready without a cloud.
+    // The Mac app's state in SmileDesk Cloud: a file store here, so the state is ready without a cloud.
     if (url.endsWith("/lib/server/persist-cloud.ts"))
       return { format: "module", shortCircuit: true, source: `export { fileStore as cloudStore } from ${JSON.stringify(project + "lib/server/persist.ts")};` };
     const file = fileURLToPath(url);
@@ -107,7 +107,7 @@ const FUNNEL = ["signup_completed", "login_completed", "product_activated", "age
 const PERSONAL = /email|name|phone|text|title|goal|url|query|message|address|file|token|key/;
 const SUPER_KEYS = ["app", "source", "platform", "environment", "app_version", "plan"];
 for (const [event, spec] of Object.entries(R.EVENTS)) {
-  assert.ok(event === "$exception" || event.startsWith("bops_"), `${event} is Bops'`);
+  assert.ok(event === "$exception" || event.startsWith("bops_"), `${event} is SmileDesk's`);
   assert.ok(!FUNNEL.includes(event), `${event} isn't an orgo-web funnel event`);
   assert.ok(["app", "mac_server", "cloud", "any"].includes(spec.by), `${event}'s sender`);
   for (const prop of Object.keys(spec.props)) {
@@ -186,7 +186,7 @@ assert.deepEqual(
     $set_once: { bops_app_version: "0.0.22" },
     $set: { bops_plan: "max_bops" },
   },
-  "posthog-js's own $ props only from the allowlist (no addresses, page content or new ones); person props only Bops'",
+  "posthog-js's own $ props only from the allowlist (no addresses, page content or new ones); person props only SmileDesk's",
 );
 assert.deepEqual(clean("bops_app_opened", { app: "orgo", environment: "prod", plan: "free" }, "app"), {}, "super props that don't fit go");
 // The window's events as posthog-js hands them to before_send.
@@ -264,8 +264,8 @@ const nodeShape = clean(
         stacktrace: {
           type: "raw",
           frames: Array.from({ length: 70 }, (_, i) => ({
-            filename: "/Users/ada/Applications/Bops.app/server/x.js",
-            abs_path: "/Users/ada/Applications/Bops.app/server/x.js",
+            filename: "/Users/ada/Applications/SmileDesk.app/server/x.js",
+            abs_path: "/Users/ada/Applications/SmileDesk.app/server/x.js",
             function: "f".repeat(200),
             lineno: i,
             colno: 1,
@@ -290,7 +290,7 @@ for (const f of frames) {
   assert.equal(f.context_line, undefined);
   assert.equal(f.pre_context, undefined);
   assert.equal(f.post_context, undefined);
-  assert.equal(f.abs_path, "/Users/<user>/Applications/Bops.app/server/x.js");
+  assert.equal(f.abs_path, "/Users/<user>/Applications/SmileDesk.app/server/x.js");
   assert.equal(f.function.length, 120);
 }
 assert.equal(nodeShape.route_path, "/app/api/bots/route");
@@ -502,7 +502,7 @@ assert.equal(M.telemetryEnvironment(), "development");
 delete process.env.BOPS_CLOUD_URL;
 assert.equal(M.telemetryEnvironment(), "production");
 
-// The header that tells Bops Cloud to send nothing for this Mac (beside the version and which state it may be given).
+// The header that tells SmileDesk Cloud to send nothing for this Mac (beside the version and which state it may be given).
 assert.deepEqual(V.appHeaders(), { "x-bops-version": "0.0.22", "x-bops-state-level": "4" });
 process.env.DO_NOT_TRACK = "1";
 assert.deepEqual(V.appHeaders(), { "x-bops-version": "0.0.22", "x-bops-state-level": "4", "x-bops-telemetry": "off" });
@@ -564,7 +564,7 @@ assert.equal((await get()).userId, null);
 await M.flushAnalytics();
 console.log("ok - the Mac's server");
 
-/* ---------------- 4. Bops Cloud (cloud/analytics.ts) ---------------- */
+/* ---------------- 4. SmileDesk Cloud (cloud/analytics.ts) ---------------- */
 
 process.env.BOPS_CLOUD_PUBLIC_URL = "https://bops.orgo.ai/api";
 const db = { off: {}, asked: 0 };
@@ -607,13 +607,13 @@ await C.inTelemetryScope(req({ "x-bops-version": "0.0.22" }), async () => C.trac
 const [ran] = await until(() => ofEvent("bops_ai_credit_ran_out", mark).length && ofEvent("bops_ai_credit_ran_out", mark), "bops_ai_credit_ran_out");
 assert.equal(ran.properties.app_version, "0.0.22", "the calling app's version");
 
-// Bops for iPhone collects no usage data: nothing for what its calls do, whatever else they say.
+// SmileDesk for iPhone collects no usage data: nothing for what its calls do, whatever else they say.
 mark = sent.length;
 await C.inTelemetryScope(req({ "x-bops-client": "ios", "x-bops-version": "0.2.0" }), async () => {
   await sleep(1);
   C.trackCloudEvent("u-9", "bops_ai_credit_ran_out", {});
 });
-await nothingSent(mark, flushCloud, "a call from Bops for iPhone: nothing for what it does");
+await nothingSent(mark, flushCloud, "a call from SmileDesk for iPhone: nothing for what it does");
 
 db.off["u-8"] = "true";
 mark = sent.length;
@@ -641,7 +641,7 @@ C.captureCloudException(new Error("x"), req({ "x-bops-telemetry": "off" }), "u-9
 await nothingSent(mark, flushCloud, "a 500 on a call marked off: nothing");
 mark = sent.length;
 C.captureCloudException(new Error("x"), req({ "x-bops-client": "ios" }), "u-9", "/v1/agent/messages");
-await nothingSent(mark, flushCloud, "a 500 on a call from Bops for iPhone: nothing");
+await nothingSent(mark, flushCloud, "a 500 on a call from SmileDesk for iPhone: nothing");
 
 assert.equal(C.cloudEnvironment(), "production");
 process.env.BOPS_CLOUD_PUBLIC_URL = "https://bops-staging.orgo.ai/api";
@@ -649,7 +649,7 @@ assert.equal(C.cloudEnvironment(), "staging");
 delete process.env.BOPS_CLOUD_PUBLIC_URL;
 assert.equal(C.cloudEnvironment(), "development");
 await C.shutdownTelemetry();
-console.log("ok - Bops Cloud");
+console.log("ok - SmileDesk Cloud");
 
 /* ---------------- 5. The catalog matches the code ---------------- */
 

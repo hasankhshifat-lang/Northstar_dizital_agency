@@ -284,7 +284,7 @@ function AskCard({ ask: a, botName, where, shared, onOpen }: { ask: AppApproval;
   const busy = working || (!!sent && sent.state !== "failed");
   const decide = async (reply: "once" | "always" | "reject") => {
     setBusy(true);
-    // In a shared workspace (a bot the viewer has at Write): through the owner's Bops (shared-act.ts).
+    // In a shared workspace (a bot the viewer has at Write): through the owner's SmileDesk (shared-act.ts).
     if (shared) {
       const r = await memberAct({ act: "answer", askId: a.id, reply });
       setError(r.ok ? null : (r.error ?? null));
@@ -295,7 +295,7 @@ function AskCard({ ask: a, botName, where, shared, onOpen }: { ask: AppApproval;
   };
   // The same headline as the chat's card: the bot's reason in plain words when it gave one (lib/permission.ts askHeadline).
   const title = askHeadline(botName, { action: undash(a.action), reason: a.reason && undash(a.reason) });
-  // A call with a key: Bops' own line for it under the bot's words, as on the chat's card, so a reason never hides a delete.
+  // A call with a key: SmileDesk's own line for it under the bot's words, as on the chat's card, so a reason never hides a delete.
   const facts = a.kind === "api" && a.api ? apiFacts(a.api) : null;
   const scope = alwaysScope(botName, { ...a, action: undash(a.action) });
   const meta = [where ? `For ${undash(where)}` : shared ? "Waiting for an OK" : "Waiting for your OK", ago(a.at)].join(" · ");
@@ -515,7 +515,7 @@ export function WithThreads({
 /* ---------------- Needs your attention ---------------- */
 
 /** What waits on the user under one bot (needsByBot): what it asked their OK for (with its name, and the thread or routine it's for), its issues, alerts and setup. */
-/** `shared`: an ask in a workspace shared with the user, of a bot they have at Write (answered through the owner's Bops). */
+/** `shared`: an ask in a workspace shared with the user, of a bot they have at Write (answered through the owner's SmileDesk). */
 export type BotNeeds = { asks: { ask: AppApproval; botName: string; where?: string; shared?: boolean }[]; issues: Issue[]; alerts: Watch[]; setup: SetupItem[] };
 
 /**

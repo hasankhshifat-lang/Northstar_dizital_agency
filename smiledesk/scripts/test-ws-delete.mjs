@@ -7,7 +7,7 @@
 // outbox on disk, sent later; a bank taken up again since is never deleted); and nothing of it stays on this
 // Mac (its skills' folder, its issues' cache, its Orbit index and the ones kept for banks it used before, its
 // memory review, and the window's localStorage keys for it), while another workspace's stay whole. orgo-web
-// and Honcho are fakes answering what Bops calls, OpenAI a fake that answers nothing, the Keychain a stand-in
+// and Honcho are fakes answering what SmileDesk calls, OpenAI a fake that answers nothing, the Keychain a stand-in
 // that's never there, and the state and files live in a throwaway folder: nothing reaches a real service.
 // Usage: node --conditions=react-server scripts/test-ws-delete.mjs
 import assert from "node:assert/strict";
@@ -310,7 +310,7 @@ await check("the confirm names its routines and Orbit issues, and says its memor
   const side = await preview("ws_side");
   assert.deepEqual([side.body.memory, side.body.issues, side.body.routines], [false, ["Side printer is down"], []]);
   assert.ok(!DASHES.test(JSON.stringify([acme.body, side.body])));
-  // An orgo-web that lists them too: Orgo's are named with Bops' own, each once.
+  // An orgo-web that lists them too: Orgo's are named with SmileDesk's own, each once.
   orgo.extra.p_solo = { routines: [{ id: "r1", title: "Made on orgo.ai" }], orbitIssues: [{ id: "i1", title: "Solo printer is down" }, { id: "i2", title: "Only on Orgo" }] };
   const solo = await preview("ws_solo");
   assert.deepEqual([solo.body.routines, solo.body.issues], [["Made on orgo.ai"], ["Solo printer is down", "Only on Orgo"]]);

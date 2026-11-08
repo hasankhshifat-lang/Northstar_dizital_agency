@@ -29,7 +29,7 @@ export const dynamic = "force-dynamic";
  * Full app state plus a version counter; the UI polls this. With ?v= (the version the page has),
  * an unchanged state answers with just the version, not the whole state. Importing routines and
  * watches starts their loops; the first poll starts mail (bots' inboxes, and listening for email),
- * Bops Cloud's tunnel if the server's start didn't (the Keychain gave the key only later), the look
+ * SmileDesk Cloud's tunnel if the server's start didn't (the Keychain gave the key only later), the look
  * at the bots' computers on Orgo (one deleted there since is replaced), asking Orgo where the bots
  * work (runner.ts), which says which routines are this Mac's, the map of the bots in each Orgo
  * workspace (bops-sync.ts), the runners on the bots' computers (runner-install.ts), an Orgo project

@@ -4,7 +4,7 @@ import { getState } from "@/lib/server/store";
 
 /**
  * The page an app a bot made runs in (lib/server/made-apps.ts). A model wrote it, so it runs sandboxed
- * like bots' pages: an opaque origin, no fetches, images or fonts from anywhere (Bops' own API
+ * like bots' pages: an opaque origin, no fetches, images or fonts from anywhere (SmileDesk's own API
  * included), no storage, no forms. The CSP can't stop a page going to another address itself, or
  * WebRTC: in the Mac app it runs in a webview on a session where nothing but its page loads and WebRTC
  * reaches nothing (desktop/app-frames.cjs). All it can reach is the window, which passes `window.bops`

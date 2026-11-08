@@ -11,7 +11,7 @@ import { teamOf } from "./ui";
 export type ComputerKeys = { keys: Record<string, ComputerOrgoKey | null>; manage: string };
 
 /**
- * Whether the bots listed work in browsers on this Mac: the user's own, with Bops set to this Mac. Never a
+ * Whether the bots listed work in browsers on this Mac: the user's own, with SmileDesk set to this Mac. Never a
  * workspace shared with them's (state.host is the viewer's own app's; the owner's bots never work here).
  */
 const onThisMac = (state: AppState) => !state.shared && state.host === "mac";
@@ -97,7 +97,7 @@ export function BotComputersList({ state, keys, padded }: { state: AppState; key
 
 /**
  * Settings, Your bots' computers, in every mode. Each bot's own computer listed is asked about once while
- * Settings is open, whether it holds its own Orgo key (Bops asks Orgo, never the window; not when
+ * Settings is open, whether it holds its own Orgo key (SmileDesk asks Orgo, never the window; not when
  * `askKeys` is off); a row never waits on that.
  */
 export function BotComputers({ state, padded, askKeys }: { state: AppState; padded: boolean; askKeys: boolean }) {

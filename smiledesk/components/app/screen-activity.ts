@@ -6,7 +6,7 @@ import type { Bot } from "@/lib/types";
 /**
  * When an agent last acted (clicked, typed, scrolled) on each of a bot's screens, by display, in
  * this Mac's clock. Streamed live from the computer's home server over the tailnet, so following
- * the action lags by well under a second. Empty for computers Bops can't reach directly.
+ * the action lags by well under a second. Empty for computers SmileDesk can't reach directly.
  */
 export function useScreenActivity(b: Bot) {
   const ip = b.tailnet?.ip;

@@ -101,7 +101,7 @@ export const RTC_SHRUNK_MS = 24 * 60 * 60_000;
  * Whether WebRTC would stream the screen smaller than it is (`video`, the size Orgo's "ready" says,
  * against the screen's real `size`). Orgo's gateway fits a screen inside its limit by resizing the
  * screen itself before it says how big the stream is, and never sizes it back: a 1280x960 screen under
- * the default 1280x720 limit comes out 960x720. Then the app stops, streams over VNC, and Bops puts
+ * the default 1280x720 limit comes out 960x720. Then the app stops, streams over VNC, and SmileDesk puts
  * the screen back (POST /api/vnc).
  */
 export function rtcShrank(video: { w: number; h: number } | undefined, size: { w: number; h: number } | undefined) {

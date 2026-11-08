@@ -73,7 +73,7 @@ export function screenEndpoint(b: Bot, display: number): string | null {
 /** The page open in a Chrome, by address and title, or null when it doesn't answer within 1.5 s. */
 export const pageAt = (ep: Endpoint) => Promise.race([currentPage(ep).catch(() => null), new Promise<null>((r) => setTimeout(() => r(null), 1500))]);
 
-/** What's open on each of a bot's screens, read from its browser (quick; null where Bops can't reach it). */
+/** What's open on each of a bot's screens, read from its browser (quick; null where SmileDesk can't reach it). */
 export function screenPages(b: Bot, displays: readonly number[] = DISPLAYS) {
   return Promise.all(
     displays.map((d) => {

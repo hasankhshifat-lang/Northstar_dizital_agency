@@ -305,7 +305,7 @@ test("a number none of the user's bots has is turned away; a failed accept leave
   assert.equal((await pending(lone.userId)).length, 0);
 });
 
-test("the bot on the owner's call knows its apps, where it's in Slack, Telegram and Discord, that it's answering from Bops Cloud, and which messages wait", async () => {
+test("the bot on the owner's call knows its apps, where it's in Slack, Telegram and Discord, that it's answering from SmileDesk Cloud, and which messages wait", async () => {
   const { userId, line, iris, mobile } = await setUp({
     extra: {
       accounts: [
@@ -333,7 +333,7 @@ test("the bot on the owner's call knows its apps, where it's in Slack, Telegram 
   assert.ok(!session.instructions.includes("Linear"), "another bot's app isn't Sam's");
   assert.match(session.instructions, /You're also in Slack \(Acme\) and Telegram \(@sam_acme_bot\), where Alex can message you\./);
   assert.ok(!session.instructions.includes("Discord"), "Iris is in Discord, not Sam");
-  assert.match(session.instructions, /You're answering from Bops Cloud: texts sent to you meanwhile wait there for the computer, and Slack messages for up to a day\./);
+  assert.match(session.instructions, /You're answering from SmileDesk Cloud: texts sent to you meanwhile wait there for the computer, and Slack messages for up to a day\./);
   assert.match(session.instructions, /Telegram messages wait at Telegram for up to a day\./);
   assert.match(session.instructions, /So if they want to send you something, take it as a note on this call, or ask them to text you\./);
   assert.ok(!session.instructions.includes(String.fromCharCode(0x2014)), "no em dashes");

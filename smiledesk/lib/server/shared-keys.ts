@@ -13,7 +13,7 @@ import { actShared, sharedKeysOpen } from "./shared";
  * Member the owner or an Admin gave it in People). This workspace's own keys are the owner's vault's, scoped to the
  * workspace's Orgo project, and orgo-web lets a Keys holder list, add, replace, remove and see them with their own Orgo key
  * (its /api/projects/<id>/bops-keys routes), so none of that waits for the owner's Mac. Which bots use a key is the
- * owner's state's (Bot.keys), switched by the "key" act through Bops Cloud, which the owner's Mac does
+ * owner's state's (Bot.keys), switched by the "key" act through SmileDesk Cloud, which the owner's Mac does
  * (lib/server/member-acts.ts). The owner's keys for all their workspaces stay theirs: named here, as the owner's Mac last
  * said them (Workspace.keysForMembers), with their bots' switches, never shown, replaced or removed. A value passes through
  * here on its way to Orgo or back to the window, as for the user's own keys (keys.ts), and is never kept or logged.
@@ -36,10 +36,10 @@ export const OWNERS_KEY = "That's the owner's key. Only they can see, replace or
  */
 const SAID: Record<string, { status: number; words: string }> = {
   KEY_NOT_FOUND: { status: 404, words: "That key isn't in this workspace anymore." },
-  invalid_name: { status: 400, words: "Bops can't call that service yet. Pick one from the list." },
+  invalid_name: { status: 400, words: "SmileDesk can't call that service yet. Pick one from the list." },
   value_required: { status: 400, words: "Paste the key first." },
   value_too_long: { status: 400, words: "That key is too long." },
-  app_key_required: { status: 403, words: "Orgo shows a key only to a Bops signed in with Orgo. Sign out, then sign in again." },
+  app_key_required: { status: 403, words: "Orgo shows a key only to a SmileDesk signed in with Orgo. Sign out, then sign in again." },
   audit_unavailable: { status: 503, words: "Orgo couldn't note who looked just now, so it didn't send the key. Try again in a minute." },
 };
 
@@ -61,7 +61,7 @@ async function projectKeys<T>(projectId: string, method: "GET" | "POST" | "DELET
       signal: AbortSignal.timeout(15_000),
     });
   } catch {
-    throw new KeysError("Bops couldn't reach Orgo. Check the internet and try again.", 502);
+    throw new KeysError("SmileDesk couldn't reach Orgo. Check the internet and try again.", 502);
   }
   const json = (await res.json().catch(() => null)) as (T & { error?: unknown; code?: unknown }) | null;
   if (res.ok && json) return json;
@@ -150,9 +150,9 @@ const ownersOnly = (names: SharedKey[], name: string) => {
 };
 
 /**
- * Let a bot of the shared workspace use a key, or stop it (the "key" act, through Bops Cloud): null, or why not. On, only
+ * Let a bot of the shared workspace use a key, or stop it (the "key" act, through SmileDesk Cloud): null, or why not. On, only
  * one of the workspace's own: one the owner's Mac said is the owner's alone is refused here first, unless orgo-web lists it
- * as the workspace's now (added since), and Bops Cloud and the owner's Mac check again. `saved`: a key of This workspace
+ * as the workspace's now (added since), and SmileDesk Cloud and the owner's Mac check again. `saved`: a key of This workspace
  * just saved here, which orgo-web has. Off goes for any.
  */
 export async function sharedGrant(name: string, botId: string, on: boolean, o: { saved?: boolean } = {}): Promise<{ status: number; error: string } | null> {
@@ -172,11 +172,11 @@ export async function sharedGrant(name: string, botId: string, on: boolean, o: {
 
 /**
  * Save a key to This workspace (orgo-web, with the user's own key: the same name replaces it), then let `botIds` use it
- * ("key" acts). `note`: the key saved, but a bot's switch didn't go (the owner's Bops needs an update, say).
+ * ("key" acts). `note`: the key saved, but a bot's switch didn't go (the owner's SmileDesk needs an update, say).
  */
 export async function sharedSave(name: string, value: string, botIds: string[]): Promise<{ name: string; note?: string }> {
   const n = keyName(name);
-  if (!keyProvider(n)) throw new KeysError("Bops can't call that service yet. Pick one from the list.", 400);
+  if (!keyProvider(n)) throw new KeysError("SmileDesk can't call that service yet. Pick one from the list.", 400);
   const v = value.trim();
   if (!v) throw new KeysError("Paste the key first.", 400);
   if (v.length > 8192) throw new KeysError("That key is too long.", 400);
@@ -213,5 +213,5 @@ export async function sharedReveal(name: string, scope: "workspace" | "all"): Pr
   return { name: n, value: got.value };
 }
 
-/** The services Bops can call, as the Keys page lists them. */
+/** The services SmileDesk can call, as the Keys page lists them. */
 export const providersShown = () => KEY_PROVIDERS.map(({ name, label, where, tip, readOnly }) => ({ name, label, where, tip, readOnly: !!readOnly }));

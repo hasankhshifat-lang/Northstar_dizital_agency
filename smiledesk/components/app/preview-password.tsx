@@ -8,12 +8,12 @@ import { InlineConfirm, undash } from "./side-group";
 import { post } from "./ui";
 
 /*
- * A site's Preview password, the owner's, beside its link wherever Bops shows it: the Preview tab's bar (a lock by the
+ * A site's Preview password, the owner's, beside its link wherever SmileDesk shows it: the Preview tab's bar (a lock by the
  * address, and Open in browser saying the browser asks for it), each site's Preview line in Your Apps, and its tab's
  * Preview section (Ask for a password, New password). Read from the server's window only route
- * (/api/hosted-apps/[name]/password), once per site, and again when the apps list says Bops set a newer one
+ * (/api/hosted-apps/[name]/password), once per site, and again when the apps list says SmileDesk set a newer one
  * (PreviewSite.passwordAt: a new one comes with each Preview deploy that goes live), so every place shows the same,
- * current one. Bops' own view of the Preview gets the cookie that opens it (desktop/preview-frames.cjs), set again
+ * current one. SmileDesk's own view of the Preview gets the cookie that opens it (desktop/preview-frames.cjs), set again
  * each time it changes. Copy copies it only when pressed.
  */
 
@@ -53,7 +53,7 @@ function read(ws: string, name: string, site: string | undefined, key: string): 
   return p;
 }
 
-/** What's kept is as new as the apps list says (its link, and a password Bops set no later than it). */
+/** What's kept is as new as the apps list says (its link, and a password SmileDesk set no later than it). */
 const fresh = (k: Kept | undefined, p: PreviewSite | null | undefined): k is Kept => !!k && !!p?.url && k.answer.url === p.url && (k.answer.at ?? 0) >= (p.passwordAt ?? 0);
 
 /**

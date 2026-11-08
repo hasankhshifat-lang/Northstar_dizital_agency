@@ -9,7 +9,7 @@ const local = (request: Request) => ["localhost", "127.0.0.1", "::1"].includes(n
 
 /**
  * Phones for bots (lib/server/phone.ts): whether it's on, texting and calling status, each bot's number.
- * `?fresh=1` asks Bops Cloud for the session again first, so a plan just bought shows (planNeeded).
+ * `?fresh=1` asks SmileDesk Cloud for the session again first, so a plan just bought shows (planNeeded).
  */
 export async function GET(request?: Request) {
   if (request && new URL(request.url).searchParams.get("fresh") === "1" && cloudOn()) await cloudSession(true).catch(() => {});

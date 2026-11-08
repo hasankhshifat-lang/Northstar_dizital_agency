@@ -16,7 +16,7 @@ import { dropUsers, keyOf, listen, newUserId, prepareDb, startCloud, type Listen
  * calls only the routes its runner needs (its state, its threads, its session, the providers' routes,
  * where what it may call is each provider's: core-computer-scope.test.ts) and is refused on phone lines,
  * mail handles, Slack, numbers, backups, notices, usage, the iPhone's agent and the tunnel; its device is
- * Bops Cloud's to set, and another one it sends is refused; Orgo's code for turning a token down is
+ * SmileDesk Cloud's to set, and another one it sends is refused; Orgo's code for turning a token down is
  * passed on.
  */
 
@@ -191,7 +191,7 @@ test("the tunnel (one per user) refuses a computer: its upgrade is 403", async (
   assert.equal(status, 403);
 });
 
-test("a computer writes as its own device, which Bops Cloud sets: another device header is 403", async () => {
+test("a computer writes as its own device, which SmileDesk Cloud sets: another device header is 403", async () => {
   clearAuthCache();
   const u = user("device");
   const token = vm(u);

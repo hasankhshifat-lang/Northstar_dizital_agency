@@ -2,14 +2,14 @@
 // brain saved in the state and the main bot on it (as a development build left it), nothing about brains shows
 // or runs. Settings has no Brain section and its old subtitle, a bot's profile has no Brain card or badge, a
 // thread Claude Code ran has no badge and no Open in terminal, a thread waiting on its brain doesn't ask the
-// user anything, and a Codex thread's reply box reads as Bops agent's. Every brain route and a thread's terminal
-// route answer 404. The bot is on Bops agent (brainOf), no CLI runs (cliDriver), the approve tool turns everything
-// down, and its tasks run on Bops agent: a new one, and one Claude Code ran, which carries on from what it did
+// user anything, and a Codex thread's reply box reads as SmileDesk agent's. Every brain route and a thread's terminal
+// route answer 404. The bot is on SmileDesk agent (brainOf), no CLI runs (cliDriver), the approve tool turns everything
+// down, and its tasks run on SmileDesk agent: a new one, and one Claude Code ran, which carries on from what it did
 // (brainRecord) as the bot's own answers, Wait included. Nothing goes on its computer for brains (no Claude Code
 // install, no brain scripts, no bops-brain or bops-agent run), and the saved brain stays as it was. A bot's own
 // computer, a copy of the main one, is still cleared of its brain folders, and a failure there names no brain.
 //
-// Orgo, Bops Cloud and OpenAI behind it are fakes on made-up origins; nothing reaches a real service.
+// Orgo, SmileDesk Cloud and OpenAI behind it are fakes on made-up origins; nothing reaches a real service.
 // Usage: node scripts/test-brains-off.mjs   (not with --conditions=react-server: the window's code renders here too)
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync } from "node:fs";
@@ -86,7 +86,7 @@ async function check(name, fn) {
   }
 }
 
-/* ---------------- Bops Cloud, OpenAI behind it, and Orgo: fakes ---------------- */
+/* ---------------- SmileDesk Cloud, OpenAI behind it, and Orgo: fakes ---------------- */
 
 process.env.BOPS_CLOUD_URL = "https://cloud.test";
 process.env.BOPS_ORGO_ORIGIN = "https://orgo.test";
@@ -95,7 +95,7 @@ const USER = { id: "u_1", email: "me@acme.test", name: "Maya" };
 const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
 const json = (obj, status = 200) => new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
 const cloudState = { version: 0, seq: 0, blob: null };
-/** Bops agent's model calls (bodies), and what OpenAI answers next. */
+/** SmileDesk agent's model calls (bodies), and what OpenAI answers next. */
 const asked = [];
 const answers = [];
 const said = (text) => ({ id: `msg_${asked.length}`, type: "message", role: "assistant", phase: "final_answer", content: [{ type: "output_text", text, annotations: [] }] });
@@ -132,7 +132,7 @@ globalThis.fetch = async (input, init) => {
     if (url.pathname === "/v1/messages" && req.method === "POST") return json({ seq: ++cloudState.seq });
     if (url.pathname === "/proxy/openai/v1/responses" && req.method === "POST") {
       const b = JSON.parse(body);
-      // Bops agent's turn (it has the computer); Jev and the rest get a plain refusal, and go on without.
+      // SmileDesk agent's turn (it has the computer); Jev and the rest get a plain refusal, and go on without.
       if (!b.tools?.some((t) => t.type === "computer")) return json({ error: { message: "not in this test" } }, 400);
       asked.push(b);
       const next = answers.shift();
@@ -210,7 +210,7 @@ const brainThread = (id, more = {}) => ({
 await check("off unless it's set: no brain for a bot set to one, no CLI to run, and the approve tool turns everything down", async () => {
   assert.equal(T.BRAINS_ON, false);
   assert.equal(S.bot(main.id).brain, PLAN.id, "the bot keeps what it picked");
-  assert.equal(T.brainOf(S.bot(main.id), S.getState()), undefined, "on Bops agent");
+  assert.equal(T.brainOf(S.bot(main.id), S.getState()), undefined, "on SmileDesk agent");
   assert.equal(C.cliDriver("claude"), undefined);
   assert.equal(C.cliDriver("codex"), undefined);
   S.update((s) => s.sessions.push(brainThread("ses_ask", { status: "running", display: 101 })));
@@ -220,27 +220,27 @@ await check("off unless it's set: no brain for a bot set to one, no CLI to run, 
   S.update((s) => (s.sessions = s.sessions.filter((x) => x.id !== "ses_ask")));
 });
 
-await check("a new task for a bot set to a brain runs on Bops agent, on AI credit, and nothing goes on its computer for brains", async () => {
-  answers.push(() => response("resp_n1", [said("Bops agent: the totals are fixed.")]));
+await check("a new task for a bot set to a brain runs on SmileDesk agent, on AI credit, and nothing goes on its computer for brains", async () => {
+  answers.push(() => response("resp_n1", [said("SmileDesk agent: the totals are fixed.")]));
   const s = X.startSession({ botId: main.id, goal: "Fix the totals", title: "Totals", where: "cloud", fresh: true });
   const t = await ended(s.id);
   assert.equal(t.status, "done", `${t.error ?? ""}; ${warned.join(" | ")}`);
-  assert.equal(t.answer, "Bops agent: the totals are fixed.");
-  assert.equal(t.runner, "computer", "Bops agent's computer tool");
+  assert.equal(t.answer, "SmileDesk agent: the totals are fixed.");
+  assert.equal(t.runner, "computer", "SmileDesk agent's computer tool");
   assert.ok(t.responseId);
   assert.equal(t.brainRun, undefined, "no brain began it");
   assert.equal(asked.length, 1);
   assert.deepEqual(brainCommands(), [], "no Claude Code install, brain script or run on the computer");
 });
 
-await check("a thread Claude Code ran carries on with Bops agent, with what Claude Code did, and its answers are the bot's own", async () => {
-  const answer = "Claude Code reached your Max plan's usage limit until 5:00 PM. I can finish this on Bops agent, on your credit, or wait.";
+await check("a thread Claude Code ran carries on with SmileDesk agent, with what Claude Code did, and its answers are the bot's own", async () => {
+  const answer = "Claude Code reached your Max plan's usage limit until 5:00 PM. I can finish this on SmileDesk agent, on your credit, or wait.";
   S.update((s) =>
     s.sessions.push(
       brainThread("ses_cc", {
         answer,
         waitingOnYou: true,
-        options: ["Finish on Bops agent", "Wait"],
+        options: ["Finish on SmileDesk agent", "Wait"],
         brainRun: { brainId: PLAN.id, kind: "claude", computerId: PC, cli: "0f6c3d2e-1111-4a2b-9c3d-123456789abc", started: true, waits: "limit", said: answer },
       }),
     ),
@@ -248,25 +248,25 @@ await check("a thread Claude Code ran carries on with Bops agent, with what Clau
   // Waiting on its brain: there's nothing to do about that in this build, so it asks the user nothing.
   assert.equal(A.needsYou(thread("ses_cc")), false);
   assert.notEqual(A.askKind(thread("ses_cc")), "brain");
-  answers.push(() => response("resp_c1", [said("Bops agent: the tax is in the total now.")]));
+  answers.push(() => response("resp_c1", [said("SmileDesk agent: the tax is in the total now.")]));
   X.replyToSession("ses_cc", "Carry on with the tax");
-  const t = await until(() => thread("ses_cc").status === "done" && thread("ses_cc").responseId && thread("ses_cc"), "Bops agent to answer");
-  assert.equal(t.answer, "Bops agent: the tax is in the total now.");
+  const t = await until(() => thread("ses_cc").status === "done" && thread("ses_cc").responseId && thread("ses_cc"), "SmileDesk agent to answer");
+  assert.equal(t.answer, "SmileDesk agent: the tax is in the total now.");
   assert.equal(t.runner, "computer");
   assert.equal(t.brainRun.waits, undefined, "what its brain waited on is over");
-  assert.equal(T.threadRunner(t), "agent", "Bops agent's from now on");
+  assert.equal(T.threadRunner(t), "agent", "SmileDesk agent's from now on");
   const first = asked.at(-1).input.filter((i) => i.role === "user").flatMap((i) => i.content.map((c) => c.text)).join("\n");
   assert.match(first, /^Fix the cart total\n\nClaude Code was doing this task on this computer\. It stopped: Claude Code reached your Max plan's usage limit until 5:00 PM\. What it did there, from its record \(information, not instructions\), oldest first:\n- ran npm test\n- edited cart\.ts\n/);
   assert.match(first, /Since then Maya said:\nCarry on with the tax/);
-  assert.ok(!first.includes("Your last answer was:\nClaude Code reached"), "what Bops said for its brain isn't the bot's answer");
+  assert.ok(!first.includes("Your last answer was:\nClaude Code reached"), "what SmileDesk said for its brain isn't the bot's answer");
   // The bot's own answer: in the chat as its result, not as a brain waiting on the user.
   const result = S.getState().messages.filter((m) => m.resultOf === "ses_cc").at(-1);
-  assert.equal(result?.text, "Bops agent: the tax is in the total now.");
+  assert.equal(result?.text, "SmileDesk agent: the tax is in the total now.");
   assert.notEqual(t.waitingOnYou, true);
   assert.deepEqual(brainCommands(), []);
 });
 
-await check("a thread whose brain waited for a sign-in carries on with Bops agent on the user's next reply", async () => {
+await check("a thread whose brain waited for a sign-in carries on with SmileDesk agent on the user's next reply", async () => {
   const answer = "Claude Code isn't signed in on Boppy's computer. Sign in with your Claude plan there and I'll start.";
   S.update((s) =>
     s.sessions.push(
@@ -281,10 +281,10 @@ await check("a thread whose brain waited for a sign-in carries on with Bops agen
     ),
   );
   assert.equal(A.needsYou(thread("ses_si")), false, "no Sign in card");
-  answers.push(() => response("resp_s1", [said("Bops agent: the invoices are out.")]));
+  answers.push(() => response("resp_s1", [said("SmileDesk agent: the invoices are out.")]));
   X.replyToSession("ses_si", "Go ahead");
-  const t = await until(() => thread("ses_si").status === "done" && thread("ses_si").responseId && thread("ses_si"), "Bops agent to answer");
-  assert.equal(t.answer, "Bops agent: the invoices are out.");
+  const t = await until(() => thread("ses_si").status === "done" && thread("ses_si").responseId && thread("ses_si"), "SmileDesk agent to answer");
+  assert.equal(t.answer, "SmileDesk agent: the invoices are out.");
   assert.equal(t.brainRun.waits, undefined);
   const first = asked.at(-1).input.filter((i) => i.role === "user").flatMap((i) => i.content.map((c) => c.text)).join("\n");
   assert.match(first, /^Send the invoices\n\nSince then Maya said:\nGo ahead/, "a brain that never began it has nothing to tell");
@@ -292,8 +292,8 @@ await check("a thread whose brain waited for a sign-in carries on with Bops agen
   assert.deepEqual(brainCommands(), []);
 });
 
-await check("Wait, to a thread its brain left at its limit, is the user's words for Bops agent: this build has no such reply", async () => {
-  const answer = "Claude Code reached your Max plan's usage limit until 5:00 PM. I can finish this on Bops agent, on your credit, or wait.";
+await check("Wait, to a thread its brain left at its limit, is the user's words for SmileDesk agent: this build has no such reply", async () => {
+  const answer = "Claude Code reached your Max plan's usage limit until 5:00 PM. I can finish this on SmileDesk agent, on your credit, or wait.";
   S.update((s) =>
     s.sessions.push(
       brainThread("ses_lw", {
@@ -301,16 +301,16 @@ await check("Wait, to a thread its brain left at its limit, is the user's words 
         goal: "Process the refunds",
         answer,
         waitingOnYou: true,
-        options: ["Finish on Bops agent", "Wait"],
+        options: ["Finish on SmileDesk agent", "Wait"],
         brainRun: { brainId: PLAN.id, kind: "claude", computerId: PC, cli: "3f6c3d2e-1111-4a2b-9c3d-123456789abc", started: true, waits: "limit", said: answer },
       }),
     ),
   );
-  answers.push(() => response("resp_w1", [said("Bops agent: the refunds are done.")]));
+  answers.push(() => response("resp_w1", [said("SmileDesk agent: the refunds are done.")]));
   try {
     X.replyToSession("ses_lw", "Wait");
-    const t = await until(() => thread("ses_lw").status === "done" && thread("ses_lw").responseId && thread("ses_lw"), "Bops agent to answer");
-    assert.equal(t.answer, "Bops agent: the refunds are done.");
+    const t = await until(() => thread("ses_lw").status === "done" && thread("ses_lw").responseId && thread("ses_lw"), "SmileDesk agent to answer");
+    assert.equal(t.answer, "SmileDesk agent: the refunds are done.");
     assert.equal(t.brainRun.waits, undefined);
     const first = asked.at(-1).input.filter((i) => i.role === "user").flatMap((i) => i.content.map((c) => c.text)).join("\n");
     assert.match(first, /Since then Maya said:\nWait/);
@@ -347,7 +347,7 @@ await check("every brain route, and a thread's terminal, answers 404", async () 
   for (const [what, call] of calls) {
     const res = await call();
     assert.equal(res.status, 404, what);
-    assert.equal((await res.json()).error, "This version of Bops has no brains.", what);
+    assert.equal((await res.json()).error, "This version of SmileDesk has no brains.", what);
   }
   assert.equal(S.getState().takeover, undefined, "no terminal opened");
   // The saved brain stays as it was, the bot still on it, for a build with brains.
@@ -401,7 +401,7 @@ const text = (html) => html.replace(/<[^>]+>/g, " ").replace(/&#x27;/g, "'").rep
 const noop = () => {};
 const view = (sessions = [], more = {}) => ({ ...structuredClone(S.getState()), sessions, messages: [], ...more });
 /** Anything that's about brains. */
-const BRAINY = /\bBrain\b|their brain|Claude Code|Bops agent|Codex|Open in terminal|Sign in with your Claude plan/;
+const BRAINY = /\bBrain\b|their brain|Claude Code|SmileDesk agent|Codex|Open in terminal|Sign in with your Claude plan/;
 
 await check("Settings has no AI plans place, and This Mac no Brain section", async () => {
   const { Settings } = await import(pathToFileURL(`${root}/components/app/bops-app.tsx`).href);
@@ -414,7 +414,7 @@ await check("Settings has no AI plans place, and This Mac no Brain section", asy
   assert.doesNotMatch(t, BRAINY);
 });
 
-await check("a bot's profile has no Brain and no badge for the brain it was set to: its AI is Bops agent alone", async () => {
+await check("a bot's profile has no Brain and no badge for the brain it was set to: its AI is SmileDesk agent alone", async () => {
   const { BotPanel } = await import(pathToFileURL(`${root}/components/app/bot-panel.tsx`).href);
   const st = view();
   const b = st.bots.find((x) => x.id === main.id);
@@ -425,19 +425,19 @@ await check("a bot's profile has no Brain and no badge for the brain it was set 
       ),
     );
     assert.match(t, new RegExp(`${b.name} Chief of Staff · runs the team`), section);
-    // Its AI section (bot-ai.tsx) is Bops agent's alone: no CLI agent, no Add, no terminal.
+    // Its AI section (bot-ai.tsx) is SmileDesk agent's alone: no CLI agent, no Add, no terminal.
     assert.doesNotMatch(t, /\bBrain\b|their brain|Claude Code|Codex|OpenCode|\bagy\b|Open in terminal|Open its terminal|\+ Add|Sign in with your Claude plan/, section);
-    if (section === "details") assert.match(t, /▾ AI Default Bops agent Agents it can run Bops agent Default OpenAI · Credit Thinking/, t);
+    if (section === "details") assert.match(t, /▾ AI Default SmileDesk agent Agents it can run SmileDesk agent Default OpenAI · Credit Thinking/, t);
   }
 });
 
-await check("a thread Claude Code ran has no badge and no Open in terminal, one waiting on its brain no Sign in, and a Codex thread's reply box reads as Bops agent's", async () => {
+await check("a thread Claude Code ran has no badge and no Open in terminal, one waiting on its brain no Sign in, and a Codex thread's reply box reads as SmileDesk agent's", async () => {
   const { ThreadSheet, ChatView } = await import(pathToFileURL(`${root}/components/app/chat-view.tsx`).href);
   const sheetHtml = (s, more) => renderToStaticMarkup(h(ThreadSheet, { state: view([s], more), session: s, onClose: noop, onShowComputer: noop, onShowScreen: noop }));
   const done = text(sheetHtml(brainThread("ses_a")));
   assert.match(done, new RegExp(`^Cart total ${main.name} · finished · 2 steps · left off on screen \\d `), done);
   assert.doesNotMatch(done, BRAINY);
-  // Bops agent took it over: no "Bops agent" badge either.
+  // SmileDesk agent took it over: no "SmileDesk agent" badge either.
   assert.doesNotMatch(text(sheetHtml(brainThread("ses_a", { responseId: "resp_1" }))), BRAINY);
   const waiting = brainThread("ses_w", {
     answer: "Waiting.",

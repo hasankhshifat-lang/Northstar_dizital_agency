@@ -1,12 +1,12 @@
 // The made-up people, keys and test account of the local two-person stack (scripts/dev-two-person.mjs) and its
 // end-to-end test (scripts/test-browser-tab-e2e.mjs). None of it is real: the keys are plain strings only the stack's
 // fake orgo-web knows, the computer is a headless Chrome on this Mac, the account signs in to a test page the stack
-// serves. Nothing here ever reaches Orgo, Bops Cloud or any real site.
+// serves. Nothing here ever reaches Orgo, SmileDesk Cloud or any real site.
 
 /**
  * Sam's role in the shared workspace, as the fake orgo-web says it: "member" (the default: Write on the bot and Use its
  * computer, kept in the owner's state) or "admin" (TWO_PERSON_MEMBER_ROLE=admin: Orgo's Admin, with no entry of their own;
- * Bops Cloud gives an Admin every bot and its computer, cloud/ws-slice.ts viewerAccess).
+ * SmileDesk Cloud gives an Admin every bot and its computer, cloud/ws-slice.ts viewerAccess).
  */
 export const SAM_ROLE = process.env.TWO_PERSON_MEMBER_ROLE === "admin" ? "admin" : "member";
 
@@ -14,7 +14,7 @@ export const SAM_ROLE = process.env.TWO_PERSON_MEMBER_ROLE === "admin" ? "admin"
 export const OWNER = { id: "u-two-person-owner", email: "owner@two-person.test", name: "Tess Owner", key: "two-person-test-key-owner" };
 export const SAM = { id: "u-two-person-sam", email: "sam@two-person.test", name: "Sam", key: "two-person-test-key-sam" };
 
-/** The Orgo workspace (orgo-web project) the owner shares, and its Bops workspace. */
+/** The Orgo workspace (orgo-web project) the owner shares, and its SmileDesk workspace. */
 export const PROJECT = { id: "proj-two-person-acme", name: "Acme", wsId: "ws_main" };
 
 /** The bot's computer: the stand-in Chrome. Its id is a made-up UUID; its key signs the relay in as that computer. */
@@ -26,7 +26,7 @@ export const BOT = { id: "boppy", name: "Boppy" };
 /** The test site's one account (scripts/dev-two-person.mjs serves its sign-in page). */
 export const ACCOUNT = { user: "sam.test", password: "not-a-real-password-7311", name: "Sam Test at Acme" };
 
-/** The owner's state as the stack seeds it in Bops Cloud before either app starts: the bot on its computer, Sam's access. */
+/** The owner's state as the stack seeds it in SmileDesk Cloud before either app starts: the bot on its computer, Sam's access. */
 export function ownerState(now = Date.now()) {
   return {
     account: { user: { id: OWNER.id, email: OWNER.email, name: OWNER.name } },

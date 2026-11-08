@@ -217,7 +217,7 @@ function Prose({ text }: { text: string }) {
 /** Light inline markdown: **bold** and [links](url). */
 function Inline({ text }: { text: string }) {
   // Links open as a tab on the right; ⌘-click still opens your browser. A page a bot made opens there too.
-  // So does a file it linked: Bops fetches it from the bot's computer (or this Mac) first, as the link itself goes nowhere.
+  // So does a file it linked: SmileDesk fetches it from the bot's computer (or this Mac) first, as the link itself goes nowhere.
   // A web page in a bot's message opens in that bot's browser, for someone who may use it (its session, its sign-ins).
   const openLink = useContext(OpenLink);
   const openLocal = useContext(OpenBotLocal);
@@ -238,7 +238,7 @@ function Inline({ text }: { text: string }) {
     setFailed(null);
     const res = await fetch("/api/files", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ botId, href }) }).catch(() => null);
     const r = ((await res?.json().catch(() => ({}))) ?? {}) as { url?: string; error?: string };
-    if (!r.url) return setFailed(res ? (r.error ?? "Couldn't open that file.") : "Couldn't reach Bops.");
+    if (!r.url) return setFailed(res ? (r.error ?? "Couldn't open that file.") : "Couldn't reach SmileDesk.");
     const url = new URL(r.url, window.location.href).href;
     if (browser || !openLink) window.open(url, "_blank");
     else openLink(url, label);
@@ -420,7 +420,7 @@ export function ChatView({
   const setShown = (f: (n: number) => number) => setWindow({ chat: c.id, shown: f(shown) });
   const hiddenCount = Math.max(0, messages.length - shown);
   const visible = hiddenCount ? messages.slice(hiddenCount) : messages;
-  // A shared workspace's chat with older messages in Bops Cloud than the window has: read a page more as
+  // A shared workspace's chat with older messages in SmileDesk Cloud than the window has: read a page more as
   // the ones here run out (lib/server/shared-core.ts SharedCopy.older).
   const olderThere = !!state.shared?.more?.includes(c.id);
   const showEarlier = () => {
@@ -511,7 +511,7 @@ export function ChatView({
   const repliedAfterUser = messages.slice(lastUserIdx + 1).some((m) => m.role === "bot");
   // Compact (the chat's menu): every message up to now into the chat's summary, and its bots read it afresh from here
   // (lib/server/chat-summary.ts). The owner's, and in a shared workspace a member's with Write on every bot in it, as
-  // saying something there takes (through the owner's Bops: shared-act.ts). Off while a bot answers, or with nothing new.
+  // saying something there takes (through the owner's SmileDesk: shared-act.ts). Off while a bot answers, or with nothing new.
   const mayCompact = !readOnly(state, c.botIds);
   const [compacting, setCompacting] = useState<{ chat: string; error?: string } | null>(null);
   const compactingHere = compacting?.chat === c.id ? compacting : null;
@@ -572,7 +572,7 @@ export function ChatView({
   // goes where the chat's bot works: in a group, the main bot's (else its first bot's) computer.
   const fileBot = solo ?? members.find((m) => m.isMain) ?? members[0];
   // In a workspace shared with the user, that computer is the owner's: a file goes there for an Admin, who has Write on
-  // the chat's bots and Use its computer (Bops Cloud checks it again: cloud/members.ts filesIn; Orgo's uploads take no
+  // the chat's bots and Use its computer (SmileDesk Cloud checks it again: cloud/members.ts filesIn; Orgo's uploads take no
   // Member yet: FILES_ADMINS_ONLY), and a picture goes as a file too, since one for the model to look at would stay on
   // this Mac. Anyone else adding one is told why.
   const filesWhy = !state.shared
@@ -650,7 +650,7 @@ export function ChatView({
     const text = draft.trim();
     if (!text && !attaching.length) return;
     // In a shared workspace (the viewer has Write on every bot here): their words, and the files they put on the owner's
-    // computer, go to the owner's Bops through Bops Cloud (shared-act.ts), shown as theirs at once. Pictures for the model
+    // computer, go to the owner's SmileDesk through SmileDesk Cloud (shared-act.ts), shown as theirs at once. Pictures for the model
     // stay on this Mac (view-only.ts uploads): the box adds them as files here.
     if (state.shared) {
       if (attaching.some((a) => a.kind === "image")) return setMicError("Pictures can't be sent in a shared workspace.");
@@ -665,7 +665,7 @@ export function ChatView({
       const mine = { id: `pending_${Date.now()}`, chatId, text, at: Date.now(), files: filed.length ? filed : undefined };
       setPending((p) => [...p, mine]);
       setSent((x) => [...x.slice(-19), { chatId, text, at: mine.at }]);
-      // Once its files are on the owner's computer, after the message sent before it: Bops Cloud names them on the message.
+      // Once its files are on the owner's computer, after the message sent before it: SmileDesk Cloud names them on the message.
       await inTurn(chatId, async () => {
         const got = await Promise.all(items.map((a) => a.done));
         const files = got.flatMap((x) => (x && "file" in x ? [x.file] : []));
@@ -673,7 +673,7 @@ export function ChatView({
         if (text || files.length) {
           const r = await memberAct({ act: "chat", chatId, text, ...(replyTo ? { replyTo } : {}), ...(files.length ? { files } : {}) });
           if (!r.ok && r.error) setMicError(r.error);
-          // (Refused before it was kept to try again under their message: a file not ready anymore, Bops not reached.)
+          // (Refused before it was kept to try again under their message: a file not ready anymore, SmileDesk not reached.)
           if (!r.ok && r.unsent) backInBox(chatId, text, was);
         }
         setPending((p) => p.filter((x) => x.id !== mine.id));
@@ -718,7 +718,7 @@ export function ChatView({
       const res = await post(`/api/chats/${encodeURIComponent(chatId)}/messages`, { text, replyTo, images: images.length ? images : undefined, files: files.length ? files : undefined, lookingAt, ...(pick ? { agent: pick } : {}), ...(aboutApp ? { appNote: true } : {}), ...(picks.length ? { picks } : {}) })
         .finally(drop)
         .catch(() => null);
-      // Not taken (a file not ready anymore, Bops Cloud not reached): said under the box, and the words put back, never gone without a word.
+      // Not taken (a file not ready anymore, SmileDesk Cloud not reached): said under the box, and the words put back, never gone without a word.
       if (!res?.ok) {
         setMicError(((await res?.json().catch(() => null)) as { error?: string } | null)?.error ?? "That didn't send. Try again.");
         backInBox(chatId, text, was);
@@ -977,7 +977,7 @@ export function ChatView({
             const tb = state.bots.find((x) => x.id === b);
             // Waiting on a teammate's answer: "Asking ● Max…" over the typing dots.
             const asking = c.asking?.[b] ? state.bots.find((x) => x.id === c.asking![b]) : undefined;
-            // Its computer waking up to answer (Bops Cloud's turn: cloud/turns.ts).
+            // Its computer waking up to answer (SmileDesk Cloud's turn: cloud/turns.ts).
             const waking = state.liveMoods?.[b]?.waking && state.liveMoods[b].chatId === c.id;
             // Rises in when the bot starts typing; one already typing as the chat opens is just there.
             return (
@@ -1434,13 +1434,13 @@ function CompactIcon() {
   );
 }
 
-/** What a Compact that didn't go says, when Bops said nothing more. */
+/** What a Compact that didn't go says, when SmileDesk said nothing more. */
 const DIDNT_COMPACT = "That didn't compact. Try again.";
 
 /** A Compact's answer from the app's own route: ok, or what it said went wrong. */
 async function answered(res: Promise<Response>): Promise<{ ok: boolean; error?: string }> {
   const r = await res.catch(() => null);
-  if (!r) return { ok: false, error: "Couldn't reach Bops. Try again." };
+  if (!r) return { ok: false, error: "Couldn't reach SmileDesk. Try again." };
   if (r.ok) return { ok: true };
   return { ok: false, error: ((await r.json().catch(() => ({}))) as { error?: string }).error || DIDNT_COMPACT };
 }
@@ -1567,7 +1567,7 @@ const reactionKey = (r: NonNullable<Message["reactions"]>[number]) => `${r.by}:$
 const QUICK_EMOJI = ["🔥", "🙏", "👀", "🎉"];
 
 /** The latest message in each chat and for each watch, worked out once per state (not once per message drawn). */
-/** The newest message said in each chat (a person's or a bot's: Bops' own notes after it don't count), and each watch's newest. */
+/** The newest message said in each chat (a person's or a bot's: SmileDesk's own notes after it don't count), and each watch's newest. */
 const lastsCache = new WeakMap<Message[], { saidByChat: Map<string, string>; byWatch: Map<string, string> }>();
 function lasts(all: Message[]) {
   let v = lastsCache.get(all);
@@ -1583,7 +1583,7 @@ function lasts(all: Message[]) {
 }
 
 /**
- * How one of the viewer's own words in a shared workspace stands until the owner's Bops has written it
+ * How one of the viewer's own words in a shared workspace stands until the owner's SmileDesk has written it
  * (Message.memberSend, ThreadReply.memberSend): on its way, waiting for the workspace's Mac to open (REPLY_WAITS_LINE), or not sent,
  * with why and Try again (the same act, by its key: it's never done twice).
  */
@@ -2075,7 +2075,7 @@ function MessageRow({ m, state, showSender, continued, sessionById, chipIds, onO
             <div className="flex flex-col items-start gap-1">
               {/* Pictures the bot made (make_image). */}
               {!!m.images?.length && <MessageImages images={m.images} align="start" />}
-              {/* What a task changed in one of the owner's apps (app-change.tsx), in place of its words, which an older Bops shows. */}
+              {/* What a task changed in one of the owner's apps (app-change.tsx), in place of its words, which an older SmileDesk shows. */}
               {m.appChange && appsOwnShown(state) ? (
                 <AppChangeCard m={m} state={state} />
               ) : (
@@ -2174,7 +2174,7 @@ export function PairSheet({ state, pairId, focusId, onClose }: { state: AppState
     .filter(Boolean) as Bot[];
   const messages = state.messages.filter((m) => m.chatId === pairId);
   const list = useRef<HTMLDivElement>(null);
-  // In a shared workspace Bops Cloud may have older messages of it than the window (lib/server/shared-core.ts
+  // In a shared workspace SmileDesk Cloud may have older messages of it than the window (lib/server/shared-core.ts
   // SharedCopy.older): a page more is read while the exchange it was opened at isn't here yet, and on Show earlier messages.
   const olderThere = !!state.shared?.more?.includes(pairId);
   const found = !focusId || messages.some((m) => m.id === focusId);
@@ -2458,7 +2458,7 @@ function SessionChip({ session: s, state, onClick }: { session: Session; state: 
       className="flex max-w-full items-center gap-[9px] rounded-[14px] bg-white py-[9px] pl-3 pr-3.5 text-left shadow-[0_0_0_1px_#E6E6E3] hover:shadow-[0_0_0_1px_#C9C9C6]"
     >
       <StatusIcon session={s} size={14} dark owner={!!state.shared && !theirs} member={theirs} okWait={waitsForOk(s, state)} />
-      {/* The agent that runs it (lib/agents.ts): its mark before the title, where its bot runs more than Bops agent,
+      {/* The agent that runs it (lib/agents.ts): its mark before the title, where its bot runs more than SmileDesk agent,
           titled with how it pays ("Claude Code · Opus 5.5 · your Max plan"), and named for a screen reader. */}
       {mark && (
         <span title={[agentWords.label, agentWords.pays, badge?.kind === "agent" ? badge.title : ""].filter(Boolean).join(" · ")} className="flex shrink-0">
@@ -2510,7 +2510,7 @@ function timeline(s: Session): Line[] {
       else lines.push({ kind: "steps", at: st.at, steps: [st] });
     }
   }
-  // Passed on from outside Bops (someone's email): shown as that, not as the user's words.
+  // Passed on from outside SmileDesk (someone's email): shown as that, not as the user's words.
   for (const r of s.replies)
     lines.push(r.note ? { kind: "event", at: r.at, text: r.note } : r.from ? { kind: "event", at: r.at, text: `Passed on from ${r.from}: ${r.text}` } : { kind: "reply", at: r.at, role: r.role, text: r.text, ...(r.member ? { member: r.member } : {}), ...(r.memberSend ? { memberSend: r.memberSend } : {}) });
   if (!s.replies.length && s.answer) lines.push({ kind: "reply", at: s.endedAt ?? Date.now(), role: "bot", text: s.answer });
@@ -2596,7 +2596,7 @@ export function ThreadSheet({
     end.current?.scrollIntoView({ block: "end" });
   }, [lines.length, s.status]);
 
-  // In a shared workspace (the viewer has Write on its bot), through Bops Cloud to the owner's Bops (shared-act.ts).
+  // In a shared workspace (the viewer has Write on its bot), through SmileDesk Cloud to the owner's SmileDesk (shared-act.ts).
   const writes = canAct(state, [s.botId]);
   // Compact (its menu): its brain folds what it has so far, now, where it takes the ask (lib/types.ts threadCompacts), as
   // replying in it takes. Off while it runs, or with nothing said since the last one.
@@ -2660,7 +2660,7 @@ export function ThreadSheet({
               Open in terminal
             </button>
           )}
-          {/* Stop for a viewer with Write on its bot (through the owner's Bops); deleting stays the owner's. */}
+          {/* Stop for a viewer with Write on its bot (through the owner's SmileDesk); deleting stays the owner's. */}
           {state.shared ? (
             writes && live(s) && (
               <button disabled={!!s.stopAsked} onClick={() => void memberAct({ act: "stop", sessionIds: [s.id] }).then((r) => setStopError(r.ok ? null : (r.error ?? "That didn't go. Try again.")))} className="rounded-full px-3 py-1.5 text-[13px] font-medium shadow-[0_0_0_1px_#E6E6E3] hover:bg-[#F7F7F6] disabled:opacity-50">
@@ -2807,7 +2807,7 @@ export function ThreadSheet({
                 <div className="whitespace-pre-wrap rounded-[18px] bg-white px-3.5 py-2 text-[14px] leading-5 text-ink shadow-[0_0_0_1px_#E2E2DF] [overflow-wrap:anywhere]">{l.text}</div>
               </div>
             ) : l.role === "user" && l.memberSend ? (
-              // The viewer's own reply in a shared workspace, on its way to the owner's Bops: how it stands under it.
+              // The viewer's own reply in a shared workspace, on its way to the owner's SmileDesk: how it stands under it.
               <div key={i} className="flex max-w-[80%] flex-col items-end gap-0.5 self-end">
                 <div className="whitespace-pre-wrap rounded-[18px] bg-ink px-3.5 py-2 text-[14px] leading-5 text-white">{l.text}</div>
                 <MemberSendLine send={l.memberSend} retry={(key) => void memberAct({ act: "reply", sessionId: s.id, text: l.text }, key)} />
@@ -2866,7 +2866,7 @@ export function ThreadSheet({
         {readOnly(state, [s.botId]) ? (
           <ReadOnlyLine state={state} botIds={[s.botId]} className="mx-3 mb-3" />
         ) : !writesThread(state, s) ? (
-          // With Write on its bot, but it runs on the owner's Mac: a member's words never reach work there (Bops Cloud refuses them).
+          // With Write on its bot, but it runs on the owner's Mac: a member's words never reach work there (SmileDesk Cloud refuses them).
           <div data-read-only className="mx-3 mb-3 rounded-[14px] bg-[#F7F7F5] px-3.5 py-2.5 text-center text-[13px] leading-[18px] text-[#6B6B6B]">
             This runs on the owner&apos;s Mac. Only the owner can tell it more.
           </div>
@@ -3088,7 +3088,7 @@ function CloudIcon() {
 /**
  * Where an undecided thread runs (Session.askWhere), picked: the owner's Mac or the bot's computer in their own workspace;
  * in a shared one an Admin picks the bot's computer only (the owner's Mac stays theirs), sent as their act (shared-act.ts),
- * which the owner's Bops does as the owner's own pick. What didn't go says why.
+ * which the owner's SmileDesk does as the owner's own pick. What didn't go says why.
  */
 function WhereButtons({ state, session: s, botName }: { state: AppState; session: Session; botName: string }) {
   const [busy, setBusy] = useState(false);
@@ -3155,10 +3155,10 @@ function NeedsYouCard({
   const [error, setError] = useState<string | null>(null);
   const b = state.bots.find((x) => x.id === s.botId);
   const name = b?.name ?? "The bot";
-  // In a shared workspace, answered through Bops Cloud on the owner's Bops (shared-act.ts), as the owner's own taps would
+  // In a shared workspace, answered through SmileDesk Cloud on the owner's SmileDesk (shared-act.ts), as the owner's own taps would
   // be, by whoever may (lib/shared.ts threadAnswerer); anyone else gets the line saying who can, never buttons that do nothing.
   const writes = canAct(state, [s.botId]);
-  // The viewer's own answer here since the bot last asked, as it stands until the owner's Bops has it (a shared
+  // The viewer's own answer here since the bot last asked, as it stands until the owner's SmileDesk has it (a shared
   // workspace: ThreadReply.memberSend): on its way the card waits, saying so; one that didn't go says why. Read from
   // the window's state, not this card's: it may have been shut and opened again meanwhile.
   const lastBot = [...s.replies].reverse().find((r) => r.role === "bot")?.at ?? 0;
@@ -3184,7 +3184,7 @@ function NeedsYouCard({
   };
   const kind = askKind(s);
   const answerer = threadAnswerer(state, s, kind);
-  // Dismiss is theirs as telling the thread more is (Bops Cloud refuses it on the owner's Mac, or a computer they can't use).
+  // Dismiss is theirs as telling the thread more is (SmileDesk Cloud refuses it on the owner's Mac, or a computer they can't use).
   const mayDismiss = tellsThread(state, s);
   const failed = kind === "failed";
   const display = s.display ?? s.lastDisplay;
@@ -3335,7 +3335,7 @@ function NeedsYouCard({
         )}
       </div>
       )}
-      {/* A reply or Dismiss waits only a while for the owner's Bops (then says it didn't go): never the answer line's promise. */}
+      {/* A reply or Dismiss waits only a while for the owner's SmileDesk (then says it didn't go): never the answer line's promise. */}
       {going && <span className="pl-1 text-[12px] leading-4 text-[#9A9A98]">{sent?.state === "sending" ? "Sending…" : REPLY_WAITS_LINE}</span>}
       {shownError && (
         <span role="alert" className="pl-1 text-[12px] leading-4 text-[#B42318]">
@@ -3353,7 +3353,7 @@ function NeedsYouCard({
  */
 function AnsweredLine({ message: m, session: s, state }: { message: Message; session?: Session; state: AppState }) {
   if (!s) return null;
-  // The answer: never what a bot passed on (`from`: a computer's runner may add one) nor a note of Bops'.
+  // The answer: never what a bot passed on (`from`: a computer's runner may add one) nor a note of SmileDesk's.
   const answer = s.replies.find((r) => r.role === "user" && !r.from && !r.note && r.at > m.at && r.memberSend?.state !== "failed");
   // Dismissed by a member: the reason names them ("Dismissed by Sam": member-acts.ts); else by the owner.
   const by = /^Dismissed by (?!you$|the owner$)(.+)$/.exec(s.error ?? "")?.[1];
@@ -3381,14 +3381,14 @@ const CHANNEL_NAME: Record<string, string> = { slack: "Slack", telegram: "Telegr
 
 /**
  * A request for your OK, like OpenCode's permission dock: "<Bot> wants to <action>" (a call with a key: "<Bot> wants to:
- * <its reason>" when it gave one, over Bops' own line for the service and the kind of change, the call under Details: keys.tsx
+ * <its reason>" when it gave one, over SmileDesk's own line for the service and the kind of change, the call under Details: keys.tsx
  * ApiAsk), exactly what will happen, and
  * Deny (with "Tell the bot what to do instead", which it's told), Always allow (Claude Code's "don't ask again": a
  * rule for the bot and this action, whoever it's for and whatever it says, which the card says under the buttons:
- * lib/permission.ts alwaysScope) and Allow once. Shown on every Bops of yours, wherever its run
+ * lib/permission.ts alwaysScope) and Allow once. Shown on every SmileDesk of yours, wherever its run
  * runs (a bot's computer too): the run waits for your reply and goes on from there (lib/server/permission.ts). In a
  * shared workspace it's answered by whoever may (lib/shared.ts askAnswerer: Write on its bot; the owner's apps, keys or
- * Mac only for an Admin), sent to where the run waits through the owner's Bops; anyone else reads it all, with a line
+ * Mac only for an Admin), sent to where the run waits through the owner's SmileDesk; anyone else reads it all, with a line
  * saying who can in place of the buttons.
  */
 function AppApprovalCard({ state, approval: a, className = "" }: { state: AppState; approval: AppApproval; className?: string }) {
@@ -3411,7 +3411,7 @@ function AppApprovalCard({ state, approval: a, className = "" }: { state: AppSta
   const decide = async (reply: "once" | "always" | "reject", message?: string) => {
     setBusy(true);
     const note = message?.trim() ? { message: message.trim() } : {};
-    // In a shared workspace, a viewer with Write on its bot answers through the owner's Bops (shared-act.ts): named as theirs there.
+    // In a shared workspace, a viewer with Write on its bot answers through the owner's SmileDesk (shared-act.ts): named as theirs there.
     if (state.shared) {
       const r = await memberAct({ act: "answer", askId: a.id, reply, ...note });
       setError(r.ok ? null : (r.error ?? null));
@@ -3441,7 +3441,7 @@ function AppApprovalCard({ state, approval: a, className = "" }: { state: AppSta
         {b && <Mascot botId={b.id} color={b.color} size={26} />}
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="text-[13.5px] font-semibold leading-[18px] [overflow-wrap:anywhere]">{askHeadline(name, { action: a.action, reason: a.reason && undash(a.reason) })}</span>
-          {/* Bops' own words for the call, from its service and method: never the bot's reason, which can be wrong or planted. */}
+          {/* SmileDesk's own words for the call, from its service and method: never the bot's reason, which can be wrong or planted. */}
           {api && (
             <span data-ask-facts className={`text-[12px] leading-4 [overflow-wrap:anywhere] ${apiDeletes(api) ? "text-[#B42318]" : "text-[#6B6B6B]"}`}>
               {apiFacts(api)}
@@ -3524,7 +3524,7 @@ function AppApprovalCard({ state, approval: a, className = "" }: { state: AppSta
  * The user's credit is used up (state.credits): the bots are paused until there's more. Upgrade opens
  * the Account sheet. Billed by use (`usage`), it's their Orgo credit and the button says Add credit (the
  * sheet's Add credit on Orgo); `computer`: only the computer can't wake for want of it. While it shows,
- * Bops asks Orgo again whenever the app comes back to the front (the user may have just paid in the
+ * SmileDesk asks Orgo again whenever the app comes back to the front (the user may have just paid in the
  * browser), and the card goes once there's credit.
  */
 function OutOfCredit({ credits, onUpgrade }: { credits: NonNullable<AppState["credits"]>; onUpgrade?: () => void }) {

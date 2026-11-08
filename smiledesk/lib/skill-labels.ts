@@ -1,7 +1,7 @@
 /*
  * Skills grouped by label, so a bot with many skills looks at a few labels first, opens the one that fits
  * the job, and only then reads a skill. Every skill has one label (SkillRef.label; one it never got is
- * UNSORTED). Bops ships some skills of its own, in labels of their own (lib/builtin-skills.ts BUILTIN_SKILLS),
+ * UNSORTED). SmileDesk ships some skills of its own, in labels of their own (lib/builtin-skills.ts BUILTIN_SKILLS),
  * which every bot has and nobody edits: the first is APPS_LABEL, for building, versioning and deploying an
  * app with Ingot. Imported by the window and the Mac server.
  */
@@ -34,7 +34,7 @@ export const sameLabel = (a: string, b: string) => cleanLabel(a).toLowerCase() =
 
 /**
  * One label as a bot or the Skills page sees it. `about`: one line on what its skills are for (the
- * built-in labels' own; a workspace label's is its skills' names). `builtin`: Bops' own.
+ * built-in labels' own; a workspace label's is its skills' names). `builtin`: SmileDesk's own.
  */
 export type SkillGroup = { label: string; about: string; builtin: boolean; count: number; slugs: string[] };
 
@@ -53,7 +53,7 @@ export const labelInfoOf = (info: SkillLabelInfo[] | undefined, label: string) =
 
 /**
  * Whether a bot has one of its workspace's skills, the one rule every list, read, copy to a computer and
- * count keeps (Bops' own skills are every bot's, always, and never come here): the skill's own bot list
+ * count keeps (SmileDesk's own skills are every bot's, always, and never come here): the skill's own bot list
  * when it names any (SkillRef.botIds, orgo-web's skills.bot_ids); else the bot's labels (Bot.skillLabels,
  * orgo-web's bops_bots.skill_labels), unset being every label, or the skill's label among them.
  */

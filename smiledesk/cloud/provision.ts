@@ -134,7 +134,7 @@ export async function ensurePlanPhone(userId: string, main: MainBot): Promise<{ 
       number?.agentId ??
       (kept && number ? kept.agent_id : null) ??
       agents.find((a) => a.description === tag)?.id ??
-      (await ap<{ id: string }>("POST", "/v1/agents", { name: `${main.bot.name} (Bops)`, description: tag, voiceMode: "webhook", enableMessaging: true })).id;
+      (await ap<{ id: string }>("POST", "/v1/agents", { name: `${main.bot.name} (SmileDesk)`, description: tag, voiceMode: "webhook", enableMessaging: true })).id;
     const bought = !number;
     if (!number) {
       number = await ap<ApNumber>("POST", "/v1/numbers", { country: "US", areaCode: config.phoneArea(), type: "sms", externalId: tag, agentId });
@@ -195,7 +195,7 @@ export async function ensurePlanPhone(userId: string, main: MainBot): Promise<{ 
             ? "its calls don't go to its agent"
             : "AgentPhone didn't say where its calls go"
           : webhook.url !== hookUrl
-            ? "its texts and calls don't come to Bops Cloud"
+            ? "its texts and calls don't come to SmileDesk Cloud"
             : null;
     await setLine(digits, problem ? "broken" : "ready", problem);
   } catch (e) {
@@ -380,7 +380,7 @@ export async function resumePaidLine(digits: string, paidUntil: string, month: s
 }
 
 /**
- * The user is no longer billed by use (orgo-web moved them back to Bops' plans): their numbers paused
+ * The user is no longer billed by use (orgo-web moved them back to SmileDesk's plans): their numbers paused
  * for a month are back on, since nothing bills a number by the month there. What came back.
  */
 export async function resumeUnbilledLines(): Promise<(UnpaidLine & { user_id: string })[]> {

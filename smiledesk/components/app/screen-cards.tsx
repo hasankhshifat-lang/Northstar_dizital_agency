@@ -6,7 +6,7 @@ import { Mascot } from "./mascot";
 import { post } from "./ui";
 
 /*
- * Generative cards: native Bops UI drawn over the bot's real page when Jev reads something on it
+ * Generative cards: native SmileDesk UI drawn over the bot's real page when Jev reads something on it
  * that needs the user. Each card is wired to the page itself, so acting here acts there.
  */
 
@@ -20,7 +20,7 @@ const host = (url: string) => {
 
 /**
  * "Sign in for Otto": the page's own sign-in or code fields, as Jev matched them. What the user types
- * goes straight into the page; Bops never keeps it and no model sees it. Multi-step sign-ins
+ * goes straight into the page; SmileDesk never keeps it and no model sees it. Multi-step sign-ins
  * (email, then password, then a code) redraw the card for each step.
  */
 export function SignInCard({
@@ -128,7 +128,7 @@ export function SignInCard({
           </button>
         </div>
         <span className="text-[11px] leading-[15px] text-[#9A9A98]">
-          Goes straight into the page on {b.name}&apos;s screen. {save ? "Saved logins stay in your Mac's Keychain." : "Bops doesn't keep it."} No AI sees it.
+          Goes straight into the page on {b.name}&apos;s screen. {save ? "Saved logins stay in your Mac's Keychain." : "SmileDesk doesn't keep it."} No AI sees it.
         </span>
       </form>
     </CardShell>

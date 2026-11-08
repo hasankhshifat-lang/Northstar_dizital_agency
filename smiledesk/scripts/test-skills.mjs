@@ -11,7 +11,7 @@
 // never pulled back meanwhile, and sent after a restart, as is a create or an edit Orgo hadn't taken; one
 // deleted on Orgo deleted here, unless changed here since; a deleted bot taken off Orgo's copy; a sync that
 // reads only what changed since the last (?since=) with orgo-web's record of deletions, so several Macs agree
-// on what was deleted; script approvals sent with the Bops sign-in key through an outbox on disk, after the
+// on what was deleted; script approvals sent with the SmileDesk sign-in key through an outbox on disk, after the
 // skill's own sync, and orgo.ai's approvals and revokes taken here). Programs: a binary file kept byte for byte (on disk, on a computer, sent as content_base64,
 // brought back from a presigned url and checked by its sha256), an archive refused, the bundle hash orgo-web's. orgo-web is a fake (a local server), the Keychain is never there, and the state and
 // folders live in a throwaway folder: nothing reaches a real service. The keys in it are made up.
@@ -116,7 +116,7 @@ const server = createServer(async (req, res) => {
     return res.end("<!doctype html><title>404</title>");
   }
   const [, pid, sid, sub] = m;
-  // Script approvals (app/api/projects/[id]/skills/approvals/route.ts): only with the person's Bops sign-in key.
+  // Script approvals (app/api/projects/[id]/skills/approvals/route.ts): only with the person's SmileDesk sign-in key.
   if (sid === "approvals" && !sub) {
     const mine = () => [...remote.approvals.values()].filter((a) => a.pid === pid).map(unscoped);
     if (req.method === "GET") return send(res, 200, { approvals: mine() });
@@ -215,7 +215,7 @@ const route = async (body, method = "POST") => {
 
 S.update((s) => {
   s.owner = { name: "Tiger" };
-  // Signed in with an @orgo.ai email: Bops' own skills for apps are every bot's (lib/apps-access.ts).
+  // Signed in with an @orgo.ai email: SmileDesk's own skills for apps are every bot's (lib/apps-access.ts).
   s.account = { user: { id: "u_tiger", email: "ava@orgo.ai" }, signedInAt: 0 };
   s.workspaces = [
     { id: "ws_main", name: "bops", createdAt: 0 },
@@ -251,7 +251,7 @@ await check("SKILL.md: frontmatter read (lists, a nested map, block text, quotes
   assert.deepEqual(again.frontmatter, p.frontmatter, "rendered and read back, the same");
   assert.match(B.renderSkillMd(p.frontmatter, p.body), /^---\nname: vm-health\ndescription: "Checks a VM\.\\nUse when \\"is it up\\"\."\nversion: "1\.2\.0"\n/, "name, description, version first; the version quoted");
   assert.deepEqual(B.parseSkillMd("no frontmatter here"), { ok: true, frontmatter: null, body: "no frontmatter here" });
-  assert.deepEqual(B.parseSkillMd("---\n: what\n---\n"), { ok: false, reason: "frontmatter is not YAML Bops can read" });
+  assert.deepEqual(B.parseSkillMd("---\n: what\n---\n"), { ok: false, reason: "frontmatter is not YAML SmileDesk can read" });
 });
 
 await check("The secret scanner: each kind by path, line and kind, never the text; placeholders and vault names pass", async () => {
@@ -281,7 +281,7 @@ await check("A new skill is a folder and a draft: its bots don't see it until it
   assert.equal(readFileSync(join(dir, "SKILL.md"), "utf8"), '---\nname: weekly-report\ndescription: "Sums up the week when asked for \\"the weekly report\\""\n---\n\n# Weekly report\n\n1. Read the chat.\n');
   assert.notEqual(statSync(join(dir, "scripts", "sum.sh")).mode & 0o111, 0, "its script executable in its folder");
   assert.deepEqual(W.skillsFor("boppy"), [], "a draft isn't any bot's yet");
-  assert.equal(W.readSkill("boppy", "Weekly report"), 'No skill called "Weekly report". Your labels: Apps and source control (5). Open one with read_skill and label to see its skills.', "Bops' own only");
+  assert.equal(W.readSkill("boppy", "Weekly report"), 'No skill called "Weekly report". Your labels: Apps and source control (5). Open one with read_skill and label to see its skills.', "SmileDesk's own only");
   // The same name again: its own slug.
   const twin = W.createSkill("ws_main", { name: "Weekly report", description: "Another", body: "# Two\n" }).ref;
   assert.equal(twin.slug, "weekly-report-2");
@@ -478,7 +478,7 @@ await check("The prompts list skills and apps under their labels: up to 15 of it
   assert.match(many, /\n- Unsorted \(21\): Orgo doctor \(app\), Many 0, Many 1, /);
   assert.doesNotMatch(many, /Number \d/, "past 15 of its own, no descriptions: read_skill with the label lists them");
   for (let i = 0; i < 20; i++) await W.deleteSkill("ws_main", "skill", `many-${i}`);
-  // Signed in as someone apps aren't open to (lib/apps-access.ts): the same list without Bops' own for apps.
+  // Signed in as someone apps aren't open to (lib/apps-access.ts): the same list without SmileDesk's own for apps.
   const was = S.getState().account;
   S.update((s) => (s.account = { user: { id: "u_2", email: "tiger@example.com" }, signedInAt: 0 }));
   try {
@@ -632,7 +632,7 @@ await check("Drafts and deletes reach Orgo: a draft goes by itself; a delete Org
   O.outboxForTests.writeAll();
   assert.ok(!existsSync(file), "nothing left to send");
 
-  // Deleted while Orgo doesn't take it, then Bops quits: the delete goes after the next start.
+  // Deleted while Orgo doesn't take it, then SmileDesk quits: the delete goes after the next start.
   const second = W.createSkill("ws_two", { name: "Restart check", description: "Checks restarts", body: "# Restart check\n" }).ref;
   clearTimers();
   await W.syncSkills("ws_two");
@@ -659,7 +659,7 @@ await check("Drafts and deletes reach Orgo: a draft goes by itself; a delete Org
   clearTimers();
 });
 
-await check("A create or an edit Orgo hadn't taken when Bops quit goes at the next start (workspaces.ts startProjectBinding)", async () => {
+await check("A create or an edit Orgo hadn't taken when SmileDesk quit goes at the next start (workspaces.ts startProjectBinding)", async () => {
   const Wk = await import(`${root}/lib/server/workspaces.ts`);
   const clearTimers = () => {
     for (const t of globalThis.bopsSkillsSync?.values() ?? []) clearTimeout(t);
@@ -667,7 +667,7 @@ await check("A create or an edit Orgo hadn't taken when Bops quit goes at the ne
     globalThis.bopsSkillsTries?.clear();
   };
   clearTimers();
-  // Made and edited here, and Bops quit before the sync's timer went off (it lives in memory only).
+  // Made and edited here, and SmileDesk quit before the sync's timer went off (it lives in memory only).
   const made = W.createSkill("ws_two", { name: "Quit check", description: "Checks a quit", body: "# Quit check\n" }).ref;
   clearTimers();
   remote.calls = [];
@@ -784,7 +784,7 @@ await check("Several Macs agree: a sync reads only what changed since the last (
   clearTimers();
 });
 
-await check("Script approvals reach Orgo with the Bops sign-in key: approved and revoked through an outbox kept on disk, one whose skill isn't on Orgo yet sent after its sync, orgo.ai's taken here, its revokes too", async () => {
+await check("Script approvals reach Orgo with the SmileDesk sign-in key: approved and revoked through an outbox kept on disk, one whose skill isn't on Orgo yet sent after its sync, orgo.ai's taken here, its revokes too", async () => {
   const O = await import(`${root}/lib/server/sync-outbox.ts`);
   const clearTimers = () => {
     for (const t of globalThis.bopsSkillsSync?.values() ?? []) clearTimeout(t);
@@ -802,13 +802,13 @@ await check("Script approvals reach Orgo with the Bops sign-in key: approved and
   clearTimers();
   await W.syncSkills("ws_two");
   const shaGo = sha(Buffer.from(script.content));
-  // Approved in the Bops window: Orgo has it, with its path.
+  // Approved in the SmileDesk window: Orgo has it, with its path.
   remote.calls = [];
   W.approveScript("ws_two", shaGo);
   await wait(() => remote.approvals.has(`p_two:${shaGo}`));
   const posted = remote.calls.find((c) => c.method === "POST" && c.path === "/api/workspaces/p_two/skills/approvals");
   assert.deepEqual(posted.body, { sha256: shaGo, path_hint: "scripts/go.sh" });
-  assert.equal(posted.auth, `Bearer ${ORGO_KEY}`, "the key Bops signed in with");
+  assert.equal(posted.auth, `Bearer ${ORGO_KEY}`, "the key SmileDesk signed in with");
   await wait(() => S.getState().workspaces.find((w) => w.id === "ws_two").approvals.find((a) => a.sha256 === shaGo)?.synced);
   assert.equal(S.getState().workspaces.find((w) => w.id === "ws_two").approvals.find((a) => a.sha256 === shaGo).synced, true);
   // Taken back: revoked on Orgo too.
@@ -828,7 +828,7 @@ await check("Script approvals reach Orgo with the Bops sign-in key: approved and
   const file = join(S.userDir(), "outbox", "skill-approvals.json");
   assert.deepEqual(JSON.parse(readFileSync(file, "utf8")).entries.map((e) => [e.item.sha256, e.item.on]), [[shaLate, true]]);
   clearTimers();
-  // Orgo down, then Bops quits: it goes at the next start's sync.
+  // Orgo down, then SmileDesk quits: it goes at the next start's sync.
   remote.failApprovals = true;
   O.outboxForTests.restart();
   clearTimers();
@@ -849,13 +849,13 @@ await check("Script approvals reach Orgo with the Bops sign-in key: approved and
   clearTimers();
   await W.syncSkills("ws_two");
   assert.equal(W.skillDetail("ws_two", "skill", k.slug).files[0].approved, false, "revoked on orgo.ai: not here either");
-  // Another member (an editor) approved it on orgo.ai, or with their own Bops: it doesn't run on this Mac.
+  // Another member (an editor) approved it on orgo.ai, or with their own SmileDesk: it doesn't run on this Mac.
   const editors = () => ({ pid: "p_two", sha256: shaGo, path_hint: "scripts/go.sh", approved_by: "u_editor", approved_at: new Date().toISOString() });
   remote.approvals.set(`p_two:${shaGo}`, editors());
   clearTimers();
   await W.syncSkills("ws_two");
   assert.equal(W.skillDetail("ws_two", "skill", k.slug).files[0].approved, false, "another member's approval doesn't run it here");
-  // One taken from Orgo before (by a Bops that took every member's) goes while Orgo says another member made it.
+  // One taken from Orgo before (by a SmileDesk that took every member's) goes while Orgo says another member made it.
   S.update((s) => {
     const ws = s.workspaces.find((w) => w.id === "ws_two");
     ws.approvals = [...(ws.approvals ?? []), { sha256: shaGo, path: "scripts/go.sh", at: 1, synced: true }];
@@ -872,16 +872,16 @@ await check("Script approvals reach Orgo with the Bops sign-in key: approved and
   assert.equal(W.skillDetail("ws_two", "skill", k.slug).files[0].approved, true, "the person's own approval here runs it");
   W.approveScript("ws_two", shaGo, false);
   await wait(() => !remote.approvals.has(`p_two:${shaGo}`));
-  // A key that isn't the person's Bops sign-in key: Orgo says session_required, and it stays on this Mac (said once).
+  // A key that isn't the person's SmileDesk sign-in key: Orgo says session_required, and it stays on this Mac (said once).
   remote.sessionOnly = true;
   W.approveScript("ws_two", shaGo);
-  await wait(() => logged.some((l) => /only from a person signed in to Bops/.test(l)));
+  await wait(() => logged.some((l) => /only from a person signed in to SmileDesk/.test(l)));
   assert.equal(remote.approvals.has(`p_two:${shaGo}`), false);
   assert.equal(W.skillDetail("ws_two", "skill", k.slug).files[0].approved, true, "still approved on this Mac");
   O.outboxForTests.writeAll();
   assert.ok(!existsSync(file), "not asked again");
   remote.sessionOnly = false;
-  logged.splice(0, logged.length, ...logged.filter((l) => !/only from a person signed in to Bops/.test(l)));
+  logged.splice(0, logged.length, ...logged.filter((l) => !/only from a person signed in to SmileDesk/.test(l)));
   W.approveScript("ws_two", shaGo, false);
   for (const r2 of [k, d]) await W.deleteSkill("ws_two", "skill", r2.slug);
   clearTimers();
@@ -1092,7 +1092,7 @@ await check("Apps with programs and Orgo: sent as type app with the program as c
   globalThis.bopsSkillsRoutes?.clear();
 });
 
-await check("The route lists a workspace's skills and apps, after a sync when asked; only from the Bops window", async () => {
+await check("The route lists a workspace's skills and apps, after a sync when asked; only from the SmileDesk window", async () => {
   const list = await route("?sync=1&ws=ws_two", "GET");
   assert.equal(list.status, 200);
   assert.equal(list.body.orgo, true);

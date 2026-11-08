@@ -2,17 +2,17 @@
 // client (lib/server/vm-identity.ts) against a fake VMM on 127.0.0.1 (each answer: a token, refused, none
 // here, a refused connection right after a token and long after, busy, a read timeout; a rejected token
 // never sent again, a fresh one at most every 5 seconds, vm_identity_off putting identity aside and
-// bops_cloud_not_ready only Bops Cloud's use of it, the refresh on the monotonic clock, a nap, which
+// bops_cloud_not_ready only SmileDesk Cloud's use of it, the refresh on the monotonic clock, a nap, which
 // computer this is, another computer's token never taken up, and no token in any log), the order a runner
 // takes its credential in (orgo-auth.ts runnerKey: identity, refused with no key file, the token kept
 // while the VMM is busy, else the key file, never one Orgo says isn't this computer's own; a 401 moves on
 // at once, without waiting for the next caller; Orgo's calls made once more on the next credential;
-// another account's computer stops; the same user's new token goes to Bops Cloud without the "new key"
+// another account's computer stops; the same user's new token goes to SmileDesk Cloud without the "new key"
 // line; `[runner] auth:` said and written to its auth file on each change), the watch of
 // which VM it's on (runner.ts watchIdentity), and, run on its own with --start, a runner with no
 // credential waiting instead of stopping (runner-start.ts).
 //
-// Orgo, Bops Cloud and the store are fakes; nothing reaches a real service or 169.254.169.254.
+// Orgo, SmileDesk Cloud and the store are fakes; nothing reaches a real service or 169.254.169.254.
 // Usage: node --conditions=react-server scripts/test-vm-identity.mjs
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -419,15 +419,15 @@ await check("vm_identity_off: none at once for 5 minutes (an `again` waits too);
   assert.equal(vmm.seen.length, asked, "not asked meanwhile");
 });
 
-await check("bops_cloud_not_ready turns nothing down: Orgo keeps the token, Bops Cloud and the profile get the key file for 10 minutes, then the token again", async () => {
+await check("bops_cloud_not_ready turns nothing down: Orgo keeps the token, SmileDesk Cloud and the profile get the key file for 10 minutes, then the token again", async () => {
   resetAll();
   fileKey("sk_file_key");
   vmm.token = tokenAnswer({ token: "orgo_vm_nr.sig" });
   assert.equal(await A.loadOrgoKey(), "orgo_vm_nr.sig");
-  assert.equal(A.cloudKey(), "orgo_vm_nr.sig", "Bops Cloud gets the token while it takes it");
+  assert.equal(A.cloudKey(), "orgo_vm_nr.sig", "SmileDesk Cloud gets the token while it takes it");
   const asked = vmm.seen.length;
   const lines = await logged(async () => {
-    // Bops Cloud passed on orgo-web's code (persist-cloud.ts, cloud.ts): the next credential at once, no caller waiting.
+    // SmileDesk Cloud passed on orgo-web's code (persist-cloud.ts, cloud.ts): the next credential at once, no caller waiting.
     V.vmIdentityRejected("orgo_vm_nr.sig", "bops_cloud_not_ready");
     await sleep(50);
   });
@@ -435,13 +435,13 @@ await check("bops_cloud_not_ready turns nothing down: Orgo keeps the token, Bops
   assert.equal(V.cloudHeld(), true);
   assert.equal(vmm.seen.length, asked, "no fresh mint");
   assert.equal(A.orgoKey(), "orgo_vm_nr.sig", "Orgo keeps the token");
-  assert.equal(A.cloudKey(), "sk_file_key", "Bops Cloud the key file");
+  assert.equal(A.cloudKey(), "sk_file_key", "SmileDesk Cloud the key file");
   assert.deepEqual(globalThis.__fake.bound.at(-1), { user: "u1", key: "sk_file_key" }, "the state's calls carry it now");
   assert.equal(A.runnerAuth(), "key", "said as key: the runner needs it");
   assert.ok(lines.includes("[runner] auth: key"), lines.join(" | "));
   assert.equal(readFileSync(authFile, "utf8"), "key\n", "and written for the Mac's look");
   assert.ok(lines.every((l) => !l.includes("orgo_vm_")), "no token in a log");
-  // Its 10 minutes up: the token again for Bops Cloud (the key file until that's settled).
+  // Its 10 minutes up: the token again for SmileDesk Cloud (the key file until that's settled).
   VT.box().cloudHoldUntil = performance.now() - 1;
   assert.equal(A.cloudKey(), "sk_file_key");
   await sleep(50);
@@ -449,7 +449,7 @@ await check("bops_cloud_not_ready turns nothing down: Orgo keeps the token, Bops
   assert.deepEqual(globalThis.__fake.bound.at(-1), { user: "u1", key: "orgo_vm_nr.sig" });
   assert.equal(A.runnerAuth(), "identity");
   assert.equal(readFileSync(authFile, "utf8"), "identity\n");
-  // No key file: Bops Cloud keeps the token (nothing better to give it).
+  // No key file: SmileDesk Cloud keeps the token (nothing better to give it).
   resetAll();
   vmm.token = tokenAnswer({ token: "orgo_vm_nr2.sig" });
   await A.loadOrgoKey();
@@ -622,7 +622,7 @@ await check("a 401 moves to the next credential at once: a fresh token, or the k
   assert.equal(await A.loadOrgoKey(), "sk_file_key");
 });
 
-await check("a token for another account than the state's stops the runner; the same user's new token goes to Bops Cloud without the new-key line", async () => {
+await check("a token for another account than the state's stops the runner; the same user's new token goes to SmileDesk Cloud without the new-key line", async () => {
   resetAll();
   vmm.token = tokenAnswer({ token: "orgo_vm_u1.sig" });
   assert.equal(await A.loadOrgoKey(), "orgo_vm_u1.sig");
@@ -631,7 +631,7 @@ await check("a token for another account than the state's stops the runner; the 
   const lines = await logged(async () => {
     assert.equal(await A.loadOrgoKey(), "orgo_vm_u1b.sig");
   });
-  assert.deepEqual(globalThis.__fake.bound, [{ user: "u1", key: "orgo_vm_u1b.sig" }], "Bops Cloud's calls carry the new one"); // gitleaks:allow (made up for this test)
+  assert.deepEqual(globalThis.__fake.bound, [{ user: "u1", key: "orgo_vm_u1b.sig" }], "SmileDesk Cloud's calls carry the new one"); // gitleaks:allow (made up for this test)
   assert.ok(!lines.some((l) => /new one|auth:/.test(l)), `no new-key line and no auth change: ${lines.join(" | ")}`);
   assert.ok(lines.every((l) => !l.includes("orgo_vm_")), "no token in a log");
   // The computer moved to another account.

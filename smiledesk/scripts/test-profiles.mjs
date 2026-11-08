@@ -1,5 +1,5 @@
 // Tests for whose state is whose on a Mac (lib/server/persist-cloud.ts, state-merge.ts, user-paths.ts,
-// orgo-sign-in.ts, app/api/auth/signout): the app's state lives in Bops Cloud under the signed-in Orgo
+// orgo-sign-in.ts, app/api/auth/signout): the app's state lives in SmileDesk Cloud under the signed-in Orgo
 // user, never in a file on the Mac. One account signs in, chats, adds a bot and a phone link, signs out;
 // another signs in and sees none of it; the first signs back in and has it all, from the cloud. The
 // state file from before goes to its own user only, and one that's nobody's for sure is kept aside.
@@ -9,9 +9,9 @@
 // account's, and a bot's turn still waiting on the model across a sign-out and another sign-in,
 // leave nothing of the first account in the second's state.
 //
-// Bops Cloud is the real one (cloud/server.ts, run as a child process) on the local test Postgres
+// SmileDesk Cloud is the real one (cloud/server.ts, run as a child process) on the local test Postgres
 // (BOPS_TEST_DATABASE_URL, as cloud/test/edge-fakes.ts: 127.0.0.1:55432); Orgo is a fake on
-// 127.0.0.1; the Keychain is a folder; Bops Cloud's tunnel, the relay, the bots' sessions and the Mac check are
+// 127.0.0.1; the Keychain is a folder; SmileDesk Cloud's tunnel, the relay, the bots' sessions and the Mac check are
 // stand-ins. Nothing reaches a real service.
 // Usage: node --conditions=react-server scripts/test-profiles.mjs
 import assert from "node:assert/strict";
@@ -116,7 +116,7 @@ await new Promise((r) => orgoServer.listen(0, "127.0.0.1", r));
 const ORGO = `http://127.0.0.1:${orgoServer.address().port}`;
 process.env.BOPS_ORGO_ORIGIN = ORGO;
 
-/* ---------------- Bops Cloud: the real server, on the test Postgres ---------------- */
+/* ---------------- SmileDesk Cloud: the real server, on the test Postgres ---------------- */
 
 const db = new pg.Pool({ connectionString: DB, max: 2 });
 try {
@@ -137,7 +137,7 @@ async function startCloudServer() {
   cloud.child = child;
   child.stdout.on("data", (d) => (cloud.log += d));
   child.stderr.on("data", (d) => (cloud.log += d));
-  await until(() => cloud.log.includes(`listening on 127.0.0.1:${cloudPort}`), "Bops Cloud to start", 20_000);
+  await until(() => cloud.log.includes(`listening on 127.0.0.1:${cloudPort}`), "SmileDesk Cloud to start", 20_000);
 }
 async function stopCloudServer() {
   const child = cloud.child;
@@ -194,7 +194,7 @@ writeFileSync(
 
 /* ---------------- The app's modules ---------------- */
 
-// Modules that would start something (Bops Cloud's tunnel, the relay, the bots' sessions, the Mac
+// Modules that would start something (SmileDesk Cloud's tunnel, the relay, the bots' sessions, the Mac
 // check that installs the Codex CLI, the desktop and mirror) are stand-ins: each of their exports does nothing.
 const STAND_INS = new Set(["cloud-tunnel", "relay", "sessions", "mac", "desktop", "mirror"]);
 const project = pathToFileURL(root).href + "/";
@@ -294,7 +294,7 @@ try {
   assert.equal(existsSync(join(scratch, ".data", "users", U.scopeOf(A), "uploads", "img_legacy1.png")), true, "what was beside it went with it");
   assert.equal(S.stateReady(), false, "signed out: no state to work on");
   assert.equal(texts().includes(LEGACY_TEXT), false);
-  assert.throws(() => S.installId(), /Sign in to Bops first/, "nothing outside is made for nobody");
+  assert.throws(() => S.installId(), /Sign in to SmileDesk first/, "nothing outside is made for nobody");
   assert.equal(S.userDir(), null);
   assert.equal(await setOwner("Nobody"), 409, "routes that change the state wait for one");
   console.log("first start: the file from before waits for its own user; signed out there's no state");
@@ -431,7 +431,7 @@ try {
   // A signs in while the cloud is away: refused (there's no state to give them), nothing of B's shown.
   orgo.next = A;
   await L.startSignIn();
-  await assert.rejects(L.pollSignIn(), (e) => e instanceof L.SignInError && e.reason === "cloud", "Couldn't load your Bops from Bops Cloud");
+  await assert.rejects(L.pollSignIn(), (e) => e instanceof L.SignInError && e.reason === "cloud", "Couldn't load your SmileDesk from SmileDesk Cloud");
   assert.equal(S.stateReady(), false);
   assert.equal(S.getState().account, undefined);
   assert.equal(keychain().includes("orgo-api-key"), false, "the key isn't kept until the state loads");
@@ -473,7 +473,7 @@ try {
   console.error = () => {};
   let st = await L.authStatus();
   console.error = quiet.error;
-  assert.deepEqual([st.signedIn, st.needsSignIn, st.cloudProblem], [false, false, true], "can't reach Bops Cloud: says so, no sign-in asked");
+  assert.deepEqual([st.signedIn, st.needsSignIn, st.cloudProblem], [false, false, true], "can't reach SmileDesk Cloud: says so, no sign-in asked");
   assert.equal(S.stateReady(), false);
   await startCloudServer();
   st = await L.authStatus({ retry: true });
@@ -634,9 +634,9 @@ try {
   assert.equal((await cloudMessages(B)).some((m) => m.text.includes("4417")), false, "nor in B's cloud");
   console.log("a bot's turn in flight across a sign-out and another sign-in: nothing of it lands in the new account");
 
-  /* ---------------- Bops stops while Bops Cloud is away: what's unsent waits on this Mac ---------------- */
+  /* ---------------- SmileDesk stops while SmileDesk Cloud is away: what's unsent waits on this Mac ---------------- */
 
-  // B changes things with the cloud away (a message, the blob, a message removed), then Bops stops (or restarts).
+  // B changes things with the cloud away (a message, the blob, a message removed), then SmileDesk stops (or restarts).
   await stopCloudServer();
   S.addMessage({ chatId: "chat_boppy", role: "user", text: "B: kept on this Mac" });
   S.update((s) => {
@@ -677,7 +677,7 @@ try {
   const stB = (await cloudState(B)).state;
   assert.equal(stB.owner.about, "Kept while offline");
   assert.ok(stB.bots.some((b) => b.name === "Nova"));
-  console.log("Bops stopping while the cloud is away: the unsent changes wait in the user's folder, and go up at their next sign-in beside another Mac's");
+  console.log("SmileDesk stopping while the cloud is away: the unsent changes wait in the user's folder, and go up at their next sign-in beside another Mac's");
 
   /* ---------------- The key comes in with the state, before the Keychain has it ---------------- */
 

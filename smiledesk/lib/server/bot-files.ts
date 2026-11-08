@@ -19,7 +19,7 @@ import { getState, id } from "./store";
  *    request take as long as it needs for this: desktop/main.cjs.)
  * 4. Orgo has the computer fetch it into place (/complete), the computer touched again first after a long upload.
  * Nothing of the link or its token is ever kept or shown. A bot that works on this Mac gets none: what it runs
- * there can't open them. In a workspace shared with the user, the computer is the owner's, as Bops Cloud names it for
+ * there can't open them. In a workspace shared with the user, the computer is the owner's, as SmileDesk Cloud names it for
  * someone who may use it (lib/server/shared.ts sharedFileTarget: sharedTarget), never the user's own bot's of that id,
  * and the same steps go with the user's own Orgo key, which Orgo checks too: what it refuses is said plainly (orgoNo).
  */
@@ -44,7 +44,7 @@ export class AddFileError extends Error {
 }
 
 /**
- * The computer `b`'s files go on: its own, or the main bot's when it shares that one. Or why there's none: Bops runs
+ * The computer `b`'s files go on: its own, or the main bot's when it shares that one. Or why there's none: SmileDesk runs
  * on this Mac, the bot is set to work on the Mac (unless the file was dropped on that computer's own screen), or it
  * has no computer yet.
  */
@@ -58,19 +58,19 @@ export function filesGoTo(b: Bot, { screen = false } = {}): { computerId: string
 /** Where a file goes: the computer, the bot it's for, and the bot whose computer that is (its own, or the main bot's). */
 export type FileTarget = MemberFileTarget;
 
-/** Bops Cloud's words when it doesn't name a computer for a shared workspace's bot (sharedTarget), by what it said. */
-const CLOUD_OLD = "Teammates can't add files here until Bops Cloud updates.";
+/** SmileDesk Cloud's words when it doesn't name a computer for a shared workspace's bot (sharedTarget), by what it said. */
+const CLOUD_OLD = "Teammates can't add files here until SmileDesk Cloud updates.";
 const GONE_FROM_WS = "You're not in this workspace anymore.";
 
 /**
- * The computer a file for a bot of the workspace shared with the user goes on, from what Bops Cloud answered
+ * The computer a file for a bot of the workspace shared with the user goes on, from what SmileDesk Cloud answered
  * (POST /v1/ws/<project>/files: lib/server/shared.ts sharedFileTarget), or an AddFileError with its words: not theirs
- * to add (a Member, no Write, a computer of another of the owner's workspaces), the owner's Bops too old, no computer,
- * or one that won't wake. A Bops Cloud from before has no such route ("Not found"), which says so; the user taken out
+ * to add (a Member, no Write, a computer of another of the owner's workspaces), the owner's SmileDesk too old, no computer,
+ * or one that won't wake. A SmileDesk Cloud from before has no such route ("Not found"), which says so; the user taken out
  * of the workspace ("No such workspace") is told that, never that the bot left.
  */
 export function sharedTarget(got: { status: number; json: Record<string, unknown> } | null): FileTarget {
-  if (!got) throw new AddFileError("Couldn't reach Bops Cloud. Try again.", 502);
+  if (!got) throw new AddFileError("Couldn't reach SmileDesk Cloud. Try again.", 502);
   const j = got.json;
   const said = typeof j.error === "string" && j.error.trim() ? j.error.trim() : "";
   if (got.status === 200) {
@@ -100,7 +100,7 @@ export type SharedAs = { role: "admin" | "member" };
  */
 function orgoNo(status: number, code: string | undefined, hostName: string, shared: SharedAs | undefined): AddFileError | null {
   if (code === "bops_owner_only") return new AddFileError("The owner hasn't let you use this computer, so files can't go on it.", 403);
-  if (code === "workspace_scope_mismatch") return new AddFileError("Your Orgo key only works in another workspace. Sign in to Orgo again in Bops.", 403);
+  if (code === "workspace_scope_mismatch") return new AddFileError("Your Orgo key only works in another workspace. Sign in to Orgo again in SmileDesk.", 403);
   if (status === 402) return new AddFileError(`${hostName}'s computer is locked on Orgo right now, so files can't go on it.${shared ? " The owner can unlock it on Orgo." : " Check your plan on Orgo."}`, 402);
   if (status === 403 && shared?.role === "member" && !code) return new AddFileError("Orgo lets only the owner and Admins of this workspace add files to its computers.", 403);
   if (status === 403 && shared) return new AddFileError(`Orgo didn't let you reach ${hostName}'s computer, so files can't go on it.`, 403);
@@ -173,7 +173,7 @@ const fromOrgo = (e: unknown): Pick<OrgoError, "status" | "code"> | null =>
 
 /**
  * Why the computer didn't wake or take the command, as the user should hear it: no hours or credit left (the user's
- * own computer: a shared one's owner's credit is never the user's, so their own Bops isn't told it ran out), Orgo
+ * own computer: a shared one's owner's credit is never the user's, so their own SmileDesk isn't told it ran out), Orgo
  * refusing it (orgoNo), else that it didn't wake.
  */
 const notAwake = (e: unknown, hostName: string, shared: SharedAs | undefined) => {

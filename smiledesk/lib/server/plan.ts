@@ -19,11 +19,11 @@ import { addMessage, getState, stateEpoch, update } from "./store";
  * /api/billing/compute-limits, asked about a workspace the user owns), with the plan's key from GET
  * /api/user/subscription. Names and words are in lib/orgo-plans.ts.
  *
- * Kept for a minute, and read again once Bops has made or deleted a computer (orgo.ts counts those).
+ * Kept for a minute, and read again once SmileDesk has made or deleted a computer (orgo.ts counts those).
  * When Orgo can't be asked, nothing here stands in the way: Orgo's own limit decides when a computer is
  * made, and its refusal is put in plain words (planRefusal).
  *
- * The user's one free Bops computer (compute-limits' bops_free_computer_id) isn't on the plan: Bops
+ * The user's one free SmileDesk computer (compute-limits' bops_free_computer_id) isn't on the plan: SmileDesk
  * makes it for the first main bot that needs a computer (makeMainComputer), and Orgo counts it nowhere.
  */
 
@@ -51,7 +51,7 @@ export function postOrgo<T>(key: string, path: string, body: unknown, headers?: 
   return callOrgo<T>(key, path, { method: "POST", body, headers, timeoutMs });
 }
 
-/* ---------------- Bops' own plan: AI credit ---------------- */
+/* ---------------- SmileDesk's own plan: AI credit ---------------- */
 
 /** GET /api/bops/plan as orgo-web answers it (billing by use's fields: lib/bops-billing.ts). */
 export type BopsPlanAnswer = {
@@ -79,10 +79,10 @@ function computerTimeOf(t: BopsPlanAnswer["computer_time"]): Pick<BopsPlan, "com
 }
 
 /**
- * The user's Bops plan and credit, read from Orgo with their key (orgo-web's GET /api/bops/plan, which
- * also gives a new user on Bops' plans their one-time $5). Null when Orgo didn't answer, or doesn't have
- * Bops plans yet, or said something this app doesn't know: billing it doesn't know, or a tier that isn't
- * one of Bops' plans (never taken for Free). Billed by use, it's the Orgo balance and what things cost
+ * The user's SmileDesk plan and credit, read from Orgo with their key (orgo-web's GET /api/bops/plan, which
+ * also gives a new user on SmileDesk's plans their one-time $5). Null when Orgo didn't answer, or doesn't have
+ * SmileDesk plans yet, or said something this app doesn't know: billing it doesn't know, or a tier that isn't
+ * one of SmileDesk's plans (never taken for Free). Billed by use, it's the Orgo balance and what things cost
  * (lib/bops-billing.ts). Credit to spend clears the app's "out of credit" (state.credits).
  */
 export async function readBopsPlan(key: string): Promise<BopsPlan | null> {
@@ -161,7 +161,7 @@ function noteComputerSize(usage: UsageTerms) {
 
 /**
  * Orgo's answer to a checkout or plan page: where to send the user, or why not. `soon`: Orgo can't take
- * payment for Bops plans yet (no such route there, or plans switched off), which isn't an error.
+ * payment for SmileDesk plans yet (no such route there, or plans switched off), which isn't an error.
  */
 export type BopsBillingLink = { url: string } | { error: string; status: number; soon?: true };
 
@@ -180,14 +180,14 @@ export async function bopsBillingLink(key: string, what: { tier: "pro_bops" | "m
 }
 
 /**
- * Billed by use (Bops Cloud said so at the session), Bops' plans and Bops' AI credit aren't sold: what
+ * Billed by use (SmileDesk Cloud said so at the session), SmileDesk's plans and SmileDesk's AI credit aren't sold: what
  * the app's checkout, manage and credit routes answer instead (409), in the user's words, pointing at
  * Orgo credit. orgo-web refuses the same for an older app (its own 409); this keeps a new app from asking.
  */
 export function usageRefusal(): Response | null {
   if (cloudSessionNow()?.plan?.billing !== "usage") return null;
   return Response.json(
-    { error: "Bops plans aren't sold any more. You pay only for what you use, from your Orgo credit. Add credit on Orgo.", code: "bops_usage_billing", url: orgoTopUpPage(orgoOrigin()) },
+    { error: "SmileDesk plans aren't sold any more. You pay only for what you use, from your Orgo credit. Add credit on Orgo.", code: "bops_usage_billing", url: orgoTopUpPage(orgoOrigin()) },
     { status: 409 },
   );
 }
@@ -265,7 +265,7 @@ export async function buyCreditOnCard(key: string, p: { amountCents: number; car
 
 /**
  * A one-time Stripe Checkout for `amountCents` of AI credit, for the user's browser (orgo-web's POST
- * /api/bops/credit/checkout): its page, or why not. It returns to Orgo's own page for Bops billing.
+ * /api/bops/credit/checkout): its page, or why not. It returns to Orgo's own page for SmileDesk billing.
  */
 export async function creditCheckoutLink(key: string, amountCents: number): Promise<{ url: string } | { error: string; code?: string; status: number }> {
   const got = await postOrgo<{ url?: unknown; error?: unknown; code?: unknown }>(key, "/api/bops/credit/checkout", { amount_cents: amountCents });
@@ -291,9 +291,9 @@ type Limits = {
   max_ram_gb?: number;
   account_ram_budget_gb?: number;
   account_ram_used_gb?: number;
-  /** The free Bops computer's id, null while there's none; missing from an Orgo before free Bops computers. */
+  /** The free SmileDesk computer's id, null while there's none; missing from an Orgo before free SmileDesk computers. */
   bops_free_computer_id?: string | null;
-  /** Max's other Bops computers, and how many Bops computers the Bops plan includes (Max 3, else 1); missing from an older Orgo. */
+  /** Max's other SmileDesk computers, and how many SmileDesk computers the SmileDesk plan includes (Max 3, else 1); missing from an older Orgo. */
   bops_max_computer_ids?: string[];
   bops_computers_limit?: number;
 };
@@ -345,9 +345,9 @@ async function readPlan(key: string): Promise<OrgoPlan | null> {
   // A custom deal's count or memory is the plan's whatever plan it's on (orgo-web lib/plan-limits.ts).
   const deal = typeof s?.planLimits?.maxDesktops === "number" || typeof s?.planLimits?.maxRamPerUser === "number";
   const free = l && "bops_free_computer_id" in l ? { freeComputerId: typeof l.bops_free_computer_id === "string" ? l.bops_free_computer_id : null } : {};
-  // The Bops plan decides a bot's own computer where Bops Cloud holds plans to what they include and
-  // Orgo counts Bops computers (lib/orgo-plans.ts OrgoPlan.bops). Billed by use there's no Bops plan:
-  // every computer but the Bops one is the Orgo plan's (or by the hour), as for any Orgo account.
+  // The SmileDesk plan decides a bot's own computer where SmileDesk Cloud holds plans to what they include and
+  // Orgo counts SmileDesk computers (lib/orgo-plans.ts OrgoPlan.bops). Billed by use there's no SmileDesk plan:
+  // every computer but the SmileDesk one is the Orgo plan's (or by the hour), as for any Orgo account.
   const session = cloudOn() ? cloudSessionNow()?.plan : undefined;
   const bops =
     session?.limits && session.billing !== "usage" && typeof l?.bops_computers_limit === "number"
@@ -385,7 +385,7 @@ export function planRefusal(e: unknown): PlanShort | null {
 }
 
 /**
- * A computer the plan has no room for: why, in plain words, and where to change that on Orgo. A Bops
+ * A computer the plan has no room for: why, in plain words, and where to change that on Orgo. A SmileDesk
  * plan's has no link: it's changed in the app's Settings, which its words say.
  */
 export class PlanLimit extends Error {
@@ -396,7 +396,7 @@ export class PlanLimit extends Error {
   }
 }
 
-/** The PlanLimit for a Bops plan with no room for another Bops computer. */
+/** The PlanLimit for a SmileDesk plan with no room for another SmileDesk computer. */
 function bopsLimit(s: { text: string; upgrade: "max" | null }) {
   return new PlanLimit(s.upgrade ? `${s.text} Upgrade to Max in Settings.` : s.text);
 }
@@ -416,7 +416,7 @@ export function needsCardLimit(e: unknown) {
   return new PlanLimit(said, { label: e.code === "NEEDS_PAYMENT" ? "Add credit on Orgo" : "Add a card on Orgo", url: `${orgoOrigin()}/settings/billing` });
 }
 
-/** Orgo turned a Bops computer down for the Bops plan (orgo-web's create gate, BOPS_COMPUTER_LIMIT): its words. */
+/** Orgo turned a SmileDesk computer down for the SmileDesk plan (orgo-web's create gate, BOPS_COMPUTER_LIMIT): its words. */
 function bopsRefusal(e: unknown) {
   const card = needsCardLimit(e);
   if (card) return card;
@@ -427,8 +427,8 @@ function bopsRefusal(e: unknown) {
 }
 
 /**
- * One more Bops computer, fresh from the Bops template (orgo-web makes it one of Max's when the free
- * one is taken), when the Bops plan has room for `more` (lib/orgo-plans.ts bopsComputerShort). What
+ * One more SmileDesk computer, fresh from the SmileDesk template (orgo-web makes it one of Max's when the free
+ * one is taken), when the SmileDesk plan has room for `more` (lib/orgo-plans.ts bopsComputerShort). What
  * `onShort` answers when it hasn't, or Orgo turns it down for the plan.
  */
 async function makeBopsComputer<T>(name: string, epoch: number, onShort: (why: PlanLimit) => T | Promise<T>, wsId?: string): Promise<{ id: string } | T> {
@@ -482,7 +482,7 @@ async function refusedFor(e: unknown, main: Bot) {
 }
 
 /**
- * Bops makes computers one at a time, each after a fresh look at the plan (the last one made or deleted
+ * SmileDesk makes computers one at a time, each after a fresh look at the plan (the last one made or deleted
  * has orgoPlan read again). Orgo counts a plan's computers and adds the new one with no lock between
  * (orgo-web lib/plan-limits.ts), so two made at once could both fit a count with room for one, and two
  * copies of one computer at once would take two live copies of its memory together.
@@ -504,7 +504,7 @@ async function planNow(short: (plan: OrgoPlan | null) => PlanShort | null | unde
 }
 
 /**
- * The plan, with whether the user's free Bops computer is made known. When Orgo didn't answer for it
+ * The plan, with whether the user's free SmileDesk computer is made known. When Orgo didn't answer for it
  * (limitsUnread, or nothing came back), it's asked again, after the main bot's workspace is found or
  * made, in case the user owned none to ask about. Still unknown, nothing is made: a computer on the
  * plan in its place would take the plan's room, or be refused for it, while the free one is still
@@ -519,7 +519,7 @@ async function freeKnown(main: Bot, epoch: number) {
   sameUser(epoch);
   const again = await orgoPlan({ fresh: true });
   if (again && !again.limitsUnread) return again;
-  throw new Error("Orgo didn't say whether your free Bops computer is made yet");
+  throw new Error("Orgo didn't say whether your free SmileDesk computer is made yet");
 }
 
 /**
@@ -530,12 +530,12 @@ function sameUser(epoch: number) {
   if (epoch !== stateEpoch()) throw new Error("Another Orgo account signed in meanwhile");
 }
 
-/** A main bot's computer: its id, and whether it's the user's free Bops computer. */
+/** A main bot's computer: its id, and whether it's the user's free SmileDesk computer. */
 export type MainComputer = { id: string; free?: boolean };
 
 /**
- * The main bot's computer, from the Bops template:
- * - The user's one free Bops computer when they have none yet (at the template's size, off the plan),
+ * The main bot's computer, from the SmileDesk template:
+ * - The user's one free SmileDesk computer when they have none yet (at the template's size, off the plan),
  *   or the one they have when no bot here has it (made before this Mac's state, or on another Mac).
  * - Else one on the plan, at the plan's size (computerRam), when the plan has room for it.
  * - Else, when another workspace's main bot has the free computer, this one works there too (null,
@@ -550,7 +550,7 @@ export function makeMainComputer(main: Bot, name: string, epoch = stateEpoch()):
     if (first?.freeComputerId === null) return makeFree(main, name, epoch);
     const kept = first?.freeComputerId;
     if (kept && !getState().bots.some((b) => b.computerId === kept)) return holdFree(main, kept, epoch);
-    // The Bops plan decides: one of Max's Bops computers, else this main bot shares the free one.
+    // The SmileDesk plan decides: one of Max's SmileDesk computers, else this main bot shares the free one.
     if (first?.bops) {
       const holder = freeComputerBot(getState().bots, main.id);
       return makeBopsComputer(
@@ -585,9 +585,9 @@ export function makeMainComputer(main: Bot, name: string, epoch = stateEpoch()):
 }
 
 /**
- * The size the free Bops computer is made at (bops_size), billed by use: the one the user picked or has
+ * The size the free SmileDesk computer is made at (bops_size), billed by use: the one the user picked or has
  * (state.computerSize), else Orgo's default for someone new, when Orgo's plan read lists it. Picked from a
- * list Orgo gave, it goes even when the plan can't be read just now. Nothing on Bops' plans, or when Orgo
+ * list Orgo gave, it goes even when the plan can't be read just now. Nothing on SmileDesk's plans, or when Orgo
  * lists no sizes (an orgo-web before them): Orgo makes it Large then, as before.
  */
 async function freeSize(): Promise<ComputerSize | undefined> {
@@ -604,7 +604,7 @@ async function freeSize(): Promise<ComputerSize | undefined> {
 const sizeRefused = (e: unknown) => e instanceof OrgoError && e.status === 400 && (e.code === "INVALID_BOPS_SIZE" || /bops_size/.test(e.said ?? ""));
 
 /**
- * The free Bops computer, made now. Orgo makes it free only when the user still has none; if one
+ * The free SmileDesk computer, made now. Orgo makes it free only when the user still has none; if one
  * came along meanwhile it's an ordinary create, so whether this one is free is read back from Orgo.
  * Billed by use, at the size the user picked (freeSize).
  */
@@ -627,7 +627,7 @@ async function makeFree(main: Bot, name: string, epoch: number): Promise<MainCom
 }
 
 /**
- * The main bot has the free Bops computer from now on, recorded before the next computer is looked at
+ * The main bot has the free SmileDesk computer from now on, recorded before the next computer is looked at
  * (one at a time), so another main bot never takes it up too.
  */
 function holdFree(main: Bot, id: string, epoch: number): MainComputer {
@@ -641,7 +641,7 @@ function holdFree(main: Bot, id: string, epoch: number): MainComputer {
 }
 
 /**
- * The user's free Bops computer, given back to `main`: a main bot left with no computer while the free
+ * The user's free SmileDesk computer, given back to `main`: a main bot left with no computer while the free
  * one is still on Orgo (a sign-in as another account and back let go of it: adoptComputers in
  * orgo-sign-in.ts). Only when Orgo has it and no bot here does, and never one made. Null otherwise, and
  * when `main` has a computer by now (or a task is setting one up for it), or `ours()` says another
@@ -659,7 +659,7 @@ export function holdFreeAgain(main: Bot, ours: () => boolean): Promise<MainCompu
 }
 
 /**
- * A main bot whose plan has no room for a computer of its own works on the free Bops computer, which
+ * A main bot whose plan has no room for a computer of its own works on the free SmileDesk computer, which
  * another workspace's main bot has: its bots with it. It says so in its chat, with where to change
  * the plan and how to give it its own (setComputer in lib/server/bots.ts) once the plan has room.
  */
@@ -674,14 +674,14 @@ function shareFree(main: Bot, holder: Bot, why: PlanLimit, epoch: number) {
     chatId: botChatId(main.id),
     role: "bot",
     botId: main.id,
-    text: `I'll work on your free Bops computer, which ${holder.name} has, instead of one of my own. ${limitText(why)} Once your ${why.link ? "Orgo plan" : "plan"} has room, you can switch me to Its own under Computer in my Details.`,
+    text: `I'll work on your free SmileDesk computer, which ${holder.name} has, instead of one of my own. ${limitText(why)} Once your ${why.link ? "Orgo plan" : "plan"} has room, you can switch me to Its own under Computer in my Details.`,
     bops: true,
   });
   return null;
 }
 
 /**
- * Why a main bot that works on the free Bops computer (shareFree) can't have a computer of its own on
+ * Why a main bot that works on the free SmileDesk computer (shareFree) can't have a computer of its own on
  * the plan now, in plain words, or null when it can (or Orgo didn't say).
  */
 export async function noMainComputer(main: Bot) {
@@ -692,7 +692,7 @@ export async function noMainComputer(main: Bot) {
  * A computer of its own for `b`, copied from its main bot's (a fork, else a clone), when the plan has
  * room for it: one more computer, as big as the main bot's. When it hasn't, or Orgo turns the copy down
  * for the plan, `b` works on the main bot's computer instead and its chat says why: null then. Its task
- * still runs, and no copy is tried again. A copy comes with the main computer's Bops runner, if it has
+ * still runs, and no copy is tried again. A copy comes with the main computer's SmileDesk runner, if it has
  * one: the first command on it, once it's up, takes that off (sessions.ts ensureComputer, RUNNER_SCRUB).
  * A main computer with a runner is cloned, never forked: a fork carries on from the running computer's
  * memory, so its runner would go on as the main computer's (its threads driving that computer) until
@@ -709,7 +709,7 @@ export async function makeOwnComputer(b: Bot, main: Bot, name: string, epoch = s
     sameUser(epoch);
     if (ram && main.computerRam !== ram && main.computerId === from) update(() => (main.computerRam = ram));
     const { plan, short } = await planNow((p) => planShort(p, 1, ram));
-    // The Bops plan decides: one of Max's Bops computers, fresh from the template (a copy would be an
+    // The SmileDesk plan decides: one of Max's SmileDesk computers, fresh from the template (a copy would be an
     // Orgo plan computer), else one on the Orgo plan (onOrgoPlan), else it shares the main bot's and says why.
     if (plan?.bops) return makeBopsComputer(name, epoch, (why) => onOrgoPlan(b, main, name, why, epoch), workspaceOf(b));
     if (short) return shareInstead(b, main, limitOf(short, plan, main), epoch);
@@ -735,10 +735,10 @@ export async function makeOwnComputer(b: Bot, main: Bot, name: string, epoch = s
 }
 
 /**
- * Max's Bops computers are all taken (`why`): `b`'s own comes from the Orgo plan, when it has room
- * (ownOnOrgoPlan), fresh from the Bops template. A copy of the main bot's can't be made: that's a Bops
- * computer, on a Bops host, where Orgo makes no copies. Else it shares the main bot's, saying why: the
- * Bops plan's words, or Orgo's when Orgo turns it down. Runs inside makeOwnComputer's oneAtATime.
+ * Max's SmileDesk computers are all taken (`why`): `b`'s own comes from the Orgo plan, when it has room
+ * (ownOnOrgoPlan), fresh from the SmileDesk template. A copy of the main bot's can't be made: that's a SmileDesk
+ * computer, on a SmileDesk host, where Orgo makes no copies. Else it shares the main bot's, saying why: the
+ * SmileDesk plan's words, or Orgo's when Orgo turns it down. Runs inside makeOwnComputer's oneAtATime.
  */
 async function onOrgoPlan(b: Bot, main: Bot, name: string, why: PlanLimit, epoch: number) {
   const { plan } = await planNow((p) => (ownOnOrgoPlan(p) ? null : "count"));

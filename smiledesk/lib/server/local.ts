@@ -34,7 +34,7 @@ export const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chr
  */
 export function tasksRoot() {
   const home = userHome();
-  if (!home) throw new Error("Sign in to Bops first.");
+  if (!home) throw new Error("Sign in to SmileDesk first.");
   return join(home, "tasks");
 }
 /**
@@ -120,7 +120,7 @@ export async function ensureChrome(botId: string, port: number) {
   // The bot's id names a folder below: only a plain id (letters, digits, _ and -) ever does.
   if (!/^[\w-]{1,80}$/.test(botId)) throw new Error("That isn't one of your bots.");
   const dir = userChrome();
-  if (!dir) throw new Error("Sign in to Bops first.");
+  if (!dir) throw new Error("Sign in to SmileDesk first.");
   const closes = quits();
   if (await cdpUp(port)) {
     if (runningFor() === dir) return;
@@ -128,7 +128,7 @@ export async function ensureChrome(botId: string, port: number) {
   }
   // The Chromes were closed meanwhile (a sign-out, or another account signing in): one started now
   // for this user would keep running, with their cookies, into the next account's.
-  if (closes !== quits() || userChrome() !== dir) throw new Error("Bops is switching accounts.");
+  if (closes !== quits() || userChrome() !== dir) throw new Error("SmileDesk is switching accounts.");
   mkdirSync(dir, { recursive: true });
   writeFileSync(RUNNING_FOR(), dir);
   const profile = join(dir, `${botId}-${port}`);
@@ -164,7 +164,7 @@ export async function ensureChrome(botId: string, port: number) {
 
 /**
  * In the Mac app the server runs as Node through the app's own binary (desktop/main.cjs), so
- * anything it starts with process.execPath must carry ELECTRON_RUN_AS_NODE, or it opens Bops again.
+ * anything it starts with process.execPath must carry ELECTRON_RUN_AS_NODE, or it opens SmileDesk again.
  */
 export const asNode = process.env.ELECTRON_RUN_AS_NODE === "1";
 
@@ -205,7 +205,7 @@ export const browserMcp = (port: number, dir: string) => {
   // The executor's environment doesn't reach its MCP servers (Codex passes on a few variables), so
   // ELECTRON_RUN_AS_NODE and the sockets folder are set here.
   // Never this server's own pages (it's on the same Mac): what bots mustn't change is also kept behind the
-  // Bops window's token (ui-token.ts), since this list doesn't hold against redirects.
+  // SmileDesk window's token (ui-token.ts), since this list doesn't hold against redirects.
   const self = process.env.PORT ?? "3210";
   const blocked = `PLAYWRIGHT_MCP_BLOCKED_ORIGINS=http://localhost:${self};http://127.0.0.1:${self};http://[::1]:${self}`;
   const env = [`PWTEST_SOCKETS_DIR=${taskSockets(dir)}`, blocked, ...(asNode ? ["ELECTRON_RUN_AS_NODE=1"] : [])];
@@ -249,13 +249,13 @@ export const MAC_UI_TOOLS = [
 /** The script a Mac task's tools reach Cua Driver through, which passes on only what a task may do (vm/mac-ui-mcp.mjs). */
 const macUiScript = () => real(join(process.cwd(), "vm/mac-ui-mcp.mjs"));
 /**
- * The Mac tools for a task with Full access, run by its executor: Cua Driver behind Bops' own MCP server
+ * The Mac tools for a task with Full access, run by its executor: Cua Driver behind SmileDesk's own MCP server
  * (vm/mac-ui-mcp.mjs), not `cua-driver mcp` itself. Cua's tools reach any window and take any arguments;
- * that script keeps a task's tool calls off Bops itself (its chats, payment approvals and settings),
+ * that script keeps a task's tool calls off SmileDesk itself (its chats, payment approvals and settings),
  * System Settings, Keychain Access, password managers, terminals, remote sessions and the like, works in
  * the background only, and refuses quitting, closing, the clipboard, a page's JavaScript and a browser's
- * debugging port. It's a second layer, not what protects Bops: the same task has a shell as the user,
- * which can run cua-driver itself or reach Bops' own server (the window's token is in a file the user's
+ * debugging port. It's a second layer, not what protects SmileDesk: the same task has a shell as the user,
+ * which can run cua-driver itself or reach SmileDesk's own server (the window's token is in a file the user's
  * processes can read). Payment approvals, "Just do it" and turning on Full access need a check outside a
  * task's reach (Touch ID or the user's password) before the proxy can be relied on for them.
  */
@@ -274,8 +274,8 @@ const KEPT_ENV = ["USER", "LOGNAME", "SHELL", "LANG", "LC_ALL", "LC_CTYPE"];
  * neither it nor anything it starts can run a shell or another program, read the user's files, write
  * outside the task's folder or script other apps. It may start Codex itself and what runs the browser
  * tools (this server's Node, through /usr/bin/env in the app). The task's folder is its home, Codex
- * home (Bops' own, never the user's ~/.codex) and temp folder, and its environment is only what it
- * needs: Bops' executor key, not the server's.
+ * home (SmileDesk's own, never the user's ~/.codex) and temp folder, and its environment is only what it
+ * needs: SmileDesk's executor key, not the server's.
  *
  * With `fullAccess` (Full access on this Mac, MacState.fullAccess) there's no sandbox: Codex runs as the
  * user, with their home, a shell and every program on the Mac (osascript, open, shortcuts…), so the
@@ -321,7 +321,7 @@ export function prepareTaskDir(sessionId: string, dir = taskDir(sessionId), keep
 
 /**
  * Start `codex exec-server` for one Mac task; it dials out to OpenAI and runs the agent's tools here,
- * in the sandbox (executorCommand), or without it with `fullAccess`. It runs on Bops' executor key alone (CODEX_API_KEY, from Bops Cloud),
+ * in the sandbox (executorCommand), or without it with `fullAccess`. It runs on SmileDesk's executor key alone (CODEX_API_KEY, from SmileDesk Cloud),
  * so Codex never uses the user's ChatGPT sign-in or their Codex settings for it.
  * `botId`: the bot whose skills go in the task's skills folder as their folders (workspace-skills.ts
  * writeSkillFiles), fresh each run, so Codex finds them as skills. A folder it can't write costs the task nothing.
@@ -481,7 +481,7 @@ export async function viewport(ep: Endpoint) {
 /** What the screen's page says, as text for quick judgments: address, title, visible text and form fields. */
 export async function pageText(ep: Endpoint) {
   // Fields include rich-text boxes (an email body is a contenteditable div). Each field and button
-  // is tagged so a Bops card can fill or press exactly that one later. Values never leave the page.
+  // is tagged so a SmileDesk card can fill or press exactly that one later. Values never leave the page.
   const expression = `JSON.stringify((() => {
     const visible = (el) => el.offsetParent !== null && !el.disabled;
     const label = (el) => (el.labels?.[0]?.innerText || el.getAttribute("aria-label") || el.getAttribute("placeholder") || el.getAttribute("data-placeholder") || "").trim() || undefined;

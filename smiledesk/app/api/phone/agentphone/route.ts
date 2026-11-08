@@ -8,13 +8,13 @@ import { notReady } from "@/lib/server/ready";
 export const dynamic = "force-dynamic";
 
 /**
- * AgentPhone's webhooks (texts to Bops' numbers, each turn of a call to one, and call summaries),
+ * AgentPhone's webhooks (texts to SmileDesk's numbers, each turn of a call to one, and call summaries),
  * public at api.bops.bot/hooks/agentphone (the Fly relay in edge/ forwards them here over the
  * tailnet). Signed: HMAC-SHA256 of "{timestamp}.{raw body}" in X-Webhook-Signature as "sha256=<hex>",
- * at most 5 minutes old. Each webhook Bops made has its own secret (the sub-account's, and one per
+ * at most 5 minutes old. Each webhook SmileDesk made has its own secret (the sub-account's, and one per
  * workspace number's agent); a delivery must match one of them. Anything else is turned away.
  *
- * Signed in with Orgo, AgentPhone delivers to Bops Cloud instead, which checks the signature (it
+ * Signed in with Orgo, AgentPhone delivers to SmileDesk Cloud instead, which checks the signature (it
  * keeps the secrets) and replays the delivery here over its tunnel, with the token only this server
  * knows (lib/server/cloud-tunnel.ts): that request counts as checked, and so does who sent it, which
  * the cloud decided (CLOUD_CALLER_HEADER, from bops.phone_lines). This Mac follows it.

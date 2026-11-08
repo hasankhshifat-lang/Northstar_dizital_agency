@@ -5,30 +5,30 @@ import { workBot, workspaceOf, type AppState } from "@/lib/types";
 import { AskInPlace, currentWorkspace, post } from "./ui";
 
 /**
- * Settings, General: whether the open workspace's bots answer with every Mac closed (chat through Bops Cloud: its bots'
- * computers answer). Bops Cloud keeps the switch and writes it on the workspace (Workspace.chatOn, chatAuto): it turns
+ * Settings, General: whether the open workspace's bots answer with every Mac closed (chat through SmileDesk Cloud: its bots'
+ * computers answer). SmileDesk Cloud keeps the switch and writes it on the workspace (Workspace.chatOn, chatAuto): it turns
  * on by itself once the bots' computers are ready, unless the owner chose the Mac here. Turned off, it's the Mac's for
- * good (until turned on again here, which gives Bops Cloud the say back). Where Bops Cloud won't take it back
+ * good (until turned on again here, which gives SmileDesk Cloud the say back). Where SmileDesk Cloud won't take it back
  * (Workspace.chatAutoOff), off is shown off and disabled with why, and turning it off asks first. Only the owner sees it,
- * only where Bops Cloud says it applies, and only for a workspace with a bot that works on a computer of its own.
+ * only where SmileDesk Cloud says it applies, and only for a workspace with a bot that works on a computer of its own.
  */
 
-/** `closed`: Bops Cloud won't take it back on here (Workspace.chatAutoOff). */
+/** `closed`: SmileDesk Cloud won't take it back on here (Workspace.chatAutoOff). */
 export type ChatSwitchView = { wsId: string; on: boolean; line: string; closed: boolean };
 
 /** The words under the switch, as the workspace stands. */
 export const CHAT_LINES = {
   cloud: "Your bots answer from their own computers, even with every Mac closed.",
   soon: "Your bots will answer from their own computers once those are ready. Until then your Mac answers.",
-  mac: "Your bots answer from your Mac while Bops is open.",
-  closed: "Your bots answer from your Mac while Bops is open. Orgo turns this on for your workspace.",
+  mac: "Your bots answer from your Mac while SmileDesk is open.",
+  closed: "Your bots answer from your Mac while SmileDesk is open. Orgo turns this on for your workspace.",
 };
 /** The same, for an Admin of a workspace shared with them: the owner's bots and Mac. */
 export const CHAT_LINES_SHARED = {
   cloud: "The bots answer from their own computers, even with every Mac closed.",
   soon: "The bots will answer from their own computers once those are ready. Until then the owner's Mac answers.",
-  mac: "The bots answer from the owner's Mac while Bops is open there.",
-  closed: "The bots answer from the owner's Mac while Bops is open there. Orgo turns this on for the workspace.",
+  mac: "The bots answer from the owner's Mac while SmileDesk is open there.",
+  closed: "The bots answer from the owner's Mac while SmileDesk is open there. Orgo turns this on for the workspace.",
 };
 /** Asked before turning it off where it can't be turned back on here (ChatSwitchView.closed). */
 export const OFF_ASK = { title: "Turn this off?", line: "You can't turn it back on here. Orgo turns it on for your workspace." };
@@ -36,7 +36,7 @@ export const OFF_ASK_SHARED = { title: "Turn this off?", line: "You can't turn i
 
 /** The switch for the open workspace, or null where there's none (see above). */
 export function chatSwitchOf(state: AppState): ChatSwitchView | null {
-  // An Admin of a shared workspace says it too, once its Bops Cloud takes an Admin's choice (it said adminActs or ownerOld).
+  // An Admin of a shared workspace says it too, once its SmileDesk Cloud takes an Admin's choice (it said adminActs or ownerOld).
   const admin = state.shared?.role === "admin" && (!!state.shared.adminActs || !!state.shared.ownerOld);
   if ((state.shared && !admin) || (!state.shared && state.host === "mac")) return null;
   const wsId = currentWorkspace(state);
@@ -52,14 +52,14 @@ export function chatSwitchOf(state: AppState): ChatSwitchView | null {
   return { wsId, on: false, line: closed ? lines.closed : lines.mac, closed };
 }
 
-/** Turn it on ("auto": Bops Cloud decides) or off (the Mac, chosen). Bops' words when it didn't go, else null. */
+/** Turn it on ("auto": SmileDesk Cloud decides) or off (the Mac, chosen). SmileDesk's words when it didn't go, else null. */
 export async function setChat(wsId: string, on: boolean, shared = false): Promise<string | null> {
   const chat = on ? "auto" : "mac";
-  // (An Admin's, of a shared workspace: through Bops Cloud, kept as an Admin's choice: lib/server/shared-people.ts.)
+  // (An Admin's, of a shared workspace: through SmileDesk Cloud, kept as an Admin's choice: lib/server/shared-people.ts.)
   const res = await (shared ? post("/api/workspaces/shared/settings", { chat }, "PATCH") : post("/api/workspaces", { id: wsId, chat }, "PATCH")).catch(() => null);
   if (res?.ok) return null;
   const j = ((await res?.json().catch(() => null)) ?? {}) as { error?: unknown };
-  return typeof j.error === "string" && j.error ? j.error : "Couldn't reach Bops. Try again.";
+  return typeof j.error === "string" && j.error ? j.error : "Couldn't reach SmileDesk. Try again.";
 }
 
 export function ChatSwitch({ state }: { state: AppState }) {

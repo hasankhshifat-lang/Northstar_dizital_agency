@@ -1,15 +1,15 @@
 // Tests for the Mac tools a task with Full access gets (vm/mac-ui-mcp.mjs, lib/server/local.ts macUiMcp):
-// Cua Driver's tools reach any window and take any arguments, so a task reaches them through Bops' own
+// Cua Driver's tools reach any window and take any arguments, so a task reaches them through SmileDesk's own
 // MCP server, which passes on only what a task may do. Its checks are fed calls here (what's refused,
 // what's rewritten), then the server itself runs against a stand-in `cua-driver mcp` that notes every
-// call it gets: Bops itself and its helpers, terminals, remote sessions, Keychain Access and the rest are
+// call it gets: SmileDesk itself and its helpers, terminals, remote sessions, Keychain Access and the rest are
 // hidden from the lists and refused as targets (by name, by the bundle id in the Info.plist of each app
 // bundle the process runs from, and by those bundles' names, so the "apps" here are real processes:
 // /bin/sleep linked into app bundles of a temporary folder); input goes in the background only, to a named
 // window of that app; no drag, no quitting, closing or clipboard shortcuts or menu items (in other languages
 // too, nor such a menu item found in a window); lists that aren't lists are refused; a page is only read; an
 // app is launched without a command line or a debugging port; and what Cua asks of the task's side (an
-// elicitation, the roots) never gets there: Bops answers it, with no. Nothing reaches the real Cua Driver or
+// elicitation, the roots) never gets there: SmileDesk answers it, with no. Nothing reaches the real Cua Driver or
 // the user's windows. macOS only (ps, plutil and app bundles).
 // Usage: node scripts/test-mac-ui.mjs
 import assert from "node:assert/strict";
@@ -39,13 +39,13 @@ for (const t of ["bring_to_front", "move_cursor", "clipboard_read", "clipboard_w
 
 // Off limits, by name, bundle id or where the process runs from; the rest aren't.
 for (const [app, what] of [
-  [{ name: "Bops" }, "Bops"],
-  [{ name: "Bops Helper (Renderer)" }, "Bops"],
-  [{ name: "Electron" }, "Bops"],
-  [{ bundleId: "ai.orgo.bops" }, "Bops"],
-  [{ bundleId: "ai.orgo.bops.helper" }, "Bops"],
-  [{ name: "Renderer", path: "/Applications/Bops.app/Contents/Frameworks/Bops Helper (Renderer).app/Contents/MacOS/Bops Helper (Renderer)" }, "Bops"],
-  [{ path: "/Applications/Bops.app" }, "Bops"],
+  [{ name: "SmileDesk" }, "SmileDesk"],
+  [{ name: "SmileDesk Helper (Renderer)" }, "SmileDesk"],
+  [{ name: "Electron" }, "SmileDesk"],
+  [{ bundleId: "ai.orgo.bops" }, "SmileDesk"],
+  [{ bundleId: "ai.orgo.bops.helper" }, "SmileDesk"],
+  [{ name: "Renderer", path: "/Applications/SmileDesk.app/Contents/Frameworks/SmileDesk Helper (Renderer).app/Contents/MacOS/SmileDesk Helper (Renderer)" }, "SmileDesk"],
+  [{ path: "/Applications/SmileDesk.app" }, "SmileDesk"],
   [{ name: "Cua Driver" }, "Cua Driver"],
   [{ path: "/Applications/CuaDriver.app/Contents/MacOS/cua-driver" }, "Cua Driver"],
   [{ name: "System Settings" }, "System Settings"],
@@ -62,9 +62,9 @@ for (const [app, what] of [
   [{ bundleId: "com.mitchellh.ghostty" }, "a terminal"],
   [{ name: "Visual Studio Code" }, "a terminal"],
   [{ name: "Script Editor" }, "a terminal"],
-  // Any build of Bops; terminals by their real names and ids; editors and apps that run commands.
-  [{ name: "Bops Beta" }, "Bops"],
-  [{ path: "/Applications/Bops Dev.app/Contents/MacOS/Bops Dev" }, "Bops"],
+  // Any build of SmileDesk; terminals by their real names and ids; editors and apps that run commands.
+  [{ name: "SmileDesk Beta" }, "SmileDesk"],
+  [{ path: "/Applications/SmileDesk Dev.app/Contents/MacOS/SmileDesk Dev" }, "SmileDesk"],
   [{ bundleId: "org.alacritty" }, "a terminal"],
   [{ name: "Code - Insiders" }, "a terminal"],
   [{ bundleId: "com.microsoft.VSCodeInsiders" }, "a terminal"],
@@ -133,12 +133,12 @@ for (const el of [{ role: "AXMenuItem", label: "Paste" }, { role: "menu item", t
   assert.ok(U.refusedElement(el), JSON.stringify(el));
 for (const el of [{ role: "AXButton", label: "Close" }, { role: "AXMenuItem", label: "New Tab" }, { role: "AXLink", label: "Copy link" }, null]) assert.equal(U.refusedElement(el), null, JSON.stringify(el));
 
-// A stand-in for what runs on the Mac: Chrome (pid 101) with two windows, Bops (102), a Bops helper
+// A stand-in for what runs on the Mac: Chrome (pid 101) with two windows, SmileDesk (102), a SmileDesk helper
 // whose window says only "Renderer" (103, known by its path), Terminal (104).
 const running = {
   101: { path: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", name: "Google Chrome", windows: [{ window_id: 11, app_name: "Google Chrome" }, { window_id: 12, app_name: "Google Chrome" }] },
-  102: { path: "/Applications/Bops.app/Contents/MacOS/Bops", name: "Bops", windows: [{ window_id: 21, app_name: "Bops" }] },
-  103: { path: "/Applications/Bops.app/Contents/Frameworks/Bops Helper (Renderer).app/Contents/MacOS/Bops Helper (Renderer)", name: "Renderer", windows: [{ window_id: 31, app_name: "Renderer" }] },
+  102: { path: "/Applications/SmileDesk.app/Contents/MacOS/SmileDesk", name: "SmileDesk", windows: [{ window_id: 21, app_name: "SmileDesk" }] },
+  103: { path: "/Applications/SmileDesk.app/Contents/Frameworks/SmileDesk Helper (Renderer).app/Contents/MacOS/SmileDesk Helper (Renderer)", name: "Renderer", windows: [{ window_id: 31, app_name: "Renderer" }] },
   104: { path: "/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal", name: "Terminal", windows: [{ window_id: 41, app_name: "Terminal" }] },
 };
 // Elements of windows the task read, by element_token (ctx.element).
@@ -174,9 +174,9 @@ await refused("click", { element_token: "t1" }, /pid and window_id/);
 await refused("hotkey", { keys: ["cmd", "l"] }, /pid and window_id/);
 await refused("click", { pid: 101, window_id: 21, x: 1, y: 2 }, /isn't one of that app's windows/);
 await refused("click", { pid: 999, window_id: 11 }, /Nothing is running/);
-// Off limits: Bops, its helper (by its path), a terminal; reading them too.
-await refused("click", { pid: 102, window_id: 21, x: 1, y: 2 }, /Bops itself is off limits/);
-await refused("click", { pid: 103, window_id: 31, x: 1, y: 2 }, /Bops itself is off limits/);
+// Off limits: SmileDesk, its helper (by its path), a terminal; reading them too.
+await refused("click", { pid: 102, window_id: 21, x: 1, y: 2 }, /SmileDesk itself is off limits/);
+await refused("click", { pid: 103, window_id: 31, x: 1, y: 2 }, /SmileDesk itself is off limits/);
 await refused("get_window_state", { pid: 102, window_id: 21 }, /off limits/);
 await refused("page", { pid: 102, window_id: 21, action: "get_text" }, /off limits/);
 await refused("type_text", { pid: 104, window_id: 41, text: "ls" }, /a terminal is off limits/);
@@ -204,7 +204,7 @@ await refused("press_key", { ...chrome, key: "q", modifiers: "cmd" }, /modifiers
 await refused("press_key", { ...chrome, key: ["q"], modifiers: ["cmd"] }, /key is one key/);
 await refused("click", { ...chrome, x: 1, y: 2, modifier: "cmd" }, /modifier is a list of strings/);
 assert.deepEqual(await passed("press_key", { ...chrome, key: "a", modifiers: [] }), { ...chrome, key: "a", modifiers: [], delivery_mode: "background" });
-// Pressing a menu item Bops saw that pastes, or a window's close button: refused; a page's own Close button isn't.
+// Pressing a menu item SmileDesk saw that pastes, or a window's close button: refused; a page's own Close button isn't.
 await refused("click", { ...chrome, element_token: "tok_paste" }, /"Paste"/);
 await refused("press_key", { ...chrome, element_token: "tok_paste", key: "return" }, /"Paste"/);
 await refused("click", { ...chrome, element_token: "tok_close" }, /close button/);
@@ -224,9 +224,9 @@ assert.deepEqual(
   { bundle_id: "com.google.Chrome", urls: ["https://example.com", "/Users/me/Downloads"] },
 );
 assert.deepEqual(await passed("launch_app", { name: "Notes" }), { name: "Notes" });
-await refused("launch_app", { bundle_id: "ai.orgo.bops" }, /Bops itself is off limits/);
+await refused("launch_app", { bundle_id: "ai.orgo.bops" }, /SmileDesk itself is off limits/);
 await refused("launch_app", { name: "Terminal" }, /off limits/);
-await refused("launch_app", { name: "/Applications/Bops.app" }, /off limits/);
+await refused("launch_app", { name: "/Applications/SmileDesk.app" }, /off limits/);
 await refused("launch_app", { bundle_id: "com.googlecode.iterm2" }, /off limits/);
 await refused("launch_app", { name: "System Settings" }, /off limits/);
 await refused("launch_app", { bundle_id: "com.apple.finder", urls: ["/Applications/Utilities/Terminal.app"] }, /not apps/);
@@ -249,7 +249,7 @@ assert.deepEqual(shown.map((t) => t.name), ["click", "page", "launch_app", "list
 const shownClick = shown.find((t) => t.name === "click");
 assert.deepEqual(Object.keys(shownClick.inputSchema.properties), ["pid", "window_id", "x"]);
 assert.deepEqual(shownClick.inputSchema.required, ["pid", "window_id"]);
-assert.match(shownClick.description, /^Click\. In Bops: name the window with pid and window_id/);
+assert.match(shownClick.description, /^Click\. In SmileDesk: name the window with pid and window_id/);
 assert.deepEqual(shown.find((t) => t.name === "page").inputSchema.properties.action.enum, ["get_text", "query_dom"]);
 assert.deepEqual(Object.keys(shown.find((t) => t.name === "page").inputSchema.properties), ["action", "pid", "window_id", "css_selector"]);
 assert.deepEqual(Object.keys(shown.find((t) => t.name === "launch_app").inputSchema.properties), ["bundle_id", "name", "urls"]);
@@ -262,9 +262,9 @@ const windowsAnswer = {
 };
 const seen = await U.screenResult("list_windows", windowsAnswer, ctx);
 assert.deepEqual(seen.structuredContent.windows.map((w) => w.pid), [101, 101]);
-assert.doesNotMatch(seen.content[0].text, /Bops|Terminal|"pid":10[234]/);
+assert.doesNotMatch(seen.content[0].text, /SmileDesk|Terminal|"pid":10[234]/);
 assert.match(seen.content[0].text, /Google Chrome/);
-const jsonText = await U.screenResult("list_apps", { content: [{ type: "text", text: JSON.stringify({ apps: [{ name: "Bops", bundle_id: "ai.orgo.bops", pid: 102 }, { name: "Notes", bundle_id: "com.apple.Notes", pid: 0 }, { name: "1Password", bundle_id: "com.1password.1password", pid: 0 }] }) }] }, ctx);
+const jsonText = await U.screenResult("list_apps", { content: [{ type: "text", text: JSON.stringify({ apps: [{ name: "SmileDesk", bundle_id: "ai.orgo.bops", pid: 102 }, { name: "Notes", bundle_id: "com.apple.Notes", pid: 0 }, { name: "1Password", bundle_id: "com.1password.1password", pid: 0 }] }) }] }, ctx);
 assert.deepEqual(JSON.parse(jsonText.content[0].text).apps.map((a) => a.name), ["Notes"]);
 // A launch that turns out to be an app off limits isn't shown.
 const launched = await U.screenResult("launch_app", { content: [{ type: "text", text: "launched" }], structuredContent: { pid: 104, name: "Shell", windows: running[104].windows } }, ctx);
@@ -280,8 +280,8 @@ const apps = {};
 const procs = [];
 for (const [key, path] of [
   ["chrome", "Google Chrome.app/Contents/MacOS/Google Chrome"],
-  ["bops", "Bops.app/Contents/MacOS/Bops"],
-  ["helper", "Bops.app/Contents/Frameworks/Bops Helper (Renderer).app/Contents/MacOS/Bops Helper (Renderer)"],
+  ["bops", "SmileDesk.app/Contents/MacOS/SmileDesk"],
+  ["helper", "SmileDesk.app/Contents/Frameworks/SmileDesk Helper (Renderer).app/Contents/MacOS/SmileDesk Helper (Renderer)"],
   ["terminal", "Terminal.app/Contents/MacOS/Terminal"],
   // Known only by its bundle id (a remote desktop app under another name): read from its Info.plist.
   ["remote", "Workspace.app/Contents/MacOS/Workspace"],
@@ -301,20 +301,20 @@ for (const [key, path] of [
 const windows = [
   { pid: apps.chrome, window_id: 11, app_name: "Google Chrome", title: "Inbox" },
   { pid: apps.chrome, window_id: 12, app_name: "Google Chrome", title: "Flights" },
-  { pid: apps.bops, window_id: 21, app_name: "Bops", title: "Bops" },
+  { pid: apps.bops, window_id: 21, app_name: "SmileDesk", title: "SmileDesk" },
   { pid: apps.helper, window_id: 31, app_name: "Renderer", title: "" },
   { pid: apps.terminal, window_id: 41, app_name: "Terminal", title: "ssh prod" },
   { pid: apps.remote, window_id: 51, app_name: "Workspace", title: "prod-db-1" },
 ];
 const appList = [
   { name: "Google Chrome", bundle_id: "com.google.Chrome", pid: apps.chrome, running: true, launch_path: join(scratch, "Applications/Google Chrome.app") },
-  { name: "Bops", bundle_id: "ai.orgo.bops", pid: apps.bops, running: true, launch_path: join(scratch, "Applications/Bops.app") },
+  { name: "SmileDesk", bundle_id: "ai.orgo.bops", pid: apps.bops, running: true, launch_path: join(scratch, "Applications/SmileDesk.app") },
   { name: "Terminal", bundle_id: "com.apple.Terminal", pid: apps.terminal, running: true, launch_path: join(scratch, "Applications/Terminal.app") },
   { name: "Notes", bundle_id: "com.apple.Notes", pid: 0, running: false, launch_path: "/System/Applications/Notes.app" },
   { name: "CuaDriver", bundle_id: "com.trycua.driver", pid: 0, running: false, launch_path: "/Applications/CuaDriver.app" },
 ];
 // The stand-in `cua-driver mcp`: Cua's tools (two pages of them), every call it gets noted, and once it's
-// set up it asks the task's side for something (an elicitation, the roots), which Bops answers itself.
+// set up it asks the task's side for something (an elicitation, the roots), which SmileDesk answers itself.
 const log = join(scratch, "cua.log");
 const fake = join(scratch, "cua-driver");
 writeFileSync(
@@ -384,7 +384,7 @@ try {
   assert.equal(init.result.serverInfo.name, "bops_mac");
   assert.deepEqual(init.result.capabilities, { tools: {} }, "tools only: Cua's resources aren't offered");
   server.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" })}\n`);
-  // Cua started as an MCP server, and what it asked the task's side was answered by Bops: no to the elicitation, no roots.
+  // Cua started as an MCP server, and what it asked the task's side was answered by SmileDesk: no to the elicitation, no roots.
   const until = async (check, what) => {
     for (const end = Date.now() + 10_000; Date.now() < end; await sleep(25)) if (check()) return;
     assert.fail(`timed out waiting for ${what}`);
@@ -393,7 +393,7 @@ try {
   const logged = readFileSync(log, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
   assert.deepEqual(logged[0], { args: ["mcp"] });
   assert.ok(logged.some((x) => x.note === "notifications/initialized"));
-  assert.equal(logged.find((x) => x.answer?.id === "cua-1").answer.error.message, "not available through Bops");
+  assert.equal(logged.find((x) => x.answer?.id === "cua-1").answer.error.message, "not available through SmileDesk");
   assert.deepEqual(logged.find((x) => x.answer?.id === "cua-2").answer.result, { roots: [] });
 
   // Both pages of Cua's tools, trimmed.
@@ -403,16 +403,16 @@ try {
   // (What the server writes comes in order, so anything of Cua's passed on would have come before this answer.)
   assert.deepEqual(unasked, [], "nothing Cua asked reached the task's side");
 
-  // The lists leave out Bops, its helper (known only by its path), Terminal and Cua Driver.
+  // The lists leave out SmileDesk, its helper (known only by its path), Terminal and Cua Driver.
   const ws = await callTool("list_windows", {});
   assert.deepEqual(ws.structuredContent.windows.map((w) => w.window_id), [11, 12], "Workspace too, by its bundle id");
-  assert.doesNotMatch(ws.content[0].text, /Bops|Renderer|Terminal|ssh prod|prod-db-1/);
+  assert.doesNotMatch(ws.content[0].text, /SmileDesk|Renderer|Terminal|ssh prod|prod-db-1/);
   assert.match(ws.content[0].text, /Inbox/);
   const as = await callTool("list_apps", {});
   assert.deepEqual(as.structuredContent.apps.map((a) => a.name), ["Google Chrome", "Notes"]);
   assert.deepEqual(JSON.parse(as.content[0].text).apps.map((a) => a.name), ["Google Chrome", "Notes"]);
 
-  // Refused calls never reach Cua; the rest reach it as Bops rewrote them.
+  // Refused calls never reach Cua; the rest reach it as SmileDesk rewrote them.
   const before = calls().length;
   for (const [name, args] of [
     ["click", { pid: apps.bops, window_id: 21, x: 5, y: 5 }],
@@ -434,7 +434,7 @@ try {
     const r = await callTool(name, args);
     assert.equal(r.isError, true, `${name} ${JSON.stringify(args)} is refused`);
   }
-  // (Bops' own look at which windows an app has goes to Cua as list_windows; nothing else did.)
+  // (SmileDesk's own look at which windows an app has goes to Cua as list_windows; nothing else did.)
   assert.deepEqual(calls().slice(before).filter((c) => c.call !== "list_windows"), [], "no refused call reached Cua");
 
   // A menu item it read in a window (a context menu's Paste) can't be pressed, by element_token or by index.

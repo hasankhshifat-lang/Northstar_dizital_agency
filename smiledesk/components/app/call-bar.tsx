@@ -13,7 +13,7 @@ const DOTS = 14;
 /**
  * A voice call with a bot, over GPT-Live (WebRTC), as a bar that takes the chat header's place, so the
  * conversation (and any threads the call starts) stays in view. The bot talks in its own voice;
- * when the user asks for something to be done, GPT-Live delegates and Bops runs it through the bot's
+ * when the user asks for something to be done, GPT-Live delegates and SmileDesk runs it through the bot's
  * chat brain (threads, hand-offs, schedules), then the bot says how it went.
  */
 /**
@@ -293,7 +293,7 @@ export function CallBar({
       } catch (e) {
         if (gone) return;
         hush();
-        setError((e as Error).message.includes("Permission") ? "Bops needs microphone access for calls." : (e as Error).message);
+        setError((e as Error).message.includes("Permission") ? "SmileDesk needs microphone access for calls." : (e as Error).message);
         setPhase("failed");
         cleanup();
       }

@@ -23,8 +23,8 @@ import { computerFor } from "./turns.ts";
 import { computerUseOf, list, viewerAccess, wsOfBot } from "./ws-slice.ts";
 
 /**
- * The bot's browser (protocol.ts "The bot's browser"): Bops Cloud between the runner on a bot's computer, which captures
- * its Chrome (lib/browser-relay.ts), and whoever watches it from their Bops (components/app/bot-browser.tsx). It relays
+ * The bot's browser (protocol.ts "The bot's browser"): SmileDesk Cloud between the runner on a bot's computer, which captures
+ * its Chrome (lib/browser-relay.ts), and whoever watches it from their SmileDesk (components/app/bot-browser.tsx). It relays
  * and keeps nothing: a frame goes straight on to the viewers it's for, or nowhere.
  *
  * - **The runner** opens WS /v1/browser/runner, signed in as its computer (auth.ts CloudUser.computer). One per computer;
@@ -148,7 +148,7 @@ function activityOf(m: Record<string, unknown>): BrowserActivity | null {
   return { step: m.step, waiting: m.waiting === true, signIn };
 }
 
-/** Who a runner says drove something: a person as Bops Cloud vouched for them to it, else nobody (the bot). */
+/** Who a runner says drove something: a person as SmileDesk Cloud vouched for them to it, else nobody (the bot). */
 const personOf = (v: unknown): BrowserPerson | null =>
   v && typeof v === "object" && typeof (v as BrowserPerson).id === "string" && typeof (v as BrowserPerson).name === "string" ? { id: (v as BrowserPerson).id, name: (v as BrowserPerson).name.slice(0, 80) } : null;
 

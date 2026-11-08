@@ -1,6 +1,6 @@
 // Tests for adding files in chat and on a bot's screen (components/app/attachments.tsx): sendFile puts the file's
 // bytes as they are to POST /api/bots/files (its name and bot in the address), saying how much has gone up, and says
-// why when it can't (too big before anything goes, the server's own words, Bops not answering); the message box's
+// why when it can't (too big before anything goes, the server's own words, SmileDesk not answering); the message box's
 // tile for a file says its name, its size or how far it is, and why it failed; a sent message's files say their name,
 // size and where they are. The chat's box takes any file (not only images), and the message names the files it
 // added by id. In a workspace shared with the user: files (a picture too) for an Admin, on the owner's computer, sent
@@ -113,7 +113,7 @@ await check("sendFile: the bytes as they are, to the bot's file route, with how 
   assert.equal(added.path, "~/Desktop/plan.pdf");
 });
 
-await check("sendFile: too big says so before anything goes; the server's words when it refuses; Bops not answering", async () => {
+await check("sendFile: too big says so before anything goes; the server's words when it refuses; SmileDesk not answering", async () => {
   xhrs.length = 0;
   const big = { name: "huge.iso", size: 3 * 1024 ** 3, type: "" };
   await assert.rejects(sendFile("max", big), /Too big\. 2 GB at most\./);
@@ -124,7 +124,7 @@ await check("sendFile: too big says so before anything goes; the server's words 
   answer = { status: 500, body: "not json" };
   await assert.rejects(sendFile("max", new File(["x"], "a.txt")), /Couldn't add this file/);
   answer = "down";
-  await assert.rejects(sendFile("max", new File(["x"], "a.txt")), /Couldn't reach Bops/);
+  await assert.rejects(sendFile("max", new File(["x"], "a.txt")), /Couldn't reach SmileDesk/);
   answer = { status: 200, body: { file: PLAN } };
 });
 
@@ -226,7 +226,7 @@ await check("a shared workspace: files for an Admin, sent with their message; wh
   const computer = readFileSync(`${root}/components/app/computer.tsx`, "utf8");
   assert.match(computer, /function SharedScreen[\s\S]*?const screenDrop = useScreenDrop\(b\.id\);[\s\S]*?\{\.\.\.screenDrop\.dropProps\}/, "a drop on the screen an Admin sees");
   // The window's guard (on while a shared workspace is open) holds the upload too, which XMLHttpRequest sends: it lets
-  // this one through (the route asks Bops Cloud), never a picture for the model (it would stay on this Mac).
+  // this one through (the route asks SmileDesk Cloud), never a picture for the model (it would stay on this Mac).
   const { sendRefused, viewOnly } = await import(`${root}/components/app/view-only.ts`);
   viewOnly("You're in Alex's workspace.");
   xhrs.length = 0;

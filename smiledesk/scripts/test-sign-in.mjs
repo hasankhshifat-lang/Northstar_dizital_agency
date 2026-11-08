@@ -15,7 +15,7 @@ for (const k of ["ORGO_API_KEY", "BOPS_DATABASE_URL", "BOPS_SELF_HOSTED"]) delet
 process.env.BOPS_ORGO_ORIGIN = "https://orgo.test";
 const root = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const ts = createRequire(import.meta.url)("typescript");
-// Modules that would start something when called or loaded (the Keychain, Bops Cloud, the relay, the
+// Modules that would start something when called or loaded (the Keychain, SmileDesk Cloud, the relay, the
 // bots' sessions and what they load) are stand-ins: each of their exports does nothing.
 const STAND_INS = new Set(["keychain", "cloud-tunnel", "relay", "sessions", "mac", "desktop", "mirror"]);
 // The server modules import "@/lib/…" and "./store" (no extension), the way Next resolves them. Node only
@@ -91,7 +91,7 @@ for (const v of ["orgo", "apple", "Google", "", undefined, null, 1, {}, ["google
 
 // approvalPage: the code and app=bops always on the page, provider= only with a way in.
 const page = `https://orgo.test/cli/approve?code=${CODE}`;
-assert.equal(L.approvalPage(page, CODE), `${page}&app=bops`, "an Orgo login names no way in, still as Bops");
+assert.equal(L.approvalPage(page, CODE), `${page}&app=bops`, "an Orgo login names no way in, still as SmileDesk");
 assert.deepEqual(params(L.approvalPage(`${page}&provider=google`, CODE)), { code: CODE, app: "bops" }, "an Orgo login never carries a way in");
 assert.equal(L.approvalPage(page, CODE, "google"), `${page}&provider=google&app=bops`);
 assert.equal(L.approvalPage(page, CODE, "email"), `${page}&provider=email&app=bops`);
@@ -100,7 +100,7 @@ assert.equal(L.approvalPage("https://orgo.test/cli/approve", CODE), `${page}&app
 assert.deepEqual(params(L.approvalPage("https://orgo.test/cli/approve?code=OLD-OLD-OLD&x=1", CODE, "email")), { code: CODE, x: "1", provider: "email", app: "bops" }, "the code is the one the app shows");
 assert.deepEqual(params(L.approvalPage(`${page}&provider=email&app=orgo`, CODE, "google")), { code: CODE, provider: "google", app: "bops" }, "the way asked for wins");
 
-// Continue with Google: Orgo is asked for a code as Bops, and the page opens on Google with the code.
+// Continue with Google: Orgo is asked for a code as SmileDesk, and the page opens on Google with the code.
 orgo.answer = () => started();
 let r = await start({ provider: "google" });
 assert.equal(r.status, 200);

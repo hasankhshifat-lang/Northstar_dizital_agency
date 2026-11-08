@@ -3,9 +3,9 @@ import { replyToAsk } from "@/lib/server/permission";
 import { notReady } from "@/lib/server/ready";
 
 /**
- * The user's reply to a request for their OK, from this Bops (permission.ts replyToAsk): Allow once, Always allow
+ * The user's reply to a request for their OK, from this SmileDesk (permission.ts replyToAsk): Allow once, Always allow
  * (a rule saved for the bot), or Deny with what to do instead (`message`, which the bot is told). Written into the
- * shared state, so the Bops whose run asked carries it on from where it paused, wherever it runs. Refused (409)
+ * shared state, so the SmileDesk whose run asked carries it on from where it paused, wherever it runs. Refused (409)
  * when it's already answered, or this is a bot's computer.
  */
 export async function POST(request: Request) {

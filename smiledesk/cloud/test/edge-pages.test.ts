@@ -31,25 +31,25 @@ after(async () => {
   await closeDb();
 });
 
-test("/connected: Bops' own page after an app's sign-in, with every value from the address escaped", async () => {
+test("/connected: SmileDesk's own page after an app's sign-in, with every value from the address escaped", async () => {
   const res = await get("/connected?app=Gmail&status=success");
   assert.equal(res.status, 200);
   assert.equal(res.headers.get("content-type"), "text/html; charset=utf-8");
   assert.equal(res.headers.get("cache-control"), "no-store");
   const html = await res.text();
-  assert.match(html, /<title>Gmail is connected · Bops<\/title>/);
-  assert.match(html, /Your bots can use it now\. You can close this tab and go back to Bops\./);
+  assert.match(html, /<title>Gmail is connected · SmileDesk<\/title>/);
+  assert.match(html, /Your bots can use it now\. You can close this tab and go back to SmileDesk\./);
   // Behind the proxy the page is at <public>/api/connected: its pictures are relative, so they stay under /api.
-  assert.match(html, /<img src="brand\/bops-512\.png" alt="Bops">/);
-  assert.match(html, /<link rel="icon" href="brand\/bops-512\.png">/);
+  assert.match(html, /<img src="brand\/smiledesk-512\.png" alt="SmileDesk">/);
+  assert.match(html, /<link rel="icon" href="brand\/smiledesk-512\.png">/);
   assert.ok(!html.includes('"/brand'), "never an address from the root");
   assert.ok(!html.includes(String.fromCharCode(0x2014)), "no em dashes");
 
   const failed = await (await get("/connected?app=Notion&status=failed")).text();
   assert.match(failed, /Notion didn't connect/);
-  assert.match(failed, /Nothing was saved\. Go back to Bops and try again\./);
+  assert.match(failed, /Nothing was saved\. Go back to SmileDesk and try again\./);
   assert.match(failed, /<script><\/script>/, "a failed one stays open");
-  assert.match(await (await get("/connected")).text(), /<title>Connected · Bops<\/title>/);
+  assert.match(await (await get("/connected")).text(), /<title>Connected · SmileDesk<\/title>/);
 
   const evil = await get(`/connected?app=${encodeURIComponent(`<script>alert("x")</script><img src=x onerror='y'>&`)}`);
   const page = await evil.text();
@@ -97,11 +97,11 @@ test("/mascot and /brand: the fixed pictures, with their own types, and nothing 
   const jpg = await get("/mascot/blob-2EC4B6.jpg");
   assert.equal(jpg.status, 200);
   assert.equal(jpg.headers.get("content-type"), "image/jpeg");
-  const logo = await get("/brand/bops-512.png");
+  const logo = await get("/brand/smiledesk-512.png");
   assert.equal(logo.status, 200);
   assert.equal(logo.headers.get("content-type"), "image/png");
   // Twice: the same bytes from what was kept.
-  assert.deepEqual(Buffer.from(await (await get("/brand/bops-512.png")).arrayBuffer()), readFileSync(new URL("../public/brand/bops-512.png", import.meta.url)));
+  assert.deepEqual(Buffer.from(await (await get("/brand/smiledesk-512.png")).arrayBuffer()), readFileSync(new URL("../public/brand/smiledesk-512.png", import.meta.url)));
 
   for (const path of [
     "/mascot/nobody-000000.png",
@@ -116,7 +116,7 @@ test("/mascot and /brand: the fixed pictures, with their own types, and nothing 
     "/brand/..%2F..%2Fpackage.json",
   ])
     assert.equal((await get(path)).status, 404, path);
-  for (const path of ["/mascot/../server.ts", "/mascot/..\\..\\server.ts", "/brand/./bops-512.png/..", "/mascot//etc/passwd"]) {
+  for (const path of ["/mascot/../server.ts", "/mascot/..\\..\\server.ts", "/brand/./smiledesk-512.png/..", "/mascot//etc/passwd"]) {
     const status = await rawGet(path);
     assert.ok(status === 404 || status === 400, `${path}: ${status}`);
   }

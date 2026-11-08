@@ -1,5 +1,5 @@
 /**
- * The size of the user's free Bops computer, billed by use: Medium or Large (lib/bops-billing.ts
+ * The size of the user's free SmileDesk computer, billed by use: Medium or Large (lib/bops-billing.ts
  * COMPUTER_SIZES, each with Orgo's price in its plan read), picked once in Pick your computer
  * (components/app/computer-size.tsx) and switched in Settings, Your plan. The words for both, the phases
  * of a switch, and the word that a computer changed size, for the live views. Shared by the server and the

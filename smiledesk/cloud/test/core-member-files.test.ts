@@ -8,11 +8,11 @@ import { sharedMessage } from "../ws-slice.ts";
 const { cleanFileName } = (await import(new URL("../../lib/added-files.ts", import.meta.url).href)) as { cleanFileName: (name: string) => string };
 
 /**
- * Files added with a message (lib/added-files.ts AddedFile, protocol.ts MemberFile), as Bops Cloud takes and shows them:
+ * Files added with a message (lib/added-files.ts AddedFile, protocol.ts MemberFile), as SmileDesk Cloud takes and shows them:
  * a member's checked whole (cleanMemberFiles); each chip shown to everyone given the bot it's for, never one for a bot
  * hidden from them (ws-slice.ts sharedMessage); the phone naming them, and showing a message of files alone (agent.ts
  * phoneMessage); and the bot answering from the phone told where they are (agent-prompt.ts historyInput). Every name the
- * member's Bops claims (lib/added-files.ts cleanFileName) is one Bops Cloud takes. Nothing here needs a database. The
+ * member's SmileDesk claims (lib/added-files.ts cleanFileName) is one SmileDesk Cloud takes. Nothing here needs a database. The
  * people and ids are made up.
  */
 
@@ -43,7 +43,7 @@ test("a member's files are taken whole and checked: a plain name on the Desktop,
   assert.equal(cleanMemberFiles("file_1"), null);
 });
 
-test("every name a member's Bops claims on the Desktop (cleanFileName) is one Bops Cloud takes on their message", () => {
+test("every name a member's SmileDesk claims on the Desktop (cleanFileName) is one SmileDesk Cloud takes on their message", () => {
   const long = `${"x".repeat(239)} ${"y".repeat(20)}`;
   for (const raw of [". notes.txt", ". .txt", "  ..hidden  ", "a\u0000b.pdf", "dir/ report.pdf", long, `${"é".repeat(130)}.pdf`]) {
     const name = cleanFileName(raw);

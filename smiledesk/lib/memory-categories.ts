@@ -1,7 +1,7 @@
 import type { AppState } from "./types";
 
 /*
- * What Bops knows, sorted into categories that fill themselves as people use their bots: the people
+ * What SmileDesk knows, sorted into categories that fill themselves as people use their bots: the people
  * they deal with, what's coming up, what they still have to do, what was promised and decided, and how
  * they like things. Read from the workspace's memory (Honcho), where every chat and finished task
  * already goes (lib/server/memory.ts), and sorted on this Mac (lib/server/memory-categories.ts). Each
@@ -140,7 +140,7 @@ export type MemoryItem = {
 
 /** What the app is sent: a workspace's categories and how their filling is going. */
 export type MemorySnapshot = {
-  /** Memory is set up (signed in to Bops Cloud, or a Honcho key when self-hosting). */
+  /** Memory is set up (signed in to SmileDesk Cloud, or a Honcho key when self-hosting). */
   on: boolean;
   ws: string;
   /** Changes with anything in this snapshot: send it back (?rev=) and an unchanged one comes back as {unchanged: true}. */

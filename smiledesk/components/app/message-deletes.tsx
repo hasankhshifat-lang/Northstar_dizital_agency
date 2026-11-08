@@ -10,7 +10,7 @@ import { post } from "./ui";
  * Select messages, or every one (Delete all messages, asked first). Each delete shows a short line for a few
  * seconds, in place for one message, over the message box for more, with Undo:
  * - The user keeps what they delete a few days (Settings → Your data, deletedDays): it's deleted at once, and
- *   Undo puts it back from Recently deleted (POST /api/privacy { restore }), as Restore there does, Bops Cloud
+ *   Undo puts it back from Recently deleted (POST /api/privacy { restore }), as Restore there does, SmileDesk Cloud
  *   and the other Macs too.
  * - Gone at once (deletedDays 0, the default): nothing is kept to put back, so the delete waits out its Undo
  *   here before it's sent (hidden meanwhile), and Undo just doesn't send it. Leaving the chat's window sends it

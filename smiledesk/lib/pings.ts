@@ -1,6 +1,6 @@
 import type { AppState } from "./types";
 
-/** What's worth a chime (and a notification when Bops is behind), with the key it's chimed for once. */
+/** What's worth a chime (and a notification when SmileDesk is behind), with the key it's chimed for once. */
 export type Ping = { key: string; title: string; body: string };
 
 /**
@@ -13,9 +13,9 @@ export type Ping = { key: string; title: string; body: string };
 export function duePings(state: Pick<AppState, "watches" | "messages" | "bots" | "appApprovals">): Ping[] {
   return [
     ...(state.watches ?? []).filter((w) => w.alert?.level === "now").map((w) => ({ key: `w:${w.id}:${w.alert!.at}`, title: w.mac?.title ?? w.site, body: w.alert!.text })),
-    ...state.messages.filter((m) => m.ping).map((m) => ({ key: `m:${m.id}`, title: state.bots.find((b) => b.id === m.botId)?.name ?? "Bops", body: m.text.replace(/\*\*|\[|\]\([^)]*\)/g, "").slice(0, 140) })),
+    ...state.messages.filter((m) => m.ping).map((m) => ({ key: `m:${m.id}`, title: state.bots.find((b) => b.id === m.botId)?.name ?? "SmileDesk", body: m.text.replace(/\*\*|\[|\]\([^)]*\)/g, "").slice(0, 140) })),
     ...(state.appApprovals ?? [])
       .filter((a) => !a.reply)
-      .map((a) => ({ key: `a:${a.id}`, title: state.bots.find((b) => b.id === a.botId)?.name ?? "Bops", body: `Waiting for your OK: ${a.action}`.slice(0, 140) })),
+      .map((a) => ({ key: `a:${a.id}`, title: state.bots.find((b) => b.id === a.botId)?.name ?? "SmileDesk", body: `Waiting for your OK: ${a.action}`.slice(0, 140) })),
   ];
 }

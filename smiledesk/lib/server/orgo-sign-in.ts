@@ -30,7 +30,7 @@ export type SignInPoll = { status: "pending" | "approved" | "denied" | "expired"
 
 /**
  * What went wrong, in the words the app shows: Orgo couldn't be reached, Orgo answered with an error,
- * the Keychain refused the key, or the user's Bops couldn't be loaded from Bops Cloud.
+ * the Keychain refused the key, or the user's SmileDesk couldn't be loaded from SmileDesk Cloud.
  */
 export type SignInProblem = "offline" | "orgo" | "keychain" | "cloud";
 export class SignInError extends Error {
@@ -101,7 +101,7 @@ export const signInProvider = (v: unknown): SignInProvider | undefined => (v ===
 
 /**
  * The page the browser opens: Orgo's approve page with the code already on it, so nobody types
- * one, shown as Bops (app=bops) every way. With Google or email it also goes straight to that way of
+ * one, shown as SmileDesk (app=bops) every way. With Google or email it also goes straight to that way of
  * signing in (provider=), then comes back to approve this Mac; Sign in with Orgo names no way in.
  */
 export function approvalPage(verificationUrl: string, userCode: string, provider?: SignInProvider) {
@@ -181,7 +181,7 @@ async function poll(): Promise<SignInPoll> {
 async function finish(p: Pending, apiKey: string, user: OrgoUser): Promise<SignInPoll> {
   // Another user's state is about to come in: the last one's tasks stop first, so their work doesn't
   // run on (or report into) someone else's, and their bots' Chromes (their cookies) close. As at a
-  // sign-out, their computers go back to their own route and Bops Cloud's tunnel on their key
+  // sign-out, their computers go back to their own route and SmileDesk Cloud's tunnel on their key
   // closes, so nothing of theirs (a webhook, a text) lands in the new account's state.
   const before = signedInUser();
   if (before && before.id !== user.id) {
@@ -201,12 +201,12 @@ async function finish(p: Pending, apiKey: string, user: OrgoUser): Promise<SignI
   seedOwnerName(user);
   // This Mac, as this user's state has it (each user's state keeps its own look at it: state.mac).
   void checkMac().catch(() => {});
-  // Then a main bot left with no computer takes up the free Bops computer again, if it's still on Orgo.
+  // Then a main bot left with no computer takes up the free SmileDesk computer again, if it's still on Orgo.
   void adoptComputers(user.id)
     .catch((e: Error) => console.warn(`[sign-in] checking the bots' computers: ${e.message}`))
     .then(() => reattachFreeComputer(user.id))
     .then(() => moveOntoOrgoWorkspaces(user.id));
-  // Bops Cloud starts over on this key (its session, the tunnel), and routing through this Mac turns
+  // SmileDesk Cloud starts over on this key (its session, the tunnel), and routing through this Mac turns
   // on by itself where Orgo offers it.
   void startCloud({ signedIn: true });
   relayAfterSignIn();
@@ -214,7 +214,7 @@ async function finish(p: Pending, apiKey: string, user: OrgoUser): Promise<SignI
 }
 
 /**
- * Each Bops workspace onto an Orgo workspace of its own, where Orgo has them (workspaces.ts): run at every
+ * Each SmileDesk workspace onto an Orgo workspace of its own, where Orgo has them (workspaces.ts): run at every
  * sign-in until it's done. On an Orgo without them it does nothing and says nothing.
  */
 async function moveOntoOrgoWorkspaces(userId: string) {
@@ -241,7 +241,7 @@ async function adoptComputers(userId: string) {
   let sure = true;
   if (st.computersOf) gone = withComputers.map((b) => b.id);
   else {
-    // From before Bops kept track: ask Orgo, on the new key, which ones it can see.
+    // From before SmileDesk kept track: ask Orgo, on the new key, which ones it can see.
     gone = [];
     for (const b of withComputers)
       await orgo.computer(b.computerId!).catch((e: Error) => {
@@ -272,7 +272,7 @@ function seedOwnerName(user: OrgoUser) {
 /**
  * Who the key belongs to on Orgo (GET /api/user/profile), with their name if they've given one; "denied"
  * when Orgo turns the key down, null when it can't say. A runner's identity token that Orgo won't answer
- * for yet (403 bops_cloud_not_ready: Bops Cloud can't tell a computer from its user) has Bops Cloud and
+ * for yet (403 bops_cloud_not_ready: SmileDesk Cloud can't tell a computer from its user) has SmileDesk Cloud and
  * this ask take the key file meanwhile (orgo-auth.ts cloudKey). On a runner, a credential Orgo says isn't
  * its computer's own (an account's key in its files, another computer's) is "denied" too, and never used
  * (orgo-auth.ts orgoKeyNotOurs).
@@ -304,7 +304,7 @@ async function whoIs(apiKey: string): Promise<OrgoUser | "denied" | null> {
   }
 }
 
-/** The credential a state load goes by: the signed-in key, or on a runner what Bops Cloud takes (orgo-auth.ts cloudKey). */
+/** The credential a state load goes by: the signed-in key, or on a runner what SmileDesk Cloud takes (orgo-auth.ts cloudKey). */
 const signInKey = () => (onRunner() ? cloudKey() : orgoKey());
 
 /** Whether a sign-in has its key from Orgo and is landing (finish): no other user's state is loaded meanwhile. */
@@ -320,7 +320,7 @@ const LOAD_RETRY_MAX_MS = 60_000;
 /**
  * Signed in (the key is in the Keychain), but nobody's state is loaded: the server just started, or a
  * hosted server restarted. Ask Orgo who the key is, and load that user's own state first, as a
- * sign-in does, so their work lands in (and is saved to) their own. When Bops Cloud or Orgo can't be
+ * sign-in does, so their work lands in (and is saved to) their own. When SmileDesk Cloud or Orgo can't be
  * reached it's tried again, after 2 seconds, then 4… up to a minute (`now`: try now anyway).
  */
 function loadForKey(key: string, now: boolean): Promise<void> {
@@ -341,7 +341,7 @@ function loadForKey(key: string, now: boolean): Promise<void> {
     seedOwnerName(user);
     void checkMac().catch(() => {});
     void Promise.resolve(reattachFreeComputer(user.id)).then(() => moveOntoOrgoWorkspaces(user.id));
-    // Now that it's known who, Bops Cloud's tunnel opens for them.
+    // Now that it's known who, SmileDesk Cloud's tunnel opens for them.
     void startCloud();
   })().then(
     () => {
@@ -363,12 +363,12 @@ function loadForKey(key: string, now: boolean): Promise<void> {
 /**
  * Whether the app has to ask the user to sign in: not when they are, and not for a self-hoster
  * who runs on their own key (BOPS_SELF_HOSTED=1 with ORGO_API_KEY). `cloudProblem`: signed in, but
- * their state couldn't be loaded from Bops Cloud (offline): the app says so, and asks again (`retry`
+ * their state couldn't be loaded from SmileDesk Cloud (offline): the app says so, and asks again (`retry`
  * tries again at once, from the app's Try again).
  */
 export async function authStatus({ retry = false } = {}) {
   const key = await loadOrgoKey();
-  // A runner asks Orgo's profile and loads its state from Bops Cloud with what Bops Cloud takes (its key file while it can't take identity yet).
+  // A runner asks Orgo's profile and loads its state from SmileDesk Cloud with what SmileDesk Cloud takes (its key file while it can't take identity yet).
   if (key && !signedInUser()) await loadForKey(signInKey() ?? key, retry);
   // The Mac app and a hosted server are signed in only once the user's state is loaded; until then it asks for a sign-in.
   const needsState = onPostgres() || stateInCloud();

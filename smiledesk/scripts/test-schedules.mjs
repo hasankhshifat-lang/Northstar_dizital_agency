@@ -388,7 +388,7 @@ await check("normalizeSchedule: times sorted and each once, at most 6; days; mon
   for (const m of [4, 241, 12.5]) assert.equal(n({ kind: "before_event", minutes: m }).error, "A meeting routine runs 5 to 240 minutes before each meeting.", `lead ${m}`);
   assert.equal(n({ kind: "before_event", minutes: 15, source: "outlook" }).error, "Meeting routines read Google Calendar.");
   assert.deepEqual(n({ kind: "once", at: "2026-10-14T15:00:00-04:00" }), { schedule: { kind: "once", at: Z("2026-10-14T19:00:00Z") } });
-  assert.equal(n({ kind: "hourly" }).error, "That isn't a schedule Bops knows.");
+  assert.equal(n({ kind: "hourly" }).error, "That isn't a schedule SmileDesk knows.");
   assert.equal(n(null).error, "That isn't a schedule.");
   // Every shape from before comes back as it was.
   for (const old of [{ kind: "daily", time: "09:00" }, { kind: "weekdays", time: "08:30" }, { kind: "weekly", day: 1, time: "09:00" }, { kind: "once", at: Z("2026-10-14T19:00:00Z") }, { kind: "every", minutes: 120, hours: { from: "08:00", to: "22:00" }, days: [1, 2, 3, 4, 5] }])
@@ -690,7 +690,7 @@ await check("a task run: a fresh thread with the routine and its skill, the chip
   assert.equal(R.ranNow(now.sessionId, "msg_other"), undefined, "another message didn't ask for it");
   assert.equal(R.ranNow(now.sessionId)?.id, r.id, "asked for in a chat");
   state.sessions.find((x) => x.id === now.sessionId).status = "done";
-  // Run now in the Bops app: the chip says so, but no text or channel turn gets its result.
+  // Run now in the SmileDesk app: the chip says so, but no text or channel turn gets its result.
   const k = state.messages.length;
   const inApp = await R.runRoutine(r.id, { manual: "app" });
   assert.equal(inApp.status, "running");
@@ -777,7 +777,7 @@ await check("set up by text before deliverTo: the thread texts its own result ba
   R.deleteRoutine(both.id);
 });
 
-await check("a long text is cut, and says the rest is in Bops", async () => {
+await check("a long text is cut, and says the rest is in SmileDesk", async () => {
   const made = R.createRoutine("bot_max", "Digest", "Digest", { kind: "daily", time: "08:00" }, { deliverTo: { kind: "text" } });
   const long = Array.from({ length: 200 }, (_, i) => `Item ${i} is fine.`).join(" ");
   const d = await R.deliver(get(made.routine.id), long);
@@ -785,7 +785,7 @@ await check("a long text is cut, and says the rest is in Bops", async () => {
   const body = fake.texts.at(-1).body;
   assert.ok(body.length <= 620, `kept short (${body.length})`);
   assert.ok(body.startsWith("Max: Item 0"), "from the team's number, with the bot's name");
-  assert.ok(body.endsWith("… (the rest is in Bops)"), body.slice(-40));
+  assert.ok(body.endsWith("… (the rest is in SmileDesk)"), body.slice(-40));
   R.deleteRoutine(made.routine.id);
 });
 
@@ -1187,7 +1187,7 @@ await check("a daily run missed while the Mac slept: once late, or at its time w
   await sleep(10);
   assert.equal(digests(), 0, "not late, with 9 AM so close");
   assert.equal(get(r.id).last.status, "skipped");
-  assert.match(get(r.id).last.error, /^Missed while Bops was off or this Mac was asleep \(it was due Oct 17\); runs next today 9 AM$/);
+  assert.match(get(r.id).last.error, /^Missed while SmileDesk was off or this Mac was asleep \(it was due Oct 17\); runs next today 9 AM$/);
   noDashes(get(r.id).last.error, "skip reason");
   eq(get(r.id).nextRunAt, at("2026-10-19T13:00:00Z"), "today 9 AM");
   clock = at("2026-10-19T13:00:30Z");
@@ -1342,7 +1342,7 @@ await check("a routine's own time zone: its next time, the timer, an edit to ano
   try {
     clock = Z("2026-10-13T20:30:00Z"); // 4:30 PM in New York, 9:30 PM in London
     const bad = R.createRoutine("bot_main", "Bad", "x", { kind: "daily", time: "09:00" }, { timeZone: "Mars/Olympus" });
-    assert.equal(bad.error, '"Mars/Olympus" isn\'t a time zone Bops knows. Use an IANA name, like America/New_York.');
+    assert.equal(bad.error, '"Mars/Olympus" isn\'t a time zone SmileDesk knows. Use an IANA name, like America/New_York.');
     noDashes(bad.error, "zone error");
     const r = R.createRoutine("bot_main", "London standup", "Say hi", { kind: "weekdays", time: "09:00" }, { timeZone: "Europe/London", reminder: "Standup" }).routine;
     assert.equal(r.timeZone, "Europe/London");
@@ -1595,7 +1595,7 @@ await check("the route: create, refuse, run now, edit, pause, delete", async () 
   await route.DELETE(req("DELETE", { id: routine.id }));
   assert.equal(get(routine.id), undefined);
   R.deleteRoutine(moved.routine.id);
-  // Not from the Bops window: refused.
+  // Not from the SmileDesk window: refused.
   process.env.BOPS_UI_TOKEN = "window-token-for-tests";
   const outside = await route.POST(req("POST", { botId: "bot_main", goal: "x", schedule: { kind: "daily", time: "09:00" } }));
   assert.equal(outside.status, 403);

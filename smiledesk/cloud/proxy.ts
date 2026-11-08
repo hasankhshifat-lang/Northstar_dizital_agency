@@ -45,7 +45,7 @@ import { isWebSearch, liveSecondsOf, recordImages, recordJev, recordTokens, reco
  *   call is for (x-bops-bot, x-bops-source: read here, never sent on), and an agent session keeps the
  *   bot it was made for.
  * - A computer's runner (auth.ts CloudUser.computer) reaches only what its own bots may use, from its
- *   user's state as Bops Cloud keeps it (computer-scope.ts; a computer can't change who works where or
+ *   user's state as SmileDesk Cloud keeps it (computer-scope.ts; a computer can't change who works where or
  *   what they may use): the models, Typesafe and treg as the Mac does; Honcho in its bots' workspaces'
  *   memory banks only; Composio's catalog, and its bots' own sessions and actions in the accounts the
  *   user gave them (read-only ones read only), never connecting, deleting or linking accounts, sign-in
@@ -172,7 +172,7 @@ type Spec = {
 
 /* ---------------- A computer's runner: what its bots may use ---------------- */
 
-/** What a computer's bots may use, from its user's state as Bops Cloud keeps it (computer-scope.ts). */
+/** What a computer's bots may use, from its user's state as SmileDesk Cloud keeps it (computer-scope.ts). */
 type ComputerView = {
   state: StateBlob;
   bots: Set<string>;
@@ -262,7 +262,7 @@ function match(spec: Spec, call: Call): Rule {
       return r;
     }
   }
-  throw new HttpError(403, `Bops Cloud doesn't pass ${call.method} /${call.path.join("/")} on to ${spec.name}.`);
+  throw new HttpError(403, `SmileDesk Cloud doesn't pass ${call.method} /${call.path.join("/")} on to ${spec.name}.`);
 }
 
 const qs = (query: URLSearchParams) => {
@@ -393,7 +393,7 @@ async function openaiRefs(call: Call) {
       (key === "type" && value === "item_reference") ||
       // A reasoning item named by id alone is looked up in storage, like an item reference.
       (key === "type" && value === "reasoning" && typeof parent?.id === "string" && !parent.encrypted_content);
-    if (refused) throw new HttpError(403, "Bops Cloud doesn't pass references to stored OpenAI objects through.");
+    if (refused) throw new HttpError(403, "SmileDesk Cloud doesn't pass references to stored OpenAI objects through.");
     if (OPENAI_OWNED_REFS.has(key)) for (const id of idsIn(value)) await mustOwn("openai", call, id);
   }
 }
@@ -408,7 +408,7 @@ function responsesTools(call: Call) {
   const tools = isObject(call.json) && Array.isArray(call.json.tools) ? call.json.tools : [];
   for (const t of tools) {
     const type = isObject(t) ? t.type : undefined;
-    if (typeof type !== "string" || !RESPONSES_TOOLS.has(type)) throw new HttpError(403, `Bops Cloud doesn't pass ${typeof type === "string" ? `the ${type} tool` : "that tool"} through.`);
+    if (typeof type !== "string" || !RESPONSES_TOOLS.has(type)) throw new HttpError(403, `SmileDesk Cloud doesn't pass ${typeof type === "string" ? `the ${type} tool` : "that tool"} through.`);
   }
 }
 
@@ -416,9 +416,9 @@ function responsesTools(call: Call) {
 const IMAGE_SIZES = new Set(["1024x1024", "1024x1536", "1536x1024"]);
 const IMAGE_QUALITIES = new Set(["low", "medium", "high"]);
 function imageAsk(n: unknown, size: unknown, quality: unknown) {
-  if (n !== undefined && Number(n) !== 1) throw new HttpError(400, "Bops Cloud makes one image at a time.");
-  if (!IMAGE_SIZES.has(String(size))) throw new HttpError(400, "Bops Cloud makes images at 1024x1024, 1024x1536 or 1536x1024.");
-  if (!IMAGE_QUALITIES.has(String(quality))) throw new HttpError(400, "Bops Cloud makes images at low, medium or high quality.");
+  if (n !== undefined && Number(n) !== 1) throw new HttpError(400, "SmileDesk Cloud makes one image at a time.");
+  if (!IMAGE_SIZES.has(String(size))) throw new HttpError(400, "SmileDesk Cloud makes images at 1024x1024, 1024x1536 or 1536x1024.");
+  if (!IMAGE_QUALITIES.has(String(quality))) throw new HttpError(400, "SmileDesk Cloud makes images at low, medium or high quality.");
 }
 
 type ResponseObject = { id?: unknown; object?: unknown; model?: unknown; usage?: unknown; output?: unknown; service_tier?: unknown };
@@ -547,9 +547,9 @@ const openai: Spec = {
       readToEnd: true,
       check: (call) => {
         if (!call.upload) throw new HttpError(400, "Send the recording as a file upload.");
-        if (formField(call, "model") !== "gpt-transcribe") throw new HttpError(400, "Bops Cloud only transcribes with gpt-transcribe.");
+        if (formField(call, "model") !== "gpt-transcribe") throw new HttpError(400, "SmileDesk Cloud only transcribes with gpt-transcribe.");
         if (!["json", undefined].includes(formField(call, "response_format"))) throw new HttpError(400, "Ask for a JSON answer.");
-        if (!["false", undefined].includes(formField(call, "stream"))) throw new HttpError(400, "Bops Cloud doesn't stream transcriptions.");
+        if (!["false", undefined].includes(formField(call, "stream"))) throw new HttpError(400, "SmileDesk Cloud doesn't stream transcriptions.");
       },
       json: (call, data) => counted(recordTranscription(call.user.id, isObject(data) ? data : {}, { model: "gpt-transcribe", botId: call.bot })),
     }),
@@ -559,8 +559,8 @@ const openai: Spec = {
       readToEnd: true,
       check: (call) => {
         const body = isObject(call.json) ? call.json : {};
-        if (!imageModelPriced(body.model)) throw new HttpError(400, "Bops Cloud only makes images with gpt-image-2.5-flare or gpt-image-2.5-sunburst.");
-        if (body.stream) throw new HttpError(400, "Bops Cloud doesn't stream images.");
+        if (!imageModelPriced(body.model)) throw new HttpError(400, "SmileDesk Cloud only makes images with gpt-image-2.5-flare or gpt-image-2.5-sunburst.");
+        if (body.stream) throw new HttpError(400, "SmileDesk Cloud doesn't stream images.");
         imageAsk(body.n, body.size, body.quality);
       },
       json: (call, data) => counted(recordImages(call.user.id, isObject(data) ? data : {}, { model: isObject(call.json) ? call.json.model : undefined, botId: call.bot })),
@@ -571,8 +571,8 @@ const openai: Spec = {
       readToEnd: true,
       check: (call) => {
         if (!call.upload) throw new HttpError(400, "Send the images as a file upload.");
-        if (!imageModelPriced(formField(call, "model"))) throw new HttpError(400, "Bops Cloud only edits images with gpt-image-2.5-flare or gpt-image-2.5-sunburst.");
-        if (!["false", undefined].includes(formField(call, "stream"))) throw new HttpError(400, "Bops Cloud doesn't stream images.");
+        if (!imageModelPriced(formField(call, "model"))) throw new HttpError(400, "SmileDesk Cloud only edits images with gpt-image-2.5-flare or gpt-image-2.5-sunburst.");
+        if (!["false", undefined].includes(formField(call, "stream"))) throw new HttpError(400, "SmileDesk Cloud doesn't stream images.");
         imageAsk(formField(call, "n"), formField(call, "size"), formField(call, "quality"));
       },
       json: (call, data) => counted(recordImages(call.user.id, isObject(data) ? data : {}, { model: formField(call, "model"), botId: call.bot })),
@@ -661,8 +661,8 @@ const SUB_ACCOUNT_KEYS = new Set(["subaccountid", "subaccount", "subaccountids"]
 /** Every AgentPhone call acts in the user's own sub-account, whatever the Mac sent. Naming one any other way is refused. */
 async function inSubAccount(call: Call) {
   const sub = (await accountFor(call.user.id))?.agentphoneSubAccount;
-  if (!sub) throw new HttpError(409, "Your phone isn't set up yet. Restart Bops and try again.");
-  if ([...queryValues(call.query), ...keysIn(call.json)].some((x) => SUB_ACCOUNT_KEYS.has(x.key))) throw new HttpError(400, "Bops Cloud picks the AgentPhone sub-account.");
+  if (!sub) throw new HttpError(409, "Your phone isn't set up yet. Restart SmileDesk and try again.");
+  if ([...queryValues(call.query), ...keysIn(call.json)].some((x) => SUB_ACCOUNT_KEYS.has(x.key))) throw new HttpError(400, "SmileDesk Cloud picks the AgentPhone sub-account.");
   call.headers["x-sub-account-id"] = sub;
 }
 
@@ -864,7 +864,7 @@ const agentphone: Spec = {
     rule("GET v1/numbers/:number/messages"),
     rule("PUT v1/numbers/:number/contact-card"),
     rule("DELETE v1/numbers/:number/contact-card"),
-    // Where a number's calls go: its agent (voice turns to the agent's webhook, what Bops uses), a SIP trunk, or nowhere.
+    // Where a number's calls go: its agent (voice turns to the agent's webhook, what SmileDesk uses), a SIP trunk, or nowhere.
     rule("PATCH v1/numbers/:number/voice-routing"),
     // AgentPhone's voices (a read: nothing changes), for the closest to a bot's own (lib/server/phone.ts voiceToAgent), set with PATCH v1/agents/:agent.
     rule("GET v1/agents/voices"),
@@ -891,7 +891,7 @@ const agentphone: Spec = {
 /* ---------------- Honcho ---------------- */
 
 const notYours = (call: Call) =>
-  new HttpError(403, `Honcho workspaces through Bops Cloud are named ${honchoPrefix(call.user.id)}-… (yours only).`);
+  new HttpError(403, `Honcho workspaces through SmileDesk Cloud are named ${honchoPrefix(call.user.id)}-… (yours only).`);
 
 /** Any workspace a Honcho body or query names must be the user's too (the path's is checked by its rule). */
 function honchoScope(call: Call) {
@@ -976,10 +976,10 @@ const COMPOSIO_REFUSED = new Set(["aclconfigforshared", "sessionconfigid", "cust
 async function composioScope(call: Call) {
   const me = composioUserId(call.user.id);
   for (const { key, value } of [...queryValues(call.query), ...keysIn(call.json)]) {
-    if (USER_KEYS.has(key) && idsIn(value).some((id) => id !== me)) throw new HttpError(403, "Composio calls through Bops Cloud act as you only.");
+    if (USER_KEYS.has(key) && idsIn(value).some((id) => id !== me)) throw new HttpError(403, "Composio calls through SmileDesk Cloud act as you only.");
     if (ACCOUNT_KEYS.has(key)) for (const id of idsIn(value)) await mustOwn("composio", call, id);
     if (COMPOSIO_REFUSED.has(key) || (key === "accounttype" && idsIn(value).some((t) => t !== "PRIVATE")))
-      throw new HttpError(403, "Bops Cloud doesn't pass shared accounts, saved configs, other credentials or other event addresses on to Composio.");
+      throw new HttpError(403, "SmileDesk Cloud doesn't pass shared accounts, saved configs, other credentials or other event addresses on to Composio.");
   }
 }
 
@@ -1045,13 +1045,13 @@ async function signInSetupWithoutSecrets(call: Call) {
       isObject(setup.credentials) &&
       Object.keys(setup.credentials).length === 0;
     if (ownKeys) {
-      if (await composioSignsIn(toolkit.slug)) throw new HttpError(403, "Composio has its own sign-in for this app: Bops uses that one.");
+      if (await composioSignsIn(toolkit.slug)) throw new HttpError(403, "Composio has its own sign-in for this app: SmileDesk uses that one.");
       // Sent the way @composio/core sends it (authScheme), the only spelling Composio is given.
       call.json = { toolkit: { slug: toolkit.slug }, auth_config: { type: "use_custom_auth", authScheme: scheme, credentials: {}, ...name } };
       return;
     }
   }
-  throw new HttpError(403, "From Bops, an app's sign-in can only be Composio's own, or one that asks each person for their own key. Ask Orgo to set up this app.");
+  throw new HttpError(403, "From SmileDesk, an app's sign-in can only be Composio's own, or one that asks each person for their own key. Ask Orgo to set up this app.");
 }
 
 /** A sign-in setup made through the cloud: any user may see and use it, as it holds nobody's secret. */
@@ -1093,7 +1093,7 @@ const usableSignIns = (required: boolean) => async (call: Call) => {
   const pinned = new Set(config.composioAuthConfigs());
   const made = await madeThroughCloud(named);
   for (const id of named)
-    if (!pinned.has(id) && !made.has(id) && !(await composioManaged(id))) throw new HttpError(403, "That sign-in setup can't be used from Bops. Pick the app again.");
+    if (!pinned.has(id) && !made.has(id) && !(await composioManaged(id))) throw new HttpError(403, "That sign-in setup can't be used from SmileDesk. Pick the app again.");
 };
 
 /** What a Mac may see of an auth config: which it is and how it signs in. Never its credentials, auth proxy or shared credentials (Orgo's own OAuth apps' secrets). */
@@ -1116,8 +1116,8 @@ async function usableAuthConfigsOnly(_call: Call, data: unknown) {
  * An account's own secrets in Composio's answers (OAuth access, refresh and ID tokens, secrets,
  * passwords, and anything named a key or a key's id: API, access, secret, consumer and service
  * account keys), by key in any spelling. The Mac never needs them (Composio uses them for it), so
- * they aren't handed to it. An app's own name for the account isn't one, so Bops can still show it
- * (and where only an ID token said who it is, Bops asks the app instead).
+ * they aren't handed to it. An app's own name for the account isn't one, so SmileDesk can still show it
+ * (and where only an ID token said who it is, SmileDesk asks the app instead).
  */
 const SECRET_KEY = /(token|secret|password|passphrase|key|keyid|codeverifier|credentials?|credentialsjson|cookie|authorization)$/;
 const MASKED = "masked";
@@ -1252,7 +1252,7 @@ const both =
  * Exactly the routes @composio/core uses for what lib/server/composio.ts and channels.ts call: the
  * catalog, sign-in setup, connected accounts (several per app), sessions with search and execute,
  * direct execute and proxy (an app's "who am I", Slack's API), tool info, and Slack triggers (not
- * their live delivery: Bops' Slack app's events come through /hooks/slack instead).
+ * their live delivery: SmileDesk's Slack app's events come through /hooks/slack instead).
  */
 const composio: Spec = {
   name: "Composio",
@@ -1351,7 +1351,7 @@ async function computerInbox(call: Call) {
 
 async function podKeyFor(call: Call): Promise<string> {
   const key = await podKeyOf(call.user.id);
-  if (!key) throw new HttpError(409, "Your email isn't set up yet. Restart Bops on your Mac and try again.");
+  if (!key) throw new HttpError(409, "Your email isn't set up yet. Restart SmileDesk on your Mac and try again.");
   return key;
 }
 
@@ -1508,9 +1508,9 @@ async function tregCall(call: Call) {
   const id = call.params.endpoint;
   const e = await tregEndpoint(id);
   if (!e || !TREG_KINDS.has(e.kind)) throw new HttpError(404, `${id} isn't in treg's catalog.`);
-  if (e.scope === "own_account") throw new HttpError(403, `${id} needs an account connected to treg, which Bops doesn't offer yet.`);
-  if (e.async) throw new HttpError(403, `${id} is a long-running job, which Bops doesn't run through treg yet.`);
-  if (!e.eligible) throw new HttpError(403, `${id} isn't available to Bops (it's replaced, or not on treg's own keys).`);
+  if (e.scope === "own_account") throw new HttpError(403, `${id} needs an account connected to treg, which SmileDesk doesn't offer yet.`);
+  if (e.async) throw new HttpError(403, `${id} is a long-running job, which SmileDesk doesn't run through treg yet.`);
+  if (!e.eligible) throw new HttpError(403, `${id} isn't available to SmileDesk (it's replaced, or not on treg's own keys).`);
   if (e.method !== call.method) throw new HttpError(405, `${id} takes ${e.method}.`);
   const said = Number([call.asked["x-treg-route-max-cost"]].flat()[0]);
   const cap = await holdForTreg(call, Math.min(Number.isFinite(said) && said > 0 ? said : TREG_CALL_CAP, TREG_CALL_MOST));
@@ -2169,7 +2169,7 @@ async function responsesSocket(req: IncomingMessage, socket: Duplex, head: Buffe
 function refusal(e: unknown) {
   const status = e instanceof HttpError ? e.status : 502;
   const extra = (e instanceof HttpError ? e.extra : undefined) as { code?: string } | undefined;
-  const message = e instanceof HttpError ? e.message : "Bops Cloud couldn't send that on.";
+  const message = e instanceof HttpError ? e.message : "SmileDesk Cloud couldn't send that on.";
   return JSON.stringify({ type: "error", status, error: { type: "invalid_request_error", code: extra?.code ?? null, message } });
 }
 
@@ -2200,7 +2200,7 @@ function responsesBridge(client: WebSocket, { ws: upstream, early, keep }: Upstr
         /* refused below */
       }
       if (!isObject(event) || event.type !== "response.create") {
-        if (client.readyState === WebSocket.OPEN) client.send(refusal(new HttpError(400, "Bops Cloud only passes response.create on this socket.")));
+        if (client.readyState === WebSocket.OPEN) client.send(refusal(new HttpError(400, "SmileDesk Cloud only passes response.create on this socket.")));
         return;
       }
       const body: Record<string, unknown> = { ...event };

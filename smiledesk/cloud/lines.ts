@@ -4,7 +4,7 @@ import { HttpError, readJson, sendJson, type Route } from "./http.ts";
 import type { CallerVerdict, LineClaim, PhoneLine, PhoneLineIn, PhoneLineUnlink, PhoneOwnerRemove } from "./protocol.ts";
 
 /**
- * Who owns each of a user's Bops numbers (bops.phone_lines, db/migrations/0006_phone_lines.sql), and
+ * Who owns each of a user's SmileDesk numbers (bops.phone_lines, db/migrations/0006_phone_lines.sql), and
  * the check every call and text to one goes through. Owner: edge builder.
  *
  * - A line is written when a number is bought through the proxy (proxy.ts, which opens its 15
@@ -14,8 +14,8 @@ import type { CallerVerdict, LineClaim, PhoneLine, PhoneLineIn, PhoneLineUnlink,
  * - "First caller claims it": while a line has no owner and its 15 minutes run, the first phone
  *   number to call or text it becomes its owner, by one conditional UPDATE (WHERE owner_number IS
  *   NULL AND now() < claim_until), so only one caller can win. The number is also recorded in
- *   bops.owner_phones, where it can be verified for one Bops user only: a number another account
- *   already has can't claim a line here, and neither can another Bops number.
+ *   bops.owner_phones, where it can be verified for one SmileDesk user only: a number another account
+ *   already has can't claim a line here, and neither can another SmileDesk number.
  * - Every delivery (callerVerdict): the caller is the owner when it's the line's owner_number, or
  *   one of the user's own numbers in bops.owner_phones (verified with a texted code, or claimed on
  *   another of their lines). Never from the app's uploaded state.
@@ -169,8 +169,8 @@ export async function linkVerifiedNumber(userId: string, number: string) {
 
 /**
  * The race-safe claim: the line takes `caller` as its owner only if it still has none and its window
- * is open, and the number goes into bops.owner_phones for this user. A number another Bops user has
- * verified (the unique index there), or another Bops number, never wins; then nothing changes.
+ * is open, and the number goes into bops.owner_phones for this user. A number another SmileDesk user has
+ * verified (the unique index there), or another SmileDesk number, never wins; then nothing changes.
  */
 async function claimLine(userId: string, digits: string, caller: string, via: "call" | "text"): Promise<boolean> {
   await ensureUserRow(userId);
@@ -192,7 +192,7 @@ async function claimLine(userId: string, digits: string, caller: string, via: "c
       return true;
     });
   } catch (e) {
-    // Another Bops user has this number verified (owner_phones_verified_once): no claim.
+    // Another SmileDesk user has this number verified (owner_phones_verified_once): no claim.
     if ((e as { code?: string }).code === "23505") return false;
     throw e;
   }
@@ -247,7 +247,7 @@ export const routes: Route[] = [
       const body = await readJson<Partial<PhoneLineIn>>(req);
       const n = await ownNumber(user!.id, body.numberId);
       const line = await recordLine(user!.id, n, { open: body.open === true, botId: str(body.botId), workspaceId: str(body.workspaceId) });
-      if (!line) throw new HttpError(400, "Only US and Canadian numbers can take calls through Bops for now.");
+      if (!line) throw new HttpError(400, "Only US and Canadian numbers can take calls through SmileDesk for now.");
       sendJson(res, 200, { line });
     },
   },

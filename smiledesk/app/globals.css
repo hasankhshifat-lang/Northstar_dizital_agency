@@ -128,7 +128,7 @@
     @apply font-sans;
   }
 }
-/* Bops palette: highlighter on paper. Yellow only marks what needs you. */
+/* SmileDesk palette: highlighter on paper. Yellow only marks what needs you. */
 @theme {
   --color-ink: #0a0a0a;
   --color-paper: #ffffff;
@@ -270,7 +270,7 @@
 }
 
 /*
- * Boppy listening to music while Bops loads (BoppyLoading in components/app/mascot.tsx): it bops to
+ * Boppy listening to music while SmileDesk loads (BoppyLoading in components/app/mascot.tsx): it bops to
  * the beat, leaning one way then the other, notes drift out of its headphones, and it sings along, its
  * eyes glancing about and blinking now and then. The same scene as the window's splash (desktop/splash.html), so one hands over
  * to the other without a jump.
@@ -1362,4 +1362,18 @@
     animation: none;
     opacity: 0;
   }
+}
+
+/* SmileDesk: the first load's Northstar mark (components/app/mascot.tsx BoppyLoading), as on desktop/splash.html. */
+.brand-loading-mark {
+  display: block;
+  margin: 12px auto 0;
+  animation: brand-breathe 1.8s ease-in-out infinite;
+}
+@keyframes brand-breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.94); opacity: 0.8; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-loading-mark { animation: none; }
 }

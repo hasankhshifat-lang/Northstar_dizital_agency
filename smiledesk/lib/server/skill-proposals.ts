@@ -15,10 +15,10 @@ import { applySkillFile, findRef, findSkill, SkillError, skillFileText, skillsFo
  * routine's run (in the background), one someone else started, one that read a page, an email or an app. That's
  * safe because a proposal changes nothing. It's a card under the bot's message (components/app/skill-proposals.tsx)
  * with the change as a diff, who proposed it, from which chat or routine, and, when the turn read something from
- * outside Bops, whose words those were (the turn's reads), so the owner sees where the idea may have come from.
+ * outside SmileDesk, whose words those were (the turn's reads), so the owner sees where the idea may have come from.
  * create_skill and update_skill keep their own rules (only on the owner's say, never after an outside read).
  *
- * Only the owner's Accept, in the Bops window (app/api/skills action "proposal"; never a member, never a shared
+ * Only the owner's Accept, in the SmileDesk window (app/api/skills action "proposal"; never a member, never a shared
  * viewer, never a computer's runner), makes it the skill's next version: the working folder's file changed through
  * the same checks as any save (no secret, the caps) and published (workspace-skills.ts applySkillFile). When the
  * skill changed since the proposal was made (another version, the file's text, changes not published yet), Accept
@@ -59,7 +59,7 @@ export const PROPOSE_TOOL = {
 
 export type ProposeArgs = { skill?: unknown; file?: unknown; edits?: unknown; content?: unknown; summary?: unknown };
 
-/** Where a proposal comes from: its chat, the routine whose run it is, and whose words the turn read from outside Bops (so far). */
+/** Where a proposal comes from: its chat, the routine whose run it is, and whose words the turn read from outside SmileDesk (so far). */
 export type ProposeFrom = { chatId: string; routineId?: string; read: () => string[] };
 
 const said = (problems: Problem[]) => problems.map((p) => `${p.path}${p.line ? ` line ${p.line}` : ""}: ${p.reason.replace(/^secret: /, "")}`).join("; ");
@@ -75,7 +75,7 @@ export function offerProposal(b: Bot, a: ProposeArgs, from: ProposeFrom, had: Sk
   const r = findSkill(b.id, name);
   if (!r) {
     const own = builtinSkills(true).some((s) => s.slug === name || s.name.toLowerCase() === name.toLowerCase());
-    return no(own ? "that's one of Bops' own skills, which come with Bops and can't be changed." : `you have no skill called "${name.slice(0, 80)}".`);
+    return no(own ? "that's one of SmileDesk's own skills, which come with SmileDesk and can't be changed." : `you have no skill called "${name.slice(0, 80)}".`);
   }
   const rawFile = typeof a.file === "string" ? a.file.trim() : "";
   const n = rawFile === "SKILL.md" ? { path: "SKILL.md" } : normalizePath(rawFile);
@@ -236,7 +236,7 @@ const going = new Set<string>();
  * rejected, on a computer's runner, and while another Accept of it goes.
  */
 export function acceptProposal(messageId: string, proposalId: string, seen?: string): ProposalAnswer {
-  if (onRunner()) return { ok: false, status: 409, error: "Accept it in Bops on your Mac." };
+  if (onRunner()) return { ok: false, status: 409, error: "Accept it in SmileDesk on your Mac." };
   const f = find(messageId, proposalId);
   if (!f) return { ok: false, status: 404, error: "That proposal isn't here anymore." };
   const { p } = f;
@@ -274,7 +274,7 @@ export function acceptProposal(messageId: string, proposalId: string, seen?: str
 
 /** The owner's Reject: dropped, nothing changed. */
 export function rejectProposal(messageId: string, proposalId: string): ProposalAnswer {
-  if (onRunner()) return { ok: false, status: 409, error: "Reject it in Bops on your Mac." };
+  if (onRunner()) return { ok: false, status: 409, error: "Reject it in SmileDesk on your Mac." };
   const f = find(messageId, proposalId);
   if (!f) return { ok: false, status: 404, error: "That proposal isn't here anymore." };
   if (f.p.status) return { ok: false, status: 409, error: f.p.status === "accepted" ? "It was accepted already." : "It was rejected already." };

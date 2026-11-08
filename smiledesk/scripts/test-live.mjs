@@ -5,7 +5,7 @@
 // on another device's "state" or a "reset" (never on its own), and the other devices' moods running out.
 //
 // Clocks and timers are fakes driven here, the cloud's answers come from fake functions, and the stream
-// is a stream made here: nothing reaches a real Bops Cloud.
+// is a stream made here: nothing reaches a real SmileDesk Cloud.
 // Usage: node scripts/test-live.mjs
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
@@ -121,7 +121,7 @@ await check("typing and asking are thinking, a thread this Mac runs is working, 
   assert.deepEqual(Object.fromEntries(localSessions(s, new Set(["s_here"]))), { s_here: { ws: "ws_acme", botId: "max", status: "running" } });
 });
 
-await check("a bot coding on an app here is working on the user's other devices: Bops Cloud knows no coding", () => {
+await check("a bot coding on an app here is working on the user's other devices: SmileDesk Cloud knows no coding", () => {
   // The cloud turns down a mood it doesn't know (cloud/live.ts), and coding isn't one.
   assert.ok(!LIVE_MOODS.includes("coding"));
   const s = state();
@@ -321,7 +321,7 @@ await check("other devices' moods run out by their ttl, and this Mac's own are l
 
 /* ---------------- The stream ---------------- */
 
-/** A fake Bops Cloud: each connect is answered by `answer(i, headers)`, a status, or an object with `push` to write events and `end`. */
+/** A fake SmileDesk Cloud: each connect is answered by `answer(i, headers)`, a status, or an object with `push` to write events and `end`. */
 function fakeCloud(answer) {
   const calls = [];
   const fetch = async (url, init) => {
@@ -479,7 +479,7 @@ await check("a silent stream is taken for dead, and another workspace starts ove
   assert.equal(cloud.calls.length, 3, "stopped is stopped");
 });
 
-await check("a bot's computer waking to answer (Bops Cloud's turn) shows until its turn moves on, with its chat's typing", async () => {
+await check("a bot's computer waking to answer (SmileDesk Cloud's turn) shows until its turn moves on, with its chat's typing", async () => {
   const streams = [];
   const { sub, clock, rm } = subscriber(() => {
     const s = {};
@@ -505,7 +505,7 @@ await check("a bot's computer waking to answer (Bops Cloud's turn) shows until i
   streams[0].push(`${turn("done")}${mood("idle")}`);
   await settle();
   assert.deepEqual(rm.forApp(), {});
-  // Waking with no more word from Bops Cloud: gone after its turn's deadline.
+  // Waking with no more word from SmileDesk Cloud: gone after its turn's deadline.
   streams[0].push(turn("waking"));
   await settle();
   assert.equal(rm.forApp().max?.waking, true);

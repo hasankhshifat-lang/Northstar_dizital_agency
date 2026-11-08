@@ -120,7 +120,7 @@ export function Connecting({ state }: { state: AppState }) {
 /** Nothing connected yet: the apps most teams start with, one tap each. */
 export function QuickStart({ onPick }: { onPick: (app: string) => void }) {
   const { apps } = useCatalog();
-  // Once the catalog is in, only apps it offers (signed in with Orgo, the ones that can connect through Bops Cloud).
+  // Once the catalog is in, only apps it offers (signed in with Orgo, the ones that can connect through SmileDesk Cloud).
   const pick = (apps ? FEATURED_APPS.map((a) => apps.find((x) => x.app === a)).filter((x): x is CatalogApp => !!x) : FEATURED_APPS.map((a) => ({ app: a, name: a }))).slice(0, 8);
   return (
     <div className="flex flex-col gap-2.5 rounded-2xl px-4 py-4 shadow-[0_0_0_1px_#ECECEA]">
@@ -664,8 +664,8 @@ export function ConnectStep({ state, app: a, replaces, hasOne, onBack, onDone }:
     a.auth === "open"
       ? `${a.name} needs no sign-in: your bots can use it straight away.`
       : a.auth === "key"
-        ? `${a.name} connects with an API key. A secure page opens in your browser and asks for it. Bops never sees it.`
-        : `${a.name}'s own sign-in opens in your browser. Bops never sees your password.`;
+        ? `${a.name} connects with an API key. A secure page opens in your browser and asks for it. SmileDesk never sees it.`
+        : `${a.name}'s own sign-in opens in your browser. SmileDesk never sees your password.`;
   return (
     <div className="flex flex-col gap-4 p-5">
       <div className="flex items-start gap-3">

@@ -8,16 +8,16 @@ import { getState, stateReady, update } from "./store";
 
 /**
  * The user's Mac as a place bots work. A task on the Mac runs the way every task runs: OpenAI's Agents
- * API runs the agent on Bops' API and the user's AI credit (through Bops Cloud, so it's counted and
- * priced), and `codex exec-server` runs its tools here, with Bops' own key (local.ts startExecutor),
+ * API runs the agent on SmileDesk's API and the user's AI credit (through SmileDesk Cloud, so it's counted and
+ * priced), and `codex exec-server` runs its tools here, with SmileDesk's own key (local.ts startExecutor),
  * in a Chrome of its own on this Mac, so websites see the user's home internet (sessions.ts run). The
  * executor runs in a macOS sandbox that leaves it the browser tools and nothing else: no shell, no
  * other programs, none of the user's files (executor-sandbox.ts).
  *
- * Bops never signs anyone in to ChatGPT and never starts Codex's app server: OpenAI doesn't allow its
+ * SmileDesk never signs anyone in to ChatGPT and never starts Codex's app server: OpenAI doesn't allow its
  * app-server sign-in in a hosted or paid product. So bots don't use the Mac's own apps (Messages,
  * Notes, Finder…) for now; a task that needs one says so. The Mac is ready once the Codex CLI is here
- * (Bops installs it by itself, codex-cli.ts) and Chrome is.
+ * (SmileDesk installs it by itself, codex-cli.ts) and Chrome is.
  */
 
 /** Apps and words that, named in a task, mean it belongs on the user's Mac (they can change the list). */
@@ -30,7 +30,7 @@ const onTheMac = () => process.platform === "darwin" && !onPostgres();
 
 /**
  * Is the user's Mac ready for bots, and if not, the one thing it waits on: the Codex CLI that runs the
- * tools (Bops installs it when it's missing, once per start and again on Retry), or Chrome. Checked
+ * tools (SmileDesk installs it when it's missing, once per start and again on Retry), or Chrome. Checked
  * now and then; the answer lives in state.mac.
  */
 export async function checkMac() {
@@ -43,7 +43,7 @@ export async function checkMac() {
   let next: MacState["next"];
   if (!onTheMac()) {
     next = "elsewhere";
-    reason = "Bots work on your Mac in the Bops app on your Mac.";
+    reason = "Bots work on your Mac in the SmileDesk app on your Mac.";
   } else if (!findCodex()) {
     if (!installStatus()) installCodex(() => void checkMac().catch(() => {}));
     const failed = installStatus()?.state === "failed" ? installStatus()?.error : undefined;

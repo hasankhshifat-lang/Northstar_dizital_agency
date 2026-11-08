@@ -11,27 +11,27 @@ import { orgo } from "./orgo";
 import { bot, getState, ownerName, session } from "./store";
 
 /**
- * A bot's threads on its brain (lib/server/brains.ts Brain) instead of Bops agent: Claude Code or Codex on
+ * A bot's threads on its brain (lib/server/brains.ts Brain) instead of SmileDesk agent: Claude Code or Codex on
  * the bot's own computer, on the user's own Claude plan or key, or OpenAI key, so none of it is on AI credit.
  * sessions.ts runs such a thread as it runs any (its screen, the screen watch, the ledger, the turn loop,
  * answers, results, routines and the cleanup); only its turns come here (sessions.ts brainTurns).
  *
  * Each run of a thread starts one process for it on the computer (Claude Code, or Codex's runner), detached
  * and pinned to the thread's screen (vm/bin/bops-agent, through bops-brain run: an empty environment, the
- * brain's own folder), with the tools a Bops agent has there (Bops' screen and browser MCP servers) and Bops'
- * briefing after the CLI's own system prompt. Bops reaches the computer one command at a time (orgo.bash)
+ * brain's own folder), with the tools a SmileDesk agent has there (SmileDesk's screen and browser MCP servers) and SmileDesk's
+ * briefing after the CLI's own system prompt. SmileDesk reaches the computer one command at a time (orgo.bash)
  * with no stream back, so it talks to the process through files: each message is a line appended to the
  * thread's input, and every poll reads the process's events on from where the last one got to and turns them
  * into the thread's steps. A message the user sends while Claude Code works goes in at once (it takes it
  * after what it's doing); a turn ends once every message sent has its answer. Stop interrupts it (SIGINT); a
  * process that's gone mid-turn (the computer slept or restarted, or it crashed) starts again on the same
- * session. What Claude Code may not do by itself asks the user in Bops first (the screen MCP's approve tool:
+ * session. What Claude Code may not do by itself asks the user in SmileDesk first (the screen MCP's approve tool:
  * approveTool), with the app approval card.
  *
  * A driver is one CLI's part in this: how it's installed, what it's told, how a message is written for it,
  * and how its output reads. Claude Code's, Codex's and OpenCode's are here, on the same files and turn loop.
  * Codex and OpenCode run one `codex exec` (`opencode run`) per message on the same thread (bops-agent keeps it
- * going between them), on the user's own key, with full access on the computer as Bops agent's executor has.
+ * going between them), on the user's own key, with full access on the computer as SmileDesk agent's executor has.
  *
  * Every process a thread starts runs as its bot's agent (lib/agents.ts, the bot's AI profile): bops-brain gives
  * it only that bot's and that agent's settings, its own claude, codex and opencode, and on a key a token for a
@@ -39,11 +39,11 @@ import { bot, getState, ownerName, session } from "./store";
  * their own. The agent is read again from the bot's profile at every start (agentNow), never from the thread alone.
  */
 
-/** What Bops reads from a brain's CLI. `parent`: a helper's (Claude Code's Task), by the call that started it. */
+/** What SmileDesk reads from a brain's CLI. `parent`: a helper's (Claude Code's Task), by the call that started it. */
 export type CliEvent =
   /** It began: its session, and the MCP servers that didn't start. */
   | { type: "started"; session?: string; failed: string[] }
-  /** A tool call. `detail` is how the thread shows it; unset for Bops' own screen and browser tools, which sessions.ts words as a Bops agent's. */
+  /** A tool call. `detail` is how the thread shows it; unset for SmileDesk's own screen and browser tools, which sessions.ts words as a SmileDesk agent's. */
   | { type: "tool"; id: string; tool: string; args: Record<string, unknown>; detail?: string; parent?: string }
   | { type: "text"; text: string; parent?: string }
   | { type: "thinking"; text: string; parent?: string }
@@ -66,16 +66,16 @@ export type CliStop = "limit" | "auth" | "model" | "down" | "vault";
 /** One CLI agent, as the turn loop uses it. */
 export type CliDriver = {
   kind: CliKind;
-  /** Its session id as Bops keeps it and puts it in a command (one that isn't is never used), and a new one for a thread. */
+  /** Its session id as SmileDesk keeps it and puts it in a command (one that isn't is never used), and a new one for a thread. */
   cliId: (v: string | undefined) => string | undefined;
   newSession: () => string;
-  /** Its CLI and Bops' scripts on a computer (once per run of Bops). */
+  /** Its CLI and SmileDesk's scripts on a computer (once per run of SmileDesk). */
   prepare: (computerId: string) => Promise<void>;
-  /** What it's told about itself after Bops' briefing: whose tools it has, and what asks the user. */
+  /** What it's told about itself after SmileDesk's briefing: whose tools it has, and what asks the user. */
   note: (owner: string) => string;
   /** A message to it, as one line of its input. */
   line: (text: string) => string;
-  /** One event of its output (a JSON line, made small by bops-agent read) as what Bops does with it. */
+  /** One event of its output (a JSON line, made small by bops-agent read) as what SmileDesk does with it. */
   parse: (event: Record<string, unknown>) => CliEvent[];
   /** A message sent while it works goes in then (Claude Code queues it after what it's doing); else it waits for the next turn. */
   steers: boolean;
@@ -94,7 +94,7 @@ const READ_MOST = 256 * 1024;
 const MARK = "@@bops-agent@@ ";
 
 /** The replies a user taps when a brain stopped and waits on them (sessions.ts replyToSession). */
-export const FINISH_ON_BOPS = "Finish on Bops agent";
+export const FINISH_ON_BOPS = "Finish on SmileDesk agent";
 export const WAIT = "Wait";
 /** Its provider wasn't answering: it starts again on its own agent, now. */
 export const TRY_AGAIN = "Try again";
@@ -110,7 +110,7 @@ const str = (v: unknown) => (typeof v === "string" ? v : undefined);
 const base = (p: unknown) => (str(p) ?? "a file").replace(/\/+$/, "").split("/").pop() || "a file";
 const cut = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
-/** Claude Code's own tools as the thread shows them, worded like a Bops agent's steps ("ran npm test", "edited cart.ts"). Bops' MCP tools by their own names. */
+/** Claude Code's own tools as the thread shows them, worded like a SmileDesk agent's steps ("ran npm test", "edited cart.ts"). SmileDesk's MCP tools by their own names. */
 function claudeTool(name: string, args: Record<string, unknown>): { tool: string; detail?: string } {
   const mcp = /^mcp__([^_]+(?:_[^_]+)*?)__(.+)$/.exec(name);
   if (mcp) return mcp[1] === "screen" || mcp[1] === "browser" ? { tool: mcp[2] } : { tool: mcp[2], detail: `used ${mcp[2]} (${mcp[1]})` };
@@ -162,7 +162,7 @@ const failure = (e: Record<string, unknown>) =>
 const LIMIT = /usage limit|limit reached|hit your (usage )?limit|out of (extra )?usage|credit balance is too low|rate.?limit|quota|too many requests|\b429\b/i;
 const AUTH = /(invalid|incorrect) (x-)?api.?key|please run \/login|not logged in|log ?in again|oauth token|token (has )?expired|authentication|unauthori[sz]ed|\b401\b|provider\.auth/i;
 const MODEL = /\bmodel\b.{0,80}\b(not available|not found|not allowed|invalid|does not exist|isn't available|is not supported)\b|\b(invalid|unknown|unsupported) model\b/i;
-const DOWN = /overloaded|\b529\b|\b502\b|\b503\b|connection (refused|reset)|ECONNREFUSED|ECONNRESET|service unavailable|Bops couldn't reach/i;
+const DOWN = /overloaded|\b529\b|\b502\b|\b503\b|connection (refused|reset)|ECONNREFUSED|ECONNRESET|service unavailable|SmileDesk couldn't reach/i;
 export const stopOf = (text: string): Exclude<CliStop, "vault"> | undefined => (LIMIT.test(text) ? "limit" : AUTH.test(text) ? "auth" : MODEL.test(text) ? "model" : DOWN.test(text) ? "down" : undefined);
 
 /** A UUID, as Claude Code's and Codex's sessions are. */
@@ -181,7 +181,7 @@ export const claudeDriver: CliDriver = {
     await ensureBrainTools(computerId);
   },
   note: (owner) =>
-    `You run as Claude Code on this computer, for Bops. Your tools are Claude Code's own (Bash for the shell, Read, Edit and Write for files, WebSearch and WebFetch to look things up and read pages, TodoWrite, and Task for helpers) and Bops' (mcp__screen__* for the screen, ${owner}'s apps, signing in with their saved logins and screens for helpers; mcp__browser__* for the Chrome on your screen). Where the instructions above name a tool, use the one of yours that does that: web_search is WebSearch, the shell is Bash. Any other tool asks ${owner} in Bops first and waits for their answer; if they say no, don't do it another way.`,
+    `You run as Claude Code on this computer, for SmileDesk. Your tools are Claude Code's own (Bash for the shell, Read, Edit and Write for files, WebSearch and WebFetch to look things up and read pages, TodoWrite, and Task for helpers) and SmileDesk's (mcp__screen__* for the screen, ${owner}'s apps, signing in with their saved logins and screens for helpers; mcp__browser__* for the Chrome on your screen). Where the instructions above name a tool, use the one of yours that does that: web_search is WebSearch, the shell is Bash. Any other tool asks ${owner} in SmileDesk first and waits for their answer; if they say no, don't do it another way.`,
   line: (text) => `${JSON.stringify({ type: "user", message: { role: "user", content: text } })}\n`,
   parse: (e) => {
     const parent = str(e.parent_tool_use_id);
@@ -228,7 +228,7 @@ function fileChange(changes: unknown) {
   return all.length === 1 ? first : `${first} and ${all.length - 1} more file${all.length === 2 ? "" : "s"}`;
 }
 
-/** A web search as the thread shows it, as a Bops agent's are (sessions.ts describeSearch). */
+/** A web search as the thread shows it, as a SmileDesk agent's are (sessions.ts describeSearch). */
 function codexSearch(item: Record<string, unknown>) {
   const a = (item.action && typeof item.action === "object" ? item.action : {}) as Record<string, unknown>;
   if (a.type === "open_page" && str(a.url)) return `read ${cut(shownAddress(str(a.url)!).replace(/^https?:\/\/(www\.)?/, ""), 70)}`;
@@ -243,9 +243,9 @@ const NOT_STARTED = /^MCP client for `([^`]+)` (?:failed to start|timed out)/;
 /**
  * Codex (`codex exec --json`, bops-agent): each message is a turn of its own on the thread, which picks the
  * thread back up (`exec resume`), so a message the user sends while it works waits for the next turn: it
- * doesn't steer. Its key is the user's OpenAI key, and it has full access on the computer (as Bops agent's
+ * doesn't steer. Its key is the user's OpenAI key, and it has full access on the computer (as SmileDesk agent's
  * executor has there), so nothing asks the user but what changes their apps (the screen MCP's app tools
- * ask, as they do for Bops agent).
+ * ask, as they do for SmileDesk agent).
  */
 export const codexDriver: CliDriver = {
   kind: "codex",
@@ -259,7 +259,7 @@ export const codexDriver: CliDriver = {
     await ensureBrainTools(computerId);
   },
   note: (owner) =>
-    `You run as Codex on this computer, for Bops. Your tools are Codex's own (the shell, editing files, web search and your plan) and Bops' (the screen server's tools for the screen, ${owner}'s apps and signing in with their saved logins; the browser server's for the Chrome on your screen). Where the instructions above name a tool, use the one of yours that does that: web_search is your web search, the shell is your shell. You have no helpers here, so do every part yourself. What would change ${owner}'s apps (sending, posting, paying) asks them in Bops first and waits for their answer; if they say no, don't do it another way.`,
+    `You run as Codex on this computer, for SmileDesk. Your tools are Codex's own (the shell, editing files, web search and your plan) and SmileDesk's (the screen server's tools for the screen, ${owner}'s apps and signing in with their saved logins; the browser server's for the Chrome on your screen). Where the instructions above name a tool, use the one of yours that does that: web_search is your web search, the shell is your shell. You have no helpers here, so do every part yourself. What would change ${owner}'s apps (sending, posting, paying) asks them in SmileDesk first and waits for their answer; if they say no, don't do it another way.`,
   line: (text) => `${JSON.stringify({ text })}\n`,
   parse: (e) => {
     if (e.type === "thread.started") return [{ type: "started", session: str(e.thread_id), failed: [] }];
@@ -304,7 +304,7 @@ export const codexDriver: CliDriver = {
 
 /* ---------------- OpenCode ---------------- */
 
-/** OpenCode's own tools, worded as Claude Code's are. Bops' MCP tools come as <server>_<tool>. */
+/** OpenCode's own tools, worded as Claude Code's are. SmileDesk's MCP tools come as <server>_<tool>. */
 function openCodeTool(name: string, args: Record<string, unknown>): { tool: string; detail?: string } {
   const mcp = /^(screen|browser)_(.+)$/.exec(name);
   if (mcp) return { tool: mcp[2] };
@@ -334,7 +334,7 @@ function openCodeTool(name: string, args: Record<string, unknown>): { tool: stri
   }
 }
 
-/** OpenCode's session for a thread: Bops makes it, as OpenCode's own look ("ses_" and letters), and OpenCode creates it on the first run. */
+/** OpenCode's session for a thread: SmileDesk makes it, as OpenCode's own look ("ses_" and letters), and OpenCode creates it on the first run. */
 const SES = /^ses_[A-Za-z0-9]{8,40}$/;
 const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -342,7 +342,7 @@ const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
  * OpenCode 2.0.27 (`opencode run --standalone --format json`, bops-agent _opencode): each message a run of its
  * own on the thread's session, on a private server (never the background service other bots on the computer
  * would share), its events as its run writes them (step_start, text, reasoning, tool_use once a tool ends,
- * error), then Bops' own line saying how the turn ended. Like Codex it doesn't steer and never asks.
+ * error), then SmileDesk's own line saying how the turn ended. Like Codex it doesn't steer and never asks.
  */
 export const opencodeDriver: CliDriver = {
   kind: "opencode",
@@ -356,7 +356,7 @@ export const opencodeDriver: CliDriver = {
     await ensureBrainTools(computerId);
   },
   note: (owner) =>
-    `You run as OpenCode on this computer, for Bops. Your tools are OpenCode's own (bash for the shell, read, edit and write for files, glob and grep to find things, webfetch to read a page, your to-do list) and Bops' (the screen server's tools for the screen, ${owner}'s apps and signing in with their saved logins; the browser server's for the Chrome on your screen). Where the instructions above name a tool, use the one of yours that does that: the shell is bash. What would change ${owner}'s apps (sending, posting, paying) asks them in Bops first and waits for their answer; if they say no, don't do it another way.`,
+    `You run as OpenCode on this computer, for SmileDesk. Your tools are OpenCode's own (bash for the shell, read, edit and write for files, glob and grep to find things, webfetch to read a page, your to-do list) and SmileDesk's (the screen server's tools for the screen, ${owner}'s apps and signing in with their saved logins; the browser server's for the Chrome on your screen). Where the instructions above name a tool, use the one of yours that does that: the shell is bash. What would change ${owner}'s apps (sending, posting, paying) asks them in SmileDesk first and waits for their answer; if they say no, don't do it another way.`,
   line: (text) => `${JSON.stringify({ text })}\n`,
   parse: (e) => {
     if (e.type === "bops" && e.subtype === "started") return [{ type: "started", session: str(e.session), failed: [] }];
@@ -381,14 +381,14 @@ export const opencodeDriver: CliDriver = {
   },
 };
 
-/** None in a build without brains (BRAINS_ON): every thread runs on Bops agent, one a CLI agent ran too. */
+/** None in a build without brains (BRAINS_ON): every thread runs on SmileDesk agent, one a CLI agent ran too. */
 const DRIVERS: Partial<Record<CliKind, CliDriver>> = BRAINS_ON ? { claude: claudeDriver, codex: codexDriver, opencode: opencodeDriver } : {};
-/** The driver for a CLI agent, when this build runs it (one without runs on Bops agent). */
+/** The driver for a CLI agent, when this build runs it (one without runs on SmileDesk agent). */
 export const cliDriver = (kind: CliKind) => DRIVERS[kind];
 
 /* ---------------- The thread's CLI on its computer ---------------- */
 
-/** A thread's CLI on a computer, for one run of the thread: where it is, its session, and how far Bops has read its output. */
+/** A thread's CLI on a computer, for one run of the thread: where it is, its session, and how far SmileDesk has read its output. */
 export type CliRun = {
   sessionId: string;
   computerId: string;
@@ -418,7 +418,7 @@ export type CliRun = {
 const b64 = (s: string) => Buffer.from(s).toString("base64");
 
 /**
- * A CLI session's id as Bops keeps it and puts it in a command: Claude Code's and Codex's are UUIDs, OpenCode's
+ * A CLI session's id as SmileDesk keeps it and puts it in a command: Claude Code's and Codex's are UUIDs, OpenCode's
  * "ses_" and letters. One that isn't (the CLI's output said something else, and the bot's own shell can write
  * there) is never used.
  */
@@ -488,7 +488,7 @@ export async function revealAgentKey(r: AgentRun, b: Bot): Promise<string> {
 /** A file for the thread's CLI on the computer (bops-agent put), from stdin: never on a command line of its own. */
 async function put(run: Pick<CliRun, "computerId" | "sessionId">, name: "mcp.json" | "prompt.md" | "key", body: string) {
   const r = await orgo.bash(run.computerId, `echo ${b64(body)} | base64 -d | bops-agent put ${run.sessionId} ${name}`, 30);
-  if (!r.output.includes("ok")) throw new Error(`Bops couldn't set up the computer for this (${r.output.trim().slice(0, 120) || "no answer"})`);
+  if (!r.output.includes("ok")) throw new Error(`SmileDesk couldn't set up the computer for this (${r.output.trim().slice(0, 120) || "no answer"})`);
 }
 
 /**
@@ -509,7 +509,7 @@ export async function openRun(o: { sessionId: string; computerId: string; displa
 async function startCli(run: CliRun): Promise<"resumed" | "fresh"> {
   const { run: now, bot: b } = agentNow(run);
   const cli = run.driver.cliId(run.cli);
-  if (!cli) throw new Error(`${run.name} has no session Bops can pick up`);
+  if (!cli) throw new Error(`${run.name} has no session SmileDesk can pick up`);
   if (now.agent.pays === "key") await put(run, "key", await revealAgentKey(now, b));
   const more = (run.args ?? []).filter((a) => /^[A-Za-z0-9=_.:/-]+$/.test(a));
   const r = await orgo.bash(run.computerId, `bops-agent start ${run.sessionId} ${now.account?.id ?? "-"} ${run.driver.kind} ${run.display} ${run.computerId} '${cli}' ${agentFlags(now, b).join(" ")}${more.length ? ` -- ${more.join(" ")}` : ""}`, 30);
@@ -525,7 +525,7 @@ async function sendCli(run: CliRun, text: string) {
   const r = await orgo.bash(run.computerId, `echo ${b64(run.driver.line(text))} | base64 -d | bops-agent send ${run.sessionId}`, 30);
   if (r.output.includes("sent")) return true;
   if (r.output.includes("gone")) return false;
-  throw new Error(`Bops couldn't reach ${run.name} on the computer (${r.output.trim().slice(0, 120) || "no answer"})`);
+  throw new Error(`SmileDesk couldn't reach ${run.name} on the computer (${r.output.trim().slice(0, 120) || "no answer"})`);
 }
 
 /** What the process said since the last read, whether there's more of it to read, and whether it still runs (when it doesn't, its last error words). */
@@ -539,7 +539,7 @@ async function readCli(run: CliRun): Promise<{ events: CliEvent[]; alive: boolea
   for (const line of lines) {
     if (!line.trim()) continue;
     try {
-      // A key or token the CLI happened to say (an `env` it ran, an error) never comes into Bops.
+      // A key or token the CLI happened to say (an `env` it ran, an error) never comes into SmileDesk.
       events.push(...run.driver.parse(redactDeep(JSON.parse(line) as Record<string, unknown>)));
     } catch {
       /* a line that isn't an event */
@@ -592,7 +592,7 @@ export async function openShell(o: { botId: string; computerId: string; display:
   if (o.agent.agent.pays === "key") {
     const key = await revealAgentKey(o.agent, o.bot);
     const r = await orgo.bash(o.computerId, `echo ${b64(key)} | base64 -d | bops-agent put shell-${o.botId} key`, 30);
-    if (!r.output.includes("ok")) throw new Error(`Bops couldn't set up the computer for this (${r.output.trim().slice(0, 120) || "no answer"})`);
+    if (!r.output.includes("ok")) throw new Error(`SmileDesk couldn't set up the computer for this (${r.output.trim().slice(0, 120) || "no answer"})`);
   }
   const r = await orgo.bash(o.computerId, `bops-agent shell ${o.botId} ${o.agent.account?.id ?? "-"} ${driver.kind} ${o.display} ${o.computerId} ${agentFlags(o.agent, o.bot).join(" ")}`, 30);
   if (!r.output.includes("terminal on")) throw new Error(`its terminal didn't open (${r.output.trim().slice(-160) || "no answer"})`);
@@ -623,13 +623,13 @@ export type CliTurn = {
   idleMs: number;
   tooLong: string;
   stalled: string;
-  /** A step for the thread; `detail` unset is Bops' screen or browser tool's, worded by sessions.ts (describe). */
+  /** A step for the thread; `detail` unset is SmileDesk's screen or browser tool's, worded by sessions.ts (describe). */
   step: (tool: string, detail: string | undefined, args: Record<string, unknown>, who?: string) => void;
   /** What it's doing, in a few words, for its cursor's caption. */
   activity: (text: string) => void;
   /** What the user has said in the thread since it last looked, and how to mark it sent once it's in. */
   steer: () => { text: string; sent: () => void } | undefined;
-  /** Bops calls `wake` when the user says something, so the turn looks at once; unset when the turn is over. */
+  /** SmileDesk calls `wake` when the user says something, so the turn looks at once; unset when the turn is over. */
   onSteer: (wake: (() => void) | undefined) => void;
   /** The CLI began (or picked up) its session: its id, as it said. */
   started: (cli: string) => void;
@@ -640,7 +640,7 @@ export type CliTurn = {
 };
 
 /** Said with the messages a process that was gone mid-turn gets again. */
-const CUT_OFF = "(From Bops: you were cut off while you worked on this, and started again. Check what's already done before you carry on.)";
+const CUT_OFF = "(From SmileDesk: you were cut off while you worked on this, and started again. Check what's already done before you carry on.)";
 
 /**
  * One turn on a thread's CLI: the message in (its process started first, when this run hasn't yet), the
@@ -777,7 +777,7 @@ export async function cliTurn(run: CliRun, t: CliTurn): Promise<string> {
   }
 }
 
-/** What Claude Code is sent to compact its session: its own command, alone, never with Bops' briefing or notes around it (they'd be taken as what to keep). */
+/** What Claude Code is sent to compact its session: its own command, alone, never with SmileDesk's briefing or notes around it (they'd be taken as what to keep). */
 const COMPACT = "/compact";
 
 /**
@@ -788,7 +788,7 @@ const COMPACT = "/compact";
  * command wasn't taken as one) didn't compact, and says so. Stopped, stuck past `idleMs` or gone, it stops the process.
  */
 export async function cliCompact(run: CliRun, t: { signal: AbortSignal; idleMs: number; stalled: string; started: (cli: string) => void }): Promise<void> {
-  if (!run.driver.compacts) throw new Error(`${run.name} doesn't compact as Bops runs it`);
+  if (!run.driver.compacts) throw new Error(`${run.name} doesn't compact as SmileDesk runs it`);
   const giveUp = async (why: string): Promise<never> => {
     await stopCli(run).catch(() => {});
     throw new Error(why);
@@ -851,7 +851,7 @@ const callDetail = (input: Record<string, unknown>) =>
  * Claude Code asks whether a thread may use a tool it may not use by itself (the screen MCP's approve tool, its
  * --permission-prompt-tool; composio.ts appCall checks it's the thread's own bot and the thread is running).
  * The user sees the request's card ("Sam wants to use Bash") and answers. Claude Code holds the call meanwhile,
- * so it can't pause the way Bops' own engines do: the request is held (permission.ts heldAsk). No answer within
+ * so it can't pause the way SmileDesk's own engines do: the request is held (permission.ts heldAsk). No answer within
  * cliTiming.approveMs, or the thread stopped meanwhile, is a no, and the request is taken out. Answers what the
  * approve tool hands Claude Code: allow, or deny with why (the user's own words, when they said what to do instead).
  */
@@ -860,7 +860,7 @@ export async function approveTool(botId: string, sessionId: string, args: Record
   const input = args.input && typeof args.input === "object" && !Array.isArray(args.input) ? (args.input as Record<string, unknown>) : {};
   const owner = ownerName();
   if (!BRAINS_ON || !session(sessionId)?.brainRun) return JSON.stringify({ behavior: "deny", message: "Only a thread a brain runs asks this way." });
-  // Claude Code asks about one of its own tools by its name (NotebookEdit), never Bops' screen and browser
+  // Claude Code asks about one of its own tools by its name (NotebookEdit), never SmileDesk's screen and browser
   // ones (it uses those by itself) or words of its own: anything else isn't its question (the approve tool is
   // one the model can call too), so the user is never shown a card for something made up.
   if (!/^[A-Za-z][A-Za-z0-9_]{0,79}$/.test(tool) || /^mcp__(screen|browser)__/.test(tool))
@@ -881,7 +881,7 @@ export async function approveTool(botId: string, sessionId: string, args: Record
       },
     );
     if (typeof answer !== "string" && answer.reply !== "reject") return JSON.stringify({ behavior: "allow" });
-    // Named as whoever answered (an Admin or a member in their own Bops), the owner otherwise.
+    // Named as whoever answered (an Admin or a member in their own SmileDesk), the owner otherwise.
     const who = typeof answer !== "string" ? answer.member?.name?.trim() || owner : owner;
     const why =
       typeof answer !== "string"
@@ -914,7 +914,7 @@ export const signInWords = (x: Pick<Brain, "name">, where: string, began: boolea
 
 /**
  * What a thread says when its CLI agent stopped (BrainStopped), with the replies it offers (tidyAnswer makes them
- * buttons): Bops agent finishes it, on AI credit, or it waits (a reply carries it on, which tries again); a provider
+ * buttons): SmileDesk agent finishes it, on AI credit, or it waits (a reply carries it on, which tries again); a provider
  * that wasn't answering is tried again now (Try again); the Vault's hour starts it again by itself in a few minutes
  * (sessions.ts vaultWaitsDue), so Wait there is just that. `plan`: the signed in plan, when known. `bot`: its name,
  * for its profile, where a model for new threads is picked.
@@ -925,13 +925,13 @@ export function stoppedWords(r: Pick<AgentRun, "kind" | "agent" | "model">, why:
   const vendor = keyVendor({ ...r.agent, model: r.model });
   const resets = why === "limit" ? resetsAt(said) : undefined;
   const until = resets ? ` until ${resets}` : "";
-  const finish = "I can finish this on Bops agent, on your credit";
+  const finish = "I can finish this on SmileDesk agent, on your credit";
   if (why === "model")
     return `Your ${onPlan ? planName(plan) : `${vendor} key`} can't use ${agentLabel({ kind: r.kind, model: r.model }).replace(`${name} · `, "")}. Pick another model for new threads in ${bot ? `${bot}'s` : "the bot's"} profile. ${finish}, or wait.\n\nOptions: ${FINISH_ON_BOPS} | ${WAIT}`;
-  if (why === "vault") return `Waiting for your Vault. It allows 30 key uses an hour, so this starts again by itself in a few minutes. Or I can finish it on Bops agent, on your credit.\n\nOptions: ${FINISH_ON_BOPS} | ${WAIT}`;
+  if (why === "vault") return `Waiting for your Vault. It allows 30 key uses an hour, so this starts again by itself in a few minutes. Or I can finish it on SmileDesk agent, on your credit.\n\nOptions: ${FINISH_ON_BOPS} | ${WAIT}`;
   if (why === "down") {
     const who = r.kind === "claude" ? "Claude" : r.kind === "codex" ? "OpenAI" : (ROUTE_NAMES[r.model?.split("/")[0] as keyof typeof ROUTE_NAMES] ?? "Its provider");
-    return `${who} isn't answering right now. I can try again, or finish this on Bops agent, on your credit.\n\nOptions: ${TRY_AGAIN} | ${FINISH_ON_BOPS}`;
+    return `${who} isn't answering right now. I can try again, or finish this on SmileDesk agent, on your credit.\n\nOptions: ${TRY_AGAIN} | ${FINISH_ON_BOPS}`;
   }
   const what =
     why === "limit"

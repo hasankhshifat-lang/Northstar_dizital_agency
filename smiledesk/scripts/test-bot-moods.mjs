@@ -475,7 +475,7 @@ await test("coding: a thread running on one of the workspace's apps, the user's 
   // Not on an app, or not the user's own ask.
   assert.equal(mood([session("max", "running")]), "working", "no app");
   assert.equal(mood([onApp("max", { routineId: "r1" })]), "working", "a routine's run");
-  assert.equal(mood([onApp("max", { fromOutside: true })]), "working", "someone outside Bops started it");
+  assert.equal(mood([onApp("max", { fromOutside: true })]), "working", "someone outside SmileDesk started it");
   // Where the window doesn't show apps, nothing of them: at work.
   assert.equal(mood([onApp()], { account: { user: { id: "u2", email: "sam@example.com" }, signedInAt: 1 } }), "working", "apps not open to the account");
   for (const status of ["done", "failed", "stopped"]) assert.equal(mood([onApp("max", { status })]), "idle", status);

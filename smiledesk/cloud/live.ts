@@ -20,7 +20,7 @@ import { chatIdsOf, chatWsOf, fullHash, list, OWNER_VIEW, sharedHash, sharedSlic
  * Live: what each bot of a workspace is doing right now (thinking, speaking, working…), and a nudge
  * when the workspace changed, streamed to every signed-in device that watches it (protocol.ts, "Live").
  * A mood is gone a second after it happens, so none of this touches the database: it's one hub in this
- * process's memory (Bops Cloud is one process), keyed by account and workspace.
+ * process's memory (SmileDesk Cloud is one process), keyed by account and workspace.
  *
  * - Watching: GET /v1/live?ws=<workspace id>, Server-Sent Events through Caddy (flush_interval -1),
  *   with a comment every 15 seconds so nothing on the way thinks it's idle. A device has one stream
@@ -143,7 +143,7 @@ export function scoped(scope: LiveScope, event: LiveEventOut, chats?: readonly s
       return scope.bots.has(event.botId) ? event : null;
     case "routine":
       return scope.routines.has(event.id) ? event : null;
-    // Where a turn of chat through Bops Cloud stands (turns.ts): only of a bot they see, in a chat they see.
+    // Where a turn of chat through SmileDesk Cloud stands (turns.ts): only of a bot they see, in a chat they see.
     case "turn":
       return scope.bots.has(event.botId) && scope.chats.has(event.chatId) ? event : null;
     case "state":

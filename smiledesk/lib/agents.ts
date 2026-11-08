@@ -5,7 +5,7 @@ import { BRAINS_ON, planName, signInOn, threadRunner, workBot, workspaceOf, type
  * may run on, each with how it pays and the account it uses, and one is its Default. Each thread runs on the
  * agent picked for it as it starts (the owner's pick in the message box, an agent they named in chat, the
  * profile's New thread with, else the Default), fixed from its first turn, so one bot runs many threads at once,
- * each on its own agent. A bot with no profile has Bops agent only, on AI credit, exactly as before.
+ * each on its own agent. A bot with no profile has SmileDesk agent only, on AI credit, exactly as before.
  *
  * Shared by the window and the server. Nothing here is secret: a key stays in the Vault and a plan's login in
  * its folder on the bot's computer (vm/bin/bops-brain), each bot's agents with their own settings there.
@@ -13,20 +13,20 @@ import { BRAINS_ON, planName, signInOn, threadRunner, workBot, workspaceOf, type
 
 export type AgentRoute = "anthropic" | "openai" | "deepinfra";
 
-/** What each kind of agent is. `soon`: shown, dimmed, with why it isn't in Bops yet. */
+/** What each kind of agent is. `soon`: shown, dimmed, with why it isn't in SmileDesk yet. */
 export const AGENTS: Record<AgentKind, { name: string; maker: string; pays: AgentPays[]; soon?: string }> = {
-  bops: { name: "Bops agent", maker: "OpenAI", pays: ["credit"] },
+  bops: { name: "SmileDesk agent", maker: "OpenAI", pays: ["credit"] },
   claude: { name: "Claude Code", maker: "Anthropic", pays: ["plan", "key"] },
   codex: { name: "Codex", maker: "OpenAI", pays: ["key"] },
   opencode: { name: "OpenCode", maker: "Any model", pays: ["key"] },
-  agy: { name: "agy", maker: "Google Antigravity", pays: [], soon: "agy signs in with a Google account, which Bops can't use for you yet." },
+  agy: { name: "agy", maker: "Google Antigravity", pays: [], soon: "agy signs in with a Google account, which SmileDesk can't use for you yet." },
 };
 
 /** Ways to pay that show in an agent's Pays with, disabled, and why. */
 export const PAYS_SOON: Partial<Record<AgentKind, Partial<Record<AgentPays, string>>>> = {
-  claude: { credit: "Credit for Claude Code needs Bops Cloud to carry it first." },
-  codex: { credit: "Credit for Codex needs Bops Cloud to carry it first.", plan: "A ChatGPT plan for Codex needs a check of OpenAI's terms first." },
-  opencode: { credit: "Credit for OpenCode needs Bops Cloud to carry it first." },
+  claude: { credit: "Credit for Claude Code needs SmileDesk Cloud to carry it first." },
+  codex: { credit: "Credit for Codex needs SmileDesk Cloud to carry it first.", plan: "A ChatGPT plan for Codex needs a check of OpenAI's terms first." },
+  opencode: { credit: "Credit for OpenCode needs SmileDesk Cloud to carry it first." },
 };
 /** The ways to pay each kind shows in its editor, in order. */
 export const PAYS_SHOWN: Record<AgentKind, AgentPays[]> = { bops: ["credit"], claude: ["credit", "plan", "key"], codex: ["credit", "plan", "key"], opencode: ["credit", "key"], agy: [] };
@@ -53,7 +53,7 @@ export const OPENCODE_OTHER = /^(anthropic|openai|deepinfra)\/[A-Za-z0-9._:/-]{1
 export const ROUTE_KEYS: Record<AgentRoute, string> = { anthropic: "ANTHROPIC_API_KEY", openai: "OPENAI_API_KEY", deepinfra: "DEEPINFRA_API_KEY" };
 export const ROUTE_NAMES: Record<AgentRoute, string> = { anthropic: "Anthropic", openai: "OpenAI", deepinfra: "DeepInfra" };
 
-/** Bops agent: every bot has it, always first, and it is every thread's fallback. */
+/** SmileDesk agent: every bot has it, always first, and it is every thread's fallback. */
 export const BOPS_AGENT: BotAgent = { id: "bops", kind: "bops", pays: "credit" };
 /** The profile of a bot with none: exactly as before. */
 export const DEFAULT_AI: BotAi = { agents: [BOPS_AGENT], default: "bops" };
@@ -73,7 +73,7 @@ export const modelShort = (kind: AgentKind, model: string | undefined) => {
   return modelsFor(kind).find((x) => x.id === m)?.short ?? (m ? (m.split("/").pop() ?? m) : "");
 };
 
-/** Where an agent's key goes (the gate's route on its computer): its provider. Bops agent and a plan have none. */
+/** Where an agent's key goes (the gate's route on its computer): its provider. SmileDesk agent and a plan have none. */
 export function gateRoute(x: Pick<BotAgent, "kind" | "pays" | "model">): AgentRoute | undefined {
   if (x.pays !== "key") return undefined;
   if (x.kind === "claude") return "anthropic";
@@ -87,7 +87,7 @@ export const agentKeyName = (x: Pick<BotAgent, "kind" | "pays" | "model">) => {
   return r ? ROUTE_KEYS[r] : undefined;
 };
 
-/** The kinds this build runs: Bops agent always; the CLI agents with brains on (BRAINS_ON). */
+/** The kinds this build runs: SmileDesk agent always; the CLI agents with brains on (BRAINS_ON). */
 export const agentOn = (kind: AgentKind) => kind === "bops" || (BRAINS_ON && !AGENTS[kind].soon);
 export const isCli = (kind: AgentKind): kind is CliKind => kind === "claude" || kind === "codex" || kind === "opencode";
 
@@ -95,10 +95,10 @@ export const isCli = (kind: AgentKind): kind is CliKind => kind === "claude" || 
 export const paysOk = (kind: AgentKind, pays: AgentPays) => AGENTS[kind].pays.includes(pays) && !PAYS_SOON[kind]?.[pays];
 
 /**
- * A profile as it may be kept: Bops agent first, always; each agent once (by id, and by kind, pay and account);
- * only what Bops can run (the AGENTS table), on an account of the bot's workspace of the right kind; a model the
- * agent allows (else none: its kind's default); at most MAX_AGENTS; a Default that's in it, else Bops agent.
- * Undefined when that's just Bops agent with no model: the default, which is never stored.
+ * A profile as it may be kept: SmileDesk agent first, always; each agent once (by id, and by kind, pay and account);
+ * only what SmileDesk can run (the AGENTS table), on an account of the bot's workspace of the right kind; a model the
+ * agent allows (else none: its kind's default); at most MAX_AGENTS; a Default that's in it, else SmileDesk agent.
+ * Undefined when that's just SmileDesk agent with no model: the default, which is never stored.
  */
 export function cleanAi(ai: unknown, brains: Brain[] = [], wsId?: string): BotAi | undefined {
   if (!ai || typeof ai !== "object" || !Array.isArray((ai as BotAi).agents)) return undefined;
@@ -153,8 +153,8 @@ export function agentIdFor(botId: string, brainId: string) {
 
 /**
  * The profile a bot's brains said before profiles (Brain.bots: the brains it may use; Bot.brain: the one it
- * uses): Bops agent, then an agent on each of those brains, the one it used its Default. Undefined for a bot on
- * none: no profile, today's Bops agent. lib/server/store.ts botAgents keeps it as the bot's profile.
+ * uses): SmileDesk agent, then an agent on each of those brains, the one it used its Default. Undefined for a bot on
+ * none: no profile, today's SmileDesk agent. lib/server/store.ts botAgents keeps it as the bot's profile.
  */
 export function legacyAi(b: Pick<Bot, "id" | "brain">, brains: Brain[] = []): BotAi | undefined {
   const on = brains.filter((x) => Array.isArray(x.bots) && x.bots.includes(b.id));
@@ -165,7 +165,7 @@ export function legacyAi(b: Pick<Bot, "id" | "brain">, brains: Brain[] = []): Bo
 
 /**
  * A bot's profile as it runs in this build: its own, cleaned, else the default. Without brains (a release build),
- * Bops agent only: CLI agents stay in the state for a build that has them, and nothing shows or runs on them.
+ * SmileDesk agent only: CLI agents stay in the state for a build that has them, and nothing shows or runs on them.
  */
 export function aiOf(b: Pick<Bot, "id" | "ai" | "brain" | "workspaceId">, state: Pick<AppState, "brains">): BotAi {
   const ai = cleanAi(b.ai ?? legacyAi(b, state.brains), state.brains ?? []) ?? DEFAULT_AI;
@@ -177,7 +177,7 @@ export const defaultAgent = (b: Pick<Bot, "id" | "ai" | "brain" | "workspaceId">
   const ai = aiOf(b, state);
   return ai.agents.find((x) => x.id === ai.default) ?? BOPS_AGENT;
 };
-/** A bot has a profile of its own (more than Bops agent on Auto). */
+/** A bot has a profile of its own (more than SmileDesk agent on Auto). */
 export const hasProfile = (b: Pick<Bot, "id" | "ai" | "brain" | "workspaceId">, state: Pick<AppState, "brains">) => !!cleanAi(b.ai ?? legacyAi(b, state.brains), state.brains ?? []);
 
 /** The account an agent runs on, when it has one. */
@@ -228,7 +228,7 @@ export function agentName(x: Pick<BotAgent, "kind"> & Partial<Pick<BotAgent, "id
   return tag ? `${AGENTS[x.kind].name} · ${tag}` : AGENTS[x.kind].name;
 }
 
-/** "Claude Code · Opus 5.5"; "Bops agent" on Auto; "Claude Code · Max plan 2 · Opus 5.5" beside another like it (`at`: its bot). */
+/** "Claude Code · Opus 5.5"; "SmileDesk agent" on Auto; "Claude Code · Max plan 2 · Opus 5.5" beside another like it (`at`: its bot). */
 export function agentLabel(x: Pick<BotAgent, "kind" | "model"> & Partial<Pick<BotAgent, "id" | "pays" | "account">>, at?: AgentIn) {
   const name = agentName(x, at);
   if (x.kind === "bops" && !x.model) return name;
@@ -246,7 +246,7 @@ export type AgentState = {
   line: string;
   /** The one thing to do about it, when there is one. */
   button?: "sign_in" | "show" | "retry" | "own_computer" | "add_key";
-  /** Not in Bops yet, and why. */
+  /** Not in SmileDesk yet, and why. */
   soon?: string;
 };
 
@@ -259,10 +259,10 @@ export function agentState(x: BotAgent, b: Bot, state: Pick<AppState, "bots" | "
   const soon = AGENTS[x.kind].soon;
   if (soon) return { ready: false, line: AGENTS[x.kind].maker, soon };
   if (x.kind === "bops") return { ready: true, line: `${x.model ? modelShort("bops", x.model) : "OpenAI"} · Credit` };
-  if (!BRAINS_ON) return { ready: false, line: "Not in this version of Bops" };
+  if (!BRAINS_ON) return { ready: false, line: "Not in this version of SmileDesk" };
   const name = AGENTS[x.kind].name;
   if (state.host === "mac") return { ready: false, line: `${name} runs on a cloud computer. Your bots work on this Mac.` };
-  if (b.runsOn === "mac") return { ready: false, line: `${b.name} works on your Mac, so its threads use Bops agent.` };
+  if (b.runsOn === "mac") return { ready: false, line: `${b.name} works on your Mac, so its threads use SmileDesk agent.` };
   if (x.pays === "key") {
     const want = x.kind === "opencode" ? agentKeyName(x) : (accountOf(x, state)?.keyName ?? agentKeyName(x));
     if (keys && want && !keys.has(want)) return { ready: false, line: `No ${keyVendor(x)} key in your Vault yet.`, button: "add_key" };
@@ -312,10 +312,10 @@ export type AgentRun = {
   route?: AgentRoute;
   /**
    * The agent it began on was removed from the bot's profile, or its account, pay or kind changed since: it
-   * runs on Bops agent now (a running one stops first, with these words).
+   * runs on SmileDesk agent now (a running one stops first, with these words).
    */
   gone?: string;
-  /** The same, said to a thread that starts on Bops agent for it (queued, or waiting on the user): it carries on there, on credit. */
+  /** The same, said to a thread that starts on SmileDesk agent for it (queued, or waiting on the user): it carries on there, on credit. */
   goneNote?: string;
 };
 
@@ -325,18 +325,18 @@ const bopsRun = (b: Pick<Bot, "id" | "ai" | "brain" | "workspaceId">, state: Pic
     agent: x,
     kind: "bops",
     ...(x.model ? { model: x.model } : {}),
-    ...(gone ? { gone: `Stopped: ${gone.what} ${gone.why}. Reply and it carries on with Bops agent.`, goneNote: `${gone.what} ${gone.why}, so Bops agent does this, on your credit.` } : {}),
+    ...(gone ? { gone: `Stopped: ${gone.what} ${gone.why}. Reply and it carries on with SmileDesk agent.`, goneNote: `${gone.what} ${gone.why}, so SmileDesk agent does this, on your credit.` } : {}),
   };
 };
 
 /**
  * The agent a thread runs on, read again at every start, restart, resume and terminal: never trusted from the
  * thread alone (a computer may write its own threads whole), always the bot's current profile.
- * - Bops agent: in a build without brains; for a thread on the user's Mac (its bot works there, or this one
- *   does); once Bops agent ran any of it (it knows what was done, the CLI wouldn't).
+ * - SmileDesk agent: in a build without brains; for a thread on the user's Mac (its bot works there, or this one
+ *   does); once SmileDesk agent ran any of it (it knows what was done, the CLI wouldn't).
  * - Else the agent the thread names, in the bot's profile now, with its account now, and the thread's model
  *   when that agent still allows it. A thread from before names none: the agent on its brain's account, else
- *   the Default. One whose agent went: Bops agent, with `gone`.
+ *   the Default. One whose agent went: SmileDesk agent, with `gone`.
  */
 export function threadAgent(s: Pick<Session, "agent" | "brainRun" | "onBopsAgent" | "agentSessionId" | "responseId" | "runsOn">, b: Bot, state: Pick<AppState, "bots" | "brains" | "host">): AgentRun {
   const ai = aiOf(b, state);
@@ -366,7 +366,7 @@ export function threadAgent(s: Pick<Session, "agent" | "brainRun" | "onBopsAgent
  * The agent a new thread starts on: the first of `picks` (agent ids, in the order 1.4 gives: the owner's pick in
  * the message box, the one named in chat, New thread with) that the bot's profile has and can run, else its
  * Default; with `model`, that model when the agent allows it. A CLI agent's thread keeps the model it starts on
- * (the agent's, else its kind's default), so changing the agent's model later changes new threads only; Bops
+ * (the agent's, else its kind's default), so changing the agent's model later changes new threads only; SmileDesk
  * agent on Auto keeps none (its route picks one each task). Undefined for a bot with no profile: nothing new is
  * written on its threads.
  */
@@ -379,7 +379,7 @@ export function pickAgent(b: Bot, state: Pick<AppState, "brains">, picks: (strin
 }
 
 /**
- * The bot's agents a thread may start on now, for the message box and chat's start_task: Bops agent, and every CLI
+ * The bot's agents a thread may start on now, for the message box and chat's start_task: SmileDesk agent, and every CLI
  * agent this build runs that's ready. `keys`: the Vault's key names, when known (the window).
  */
 export const readyAgents = (b: Bot, state: Pick<AppState, "bots" | "brains" | "host">, keys?: ReadonlySet<string>) =>

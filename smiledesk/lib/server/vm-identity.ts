@@ -4,7 +4,7 @@ import { Agent, request } from "node:http";
 import { sleptSince } from "./awake";
 
 /**
- * A computer's own Orgo identity, which its Bops runner signs in with before its key file (orgo-auth.ts
+ * A computer's own Orgo identity, which its SmileDesk runner signs in with before its key file (orgo-auth.ts
  * runnerKey). Orgo's VMM answers http://169.254.169.254 from inside the computer's own network, so the
  * answer can only be this computer's: a token `orgo_vm_…` for it alone, good for an hour, that orgo-web
  * takes as a one-computer credential (the identity spec, scratchpad vm-identity-spec.md 2.4 and 4.1).
@@ -23,8 +23,8 @@ import { sleptSince } from "./awake";
  * A 401 from Orgo with a token (vmIdentityRejected) drops it for good: with `vm_identity_off` identity is
  * absent for 5 minutes (the key file then), and with any other the next ask is a fresh one (`?fresh=1`),
  * at most every 5 seconds. `bops_cloud_not_ready` (orgo-web won't give a computer's token a profile
- * until Bops Cloud tells a computer from its user) turns nothing down: orgo-web still takes the token,
- * and only Bops Cloud (and the profile) get the key file for 10 minutes (cloudHeld; orgo-auth.ts
+ * until SmileDesk Cloud tells a computer from its user) turns nothing down: orgo-web still takes the token,
+ * and only SmileDesk Cloud (and the profile) get the key file for 10 minutes (cloudHeld; orgo-auth.ts
  * cloudKey), then the token again. Either way the runner takes its next credential at once (the hook
  * orgo-auth.ts sets, onTurnedDown). A 200 for another computer than BOPS_RUNNER_COMPUTER is this
  * computer's copy (a fork carries the runner on from the same memory): never taken up, and the runner
@@ -84,7 +84,7 @@ type Box = {
   freshAt: number;
   /** Until then an `again` doesn't ask (identity was said off). */
   holdUntil?: number;
-  /** Until then Bops Cloud and the profile get the key file (bops_cloud_not_ready): orgo-web keeps the token. */
+  /** Until then SmileDesk Cloud and the profile get the key file (bops_cloud_not_ready): orgo-web keeps the token. */
   cloudHoldUntil?: number;
   /** Called when a token was turned down, so the runner takes its next credential now (orgo-auth.ts). */
   onTurnedDown?: () => void;
@@ -296,9 +296,9 @@ export async function vmIdentity(opts: { fresh?: boolean; again?: boolean } = {}
 }
 
 /**
- * Orgo answered 401 to `token` (orgo.ts, orgo-sign-in.ts, Bops Cloud through persist-cloud.ts and
- * cloud.ts): it's dropped and never sent again. Orgo's profile (or Bops Cloud, passing on its code) said
- * Bops Cloud can't take a computer's token yet (bops_cloud_not_ready): nothing is dropped, and Bops Cloud
+ * Orgo answered 401 to `token` (orgo.ts, orgo-sign-in.ts, SmileDesk Cloud through persist-cloud.ts and
+ * cloud.ts): it's dropped and never sent again. Orgo's profile (or SmileDesk Cloud, passing on its code) said
+ * SmileDesk Cloud can't take a computer's token yet (bops_cloud_not_ready): nothing is dropped, and SmileDesk Cloud
  * and the profile get the key file for 10 minutes (cloudHeld). Either way the runner takes its next
  * credential now (onTurnedDown). Anything that isn't an identity token is left to orgo-auth.ts.
  */
@@ -307,7 +307,7 @@ export function vmIdentityRejected(token: string, code?: string) {
   const t = now();
   if (code === "bops_cloud_not_ready") {
     box.cloudHoldUntil = t + NOT_READY_MS;
-    say(`hold:${code}`, "Bops Cloud can't take this computer's identity yet (bops_cloud_not_ready): it gets the key file meanwhile, and Orgo the identity", true);
+    say(`hold:${code}`, "SmileDesk Cloud can't take this computer's identity yet (bops_cloud_not_ready): it gets the key file meanwhile, and Orgo the identity", true);
     box.onTurnedDown?.();
     return;
   }
@@ -325,7 +325,7 @@ export function vmIdentityRejected(token: string, code?: string) {
   box.onTurnedDown?.();
 }
 
-/** Whether Bops Cloud (and Orgo's profile) can't take this computer's identity for now (bops_cloud_not_ready): they get the key file. */
+/** Whether SmileDesk Cloud (and Orgo's profile) can't take this computer's identity for now (bops_cloud_not_ready): they get the key file. */
 export const cloudHeld = () => box.cloudHoldUntil !== undefined && now() < box.cloudHoldUntil;
 
 /** What runs when a token was turned down (orgo-auth.ts: the runner's next credential, now). */

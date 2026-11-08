@@ -8,12 +8,12 @@ import { post } from "./ui";
  * actShared, through POST /api/workspaces/shared, the one way it goes while a shared workspace is open: view-only.ts):
  * a fresh key, or the same one to try a failed one again (it's never done twice). What it says when it didn't go
  * (`error`) is also shown where it was done: under their message or reply, which the window's state carries
- * (Message.memberSend) until the owner's Bops has written it.
+ * (Message.memberSend) until the owner's SmileDesk has written it.
  */
 export async function memberAct(act: MemberAct, key = crypto.randomUUID().replace(/-/g, "")): Promise<{ ok: boolean; error?: string; unsent?: boolean }> {
   const res = await post("/api/workspaces/shared", { act, key }).catch(() => null);
-  // (`unsent`: nothing of it was kept to try again under their message: Bops not reached, or it refused it first.)
-  if (!res) return { ok: false, error: "Couldn't reach Bops. Try again.", unsent: true };
+  // (`unsent`: nothing of it was kept to try again under their message: SmileDesk not reached, or it refused it first.)
+  if (!res) return { ok: false, error: "Couldn't reach SmileDesk. Try again.", unsent: true };
   if (res.ok) return { ok: true };
   const body = (await res.json().catch(() => ({}))) as { error?: string; unsent?: unknown };
   return { ok: false, error: body.error || "That didn't go. Try again.", ...(body.unsent === true ? { unsent: true } : {}) };

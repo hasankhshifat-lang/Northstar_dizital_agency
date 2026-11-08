@@ -28,7 +28,7 @@ import { recordUsageFor } from "./usage.ts";
  * - still unpaid 30 days after the pause: given back (provision.ts releaseAfterPause, later in the sweep).
  *
  * The free number is never charged, so it's never paused for its month. A line paused for anything else
- * (a plan's, from before) isn't charged while it is. A user moved back to Bops' plans has their numbers
+ * (a plan's, from before) isn't charged while it is. A user moved back to SmileDesk's plans has their numbers
  * paused for a month back on (provision.ts resumeUnbilledLines): nothing bills a number by the month there.
  * Each line is renewed under its user's plan lock (plans.ts locked), so a release at that moment never
  * gives back a number just paid for.

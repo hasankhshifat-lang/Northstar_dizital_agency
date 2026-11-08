@@ -6,7 +6,7 @@ import { orgo } from "./orgo";
 import { bot, update } from "./store";
 
 /**
- * Puts a bot's Orgo computer on the user's tailnet (vm/bin/bops-tailnet), so Bops can reach its
+ * Puts a bot's Orgo computer on the user's tailnet (vm/bin/bops-tailnet), so SmileDesk can reach its
  * screens' Chrome directly: the mirror, Jev's screen reads and precise take-over all need that.
  * The auth key goes over for one use and is deleted on the computer right after.
  */

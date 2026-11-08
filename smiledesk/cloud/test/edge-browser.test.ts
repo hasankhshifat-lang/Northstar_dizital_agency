@@ -10,11 +10,11 @@ import { BROWSER_NEEDS_COMPUTER, BROWSER_NEEDS_WRITE, BROWSER_SHARED_COMPUTER, t
 import { listen, newUserId, prepareDb, startCloud, until, type Listening } from "./edge-fakes.ts";
 
 /**
- * The bot's browser in Bops Cloud (browser.ts): who may watch a bot's browser and take control of it. The owner, and a
+ * The bot's browser in SmileDesk Cloud (browser.ts): who may watch a bot's browser and take control of it. The owner, and a
  * member the owner gave Write on that bot and Use its computer; a member without Use its computer, a member at Read, a
  * member who doesn't see the bot and someone who isn't in the workspace are refused, each saying why (or nothing, for
  * what they don't see), on the stream and on every act. What the runner on the bot's computer sends reaches the viewers
- * it's for, and what they ask reaches the runner with who asked, as Bops Cloud vouches for them. Pointer events and what
+ * it's for, and what they ask reaches the runner with who asked, as SmileDesk Cloud vouches for them. Pointer events and what
  * the bot is doing reach viewers; a stream of only the latter (a Watch chip's) isn't watching. The owner's take goes
  * over a member's control; a member's never does. orgo-web is a fake.
  */
@@ -286,7 +286,7 @@ test("pointers and what the bot is doing reach viewers; an activity-only stream 
   await until(() => !runnerConnected(owner, DESKTOP), "the runner to go");
 });
 
-test("an Admin with no entry of their own watches and takes over, as Bops Cloud's roles give it (viewerAccess, computerUseOf); never over a member", async () => {
+test("an Admin with no entry of their own watches and takes over, as SmileDesk Cloud's roles give it (viewerAccess, computerUseOf); never over a member", async () => {
   assert.ok(!Object.keys(state.workspaces[0].memberAccess).some((k) => k.startsWith(admin)), "no per-person entry");
   const r = await runner();
   const theirs = await watch(admin);

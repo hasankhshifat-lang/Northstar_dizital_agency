@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 
 /**
- * The state as Bops Cloud keeps it (lib/server/persist-cloud.ts), and putting two Macs' changes
+ * The state as SmileDesk Cloud keeps it (lib/server/persist-cloud.ts), and putting two Macs' changes
  * together. Pure functions, no server: the tests run them directly.
  *
  * In the cloud a user's state is a blob (everything but the messages, which are rows of their own)
@@ -23,7 +23,7 @@ export const PER_MAC = ["relay", "relayRoutes", "mac", "setup", "driving"] as co
  * Orgo's (made-apps-sync.ts: every Mac lists them from there, and this Mac keeps its copy in
  * made-apps/apps.json). A list from before, under macs[deviceId].madeApps, is read into that copy once
  * and goes from the blob with this Mac's next save. What a bot asks the user's OK for (appApprovals) is
- * shared, so every Bops of theirs shows it and the one whose run asked reads the reply (permission.ts).
+ * shared, so every SmileDesk of theirs shows it and the one whose run asked reads the reply (permission.ts).
  */
 export const NEVER_SYNCED = ["account", "screens", "takeover", "connecting", "screenStream", "cloudUser", "messages", "macs", "madeApps", "liveMoods"] as const;
 /** The newest usage events kept, as lib/server/usage.ts keeps them. */
@@ -78,9 +78,9 @@ export function fromShared(blob: Blob, device: string): Blob {
  *   go thing by thing: one changed here keeps this Mac's copy, one removed on either side (and not
  *   changed on the other) goes, one added on either side stays; this Mac's order, the others' new
  *   ones after. A routine changed on both sides goes field by field, its clock as one (mergeRoutine);
- *   a thread is the copy of the Bops that runs it, with the replies and steps of both (mergeSession);
+ *   a thread is the copy of the SmileDesk that runs it, with the replies and steps of both (mergeSession);
  *   a request for the user's OK keeps its reply, never back to unanswered (mergeApproval), and one taken
- *   out on either side stays out, whatever the other changed: only the Bops that asked takes one out, once
+ *   out on either side stays out, whatever the other changed: only the SmileDesk that asked takes one out, once
  *   it has read the reply, so a second reply or a Stop that crossed it never brings it back to be read again;
  *   a bot is this Mac's copy with its How I work the other side's where only that side changed it (keepHowIWork);
  *   a workspace goes field by field (each field changed on both is this Mac's), so a rename on one
@@ -94,9 +94,9 @@ export function fromShared(blob: Blob, device: string): Blob {
  * - usage is both ledgers together; macs, and any other object, key by key;
  * - anything else is this Mac's.
  * A thread, routine or watch either side kept "between us" (secret) stays so, however it merged (keepMarks).
- * `me`: which Bops is merging (its device id, and whether it's a computer's runner), so a thread
+ * `me`: which SmileDesk is merging (its device id, and whether it's a computer's runner), so a thread
  * changed on both sides goes by the one that runs it (Session.by); without it, by this Mac's copy. With
- * me.older, `mine` is an older Bops's copy and theirs stands where both changed something (Me.older),
+ * me.older, `mine` is an older SmileDesk's copy and theirs stands where both changed something (Me.older),
  * and its routines' runs never go in (withoutRuns).
  */
 export function merge3(base: Blob | null, mine: Blob, theirs: Blob, me?: Me): Blob {
@@ -108,13 +108,13 @@ type Me = {
   device: string;
   runner?: boolean;
   /**
-   * `mine` is a copy an older Bops kept (persist-cloud.ts buildKept: written by an app below the level of
-   * the one that wrote `theirs` since, such as a Mac Bops Cloud refused as too old while it went on in
+   * `mine` is a copy an older SmileDesk kept (persist-cloud.ts buildKept: written by an app below the level of
+   * the one that wrote `theirs` since, such as a Mac SmileDesk Cloud refused as too old while it went on in
    * memory): where both changed the same thing, theirs stands. A bot or a workspace goes field by field
    * (renamed there and woken here: the new name, and woken), anything else changed on both is theirs
    * whole, and a routine's clock is never the older copy's, even where only it changed the routine
    * (withoutRuns). What only the older copy added or changed still goes in, and a thread still goes by
-   * the Bops that runs it (mergeSession).
+   * the SmileDesk that runs it (mergeSession).
    */
   older?: boolean;
   /**
@@ -160,7 +160,7 @@ const KEPT_ACCESS: [string, (v: unknown) => boolean][] = [
 /**
  * A person's Your Apps level (MemberAccess.apps), Use its computer (MemberAccess.computer) and what they may change
  * (MemberAccess.can) put back where an older
- * Bops dropped them: its People sheet, or its own look at who's still there, rewrites a person's entry as
+ * SmileDesk dropped them: its People sheet, or its own look at who's still there, rewrites a person's entry as
  * `{ others, bots }` and loses them (they read as none: access lost, never gained). For each entry of the merged
  * `merged` workspaces without one, what that person had in the first of `copies` (this side's, the other's, the one
  * before) that has it. Never into an entry set with an invite (`invite`) from a copy where it wasn't (removed and
@@ -202,7 +202,7 @@ export function keepAppsLevels(merged: unknown, copies: unknown[]): unknown {
  * base and both sides): one way, never taken back by a merge. A thread a computer's runner runs is the
  * runner's copy (mergeSession), and one changed on one side only is that side's, but a mark the Mac put
  * on it meanwhile (a message kept between us sent to it, Jev's later check) stays, as does one the runner
- * put on it (a part it split off), whatever a Bops from before the mark wrote.
+ * put on it (a part it split off), whatever a SmileDesk from before the mark wrote.
  */
 function keepMarks(merged: unknown, copies: unknown[]): unknown {
   if (!Array.isArray(merged)) return merged;
@@ -228,7 +228,7 @@ function mergeEither(key: string, b: unknown, m: unknown, t: unknown, top: boole
     return mergeById(Array.isArray(b) ? b : [], (m as { id: string }[]) ?? [], (t as { id: string }[]) ?? [], both, me?.older, top && key === "appApprovals");
   }
   // A workspace's team chart (Workspace.chain) is one field, like its favorites: changed on both, the copy of the
-  // Bops saving now goes whole (an older Bops's: theirs), never a mix of two charts.
+  // SmileDesk saving now goes whole (an older SmileDesk's: theirs), never a mix of two charts.
   if (!top && key === "chain") return me?.older ? t : m;
   if (isObject(m) && isObject(t)) return mergeObject(isObject(b) ? b : {}, m, t, false, me);
   return me?.older ? t : m;
@@ -239,7 +239,7 @@ const HOW_I_WORK = ["persona", "personaBy"] as const;
 
 /**
  * A bot changed on both sides: this Mac's copy, with its How I work (HOW_I_WORK) the other side's where only that side
- * changed it: an Admin's change Bops Cloud kept while this Mac was away (cloud/members.ts personaHere) stands over this
+ * changed it: an Admin's change SmileDesk Cloud kept while this Mac was away (cloud/members.ts personaHere) stands over this
  * Mac's older words, whatever else of the bot this Mac changed meanwhile. Changed on both, this Mac's as before.
  */
 function keepHowIWork(base: Blob, mine: Blob, theirs: Blob): Blob {
@@ -255,9 +255,9 @@ function keepHowIWork(base: Blob, mine: Blob, theirs: Blob): Blob {
 
 /**
  * `both`: how one changed on both sides goes together; without it, this Mac's copy. `older`: this Mac's
- * is an older Bops's copy (Me.older), so theirs leads: their order, and their copy where both changed one
+ * is an older SmileDesk's copy (Me.older), so theirs leads: their order, and their copy where both changed one
  * (or one side removed what the other changed). `goneWins`: one removed on either side goes, even where
- * the other changed it (a request for the user's OK the Bops that asked took out: mergeEither).
+ * the other changed it (a request for the user's OK the SmileDesk that asked took out: mergeEither).
  */
 function mergeById(base: { id: string }[], mine: { id: string }[], theirs: { id: string }[], both?: (was: Blob, mine: Blob, theirs: Blob) => Blob, older = false, goneWins = false): { id: string }[] {
   if (older) return mergeById(base, theirs, mine, both && ((was, x, y) => both(was, y, x)), false, goneWins);
@@ -287,10 +287,10 @@ const CLOCK = ["nextRunAt", "lastRunAt", "last", "lateRun", "eventsThrough"] as 
 const plan = (x: Blob) => canonical([x.schedule, x.timeZone ?? null, x.enabled === false]);
 
 /**
- * An older Bops's kept copy (Me.older) with each routine it shares with `base` put back to how it was
- * there in all its runs changed: its clock, and a one-off its run turned off (ranOff). That Bops went on
- * running routines from memory while Bops Cloud refused it, so each run it shows failed or was never
- * seen (persist-cloud.ts refusedWork leaves out what it posted): left as it was, the newer Bops runs it,
+ * An older SmileDesk's kept copy (Me.older) with each routine it shares with `base` put back to how it was
+ * there in all its runs changed: its clock, and a one-off its run turned off (ranOff). That SmileDesk went on
+ * running routines from memory while SmileDesk Cloud refused it, so each run it shows failed or was never
+ * seen (persist-cloud.ts refusedWork leaves out what it posted): left as it was, the newer SmileDesk runs it,
  * late if its time has passed. What the user changed there (a title, a goal, a schedule, a pause) still
  * goes in, and a new schedule, zone or pause has its next time worked out again, as routines.ts does when
  * it's edited (a one-off's is its time). A routine only the older copy has keeps what it has.
@@ -322,7 +322,7 @@ function withoutRuns(base: Blob, mine: Blob, me: Me): Blob {
   return { ...mine, routines };
 }
 
-/** Whether a one-off went off by running (routines.ts record: its run for its time ended, and it's done; an older Bops's tick, as it fired), not by a pause. */
+/** Whether a one-off went off by running (routines.ts record: its run for its time ended, and it's done; an older SmileDesk's tick, as it fired), not by a pause. */
 function ranOff(was: Blob, now: Blob): boolean {
   const s = isObject(now.schedule) ? now.schedule : {};
   const ran = now.lastRunAt;
@@ -345,10 +345,10 @@ function ranOff(was: Blob, now: Blob): boolean {
  * back on either side goes), until it has passed; a next time that's one of them is moved past it by the
  * routines timer before it comes due (routines.ts tick). Paused on either side: no next time, nothing
  * skipped (routines.ts setRoutineEnabled). A next time at or before the other side's last run (a Run now
- * on one Bops just after the other ran that time) is never taken: the other side's next time is.
- * A copy an older Bops kept (Me.older) never gives the clock.
+ * on one SmileDesk just after the other ran that time) is never taken: the other side's next time is.
+ * A copy an older SmileDesk kept (Me.older) never gives the clock.
  * When the side the clock came from had another schedule, zone or pause than the routine has now (an
- * edit on one Bops while the other ran it), its next time was for that other schedule: it's worked out
+ * edit on one SmileDesk while the other ran it), its next time was for that other schedule: it's worked out
  * again for this one (Me.nextRunOf), so the edit's time runs and the old one doesn't.
  */
 function mergeRoutine(base: Blob, mine: Blob, theirs: Blob, me?: Me): Blob {
@@ -421,7 +421,7 @@ export function mergeApproval(base: Blob, mine: Blob, theirs: Blob): Blob {
 }
 
 /**
- * What another Bops than the one that runs a thread may change in it and keep, each while the one that
+ * What another SmileDesk than the one that runs a thread may change in it and keep, each while the one that
  * runs it left it as it was: a stop it asked for (sessions.ts stopSession), a move to the Mac (moveToMac:
  * the thread that took its place, and what waits on the user and the offer it clears) and a dismiss
  * (dismissWaiting: the mark, and what waits on the user and the replies it offered, cleared).
@@ -430,7 +430,7 @@ const ASKED_ELSEWHERE = ["stopAsked", "replacedBy", "dismissed", "blocker", "wai
 
 /**
  * A thread changed on both sides (the user replied on the Mac while a computer's runner worked on it, or
- * the other way): the copy of the Bops that runs it (Session.by, or the side that just picked it up), as
+ * the other way): the copy of the SmileDesk that runs it (Session.by, or the side that just picked it up), as
  * its fields go together (its status and its screen, its answer, what it waits on), with the replies of
  * both, each reply field by field (the one that runs it marks them taken in), the steps of both, what
  * the user did to it from elsewhere (ASKED_ELSEWHERE: a stop, a move to the Mac, a dismiss), and a
@@ -453,7 +453,7 @@ function mergeSession(base: Blob, mine: Blob, theirs: Blob, me?: Me): Blob {
   return out;
 }
 
-/** Whether this side's copy of a thread is the one that runs it: this Bops's own (store.ts ownSession), unless the other side picked it up since. */
+/** Whether this side's copy of a thread is the one that runs it: this SmileDesk's own (store.ts ownSession), unless the other side picked it up since. */
 function runsIt(base: Blob, mine: Blob, theirs: Blob, me?: Me): boolean {
   const by = (x: Blob) => (typeof x.by === "string" ? x.by : undefined);
   const [b, m, t] = [by(base), by(mine), by(theirs)];

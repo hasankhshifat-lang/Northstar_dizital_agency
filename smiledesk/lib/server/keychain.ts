@@ -4,13 +4,13 @@ import { onRunner } from "./persist";
 import { stateUser } from "./store";
 
 /**
- * Secrets in the Mac's Keychain, under "Bops Vault". Values go to `security` on stdin, hex-encoded,
+ * Secrets in the Mac's Keychain, under "SmileDesk Vault". Values go to `security` on stdin, hex-encoded,
  * so they never show up in the process list; reading one back only names the item. A computer's runner
  * has no Keychain: nothing is there to read (a saved login, a Telegram token), and nothing is kept.
  */
-const SERVICE = "Bops Vault";
+const SERVICE = "SmileDesk Vault";
 const q = (s: string) => `"${s.replace(/["\\]/g, "")}"`;
-const NOT_HERE = "This is kept only in the Bops app on your Mac.";
+const NOT_HERE = "This is kept only in the SmileDesk app on your Mac.";
 
 export function setSecret(account: string, value: string) {
   if (onRunner()) return Promise.reject(new Error(NOT_HERE));

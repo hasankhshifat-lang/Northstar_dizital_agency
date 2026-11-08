@@ -73,7 +73,7 @@ export const small = (tone: "plain" | "red") =>
 
 /*
  * Kept per group ("memory" for Orbit, "autopilot"), Orgo account and workspace. Every read and write
- * is guarded: with no storage, what the user did is kept until Bops reloads.
+ * is guarded: with no storage, what the user did is kept until SmileDesk reloads.
  */
 const sectionKey = (group: string, user: string, ws: string, section: string) => `bops.${group}.open.${user}.${ws}.${section}`;
 const groupKey = (group: string, user: string, ws: string) => `bops.${group}.group.${user}.${ws}`;
@@ -92,7 +92,7 @@ export function writeSectionOpen(group: string, user: string, ws: string, sectio
   try {
     localStorage.setItem(sectionKey(group, user, ws, section), open ? "1" : "0");
   } catch {
-    /* kept until Bops reloads */
+    /* kept until SmileDesk reloads */
   }
 }
 
@@ -109,7 +109,7 @@ export function writeGroupOpen(group: string, user: string, ws: string, open: bo
   try {
     localStorage.setItem(groupKey(group, user, ws), open ? "1" : "0");
   } catch {
-    /* kept until Bops reloads */
+    /* kept until SmileDesk reloads */
   }
 }
 

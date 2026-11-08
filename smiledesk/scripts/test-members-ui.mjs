@@ -2,11 +2,11 @@
 // workspace's, its main bot first, none while a workspace shared with the user is open), how a level picked
 // on a row changes someone's access (lib/member-access.ts), and the picker rendered: a row for every bot at
 // once, new ones too, then one row per bot with its mascot, each None, Read or Write, Write saying what it
-// lets them do (chat with the bot, have it work, answer it, stop it; never the owner's logins, keys or Macs). Then the sheet rendered into a DOM (linkedom) and clicked, against a fake Bops: the owner
+// lets them do (chat with the bot, have it work, answer it, stop it; never the owner's logins, keys or Macs). Then the sheet rendered into a DOM (linkedom) and clicked, against a fake SmileDesk: the owner
 // says Every bot, each person and invite says which bots they see and that View only is about the
 // computers; an invite goes out with every bot there now to read unless bots were chosen, and the form
 // starts over after; a person's bots save at once, one change at a time with the newest last, and go back
-// to what was saved when Bops turns one down, or to the last one saved when the read after it fails; an invite
+// to what was saved when SmileDesk turns one down, or to the last one saved when the read after it fails; an invite
 // sent again keeps its bots, from its row or the form; and with a shared workspace open no bots are offered or
 // sent. Last, the words: no dashes, and the footer says the bots you pick, never the Vault.
 //
@@ -105,7 +105,7 @@ await test("a level picked on a bot names it unless it's the rest's level; on Ev
   assert.deepEqual(S.withLevel(a, "boppy", "write"), { others: "none", bots: { boppy: "write" } });
   assert.deepEqual(S.withLevel(a, null, "read"), { others: "read", bots: {} });
   assert.deepEqual(a, { others: "none", bots: { boppy: "read" } }, "the access it was given is left alone");
-  // What it makes is what Bops Cloud keeps.
+  // What it makes is what SmileDesk Cloud keeps.
   for (const x of [S.withLevel(a, "sam", "write"), S.withLevel(a, "boppy", "none"), S.withLevel(a, null, "write")]) assert.deepEqual(A.cleanAccess(x), x);
 });
 
@@ -136,7 +136,7 @@ await test("the picker: three groups, each named; All bots, then each bot with i
   const levels = html.match(/<ul data-access-levels[^>]*>([\s\S]*?)<\/ul>/)?.[1] ?? "";
   assert.deepEqual(
     [...levels.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(([, li]) => li.replace(/<[^>]+>/g, "").replace(/&#x27;/g, "'")),
-    ["None: can't see this bot in Bops. On orgo.ai they still see its computer.", "Read: sees everything this bot does, including your chats with it.", "Write: can chat with this bot, have it do work, answer what it asks and stop it. Never your logins, keys or Macs."],
+    ["None: can't see this bot in SmileDesk. On orgo.ai they still see its computer.", "Read: sees everything this bot does, including your chats with it.", "Write: can chat with this bot, have it do work, answer what it asks and stop it. Never your logins, keys or Macs."],
   );
   // Every name is cut short: the five rows above, and each of What they can change (member-access.ts POWERS), all off.
   assert.equal((html.match(/truncate/g) ?? []).length, 5 + POWERS.length, "every name is cut short, not wrapped");
@@ -237,7 +237,7 @@ const summaryOf = (el) => el.querySelector("[data-access-summary]")?.textContent
 /** A row of Who has access or Invited, by the name or email on it. */
 const rowOf = (box, who) => [...box.querySelectorAll(".group")].find((r) => r.textContent.includes(who));
 
-/** Bops, faked: who has access (kept as Bops keeps it after each change), and what each change was sent. */
+/** SmileDesk, faked: who has access (kept as SmileDesk keeps it after each change), and what each change was sent. */
 function bops() {
   const info = {
     state: "ready",
@@ -250,7 +250,7 @@ function bops() {
     invites: [{ email: "alex@example.com", role: "viewer", expiresAt: new Date(2026, 9, 28).getTime(), expired: false, link: "https://orgo.test/accept/x", access: { others: "read", bots: { sam: "write" } } }],
     seats: { plan: "max_bops", canAdd: true, limit: 5, used: 2, upgrade: null, caps: { pro_bops: 2, max_bops: 5 } },
   };
-  // `failReadsAfter`: once this many changes were sent, reading who has access fails (as Bops not answering).
+  // `failReadsAfter`: once this many changes were sent, reading who has access fails (as SmileDesk not answering).
   // `refuseWith`: the next changes are turned down with this {status, body}, as the route answers one.
   const fake = { info, sent: [], refuse: false, refuseWith: null, hold: null, failReadsAfter: Infinity };
   globalThis.fetch = async (url, init = {}) => {
@@ -292,7 +292,7 @@ await test("the owner says Every bot; a person and an invite say which bots, and
   await done();
 });
 
-await test("while Bops Cloud doesn't give people their role yet (fullAccess not_yet): Admin isn't offered, and Your Apps says it waits", async () => {
+await test("while SmileDesk Cloud doesn't give people their role yet (fullAccess not_yet): Admin isn't offered, and Your Apps says it waits", async () => {
   const fake = bops();
   fake.info.fullAccess = "not_yet";
   const { box, done } = await mount(h(S.Members, { state: base, onClose: noop, onUpgrade: noop }));
@@ -389,7 +389,7 @@ await test("a save queued behind another shows what it saved when the read after
   await done();
 });
 
-await test("a change Bops turns down goes back to what was saved, with why under the row", async () => {
+await test("a change SmileDesk turns down goes back to what was saved, with why under the row", async () => {
   const fake = bops();
   const { box, done } = await mount(h(S.Members, { state: base, onClose: noop, onUpgrade: noop }));
   await click(buttonOf(rowOf(box, "Jamie Lee"), "Bots"));
@@ -397,7 +397,7 @@ await test("a change Bops turns down goes back to what was saved, with why under
   await click(levelButton(rowOf(box, "Jamie Lee").querySelector("[data-bot-access]"), "Bots you make later", "Read"));
   assert.equal(fake.sent.length, 1);
   const jamie = rowOf(box, "Jamie Lee");
-  assert.equal(summaryOf(jamie), "1 bot, read", "back to what Bops has");
+  assert.equal(summaryOf(jamie), "1 bot, read", "back to what SmileDesk has");
   assert.equal(levelButton(jamie, "Bots you make later", "None").getAttribute("aria-checked"), "true");
   assert.equal(jamie.querySelector('[role="alert"]')?.textContent, "Couldn't change their bots. Try again.");
   await done();
@@ -501,10 +501,10 @@ await test("no dashes, and the sheet says the bots you pick, never the saved log
   const { box, done } = await mount(h(S.Members, { state: base, onClose: noop, onUpgrade: noop }));
   await click(buttonOf(rowOf(box, "Jamie Lee"), "Bots"));
   noDashes(box.textContent);
-  assert.match(box.textContent, /In Bops they see everything of the bots you pick, your chats with them too\./);
+  assert.match(box.textContent, /In SmileDesk they see everything of the bots you pick, your chats with them too\./);
   assert.match(box.textContent, /Read: sees everything this bot does, including your chats with it\./, "the picker says what Read lets them see");
   assert.match(box.textContent, /On orgo\.ai they see every bot's computer/);
-  assert.match(box.textContent, /Never your saved logins or keys\./, "no keys of Bops' on the computers");
+  assert.match(box.textContent, /Never your saved logins or keys\./, "no keys of SmileDesk's on the computers");
   assert.ok(!/Vault/.test(box.textContent), "the Vault is Logins now");
   assert.ok(!/They see everything in the workspace/.test(box.textContent));
   assert.equal(M.ROLE_LINES.viewer, "Sees and does only what you pick for them.");
@@ -515,9 +515,9 @@ await test("Member and None say what people get, and keys on the computers are s
   // An Admin's line says what only the owner does; a Member's never promises orgo.ai (a staff owned workspace keeps a Member without Use its computer off there).
   assert.equal(M.ROLE_LINES.admin, "Every bot, its computer and your apps, and adding people. Only you can delete this workspace.");
   assert.ok(!/orgo\.ai/.test(M.ROLE_LINES.viewer));
-  assert.match(M.ACCESS_TIPS.none, /^Can't see this bot in Bops\. On orgo\.ai they still see its computer\.$/);
+  assert.match(M.ACCESS_TIPS.none, /^Can't see this bot in SmileDesk\. On orgo\.ai they still see its computer\.$/);
   const esc = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  // Bops' keys on the computers, and only someone with View only in: said, and the footer doesn't promise the keys.
+  // SmileDesk's keys on the computers, and only someone with View only in: said, and the footer doesn't promise the keys.
   const held = bops();
   held.info.keysOnComputers = true;
   let { box, done } = await mount(h(S.Members, { state: base, onClose: noop, onUpgrade: noop }));
@@ -606,7 +606,7 @@ await test("Your Apps: a row of its own beside the bots under Access, Read for a
   assert.equal(levelButton(picker(), "Your Apps", "None").getAttribute("data-tip"), "Doesn't see your apps.");
   assert.equal(picker().querySelector("[data-apps-legend]").textContent, "Your Apps never shows them variables or keys, and only you buy domains.");
   assert.equal(picker().querySelector("[data-apps-older]"), null, "no older Macs, no line");
-  assert.equal(picker().querySelector("[data-apps-note]"), null, "Bops Cloud shows them now: no line saying it doesn't yet");
+  assert.equal(picker().querySelector("[data-apps-note]"), null, "SmileDesk Cloud shows them now: no line saying it doesn't yet");
   await click(levelButton(picker(), "Your Apps", "Write"));
   assert.deepEqual(fake.sent.at(-1), { method: "PATCH", body: { memberId: "m1", access: { others: "none", bots: { boppy: "read" }, apps: "write" } } });
   assert.equal(summaryOf(rowOf(m.box, "Jamie Lee")), "1 bot, read · Your Apps, write");
@@ -621,11 +621,11 @@ await test("Your Apps: a row of its own beside the bots under Access, Read for a
   await submit(form);
   assert.deepEqual(fake.sent.at(-1).body.access, { others: "none", bots: { boppy: "read", sam: "read" }, apps: "none" });
   await m.done();
-  // A Mac on the account on a Bops from before: said under the row.
+  // A Mac on the account on a SmileDesk from before: said under the row.
   older = true;
   m = await mount(h(S.Members, { state: team, onClose: noop, onUpgrade: noop }));
   await click(buttonOf(rowOf(m.box, "Jamie Lee"), "Access"));
-  assert.equal(rowOf(m.box, "Jamie Lee").querySelector("[data-apps-older]").textContent, "One of your Macs runs an older Bops. A change made there can hide Your Apps from someone until this Mac is on again.");
+  assert.equal(rowOf(m.box, "Jamie Lee").querySelector("[data-apps-older]").textContent, "One of your Macs runs an older SmileDesk. A change made there can hide Your Apps from someone until this Mac is on again.");
   await m.done();
   // Not set yet (someone shared with before the scope): no level picked, and a bot changed sends none.
   fake.info.people[0].access = { others: "none", bots: { boppy: "read" } };
@@ -661,7 +661,7 @@ await test("Use its computer: off for a new invite, only with Write on a bot, on
   assert.equal(rowsOf(html).at(-1).levels, "[Off] On");
   assert.match(html, /<span data-computer-note[^>]*>Give them Write on a bot first\. Using its computer comes with Write\.<\/span>/);
   assert.match(html, /role="radio" aria-checked="false" disabled=""[^>]*>On</, "off and can't be turned on without Write");
-  // Kept "use" by Bops Cloud's own rules: on, off ("none"), and anything else dropped.
+  // Kept "use" by SmileDesk Cloud's own rules: on, off ("none"), and anything else dropped.
   assert.deepEqual(A.cleanAccess({ others: "none", bots: {}, computer: "use" }), { others: "none", bots: {}, computer: "use" });
   assert.deepEqual(A.cleanAccess({ others: "none", bots: {}, computer: "none" }), { others: "none", bots: {}, computer: "none" });
   assert.deepEqual(A.cleanAccess({ others: "none", bots: {}, computer: "root" }), { others: "none", bots: {} });
@@ -796,7 +796,7 @@ await test("Keys: a switch per Member beside Use its computer, sent as {memberId
   assert.equal(buttonOf(lion.querySelector('[aria-label="Keys"]'), "On").disabled, true);
   assert.equal(lion.querySelector("[data-keys-note]").textContent, M.KEYS_WORDS.guest);
   await m.done();
-  // Bops Cloud without Keys yet: the line says it starts then.
+  // SmileDesk Cloud without Keys yet: the line says it starts then.
   const later = bops();
   later.info.keysScope = "not_yet";
   const n = await mount(h(S.Members, { state: base, onClose: noop, onUpgrade: noop }));
@@ -838,7 +838,7 @@ await test("Free with people included (orgo-web's numbers, never the plan's name
   const add = sectionOf(m.box, "Add someone");
   assert.equal(add.querySelector("form"), null);
   assert.equal(asideOf(m.box, "Add someone"), "5 of 5 people");
-  assert.ok(add.textContent.includes("Bops includes 5 people, and you have 5. Remove someone or cancel an invite to add someone else."), add.textContent);
+  assert.ok(add.textContent.includes("SmileDesk includes 5 people, and you have 5. Remove someone or cancel an invite to add someone else."), add.textContent);
   assert.ok(!/Free doesn't include|Pro|Max/.test(add.textContent), "never says Free adds nobody, nor names a plan to buy");
   assert.equal(add.querySelector("button"), null, "no Purchase a plan, no Upgrade to Max");
   assert.equal(asideOf(m.box, "Invited"), null, "a full plan's invites still hold their seats: they can be accepted");
@@ -924,7 +924,7 @@ await test("an Admin's sheet of a full workspace with no plan to buy: why, and n
   };
   let m = await sheet({ plan: "free_bops", used: 5, limit: 5, upgrade: null });
   const add = sectionOf(m.box, "Add someone");
-  assert.ok(add.textContent.includes("Bops includes 5 people, and you have 5."), add.textContent);
+  assert.ok(add.textContent.includes("SmileDesk includes 5 people, and you have 5."), add.textContent);
   assert.ok(!m.box.textContent.includes(M.ADMIN_SHEET_WORDS.seats), "the owner has no more seats to get");
   assert.equal(buttonOf(m.box, "Upgrade to Max"), undefined);
   await m.done();
@@ -933,7 +933,7 @@ await test("an Admin's sheet of a full workspace with no plan to buy: why, and n
   await m.done();
 });
 
-await test("an Admin's sheet while orgo-web or Bops Cloud don't let them change people: it reads only, says why, and Leave still goes", async () => {
+await test("an Admin's sheet while orgo-web or SmileDesk Cloud don't let them change people: it reads only, says why, and Leave still goes", async () => {
   const fake = bops();
   fake.info.people.push({ id: "m2", name: "Ada Admin", email: "ada@example.com", role: "admin", guest: false, access: { others: "none", bots: {} } });
   fake.info.shared = { me: "m2", can: false, line: M.ADMIN_SHEET_WORDS.notYet };

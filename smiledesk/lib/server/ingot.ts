@@ -17,14 +17,14 @@ import { bot, getState, sameState, update, watchChanges } from "./store";
  * (BOPS_INGOT_URL, https://bops.bot/api/ingot by default), each under its workspace's Orgo project
  * (Workspace.orgoProjectId), and signs each caller in with their Orgo key: the workspace's owner and
  * admins write, its members read. This Mac calls its API straight, with the user's key (`ingot` below),
- * so an app's history never needs a computer awake. A Bops computer gets only the ingot command, root's
+ * so an app's history never needs a computer awake. A SmileDesk computer gets only the ingot command, root's
  * config for it and an agent token for each workspace it works on apps for (ensureIngotCli), which its
  * working folders (readyFolder), its brains' MCP tools (INGOT_MCP), plain git (`ingot setup-git`) and
  * orgo-web's deploy runner (`ingot export`) all use. There it signs in with those tokens (design.md 19),
  * never the user's key: this Mac mints each with the user's key for that computer and workspace alone, so
  * a workspace others use works the same, and revokes it once no app of the workspace is on the computer
  * or the computer is gone. A token is for one workspace, and a computer may work for several (the user's
- * free Bops computer, which other workspaces' main bots share), so each has its own file there (TOKENS),
+ * free SmileDesk computer, which other workspaces' main bots share), so each has its own file there (TOKENS),
  * and the ingot command signs in to a repo with its workspace's. A token goes there sealed to a key the
  * computer makes for it (sealScript): orgo-web logs every command, and the computer runs each as an
  * argument of `bash -c`, so no command carries it, not even in base64.
@@ -62,7 +62,7 @@ const runnerTokens = () => process.env.BOPS_INGOT_TOKENS || "/root/.config/ingot
 export const NO_TOKEN_HERE =
   "This computer has no Ingot sign in for this workspace yet, and it can't make one with its own Orgo sign in (only the owner's account can), so nothing of the app was changed";
 
-/** The workspace's agent token on this computer, as the owner's Bops wrote it there (tokenScript), or null: a runner's own sign in to Ingot. */
+/** The workspace's agent token on this computer, as the owner's SmileDesk wrote it there (tokenScript), or null: a runner's own sign in to Ingot. */
 function runnerToken(workspace: string): string | null {
   try {
     const t = readFileSync(join(runnerTokens(), workspace), "utf8").trim();
@@ -126,7 +126,7 @@ export function stillOurs(ours: () => boolean) {
 /** An Orgo project's id as it goes in Ingot's paths (a lowercase uuid; Ingot's own rule, at most 64 characters). */
 const PROJECT = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
-/** The workspace a Bops workspace's repos are under in Ingot: its Orgo project (IngotError when it has none yet). */
+/** The workspace a SmileDesk workspace's repos are under in Ingot: its Orgo project (IngotError when it has none yet). */
 export function ingotWorkspace(wsId: string): string {
   const p = getState().workspaces?.find((w) => w.id === wsId)?.orgoProjectId?.toLowerCase();
   if (!p || p.length > 64 || !PROJECT.test(p)) throw new IngotError(NO_PROJECT);
@@ -163,7 +163,7 @@ const READY_MS = 60_000;
  */
 export function authorOf(botId: string | undefined): string {
   const b = botId ? bot(botId) : undefined;
-  const name = (b?.name ?? "Bops").replace(/[\u0000-\u001f\u007f;]+/g, " ").trim() || "Bops";
+  const name = (b?.name ?? "SmileDesk").replace(/[\u0000-\u001f\u007f;]+/g, " ").trim() || "SmileDesk";
   return `${b?.id ?? "bops"}; ${name}`;
 }
 
@@ -186,15 +186,15 @@ export function byBots(c: Pick<IngotChangeset, "author">, botIds: string[]): boo
   });
 }
 
-/* ---------------- The ingot binary, from this Bops ---------------- */
+/* ---------------- The ingot binary, from this SmileDesk ---------------- */
 
 type Arch = "amd64" | "arm64";
 
-/** Where this Bops keeps the ingot binaries for Linux: vendor/ingot (BOPS_INGOT_DIR in the packaged app). */
+/** Where this SmileDesk keeps the ingot binaries for Linux: vendor/ingot (BOPS_INGOT_DIR in the packaged app). */
 const vendorDir = () => process.env.BOPS_INGOT_DIR || join(/*turbopackIgnore: true*/ process.cwd(), "vendor/ingot");
 const binaryPath = (arch: Arch) => join(/*turbopackIgnore: true*/ vendorDir(), `ingot-linux-${arch}`);
 
-/** The vendored binary for `arch` and its sha256, or null when this Bops has none. */
+/** The vendored binary for `arch` and its sha256, or null when this SmileDesk has none. */
 function vendored(arch: Arch): { path: string; sha256: string } | null {
   const path = binaryPath(arch);
   let stamp: string;
@@ -428,7 +428,7 @@ async function tokenName(computerId: string, wsId: string, botId?: string): Prom
       .slice(0, most)
       .join("")
       .trim();
-  const who = plain(b?.name, 30) || "Bops";
+  const who = plain(b?.name, 30) || "SmileDesk";
   return `${who} on ${plain(c?.name, 60 - Array.from(who).length) || plain(computerId, 60 - Array.from(who).length)}`;
 }
 
@@ -512,7 +512,7 @@ if (!onRunner())
 /* ---------------- Setting a computer up ---------------- */
 
 /**
- * The ingot command ready on a computer for workspace `wsId`: the binary from this Bops
+ * The ingot command ready on a computer for workspace `wsId`: the binary from this SmileDesk
  * (vendor/ingot/ingot-linux-<amd64|arm64>, by uname -m) at INGOT_BIN, root's config for the central
  * server, the computer's own agent token for the workspace in its file there, and git's credential helper
  * (`ingot setup-git`). Nothing else runs there, and neither the user's key nor the token is in any command.
@@ -559,7 +559,7 @@ export async function ensureIngotCli(computerId: string, wsId: string, opts: { s
 
 /**
  * ensureIngotCli on a computer's runner, for its own computer: the ingot command and root's config made right there
- * when they aren't (this Bops has the binary, and they're the computer's own), and the workspace's token file looked
+ * when they aren't (this SmileDesk has the binary, and they're the computer's own), and the workspace's token file looked
  * for. A runner never makes a token (only the owner's account can, with its key: ingot.mintToken), so one that's
  * missing, or that Ingot turned away (`renew`), is said in plain words (NO_TOKEN_HERE), and nothing is changed.
  */
@@ -577,7 +577,7 @@ async function runnerReady(computerId: string, workspace: string, o: { signal?: 
   if (!sum || sum === "none" || !runnerToken(workspace)) throw new IngotError(NO_TOKEN_HERE);
   const has = m.get("INGOT_BIN") ?? "none";
   const bin = vendored(arch);
-  if (!bin && has === "none") throw new IngotError(`This Bops has no Ingot for the computer to run (${binaryPath(arch)} is missing), so its apps can't be set up there.`);
+  if (!bin && has === "none") throw new IngotError(`This SmileDesk has no Ingot for the computer to run (${binaryPath(arch)} is missing), so its apps can't be set up there.`);
   if (bin && has !== bin.sha256) await sendBinary(computerId, bin, () => true, o.signal);
   const config = configText();
   const newConfig = m.get("INGOT_CONFIG") !== sha256(config);
@@ -600,7 +600,7 @@ async function setUp(computerId: string, wsId: string, workspace: string, o: { s
   if (arch !== "amd64" && arch !== "arm64") throw new IngotError(`Ingot runs on Linux on amd64 or arm64, and this computer is ${arch || "something else"}.`);
   const has = m.get("INGOT_BIN") ?? "none";
   const bin = vendored(arch);
-  if (!bin && has === "none") throw new IngotError(`This Bops has no Ingot for the computer to run (${binaryPath(arch)} is missing), so its apps can't be set up there.`);
+  if (!bin && has === "none") throw new IngotError(`This SmileDesk has no Ingot for the computer to run (${binaryPath(arch)} is missing), so its apps can't be set up there.`);
   if (bin && has !== bin.sha256) {
     await sendBinary(computerId, bin, o.ours, o.signal);
     stillOurs(o.ours);
@@ -751,7 +751,7 @@ const fileOf = (v: unknown): IngotFile | null => {
     : null;
 };
 
-/** Typed calls to the central Ingot (hosted-api.md), for a Bops workspace's repos. None needs a computer. */
+/** Typed calls to the central Ingot (hosted-api.md), for a SmileDesk workspace's repos. None needs a computer. */
 export const ingot = {
   /** Every repo of the workspace, with its newest changeset on main. */
   repos: async (wsId: string, signal?: AbortSignal): Promise<IngotRepo[]> => {
@@ -801,7 +801,7 @@ export const ingot = {
     if (r.status === 404) return null;
     if (r.status !== 200 || !Array.isArray(r.json.files)) throw refusal(`Couldn't read ${name}'s files`, r);
     const files = r.json.files.map(fileOf);
-    if (files.some((f) => !f)) throw new IngotError(`Ingot listed ${name}'s files in a way this Bops doesn't know.`);
+    if (files.some((f) => !f)) throw new IngotError(`Ingot listed ${name}'s files in a way this SmileDesk doesn't know.`);
     return files as IngotFile[];
   },
   /**
@@ -869,7 +869,7 @@ export const ingot = {
   },
 };
 
-/** An agent token's id as Ingot gives it (a number), as Bops keeps it. */
+/** An agent token's id as Ingot gives it (a number), as SmileDesk keeps it. */
 const idOf = (v: unknown) => (typeof v === "number" && Number.isSafeInteger(v) && v > 0 ? String(v) : typeof v === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(v) ? v : undefined);
 
 /**

@@ -13,12 +13,12 @@ import { howIWork } from "@/cloud/style";
 import { recordCallMinutes, recordTokens, usageTags } from "./usage";
 
 /**
- * Calls to a bot's number, answered on this Mac. Every Bops number's calls go to its AgentPhone
+ * Calls to a bot's number, answered on this Mac. Every SmileDesk number's calls go to its AgentPhone
  * agent in voice mode "webhook" (phone.ts callsToAgent): AgentPhone hears the caller and sends each
- * turn to the webhook (on Bops Cloud, replayed here over the tunnel), and the text answered is what
- * it speaks. While this Mac is away, Bops Cloud answers the turns itself (cloud/voice.ts).
+ * turn to the webhook (on SmileDesk Cloud, replayed here over the tunnel), and the text answered is what
+ * it speaks. While this Mac is away, SmileDesk Cloud answers the turns itself (cloud/voice.ts).
  *
- * - **Who's calling** is Bops Cloud's to say (CallerVerdict, from bops.phone_lines: the line's owner,
+ * - **Who's calling** is SmileDesk Cloud's to say (CallerVerdict, from bops.phone_lines: the line's owner,
  *   the user's own numbers, or the first caller in a new line's 15 minutes); self-hosting, the
  *   verified numbers here. A first call that claimed the line links that phone (linkClaimed).
  * - **The owner** gets the whole bot: the prompt of a call in the app (voicePrompt, "turns"), each
@@ -29,7 +29,7 @@ import { recordCallMinutes, recordTokens, usageTags } from "./usage";
  *   about them (no name, memory, apps or work), and can't delegate. The message lands in the bot's
  *   chat with a chime.
  * - **Speed:** the prompt is built once per call, from the first turn on (the hello uses a quick one
- *   meanwhile). A turn that takes long gets a filler first ("Mm-hm, one sec.": voiceResponse, or Bops
+ *   meanwhile). A turn that takes long gets a filler first ("Mm-hm, one sec.": voiceResponse, or SmileDesk
  *   Cloud does it for a turn it replays here), except the hello: nobody has said anything to wait on.
  * - **The call** is grouped by AgentPhone's callId and ends on a hangup, on AgentPhone's call_ended
  *   event, or after 2 minutes without a turn. Then the transcript goes into the bot's chat (and, for
@@ -92,8 +92,8 @@ const callIdOf = (e: ApEvent) => {
 function quickPrompt(b: Bot) {
   const owner = ownerName();
   return [
-    `You are ${b.name}, ${b.isMain ? `${owner}'s chief of staff` : `${owner}'s ${b.role} bot`} in Bops, on a phone call with ${owner}. ${ownerLine()}`,
-    // How I work, short (the full prompt has it too): the owner's preferences, never Bops' rules.
+    `You are ${b.name}, ${b.isMain ? `${owner}'s chief of staff` : `${owner}'s ${b.role} bot`} in SmileDesk, on a phone call with ${owner}. ${ownerLine()}`,
+    // How I work, short (the full prompt has it too): the owner's preferences, never SmileDesk's rules.
     howIWork(owner, personaOf(b).text?.slice(0, MAX_PERSONA_CHARS), true, personaOf(b).by),
     "Talk like a capable teammate on a call: short, warm, natural.",
     SPEAKING,
@@ -110,7 +110,7 @@ export function strangerPrompt(b: Bot) {
     `You are ${b.name}, an AI assistant who answers this phone number for the person you work for. The caller is someone else, not that person.`,
     "Be friendly and brief. You can chat, and you can take a message for the person you work for: who it's from, what it's about, and a number or email to reach them back, if they want to give one.",
     "Never share anything about the person you work for: not their name, where they are, their plans, their contacts, their accounts, or what you're working on. Don't say whether they're around. You can't do tasks for the caller, look anything up, or put them through to anyone.",
-    "If the caller says this is their own phone and they use Bops, tell them to link it in the Bops app, on your profile.",
+    "If the caller says this is their own phone and they use SmileDesk, tell them to link it in the SmileDesk app, on your profile.",
     "When they've said their message, call take_message with it. When the call is done, call end_call with a short goodbye.",
     "Each of your replies is spoken aloud by a voice that reads your text. Write only the words to say: one or two short sentences, plain words, no markdown, lists, links, emoji or symbols.",
   ].join("\n\n");
@@ -252,7 +252,7 @@ async function strangerTurn(c: PhoneCall, b: Bot): Promise<VoiceReply> {
 
 /**
  * One turn of a call to a bot's number (AgentPhone's agent.message on channel "voice"): what the bot
- * says next. `verdict`: who's calling, as Bops Cloud decided; without one, the verified numbers here.
+ * says next. `verdict`: who's calling, as SmileDesk Cloud decided; without one, the verified numbers here.
  */
 /**
  * What a call to bot `b`'s number hears when its settings page turned it away, else null: Answers calls off (everyone,
@@ -331,7 +331,7 @@ export const callOpen = (id: string) => calls.has(id);
 
 /**
  * A call's answer as AgentPhone takes it: JSON when it's quick, else NDJSON with a filler spoken at
- * once and the answer as the final chunk (`filler` false: always JSON, for the hello). Through Bops
+ * once and the answer as the final chunk (`filler` false: always JSON, for the hello). Through SmileDesk
  * Cloud the answer goes back as JSON (the cloud does the filler); this is for AgentPhone calling this
  * Mac's webhook directly.
  */

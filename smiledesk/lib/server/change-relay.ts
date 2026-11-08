@@ -26,8 +26,8 @@ export async function relayChange(request: Request): Promise<Response | null> {
   // favorites), done here as before; elsewhere it's refused, never done on the user's own bot of that id.
   const ours = isChange(found.route, body) && !(found.route.ws ?? []).some((k) => body[k] !== open.wsId) && (!found.route.bot || open.botIds.includes(String(body[found.route.bot])));
   if (!ours) return found.route.ownCalls ? null : Response.json({ error: "Only the owner changes this.", code: "view_only" }, { status: 403 });
-  // Only from the Bops window, as every change of the owner's own is.
-  if (!fromBopsWindow(request)) return Response.json({ error: "Only from the Bops window." }, { status: 403 });
+  // Only from the SmileDesk window, as every change of the owner's own is.
+  if (!fromBopsWindow(request)) return Response.json({ error: "Only from the SmileDesk window." }, { status: 403 });
   // This workspace, as the window calls it: the owner's Mac puts its own id back.
   for (const k of found.route.ws ?? []) if (body[k] === open.wsId) body[k] = THIS_WS;
   const query: Record<string, string> = {};
@@ -36,7 +36,7 @@ export async function relayChange(request: Request): Promise<Response | null> {
   if (typeof powers === "string") return Response.json({ error: powers }, { status: 403 });
   const missing = powers.find((p: Power) => !open.can.includes(p));
   if (missing) return Response.json({ error: `The owner or an Admin can let you change ${POWER_WORDS[missing].name} in Team.` }, { status: 403 });
-  if (!open.changes) return Response.json({ error: "The owner's Bops needs an update first." }, { status: 409 });
+  if (!open.changes) return Response.json({ error: "The owner's SmileDesk needs an update first." }, { status: 409 });
   const key = `chg_${randomBytes(9).toString("base64url")}`;
   const method = request.method as "POST" | "PATCH" | "PUT" | "DELETE";
   const r = await actShared({ act: "change", method, path: url.pathname, ...(Object.keys(query).length ? { query } : {}), body }, key);

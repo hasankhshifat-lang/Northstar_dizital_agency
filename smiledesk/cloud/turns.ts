@@ -36,10 +36,10 @@ import { deliverWaitingTo, isConnected } from "./tunnel.ts";
 import { computerUseOf, list, viewerAccess, wsOfBot, type SliceViewer } from "./ws-slice.ts";
 
 /**
- * Chat through Bops Cloud (protocol.ts "Chat through Bops Cloud"). Owner: edge builder.
+ * Chat through SmileDesk Cloud (protocol.ts "Chat through SmileDesk Cloud"). Owner: edge builder.
  *
  * In a workspace switched to it (bops.chat_routing: routingOf), a message someone says in a one bot chat is written here
- * first, by Bops Cloud alone, and its answer is owed as a turn (bops.chat_turns) that the runner on the bot's computer
+ * first, by SmileDesk Cloud alone, and its answer is owed as a turn (bops.chat_turns) that the runner on the bot's computer
  * runs. A workspace nobody chose for goes there by itself once every computer its bots work on has a runner that answers,
  * and back to the owner's Mac whenever one can't (autoRoute, BOPS_CHAT_AUTO); a choice the owner or Orgo's staff made
  * stands, either way:
@@ -55,13 +55,13 @@ import { computerUseOf, list, viewerAccess, wsOfBot, type SliceViewer } from "./
  *   hour is woken only when the owner allowed it (chat_routing.allow_hourly); one that can't be woken (stopped,
  *   deleted, out of Free hours, out of AI credit) fails its turns with a note saying so.
  * - **Running it**: the runner claims a turn (only one meant for its own device, and only the oldest of its chat while
- *   none of that chat runs: one answer at a time per chat), and gets Bops Cloud's clock to stamp its answer by (a
+ *   none of that chat runs: one answer at a time per chat), and gets SmileDesk Cloud's clock to stamp its answer by (a
  *   computer's own lags after a nap). The claim checks again that the bot still works there and that a member still may.
  *   It beats every TURN_BEAT_MS (phase "tools" once it did something that can't be done twice) and says it's done,
  *   paused for an OK (no lease then) or failed. A paused turn goes on only through resume, for the request its pause
  *   named, on the runner that paused it (a beat never wakes it). Every beat, pause and resume checks the member again,
  *   so taking away their Write or Use its computer stops a turn already running. The bot's rows carry the turn's id:
- *   Bops Cloud takes them only from the device that holds or held its claim (turnRowsMayWrite), never before the
+ *   SmileDesk Cloud takes them only from the device that holds or held its claim (turnRowsMayWrite), never before the
  *   message's time.
  * - **A lost runner** (sweep): a lease that runs out before the turn did anything that can't be done twice is owed again
  *   (MAX_ATTEMPTS at most), unless its answer is already written (then it's done: never answered twice); after, the
@@ -69,7 +69,7 @@ import { computerUseOf, list, viewerAccess, wsOfBot, type SliceViewer } from "./
  *   computer didn't wake in time. A turn owed a while to a runner that listens is offered to it again.
  * - **Someone removed or their access changed** (cancelMember, from members.ts membersChanged; recheckTurns, after
  *   each of the owner's state writes): their turns that may no longer run end at once, and a runner holding one hears
- *   "turn-cancel". An honest runner writes nothing more for it, and Bops Cloud refuses its rows tagged with the turn;
+ *   "turn-cancel". An honest runner writes nothing more for it, and SmileDesk Cloud refuses its rows tagged with the turn;
  *   a runner that isn't honest (its computer's root is someone's) can still write untagged rows its bots may write.
  * - **Viewers** hear where each turn stands as a LiveTurn, and the bot "thinking" while it's owed or running, on the
  *   stream they already watch (live.ts hub, held to each member's scope). Nothing of it goes in the message's row.
@@ -158,7 +158,7 @@ const turnOf = (r: RawTurn): TurnRow => ({
 
 /* ---------------- The switch ---------------- */
 
-/** Whether workspace `wsId` of the user goes through Bops Cloud, and whether the owner lets a message wake a computer billed by the hour. */
+/** Whether workspace `wsId` of the user goes through SmileDesk Cloud, and whether the owner lets a message wake a computer billed by the hour. */
 export async function routingOf(userId: string, wsId: string, c?: pg.PoolClient): Promise<{ cloud: boolean; allowHourly: boolean }> {
   const sql = "SELECT mode, allow_hourly FROM bops.chat_routing WHERE user_id = $1 AND ws_id = $2";
   const r = c ? await c.query<{ mode: string; allow_hourly: boolean }>(sql, [userId, wsId]) : await query<{ mode: string; allow_hourly: boolean }>(sql, [userId, wsId]);
@@ -167,8 +167,8 @@ export async function routingOf(userId: string, wsId: string, c?: pg.PoolClient)
 
 /**
  * A workspace's switch as the table has it. `setBy`: "owner" or "staff" for a choice someone made, which nothing moves
- * by itself, either way; "auto" (or "auto-held") when Bops Cloud moved it (autoRoute); NULL when nobody chose (the
- * owner let Bops Cloud decide, or said only whether a message may wake a computer billed by the hour).
+ * by itself, either way; "auto" (or "auto-held") when SmileDesk Cloud moved it (autoRoute); NULL when nobody chose (the
+ * owner let SmileDesk Cloud decide, or said only whether a message may wake a computer billed by the hour).
  */
 export type RoutingRow = { mode: "mac" | "cloud"; setBy: string | null; setAt: number };
 /** Chosen by the owner, an Admin of the workspace (members.ts setRoutingAsAdmin) or Orgo's staff: never moved by itself. */
@@ -183,9 +183,9 @@ export async function routedWorkspaces(c: pg.PoolClient | null, userId: string, 
 }
 
 /**
- * Whether Bops Cloud moves the owner's workspaces to it by itself (config.chatAuto, BOPS_CHAT_AUTO): "on" for everyone,
+ * Whether SmileDesk Cloud moves the owner's workspaces to it by itself (config.chatAuto, BOPS_CHAT_AUTO): "on" for everyone,
  * a list of Orgo user ids for theirs only (a canary). Unset, "off" or "revert": never. Moving back to the Mac doesn't
- * ask this: a workspace Bops Cloud moved goes back whenever its computers can't answer, whatever it says.
+ * ask this: a workspace SmileDesk Cloud moved goes back whenever its computers can't answer, whatever it says.
  */
 export function chatAutoFor(userId: string): boolean {
   const v = config.chatAuto();
@@ -199,10 +199,10 @@ export function chatAutoFor(userId: string): boolean {
 
 /**
  * The switch as each workspace of the owner's state carries it (Workspace.chatOn, chatAuto): chatOn "cloud" while its
- * chat goes through Bops Cloud, "mac" when the owner or Orgo's staff chose the Mac, unset otherwise; chatAuto while
- * Bops Cloud may move it by itself (`on`, and nobody chose); chatAutoOff where the switch shows (chatOn) but Bops Cloud
+ * chat goes through SmileDesk Cloud, "mac" when the owner or Orgo's staff chose the Mac, unset otherwise; chatAuto while
+ * SmileDesk Cloud may move it by itself (`on`, and nobody chose); chatAutoOff where the switch shows (chatOn) but SmileDesk Cloud
  * refuses "auto" for the owner (not `on`: setRouting, 409 CHAT_AUTO_OFF), so turned off it can't be turned back on
- * there. The owner's Bops reads them: its switch in Settings (components/app/chat-switch.tsx, which says so first), and
+ * there. The owner's SmileDesk reads them: its switch in Settings (components/app/chat-switch.tsx, which says so first), and
  * whether a computer someone else can use may get a runner (lib/server/runner-install.ts sharedRunnerOk).
  */
 export function mirrorOf(row: RoutingRow | undefined, on: boolean): { chatOn?: "cloud" | "mac"; chatAuto?: true; chatAutoOff?: true } {
@@ -216,8 +216,8 @@ export function mirrorOf(row: RoutingRow | undefined, on: boolean): { chatOn?: "
 
 /**
  * The switch as the table has it, put on every workspace of the blob (mirrorOf): Workspace.chatOn, chatAuto and
- * chatAutoOff are a mirror, and a Bops from before (or a restore) that drops them would turn the owner stamp rule and the runners off
- * while members' messages still go through Bops Cloud. Returns the blob, changed or not.
+ * chatAutoOff are a mirror, and a SmileDesk from before (or a restore) that drops them would turn the owner stamp rule and the runners off
+ * while members' messages still go through SmileDesk Cloud. Returns the blob, changed or not.
  */
 export function keepChatOn(blob: Record<string, unknown>, rows: Map<string, RoutingRow>, on: boolean): Record<string, unknown> {
   const was = list(blob.workspaces);
@@ -236,8 +236,8 @@ export function keepChatOn(blob: Record<string, unknown>, rows: Map<string, Rout
 }
 
 /**
- * Under the owner's lock, after their rows changed: the mirror put right on the state (keepChatOn), written by Bops
- * Cloud when it changed, so every Bops of theirs reads it at once. The blob written, or null when nothing changed.
+ * Under the owner's lock, after their rows changed: the mirror put right on the state (keepChatOn), written by SmileDesk
+ * Cloud when it changed, so every SmileDesk of theirs reads it at once. The blob written, or null when nothing changed.
  */
 async function mirrorAfter(c: pg.PoolClient, userId: string, blob: Record<string, unknown>): Promise<Record<string, unknown> | null> {
   const next = keepChatOn(blob, await routedWorkspaces(c, userId), chatAutoFor(userId));
@@ -248,10 +248,10 @@ async function mirrorAfter(c: pg.PoolClient, userId: string, blob: Record<string
 
 /**
  * Switch a workspace (`mode`), or the owner's say on waking a computer billed by the hour (`allowHourly`), and mirror the
- * switch on the owner's state (mirrorOf), so the owner's Bops and the runner set up go by it too. Under the owner's
+ * switch on the owner's state (mirrorOf), so the owner's SmileDesk and the runner set up go by it too. Under the owner's
  * lock; every viewer hears the state changed. "cloud" and "mac" are a choice (`by`), never moved by itself after;
- * "auto" (the owner's switch turned back on) takes the choice away, so Bops Cloud moves it once its computers can
- * answer, and back while they can't (autoRoute). Where Bops Cloud doesn't move workspaces for the owner yet
+ * "auto" (the owner's switch turned back on) takes the choice away, so SmileDesk Cloud moves it once its computers can
+ * answer, and back while they can't (autoRoute). Where SmileDesk Cloud doesn't move workspaces for the owner yet
  * (chatAutoFor), "auto" is refused (409 CHAT_AUTO_OFF) and the row stays as it is: nothing checks there that the bots'
  * computers can answer, and a "cloud" chosen that way would never move back. `allowHourly` alone chooses nothing.
  */
@@ -264,7 +264,7 @@ export async function setRouting(
 ): Promise<{ cloud: boolean; allowHourly: boolean }> {
   const mode = set.mode;
   if (mode === "auto" && !chatAutoFor(userId))
-    throw new HttpError(409, "Bops Cloud can't answer this workspace by itself yet, so your Mac keeps answering it.", { code: CHAT_AUTO_OFF });
+    throw new HttpError(409, "SmileDesk Cloud can't answer this workspace by itself yet, so your Mac keeps answering it.", { code: CHAT_AUTO_OFF });
   if (mode === "cloud" && !opts.force) await newEnoughFor(userId, opts.version);
   const out = await tx(async (c) => {
     await lockUser(c, userId);
@@ -287,15 +287,15 @@ export async function setRouting(
 }
 
 /**
- * Turning a workspace's chat to Bops Cloud waits for a Bops that keeps to it (CLOUD_CHAT_MIN_VERSION): the one asking
+ * Turning a workspace's chat to SmileDesk Cloud waits for a SmileDesk that keeps to it (CLOUD_CHAT_MIN_VERSION): the one asking
  * (`version`, its own call's), and the last Mac of the account's that said (cloud_accounts.app_version: a computer's
- * runner never counts, server.ts appCheck). Bops Cloud keeps only that one, so another of the owner's Macs on an older
- * Bops isn't seen here: docs/cloud-runner.md says to update every one first. Else 409 CHAT_NEEDS_UPDATE.
+ * runner never counts, server.ts appCheck). SmileDesk Cloud keeps only that one, so another of the owner's Macs on an older
+ * SmileDesk isn't seen here: docs/cloud-runner.md says to update every one first. Else 409 CHAT_NEEDS_UPDATE.
  */
 async function newEnoughFor(userId: string, version: string | null | undefined) {
   const old = (v: string | null | undefined) => !v || olderThan(v, CLOUD_CHAT_MIN_VERSION);
   if ((version !== undefined ? old(version) : false) || (version === undefined && !(await macNewEnough(userId))))
-    throw new HttpError(409, `Update Bops to ${CLOUD_CHAT_MIN_VERSION} or newer on every Mac first.`, { code: CHAT_NEEDS_UPDATE });
+    throw new HttpError(409, `Update SmileDesk to ${CLOUD_CHAT_MIN_VERSION} or newer on every Mac first.`, { code: CHAT_NEEDS_UPDATE });
 }
 
 /** Whether the last Mac of the user's that said its version is at `min` (CLOUD_CHAT_MIN_VERSION) or newer. */
@@ -307,37 +307,37 @@ export async function macNewEnough(userId: string, min = CLOUD_CHAT_MIN_VERSION)
 /* ---------------- The switch, by itself ---------------- */
 
 /**
- * How long a workspace Bops Cloud moved back to the Mac because its computer couldn't be woken (billed by the hour and
+ * How long a workspace SmileDesk Cloud moved back to the Mac because its computer couldn't be woken (billed by the hour and
  * not let, stopped, deleted, paused, out of Free hours or credit) stays there: its runner connects again whenever the
  * computer wakes for something else, and each move would cost a message its answer.
  */
 export const AUTO_HOLD_MS = 24 * 3600_000;
 /** The wake refusals that hold a workspace on the Mac (AUTO_HOLD_MS); the rest (no runner, too late, couldn't wake) don't. */
 const HOLDING = new Set(["hourly", "stopped", "deleted", "noHours", "noCredit", "paused"]);
-/** Whether the owner lets a message wake a computer billed by the hour, on a workspace Bops Cloud moves by itself. */
+/** Whether the owner lets a message wake a computer billed by the hour, on a workspace SmileDesk Cloud moves by itself. */
 const AUTO_ALLOW_HOURLY = false;
 
-/** A Bops version (x.y.z) at CLOUD_CHAT_MIN_VERSION or newer. */
+/** A SmileDesk version (x.y.z) at CLOUD_CHAT_MIN_VERSION or newer. */
 const chatReady = (v: unknown): v is string => typeof v === "string" && /^\d{1,4}\.\d{1,4}\.\d{1,6}$/.test(v) && !olderThan(v, CLOUD_CHAT_MIN_VERSION);
 
-/** Each runner that connected since this Bops Cloud started, by "<user>\0<device>": the Bops it runs, and when. */
+/** Each runner that connected since this SmileDesk Cloud started, by "<user>\0<device>": the SmileDesk it runs, and when. */
 const proved = new Map<string, { version: string; at: number }>();
 /** The owners with one (an owner's save looks no further when none of theirs connected: nothing of theirs can move here). */
 const provedUsers = new Set<string>();
 /** When each computer last couldn't answer a turn, by "<user>\0<device>", and whether that holds it on the Mac. */
 const broken = new Map<string, { at: number; hold: boolean }>();
-/** A computer that couldn't answer (a wake refused, no runner, too late): a workspace Bops Cloud moved goes back to the Mac. */
+/** A computer that couldn't answer (a wake refused, no runner, too late): a workspace SmileDesk Cloud moved goes back to the Mac. */
 function noteBroken(userId: string, device: string, note: string) {
   broken.set(rkey(userId, device), { at: Date.now(), hold: HOLDING.has(note) });
   void autoRoute(userId);
 }
 
 export type AutoSeen = {
-  /** Bops Cloud moves the owner's workspaces to it by itself (chatAutoFor). */
+  /** SmileDesk Cloud moves the owner's workspaces to it by itself (chatAutoFor). */
   on: boolean;
   /** The owner's last Mac runs CHAT_AUTO_MIN_VERSION or newer (it has the switch, so the owner can choose the Mac again). */
   appOk: boolean;
-  /** A computer's runner connected since this Bops Cloud started: its version and when, by lowercased computer id. */
+  /** A computer's runner connected since this SmileDesk Cloud started: its version and when, by lowercased computer id. */
   proved: (desktopId: string) => { version: string; at: number } | undefined;
   /** When a computer last couldn't answer, by lowercased computer id. */
   broken: (desktopId: string) => { at: number; hold: boolean } | undefined;
@@ -346,12 +346,12 @@ export type AutoSeen = {
 export type AutoMove = { wsId: string; mode: "mac" | "cloud"; why: string; hold?: boolean };
 
 /**
- * Which of the owner's workspaces Bops Cloud moves now (none it was told: chosen). To the cloud, only with moves on for
+ * Which of the owner's workspaces SmileDesk Cloud moves now (none it was told: chosen). To the cloud, only with moves on for
  * the owner and their last Mac new enough (CHAT_AUTO_MIN_VERSION), once every computer its bots work on (computerFor: not a bot with none, or
  * set to work on the Mac) has a runner the Mac set up and saw running (AppState.runners, as the Mac writes it), at
- * CLOUD_CHAT_MIN_VERSION or newer, with its computer not found down, that connected to Bops Cloud at that version since
+ * CLOUD_CHAT_MIN_VERSION or newer, with its computer not found down, that connected to SmileDesk Cloud at that version since
  * it started and since that computer last couldn't answer; and not while one moved back for a wake refused waits
- * (AUTO_HOLD_MS). Each needn't be listening now: computers nap, and a turn wakes them. Back to the Mac, for one Bops
+ * (AUTO_HOLD_MS). Each needn't be listening now: computers nap, and a turn wakes them. Back to the Mac, for one SmileDesk
  * Cloud moved, whenever its bots have no computer any more, or one has no runner, a runner that failed or is being
  * stopped, is found down, or couldn't answer since its runner last connected; never because a runner just went quiet.
  */
@@ -405,11 +405,11 @@ export function autoMoves(blob: Record<string, unknown>, rows: Map<string, Routi
 const routing = new Map<string, { again: boolean; blob?: Record<string, unknown>; done: Promise<void> }>();
 
 /**
- * Move the owner's workspaces Bops Cloud may move, as autoMoves says (one look at a time per owner; one asked for
+ * Move the owner's workspaces SmileDesk Cloud may move, as autoMoves says (one look at a time per owner; one asked for
  * meanwhile runs after it, on what's known then: what it goes by is all kept, not passed). Asked when a runner
  * connects, when the owner's state is written (runners set up, taken down or failed, bots moved, a newer Mac), and
  * when a computer couldn't answer a turn. A move is written under the owner's lock, and only over a row nobody chose
- * (an owner's or staff's choice made a moment before stands), with the mirror on the state (every Bops hears it).
+ * (an owner's or staff's choice made a moment before stands), with the mirror on the state (every SmileDesk hears it).
  * `blob`: the owner's state as just written (their save), so the look needn't read it.
  */
 export function autoRoute(userId: string, blob?: Record<string, unknown>): Promise<void> {
@@ -440,7 +440,7 @@ async function routeOnce(userId: string, written?: Record<string, unknown>) {
   // Nothing moves here without a runner of theirs that connected since the start.
   const on = chatAutoFor(userId) && provedUsers.has(userId);
   const seenRows = await routedWorkspaces(null, userId);
-  // Nothing to move back (none Bops Cloud moved to it), and nothing moves to it: no state read.
+  // Nothing to move back (none SmileDesk Cloud moved to it), and nothing moves to it: no state read.
   const movedHere = [...seenRows.values()].some((r) => r.mode === "cloud" && !chosen(r));
   if (!on && !movedHere) return;
   // Only for an owner whose Mac has the switch: one moved here can choose the Mac again in Settings.
@@ -485,7 +485,7 @@ async function routeOnce(userId: string, written?: Record<string, unknown>) {
 type HandedBack = { members: TurnRow[]; owner: TurnRow[]; notes: string[] };
 
 /**
- * Workspaces Bops Cloud moved back to the Mac (autoRoute, revertAuto), inside that move's transaction: the turns still
+ * Workspaces SmileDesk Cloud moved back to the Mac (autoRoute, revertAuto), inside that move's transaction: the turns still
  * owed to their computers (none taken yet) go to the Mac, which answers those workspaces now. A member's ends with no
  * note, and its message, written already, is queued for the Mac to answer (a stored member act, as members.ts
  * cloudChat queues one for a workspace on the Mac), with the chat saying the Mac answers it while that Mac is away.
@@ -547,8 +547,8 @@ async function handedBack(userId: string, back: HandedBack) {
 }
 
 /**
- * BOPS_CHAT_AUTO=revert (at start): every workspace Bops Cloud moved to it goes back to the Mac, its mirror with it, so
- * every Bops of the owner's hears it at once (a change straight in the table would leave the owner's state saying
+ * BOPS_CHAT_AUTO=revert (at start): every workspace SmileDesk Cloud moved to it goes back to the Mac, its mirror with it, so
+ * every SmileDesk of the owner's hears it at once (a change straight in the table would leave the owner's state saying
  * "cloud" until their next save, and their Mac dropping members' messages meanwhile).
  */
 export async function revertAuto(): Promise<number> {
@@ -599,12 +599,12 @@ export const ownerOf = (blob: Record<string, unknown>) => {
   return typeof o === "string" && o.trim() ? o.trim() : "The owner";
 };
 
-/** The notes Bops Cloud writes in the chat, in plain words every viewer reads. */
+/** The notes SmileDesk Cloud writes in the chat, in plain words every viewer reads. */
 export const NOTES = {
   noUse: noUseNote,
-  onMac: (owner: string, bot: string) => `${bot} works on ${owner}'s Mac, so ${bot} will answer once ${owner} opens Bops.`,
-  onMacGroup: (owner: string) => `${owner}'s Mac answers in this group, so the bots will answer once ${owner} opens Bops.`,
-  onMacNow: (owner: string, bot: string) => `${owner}'s Mac answers ${bot} for now, so ${bot} will answer once ${owner} opens Bops.`,
+  onMac: (owner: string, bot: string) => `${bot} works on ${owner}'s Mac, so ${bot} will answer once ${owner} opens SmileDesk.`,
+  onMacGroup: (owner: string) => `${owner}'s Mac answers in this group, so the bots will answer once ${owner} opens SmileDesk.`,
+  onMacNow: (owner: string, bot: string) => `${owner}'s Mac answers ${bot} for now, so ${bot} will answer once ${owner} opens SmileDesk.`,
   stopped: (owner: string, bot: string) => `${bot}'s computer is stopped, so ${bot} can't answer this. ${owner} can start it again.`,
   deleted: (_owner: string, bot: string) => `${bot}'s computer was deleted, so ${bot} can't answer this.`,
   noHours: (_owner: string, bot: string) => `${bot}'s computer is out of Free hours for today, so ${bot} can't answer this.`,
@@ -616,13 +616,13 @@ export const NOTES = {
   late: (_owner: string, bot: string) => `${bot}'s computer didn't wake up in time. Send it again to try once more.`,
   midway: (_owner: string, bot: string) => `${bot} stopped partway through this answer. Send it again to try once more.`,
   moved: (_owner: string, bot: string) => `${bot} moved to another computer before it could answer. Send it again.`,
-  // The owner's own message, owed to the computer when Bops Cloud moved the workspace back to the Mac (handBack).
+  // The owner's own message, owed to the computer when SmileDesk Cloud moved the workspace back to the Mac (handBack).
   toMac: (owner: string, bot: string) => `${owner}'s Mac answers ${bot} for now, and ${bot} hadn't started on this yet. Send it again.`,
-  noRunner: (owner: string, bot: string) => `${bot}'s computer is on, but it can't answer chats yet. ${owner} needs to open the updated Bops once to set it up.`,
+  noRunner: (owner: string, bot: string) => `${bot}'s computer is on, but it can't answer chats yet. ${owner} needs to open the updated SmileDesk once to set it up.`,
   gone: (owner: string, bot: string) => `${owner} changed who can use ${bot}, so ${bot} stopped this answer.`,
 };
 
-/** A note from Bops in the chat about a message (role system, its bot named so a member who sees the bot sees it), right after it. */
+/** A note from SmileDesk in the chat about a message (role system, its bot named so a member who sees the bot sees it), right after it. */
 const noteRow = (t: { messageId: string; chatId: string; botId: string; humanAt: number }, text: string) => ({
   id: `${t.messageId}_note`,
   chatId: t.chatId,
@@ -643,7 +643,7 @@ export type Taken = { message: Record<string, unknown>; turn: TurnRow | null; fr
  * `needComputer`, a bot with no computer is CHAT_NOT_IN_CLOUD (the owner's Mac answers its own). A message already
  * written by that key is answered as it is, with its turn. A bot with no computer is "mac" (the owner's Mac answers
  * it), and with `macAway` the chat says so meanwhile. `byRow`: a bot's computer answers only while the workspace goes
- * through Bops Cloud as its row says under the lock (else it's "mac", or CHAT_NOT_IN_CLOUD with `needComputer`), so a
+ * through SmileDesk Cloud as its row says under the lock (else it's "mac", or CHAT_NOT_IN_CLOUD with `needComputer`), so a
  * move of it a moment before (autoRoute, under the same lock) is never missed.
  */
 export async function takeMessage(o: {
@@ -676,7 +676,7 @@ export async function takeMessage(o: {
     // A group's answer stays the owner's Mac's for now (one answerer per group: later).
     const own = group ? null : computerFor(blob, botId);
     const desktop = own && o.byRow && !(await routingOf(o.account, wsId, c)).cloud ? null : own;
-    if (o.needComputer && !desktop) throw new HttpError(409, "This chat's bot has no computer: your Bops answers it.", { code: CHAT_NOT_IN_CLOUD });
+    if (o.needComputer && !desktop) throw new HttpError(409, "This chat's bot has no computer: your SmileDesk answers it.", { code: CHAT_NOT_IN_CLOUD });
     // A reply to a reply joins the conversation it started from (chat.ts handleMessage).
     let root: string | undefined;
     if (o.replyTo) {
@@ -684,7 +684,7 @@ export async function takeMessage(o: {
       if (r?.json) root = typeof r.json.replyTo === "string" ? r.json.replyTo : o.replyTo;
     }
     const at = Date.now();
-    // Said without Use its computer: marked on their stamp (which only Bops Cloud writes), so a turn that reads the chat
+    // Said without Use its computer: marked on their stamp (which only SmileDesk Cloud writes), so a turn that reads the chat
     // later (the owner's, or someone's who may) takes their words as something said, never as what to do.
     const member = o.member ? { userId: o.member.userId, ...(o.member.email ? { email: o.member.email } : {}), name: o.member.name, ref: o.member.ref, ...(mayUse ? {} : { noUse: true }) } : undefined;
     const message: Record<string, unknown> = { id: o.id, chatId: o.chatId, role: "user", text: o.text, at, ...(root ? { replyTo: root } : {}), ...(o.files?.length ? { files: o.files } : {}), ...(member ? { member } : {}) };
@@ -922,7 +922,7 @@ async function endWaiting(userId: string, device: string, note: Exclude<keyof ty
     [userId, device, note],
   );
   await ended(r.rows.map(turnOf));
-  // A workspace Bops Cloud moved here goes back to the Mac (autoMoves): its computer can't answer now.
+  // A workspace SmileDesk Cloud moved here goes back to the Mac (autoMoves): its computer can't answer now.
   noteBroken(userId, device, note);
 }
 
@@ -1002,7 +1002,7 @@ const runnerLive: Route = {
     // A wake waiting for it carries on now, and what it's owed goes to it.
     for (const w of [...(waiters.get(k) ?? [])]) w();
     for (const t of await owedTo(userId, c.device)) if (!done) stream.write("turn", await eventOf(t));
-    // Its workspace may go through Bops Cloud now (after what it's owed went out: never in their way).
+    // Its workspace may go through SmileDesk Cloud now (after what it's owed went out: never in their way).
     if (!done) void autoRoute(userId);
   },
 };
@@ -1181,7 +1181,7 @@ async function finish(user: CloudUser, id: string, body: unknown) {
        WHERE user_id = $1 AND id = $2 RETURNING ${COLS}`,
       [user.id, id, state, approvalId, PAUSED_MS / 1000, note],
     );
-    // Its tapback on the message: a person's row is Bops Cloud's to write, never a computer's.
+    // Its tapback on the message: a person's row is SmileDesk Cloud's to write, never a computer's.
     if (react && state !== "paused") {
       const m = (await db.query<{ json: Record<string, unknown> | null }>("SELECT json FROM bops.chat_messages WHERE user_id = $1 AND id = $2", [user.id, raw.message_id])).rows[0]?.json;
       if (m) {
@@ -1238,9 +1238,9 @@ const sentChat = (pathname: string): string | undefined => {
 };
 
 /**
- * POST /v1/chats/<chatId>/send (ChatSendBody): the owner's Bops says something in a one bot chat of a workspace whose
- * chat goes through Bops Cloud, and the bot's computer answers it (the owner always may). CHAT_NOT_IN_CLOUD for any
- * other chat: their Bops answers it as before.
+ * POST /v1/chats/<chatId>/send (ChatSendBody): the owner's SmileDesk says something in a one bot chat of a workspace whose
+ * chat goes through SmileDesk Cloud, and the bot's computer answers it (the owner always may). CHAT_NOT_IN_CLOUD for any
+ * other chat: their SmileDesk answers it as before.
  */
 const send: Route = {
   method: "POST",
@@ -1256,7 +1256,7 @@ const send: Route = {
     const replyTo = body?.replyTo;
     if (typeof key !== "string" || !ACT_KEY.test(key) || !text || text.length > MEMBER_MAX_TEXT || (replyTo !== undefined && replyTo !== null && (typeof replyTo !== "string" || replyTo.length > 120)))
       throw new HttpError(400, "Send {key, text, replyTo?}");
-    const notHere = () => new HttpError(409, "This chat doesn't go through Bops Cloud.", { code: CHAT_NOT_IN_CLOUD });
+    const notHere = () => new HttpError(409, "This chat doesn't go through SmileDesk Cloud.", { code: CHAT_NOT_IN_CLOUD });
     const blob = ((await loadState(user!.id))?.state ?? {}) as Record<string, unknown>;
     const ws = wsOfChat(blob, chatId);
     if (!ws || !(await routingOf(user!.id, ws)).cloud) throw notHere();
@@ -1290,9 +1290,9 @@ function routingSet(b: Record<string, unknown> | null): { mode?: "mac" | "cloud"
 }
 
 /**
- * GET and POST /v1/chat-routing: the owner's Bops reads (?ws=) and sets one of their workspaces' switch, and whether a
+ * GET and POST /v1/chat-routing: the owner's SmileDesk reads (?ws=) and sets one of their workspaces' switch, and whether a
  * message may wake a computer billed by the hour. Turning it on matters only once the bots' computers run a runner that
- * listens for turns (the owner's Mac opens the updated Bops once to set those up: docs/cloud-runner.md).
+ * listens for turns (the owner's Mac opens the updated SmileDesk once to set those up: docs/cloud-runner.md).
  */
 const ownRouting: Route = {
   method: "POST",
@@ -1332,7 +1332,7 @@ const staffRouting: Route = {
       b = JSON.parse(raw.toString("utf8")) as Record<string, unknown>;
     } catch {}
     if (typeof b?.userId !== "string" || !USER_ID.test(b.userId) || typeof b.wsId !== "string" || !WS_ID.test(b.wsId)) throw new HttpError(400, "Send {userId, wsId, mode?, allowHourly?, force?}");
-    // `force`: staff who checked every Mac of the owner's themselves (Bops Cloud knows only the newest's version).
+    // `force`: staff who checked every Mac of the owner's themselves (SmileDesk Cloud knows only the newest's version).
     sendJson(res, 200, { ok: true, ...(await setRouting(b.userId, b.wsId, routingSet(b), "staff", { force: b.force === true })) });
   },
 };
@@ -1445,7 +1445,7 @@ export async function sweepTurns() {
   for (const t of late.rows.map(turnOf))
     if (t.note) {
       failed.push(t);
-      // Its computer didn't wake in time: a workspace Bops Cloud moved here goes back to the Mac (autoMoves). Not when
+      // Its computer didn't wake in time: a workspace SmileDesk Cloud moved here goes back to the Mac (autoMoves). Not when
       // its runner listens: then it waited behind a longer answer in its chat (one at a time), and the computer is fine.
       if (!runnerOn(t.userId, t.targetDevice)) noteBroken(t.userId, t.targetDevice, t.note);
     } else shown(t, "done");

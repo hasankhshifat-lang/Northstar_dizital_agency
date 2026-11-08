@@ -13,7 +13,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
-// A file store, loaded at once and always ready (lib/server/persist.ts); the Mac app's ways (Bops Cloud's AI
+// A file store, loaded at once and always ready (lib/server/persist.ts); the Mac app's ways (SmileDesk Cloud's AI
 // credit, cloud.ts cloudOn) once it's loaded, below.
 process.env.BOPS_SELF_HOSTED = "1";
 for (const k of ["ORGO_API_KEY", "BOPS_ORGO_WORKSPACE", "BOPS_ORGO_TEMPLATE", "BOPS_DATABASE_URL", "AGENTMAIL_API_KEY", "BOPS_MAIL_DOMAIN", "OPENAI_API_KEY", "TAILSCALE_AUTH_KEY"]) delete process.env[k];
@@ -79,7 +79,7 @@ for (const level of ["log", "info", "warn", "error"]) {
 const C = await import(`${root}/lib/credit-topup.ts`);
 const R = await import(`${root}/app/api/account/credit/route.ts`);
 const L = await import(`${root}/lib/server/plan.ts`);
-// Loaded: now it's the Mac app, whose AI credit is Bops Cloud's.
+// Loaded: now it's the Mac app, whose AI credit is SmileDesk Cloud's.
 delete process.env.BOPS_SELF_HOSTED;
 
 const noDashes = (text) => assert.ok(!/[–—]/.test(text), `no dashes: ${text}`);
@@ -119,11 +119,11 @@ assert.deepEqual(C.topUpFrom(r.status, r.body), { off: true });
 assert.equal(calls.at(-1).path, "/api/bops/credit/card-on-file");
 assert.equal(calls.at(-1).headers.authorization, `Bearer ${KEY}`, "asked with the user's own key");
 // One that says so (a database without the top-ups migration).
-replies = { "GET /api/bops/credit/card-on-file": () => json(503, { code: "bops_credit_off", error: "Buying Bops AI credit isn't available yet." }) };
+replies = { "GET /api/bops/credit/card-on-file": () => json(503, { code: "bops_credit_off", error: "Buying SmileDesk AI credit isn't available yet." }) };
 r = await get();
 assert.deepEqual(r, { status: 200, body: { off: true } });
 assert.equal(C.topUpFrom(r.status, r.body).off, true);
-// Self-hosted: no Bops Cloud credit to add to, and Orgo isn't asked.
+// Self-hosted: no SmileDesk Cloud credit to add to, and Orgo isn't asked.
 process.env.BOPS_SELF_HOSTED = "1";
 n = calls.length;
 assert.deepEqual(await get(), { status: 200, body: { off: true } });
@@ -283,7 +283,7 @@ for (const [status, body, kind, extra] of [
   if (kind === "open") assert.equal(step.purchase.key, purchase.key);
 }
 // Orgo stopped selling credit meanwhile, or never had the route: off, nothing charged.
-onCard(() => json(503, { code: "bops_credit_off", error: "Buying Bops AI credit isn't available yet." }));
+onCard(() => json(503, { code: "bops_credit_off", error: "Buying SmileDesk AI credit isn't available yet." }));
 r = await buy(5000);
 assert.deepEqual(C.afterAnswer(purchase, C.topUpNext(r.status, r.body)), { kind: "off" });
 replies = {};
@@ -355,7 +355,7 @@ for (const t of [null, undefined, { used_seconds: 1 }, { used_seconds: 1, limit_
 // (the UTC day, Nov 1, in any time zone: west of UTC the hours are back the evening before).
 const PI = await import(`${root}/lib/plan-includes.ts`);
 assert.deepEqual(PI.freeHoursWords(time), {
-  note: "Free includes 10 hours a month on your Bops computer. It sleeps when nothing's using it, so only the time it works counts. Your hours start over Nov 1.",
+  note: "Free includes 10 hours a month on your SmileDesk computer. It sleeps when nothing's using it, so only the time it works counts. Your hours start over Nov 1.",
   amount: "2 of 10 hours used",
   label: "Computer time this month",
 });
@@ -369,7 +369,7 @@ for (const usedSeconds of [35_821, 35_999]) {
 }
 const allUsed = { ...time, usedSeconds: 36_060 };
 assert.deepEqual(PI.freeHoursWords(allUsed), {
-  note: "Your Bops computer has used its 10 hours this month. It's back Nov 1, or upgrade to Pro to keep it on.",
+  note: "Your SmileDesk computer has used its 10 hours this month. It's back Nov 1, or upgrade to Pro to keep it on.",
   amount: "10 of 10 hours used",
   label: "Computer time this month",
 });
@@ -385,13 +385,13 @@ replies = {
 const weekly = (await L.readBopsPlan(KEY)).computerTime;
 assert.deepEqual(weekly, { ...time, resetsAt: Date.parse("2026-10-12T00:00:00.000Z") });
 assert.deepEqual(PI.freeHoursWords(weekly), {
-  note: "Your Bops computer sleeps when nothing's using it, so only the time it works counts. Your hours start over Oct 12.",
+  note: "Your SmileDesk computer sleeps when nothing's using it, so only the time it works counts. Your hours start over Oct 12.",
   amount: "2 of 10 hours used",
   label: "Computer time",
 });
 const weeklyUsed = { ...weekly, usedSeconds: 36_000 };
 assert.deepEqual(PI.freeHoursWords(weeklyUsed), {
-  note: "Your Bops computer has used its 10 hours. It's back Oct 12, or upgrade to Pro to keep it on.",
+  note: "Your SmileDesk computer has used its 10 hours. It's back Oct 12, or upgrade to Pro to keep it on.",
   amount: "10 of 10 hours used",
   label: "Computer time",
 });
@@ -402,15 +402,15 @@ for (const w of [PI.freeHoursWords(time), PI.freeHoursWords(allUsed), PI.freeHou
 const FH = await import(`${root}/lib/server/free-hours.ts`);
 const O = await import(`${root}/lib/server/orgo.ts`);
 const S = await import(`${root}/lib/server/store.ts`);
-const usedUp = "Your free Bops computer has used its 10 hours this month. It's back on November 1, or upgrade to Pro to keep it on.";
-const usedUpWeek = "Your free Bops computer has used its 10 hours this week. It's back Monday, Oct 12, or upgrade to Pro to keep it on.";
+const usedUp = "Your free SmileDesk computer has used its 10 hours this month. It's back on November 1, or upgrade to Pro to keep it on.";
+const usedUpWeek = "Your free SmileDesk computer has used its 10 hours this week. It's back Monday, Oct 12, or upgrade to Pro to keep it on.";
 assert.equal(FH.freeHoursUsed(new O.OrgoError("x", 402, "bops_free_hours", usedUp)), usedUp);
 for (const said of [usedUp, usedUpWeek]) assert.equal(FH.freeHoursUsed(new O.OrgoError("x", 402, undefined, said)), said, "by its words when the code didn't come");
 assert.equal(FH.freeHoursUsed(new O.OrgoError("x", 402, "upgrade_required", "Your plan does not include running computers.")), undefined);
 assert.equal(FH.freeHoursUsed(new O.OrgoError("x", 402, undefined, "Your plan does not include running computers.")), undefined);
 assert.equal(FH.freeHoursUsed(new Error(usedUp)), undefined);
 noDashes(usedUp);
-// Bops says the computer is in use: once for the sign-in (Orgo then knows this app says so), then only while a task
+// SmileDesk says the computer is in use: once for the sign-in (Orgo then knows this app says so), then only while a task
 // works on a computer in the cloud or the user drives one of its screens.
 replies = { "POST /api/bops/computer/active": () => json(200, { ok: true }) };
 const beats = () => calls.filter((c) => c.method === "POST" && c.path === "/api/bops/computer/active");

@@ -21,7 +21,7 @@ export type AiOp =
   | { op: "remove"; agentId: string }
   | { op: "default"; agentId: string };
 
-const soonWords = (kind: AgentKind, pays?: AgentPays) => `Soon: ${(pays && PAYS_SOON[kind]?.[pays]) ?? AGENTS[kind].soon ?? `${AGENTS[kind].name} isn't in Bops yet.`}`;
+const soonWords = (kind: AgentKind, pays?: AgentPays) => `Soon: ${(pays && PAYS_SOON[kind]?.[pays]) ?? AGENTS[kind].soon ?? `${AGENTS[kind].name} isn't in SmileDesk yet.`}`;
 
 /**
  * The account for an agent of `kind` paying with `pays` in the bot's workspace: the one there is that the bot's other
@@ -57,7 +57,7 @@ export function setBotAi(botId: string, o: AiOp, out: { added?: string } = {}): 
   };
   const cliOk = (kind: AgentKind, pays?: AgentPays) => {
     if (kind === "bops") return;
-    if (!BRAINS_ON) throw new BrainError("This version of Bops runs Bops agent only.", 404);
+    if (!BRAINS_ON) throw new BrainError("This version of SmileDesk runs SmileDesk agent only.", 404);
     if (AGENTS[kind].soon || !agentOn(kind)) throw new BrainError(soonWords(kind), 400);
     if (pays && !paysOk(kind, pays)) throw new BrainError(PAYS_SOON[kind]?.[pays] ? soonWords(kind, pays) : `${AGENTS[kind].name} doesn't run that way.`, 400);
   };
@@ -68,7 +68,7 @@ export function setBotAi(botId: string, o: AiOp, out: { added?: string } = {}): 
   const takenBy = (kind: AgentKind, but?: BotAgent) => new Set(agents.filter((y) => y !== but && y.kind === kind).map((y) => y.account));
   switch (o.op) {
     case "add": {
-      if (o.kind === "bops") throw new BrainError("Bops agent is always there.", 400);
+      if (o.kind === "bops") throw new BrainError("SmileDesk agent is always there.", 400);
       cliOk(o.kind, o.pays);
       modelCheck(o.kind, o.model);
       if (agents.length >= MAX_AGENTS) throw new BrainError(`A bot runs at most ${MAX_AGENTS} agents.`, 400);
@@ -83,7 +83,7 @@ export function setBotAi(botId: string, o: AiOp, out: { added?: string } = {}): 
       const x = find(o.agentId);
       if (o.pays !== undefined && o.pays !== x.pays) {
         cliOk(x.kind, o.pays);
-        if (x.kind === "bops") throw new BrainError("Bops agent runs on your credit.", 400);
+        if (x.kind === "bops") throw new BrainError("SmileDesk agent runs on your credit.", 400);
         // Another way to pay: its model and account start over (the old account's model may not be the new one's).
         x.pays = o.pays;
         delete x.model;
@@ -111,7 +111,7 @@ export function setBotAi(botId: string, o: AiOp, out: { added?: string } = {}): 
     }
     case "remove": {
       const x = find(o.agentId);
-      if (x.kind === "bops") throw new BrainError("Bops agent is always there: it is chat's agent and every thread's fallback.", 400);
+      if (x.kind === "bops") throw new BrainError("SmileDesk agent is always there: it is chat's agent and every thread's fallback.", 400);
       agents.splice(agents.indexOf(x), 1);
       if (def === x.id) def = "bops";
       break;
@@ -131,7 +131,7 @@ export function setBotAi(botId: string, o: AiOp, out: { added?: string } = {}): 
     if (!c) return;
     if (next) c.ai = next;
     else delete c.ai;
-    // For older Bops: its brain is the Default's account, and each brain's bots those with an agent on it.
+    // For older SmileDesk: its brain is the Default's account, and each brain's bots those with an agent on it.
     const d = next?.agents.find((x) => x.id === next.default);
     if (d && isCli(d.kind) && d.account) c.brain = d.account;
     else delete c.brain;
@@ -147,7 +147,7 @@ export function setBotAi(botId: string, o: AiOp, out: { added?: string } = {}): 
 /**
  * A bot's profile changed (setBotAi, or Settings' accounts: brains.ts): what ran on an agent that went, or that's on
  * another account or way to pay now, stops at once (`stop`: brains.ts stops its own, brainLeft), and the bot's
- * folders on its computer follow it (letGo). `after` undefined: back to no profile, today's Bops agent.
+ * folders on its computer follow it (letGo). `after` undefined: back to no profile, today's SmileDesk agent.
  */
 export function aiChanged(botId: string, before: BotAi, after: BotAi | undefined, stop = true) {
   const changed = before.agents.filter((x) => {
@@ -162,7 +162,7 @@ export function aiChanged(botId: string, before: BotAi, after: BotAi | undefined
  * them closes (a thread open in a terminal isn't running, so it isn't among those that stop), then on its computer
  * those agents' folders and gates go (or the whole bot's, back to the default), and every other agent of the bot
  * gets its wrappers again from its profile now (bops-brain rebin), so a Claude plan it doesn't run anymore leaves
- * its Bops agent's commands and its other threads at once. Best effort: a computer that's asleep or gone has
+ * its SmileDesk agent's commands and its other threads at once. Best effort: a computer that's asleep or gone has
  * nothing more running on them, and its next start writes fresh settings.
  */
 async function letGo(botId: string, agentIds: string[], all: boolean, stop: boolean) {

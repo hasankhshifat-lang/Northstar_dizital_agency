@@ -42,7 +42,7 @@ export async function computerBriefing(botId: string, opts: { thread?: string; s
   // A thread, as this bot says it: itself, one of its own, or another bot's.
   const whose = (owner: string, id: string, title: string) =>
     owner === botId ? (opts.thread === id ? "this thread (you)" : `your thread "${title}"`) : named(owner) ? `${bot(owner)?.name ?? "another bot"}'s thread "${title}"` : "another bot's task";
-  // What's open on each screen, read from its browser (quick, and only where Bops can reach it).
+  // What's open on each screen, read from its browser (quick, and only where SmileDesk can reach it).
   const pages = await screenPages(b);
   const pageText = (i: number) => {
     const p = pages[i];
@@ -129,7 +129,7 @@ async function macBriefing(botId: string) {
   const watched = (state.watches ?? []).filter((w) => w.mac);
   const ago = (t?: number) => (t ? `${Math.max(1, Math.round((Date.now() - t) / 60_000))} min ago` : "not yet");
   const watching = watched.length
-    ? `Windows watched on ${owner}'s Mac (${watched.length}; Bops reads each when it changes, and ${bot(watched[0].botId)?.name ?? "the main bot"} gives the heads-up): ${watched
+    ? `Windows watched on ${owner}'s Mac (${watched.length}; SmileDesk reads each when it changes, and ${bot(watched[0].botId)?.name ?? "the main bot"} gives the heads-up): ${watched
         .map((w) => `"${w.mac!.title}" in ${w.mac!.app}, for ${w.lookFor}, last read ${ago(w.readAt)}${w.away ? ", paused: the window shows something else right now" : ""}${w.alert ? `, waiting for ${owner}: "${w.alert.text}"` : ""}`)
         .join("; ")}.`
     : `No windows on ${owner}'s Mac are being watched.`;

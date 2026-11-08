@@ -17,14 +17,14 @@ export const DELETED_OPTIONS: readonly DeletedDays[] = [0, 7, 30];
 
 export const isKeepDays = (v: unknown): v is KeepDays => v === null || v === 30 || v === 90 || v === 365;
 export const isDeletedDays = (v: unknown): v is DeletedDays => v === 0 || v === 7 || v === 30;
-/** The longest this Bops keeps what the user deletes: what a deletedDays it doesn't know is read as. */
+/** The longest this SmileDesk keeps what the user deletes: what a deletedDays it doesn't know is read as. */
 export const DELETED_LONGEST: DeletedDays = 30;
 
 /**
  * The user's choices with what an unset one means: chats kept until the user deletes them, and what they
- * delete gone at once, as before there was a choice. One this Bops doesn't know (a newer Bops offers more, or
+ * delete gone at once, as before there was a choice. One this SmileDesk doesn't know (a newer SmileDesk offers more, or
  * it was written by hand) is read as what keeps the most of the user's things, never as what deletes them:
- * chats kept until the user deletes them, and what they delete kept the longest this Bops offers (30 days),
+ * chats kept until the user deletes them, and what they delete kept the longest this SmileDesk offers (30 days),
  * so a Mac not updated yet never sweeps or purges by a choice the user didn't make.
  */
 export function privacyOf(state: Pick<AppState, "privacy"> | null | undefined): { keepDays: KeepDays; deletedDays: DeletedDays } {
@@ -161,7 +161,7 @@ export function clearPlan(state: Pick<AppState, "messages" | "sessions" | "appAp
 }
 
 /**
- * What Delete now takes, as Settings says before it asks: the messages and threads (from Bops Cloud and every
+ * What Delete now takes, as Settings says before it asks: the messages and threads (from SmileDesk Cloud and every
  * Mac); for every bot, this Mac's own too, as the sweep's: its files (images, pages, last screens) older than the
  * cutoff that no message left shows, and the lines of its call notes and model choices older than it.
  */
@@ -177,7 +177,7 @@ export type DeletedItem = { id: string; kind: "message" | "thread" | "chat" | "m
 export type PrivacyInfo = {
   keepDays: KeepDays;
   deletedDays: DeletedDays;
-  /** Chat messages in every workspace, as Bops Cloud keeps them for every Mac of the user's. */
+  /** Chat messages in every workspace, as SmileDesk Cloud keeps them for every Mac of the user's. */
   messages: number;
   /** This Mac's own: images in chats, pages bots made, call notes, last screens, bots' browser profiles, the router's notes. */
   here: { uploads: HereCount; pages: HereCount; calls: HereCount; frames: HereCount; chrome: HereCount; routes: HereCount };
@@ -195,7 +195,7 @@ export type PrivacyInfo = {
 };
 
 /**
- * What a shorter keep deletes now: messages and threads from Bops Cloud and every Mac; from this Mac, its
+ * What a shorter keep deletes now: messages and threads from SmileDesk Cloud and every Mac; from this Mac, its
  * files (images, pages, last screens), the lines of its call notes and model choices, and the copies in its
  * Recently deleted that go whole or in part. Each Mac sweeps its own files the same way at its next check.
  */
@@ -223,23 +223,23 @@ const ageOf = (keepDays: KeepDays) => `older than ${keepDays === 365 ? "a year" 
 
 /**
  * What a shorter keep deletes now, as Settings asks before it saves: the messages and threads from
- * everywhere, this Mac's own from this Mac. With `goes` null (Bops couldn't say), it still asks, in general.
+ * everywhere, this Mac's own from this Mac. With `goes` null (SmileDesk couldn't say), it still asks, in general.
  */
 export function goesLine(keepDays: KeepDays, goes: KeepGoes | null) {
   const age = ageOf(keepDays);
-  if (!goes) return `Bops couldn't check what this deletes now. Everything ${age} goes from Bops Cloud and all your Macs. It can't be undone.`;
+  if (!goes) return `SmileDesk couldn't check what this deletes now. Everything ${age} goes from SmileDesk Cloud and all your Macs. It can't be undone.`;
   const all = listed([goes.messages ? many(goes.messages, "message") : "", goes.threads ? many(goes.threads, "thread") : ""].filter(Boolean));
   const mine = listed(
     [goes.files ? many(goes.files, "file") : "", goes.lines ? many(goes.lines, "line of notes", "lines of notes") : "", goes.copies ? `${many(goes.copies, "copy", "copies")} in Recently deleted` : ""].filter(Boolean),
   );
-  const everywhere = all ? `${all} ${age} from Bops Cloud and all your Macs` : "";
+  const everywhere = all ? `${all} ${age} from SmileDesk Cloud and all your Macs` : "";
   const here = mine ? `${mine}${all ? "" : ` ${age}`} from this Mac` : "";
   return `This deletes ${everywhere}${everywhere && here ? ", and " : ""}${here}. It can't be undone.`;
 }
 
 /**
  * What fewer days for what the user deletes takes, as Settings asks before it saves: this Mac's copies now,
- * and the other Macs' at their next check (copies stay on the Mac they were made on). With `goes` null (Bops
+ * and the other Macs' at their next check (copies stay on the Mac they were made on). With `goes` null (SmileDesk
  * couldn't say how many), it still asks.
  */
 export function deletedGoesLine(deletedDays: DeletedDays, goes: DeletedGoes | null) {
@@ -256,16 +256,16 @@ export function deletedGoesLine(deletedDays: DeletedDays, goes: DeletedGoes | nu
  * What Delete now takes, as Settings asks before it goes (`bot`: the name of the bot it's for): the messages and
  * threads from everywhere, this Mac's own from this Mac; whether they can come back from Recently deleted
  * (`deletedDays`), which this Mac's files and notes never can; and that Knowledge keeps what it learned. With
- * `goes` null (Bops couldn't say), it still asks, in general.
+ * `goes` null (SmileDesk couldn't say), it still asks, in general.
  */
 export function clearLine(goes: ClearGoes | null, deletedDays: DeletedDays, bot?: string) {
   const knowledge = " Knowledge keeps what it learned from them.";
-  if (!goes) return `Bops couldn't check what this deletes. It deletes ${bot ? `${bot}'s messages and threads` : "your messages and threads"} from Bops Cloud and all your Macs.${knowledge}`;
+  if (!goes) return `SmileDesk couldn't check what this deletes. It deletes ${bot ? `${bot}'s messages and threads` : "your messages and threads"} from SmileDesk Cloud and all your Macs.${knowledge}`;
   const age = goes.olderThan === null ? "" : ` ${ageOf(goes.olderThan)}`;
   const all = listed([goes.messages ? many(goes.messages, "message") : "", goes.threads ? many(goes.threads, "thread") : ""].filter(Boolean));
   const mine = listed([goes.files ? many(goes.files, "file") : "", goes.lines ? many(goes.lines, "line of notes", "lines of notes") : ""].filter(Boolean));
   if (!all && !mine) return `${bot ? `${bot} has nothing` : "There's nothing"}${age} to delete.`;
-  const everywhere = all ? `${bot ? `${bot}'s ` : ""}${all}${age} from Bops Cloud and all your Macs` : "";
+  const everywhere = all ? `${bot ? `${bot}'s ` : ""}${all}${age} from SmileDesk Cloud and all your Macs` : "";
   const here = mine ? `${mine}${all ? "" : age} from this Mac` : "";
   const back = !all
     ? " It can't be undone."

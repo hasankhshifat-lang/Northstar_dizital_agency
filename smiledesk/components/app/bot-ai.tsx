@@ -50,11 +50,11 @@ async function change(botId: string, body: Record<string, unknown>): Promise<{ e
     const j = (await res.json().catch(() => ({}))) as { error?: string; added?: string };
     return res.ok ? { error: null, ...(j.added ? { added: j.added } : {}) } : { error: undash(j.error ?? "That didn't change. Try again.") };
   } catch {
-    return { error: "Couldn't reach Bops. Try again." };
+    return { error: "Couldn't reach SmileDesk. Try again." };
   }
 }
 
-/** The agent a thread runs on, for its mark: the CLI that ran it, else the one it was given, else Bops agent. */
+/** The agent a thread runs on, for its mark: the CLI that ran it, else the one it was given, else SmileDesk agent. */
 export function threadKind(s: Pick<Session, "agent" | "brainRun" | "onBopsAgent" | "agentSessionId" | "responseId">): AgentKind {
   const r = threadRunner(s);
   if (r && r !== "agent") return r;
@@ -63,7 +63,7 @@ export function threadKind(s: Pick<Session, "agent" | "brainRun" | "onBopsAgent"
 }
 
 /**
- * The agent a thread runs on, in words: "Claude Code · Opus 5.5", and how it pays ("your Max plan", "Bops AI credit"),
+ * The agent a thread runs on, in words: "Claude Code · Opus 5.5", and how it pays ("your Max plan", "SmileDesk AI credit"),
  * when its bot's profile still has it; beside another of its kind on the bot, what tells them apart ("your Max plan 2").
  */
 export function threadAgentWords(s: Session, b: Bot | undefined, state: AppState): { label: string; pays?: string } {
@@ -470,7 +470,7 @@ function SharedWarning({ bot: b, words, ro }: { bot: Bot; words: string; ro: boo
       setError(res.ok ? null : undash(j.error ?? "That didn't change. Try again."));
       if (res.ok) setAsking(false);
     } catch {
-      setError("Couldn't reach Bops. Try again.");
+      setError("Couldn't reach SmileDesk. Try again.");
     }
     setBusy(false);
   };
@@ -632,7 +632,7 @@ export function BotAiSection({
                     if (res.ok && j.botId && typeof j.display === "number") onShowScreen(j.botId, j.display);
                     else setError(undash(j.error ?? "Its terminal didn't open. Try again."));
                   } catch {
-                    setError("Couldn't reach Bops. Try again.");
+                    setError("Couldn't reach SmileDesk. Try again.");
                   }
                   setTermBusy(false);
                 }}
@@ -650,7 +650,7 @@ export function BotAiSection({
           {shared && <SharedWarning bot={b} words={shared} ro={ro || workBot(b, state.bots).id === b.id} />}
           <span className={quiet}>
             {BRAINS_ON ? `Each thread runs on the agent you pick, with ${b.name}'s own accounts. Chat, memory and calls stay on credit.` : "Chat, threads, memory and calls run on credit."}
-            {BRAINS_ON && where === "some" ? " Threads on your Mac use Bops agent." : ""}
+            {BRAINS_ON && where === "some" ? " Threads on your Mac use SmileDesk agent." : ""}
           </span>
           {ro && (
             <span className={quiet}>

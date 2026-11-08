@@ -1,5 +1,5 @@
 /**
- * Who may call Bops' API. The server answers on every address the Mac has, but only the app on this
+ * Who may call SmileDesk's API. The server answers on every address the Mac has, but only the app on this
  * Mac may drive it: anyone else on the same wifi could otherwise sign it out and back in to their own
  * Orgo account, and any web page in the user's browser could post to it.
  *
@@ -12,7 +12,7 @@
  * same network. That needs the server bound to loopback, and then another way in for the tailnet
  * paths above.
  *
- * On the Mac app, only the Bops window may use the API, reads included: desktop/main.cjs gives this
+ * On the Mac app, only the SmileDesk window may use the API, reads included: desktop/main.cjs gives this
  * server a token (BOPS_UI_TOKEN) and the window an httpOnly cookie with it, so every request must carry
  * it (lib/server/ui-token.ts). A page that reached this server some other way (a bot's Chrome on this
  * Mac, after a redirect) has the same origin but not the cookie, so it can neither act nor read (a bot
@@ -29,7 +29,7 @@
 
 const LOOPBACK = new Set(["localhost", "127.0.0.1", "[::1]"]);
 const TAILNET_PATHS = new Set(["/api/apps/call", "/api/phone/agentphone", "/api/phone/openai", "/api/channels/slack/events"]);
-/** Handed over by Bops Cloud's tunnel (lib/server/cloud-tunnel.ts), which proves itself with its own token. */
+/** Handed over by SmileDesk Cloud's tunnel (lib/server/cloud-tunnel.ts), which proves itself with its own token. */
 const TUNNEL_PATHS = new Set(["/api/cloud/event"]);
 const READS = new Set(["GET", "HEAD"]);
 /**
@@ -81,6 +81,6 @@ export function refused(request: Request): Response | null {
   const path = new URL(request.url).pathname;
   const method = request.method.toUpperCase();
   const open = TAILNET_PATHS.has(path) || TUNNEL_PATHS.has(path) || method === "OPTIONS" || (READS.has(method) && OPEN_READS(path));
-  if (token && !open && !fromWindow(request, token)) return Response.json({ error: "Only the Bops app can do that." }, { status: 403 });
+  if (token && !open && !fromWindow(request, token)) return Response.json({ error: "Only the SmileDesk app can do that." }, { status: 403 });
   return null;
 }

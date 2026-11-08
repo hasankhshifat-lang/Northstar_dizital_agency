@@ -1,6 +1,6 @@
 // Tests for a task's fast steps over a WebSocket (lib/server/responses-ws.ts, computer-task.ts): a step
 // is a `response.create` and its answer the finished response; a step OpenAI turns down throws with its
-// status (a busy tier falls back), Bops Cloud's credit refusals as its own errors; a socket that won't
+// status (a busy tier falls back), SmileDesk Cloud's credit refusals as its own errors; a socket that won't
 // open or drops mid-step throws a TransportError (the step goes over HTTP); a step that hangs times out,
 // and Stop stops it. Then a real turn: its Ultrafast step turned down, the same socket carries it on Fast,
 // and the socket closes with the turn; a socket that's refused leaves the step to HTTP. Self-hosted, with
@@ -123,7 +123,7 @@ assert.deepEqual(connections[0].creates[0], { type: "response.create", model: "g
 onCreate = (e, ws) => ws.send(JSON.stringify({ type: "response.incomplete", response: { ...response("resp_b", []), status: "incomplete" } }));
 assert.equal((await socket.create({ model: "m" }, { timeoutMs: 5000 })).status, "incomplete");
 
-// Turned down: a busy tier (its status, so it falls back), a failed response, and Bops Cloud's credit refusals as its errors.
+// Turned down: a busy tier (its status, so it falls back), a failed response, and SmileDesk Cloud's credit refusals as its errors.
 onCreate = (e, ws) => ws.send(JSON.stringify({ type: "error", status: 429, error: { type: "rate_limit_error", code: "rate_limit_exceeded", message: "Rate limit reached for ultrafast" } }));
 let err = await socket.create({ model: "m" }, { timeoutMs: 5000 }).catch((e) => e);
 assert.deepEqual([err.status, err.message, err instanceof W.TransportError], [429, "Rate limit reached for ultrafast", false]);
@@ -133,7 +133,7 @@ onCreate = (e, ws) => ws.send(JSON.stringify({ type: "response.failed", response
 assert.equal((await socket.create({ model: "m" }, { timeoutMs: 5000 }).catch((e) => e)).message, "server_error");
 onCreate = (e, ws) => ws.send(JSON.stringify({ type: "error", status: 402, error: { type: "invalid_request_error", code: "ai_credit_empty", message: "Out of AI credit" } }));
 err = await socket.create({ model: "m" }, { timeoutMs: 5000 }).catch((e) => e);
-assert.ok(err instanceof CloudError && err.status === 402 && err.code === "ai_credit_empty", "Bops Cloud's credit refusal");
+assert.ok(err instanceof CloudError && err.status === 402 && err.code === "ai_credit_empty", "SmileDesk Cloud's credit refusal");
 assert.equal(outOfCredits(err), true, "read as AI credit used up, as a POST's 402 is");
 // One step at a time; the socket still works after a refusal.
 onCreate = (e, ws) => setTimeout(() => ws.send(JSON.stringify({ type: "response.completed", response: response("resp_c", []) })), 50);

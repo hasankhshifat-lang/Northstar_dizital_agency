@@ -1,4 +1,4 @@
-// Tests for reading public web pages safely: lib/server/safe-fetch.ts (which addresses Bops will open at
+// Tests for reading public web pages safely: lib/server/safe-fetch.ts (which addresses SmileDesk will open at
 // all, the lookup and the pinned connection, redirects, the byte cap, the clock, the kinds of file it
 // reads, compression and charsets) and lib/server/web-page.ts (readPage for a bot's web_fetch,
 // pageLines and htmlLines for page monitors). The pages come from a fixture server on 127.0.0.1 with a
@@ -320,7 +320,7 @@ await part("The fixture is refused unless BOPS_FETCH_ALLOW names it", async () =
     assert.equal(got.truncated, false);
     assert.equal(got.url, at("/plain"));
   });
-  await check("never for Bops itself, the relay or DevTools", () => {
+  await check("never for SmileDesk itself, the relay or DevTools", () => {
     process.env.BOPS_FETCH_ALLOW = "127.0.0.1:3210,127.0.0.1:8897,127.0.0.1:9200,127.0.0.1:9222,127.0.0.1:9399,localhost:3210";
     for (const url of ["http://127.0.0.1:3210/api/health", "http://127.0.0.1:8897/", "http://127.0.0.1:9200/json/list", "http://127.0.0.1:9222/json/new", "http://127.0.0.1:9399/", "http://localhost:3210/"]) assert.throws(() => checkUrl(url), FetchRefused, url);
   });
@@ -328,10 +328,10 @@ await part("The fixture is refused unless BOPS_FETCH_ALLOW names it", async () =
     allow();
     await refused(() => safeFetch(`http://u:p@127.0.0.1:${port}/plain`), /password/);
   });
-  await check("the request says it's Bops", async () => {
+  await check("the request says it's SmileDesk", async () => {
     allow();
     const echo = JSON.parse((await safeFetch(at("/echo?x=1#frag"))).body);
-    assert.match(echo.ua, /^Bops\/\S+ \(\+https:\/\/bops\.bot\)$/);
+    assert.match(echo.ua, /^SmileDesk\/\S+ \(\+https:\/\/bops\.bot\)$/);
     assert.equal(echo.path, "/echo?x=1");
     assert.match(echo.accept, /text\/html/);
   });
@@ -393,7 +393,7 @@ await part("Redirects", async () => {
   });
   await check("a 6th is too many", async () => {
     const e = await failure(() => safeFetch(at("/chain/6")));
-    assert.equal(e.message, "That page sent Bops through too many redirects.");
+    assert.equal(e.message, "That page sent SmileDesk through too many redirects.");
   });
 });
 
@@ -424,7 +424,7 @@ await part("This Mac's own networks, and redirects to a bare address", async () 
       dns.table.set("site.test", [{ address: "127.0.0.1", family: 4 }]);
       allow(`site.test:${port}`);
       const e = await refused(() => safeFetch(`http://site.test:${port}/redirect?to=${encodeURIComponent("http://73.12.34.56/admin")}`));
-      assert.equal(e.message, "That page redirected to a bare network address, so Bops won't follow it.");
+      assert.equal(e.message, "That page redirected to a bare network address, so SmileDesk won't follow it.");
     });
     await check("the networks are read fresh each time (the Mac moved)", () => {
       globalThis.__webTestInterfaces = () => ({});

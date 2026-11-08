@@ -11,10 +11,10 @@ export const dynamic = "force-dynamic";
 /**
  * GET ?ws= : every domain the workspace bought through Orgo, with its renewal and what its names serve, and
  * whether one can be bought here. It carries who the user registered their last one to (their own address
- * and phone): the Bops window only.
+ * and phone): the SmileDesk window only.
  */
 export async function GET(request: Request) {
-  const gate = domainsGate(request, "Domains can only be seen in the Bops app.");
+  const gate = domainsGate(request, "Domains can only be seen in the SmileDesk app.");
   if (gate) return gate;
   try {
     return Response.json(await workspaceDomains(wsFrom(new URL(request.url).searchParams.get("ws"))));
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
  * field?, price?, renewal?, years?, available?, topUp? }).
  */
 export async function POST(request: Request) {
-  const gate = domainsGate(request, "Domains can only be bought in the Bops app.");
+  const gate = domainsGate(request, "Domains can only be bought in the SmileDesk app.");
   if (gate) return gate;
   const b = await askedOf(request);
   try {

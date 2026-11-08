@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
  * OPENAI_WEBHOOK_SECRET; anything else is turned away. `live.transport.incoming`: someone is calling
  * a bot's number (lib/server/phone.ts answers it).
  *
- * Signed in with Orgo, OpenAI delivers to Bops Cloud instead, which checks the signature and replays
+ * Signed in with Orgo, OpenAI delivers to SmileDesk Cloud instead, which checks the signature and replays
  * the delivery here over its tunnel, with the token only this server knows
  * (lib/server/cloud-tunnel.ts): that request counts as checked, and so does who's calling, which the
  * cloud decided (CLOUD_CALLER_HEADER). Dormant while numbers send calls to their agents instead.
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   }
   // Every verified event is logged (.data/phone-calls.jsonl), so a call that arrives as some other event type shows up.
   logWebhook(event.type, (event as { data?: { session_id?: string; call_id?: string } }).data?.session_id ?? (event as { data?: { call_id?: string } }).data?.call_id);
-  // Through Bops Cloud, who's calling is the cloud's to say (bops.phone_lines), as for AgentPhone's deliveries.
+  // Through SmileDesk Cloud, who's calling is the cloud's to say (bops.phone_lines), as for AgentPhone's deliveries.
   const verdict = tunnel ? verdictOf(request.headers.get(CLOUD_CALLER_HEADER)) : undefined;
   if (event.type === "live.transport.incoming") void incomingCall(event, verdict).catch((e: Error) => console.warn(`[phone] ${e.message}`));
   return Response.json({ ok: true });

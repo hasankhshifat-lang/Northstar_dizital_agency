@@ -10,21 +10,21 @@ import { runInTurn, type TurnContext } from "./turn-context";
 
 /**
  * Chat answered on a bot's computer (cloud/turns.ts, the "chat" loop of a runner: persist.ts RUNNER_LOOPS). In a
- * workspace whose chat goes through Bops Cloud, every message is written there first and its answer owed to the runner
- * on the bot's computer. This runner listens for its own (GET /v1/runner/live, while it's up; Bops Cloud wakes the
+ * workspace whose chat goes through SmileDesk Cloud, every message is written there first and its answer owed to the runner
+ * on the bot's computer. This runner listens for its own (GET /v1/runner/live, while it's up; SmileDesk Cloud wakes the
  * computer when nobody listens), and for each turn:
  *
- * 1. makes sure it's on its own computer (runner.ts checkIdentity: a copy never answers), then claims it (Bops Cloud gives
+ * 1. makes sure it's on its own computer (runner.ts checkIdentity: a copy never answers), then claims it (SmileDesk Cloud gives
  *    it only to this computer's device, one at a time per chat, and checks again that a member still may);
- * 2. reads the state until it has the message (Bops Cloud wrote it, never this runner);
+ * 2. reads the state until it has the message (SmileDesk Cloud wrote it, never this runner);
  * 3. runs the same turn the Mac would (chat.ts answerMessage) in the turn's context (turn-context.ts): its rows carry the
- *    turn and Bops Cloud's clock, and the first thing it does that can't be done twice is said at once, so a runner that
+ *    turn and SmileDesk Cloud's clock, and the first thing it does that can't be done twice is said at once, so a runner that
  *    goes quiet after that never has it run again;
- * 4. beats every TURN_BEAT_MS while it runs (a 409 means Bops Cloud took it back: it stops and writes nothing more),
- *    then, once any beat on the way has landed, says it's done (with its tapback on the message, which Bops Cloud
- *    writes), or paused for an OK (sent again when Bops Cloud didn't answer: a lost done would have it answered again).
+ * 4. beats every TURN_BEAT_MS while it runs (a 409 means SmileDesk Cloud took it back: it stops and writes nothing more),
+ *    then, once any beat on the way has landed, says it's done (with its tapback on the message, which SmileDesk Cloud
+ *    writes), or paused for an OK (sent again when SmileDesk Cloud didn't answer: a lost done would have it answered again).
  *    The OK request carries the turn's id (AskResume.cloudTurn), so when the answer comes the turn goes on only as
- *    itself, through Bops Cloud (resumeAsTurn): one it ended meanwhile (its member's access taken away, past its day)
+ *    itself, through SmileDesk Cloud (resumeAsTurn): one it ended meanwhile (its member's access taken away, past its day)
  *    never runs, on this runner or after a restart or an upgrade.
  *
  * "turn-cancel" (its member removed or their access changed, its lease lost) stops a turn where it is. "state" reads
@@ -34,11 +34,11 @@ import { runInTurn, type TurnContext } from "./turn-context";
 
 const RECONNECT_MIN_MS = 2_000;
 const RECONNECT_MAX_MS = 60_000;
-/** Bops Cloud says something every 15 seconds: quiet longer than this, the stream is dead. */
+/** SmileDesk Cloud says something every 15 seconds: quiet longer than this, the stream is dead. */
 const SILENT_MS = 45_000;
 /** How many times it reads the state for a message it doesn't have yet. */
 const READS_FOR_MESSAGE = 5;
-/** How many times a call that must land (claim, done, resume) is sent when Bops Cloud doesn't answer, and the waits between. */
+/** How many times a call that must land (claim, done, resume) is sent when SmileDesk Cloud doesn't answer, and the waits between. */
 const TRIES = 3;
 const RETRY_MS = [1_000, 4_000];
 
@@ -65,7 +65,7 @@ const box: Box = (g.__bopsRunnerChat ??= { running: new Map() });
 const answerOf = async () => box.answer ?? (await import("./chat")).answerMessage;
 const identityOf = async () => box.identity ?? (await import("./runner")).checkIdentity;
 
-/** A call to Bops Cloud as this computer: the answer's status and body (status 0 when it didn't answer). */
+/** A call to SmileDesk Cloud as this computer: the answer's status and body (status 0 when it didn't answer). */
 async function post<T>(path: string, body: unknown): Promise<{ status: number; body: T | null }> {
   try {
     const res = await cloudFetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
@@ -75,7 +75,7 @@ async function post<T>(path: string, body: unknown): Promise<{ status: number; b
   }
 }
 
-/** The same call until Bops Cloud answers it (status 0, or a 5xx), TRIES at most: a lost done or pause would have the turn owed again. */
+/** The same call until SmileDesk Cloud answers it (status 0, or a 5xx), TRIES at most: a lost done or pause would have the turn owed again. */
 async function postSure<T>(path: string, body: unknown): Promise<{ status: number; body: T | null }> {
   let r = await post<T>(path, body);
   for (let i = 1; i < TRIES && (r.status === 0 || r.status >= 500); i++) {
@@ -170,7 +170,7 @@ function onBlock(live: Live, block: string) {
   }
 }
 
-/** Bops Cloud took a turn back: it stops where it is, and writes nothing more. Let go at once, so the turn offered again is taken up. */
+/** SmileDesk Cloud took a turn back: it stops where it is, and writes nothing more. Let go at once, so the turn offered again is taken up. */
 function cancel(id: string) {
   const t = box.running.get(id);
   if (t) t.cancelled = true;
@@ -178,7 +178,7 @@ function cancel(id: string) {
 }
 
 /**
- * What a member's turn tells the bot of who's talking (Message.member), and their role as Bops Cloud found it taking
+ * What a member's turn tells the bot of who's talking (Message.member), and their role as SmileDesk Cloud found it taking
  * their words (TurnMember.role: an Admin's turn has every bot and Your Apps at Write, chat.ts TurnOptions.member).
  */
 const saidBy = (m: TurnMember | undefined): MemberTurn | undefined =>
@@ -191,8 +191,8 @@ const HOLD_STALE_MS = 5 * 60_000;
 
 /**
  * `run` with this reply marked on its computer (RUNNER_TURNS_DIR), from before it's claimed until after its end is said
- * to Bops Cloud, so an upgrade of this runner waits for all of it. `held`: an upgrade holds this runner (RUNNER_HOLD,
- * set under 5 minutes ago), so a new reply isn't started (Bops Cloud gives it again); a resume goes on all the same.
+ * to SmileDesk Cloud, so an upgrade of this runner waits for all of it. `held`: an upgrade holds this runner (RUNNER_HOLD,
+ * set under 5 minutes ago), so a new reply isn't started (SmileDesk Cloud gives it again); a resume goes on all the same.
  * The mark is made before the hold is looked at, so an upgrade never misses a reply that starts as it holds. Best
  * effort: a mark that can't be made never stops a reply.
  */
@@ -204,7 +204,7 @@ async function whileMarked<T>(id: string, run: () => Promise<T>, held?: () => T)
     await mkdir(turnsDir(), { recursive: true }).then(() => writeFile(mark, ""), () => {});
     if (held && (await holding())) return held();
     // A resume (its OK already taken out, so it can't be given again later) waits for the hold to go: its mark stops
-    // an upgrade that hasn't swapped yet, and one that has restarts this runner (Bops Cloud keeps the turn paused).
+    // an upgrade that hasn't swapped yet, and one that has restarts this runner (SmileDesk Cloud keeps the turn paused).
     if (!held) for (const end = Date.now() + HOLD_STALE_MS; (await holding()) && Date.now() < end; ) await new Promise((r) => setTimeout(r, box.holdPollMs ?? 1_000));
     return await run();
   } finally {
@@ -268,19 +268,19 @@ function askOf(ctx: TurnContext): AppApproval | undefined {
     .sort((a, b) => (b.at ?? 0) - (a.at ?? 0))[0];
 }
 
-/** One turn Bops Cloud owes this computer: claimed, read, answered, ended (see above). */
+/** One turn SmileDesk Cloud owes this computer: claimed, read, answered, ended (see above). */
 export async function answerTurn(ev: RunnerTurnEvent) {
   if (box.running.has(ev.id) || !stateReady()) return;
-  // A copy of this computer never answers (it leaves); no answer from its VMM or Orgo: not now (Bops Cloud gives it again).
+  // A copy of this computer never answers (it leaves); no answer from its VMM or Orgo: not now (SmileDesk Cloud gives it again).
   if ((await (await identityOf())()) !== "same") return;
   await whileMarked(ev.id, () => claimAndAnswer(ev), () => undefined);
 }
 
 async function claimAndAnswer(ev: RunnerTurnEvent) {
-  // (A claim Bops Cloud didn't answer is sent again: a second for one it took is 409 "taken" by this runner, and the
+  // (A claim SmileDesk Cloud didn't answer is sent again: a second for one it took is 409 "taken" by this runner, and the
   // sweep owes it again once its lease runs out.)
   const r = await postSure<RunnerClaim>(`/v1/runner/turns/${encodeURIComponent(ev.id)}/claim`, {});
-  // Taken, another of its chat first, or over: Bops Cloud sends it again when it's this one's turn.
+  // Taken, another of its chat first, or over: SmileDesk Cloud sends it again when it's this one's turn.
   if (r.status !== 200 || !r.body?.turn) return;
   const t = r.body.turn;
   const offsetMs = r.body.now - Date.now();
@@ -297,7 +297,7 @@ async function claimAndAnswer(ev: RunnerTurnEvent) {
 
 /**
  * A chat turn that paused for an OK goes on from the answer (chat.ts resumeChat, through permission.ts settleAsks). One
- * asked on a turn Bops Cloud owed (AskResume.cloudTurn) goes on only as that turn, once Bops Cloud says it may
+ * asked on a turn SmileDesk Cloud owed (AskResume.cloudTurn) goes on only as that turn, once SmileDesk Cloud says it may
  * (RunnerResume: still paused on this request, on this runner, its member still may), beating and ending as one. Any
  * other answer (it ended the turn meanwhile, or never answered) and nothing runs: the approved action never happens
  * outside its turn. One not asked on such a turn (from before this build) goes on as it is.

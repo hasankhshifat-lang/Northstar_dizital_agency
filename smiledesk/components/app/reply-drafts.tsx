@@ -38,7 +38,7 @@ export function ReplyDrafts({ message: m, state, className = "" }: { message: Me
 function DraftCard({ messageId, draft: d, readOnly, from }: { messageId: string; draft: ReplyDraft; readOnly: boolean; from?: AppAccount }) {
   const [text, setText] = useState(() => edits.get(d.id) ?? d.sent?.text ?? d.text);
   const [busy, setBusy] = useState(false);
-  // What the server answered that the state doesn't say (the reply gone, Bops not reached).
+  // What the server answered that the state doesn't say (the reply gone, SmileDesk not reached).
   const [answered, setAnswered] = useState<string>();
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
@@ -68,7 +68,7 @@ function DraftCard({ messageId, draft: d, readOnly, from }: { messageId: string;
       // Being sent, or sent already (a second click, another window): the card shows that from the state.
       else if (res.status !== 409) setAnswered(((await res.json().catch(() => null)) as { error?: string } | null)?.error ?? "It didn't send.");
     } catch {
-      setAnswered("Bops couldn't be reached. Try again.");
+      setAnswered("SmileDesk couldn't be reached. Try again.");
     }
     setBusy(false);
   };

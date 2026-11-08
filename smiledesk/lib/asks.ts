@@ -2,7 +2,7 @@ import { BRAINS_ON, live, workspaceOf, type AppState, type Session } from "@/lib
 
 /**
  * What a thread needs from the user, the same for the app and the server: one rule decides the
- * "Needs you" cards pinned over a chat's composer, the chime, and the text Bops sends when nobody
+ * "Needs you" cards pinned over a chat's composer, the chime, and the text SmileDesk sends when nobody
  * answers (sessions.ts textIfUnanswered).
  */
 
@@ -18,7 +18,7 @@ export function needsYou(s: Session) {
   if (s.askWhere && live(s)) return true;
   if (repliedSince(s)) return false;
   // Its brain waits on them (Session.brainRun), in a build without brains (BRAINS_ON): there's nothing to do
-  // about it here, and a reply carries it on with Bops agent.
+  // about it here, and a reply carries it on with SmileDesk agent.
   if (!BRAINS_ON && s.brainRun?.waits && !live(s)) return false;
   if (live(s)) return !!s.blocker;
   if (s.status === "done") return !!s.blocker || (s.waitingOnYou ?? (s.answer ?? "").trim().endsWith("?"));
@@ -30,7 +30,7 @@ export function needsYou(s: Session) {
 /**
  * The owner replied in the thread after the bot last said something there: what it asked them is answered. Their own
  * reply only, never what a bot passed on from someone else (`from`: a computer's runner may add one). In a shared
- * workspace, never the viewer's own reply still on its way (ThreadReply.memberSend): it answers once the owner's Bops
+ * workspace, never the viewer's own reply still on its way (ThreadReply.memberSend): it answers once the owner's SmileDesk
  * has it, and one that didn't go answers nothing, so the card stays (saying how it stands: NeedsYouCard).
  */
 export function repliedSince(s: Session) {
@@ -52,7 +52,7 @@ export function askKind(s: Session): AskKind {
   return "question";
 }
 
-/** How long a question waits unanswered before Bops texts the user about it. Tests shorten it. */
+/** How long a question waits unanswered before SmileDesk texts the user about it. Tests shorten it. */
 export const askTiming = { textAfterMs: 5 * 60_000 };
 
 /**

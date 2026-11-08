@@ -1,7 +1,7 @@
 /**
- * Reading a page in a browser, for the Bops server (lib/server/web-render.ts): a page that draws itself
+ * Reading a page in a browser, for the SmileDesk server (lib/server/web-render.ts): a page that draws itself
  * with JavaScript, or one behind a "checking your browser" wall, shows no text to a plain fetch. The
- * server asks here, over a socket only this user can open (in Bops' Application Support folder, with the
+ * server asks here, over a socket only this user can open (in SmileDesk's Application Support folder, with the
  * window's token), and this opens the page in a hidden window and hands back its visible text, title
  * and links.
  *
@@ -9,7 +9,7 @@
  * cookies, no sign ins, nothing kept; it's cleared after every page), never shown. Every request it
  * makes goes through the guard the server opens for that page (lib/server/render-guard.ts: public
  * addresses only, checked and pinned like a plain fetch), this Mac's own addresses included, and before
- * that this refuses any address that isn't http(s) or ws(s) (file: and the like), and Bops' own ports.
+ * that this refuses any address that isn't http(s) or ws(s) (file: and the like), and SmileDesk's own ports.
  * No downloads, no new windows, no permissions (camera, microphone, notifications, location, devices),
  * no plugins, no Node, the page sandboxed and isolated, sound off, no client certificate, no sign in
  * prompts. One page at a time, 20 seconds at most each, and the window is always destroyed.
@@ -31,7 +31,7 @@ const MAX_LINKS = 2_000;
 const MAX_WAITING = 8;
 /** The session the hidden windows use: no "persist:" prefix, so it lives in memory only. */
 const PARTITION = "bops-render";
-/** Ports no rendered page may reach, whatever the server allows for tests: Bops itself, the relay, DevTools. */
+/** Ports no rendered page may reach, whatever the server allows for tests: SmileDesk itself, the relay, DevTools. */
 const neverPort = (port) => port === 3210 || port === 8897 || (port >= 9200 && port <= 9399);
 /** Addresses a page may ask for at all (the guard checks where they lead). data: and blob: never leave the page. */
 const SCHEMES = new Set(["http:", "https:", "ws:", "wss:", "data:", "blob:", "about:"]);
@@ -88,7 +88,7 @@ function renderSession() {
   });
   s.setSpellCheckerEnabled(false);
   // A plain Chrome's user agent (this is Chromium): "Electron" and the app's name in it are what bot walls look for.
-  s.setUserAgent(s.getUserAgent().replace(/\s(?:Electron|Bops|bops)\/\S+/g, ""));
+  s.setUserAgent(s.getUserAgent().replace(/\s(?:Electron|SmileDesk|bops)\/\S+/g, ""));
   s.webRequest.onBeforeRequest((details, callback) => {
     let u;
     try {

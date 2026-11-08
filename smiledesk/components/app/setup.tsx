@@ -9,7 +9,7 @@ import { post } from "./ui";
 import { UpdateSettings } from "./update-notice";
 
 /*
- * Everything Bops needs on this Mac, in one place: Settings → This Mac. It never stands in the way: signing in
+ * Everything SmileDesk needs on this Mac, in one place: Settings → This Mac. It never stands in the way: signing in
  * goes straight to the app, and the account menu (sidebar.tsx) shows a badge while something here still
  * needs the user and they haven't skipped it, and opens Settings there (a page, never a sheet over the app).
  *
@@ -18,9 +18,9 @@ import { UpdateSettings } from "./update-notice";
  * - Routing through this Mac: bots' computers reach the internet through this Mac (app/api/relay).
  *   It's on by default wherever Orgo offers it, so the card shows it on; turning it off sticks.
  *
- * When something's off, the account menu offers Restart Bops (restart.tsx), as the Screen recording card does.
+ * When something's off, the account menu offers Restart SmileDesk (restart.tsx), as the Screen recording card does.
  *
- * - Full access (Settings → This Mac only): bots' tasks on this Mac run outside Bops'
+ * - Full access (Settings → This Mac only): bots' tasks on this Mac run outside SmileDesk's
  *   sandbox, with a shell, the user's files and apps (MacState.fullAccess). Off until the user turns it on.
  *
  * The user's mobile isn't asked for here: it becomes theirs when they call or text their bot's number
@@ -36,7 +36,7 @@ type Permissions = {
   status(ids?: PermId[]): Promise<Partial<Record<PermId, PermStatus>>>;
   request(id: PermId): Promise<PermStatus>;
   openSettings(id: PermId): Promise<void>;
-  /** Full access's apps, each with its Automation answer (null until Bops can read them). Older Mac apps don't have it. */
+  /** Full access's apps, each with its Automation answer (null until SmileDesk can read them). Older Mac apps don't have it. */
   automationApps?(): Promise<ScriptedApp[] | null>;
 };
 type Bridge = { permissions?: Permissions; screenNeedsRestart?: () => Promise<boolean> };
@@ -49,12 +49,12 @@ export type SetupItem = "screen" | "microphone" | "notifications" | "relay";
 type Item = SetupItem;
 const ITEMS: Item[] = ["screen", "microphone", "notifications", "relay"];
 
-/** The OS permissions setup asks for. Accessibility isn't one: Bops itself never drives other apps. */
+/** The OS permissions setup asks for. Accessibility isn't one: SmileDesk itself never drives other apps. */
 const ASKED: PermId[] = ["microphone", "notifications", "screen"];
 
 /**
  * Runs `fn` now, whenever the window comes back (from System Settings, say), and every `every` ms while
- * it's in front (0: only then). A grant made in System Settings means leaving Bops, so coming back covers it.
+ * it's in front (0: only then). A grant made in System Settings means leaving SmileDesk, so coming back covers it.
  */
 function useWhileOpen(fn: () => void, every = 3000) {
   const ref = useRef(fn);
@@ -76,7 +76,7 @@ function useWhileOpen(fn: () => void, every = 3000) {
   }, [every]);
 }
 
-/** This Mac's permissions for Bops (`ids`, else all of them), read live, and whether Screen Recording waits on a restart. */
+/** This Mac's permissions for SmileDesk (`ids`, else all of them), read live, and whether Screen Recording waits on a restart. */
 function usePermissions(every: number, ids?: PermId[]) {
   const inApp = useMacApp();
   const [status, setStatus] = useState<Partial<Record<PermId, PermStatus>> | null>(null);
@@ -253,7 +253,7 @@ const ICONS = {
 };
 
 const COPY: Record<"screen" | "microphone" | "notifications", { title: string; line: string }> = {
-  screen: { title: "Screen recording", line: "See your Mac live in Bops, and watch bots work on it." },
+  screen: { title: "Screen recording", line: "See your Mac live in SmileDesk, and watch bots work on it." },
   microphone: { title: "Microphone", line: "Talk to your bots on a call." },
   notifications: { title: "Notifications", line: "Hear from bots when something needs you." },
 };
@@ -264,14 +264,14 @@ function PermissionCard({ id, items }: { id: "screen" | "microphone" | "notifica
   const s = perms.status?.[id];
   const copy = COPY[id];
   if (!perms.inApp)
-    return <Card icon={ICONS[id]} title={copy.title} line={copy.line} tone="none" status="Needs the Bops app for Mac" />;
+    return <Card icon={ICONS[id]} title={copy.title} line={copy.line} tone="none" status="Needs the SmileDesk app for Mac" />;
   if (!s) return <Card icon={ICONS[id]} title={copy.title} line={copy.line} tone="none" status="Checking" />;
-  // Screen Recording turned on while Bops was open: macOS applies it on the next launch.
+  // Screen Recording turned on while SmileDesk was open: macOS applies it on the next launch.
   const restart = id === "screen" && (perms.restart || (s !== "granted" && sentToSettings.has("screen")));
   const status =
     s === "granted"
       ? id === "screen" && perms.restart
-        ? "Allowed. Restart Bops to use it"
+        ? "Allowed. Restart SmileDesk to use it"
         : "Allowed"
       : s === "restricted"
         ? id === "notifications"
@@ -279,7 +279,7 @@ function PermissionCard({ id, items }: { id: "screen" | "microphone" | "notifica
           : "Blocked by your Mac's settings or admin"
         : s === "denied"
           ? restart
-            ? "Turn on Bops in System Settings, then restart Bops"
+            ? "Turn on SmileDesk in System Settings, then restart SmileDesk"
             : "Off. Turn it on in System Settings"
           : id === "notifications" && s === "unknown"
             ? "Asked. Check System Settings if none showed"
@@ -289,7 +289,7 @@ function PermissionCard({ id, items }: { id: "screen" | "microphone" | "notifica
     <Card icon={ICONS[id]} title={copy.title} line={copy.line} tone={tone} status={status} below={restarting ? <RestartAsk compact onCancel={() => setRestarting(false)} /> : undefined}>
       {restart && !restarting && (
         <button onClick={() => setRestarting(true)} className={s === "granted" ? dark : light}>
-          Restart Bops
+          Restart SmileDesk
         </button>
       )}
       {s === "not-determined" || (id === "notifications" && s === "unknown") ? (
@@ -338,7 +338,7 @@ function Cards({ items }: { items: Items }) {
   );
 }
 
-/** Ask macOS for each permission still unasked, one after another (the microphone and notifications first: their prompts stay in Bops). */
+/** Ask macOS for each permission still unasked, one after another (the microphone and notifications first: their prompts stay in SmileDesk). */
 async function allowAll(items: Items) {
   for (const id of ASKED) {
     const s = items.perms.status?.[id];
@@ -416,7 +416,7 @@ export function ThisMacSettings({ state }: { state: AppState }) {
 /**
  * What Full access needs from macOS, asked for here up front rather than mid-task: Full Disk Access
  * (files in protected places, and Messages' history), which only System Settings can give, then
- * Automation for each app bots script, which Bops asks for all at once (desktop/main.cjs askAutomation:
+ * Automation for each app bots script, which SmileDesk asks for all at once (desktop/main.cjs askAutomation:
  * apps it opens for that stay hidden).
  */
 function FullAccessSetup({ items }: { items: Items }) {
@@ -442,7 +442,7 @@ function FullAccessSetup({ items }: { items: Items }) {
       {row(
         disk,
         "Your files",
-        disk ? "Bops has Full Disk Access." : "Give Bops Full Disk Access in System Settings, then come back.",
+        disk ? "SmileDesk has Full Disk Access." : "Give SmileDesk Full Disk Access in System Settings, then come back.",
         !disk && (
           <button onClick={() => void items.openSettings("fullDisk")} className={dark}>
             Open Settings
@@ -484,7 +484,7 @@ function FullAccessCard({ items }: { items: Items }) {
       icon={ICONS.fullAccess}
       title="Full access for bots"
       chip={on ? "On" : undefined}
-      line="Bots' tasks on this Mac get a shell, your files and your apps, outside Bops' sandbox. Anything you could do here, they can."
+      line="Bots' tasks on this Mac get a shell, your files and your apps, outside SmileDesk's sandbox. Anything you could do here, they can."
       tone={on ? (set || !items.perms.inApp ? "ok" : "todo") : "off"}
       status={on ? (set || !items.perms.inApp ? "Bots can use your files and apps" : "Two steps left, so macOS never stops a bot mid-task") : "Off: bots on this Mac only browse, in a Chrome of their own"}
       below={on && items.perms.inApp ? <FullAccessSetup items={items} /> : undefined}

@@ -18,7 +18,7 @@ import { Chevron, since, undash } from "./side-group";
  * long it took, opening in place to what it said in the bot's chat (in full, Show all when long, and the
  * replies it wrote for the user to send, as cards with Send: reply-drafts.tsx), its
  * thread when it ran on a computer, what it was sent to, why it failed or didn't run. The runs are Orgo's
- * record (/api/routines/{id}/runs) with the last run as Bops has it, what they said the chat's
+ * record (/api/routines/{id}/runs) with the last run as SmileDesk has it, what they said the chat's
  * (lib/routine-reports.ts). The last run shows at once, the rest under it once Orgo answers, so nothing
  * moves; when it doesn't, the last run and what's in the chat, said so. In a workspace shared with the
  * viewer, only what that view shows: the last run and the chat they can read (nothing is asked of Orgo,
@@ -106,7 +106,7 @@ export function ReportsSheet({
     () => routineReports({ routine: r, runs, messages: state.messages, sessions: state.sessions, chats: state.chats }),
     [r, runs, state.messages, state.sessions, state.chats],
   );
-  // While Orgo is asked, only the last run (it's Bops' own): the rest come in under it, so nothing above moves.
+  // While Orgo is asked, only the last run (it's SmileDesk's own): the rest come in under it, so nothing above moves.
   const reports = loading ? all.filter((x) => x.last) : all;
   const [openKey, setOpenKey] = useState<string | null>(() => (at !== undefined ? `run:${at}` : null));
   const list = useRef<HTMLOListElement>(null);

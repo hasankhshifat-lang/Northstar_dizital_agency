@@ -14,24 +14,24 @@
  *                      computer may spend, usage.computer_credit_cents: a plan's monthly allowance pays
  *                      AI only). `key` is the computer's real size (usage.computer.size), `change` how it's
  *                      switched now (ComputerSizeChange), usage.computer.id whether there's one yet
- *   computerSizes      the sizes Orgo makes a Bops computer at, in order, each with its price an hour
+ *   computerSizes      the sizes Orgo makes a SmileDesk computer at, in order, each with its price an hour
  *                      while it works (usage.computer_sizes); missing from an orgo-web before sizes, which
- *                      makes every Bops computer Large: then the app offers no choice and sends no size
+ *                      makes every SmileDesk computer Large: then the app offers no choice and sends no size
  *   defaultSize        the size a new user's computer is picked at (usage.default_size)
  *   extensionEndsAt    when a user given a month more of their plan moves to billing by use
  *                      (ISO time or Unix seconds; extension.ends_at too). Only with billing "plan".
  *   numberMonthlyCents a phone number's month from Orgo credit (usage.phone_number_cents_per_month)
  *   topUpUrl           where to add Orgo credit (usage.add_credit.page); missing: Orgo's billing page
  *
- * Billing it doesn't know is no answer at all (null): never taken for Bops' Free plan. Numbers Orgo
- * leaves out fall back to BOPS_USAGE (cloud/protocol.ts), the same ones Bops Cloud holds a user to.
+ * Billing it doesn't know is no answer at all (null): never taken for SmileDesk's Free plan. Numbers Orgo
+ * leaves out fall back to BOPS_USAGE (cloud/protocol.ts), the same ones SmileDesk Cloud holds a user to.
  */
 import { BOPS_USAGE, isBilling, type BopsBilling } from "@/cloud/protocol";
 
 export type { BopsBilling };
 
 /**
- * The sizes of Bops computer this app knows, smallest first: the ones it offers, of those orgo-web lists. A
+ * The sizes of SmileDesk computer this app knows, smallest first: the ones it offers, of those orgo-web lists. A
  * size added later (a "small" one for a personal agent with no screen, say) is one more value here and one
  * more row in orgo-web's list, never a change to how they talk.
  */
@@ -39,11 +39,11 @@ export const COMPUTER_SIZES = ["medium", "large"] as const;
 export type ComputerSize = (typeof COMPUTER_SIZES)[number];
 export const isComputerSize = (x: unknown): x is ComputerSize => typeof x === "string" && (COMPUTER_SIZES as readonly string[]).includes(x);
 
-/** A size Orgo makes the Bops computer at: its name, cores, memory and disk in GB, and its price an hour while it works. */
+/** A size Orgo makes the SmileDesk computer at: its name, cores, memory and disk in GB, and its price an hour while it works. */
 export type SizeOffer = { key: ComputerSize; name: string; cpu?: number; ramGb?: number; diskGb?: number; hourlyCents: number };
 
 /**
- * How the computer's size is switched now: "bops", Orgo's switch for a Bops computer billed by the hour
+ * How the computer's size is switched now: "bops", Orgo's switch for a SmileDesk computer billed by the hour
  * (POST /api/bops/computer/size); "plan", Orgo's own resize, for one that's part of the user's Orgo plan
  * (PATCH /api/computers/{id}/resize); null, not now (it's still being set up).
  */
@@ -206,15 +206,15 @@ export const dayText = (ms: number) => new Date(ms).toLocaleDateString("en-US", 
 export const extensionLine = (endsAt: number) => `Your current plan stays as it is until ${dayText(endsAt)}, then you pay only for what you use.`;
 
 /** What a computer that can't wake for want of Orgo credit says (its asleep screen, a task that couldn't start). */
-export const OUT_OF_CREDIT_WAKE = "Your Bops computer is asleep because your Orgo credit ran out. Add credit on Orgo to wake it.";
+export const OUT_OF_CREDIT_WAKE = "Your SmileDesk computer is asleep because your Orgo credit ran out. Add credit on Orgo to wake it.";
 
 /**
  * Orgo's codes when a wake or a start is turned down for want of credit (orgo-web: lib/billing
  * compute-live.ts INSUFFICIENT_COMPUTE_CREDIT, the wake gate's upgrade_required, the ledger's
- * insufficient_credit, and bops_out_of_credit, the one asked of it for Bops' computers).
+ * insufficient_credit, and bops_out_of_credit, the one asked of it for SmileDesk's computers).
  */
 const OUT_OF_CREDIT_CODE_SET = new Set(["bops_out_of_credit", "insufficient_compute_credit", "insufficient_credit", "upgrade_required"]);
 /** Whether `code` is one of those, in any case (orgo-web has sent BOPS_OUT_OF_CREDIT and INSUFFICIENT_COMPUTE_CREDIT). */
 export const isOutOfCreditCode = (code: unknown) => typeof code === "string" && OUT_OF_CREDIT_CODE_SET.has(code.toLowerCase());
-/** Whether `code` is the one asked of orgo-web for Bops' computers, in any case. */
+/** Whether `code` is the one asked of orgo-web for SmileDesk's computers, in any case. */
 export const isBopsOutOfCreditCode = (code: unknown) => typeof code === "string" && code.toLowerCase() === "bops_out_of_credit";

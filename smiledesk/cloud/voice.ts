@@ -9,7 +9,7 @@ import { atSpeed } from "./speed.ts";
 
 /**
  * A call's turns, answered in the cloud while the Mac is away (asleep, off, offline, or not answering
- * in time). Every Bops number's calls go to its AgentPhone agent in voice mode "webhook": AgentPhone
+ * in time). Every SmileDesk number's calls go to its AgentPhone agent in voice mode "webhook": AgentPhone
  * hears the caller and sends each turn to /hooks/agentphone (hooks.ts), and the text answered is
  * what it speaks. The Mac answers them when it's there (lib/server/phone-voice.ts); this is the
  * cloud's own answer. Owner: edge builder.
@@ -78,13 +78,13 @@ function ownerPrompt(s: State, b: Bot, c: VoiceCall) {
   const theirs = s.owner ? `${s.owner}'s` : "their";
   // Who it is on the team, as on a call in the app (voicePrompt in lib/server/call.ts): the main bot runs it.
   const role = typeof b.role === "string" && b.role.trim() ? b.role.trim().slice(0, 60) : "";
-  const what = b.isMain ? `${theirs} chief of staff in Bops` : role ? `${theirs} ${role} bot in Bops` : "an AI assistant";
+  const what = b.isMain ? `${theirs} chief of staff in SmileDesk` : role ? `${theirs} ${role} bot in SmileDesk` : "an AI assistant";
   return [
     `You are ${b.name}, ${what}, on a phone call with ${s.owner ? `${s.owner}, who you work for` : "the person you work for"}. The computer you work on is offline right now, so you can't do tasks or look anything up until it's back.`,
     ...(s.ownerAbout ? [`About ${s.owner ?? "them"}: ${s.ownerAbout}`] : []),
     ...(apps.length ? [`When it's back you can use ${theirs} apps again: ${apps.join(", ")}.`] : []),
     ...(places.length ? [`You're also in ${and(places)}, where ${s.owner ?? "they"} can message you.`] : []),
-    `You're answering from Bops Cloud: texts sent to you meanwhile wait there for the computer${kinds.has("slack") ? ", and Slack messages for up to a day" : ""}.`,
+    `You're answering from SmileDesk Cloud: texts sent to you meanwhile wait there for the computer${kinds.has("slack") ? ", and Slack messages for up to a day" : ""}.`,
     ...(kinds.has("telegram") ? ["Telegram messages wait at Telegram for up to a day."] : []),
     ...(kinds.has("discord") ? ["Discord messages sent before the computer is back are missed."] : []),
     "If they want something done, call take_message with what they want, in their words, and say you'll do it when the computer's back. When they're done, call end_call with a short goodbye.",
@@ -99,7 +99,7 @@ export function strangerPrompt(botName: string) {
     `You are ${botName}, an AI assistant who answers this phone number for the person you work for. The caller is someone else, not that person.`,
     "Be friendly and brief. You can chat, and you can take a message for the person you work for: who it's from, what it's about, and a number or email to reach them back, if they want to give one.",
     "Never share anything about the person you work for: not their name, where they are, their plans, their contacts, their accounts, or what you're working on. Don't say whether they're around. You can't do tasks for the caller, look anything up, or put them through to anyone.",
-    "If the caller says this is their own phone and they use Bops, tell them to link it in the Bops app, on your profile.",
+    "If the caller says this is their own phone and they use SmileDesk, tell them to link it in the SmileDesk app, on your profile.",
     "When they've said their message, call take_message with it. When the call is done, call end_call with a short goodbye.",
     SPOKEN,
   ].join("\n\n");
@@ -239,7 +239,7 @@ export async function cloudVoiceTurn(userId: string, event: ApVoiceEvent, verdic
   } else if (!(await hasCredit(userId).catch(() => true))) {
     // Answering costs AI credit (the turn's tokens): once it's used up, the call ends politely.
     const credit = c.owner ? creditWords(await billingFor(userId)).name : "";
-    reply = { text: c.owner ? `Hi, it's ${b.name}. Your ${credit} is used up, so I can't talk right now. Open Bops to add more.` : "Sorry, nobody can take your call right now. Bye!", hangup: true };
+    reply = { text: c.owner ? `Hi, it's ${b.name}. Your ${credit} is used up, so I can't talk right now. Open SmileDesk to add more.` : "Sorry, nobody can take your call right now. Bye!", hangup: true };
   } else {
     try {
       const r = await respond(c, c.owner ? ownerPrompt(s, b, c) : strangerPrompt(b.name));

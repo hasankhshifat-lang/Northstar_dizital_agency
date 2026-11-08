@@ -8,7 +8,7 @@ import { initialsFrom } from "./account";
 import { Mascot } from "./mascot";
 
 /*
- * Who is moving on the bot's page, drawn beside the frame (never in it: the page is the bot's, this is Bops's own DOM
+ * Who is moving on the bot's page, drawn beside the frame (never in it: the page is the bot's, this is SmileDesk's own DOM
  * over the picture of it). Each driver has a cursor: an ink arrow with its name riding at its lower right, the bot's
  * with its face and name, a person's with their initials and first name. It travels like a hand (lib/cursor-path.ts),
  * arrives before it presses (a press that comes first hurries the rest of the way), dips and rings once where it

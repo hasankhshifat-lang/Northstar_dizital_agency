@@ -4,7 +4,7 @@ import type { AppState } from "@/lib/types";
 import type { Persistence, StateAccess } from "./persist";
 
 /**
- * Hosted Bops keeps each user's state in Postgres: one row per Orgo user in bops.app_state (see
+ * Hosted SmileDesk keeps each user's state in Postgres: one row per Orgo user in bops.app_state (see
  * db/), the whole AppState as JSONB. A server process holds one user's state in memory at a time,
  * the same as the desktop app: pinned with BOPS_ORGO_USER_ID, or whoever signs in.
  *

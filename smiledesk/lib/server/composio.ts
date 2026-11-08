@@ -16,16 +16,16 @@ import { DATA_TOOL_NAMES, dataOn, foundByBots, runDataTool } from "./treg";
 
 /**
  * The user's apps (Gmail, Notion, HubSpot… any of Composio's catalog) through Composio. Composio keeps
- * the OAuth tokens and API keys; Bops keeps only which accounts are connected (several per app is
+ * the OAuth tokens and API keys; SmileDesk keeps only which accounts are connected (several per app is
  * fine: a work and a personal Gmail) and which bot may use which account, read only or read and act.
- * Bops is the only thing that holds the Composio key: bots reach apps through two tools that Bops
+ * SmileDesk is the only thing that holds the Composio key: bots reach apps through two tools that SmileDesk
  * runs (find_app_actions, use_app), and anything that sends, changes, deletes or pays waits for the
- * user to say yes first. Signed in with Orgo, Composio is reached through Bops Cloud
+ * user to say yes first. Signed in with Orgo, Composio is reached through SmileDesk Cloud
  * (lib/server/cloud.ts), which holds the key and keeps the user to their own Composio user.
  */
 
 /**
- * Whose connected accounts these are in Composio: on Bops Cloud the user's own (their session), else
+ * Whose connected accounts these are in Composio: on SmileDesk Cloud the user's own (their session), else
  * COMPOSIO_USER_ID, else one id per install (so installs sharing a Composio project stay apart).
  */
 function userId() {
@@ -38,8 +38,8 @@ function userId() {
 export const composioOn = () => (cloudOn() ? !!cloudSessionNow()?.composio : !!process.env.COMPOSIO_API_KEY);
 
 /**
- * Bops' public address: the "connected" page after an app's sign-in, OAuth callbacks, and the bots'
- * pictures (Slack's icon_url, Telegram's and Discord's profile pictures). Signed in with Orgo, Bops
+ * SmileDesk's public address: the "connected" page after an app's sign-in, OAuth callbacks, and the bots'
+ * pictures (Slack's icon_url, Telegram's and Discord's profile pictures). Signed in with Orgo, SmileDesk
  * Cloud's (CloudSession.publicUrl: it serves /connected, /oauth/callback, /mascot/* and /brand/*);
  * self-hosted, BOPS_PUBLIC_URL (the self-hoster's front door, edge/), else api.bops.bot.
  */
@@ -47,14 +47,14 @@ export const publicUrl = () => (cloudOn() ? (cloudSessionNow()?.publicUrl ?? clo
 
 /** An action: its tags (readOnlyHint…), name, app and input schema (withConsts). */
 type ToolInfo = { tags: string[]; name: string; app?: string; input?: Schema };
-/** How Composio is reached: through Bops Cloud (signed in with Orgo) or directly (self-hosted). The catalog differs. */
+/** How Composio is reached: through SmileDesk Cloud (signed in with Orgo) or directly (self-hosted). The catalog differs. */
 type Via = "cloud" | "direct";
 type Live = {
   client?: Composio;
   /** The key the client was made with: another sign-in makes a new one (and new bot sessions). */
   clientKey?: string;
   sessions: Map<string, { access: string; session: Awaited<ReturnType<Composio["sessions"]["use"]>> }>;
-  /** Clients that tell Bops Cloud which bot and app a run is for (cxFor), by key, bot and app. */
+  /** Clients that tell SmileDesk Cloud which bot and app a run is for (cxFor), by key, bot and app. */
   tagged?: Map<string, Composio>;
   tools: Map<string, ToolInfo>;
   catalog?: { at: number; v: number; via: Via; apps: CatalogApp[] };
@@ -64,7 +64,7 @@ const g = globalThis as unknown as { bopsComposio2?: Live };
 const live: Live = (g.bopsComposio2 ??= { sessions: new Map(), tools: new Map() });
 
 /**
- * Composio on the key in use. Through Bops Cloud the user's Orgo key goes as a Bearer token (how the
+ * Composio on the key in use. Through SmileDesk Cloud the user's Orgo key goes as a Bearer token (how the
  * cloud knows who it is) and as the SDK's key, which the cloud swaps for its own; the SDK's own
  * usage reports stay off, since this Mac reaches Composio only through the cloud. No client asks npm
  * for a newer SDK (each new one did, and logged "Upgrade available").
@@ -83,7 +83,7 @@ function cx() {
 }
 
 /**
- * Composio for one bot and one app (either may be unknown). Through Bops Cloud, the client says which
+ * Composio for one bot and one app (either may be unknown). Through SmileDesk Cloud, the client says which
  * bot and app it's for (x-bops-bot, x-bops-app) so the cloud counts each run for them, and a session
  * it makes is that bot's; directly, the shared client.
  */
@@ -121,7 +121,7 @@ const CATALOG_V = 4;
 
 /**
  * An auth scheme where each person signs in with their own key or password, never through an OAuth
- * app: the only kind of sign-in setup Bops Cloud makes for an app Composio doesn't sign people in to
+ * app: the only kind of sign-in setup SmileDesk Cloud makes for an app Composio doesn't sign people in to
  * itself (OWN_KEY_SCHEME in cloud/proxy.ts). Not SAML: its setup needs the company's own keys first.
  */
 const ownKeyScheme = (scheme: string) => scheme !== "NO_AUTH" && scheme !== "SAML" && /^(?!.*OAUTH)[A-Z][A-Z0-9_]{1,40}$/.test(scheme);
@@ -144,7 +144,7 @@ async function everyToolkit() {
 }
 
 /**
- * The apps with a sign-in setup this Mac may use through Bops Cloud: its GET auth_configs lists only
+ * The apps with a sign-in setup this Mac may use through SmileDesk Cloud: its GET auth_configs lists only
  * those (Composio's own, Orgo's pinned ones such as its Slack app's, and ones made through the cloud).
  */
 async function cloudSetups() {
@@ -161,7 +161,7 @@ async function cloudSetups() {
 
 /**
  * Every app the user can connect, most used first. Fetched at most twice a day. Self-hosted, all of
- * Composio's. Signed in with Orgo, only the ones that can connect through Bops Cloud: no sign-in
+ * Composio's. Signed in with Orgo, only the ones that can connect through SmileDesk Cloud: no sign-in
  * needed, Composio signs people in itself, a setup the cloud offers (Orgo's own OAuth apps), or each
  * person types their own key. The rest would only be turned away at the cloud, so they aren't offered.
  */
@@ -208,21 +208,21 @@ const appNameOf = async (app: string) => (await catalog().catch(() => [])).find(
 
 /**
  * The project's sign-in setup for an app: Composio's own (most apps), else one that asks the user for
- * their key. Through Bops Cloud the cloud lists only the setups a Mac may use and makes only these two
+ * their key. Through SmileDesk Cloud the cloud lists only the setups a Mac may use and makes only these two
  * kinds (cloud/proxy.ts signInSetupWithoutSecrets): an app that signs in with OAuth but has no sign-in
  * of Composio's connects once Orgo has set one up in its project.
  */
 async function authConfigFor(app: string) {
   const { items } = await cx().authConfigs.list({ toolkit: app });
-  // Our own app (Bops' OAuth app for Slack, Google…: the consent screen says Bops) wins over Composio's.
+  // Our own app (SmileDesk's OAuth app for Slack, Google…: the consent screen says SmileDesk) wins over Composio's.
   const ready = items.filter((a) => a.status === "ENABLED").sort((a, b) => Number(!!a.isComposioManaged) - Number(!!b.isComposioManaged))[0];
   if (ready) return ready.id;
   const tk = await cx().toolkits.get(app);
-  if (tk.composioManagedAuthSchemes?.length) return (await cx().authConfigs.create(app, { type: "use_composio_managed_auth", name: `${tk.name} (Bops)` })).id;
-  // Through Bops Cloud, a setup of our own can only ask each person for their own key (see ownKeyScheme).
+  if (tk.composioManagedAuthSchemes?.length) return (await cx().authConfigs.create(app, { type: "use_composio_managed_auth", name: `${tk.name} (SmileDesk)` })).id;
+  // Through SmileDesk Cloud, a setup of our own can only ask each person for their own key (see ownKeyScheme).
   const mode = cloudOn() ? tk.authConfigDetails?.find((d) => ownKeyScheme(d.mode))?.mode : tk.authConfigDetails?.[0]?.mode;
-  if (!mode) throw new Error(`${tk.name} can't be connected from Bops yet`);
-  return (await cx().authConfigs.create(app, { type: "use_custom_auth", authScheme: mode as never, name: `${tk.name} (Bops)`, credentials: {} })).id;
+  if (!mode) throw new Error(`${tk.name} can't be connected from SmileDesk yet`);
+  return (await cx().authConfigs.create(app, { type: "use_custom_auth", authScheme: mode as never, name: `${tk.name} (SmileDesk)`, credentials: {} })).id;
 }
 
 /**
@@ -253,7 +253,7 @@ export async function connectApp(app: string, label?: string, replaces?: string,
     if (isNew) await offerStartersFor(app, grant?.bots);
     return { accountId };
   }
-  // Afterwards the browser lands on Bops' own "connected" page, not Composio's (Bops Cloud's, signed in with Orgo).
+  // Afterwards the browser lands on SmileDesk's own "connected" page, not Composio's (SmileDesk Cloud's, signed in with Orgo).
   if (cloudOn()) await cloudSession();
   const callbackUrl = `${publicUrl()}/connected?app=${encodeURIComponent(appName)}`;
   const req = await cx().connectedAccounts.link(userId(), await authConfigFor(app), { allowMultiple: true, callbackUrl });
@@ -287,7 +287,7 @@ export async function connectApp(app: string, label?: string, replaces?: string,
         if (old) {
           for (const b of s.bots) if (b.access?.[old.id] !== undefined) b.access[ca.id] = b.access[old.id];
           for (const r of s.routines) if (r.source?.account === old.id) r.source.account = ca.id;
-          // Bots in Slack through this account (the Bops Slack app) move with it.
+          // Bots in Slack through this account (the SmileDesk Slack app) move with it.
           for (const l of s.channels ?? []) if (l.slack?.accountId === old.id) l.slack.accountId = ca.id;
           dropAccount(s, old.id);
         }
@@ -410,7 +410,7 @@ async function whoIs(accountId: string, app: string) {
   return undefined;
 }
 
-/** Bring Bops in line with Composio: accounts connected, signed out or removed elsewhere (the Composio dashboard, another device). */
+/** Bring SmileDesk in line with Composio: accounts connected, signed out or removed elsewhere (the Composio dashboard, another device). */
 export async function syncApps() {
   if (!composioOn()) return;
   const found = new Map<string, { app: string; status: "active" | "expired" }>();
@@ -430,7 +430,7 @@ export async function syncApps() {
     if (known.has(accountId) || x.status !== "active") continue;
     // Being connected right now: the sign-in finishing adds it, with its label.
     if (getState().connecting?.some((c) => c.app === x.app && c.status === "waiting")) continue;
-    // Connected where this Mac didn't see who was picked for it (a Mac still on an older Bops, which Bops
+    // Connected where this Mac didn't see who was picked for it (a Mac still on an older SmileDesk, which SmileDesk
     // Cloud keeps out of your state until it's updated): only the bots you give it, never every bot.
     added.push({ id: accountId, app: x.app, appName: await appNameOf(x.app), name: await accountName(accountId).catch(() => undefined), status: x.status, at: Date.now(), workspaceId: MAIN_WORKSPACE, onlyGiven: true });
   }
@@ -618,7 +618,7 @@ export const APP_TOOLS = (b: Bot, opts: { forMember?: boolean } = {}) => {
     {
       type: "function" as const,
       name: "use_app",
-      description: `Run one action in ${owner}'s apps (${list}): an exact name from find_app_actions, with its inputs. Reading runs at once. ${b.autoApprove && !opts.forMember ? `Everything else runs at once too (${owner} set you to "Just do it"), except anything that could move money: that still asks them first.` : `Anything that sends, creates, changes or pays asks ${owner} first; Bops shows them the details.`}`,
+      description: `Run one action in ${owner}'s apps (${list}): an exact name from find_app_actions, with its inputs. Reading runs at once. ${b.autoApprove && !opts.forMember ? `Everything else runs at once too (${owner} set you to "Just do it"), except anything that could move money: that still asks them first.` : `Anything that sends, creates, changes or pays asks ${owner} first; SmileDesk shows them the details.`}`,
       parameters: {
         type: "object",
         additionalProperties: false,
@@ -637,13 +637,13 @@ export const APP_TOOLS = (b: Bot, opts: { forMember?: boolean } = {}) => {
 const clip = (s: string, n = 14_000) => (s.length > n ? `${s.slice(0, n)}… (cut short)` : s);
 
 /**
- * A thread someone outside Bops started (an email, a text or a call to a bot), or a part of one (lib/types.ts
+ * A thread someone outside SmileDesk started (an email, a text or a call to a bot), or a part of one (lib/types.ts
  * outsideThread): it gets no apps, like their turns in the chat (chat.ts), whatever access its bot has. A member's
  * (memberThread) does: they reach the owner's apps through the bots they may tell, and anything that changes something
  * asks the owner (forMember). Asked as each call comes.
  */
 const fromOutside = (sessionId?: string) => !!sessionId && outsideThread(threadOf(sessionId), threadOf);
-const NOT_FOR_OUTSIDE = () => `Not on this task: someone outside Bops asked for it, and ${ownerName()}'s apps are only for the people ${ownerName()} works with.`;
+const NOT_FOR_OUTSIDE = () => `Not on this task: someone outside SmileDesk asked for it, and ${ownerName()}'s apps are only for the people ${ownerName()} works with.`;
 
 /** find_app_actions: Composio's search, cut down to what the model needs. */
 export async function findAppActions(botId: string, query: string, where: { sessionId?: string } = {}) {
@@ -744,7 +744,7 @@ export async function runAppAction(
     return ok ? clip(JSON.stringify(res.data ?? {})) : `Failed: ${res.error ?? "the app said no"}`;
   };
   if (reads) return run();
-  // A look for Bops itself (chat.ts BackgroundJob.sample) only reads.
+  // A look for SmileDesk itself (chat.ts BackgroundJob.sample) only reads.
   if (opts.readOnly) return `Not done: this run only reads, and ${info.name} changes something. Use a read action.`;
   // The user said yes to this very call (its run paused for it and carries on now).
   if (opts.approved) return run("user");
@@ -788,7 +788,7 @@ function addressesIn(v: string): string[] | null {
 
 /**
  * To whom or what an action goes, as a request names it (AppApproval.resources): every recipient, channel, address
- * or place its inputs name, lowercased. Found two ways, so an input Bops doesn't know by name still counts: by its
+ * or place its inputs name, lowercased. Found two ways, so an input SmileDesk doesn't know by name still counts: by its
  * name, at any depth (to, cc_emails, extra_recipients, invitees, user_ids, channel, …), and any value anywhere that is
  * only email addresses (a body or subject that mentions one reaches no one). None for an action whose inputs name no
  * one. Shown on its card for the user to read; a rule is for the action, whoever it's for (lib/permission.ts).
@@ -837,8 +837,8 @@ const MONEY = /(?:^|_)(?:PAY|PAYS|PAYMENTS?|PAYOUTS?|PAYROLL|CHARGES?|REFUNDS?|T
 const surelyMoney = (slug: string, app: string) => MONEY_APPS.has(app.toLowerCase()) || MONEY.test(slug.toUpperCase());
 
 /**
- * Run an action for Bops itself (not a bot's request), in one of the user's accounts: posting a bot's
- * Slack reply, listing Slack channels. Callers decide what's allowed. Counted by Bops Cloud for the
+ * Run an action for SmileDesk itself (not a bot's request), in one of the user's accounts: posting a bot's
+ * Slack reply, listing Slack channels. Callers decide what's allowed. Counted by SmileDesk Cloud for the
  * action's app (its slug's first word, "SLACKBOT_…" is slackbot) and the bot it's for, when it's for one.
  */
 export async function runAs(accountId: string, action: string, args: Record<string, unknown>, botId?: string) {
@@ -851,7 +851,7 @@ export async function runAs(accountId: string, action: string, args: Record<stri
   return res.data as Record<string, unknown>;
 }
 
-/** Composio's client, for the other parts of Bops that listen to apps (Slack messages for channels.ts): for a bot and an app when they're known, so Bops Cloud counts its calls for them. */
+/** Composio's client, for the other parts of SmileDesk that listen to apps (Slack messages for channels.ts): for a bot and an app when they're known, so SmileDesk Cloud counts its calls for them. */
 export const composio = (botId?: string, app?: string) => cxFor(botId, app);
 export const composioUser = userId;
 
@@ -875,7 +875,7 @@ export function appsKeyFor(botId: string) {
  */
 export const reachableFromComputers = () => !["127.0.0.1", "localhost", "::1"].includes(process.env.HOSTNAME ?? "");
 
-/** Where a bot computer reaches Bops: this Mac on the tailnet. */
+/** Where a bot computer reaches SmileDesk: this Mac on the tailnet. */
 export function bopsAddress() {
   if (!reachableFromComputers()) return null;
   const cli = ["/Applications/Tailscale.app/Contents/MacOS/Tailscale", "tailscale"];
@@ -917,13 +917,13 @@ async function threadApps(botId: string, sessionId: string, tool: string, args: 
   return { status: 404, text: `unknown tool ${tool}` };
 }
 
-/** How long a call through the screen tools waits for the user's reply (screen_mcp.py waits 20 minutes for Bops). */
+/** How long a call through the screen tools waits for the user's reply (screen_mcp.py waits 20 minutes for SmileDesk). */
 export const HELD_ASK_MS = 19 * 60_000;
 
 /**
- * A call through the screen tools (a thread its brain runs: Claude Code holds the call until Bops answers) that
+ * A call through the screen tools (a thread its brain runs: Claude Code holds the call until SmileDesk answers) that
  * needs the user's OK: it can't pause, so it waits for the reply (permission.ts heldAsk), HELD_ASK_MS at most or
- * while its thread runs, and is done on a yes. Every engine Bops runs itself pauses instead (askFor).
+ * while its thread runs, and is done on a yes. Every engine SmileDesk runs itself pauses instead (askFor).
  */
 async function held(botId: string, sessionId: string, work: (approved: boolean) => Promise<string>): Promise<string> {
   try {

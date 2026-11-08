@@ -7,7 +7,7 @@ import { closeDb, query } from "../db.ts";
 import { call, dropUsers, fakeOrgo, fakeProvider, keyOf, newUserId, prepareDb, startCloud, type Got, type Listening } from "./core-fakes.ts";
 
 /**
- * Usage events from Bops Cloud (analytics.ts, README "Usage events"): a new user's first session is
+ * Usage events from SmileDesk Cloud (analytics.ts, README "Usage events"): a new user's first session is
  * one bops_signup_completed and later sessions none; a plan change from orgo-web's notice is one
  * bops_plan_changed with the person's bops_plan, and the same notice again none. Nothing for a call
  * marked x-bops-telemetry: off, for a user whose state has analyticsOff, or with BOPS_TELEMETRY unset.

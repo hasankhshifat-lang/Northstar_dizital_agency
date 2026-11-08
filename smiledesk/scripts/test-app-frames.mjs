@@ -34,7 +34,7 @@ const test = async (name, fn) => {
 const SERVER = "http://localhost:3210";
 const VIEW = `${SERVER}/api/made-apps/app_0a1b2c/view?v=3`;
 
-await test("an app's page is a view address on Bops' own server, and nothing else is", () => {
+await test("an app's page is a view address on SmileDesk's own server, and nothing else is", () => {
   assert.equal(F.appOfView(VIEW, SERVER), "app_0a1b2c");
   assert.equal(F.appOfView(`${SERVER}/api/made-apps/app_0a1b2c/view`, SERVER), "app_0a1b2c");
   for (const url of [
@@ -119,7 +119,7 @@ await test("an app's page may load its own page again, never another address, no
     assert.equal(stopped(ev, "data:text/html,<b>hi</b>"), true, `${ev}: data:`);
     assert.equal(stopped(ev, "about:blank"), true, `${ev}: about:blank`);
     assert.equal(stopped(ev, `${SERVER}/api/made-apps/app_ffff/view?v=1`), true, `${ev}: another app's page`);
-    assert.equal(stopped(ev, `${SERVER}/api/state`), true, `${ev}: Bops' API`);
+    assert.equal(stopped(ev, `${SERVER}/api/state`), true, `${ev}: SmileDesk's API`);
   }
 });
 

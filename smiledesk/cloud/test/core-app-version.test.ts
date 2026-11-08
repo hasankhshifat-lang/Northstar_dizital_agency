@@ -6,7 +6,7 @@ import { closeDb, query } from "../db.ts";
 import { call, dropUsers, fakeOrgo, fakeProvider, keyOf, newUserId, prepareDb, seedUser, startCloud, until, type Listening } from "./core-fakes.ts";
 
 /**
- * Which Bops app each user is on, and old apps kept out (cloud/app-version.ts): every signed-in call
+ * Which SmileDesk app each user is on, and old apps kept out (cloud/app-version.ts): every signed-in call
  * says its version, kept with the user's account; with bops.app_policy's block_below set, an older app,
  * or one that doesn't say, is told to update (426) everywhere but its state's calls, its sockets too,
  * and nothing it asked for reaches a provider. Against a fake OpenAI. (Only this process reads the
@@ -158,7 +158,7 @@ test("a Mac whose state a newer app wrote, on an app that doesn't stop its routi
     const r = await ask(headers);
     assert.equal(r.status, 426, `${JSON.stringify(headers)}: ${r.text}`);
     assert.deepEqual(r.json, { error: { message: r.json.error.message, code: "state_too_new" }, code: "state_too_new" });
-    assert.match(r.json.error.message, /^Another of your Macs is on a newer Bops\. Update Bops on this Mac/);
+    assert.match(r.json.error.message, /^Another of your Macs is on a newer SmileDesk\. Update SmileDesk on this Mac/);
   }
   assert.equal(openai.got.length, asked + 2, "only the new Mac's reached OpenAI");
   // A call that says neither isn't taken for 0.0.29 (block_below keeps such apps out).
@@ -167,7 +167,7 @@ test("a Mac whose state a newer app wrote, on an app that doesn't stop its routi
   assert.equal((await at(app29, "GET", "/v1/state/head")).status, 426);
   const notices = await at(app29, "GET", "/v1/notices");
   assert.equal(notices.status, 200, notices.text);
-  assert.equal(notices.json.notices[0]?.title, "Update Bops on this Mac");
+  assert.equal(notices.json.notices[0]?.title, "Update SmileDesk on this Mac");
   // Alice's Macs are all on 0.0.29, which wrote her state at level 3: every call of hers is served, its SDK's included.
   await query("UPDATE bops.app_state SET protocol = 3 WHERE user_id = $1", [alice]);
   for (const headers of [sdk29, { ...app29, "x-bops-user": alice }]) {

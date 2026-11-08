@@ -139,7 +139,7 @@ export function BotPanel({
         <div className="flex flex-col items-center gap-px">
           <div className="text-[20px] font-semibold leading-6 tracking-[-0.01em]">{b.name}</div>
           <div className="flex items-center gap-1.5 text-[13px] leading-4 text-[#6B6B6B]">
-            {b.isMain ? "Chief of Staff · runs the team" : `${b.role} · Bops team`}
+            {b.isMain ? "Chief of Staff · runs the team" : `${b.role} · SmileDesk team`}
             <BotBrainBadge state={state} bot={b} />
           </div>
         </div>
@@ -177,7 +177,7 @@ function ExpandButton({ onClick }: { onClick: () => void }) {
 
 /**
  * By the bot's role: the agent its new threads start on (its AI profile's Default, lib/agents.ts), when that's a
- * CLI the user brought. Nothing for Bops agent (every bot, in a build without brains), or where its tasks all run
+ * CLI the user brought. Nothing for SmileDesk agent (every bot, in a build without brains), or where its tasks all run
  * on this Mac (brainRuns).
  */
 export function BotBrainBadge({ state, bot: b, className }: { state: AppState; bot: Bot; className?: string }) {
@@ -238,7 +238,7 @@ function Details({
   const running = state.sessions.filter((s) => s.botId === b.id && live(s)).length;
   const [copied, setCopied] = useState(false);
   const share = async () => {
-    await navigator.clipboard.writeText([`${b.name} (${b.role}, Bops)`, b.phone, b.email].filter(Boolean).join("\n"));
+    await navigator.clipboard.writeText([`${b.name} (${b.role}, SmileDesk)`, b.phone, b.email].filter(Boolean).join("\n"));
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -253,7 +253,7 @@ function Details({
       <div className="flex flex-col items-center gap-0.5">
         <div className="text-[26px] font-bold leading-[30px] tracking-[-0.02em]">{b.name}</div>
         <div className="flex items-center gap-1.5 text-[13px] font-medium leading-4 text-[#3A3A38]">
-          {b.isMain ? "Chief of Staff · runs the team" : `${b.role} · Bops team`}
+          {b.isMain ? "Chief of Staff · runs the team" : `${b.role} · SmileDesk team`}
           <BotBrainBadge state={state} bot={b} className="bg-white/60 shadow-[0_0_0_1px_#0000000F]" />
         </div>
         {/* Its place on the team chart: who it answers to and how many it may ask, opening the chart at its sheet. */}
@@ -398,7 +398,7 @@ export const GLASS = "bg-white/60 shadow-[inset_0_0_0_1px_#FFFFFF,0_0_0_1px_#000
  * number; the others are reached through it), its main bot, the number that reaches it, and why the plan has no room.
  */
 export function contactOf(state: AppState, b: Bot, plan: PhonePlan) {
-  // What the Bops plan includes for this bot (lib/plan-includes.ts), when Bops Cloud holds plans to it.
+  // What the SmileDesk plan includes for this bot (lib/plan-includes.ts), when SmileDesk Cloud holds plans to it.
   const planBot = !!b.isMain && workspaceOf(b) === MAIN_WORKSPACE;
   const numberRoom = plan.room ? numberShort(plan.room.tier, plan.room.numbers, { isPlanBot: planBot }) : null;
   const emailRoom = plan.room && !b.email ? emailShort(plan.room.tier, plan.room.emails, { isPlanBot: planBot }) : null;
@@ -427,8 +427,8 @@ export function ContactActions({ state, bot: b, plan, onOpenChat, size }: { stat
         <ActionButton size={size} label={reach ? `Call ${prettyPhone(reach)}` : "Calling arrives with its phone"} disabled={!reach} onClick={() => reach && window.open(`tel:${reach}`)}>
           <path d="M3 2.2h2.6l1 2.6-1.6 1a7 7 0 003 3l1-1.6 2.6 1V11a.9.9 0 01-.9.9A9.6 9.6 0 012.1 3.1.9.9 0 013 2.2z" fill="#0A0A0A" />
         </ActionButton>
-        {/* Video calls with bots aren't here yet; meanwhile it books a video call with the Bops team. */}
-        <ActionButton size={size} label="Book a 20 minute video call with the Bops team" onClick={() => window.open(BOOK_A_CALL)}>
+        {/* Video calls with bots aren't here yet; meanwhile it books a video call with the SmileDesk team. */}
+        <ActionButton size={size} label="Book a 20 minute video call with the SmileDesk team" onClick={() => window.open(BOOK_A_CALL)}>
           <rect x="1.2" y="3.5" width="8" height="7" rx="1.5" fill="#0A0A0A" />
           <path d="M9.6 6.2l3.2-2v5.6L9.6 7.8z" fill="#0A0A0A" />
         </ActionButton>
@@ -495,11 +495,11 @@ export function SequencesIcon({ size = 18 }: { size?: number }) {
 
 /**
  * Which computer a bot works on: the main bot's (the default; it uses free screens there) or its own,
- * made on its first task: a copy of the main bot's, or where the Bops plan decides, a Bops computer (on
+ * made on its first task: a copy of the main bot's, or where the SmileDesk plan decides, a SmileDesk computer (on
  * Max, once those are all taken, one on the Orgo plan). Its own is offered only when there's room for
  * it; else this says why, with the numbers and the plan that has room. Leaving its own
  * computer deletes it, so that asks once more. The server refuses while the bot has cloud work going
- * and says why. A main bot shows this only while it works on the free Bops computer another
+ * and says why. A main bot shows this only while it works on the free SmileDesk computer another
  * workspace's main bot has: it can move to its own on the plan (with its team), never back.
  */
 export function ComputerChoice({ state, bot: b, className, onUpgrade }: { state: AppState; bot: Bot; className: string; onUpgrade: () => void }) {
@@ -529,12 +529,12 @@ export function ComputerChoice({ state, bot: b, className, onUpgrade }: { state:
           <span className="text-[13px] font-semibold leading-4">Computer</span>
           <span className="text-[12px] leading-4 text-[#6B6B6B]">
             {b.isMain
-              ? `Works on ${your(state)} free Bops computer, which ${main.name} has, with ${b.name}'s team`
+              ? `Works on ${your(state)} free SmileDesk computer, which ${main.name} has, with ${b.name}'s team`
               : shared
                 ? `Works on ${main.name}'s computer, on screens no one else is using`
                 : plan?.plan?.bops
                   ? ownIsBops(plan.plan, b)
-                    ? "Its own Bops computer"
+                    ? "Its own SmileDesk computer"
                     : "Its own cloud computer, on your Orgo plan"
                   : "Its own cloud computer, a copy of the main bot's"}
           </span>
@@ -646,14 +646,14 @@ const prettyPhone = (n: string) => {
 type NumberOption = { areaCode: string; city: string; state: string; count: number };
 type Found = { areaCode: string; options: NumberOption[]; anywhere?: boolean };
 
-/** What the Bops plan holds now (lib/server/plan-room.ts): null where Bops Cloud doesn't hold plans to what they include. */
+/** What the SmileDesk plan holds now (lib/server/plan-room.ts): null where SmileDesk Cloud doesn't hold plans to what they include. */
 type Room = { tier: BopsTier; numbers: number; emails: number } | null;
 export type PhonePlan = { on: boolean | null; planNeeded: boolean; room: Room };
 
 /**
- * Phones on here (AgentPhone through Bops Cloud), and whether a number or an inbox needs Pro or Max:
- * Bops Cloud holds Free to its plan (BOPS_PLAN_LIMITS). Asked again with the plan read fresh when
- * Bops comes back to the front while it still says Free: the user may have just paid in the browser.
+ * Phones on here (AgentPhone through SmileDesk Cloud), and whether a number or an inbox needs Pro or Max:
+ * SmileDesk Cloud holds Free to its plan (BOPS_PLAN_LIMITS). Asked again with the plan read fresh when
+ * SmileDesk comes back to the front while it still says Free: the user may have just paid in the browser.
  */
 export function usePhonePlan(): PhonePlan {
   const [plan, setPlan] = useState<PhonePlan>({ on: null, planNeeded: false, room: null });
@@ -958,10 +958,10 @@ export function Field({ label, value, empty }: { label: string; value?: string; 
 
 /**
  * "How I work": what the user wants this bot to keep in mind as it works (Bot.persona), in their own
- * words. It gets it in its chat, tasks and calls as their preferences, under Bops' own rules. Saving it
+ * words. It gets it in its chat, tasks and calls as their preferences, under SmileDesk's own rules. Saving it
  * empty clears it. Esc with unsaved words puts back what's saved. Save names the words the edit began from (`base`):
  * saved by someone else meanwhile, it's refused and the box shows theirs. Words saved elsewhere show while the box is
- * unedited. In a workspace shared with the user as an Admin, Save goes to the owner's Bops (the "persona" act,
+ * unedited. In a workspace shared with the user as an Admin, Save goes to the owner's SmileDesk (the "persona" act,
  * shared-act.ts memberAct): Saved once the owner's copy has it (SharedOpen.personaActs), else why it didn't go.
  */
 export function HowIWork({ bot: b, className, shared }: { bot: Bot; className: string; shared?: SharedOpen }) {
@@ -1025,7 +1025,7 @@ export function HowIWork({ bot: b, className, shared }: { bot: Bot; className: s
       setText((now) => (now === words ? words.trim() : now));
       setSaved(true);
     } catch {
-      setError("Couldn't reach Bops. Try again.");
+      setError("Couldn't reach SmileDesk. Try again.");
     } finally {
       setBusy(false);
     }

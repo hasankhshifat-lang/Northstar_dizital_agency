@@ -1,4 +1,4 @@
-// Tests for whether each of the bots' computers holds its own Orgo key, as Settings asks Bops for it
+// Tests for whether each of the bots' computers holds its own Orgo key, as Settings asks SmileDesk for it
 // (app/api/runs-on/keys, lib/server/computer-keys.ts): orgo-web's GET /api/computers/{id}/orgo-key with the
 // signed-in key, and nothing else about the computer (an asleep one is never woken); a key (what names it,
 // its prefix only when it's no more than one, never the key), none (404 key_not_found), and nothing said

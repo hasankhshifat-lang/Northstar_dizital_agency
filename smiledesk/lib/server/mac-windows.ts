@@ -4,7 +4,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 /**
- * Live pictures of the windows bots use on the user's Mac, for the previews in Bops. Cua Driver
+ * Live pictures of the windows bots use on the user's Mac, for the previews in SmileDesk. Cua Driver
  * (installed with permission to see the screen) captures one window at a time, in the background,
  * without touching what the user is doing. Nothing else on the screen is captured.
  */
@@ -58,7 +58,7 @@ export async function appWindows(app: string) {
 
 /**
  * Where macOS draws its "this window is being shared" marker on a window (a small purple capsule
- * over the traffic lights, shown while Bops streams it), relative to the window, in points. It's a
+ * over the traffic lights, shown while SmileDesk streams it), relative to the window, in points. It's a
  * tiny window of its own, owned by the same app; null when there isn't one right now.
  */
 export async function sharingMarker(win: Win) {
@@ -94,7 +94,7 @@ export async function capture(app: string, max = 640) {
 
 /** Every window open on the Mac that's worth watching (normal windows of real apps), for the Watch picker. */
 export async function listWindows() {
-  const skip = /^(Bops|Electron|Cua Driver|cua-spacesd|Dock|Window Server|Control Center|Notification Center|CursorUIViewService|Wallpaper)$/i;
+  const skip = /^(SmileDesk|Electron|Cua Driver|cua-spacesd|Dock|Window Server|Control Center|Notification Center|CursorUIViewService|Wallpaper)$/i;
   return (await allWindows())
     .filter((w) => (w.layer ?? 0) === 0 && (w.bounds?.height ?? 0) > 120 && (w.bounds?.width ?? 0) > 160 && w.title && !skip.test(w.app_name))
     .sort((a, b) => Number(b.is_on_screen ?? false) - Number(a.is_on_screen ?? false) || (b.z_index ?? 0) - (a.z_index ?? 0))

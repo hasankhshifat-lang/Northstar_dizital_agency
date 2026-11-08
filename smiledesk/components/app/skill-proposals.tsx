@@ -10,7 +10,7 @@ import { clockTime, post } from "./ui";
  * Changes a bot proposed to its workspace's skills (Message.skillProposals, lib/server/skill-proposals.ts), as cards
  * under its message: in the chat (chat-view.tsx) and in a routine's reports (routine-reports.tsx). Each says which
  * skill and file, why, the change as a diff, who proposed it and where (its chat, or the routine whose run it was),
- * and, when the turn read something from outside Bops, whose words those were. Accept makes it the skill's next
+ * and, when the turn read something from outside SmileDesk, whose words those were. Accept makes it the skill's next
  * version and Reject drops it, only for the owner in the window: in a workspace shared with the user they're read
  * only (the server refuses it too: app/api/skills). When the skill changed since, Accept shows the change on what it
  * is now and asks again before it applies.
@@ -79,7 +79,7 @@ function ProposalCard({ messageId, proposal: p, state, readOnly }: { messageId: 
         if (!json.stale.lines) setError(json.error);
       } else setError(json.error ?? "That didn't work. Try again.");
     } catch {
-      setError("Couldn't reach Bops. Try again.");
+      setError("Couldn't reach SmileDesk. Try again.");
     }
     setBusy(null);
   };
@@ -108,7 +108,7 @@ function ProposalCard({ messageId, proposal: p, state, readOnly }: { messageId: 
       <p className="text-[13px] leading-[19px] text-[#3A3A38] [overflow-wrap:anywhere]">{p.summary}</p>
       {!!p.read?.length && (
         <div data-proposal-read className="flex flex-col gap-0.5 rounded-xl bg-[#FFF8E6] px-3 py-2 text-[12px] leading-4 text-[#7A4D00]">
-          <span className="font-medium">This turn read words from outside Bops. Check the change is yours to make:</span>
+          <span className="font-medium">This turn read words from outside SmileDesk. Check the change is yours to make:</span>
           {p.read.map((x) => (
             <span key={x} className="[overflow-wrap:anywhere]">
               {x}

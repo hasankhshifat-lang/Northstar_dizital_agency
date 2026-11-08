@@ -13,10 +13,10 @@ import { closeRunners, resetTurns, sweepTurns, turnById, turnTiming } from "../t
 import { connectMac, dropUsers, keyOf, listen, newUserId, prepareDb, startCloud, until, type Listening } from "./edge-fakes.ts";
 
 /**
- * Chat through Bops Cloud (cloud/turns.ts, members.ts): in a workspace switched to it, a member's message in a one bot
- * chat is written by Bops Cloud at once with their stamp, every viewer (the owner's devices and the member's) hears it
+ * Chat through SmileDesk Cloud (cloud/turns.ts, members.ts): in a workspace switched to it, a member's message in a one bot
+ * chat is written by SmileDesk Cloud at once with their stamp, every viewer (the owner's devices and the member's) hears it
  * and then the bot's answer on the stream they already watch, and the answer is owed to the runner on the bot's
- * computer, which claims it (only its own, one at a time per chat), stamps its rows by Bops Cloud's clock and says it's
+ * computer, which claims it (only its own, one at a time per chat), stamps its rows by SmileDesk Cloud's clock and says it's
  * done. A computer with no runner listening is woken through orgo-web (one wake at a time per computer; refused for one
  * billed by the hour unless the owner allowed it, with a note). Without Use its computer the message stays with a note
  * and nothing runs. A removed member's turns end and their runner hears it. A lost runner's turn is owed again only
@@ -113,7 +113,7 @@ const own = (userId: string, device = "mac-o", version = "0.0.36") => ({
 });
 const vm = (userId: string, desktop: string) => `orgo_vm_${userId}~${desktop}`;
 
-/** An owner whose workspace Acme is switched to chat through Bops Cloud: Max (and Dana, on Max's computer), Zed on the owner's Mac. */
+/** An owner whose workspace Acme is switched to chat through SmileDesk Cloud: Max (and Dana, on Max's computer), Zed on the owner's Mac. */
 async function setup(opts: { cloud?: boolean } = {}) {
   const owner = user("owner");
   const writer = user("writer");
@@ -201,12 +201,12 @@ const membersChanged = (projectId: string, userId: string) => {
 };
 
 
-/** A note Bops Cloud writes in the chat (some just after the response): its words once it's there. */
+/** A note SmileDesk Cloud writes in the chat (some just after the response): its words once it's there. */
 async function noteOf(owner: string, id: string): Promise<string | undefined> {
   await until(async () => (await messages(owner)).some((m) => m.id === id), `the note ${id}`);
   return (await messages(owner)).find((m) => m.id === id)?.text as string | undefined;
 }
-test("a member's message is written by Bops Cloud at once, both viewers hear it and the bot's answer, and the computer's runner answers it on Bops Cloud's clock", async () => {
+test("a member's message is written by SmileDesk Cloud at once, both viewers hear it and the bot's answer, and the computer's runner answers it on SmileDesk Cloud's clock", async () => {
   const s = await setup();
   const ownerLive = await stream("/v1/live?ws=ws_acme", keyOf(s.owner), "snapshot");
   const memberLive = await stream(`/v1/live?project=${s.project}`, keyOf(s.writer), "snapshot");
@@ -226,7 +226,7 @@ test("a member's message is written by Bops Cloud at once, both viewers hear it 
     await until(() => v.of("turn").some((e) => e.data.state === "owed" && e.data.chatId === "bot:max"), "the turn owed");
     await until(() => v.of("mood").some((e) => e.data.botId === "max" && e.data.mood === "thinking"), "Max thinking");
   }
-  // The runner hears it, claims it, and gets Bops Cloud's clock and who said it.
+  // The runner hears it, claims it, and gets SmileDesk Cloud's clock and who said it.
   const ev = await until(() => box.of("turn").find((e) => e.data.id === answer.turn), "the runner's turn event");
   assert.equal(ev.data.messageId, answer.messageId);
   const c = await runner(s.owner, s.desktop, `/v1/runner/turns/${answer.turn}/claim`, {});
@@ -243,7 +243,7 @@ test("a member's message is written by Bops Cloud at once, both viewers hear it 
   const all = await messages(s.owner);
   const reply = all.find((m) => m.id === "a1")!;
   assert.equal(reply.at, (row.at as number) + 1, "stamped right after the question");
-  assert.deepEqual((all.find((m) => m.id === answer.messageId)!.reactions as { by: string; type: string }[]).map((x) => [x.by, x.type]), [["max", "like"]], "its tapback, written by Bops Cloud");
+  assert.deepEqual((all.find((m) => m.id === answer.messageId)!.reactions as { by: string; type: string }[]).map((x) => [x.by, x.type]), [["max", "like"]], "its tapback, written by SmileDesk Cloud");
   assert.equal((await turnById(s.owner, answer.turn))?.state, "done");
   for (const v of [ownerLive, memberLive]) await until(() => v.of("turn").some((e) => e.data.state === "done"), "done on every stream");
   // The member reads both from the workspace's state: their words and the bot's answer.
@@ -341,7 +341,7 @@ test("without Use its computer the message stays with a note, nothing is woken, 
   assert.ok((await messages(s.owner)).some((m) => m.id === g.messageId && (m.member as { userId: string }).userId === s.writer));
   const waiting = await query<{ payload: { stored: boolean; messageId: string } }>("SELECT payload FROM bops.cloud_pending WHERE user_id = $1 AND kind = 'member'", [s.owner]);
   assert.deepEqual(waiting.rows.map((r) => [r.payload.stored, r.payload.messageId]), [[true, g.messageId]]);
-  assert.equal((await noteOf(s.owner, `${g.messageId}_note`)), "Tara's Mac answers in this group, so the bots will answer once Tara opens Bops.");
+  assert.equal((await noteOf(s.owner, `${g.messageId}_note`)), "Tara's Mac answers in this group, so the bots will answer once Tara opens SmileDesk.");
 });
 
 test("a computer with no runner is woken once however many turns wait, they go to the runner as it connects, and a refusal ends them with a note", async () => {
@@ -393,7 +393,7 @@ test("a member removed: what they're owed ends at once, and the runner holding i
   box.close();
 });
 
-test("orgo-web's word on Use its computer is the one Bops Cloud goes by: its no wins over the owner's state, its yes stands where that never set it, and the owner turning it off still ends a turn", async () => {
+test("orgo-web's word on Use its computer is the one SmileDesk Cloud goes by: its no wins over the owner's state, its yes stands where that never set it, and the owner turning it off still ends a turn", async () => {
   const s = await setup();
   const box = await stream("/v1/runner/live", vm(s.owner, s.desktop), "hello");
   const view = async (member: string) =>
@@ -447,16 +447,16 @@ test("an Admin with no entry: their message is owed to the computer and claimed 
   box.close();
 });
 
-/** A Bops whose own writes keep an Admin's How I work that Bops Cloud kept (CLOUD_PERSONA_MIN_VERSION), as the owner's Mac says it on each call. */
+/** A SmileDesk whose own writes keep an Admin's How I work that SmileDesk Cloud kept (CLOUD_PERSONA_MIN_VERSION), as the owner's Mac says it on each call. */
 const NEW_MAC = "0.0.42";
 /** The owner's last Mac said `version` (NEW_MAC), as their account keeps it (cloud/app-version.ts; /v1/session makes the row, which these owners never called). */
 const macSaid = (owner: string, version = NEW_MAC) =>
   query("INSERT INTO bops.cloud_accounts (user_id, app_version) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET app_version = EXCLUDED.app_version", [owner, version]);
-/** The owner's state as their Mac reads it from Bops Cloud (persist-cloud.ts load). */
+/** The owner's state as their Mac reads it from SmileDesk Cloud (persist-cloud.ts load). */
 const ownersState = async (owner: string) => (await (await fetch(`${cloud.url}/v1/state`, { headers: own(owner, "mac-o", NEW_MAC) })).json()) as { version: number; state: { bots: Record<string, unknown>[] } };
 const botOf = (state: { bots: Record<string, unknown>[] }, id: string) => state.bots.find((b) => b.id === id)!;
 
-test("an Admin's How I work with the owner's Mac shut: Bops Cloud keeps it at once, the bot's next turn on its computer has it, nothing waits ten minutes, and the owner's Mac reads it as it opens", async (t) => {
+test("an Admin's How I work with the owner's Mac shut: SmileDesk Cloud keeps it at once, the bot's next turn on its computer has it, nothing waits ten minutes, and the owner's Mac reads it as it opens", async (t) => {
   const s = await setup();
   const admin = user("admin");
   roles[`${admin} ${s.project}`] = { role: "admin", ownerUserId: s.owner, bopsWsId: "ws_acme", name: "Acme" };
@@ -494,18 +494,18 @@ test("an Admin's How I work with the owner's Mac shut: Bops Cloud keeps it at on
   assert.equal((await ownersState(s.owner)).version, v);
 });
 
-test("an Admin's How I work for an owner whose last Mac is older than CLOUD_PERSONA_MIN_VERSION waits for that Mac as before, even with it shut: Bops Cloud never writes it, so that Mac's next save can't put the owner's words back over it", async () => {
+test("an Admin's How I work for an owner whose last Mac is older than CLOUD_PERSONA_MIN_VERSION waits for that Mac as before, even with it shut: SmileDesk Cloud never writes it, so that Mac's next save can't put the owner's words back over it", async () => {
   const s = await setup();
   const admin = user("admin");
   roles[`${admin} ${s.project}`] = { role: "admin", ownerUserId: s.owner, bopsWsId: "ws_acme", name: "Acme" };
-  // 0.0.41 takes an Admin's How I work (ADMIN_PUBLISH_MIN_VERSION), but merges its own later write of the bot without keeping one Bops Cloud kept.
+  // 0.0.41 takes an Admin's How I work (ADMIN_PUBLISH_MIN_VERSION), but merges its own later write of the bot without keeping one SmileDesk Cloud kept.
   await macSaid(s.owner, "0.0.41");
   const r = await act(admin, s.project, "key-oldmac-01", { act: "persona", botId: "max", text: "Keep replies short.", was: "" });
   assert.equal(r.status, 202, await r.clone().text());
   assert.deepEqual(await r.json(), { ok: true, macOn: false }, "queued for the owner's Mac, as before");
   assert.equal((await query("SELECT 1 FROM bops.cloud_pending WHERE user_id = $1", [s.owner])).rowCount, 1, "one act waiting for it");
   const kept = (await query<{ state: { bots: Record<string, unknown>[] } }>("SELECT state FROM bops.app_state WHERE user_id = $1", [s.owner])).rows[0].state;
-  assert.equal(botOf(kept, "max").persona, undefined, "never written by Bops Cloud");
+  assert.equal(botOf(kept, "max").persona, undefined, "never written by SmileDesk Cloud");
   assert.equal((await messages(s.owner)).some((m) => m.id === `msg_persona_${admin}_key-oldmac-01`), false, "nor said in the chat");
 });
 
@@ -564,7 +564,7 @@ test("an Admin's How I work with the owner's Mac on, or in a workspace whose cha
   const on = await act(admin, s.project, "key-macon-01", { act: "persona", botId: "max", text: "Keep replies short.", was: "" });
   assert.deepEqual((await on.json()) as Record<string, unknown>, { ok: true, macOn: true }, "handed to the owner's Mac, which saves it as its own Save does");
   await until(() => mac.frames.some((f) => f.t === "event" && (f.payload as MemberActPayload).key === "key-macon-01"), "the Mac's event");
-  assert.equal(botOf((await ownersState(s.owner)).state, "max").persona, undefined, "never written by Bops Cloud while the Mac is on");
+  assert.equal(botOf((await ownersState(s.owner)).state, "max").persona, undefined, "never written by SmileDesk Cloud while the Mac is on");
   mac.ws.close();
   await mac.closed;
   await until(async () => (await query("SELECT 1 FROM bops.cloud_pending WHERE user_id = $1 AND delivered_at IS NULL", [s.owner])).rowCount === 0, "the Mac's ack");
@@ -583,7 +583,7 @@ test("Use its computer turned off in orgo-web: its notice ends what's owed and r
   const a = (await (await act(s.writer, s.project, "key-orgo-off-1", { act: "chat", chatId: "bot:max", text: "x" })).json()) as { turn: string };
   const b = (await (await act(s.writer, s.project, "key-orgo-off-2", { act: "chat", chatId: "bot:dana", text: "y" })).json()) as { turn: string };
   assert.equal((await runner(s.owner, s.desktop, `/v1/runner/turns/${a.turn}/claim`, {})).status, 200);
-  // Turned off there (the owner's state still says "use"), and orgo-web tells Bops Cloud.
+  // Turned off there (the owner's state still says "use"), and orgo-web tells SmileDesk Cloud.
   orgoSays(s.writer, s.project, { computerUse: false });
   assert.equal((await membersChanged(s.project, s.writer)).status, 204);
   await until(async () => (await turnById(s.owner, a.turn))?.state === "expired" && (await turnById(s.owner, b.turn))?.state === "expired", "both ended");
@@ -609,7 +609,7 @@ test("Use its computer taken away after the message: the runner's claim is refus
   assert.equal((await noteOf(s.owner, `${a.messageId}_note`)), "Tara hasn't let Wren use Max's computer, so Max won't answer this.");
 });
 
-test("the owner's own message goes through Bops Cloud too, only in a one bot chat of a switched workspace", async () => {
+test("the owner's own message goes through SmileDesk Cloud too, only in a one bot chat of a switched workspace", async () => {
   const s = await setup();
   const send = (chatId: string, body: Record<string, unknown>) => fetch(`${cloud.url}/v1/chats/${chatId}/send`, { method: "POST", headers: own(s.owner), body: JSON.stringify(body) });
   const r = await send("bot:max", { key: "owner-key-0001", text: "hello Max" });
@@ -632,14 +632,14 @@ test("the owner's own message goes through Bops Cloud too, only in a one bot cha
   assert.equal((await send("bot%2Fmax", { key: "owner-key-0001f", text: "x" })).status, 404);
 });
 
-test("a bot on the owner's Mac: Bops Cloud writes the message, the Mac is handed it to answer, and the chat says so while the Mac is away", async () => {
+test("a bot on the owner's Mac: SmileDesk Cloud writes the message, the Mac is handed it to answer, and the chat says so while the Mac is away", async () => {
   const s = await setup();
   const r = await act(s.writer, s.project, "key-onmac-0001", { act: "chat", chatId: "bot:zed", text: "on the Mac" });
   const a = (await r.json()) as { messageId: string; turn?: string };
   assert.equal(a.turn, undefined);
   const waiting = await query<{ payload: { stored: boolean; messageId: string } }>("SELECT payload FROM bops.cloud_pending WHERE user_id = $1 AND kind = 'member'", [s.owner]);
   assert.deepEqual([waiting.rows[0]?.payload.stored, waiting.rows[0]?.payload.messageId], [true, a.messageId]);
-  assert.equal((await noteOf(s.owner, `${a.messageId}_note`)), "Zed works on Tara's Mac, so Zed will answer once Tara opens Bops.");
+  assert.equal((await noteOf(s.owner, `${a.messageId}_note`)), "Zed works on Tara's Mac, so Zed will answer once Tara opens SmileDesk.");
 });
 
 test("with the switch off nothing changes: the act waits for the owner's Mac as before", async () => {
@@ -675,7 +675,7 @@ test("Use its computer turned off while a turn runs: its next beat is refused, t
   box.close();
 });
 
-test("a beat checks the member again even when no write told Bops Cloud (a state written another way)", async () => {
+test("a beat checks the member again even when no write told SmileDesk Cloud (a state written another way)", async () => {
   const s = await setup();
   const a = (await (await act(s.writer, s.project, "key-beat-chk01", { act: "chat", chatId: "bot:max", text: "x" })).json()) as { turn: string };
   assert.equal((await runner(s.owner, s.desktop, `/v1/runner/turns/${a.turn}/claim`, {})).status, 200);
@@ -751,16 +751,16 @@ test("a computer orgo-web says is running whose runner never connects (one from 
   await until(async () => (await turnById(s.owner, a.turn))?.state === "failed", "ended", 15_000);
   assert.equal((await turnById(s.owner, a.turn))?.note, "noRunner");
   await until(async () => (await messages(s.owner)).some((m) => m.id === `${a.messageId}_note`), "the note");
-  assert.equal((await noteOf(s.owner, `${a.messageId}_note`)), "Max's computer is on, but it can't answer chats yet. Tara needs to open the updated Bops once to set it up.");
+  assert.equal((await noteOf(s.owner, `${a.messageId}_note`)), "Max's computer is on, but it can't answer chats yet. Tara needs to open the updated SmileDesk once to set it up.");
 });
 
-test("turning chat to Bops Cloud waits for a Bops new enough; an older Mac's save that drops the switch has it put back", async () => {
+test("turning chat to SmileDesk Cloud waits for a SmileDesk new enough; an older Mac's save that drops the switch has it put back", async () => {
   const s = await setup({ cloud: false });
   const on = (headers: Record<string, string>) => fetch(`${cloud.url}/v1/chat-routing`, { method: "POST", headers, body: JSON.stringify({ wsId: "ws_acme", mode: "cloud" }) });
   const old = await on(own(s.owner, "mac-o", "0.0.35"));
   assert.deepEqual([old.status, ((await old.json()) as { code: string }).code], [409, "chat_needs_update"]);
   assert.equal((await on(own(s.owner))).status, 200);
-  // An older Bops saves the state without Workspace.chatOn: Bops Cloud keeps the switch on it.
+  // An older SmileDesk saves the state without Workspace.chatOn: SmileDesk Cloud keeps the switch on it.
   await ownerChanges(s.owner, (st) => delete st.workspaces.find((w) => w.id === "ws_acme")!.chatOn, own(s.owner, "mac-old", "0.0.35"));
   const now = (await (await fetch(`${cloud.url}/v1/state`, { headers: own(s.owner) })).json()) as { state: { workspaces: { id: string; chatOn?: string }[] } };
   assert.equal(now.state.workspaces.find((w) => w.id === "ws_acme")?.chatOn, "cloud");

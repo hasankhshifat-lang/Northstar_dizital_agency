@@ -1,7 +1,7 @@
 // Tests for what a bot does without asking (lib/permission.ts), as Claude Code's "don't ask again" decides it: a rule is
 // for one bot and one action, whatever the recipients or details of each call; the last rule for an action wins, and none
 // asks. "Just do it" allows what no rule says, except what it still asks about (what could move money) and what it never
-// covers (a key's write, a paid lookup). Always allow saves one rule for the action, with "*" as its resource for a Bops
+// covers (a key's write, a paid lookup). Always allow saves one rule for the action, with "*" as its resource for a SmileDesk
 // from before, never twice. A rule saved before for an action and one resource reads as a rule for that action. No
 // wildcards: an action is as it's written.
 // Pure: no state, no network.
@@ -54,7 +54,7 @@ assert.equal(P.allows({ permissions: [{ action: "Use a paid lookup", resource: "
 
 /* ---------------- Always allow ---------------- */
 
-assert.deepEqual(P.alwaysRule("Send an email"), { action: "Send an email", resource: "*", effect: "allow" }, "one rule for the action, \"*\" for a Bops from before");
+assert.deepEqual(P.alwaysRule("Send an email"), { action: "Send an email", resource: "*", effect: "allow" }, "one rule for the action, \"*\" for a SmileDesk from before");
 assert.equal(P.alwaysRule("Send an email", ava), null, "never twice");
 assert.equal(P.alwaysRule("Send an email", [{ action: "Send an email", resource: "dana@acme.example", effect: "allow" }]), null, "one saved before covers it already");
 assert.deepEqual(P.alwaysRule("Send an email", flip), { action: "Send an email", resource: "*", effect: "allow" }, "over a rule that asks");
@@ -78,7 +78,7 @@ assert.equal(P.mailRule({ permissions: [...ask, ...ava] }), "allow", "the last r
 assert.equal(P.mailRule({ permissions: ask, autoApprove: true }), "ask");
 const other = { action: "Call Stripe", resource: "*", effect: "allow" };
 const mixed = [{ action: "Send an email", resource: "dana@acme.example", effect: "allow" }, other, ...ask];
-assert.deepEqual(P.withMailRule(mixed, "never"), [other, ...ask], "Never keeps an ask rule (a Bops from before asks), others kept");
+assert.deepEqual(P.withMailRule(mixed, "never"), [other, ...ask], "Never keeps an ask rule (a SmileDesk from before asks), others kept");
 assert.deepEqual(P.withMailRule(mixed, "ask"), [other, ...ask], "With your OK: an ask rule, whatever Just do it says now");
 assert.deepEqual(P.withMailRule(undefined, "ask"), ask);
 assert.deepEqual(P.withMailRule(mixed, "allow"), [other, ...ava], "allow: the rule Always allow saves");

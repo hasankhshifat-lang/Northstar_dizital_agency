@@ -88,23 +88,23 @@ import { cancelMember, chatAutoFor, computerFor, macNewEnough, ownerOf, recheckT
 
 /**
  * Shared workspaces (protocol.ts "Shared workspaces"): someone the owner added to one of their
- * Bops workspaces' Orgo projects watches it from their own Bops. They see the bots the owner gave them
+ * SmileDesk workspaces' Orgo projects watches it from their own SmileDesk. They see the bots the owner gave them
  * (member-access.ts, kept on the workspace in the owner's state) and everything of each: its chats (the
  * owner's 1:1 chats with it, the owner's own messages in them, and a group whose every bot they were
  * given), its threads with their notes and results, its routines and watches, what Needs you, the moods
  * as they happen. Never another bot's, nor the owner's vault, logins, keys, Macs or settings
  * (ws-slice.ts). Members never publish (POST /v1/live only ever goes into the caller's own account), and
- * Bops Cloud edits the owner's state for an Admin in two places only: the bots a Member has (peopleWrite), entry by
+ * SmileDesk Cloud edits the owner's state for an Admin in two places only: the bots a Member has (peopleWrite), entry by
  * entry as the owner's Mac keeps them, which the owner's Macs merge in; and a bot's How I work while the owner's Mac is
- * away, in a workspace whose chat goes through Bops Cloud, with the owner's Bops new enough to keep it (personaHere).
+ * away, in a workspace whose chat goes through SmileDesk Cloud, with the owner's SmileDesk new enough to keep it (personaHere).
  *
  * - **Who may**: orgo-web says, with the caller's own Orgo key (GET /api/projects/<id>/bops-role: the
  *   owner, an admin or a member; 404 for anyone else; and, from an orgo-web that sends it, when their
  *   membership began: joinedAt, so bots set for them before they were removed and came back stay hidden;
- *   and whether the owner let them use the bots' computers: computerUse, which ws-slice.ts computerUseOf goes by). Bops Cloud's login can't read orgo-web's members,
+ *   and whether the owner let them use the bots' computers: computerUse, which ws-slice.ts computerUseOf goes by). SmileDesk Cloud's login can't read orgo-web's members,
  *   so it asks. Each answer is kept ROLE_MS for that caller and project (a "no" NO_MS); a member's open
  *   stream asks again every ROLE_MS and ends with "revoked" once the answer is no (and plainly, to be asked
- *   afresh as it reconnects, once Orgo couldn't answer UNSURE_LOOKS looks in a row). A project with no Bops
+ *   afresh as it reconnects, once Orgo couldn't answer UNSURE_LOOKS looks in a row). A project with no SmileDesk
  *   workspace of its own (an Orgo without per workspace projects: one "bops" project for all of them)
  *   is refused, since being its member would show every workspace.
  * - **orgo-web tells the cloud** when someone's access to a project changed (they were removed, left, had
@@ -119,12 +119,12 @@ import { cancelMember, chatAutoFor, computerFor, macNewEnough, ownerOf, recheckT
  * - **Acting** (a member with Write): POST /v1/ws/<id>/act { key, act } (protocol.ts MemberAct) says
  *   something in a chat, replies in a thread, answers an ask, stops threads or says there's nothing to
  *   add. It's checked here first: the caller with orgo-web afresh (a removal stops it at once), never the
- *   owner (who acts in their own Bops), and the owner's memberAccess for every bot it touches, worked out
+ *   owner (who acts in their own SmileDesk), and the owner's memberAccess for every bot it touches, worked out
  *   from the owner's state, never from what the member's app sent (a group chat only with Write on every
  *   bot in it, an app's ask only for Orgo's team). Then it waits for the owner's Mac on the tunnel's queue
  *   (a "member" event, MEMBER_ACT_MS at most), which checks it again against its own state and does it as
  *   the owner's own taps would, with the member named as who said it. The member's own key for it makes a
- *   retry a no-op. Counted, MEMBER_ACTS_A_MINUTE a minute each. In a workspace whose chat goes through Bops Cloud
+ *   retry a no-op. Counted, MEMBER_ACTS_A_MINUTE a minute each. In a workspace whose chat goes through SmileDesk Cloud
  *   (turns.ts), a chat act is written here at once instead, and its answer owed to the bot's computer (cloudChat); so is
  *   an Admin's How I work while the owner's Mac is away (personaHere: CLOUD_PERSONA_MIN_VERSION), and an answer to a computer's runner's ask
  *   (answerOnComputer).
@@ -227,12 +227,12 @@ async function ask(key: string, projectId: string): Promise<WsAccess | null> {
 /**
  * The stream and the state a caller may watch for a project: the owner's account and the project's
  * workspace. 404 without access (never saying whether the project exists), 409 for a project with no
- * Bops workspace of its own.
+ * SmileDesk workspace of its own.
  */
 export async function watchable(user: CloudUser, key: string, projectId: string, opts: { fresh?: boolean } = {}): Promise<{ access: WsAccess; target: LiveTarget }> {
   const access = await accessFor(user.id, key, projectId, opts);
   if (!access) throw new HttpError(404, "No such workspace");
-  if (!access.bopsWsId) throw new HttpError(409, "This workspace can't be shared in Bops yet", { code: WS_NOT_SHAREABLE });
+  if (!access.bopsWsId) throw new HttpError(409, "This workspace can't be shared in SmileDesk yet", { code: WS_NOT_SHAREABLE });
   return { access, target: { account: access.ownerUserId, ws: access.bopsWsId } };
 }
 
@@ -240,7 +240,7 @@ export async function watchable(user: CloudUser, key: string, projectId: string,
  * Who the caller is to the workspace, as ws-slice.ts sharedSlice takes it: orgo-web's role (an Admin has every bot:
  * ws-slice.ts viewerAccess), their email (their access is kept by it), user id (a guest's is), when their membership
  * began (access set before isn't theirs), their Use its computer and Keys as orgo-web says them, and the owner's email (apps).
- * `adminActs` and `adminPublish`: the owner's Bops takes an Admin's acts, and publishes for them (adminGate). `keyActs`: it
+ * `adminActs` and `adminPublish`: the owner's SmileDesk takes an Admin's acts, and publishes for them (adminGate). `keyActs`: it
  * takes the "key" act (KEYS_MIN_VERSION), said to someone with Keys. `changes`: it takes the "change" act (change-routes.ts
  * CHANGES_MIN_VERSION), said to anyone but the owner.
  */
@@ -280,7 +280,7 @@ async function liveWorkspaceKeys(key: string, projectId: string): Promise<Set<st
 }
 
 /**
- * Whether a "key" act turning `name` on is for one of the owner's own keys (OWNERS_KEY_LINE), as far as Bops Cloud can tell:
+ * Whether a "key" act turning `name` on is for one of the owner's own keys (OWNERS_KEY_LINE), as far as SmileDesk Cloud can tell:
  * the names the owner's Mac last said (keyNamesOf) have it only as the owner's (for all their workspaces, or another
  * workspace's of theirs), and orgo-web's list of the workspace's own keys doesn't have it either (one added there since the
  * owner's Mac last said is the workspace's own). When either can't say, the owner's Mac decides, from its vault read afresh.
@@ -292,16 +292,16 @@ async function ownersOwnKey(workspace: Record<string, unknown> | null, name: str
   return !!live && !live.has(name);
 }
 
-/* ---------------- An Admin's acts: the owner's Bops new enough ---------------- */
+/* ---------------- An Admin's acts: the owner's SmileDesk new enough ---------------- */
 
-/** How long whether an owner's Bops takes an Admin's acts is kept (adminGate). */
+/** How long whether an owner's SmileDesk takes an Admin's acts is kept (adminGate). */
 const GATE_MS = 60_000;
 const gates = new Map<string, { at: number; yes: boolean }>();
 const realGate = (owner: string, min: string) => macNewEnough(owner, min);
 let gateOf: (owner: string, min: string) => Promise<boolean> = realGate;
 
 /**
- * Whether the owner's Bops takes an Admin's acts (protocol.ts ADMIN_POWERS_MIN_VERSION), or those from `min` on (Publish, and a change to a bot's How
+ * Whether the owner's SmileDesk takes an Admin's acts (protocol.ts ADMIN_POWERS_MIN_VERSION), or those from `min` on (Publish, and a change to a bot's How
  * I work: ADMIN_PUBLISH_MIN_VERSION): the last Mac of theirs that said its version (turns.ts macNewEnough), kept GATE_MS. An
  * older one would drop what it doesn't know, so they're refused here first (OWNER_BOPS_OLD). Never throws: no answer is a no.
  */
@@ -316,22 +316,22 @@ export async function adminGate(owner: string, min = ADMIN_POWERS_MIN_VERSION): 
 }
 
 /**
- * Who acts, as the checks below take it: orgo-web's role (asked afresh) and whether the owner's Bops takes an Admin's acts
+ * Who acts, as the checks below take it: orgo-web's role (asked afresh) and whether the owner's SmileDesk takes an Admin's acts
  * (`adminEdits`: a change to a bot's "How I work", asked only for an Admin's "persona" act).
  */
 type Actor = { role: WsRole; adminActs: boolean; adminEdits?: boolean; keys?: boolean; keyActs?: boolean; can?: Partial<Record<Power, true>> };
 /**
- * Whether an Admin with the owner's Bops new enough may do `power` (member-access.ts ADMIN_POWERS), or a Member with its
- * switch on (`can`: set only when the owner's Bops takes switches, CHANGES_MIN_VERSION).
+ * Whether an Admin with the owner's SmileDesk new enough may do `power` (member-access.ts ADMIN_POWERS), or a Member with its
+ * switch on (`can`: set only when the owner's SmileDesk takes switches, CHANGES_MIN_VERSION).
  */
 const mayAdmin = (who: Actor, power: AdminPower) => adminMay(power, { admin: who.role === "admin" && who.adminActs, ...(who.can ? { can: who.can } : {}) });
-/** For an act only an Admin does: 403 ADMIN_ONLY for anyone else, 409 OWNER_BOPS_OLD while the owner's Bops can't take it (`taken`). */
+/** For an act only an Admin does: 403 ADMIN_ONLY for anyone else, 409 OWNER_BOPS_OLD while the owner's SmileDesk can't take it (`taken`). */
 function adminOnly(who: Actor, taken = who.adminActs) {
   if (who.role !== "admin") throw new HttpError(403, ADMIN_LINE, { code: ADMIN_ONLY });
   if (!taken) throw new HttpError(409, OWNER_OLD_LINE, { code: OWNER_BOPS_OLD });
 }
 export const ADMIN_LINE = "Only the owner or an Admin can do this.";
-export const OWNER_OLD_LINE = "The owner's Bops needs an update first.";
+export const OWNER_OLD_LINE = "The owner's SmileDesk needs an update first.";
 /** What someone without Keys is told for a "key" act (MEMBER_NO_KEYS). */
 export const NO_KEYS = "The owner or an Admin can give you Keys.";
 
@@ -453,7 +453,7 @@ const readState: Route = {
       access,
       access.role !== "owner" && (await adminGate(target.account)),
       access.role === "admin" && (await adminGate(target.account, ADMIN_PUBLISH_MIN_VERSION)),
-      // Someone with Keys: whether the owner's Bops takes their "key" act (asked only for them).
+      // Someone with Keys: whether the owner's SmileDesk takes their "key" act (asked only for them).
       keysHeld(access) && (await adminGate(target.account, KEYS_MIN_VERSION)),
       // Whether it takes a "change" act (change-routes.ts), said to anyone but the owner.
       access.role !== "owner" && (await adminGate(target.account, CHANGES_MIN_VERSION)),
@@ -664,8 +664,8 @@ export const NO_COMPUTER = "This runs on the bot's computer, and the owner hasn'
 const THEIR_LOGINS = "This uses the owner's apps or keys. Only the owner can answer it.";
 /** What someone without Use its computer is told when they add a file for a bot (MEMBER_NO_COMPUTER): files go on its computer. */
 export const FILES_NO_COMPUTER = "The owner hasn't let you use this bot's computer, so you can't add files for it.";
-/** Files from someone else, while the owner's Bops is older than MEMBER_FILES_MIN_VERSION (OWNER_BOPS_OLD): it would drop them. */
-export const FILES_OWNER_OLD = "The owner's Bops needs an update before you can add files here.";
+/** Files from someone else, while the owner's SmileDesk is older than MEMBER_FILES_MIN_VERSION (OWNER_BOPS_OLD): it would drop them. */
+export const FILES_OWNER_OLD = "The owner's SmileDesk needs an update before you can add files here.";
 /**
  * What a Member (not an Admin) is told when they add a file (ADMIN_ONLY): orgo-web's file uploads take the owner and
  * Admins only (its lib/files/authorize.ts authorizeComputerWrite: write access to the project, which its role "member"
@@ -682,8 +682,8 @@ const botName = (b: Record<string, unknown> | undefined) => (typeof b?.name === 
 /**
  * A message's files (cleanAct) as they fit the owner's state as `blob` has it: each for one of the chat's bots (`bots`,
  * botsTouched), on the computer that bot works on (its own, or the main bot's it shares: computer-scope.ts workBotOf), as
- * the member's Bops was told when it put it there (filesIn), and never for a bot that works on the owner's Mac now (it
- * can't open them there). Each is named by that computer's bot as this state names it, never as the member's Bops sent
+ * the member's SmileDesk was told when it put it there (filesIn), and never for a bot that works on the owner's Mac now (it
+ * can't open them there). Each is named by that computer's bot as this state names it, never as the member's SmileDesk sent
  * it: everyone sees the name on the message, and the bot is told it. One that doesn't fit (the owner moved the bot
  * meanwhile) is refused, so the bot is never told of a file somewhere it isn't.
  */
@@ -729,7 +729,7 @@ function computerAct(blob: Record<string, unknown>, slice: ReturnType<typeof sli
 
 /**
  * A Member's switches in Team (member-access.ts MemberAccess.can) as the owner's state keeps them for their membership now,
- * when the owner's Bops takes them (CHANGES_MIN_VERSION): an older one doesn't know them, so none count. As `{ can }`, or nothing.
+ * when the owner's SmileDesk takes them (CHANGES_MIN_VERSION): an older one doesn't know them, so none count. As `{ can }`, or nothing.
  */
 async function switchesOf(blob: Record<string, unknown>, target: LiveTarget, user: CloudUser, role: WsAccess): Promise<{ can?: Partial<Record<Power, true>> }> {
   if (!(await adminGate(target.account, CHANGES_MIN_VERSION))) return {};
@@ -786,7 +786,7 @@ function botsTouched(blob: Record<string, unknown>, slice: ReturnType<typeof sli
       return botOf(t);
     }
     case "key": {
-      // A Keys holder's (member-access.ts holdsKeys, as orgo-web said it just now), once the owner's Bops takes it (KEYS_MIN_VERSION), for a bot in their view.
+      // A Keys holder's (member-access.ts holdsKeys, as orgo-web said it just now), once the owner's SmileDesk takes it (KEYS_MIN_VERSION), for a bot in their view.
       // Which names the workspace sees is the owner's Mac's to check, against its vault as it is then (lib/server/member-acts.ts):
       // a key just added on orgo-web isn't in what it last said yet.
       if (!who.keys) throw new HttpError(403, NO_KEYS, { code: MEMBER_NO_KEYS });
@@ -798,7 +798,7 @@ function botsTouched(blob: Record<string, unknown>, slice: ReturnType<typeof sli
     case "change":
       return [];
     case "persona": {
-      // An Admin's (ADMIN_POWERS.instructions), once the owner's Bops takes it (ADMIN_PUBLISH_MIN_VERSION); a Member's with Bot settings on.
+      // An Admin's (ADMIN_POWERS.instructions), once the owner's SmileDesk takes it (ADMIN_PUBLISH_MIN_VERSION); a Member's with Bot settings on.
       if (!who.can?.bots) adminOnly(who, adminMay("instructions", who.adminEdits === true));
       const b = slice.bots.find((x) => x.id === act.botId);
       if (!b) throw new HttpError(404, "No such bot");
@@ -810,10 +810,10 @@ function botsTouched(blob: Record<string, unknown>, slice: ReturnType<typeof sli
     case "answer": {
       const a = slice.approvals?.find((x) => x.id === act.askId);
       if (a) {
-        // The owner's own (their logins, a thread on their Mac): an Admin's too, once the owner's Bops takes it.
+        // The owner's own (their logins, a thread on their Mac): an Admin's too, once the owner's SmileDesk takes it.
         const t = typeof a.threadId === "string" ? thread(a.threadId) : undefined;
         const why = askOwnersOnly(a, t, { admin: who.role === "admin" && who.adminActs, ...(who.can ? { can: who.can } : {}) });
-        // An Admin's to answer, once the owner's Bops takes it: until then it would be dropped there.
+        // An Admin's to answer, once the owner's SmileDesk takes it: until then it would be dropped there.
         if (why && who.role === "admin" && !who.adminActs && !askOwnersOnly(a, t, true)) throw new HttpError(409, OWNER_OLD_LINE, { code: OWNER_BOPS_OLD });
         if (why === "logins") throw new HttpError(403, THEIR_LOGINS, { code: MEMBER_OWNER_ONLY });
         if (why === "mac") throw new HttpError(403, ON_THEIR_MAC, { code: MEMBER_OWNER_ONLY });
@@ -885,25 +885,25 @@ let queue: Queue = realQueue;
 let isOn: (owner: string) => boolean = realIsOn;
 let drop: (projectId: string, userId: string) => Promise<void> = dropActs;
 let cancel: (projectId: string, userId: string) => Promise<void> = (...a) => cancelMember(...a);
-/** Whether the owner's workspace goes through Bops Cloud (turns.ts routingOf). */
+/** Whether the owner's workspace goes through SmileDesk Cloud (turns.ts routingOf). */
 const realRouted = async (owner: string, ws: string) => (await routingOf(owner, ws)).cloud;
 let routed: (owner: string, ws: string) => Promise<boolean> = realRouted;
 /**
- * Whether a workspace still on the owner's Mac has its members' messages written by Bops Cloud first all the same
- * (cloudChat, then answered by the Mac): one that may move to Bops Cloud (turns.ts autoRoute) or back, or that someone
+ * Whether a workspace still on the owner's Mac has its members' messages written by SmileDesk Cloud first all the same
+ * (cloudChat, then answered by the Mac): one that may move to SmileDesk Cloud (turns.ts autoRoute) or back, or that someone
  * switched, with the owner's last Mac new enough to answer such a message. An act queued for the Mac as before is
  * dropped by a Mac that has heard of a move meanwhile (lib/server/member-acts.ts); one written first never is.
  */
 const realStoredFirst = async (owner: string, ws: string) => (await macNewEnough(owner)) && (chatAutoFor(owner) || (await routedWorkspaces(null, owner)).has(ws));
 let storedFirst: (owner: string, ws: string) => Promise<boolean> = realStoredFirst;
 let count: (userId: string, what?: "act" | "file") => Promise<void> = countAct;
-/** How a computer is woken for an answer Bops Cloud wrote (turns.ts wakeComputer). */
+/** How a computer is woken for an answer SmileDesk Cloud wrote (turns.ts wakeComputer). */
 let wake: typeof wakeComputer = (...a) => wakeComputer(...a);
-/** Bops Cloud answers a computer's runner's ask itself while the owner's Mac is away (answerOnComputer). */
+/** SmileDesk Cloud answers a computer's runner's ask itself while the owner's Mac is away (answerOnComputer). */
 let answerHere: (o: Parameters<typeof answerOnComputer>[0]) => Promise<boolean> = (o) => answerOnComputer(o);
 
 /**
- * Who the member is on what they did, as the owner's Bops shows it: their Orgo name, else their email's name, made
+ * Who the member is on what they did, as the owner's SmileDesk shows it: their Orgo name, else their email's name, made
  * plain (cleanName: it's theirs to set, and the bot's instructions carry it).
  */
 const whoOf = (user: CloudUser): MemberWho => ({
@@ -939,20 +939,20 @@ const actIn: Route = {
     // orgo-web's notices so far: one that comes after this, while it's being queued, takes it back (below).
     const asked = notices;
     const { access: role, target } = await watchable(user!, bearer(req), projectId, { fresh: true });
-    if (role.role === "owner") throw new HttpError(403, "This is your own workspace. Act in it from your Bops.", { code: OWN_WORKSPACE });
+    if (role.role === "owner") throw new HttpError(403, "This is your own workspace. Act in it from your SmileDesk.", { code: OWN_WORKSPACE });
     const blob = await ownerState(target.account);
     const actor: Actor = {
       role: role.role,
       adminActs: await adminGate(target.account),
-      // A change to a bot's How I work: an Admin's, with the owner's Bops as new as Publish needs (an older one drops it).
+      // A change to a bot's How I work: an Admin's, with the owner's SmileDesk as new as Publish needs (an older one drops it).
       ...(role.role === "admin" && body.act.act === "persona" ? { adminEdits: await adminGate(target.account, ADMIN_PUBLISH_MIN_VERSION) } : {}),
-      // Keys: theirs as orgo-web said it just now, and the owner's Bops new enough to take a "key" act (asked only for one).
+      // Keys: theirs as orgo-web said it just now, and the owner's SmileDesk new enough to take a "key" act (asked only for one).
       ...(body.act.act === "key" ? { keys: keysHeld(role), keyActs: keysHeld(role) && (await adminGate(target.account, KEYS_MIN_VERSION)) } : {}),
-      // A Member's switches in Team (member-access.ts MemberAccess.can), once the owner's Bops takes them.
+      // A Member's switches in Team (member-access.ts MemberAccess.can), once the owner's SmileDesk takes them.
       ...(role.role === "member" ? await switchesOf(blob, target, user!, role) : {}),
     };
-    // Publish from Your Apps (env "prod"): an Admin's, with the owner's Bops new enough (an older one would put it on the Preview).
-    // A Member's with App secrets on (actor.can: the owner's Bops takes switches, so it's new enough to publish for them).
+    // Publish from Your Apps (env "prod"): an Admin's, with the owner's SmileDesk new enough (an older one would put it on the Preview).
+    // A Member's with App secrets on (actor.can: the owner's SmileDesk takes switches, so it's new enough to publish for them).
     if ((body.act.act === "deploy" || body.act.act === "rollback") && body.act.env === "prod" && !actor.can?.appSecrets) adminOnly({ role: role.role, adminActs: await adminGate(target.account, ADMIN_PUBLISH_MIN_VERSION) });
     const viewer = viewerOf(user!, role, actor.adminActs);
     // Their own view, every item whole and with the owner's ids: what they may act on is only what they're shown.
@@ -961,7 +961,7 @@ const actIn: Route = {
     const access = viewerAccess(slice.workspace, viewer);
     if (isAppAct(body.act)) appsTouched(slice, viewer, access, body.act);
     // A change as the owner's window makes it: the power it needs (an Admin has every one), and only this workspace's
-    // bots (at Write) and apps (Your Apps at Write), once the owner's Bops takes it (changeTouched).
+    // bots (at Write) and apps (Your Apps at Write), once the owner's SmileDesk takes it (changeTouched).
     else if (body.act.act === "change") {
       if (!(await adminGate(target.account, CHANGES_MIN_VERSION))) throw new HttpError(409, OWNER_OLD_LINE, { code: OWNER_BOPS_OLD });
       changeTouched(blob, target.ws, slice, viewer, access, body.act);
@@ -986,7 +986,7 @@ const actIn: Route = {
     }
     // Whether their words may wake the bots' computers and run there (Use its computer), as the same state says it.
     const computer = computerUseOf(slice.workspace, viewer);
-    // Files went on a bot's computer, which takes an Admin (FILES_ADMINS_ONLY) and Use its computer, and the owner's Bops
+    // Files went on a bot's computer, which takes an Admin (FILES_ADMINS_ONLY) and Use its computer, and the owner's SmileDesk
     // new enough to tell the bot (an older one drops them).
     if (body.act.act === "chat" && body.act.files) {
       if (!filesMay(role.role)) throw new HttpError(403, FILES_ADMINS_ONLY, { code: ADMIN_ONLY });
@@ -995,13 +995,13 @@ const actIn: Route = {
     }
     // Telling work on a bot's computer more, or letting it go on (computerAct): only with Use its computer.
     if (!computer && computerAct(blob, slice, body.act)) throw new HttpError(403, NO_COMPUTER, { code: MEMBER_NO_COMPUTER });
-    // A workspace whose chat goes through Bops Cloud, or may move there: a message in a chat is written here now (cloudChat).
+    // A workspace whose chat goes through SmileDesk Cloud, or may move there: a message in a chat is written here now (cloudChat).
     if (body.act.act === "chat" && ((await routed(target.account, target.ws)) || (await storedFirst(target.account, target.ws)))) {
       const chatAct = body.act;
       if (slice.chats.some((c) => c.id === chatAct.chatId)) return cloudChat(res, { user: user!, role, target, viewer, projectId, key: body.key, act: chatAct, asked });
     }
-    // An Admin's How I work in a workspace whose chat goes through Bops Cloud, while the owner's Mac is away: kept here now,
-    // so the bot's next turn there has it (personaHere), once the owner's Bops keeps it through its own later writes
+    // An Admin's How I work in a workspace whose chat goes through SmileDesk Cloud, while the owner's Mac is away: kept here now,
+    // so the bot's next turn there has it (personaHere), once the owner's SmileDesk keeps it through its own later writes
     // (CLOUD_PERSONA_MIN_VERSION). With the Mac on, or an older one, it waits for that Mac as before.
     if (body.act.act === "persona" && !isOn(target.account) && (await routed(target.account, target.ws)) && (await adminGate(target.account, CLOUD_PERSONA_MIN_VERSION))) {
       await personaHere({ target, viewer, actor, act: body.act, who: whoOf(user!), key: body.key, still: () => (noticed.get(keyOf(user!.id, projectId))?.n ?? 0) <= asked });
@@ -1023,7 +1023,7 @@ const actIn: Route = {
       act: body.act,
       ...(computer ? { computer: true as const } : {}),
       // An answer waits as long as its ask can (below): marked stored, as every owner's Mac with members (0.0.37 on) then
-      // takes it up to STORED_ACT_MS late. (Only a chat act with a messageId is one Bops Cloud wrote already.)
+      // takes it up to STORED_ACT_MS late. (Only a chat act with a messageId is one SmileDesk Cloud wrote already.)
       ...(body.act.act === "answer" ? { stored: true as const } : {}),
       // An Admin, as orgo-web said it just now (asked afresh): the owner's Mac from 0.0.38 gives them every bot. Older Macs go by the entry.
       ...(role.role === "admin" ? { role: "admin" as const } : {}),
@@ -1047,7 +1047,7 @@ const actIn: Route = {
 
 /**
  * An answer to an ask a bot's computer's runner made (AppApproval.askedBy is that computer's runner: device.ts deviceIdOf),
- * Allow once or Deny, written on the owner's state by Bops Cloud while the owner's Mac is away, so the run there goes on
+ * Allow once or Deny, written on the owner's state by SmileDesk Cloud while the owner's Mac is away, so the run there goes on
  * now (the owner's Mac would only have written it there too: lib/server/permission.ts replyToAsk). Checked again under
  * the owner's lock, on the state as it is then (botsTouched: who may answer it, and their Write), and only while
  * orgo-web sent no notice for them. Named as theirs (AskAnswer.member), the runner told (announce nudges it) and its
@@ -1098,11 +1098,11 @@ async function answerOnComputer(o: { target: LiveTarget; viewer: SliceViewer; ac
 }
 
 /**
- * An Admin's change to a bot's How I work (the "persona" act), written on the owner's state by Bops Cloud while the owner's
+ * An Admin's change to a bot's How I work (the "persona" act), written on the owner's state by SmileDesk Cloud while the owner's
  * Mac is away, in a workspace whose chat goes through it: the bot's next turn on its computer has it (its runner reads its
  * bots whole: computer-scope.ts forComputer), and the owner's Mac loads it as it opens (one that merges it with changes of
  * its own keeps it too: lib/server/state-merge.ts). Checked again under the owner's lock, on the state as it is then, as
- * the owner's Mac checks it (lib/server/member-acts.ts refused): an Admin whose owner's Bops takes it, a bot of the
+ * the owner's Mac checks it (lib/server/member-acts.ts refused): an Admin whose owner's SmileDesk takes it, a bot of the
  * workspace, the words it began from still there (PERSONA_CHANGED), and no orgo-web notice for them since they were asked.
  * Kept as the owner's Mac keeps it: named as theirs (Bot.personaBy) with the owner's own last words for work on the owner's
  * Mac, and said in the bot's chat. The same act again (its key) changes nothing.
@@ -1139,10 +1139,10 @@ async function personaHere(o: { target: LiveTarget; viewer: SliceViewer; actor: 
   await writeMessages(target.account, [{ id: `msg_persona_${who.userId}_${o.key}`, chatId: `bot:${act.botId}`, role: "system", botId: act.botId, text: `${who.name} changed how ${out.bot} works`, at: now() }]);
 }
 
-/** Wake the computer of a run Bops Cloud answered (answerOnComputer); when it can't be, a note in the ask's chat saying why. */
+/** Wake the computer of a run SmileDesk Cloud answered (answerOnComputer); when it can't be, a note in the ask's chat saying why. */
 async function answerWake(account: string, ws: string, askId: string, o: { desktop: string; chatId: string | null; botId: string; threadId?: string; owner: string; bot: string }) {
   const w = await wake(account, o.desktop, ws, { owner: o.owner, bot: o.bot });
-  // (Waking not set up on this Bops Cloud at all is no reason to give anyone.)
+  // (Waking not set up on this SmileDesk Cloud at all is no reason to give anyone.)
   if (w.ok || w.state === "unset" || !w.why || !o.chatId) return;
   await writeMessages(account, [
     {
@@ -1160,7 +1160,7 @@ async function answerWake(account: string, ws: string, askId: string, o: { deskt
 export const wakeNote = (bot: string, why: string) => `${bot}'s computer couldn't wake for this answer. ${why.trim().replace(/[.!]?$/, ".")} ${bot} goes on once the computer is up.`;
 
 /**
- * A member's message in a chat of a workspace whose chat goes through Bops Cloud (turns.ts takeMessage): checked
+ * A member's message in a chat of a workspace whose chat goes through SmileDesk Cloud (turns.ts takeMessage): checked
  * again under the owner's lock on the state as it is then (in their view, Write on the bot), written once by their key
  * with their stamp as orgo-web vouched for them, and its answer owed to the bot's computer when the owner let them use
  * it (else the message stays, with a note that the bot won't answer). An orgo-web notice for them that lands meanwhile
@@ -1212,7 +1212,7 @@ async function cloudChat(
     },
     still: () => (noticed.get(keyOf(user.id, projectId))?.n ?? 0) <= o.asked,
     macAway: !isOn(target.account),
-    // Answered by the bot's computer only while the workspace goes through Bops Cloud as its row says now.
+    // Answered by the bot's computer only while the workspace goes through SmileDesk Cloud as its row says now.
     byRow: true,
   });
   if (taken.fresh && taken.where === "mac") {
@@ -1265,11 +1265,11 @@ const WAKE_PATH = /^\/v1\/ws\/([A-Za-z0-9-]{1,64})\/wake$/;
 const FILES_PATH = /^\/v1\/ws\/([A-Za-z0-9-]{1,64})\/files$/;
 const ROUTING_PATH = /^\/v1\/ws\/([A-Za-z0-9-]{1,64})\/routing$/;
 
-/** The caller, asked afresh, and the workspace, for an Admin's own routes: 403 ADMIN_ONLY for anyone else (the owner acts in their own Bops). */
+/** The caller, asked afresh, and the workspace, for an Admin's own routes: 403 ADMIN_ONLY for anyone else (the owner acts in their own SmileDesk). */
 async function asAdmin(req: IncomingMessage, user: CloudUser, projectId: string) {
   const key = bearer(req);
   const { access, target } = await watchable(user, key, projectId, { fresh: true });
-  if (access.role === "owner") throw new HttpError(403, "This is your own workspace. Change it from your Bops.", { code: OWN_WORKSPACE });
+  if (access.role === "owner") throw new HttpError(403, "This is your own workspace. Change it from your SmileDesk.", { code: OWN_WORKSPACE });
   if (access.role !== "admin") throw new HttpError(403, ADMIN_LINE, { code: ADMIN_ONLY });
   return { key, access, target };
 }
@@ -1370,9 +1370,9 @@ function peopleBody(b: unknown): { who: { memberId: string } | { invite: string 
  * Member's invite) has, kept on the owner's state as the owner's Mac keeps them (member-access.ts withEntry), with every
  * Mac closed. Who it is comes from orgo-web's list with the Admin's own key, asked now (never from the body): someone
  * not listed is 404 gone, the owner or an Admin 409 (they have every bot). An invite never gets Use its computer, and
- * access that leaves no Write turns it off (fitComputer). Written under the owner's lock as a new version by Bops Cloud
+ * access that leaves no Write turns it off (fitComputer). Written under the owner's lock as a new version by SmileDesk Cloud
  * (their Macs merge it in, entry by entry), then everyone watching hears it, and turns of anyone who may no longer run go.
- * Bops Cloud writes the owner's state for an Admin only here (and the routing mirror).
+ * SmileDesk Cloud writes the owner's state for an Admin only here (and the routing mirror).
  */
 const peopleWrite: Route = {
   method: "POST",
@@ -1454,7 +1454,7 @@ const wakeIn: Route = {
     if (!b || typeof b.botId !== "string" || !anId(b.botId)) throw new HttpError(400, "Send {botId}");
     await count(user!.id);
     const { access: role, target } = await watchable(user!, bearer(req), projectId, { fresh: true });
-    if (role.role === "owner") throw new HttpError(403, "This is your own workspace. Wake it from your Bops.", { code: OWN_WORKSPACE });
+    if (role.role === "owner") throw new HttpError(403, "This is your own workspace. Wake it from your SmileDesk.", { code: OWN_WORKSPACE });
     const blob = await ownerState(target.account);
     const viewer = viewerOf(user!, role);
     const slice = sliceOf(blob, target.ws, viewer);
@@ -1483,13 +1483,13 @@ const NOT_AWAKE: Partial<Record<WakeRefusal, (owner: string, host: string) => st
  * POST /v1/ws/<project>/files {botId, screen?}: where a file someone adds for a bot goes (lib/server/shared.ts
  * sharedFileTarget), for an Admin (every bot at Write, and Use its computer): the computer it works on (its own, or the
  * main bot's it shares), woken as a message to it would wake it, with the owner's say on one billed by the hour
- * (MemberFileTarget). Their own Bops then puts the file there with their own Orgo key, which orgo-web checks too, and
+ * (MemberFileTarget). Their own SmileDesk then puts the file there with their own Orgo key, which orgo-web checks too, and
  * their message names it (cleanAct, filesFit). A Member is told why not before anything is woken (FILES_ADMINS_ONLY:
  * orgo-web's uploads would refuse them). `screen`: dropped on that computer's screen, which only an Admin is shown
  * (SharedWsSlice.screens) and takes control of, so it goes there even for a bot set to work on the owner's Mac. Never
- * the owner's own (their Bops puts files on their computers itself), never a computer of another of the owner's
- * workspaces (a main bot on the free Bops computer another workspace's main bot has: that computer is in that
- * workspace's Orgo project, which the caller isn't in), and only once the owner's Bops tells the bot about them
+ * the owner's own (their SmileDesk puts files on their computers itself), never a computer of another of the owner's
+ * workspaces (a main bot on the free SmileDesk computer another workspace's main bot has: that computer is in that
+ * workspace's Orgo project, which the caller isn't in), and only once the owner's SmileDesk tells the bot about them
  * (MEMBER_FILES_MIN_VERSION), so none is put there for nothing. Counted on a count of their own (MEMBER_FILES_A_MINUTE).
  */
 const filesIn: Route = {
@@ -1505,7 +1505,7 @@ const filesIn: Route = {
     const screen = b.screen === true;
     await count(user!.id, "file");
     const { access: role, target } = await watchable(user!, bearer(req), projectId, { fresh: true });
-    if (role.role === "owner") throw new HttpError(403, "This is your own workspace. Add files from your Bops.", { code: OWN_WORKSPACE });
+    if (role.role === "owner") throw new HttpError(403, "This is your own workspace. Add files from your SmileDesk.", { code: OWN_WORKSPACE });
     if (!filesMay(role.role)) throw new HttpError(403, FILES_ADMINS_ONLY, { code: ADMIN_ONLY });
     const blob = await ownerState(target.account);
     const viewer = viewerOf(user!, role);
@@ -1519,18 +1519,18 @@ const filesIn: Route = {
     const bot = all.find((x) => x.id === botId)!;
     const name = typeof bot.name === "string" && bot.name.trim() ? bot.name.trim() : "This bot";
     const owner = ownerOf(blob);
-    // As the owner's own Bops says it (lib/server/bot-files.ts filesGoTo), in the owner's name.
+    // As the owner's own SmileDesk says it (lib/server/bot-files.ts filesGoTo), in the owner's name.
     if (blob.host === "mac") throw new HttpError(409, `${owner}'s bots work on their Mac, so there's no computer to put files on.`, { code: NOT_WAITING });
     if (bot.runsOn === "mac" && !screen) throw new HttpError(409, `${name} works on ${owner}'s Mac, where added files can't be opened yet.`, { code: NOT_WAITING });
     const host = workBotOf(bot, all);
     const computerId = typeof host.computerId === "string" && /^[A-Za-z0-9_-]{1,80}$/.test(host.computerId) ? host.computerId : null;
     const hostId = typeof host.id === "string" ? host.id : null;
     if (!computerId || !hostId) throw new HttpError(409, `${name} has no computer yet.`, { code: NOT_WAITING });
-    // The free Bops computer another workspace's main bot has (computer-scope.ts workBotOf): in that workspace's Orgo project.
+    // The free SmileDesk computer another workspace's main bot has (computer-scope.ts workBotOf): in that workspace's Orgo project.
     if (wsOfBot(host) !== target.ws) throw new HttpError(403, `${name} works on a computer in another of ${owner}'s workspaces, so only ${owner} can add files to it.`, { code: MEMBER_OWNER_ONLY });
     const hostName = botName(host) ?? name;
     const w = await wake(target.account, computerId.toLowerCase(), target.ws, { owner, bot: hostName });
-    // (Waking not set up on this Bops Cloud at all: Orgo wakes it for the file's first step, as for the owner.)
+    // (Waking not set up on this SmileDesk Cloud at all: Orgo wakes it for the file's first step, as for the owner.)
     if (!w.ok && w.state !== "unset") {
       const said = w.note && NOT_AWAKE[w.note];
       throw new HttpError(w.note === "noHours" || w.note === "noCredit" ? 402 : 409, said ? said(owner, hostName) : `${hostName}'s computer couldn't wake up. Try again later.`, { code: NOT_WAITING });
@@ -1542,7 +1542,7 @@ const filesIn: Route = {
 /**
  * PATCH /v1/ws/<project>/routing {mode: "mac" | "cloud" | "auto"}: where the workspace's chat is answered, chosen by an
  * Admin as the owner's switch does (turns.ts setRouting), kept as an Admin's choice ("admin": never moved by itself).
- * "cloud" waits for the owner's own Mac to be new enough (never the Admin's Bops). Whether a message may wake a computer
+ * "cloud" waits for the owner's own Mac to be new enough (never the Admin's SmileDesk). Whether a message may wake a computer
  * billed by the hour (`allowHourly`) is an Admin's to say too (an Admin may do everything but delete the workspace).
  */
 const routingIn: Route = {
@@ -1560,7 +1560,7 @@ const routingIn: Route = {
     const { target } = await asAdmin(req, user!, projectId);
     const out = await setRouting(target.account, target.ws, { ...(mode ? { mode } : {}), ...(typeof b.allowHourly === "boolean" ? { allowHourly: b.allowHourly } : {}) }, "admin").catch((e: unknown) => {
       // The owner's words ("your Mac") said to an Admin: the owner's Mac.
-      if (e instanceof HttpError && e.extra?.code === CHAT_AUTO_OFF) throw new HttpError(e.status, "Bops Cloud can't answer this workspace by itself yet, so the owner's Mac keeps answering it.", e.extra);
+      if (e instanceof HttpError && e.extra?.code === CHAT_AUTO_OFF) throw new HttpError(e.status, "SmileDesk Cloud can't answer this workspace by itself yet, so the owner's Mac keeps answering it.", e.extra);
       throw e;
     });
     console.log(`[members] an Admin (${user!.id}) set ${projectId}'s chat${mode ? ` to ${mode}` : ""}${typeof b.allowHourly === "boolean" ? `, hourly wake ${b.allowHourly ? "on" : "off"}` : ""}`);
@@ -1574,7 +1574,7 @@ export const routes: Route[] = [readState, actIn, changed, routingIn];
  * For tests: forget every answer kept, and use this clock, this way to reach orgo-web, this wait between
  * an open stream's looks, this way to read an owner's state, and these ways to queue a member's act for the
  * owner's Mac, tell whether it's on, drop what waits, count acts, end what's owed on a computer, tell whether
- * a workspace's chat goes through Bops Cloud, and whether its members' messages are written here first (unset: the real ones).
+ * a workspace's chat goes through SmileDesk Cloud, and whether its members' messages are written here first (unset: the real ones).
  */
 export function resetMembers(
   opts: {
@@ -1589,10 +1589,10 @@ export function resetMembers(
     cancel?: (projectId: string, userId: string) => Promise<void>;
     routed?: (owner: string, ws: string) => Promise<boolean>;
     storedFirst?: (owner: string, ws: string) => Promise<boolean>;
-    /** Whether the owner's Bops takes an Admin's acts from `min` on (adminGate). A test that fakes the owner's state says no, unless it says. */
+    /** Whether the owner's SmileDesk takes an Admin's acts from `min` on (adminGate). A test that fakes the owner's state says no, unless it says. */
     adminGate?: (owner: string, min: string) => Promise<boolean>;
     answerHere?: (o: Parameters<typeof answerOnComputer>[0]) => Promise<boolean>;
-    /** How a computer is woken for an answer Bops Cloud wrote (unset: turns.ts wakeComputer). */
+    /** How a computer is woken for an answer SmileDesk Cloud wrote (unset: turns.ts wakeComputer). */
     wake?: typeof wakeComputer;
   } = {},
 ) {

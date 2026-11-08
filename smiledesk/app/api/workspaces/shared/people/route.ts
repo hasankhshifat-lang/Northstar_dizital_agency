@@ -8,8 +8,8 @@ export const dynamic = "force-dynamic";
 /*
  * The People sheet of the workspace shared with the user open now, for an Admin there (lib/server/shared-people.ts):
  * who's in, inviting, changing roles, Use its computer and a Member's bots, and removing people, on the owner's
- * workspace with the user's own Orgo key. Changes only from the Bops window (ui-token.ts), as the owner's own sheet's
- * (app/api/members): never from a bot, a page a bot's Chrome reached, a channel or Bops Cloud.
+ * workspace with the user's own Orgo key. Changes only from the SmileDesk window (ui-token.ts), as the owner's own sheet's
+ * (app/api/members): never from a bot, a page a bot's Chrome reached, a channel or SmileDesk Cloud.
  */
 const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ code: "WINDOW_ONLY", error: WORDS.windowOnly }, { status: 403 }));
 const answer = (a: { status: number; body: unknown }) => Response.json(a.body, { status: a.status });

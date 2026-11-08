@@ -158,7 +158,7 @@ const until = async (check, what, ms = 5000) => {
 const set = () => S.getState().workspaces?.find((w) => w.id === "ws_main")?.botSettings?.[sam().id];
 const NEW_ON_BOT = ["callVoice", "answersCalls", "sequencesOff", "mailNever"];
 {
-  assert.equal((await patch({ callVoice: "sage" }, false)).status, 403, "only from the Bops window");
+  assert.equal((await patch({ callVoice: "sage" }, false)).status, 403, "only from the SmileDesk window");
   assert.equal(set(), undefined);
   assert.equal((await patch({ callVoice: "sage" })).status, 200);
   assert.deepEqual(set(), { callVoice: "sage" }, "kept on its workspace, by bot id");
@@ -185,7 +185,7 @@ const NEW_ON_BOT = ["callVoice", "answersCalls", "sequencesOff", "mailNever"];
   const ask = { action: "Send an email", resource: "*", effect: "ask" };
   S.update(() => void (sam().permissions = [{ action: "Send an email", resource: "juno@acme.example", effect: "allow" }, other]));
   await patch({ othersMail: "never" });
-  assert.deepEqual(sam().permissions, [other, ask], "Never: an ask rule, which a Bops from before reads as it is; others kept");
+  assert.deepEqual(sam().permissions, [other, ask], "Never: an ask rule, which a SmileDesk from before reads as it is; others kept");
   assert.equal(set().mailNever, true, "and Never itself on the workspace");
   await patch({ othersMail: "ask" });
   assert.deepEqual(sam().permissions, [other, ask], "With your OK: an ask rule, even with Just do it off");
@@ -215,7 +215,7 @@ const NEW_ON_BOT = ["callVoice", "answersCalls", "sequencesOff", "mailNever"];
 
 {
   assert.equal(await C.voiceFor(sam()), "sage", "the picked voice");
-  assert.equal(sam().voice, "cedar", "Bot.voice stays what a Bops from before writes for its name");
+  assert.equal(sam().voice, "cedar", "Bot.voice stays what a SmileDesk from before writes for its name");
   await patch({ callVoice: null });
   assert.equal(set(), undefined, "Picked for its name clears it, and an empty entry goes");
   assert.equal(S.getState().workspaces.find((w) => w.id === "ws_main").botSettings, undefined, "and an empty map");
@@ -328,7 +328,7 @@ const settle = () => new Promise((r) => setTimeout(r, 50));
   assert.deepEqual(ws().botSites[sam().id], { app: "shop", site: "shop" }, "the app's own site when none is named");
   assert.deepEqual(await said(await patch({ site: { app: "shop", site: "nope" } })), { status: 404, error: "There's no site by that name in this workspace's apps." });
   assert.equal((await patch({ site: "shop" })).status, 400);
-  assert.equal((await patch({ site: null }, false)).status, 403, "only from the Bops window");
+  assert.equal((await patch({ site: null }, false)).status, 403, "only from the SmileDesk window");
   assert.deepEqual(ws().botSites[sam().id], { app: "shop", site: "shop" }, "unchanged");
   assert.equal((await patch({ site: null })).status, 200);
   assert.equal(ws().botSites, undefined, "None: gone, and the map with it");

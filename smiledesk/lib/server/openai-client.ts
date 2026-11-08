@@ -5,7 +5,7 @@ import { cloudProxy } from "./cloud";
 
 /**
  * An OpenAI client that finds its key when it makes a call, not when its module loads. Signed in
- * with Orgo, calls go through Bops Cloud (lib/server/cloud.ts) on the user's Orgo key. The base URL
+ * with Orgo, calls go through SmileDesk Cloud (lib/server/cloud.ts) on the user's Orgo key. The base URL
  * is read per call too, so a sign-in or sign-out applies at once, and the live call sideband
  * (phone.ts), which builds its WebSocket address from the client's, goes through the cloud as well.
  * Self-hosting, it's OPENAI_API_KEY: the Mac app ships with no keys, and a client made with
@@ -15,7 +15,7 @@ export function openaiClient(opts: Omit<ClientOptions, "apiKey" | "defaultHeader
   const client = new OpenAI({
     ...opts,
     // Which app is calling, and which state it may be given (an older app's calls are refused once a
-    // newer one wrote the user's state: cloud/state.ts behindState), said to Bops Cloud only: read at
+    // newer one wrote the user's state: cloud/state.ts behindState), said to SmileDesk Cloud only: read at
     // each call (and each sideband socket), and left out (null) when the app calls OpenAI directly.
     defaultHeaders: {
       get [APP_VERSION_HEADER]() {

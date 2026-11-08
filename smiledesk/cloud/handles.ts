@@ -7,13 +7,13 @@ import { loadState } from "./state.ts";
 
 /**
  * Mail handles: each workspace's part of its bots' addresses (boppy@tiger.bops.bot), claimed once
- * across every Bops user in bops.mail_handles (db/migrations/0008_plans.sql). Before these, every
+ * across every SmileDesk user in bops.mail_handles (db/migrations/0008_plans.sql). Before these, every
  * user's first workspace was "Main" and every first bot Boppy, so everyone wanted boppy@main.bops.bot.
  *
  * - The user's default workspace (ws_main) takes the user's own handle: their Orgo name, else their
  *   email's part before the @. Any other workspace takes its own name. Both slugified: 3 to 30
  *   lowercase letters, digits and dashes, starting and ending with a letter or digit.
- * - Taken (or kept for Bops: www, mail, api, main…), a number goes on the end: tiger, tiger2, tiger3.
+ * - Taken (or kept for SmileDesk: www, mail, api, main…), a number goes on the end: tiger, tiger2, tiger3.
  * - Claimed by one INSERT … ON CONFLICT DO NOTHING on the handle's primary key, so of two users
  *   wanting the same one at once, only one gets it. One current row per (user, workspace).
  * - Changed (at most 3 times), the old handle stays the user's (retired): mail to the old addresses
@@ -33,7 +33,7 @@ export const MAIN_WORKSPACE = "ws_main";
 export const MAX_CHANGES = 3;
 
 /**
- * Kept for Bops: addresses people would trust as Bops' own, the mail system's own names, and the
+ * Kept for SmileDesk: addresses people would trust as SmileDesk's own, the mail system's own names, and the
  * subdomains everyone shared before handles (main, main-2 … main-25).
  */
 const RESERVED = new Set([
@@ -64,7 +64,7 @@ export function handleProblem(h: string): string | null {
   if (!/^[a-z0-9-]+$/.test(h)) return "Use letters, numbers and dashes only.";
   if (!RULE.test(h)) return "Start and end with a letter or a number.";
   if (h.includes("--")) return "Use one dash at a time.";
-  if (reserved(h)) return "That one is kept for Bops.";
+  if (reserved(h)) return "That one is kept for SmileDesk.";
   return null;
 }
 

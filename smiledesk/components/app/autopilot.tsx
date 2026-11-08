@@ -186,9 +186,9 @@ function deliveryName(d: Delivery, state: AppState) {
   return channel ? `Slack #${channel.name}` : SERVICES[link.kind];
 }
 
-/** Every place a schedule's results go: the bot's chat in Bops always, then what it delivers to. */
+/** Every place a schedule's results go: the bot's chat in SmileDesk always, then what it delivers to. */
 function destinations(r: Routine, state: AppState) {
-  const to = ["Bops chat"];
+  const to = ["SmileDesk chat"];
   if (r.deliverTo) to.push(deliveryName(r.deliverTo, state));
   if (r.textTo && r.deliverTo?.kind !== "text") to.push("Text");
   return to.join(", ");
@@ -222,8 +222,8 @@ function whereWords(w: Watch, state: AppState) {
 }
 
 /**
- * Asks Bops for a change: null when done (the state shows it), else what went wrong, in words. `answered`
- * reads what Bops answered when it worked, and can say what went wrong there too (a look that failed).
+ * Asks SmileDesk for a change: null when done (the state shows it), else what went wrong, in words. `answered`
+ * reads what SmileDesk answered when it worked, and can say what went wrong there too (a look that failed).
  */
 async function send(url: string, body: unknown, method: string, answered?: (json: unknown) => string | null): Promise<string | null> {
   try {
@@ -233,7 +233,7 @@ async function send(url: string, body: unknown, method: string, answered?: (json
     if (r.ok && !said) return answered?.(j) ?? null;
     return typeof said === "string" && said ? undash(said) : "That didn't work. Try again.";
   } catch {
-    return "Couldn't reach Bops. Try again.";
+    return "Couldn't reach SmileDesk. Try again.";
   }
 }
 
@@ -1156,7 +1156,7 @@ function BotName({ bot }: { bot?: { id: string; name: string; color: string } })
   );
 }
 
-/** What a row is doing now: which action, while Bops does it. */
+/** What a row is doing now: which action, while SmileDesk does it. */
 type Busy = null | "run" | "toggle" | "skip" | "unskip" | "check" | "remove" | "save";
 
 /**
@@ -1515,7 +1515,7 @@ export function MonitorRow({
         sure && (
           <>
             <InlineConfirm
-              text="Stop watching this? Bops stops checking it."
+              text="Stop watching this? SmileDesk stops checking it."
               action="Stop"
               doing="Stopping…"
               busy={busy === "remove"}

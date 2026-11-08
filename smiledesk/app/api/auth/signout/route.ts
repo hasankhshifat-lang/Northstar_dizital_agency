@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
  * Sign out of Orgo on this Mac: the key leaves the Keychain (it stays valid on Orgo until revoked
  * there), and the user's state leaves memory, so whoever signs in next sees only their own.
  *
- * Their changes go up to Bops Cloud first (for up to 10 seconds). When some can't (offline), the
+ * Their changes go up to SmileDesk Cloud first (for up to 10 seconds). When some can't (offline), the
  * answer is 409 { unsent: true } and nothing is done: the app asks, and signs out anyway with
  * { force: true }; what's unsent then keeps going up in the background, never into another account.
  */
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   await stopRelay();
   // What stopping changed goes up too, briefly; the rest goes in the background.
   await flushState(3000);
-  // Bops Cloud's tunnel closes while the key is still here.
+  // SmileDesk Cloud's tunnel closes while the key is still here.
   await stopCloud();
   await signOut();
   return Response.json(await authStatus());

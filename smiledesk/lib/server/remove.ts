@@ -21,7 +21,7 @@ import { refold } from "./chat-summary";
 
 /**
  * What a delete leaves behind on this Mac (Settings → Your data, lib/privacy.ts), once its messages, threads or
- * chat left the state (and so Bops Cloud and the user's other Macs, with the next save). With days to keep
+ * chat left the state (and so SmileDesk Cloud and the user's other Macs, with the next save). With days to keep
  * what the user deletes (deletedDays), a copy under Recently deleted on this Mac (lib/server/deleted.ts),
  * with the images, the pages its messages linked to and the threads' frames moved into it. Never of what the
  * user kept "between us" (Message.secret; a thread started for one, Session.secret, whole): no copy ever holds
@@ -117,7 +117,7 @@ export type Removed = { count: number; restore: string | null; between: number }
 /**
  * Delete messages from their chats: the one way a message goes, whether the user deleted it (one from its
  * menu, several picked, a chat's every one: clearChat) or it's older than they keep chats (lib/server/privacy.ts,
- * `forGood`: never kept under Recently deleted). Gone from the state, so from Bops Cloud with the next save,
+ * `forGood`: never kept under Recently deleted). Gone from the state, so from SmileDesk Cloud with the next save,
  * which every Mac and the iPhone hear of (a removed row, json NULL, cloud/state.ts). Several in one change and
  * one copy (`labelFor`: what Settings lists the copy as, by how many it holds). One the user kept "between us"
  * leaves the bots' answers to it kept the same (keepAnswersSecret).
@@ -180,7 +180,7 @@ function clearLabel({ olderThan, bot: b }: ClearChoice): string {
 /**
  * Delete now (Settings → Your data): the messages and finished threads it takes (lib/privacy.ts clearPlan:
  * everything, or what's older, in every chat or one bot's), with each thread's result and notes, the way the
- * user's own deletes take them, in one change to the state; so from Bops Cloud and every Mac with the next
+ * user's own deletes take them, in one change to the state; so from SmileDesk Cloud and every Mac with the next
  * save. One copy under Recently deleted of all of it, when the user keeps one (`forGood`: never). How many
  * messages and threads went.
  */
@@ -289,11 +289,11 @@ export function deleteGroupChat(chatId: string) {
 
 /**
  * Delete a bot: stop its work, stop watching its screens, delete its own computer if it has one
- * (only ever one in the Bops workspace; a bot that shares the main bot's leaves that one alone), then remove it with its chat, threads, routines and
+ * (only ever one in the SmileDesk workspace; a bot that shares the main bot's leaves that one alone), then remove it with its chat, threads, routines and
  * the skills only it had (a skill other bots have too stays theirs). Group chats keep their
  * history without it, unless only one bot is left in them: its lines there stay its own, as no bot made
  * later gets its id while they're kept (bots.ts freeBotId). Its channels go too (channels.ts removeLink:
- * its Telegram or Discord bot stops listening and its token leaves the Keychain; a Slack link leaves Bops
+ * its Telegram or Discord bot stops listening and its token leaves the Keychain; a Slack link leaves SmileDesk
  * Cloud), as they go from Orgo's map with it. The apps it made stay, under its workspace's main bot (their
  * record in Orgo too: made-apps-sync.ts appsToMainBot), as the delete's question says. Of the apps on the web it
  * works on (hosted-apps.ts appsBotGone), its Locals go and its working folder stays. The main bot can't be deleted.
@@ -373,7 +373,7 @@ export async function deleteBot(botId: string, withWorkspace = false) {
  * refuses before it deletes anything, so a refusal throws with the workspace still here, whole, computers
  * and all), then the team's computers outside it (most are in the default's "bops" project, since nothing
  * moved; one that went with the project is already gone, and a failure here leaves the project gone, which
- * Delete again takes as done and goes on). The free Bops computer stays when another workspace's main bot
+ * Delete again takes as done and goes on). The free SmileDesk computer stays when another workspace's main bot
  * works on it or has it (freeComputerOnDelete): it passes to that one instead. Only then is it taken off
  * this Mac. A workspace with an Orgo project is never deleted on this Mac alone: when Orgo can't be asked
  * (it doesn't answer, or no one is signed in) nothing is deleted and the user is told to try again. Its
@@ -429,7 +429,7 @@ export async function deleteWorkspace(workspaceId: string) {
 /**
  * Whether a workspace's Orgo project goes with it (per workspace projects: deletePreview said so too).
  * Throws, so nothing is deleted, when Orgo can't be asked: no one is signed in, or it didn't answer. Null
- * (Orgo lists no project tied to a Bops workspace, so this one's is gone there) and false (an Orgo without
+ * (Orgo lists no project tied to a SmileDesk workspace, so this one's is gone there) and false (an Orgo without
  * per workspace projects) delete it on this Mac only.
  */
 async function orgoWorkspaceGoes(name: string): Promise<boolean | null> {
@@ -442,7 +442,7 @@ async function orgoWorkspaceGoes(name: string): Promise<boolean | null> {
 }
 
 /**
- * The free Bops computer a main bot of the workspace being deleted holds, kept when other workspaces' bots
+ * The free SmileDesk computer a main bot of the workspace being deleted holds, kept when other workspaces' bots
  * work on it: let go of here, so deleting the team never deletes it, and taken up by the main bot that
  * worked on it (as plan.ts holdFree does), which its bots then work on. Unless it went with the Orgo
  * workspace just deleted (made in its project): then it is gone, and the heir gets one again with its next

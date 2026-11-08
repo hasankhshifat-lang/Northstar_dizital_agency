@@ -21,7 +21,7 @@ import { recordUsage } from "./usage.ts";
  * Memory never holds up or fails a turn: anything that goes wrong is one log line with its status.
  */
 
-/** A Bops workspace's bank (a Honcho workspace) and the user's peer in it (lib/server/memory.ts Binding). */
+/** A SmileDesk workspace's bank (a Honcho workspace) and the user's peer in it (lib/server/memory.ts Binding). */
 export type Binding = { bank: string; peer: string };
 
 /** Honcho ids allow letters, digits, _ and -. */

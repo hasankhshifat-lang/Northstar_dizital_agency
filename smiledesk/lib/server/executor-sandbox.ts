@@ -9,7 +9,7 @@ import { delimiter, dirname, join, sep } from "node:path";
  * `codex exec-server` runs whatever the agent asks for on this Mac: the browser tools, but also a shell
  * (exec_command), file reads and writes, with the user's own permissions. Neither the Agents API nor
  * the executor has a setting that leaves the shell out, and the executor only sandboxes a command when
- * the caller asks it to. So Bops starts the executor itself inside a sandbox of its own, which holds
+ * the caller asks it to. So SmileDesk starts the executor itself inside a sandbox of its own, which holds
  * for everything it does and everything it starts:
  * - it can start only Codex itself and the runtime of the browser tools (exact paths): no shell, no
  *   osascript, open, curl or any other program;
@@ -18,7 +18,7 @@ import { delimiter, dirname, join, sep } from "node:path";
  * - it writes only in the task's own folder and its browser tools' sockets folder (both deleted when
  *   the task ends), and can't run code from there;
  * - its network reaches OpenAI (the port of its remote) and the task's own Chrome on this Mac, nothing else
- *   (its apps and business data are its agent session's function tools, which Bops answers itself: sessions.ts agentTool);
+ *   (its apps and business data are its agent session's function tools, which SmileDesk answers itself: sessions.ts agentTool);
  * - it can't send Apple Events, so it can't script other apps.
  */
 
@@ -145,7 +145,7 @@ const head = (path: string) => {
 
 /**
  * How to run Codex in the sandbox: its own binary, and the programs and folders that takes. npm's
- * `codex` is a Node script that starts the binary for this Mac's chip, so Bops runs that binary
+ * `codex` is a Node script that starts the binary for this Mac's chip, so SmileDesk runs that binary
  * directly; any other script runs through its interpreter.
  */
 export function codexInSandbox(found: string, path: string): { command: string; programs: string[]; readable: string[] } {

@@ -9,11 +9,11 @@ export const dynamic = "force-dynamic";
 
 /**
  * Set or remove an app's variables (AppEnvChange in lib/hosted-apps.ts: { ws, where?, env: { NAME: value | null } }:
- * Prod's, Staging's, or Local's own on its computer), only from the Bops window. The values are the user's secrets: they go on to orgo-web as they came and
+ * Prod's, Staging's, or Local's own on its computer), only from the SmileDesk window. The values are the user's secrets: they go on to orgo-web as they came and
  * nowhere else (never kept, logged or answered); the answer is the variables' names, { env }.
  */
 export async function PATCH(request: Request, ctx: { params: Promise<{ name: string }> }) {
-  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "An app's variables can only be changed in the Bops app." }, { status: 403 }));
+  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "An app's variables can only be changed in the SmileDesk app." }, { status: 403 }));
   if (unready) return unready;
   // Only an @orgo.ai account has apps on the web for now (lib/apps-access.ts).
   if (!appsOpen(getState())) return Response.json({ error: "Not found" }, { status: 404 });

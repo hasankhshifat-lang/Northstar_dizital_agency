@@ -41,7 +41,7 @@ type Item = {
   session?: Session;
   bot?: Bot;
   aspect?: number;
-  /** The display Bops itself is on. */
+  /** The display SmileDesk itself is on. */
   bops?: boolean;
   /** Jev is watching this window for the user. */
   watch?: Watch;
@@ -93,7 +93,7 @@ function MacComputerView({ state, mode, onFocus, onBack, onOpenThread, showThrea
 
   const sources = new Set(screens?.sources.map((s) => s.id) ?? []);
   const items: Item[] = [];
-  // Tasks on the Mac browse in a Chrome of their own there, which isn't a window on the screen: Bops
+  // Tasks on the Mac browse in a Chrome of their own there, which isn't a window on the screen: SmileDesk
   // shows a picture of it, while it works, for two minutes after, and while it waits on you (a sign-in:
   // you take control of it here). One tile per Chrome, for its newest task; and the one you're driving.
   const browsing = state.sessions.filter((s) => s.runsOn === "mac" && s.macScreen !== undefined && !s.macApps?.length && (live(s) || s.waitingOnYou || (s.endedAt && now - s.endedAt < 120_000)));
@@ -173,14 +173,14 @@ function MacComputerView({ state, mode, onFocus, onBack, onOpenThread, showThrea
   const pinned = pin && newestTask === pin.at ? pin.key : null;
   const following = !pinned;
   const grid = following && !drivenKey && working.length >= 2 && !items.some(waitingOn) ? working.slice(0, 4) : [];
-  // With nothing running: the window a bot just finished in, else a display (not the one Bops is on, if there's another).
+  // With nothing running: the window a bot just finished in, else a display (not the one SmileDesk is on, if there's another).
   const fallbackKey = (working[0] ?? items.find((i) => i.kind === "browser" && i.session?.waitingOnYou) ?? items.find((i) => i.kind === "window") ?? items.find((i) => i.kind === "display" && !i.bops) ?? items.find((i) => i.kind === "display"))?.key ?? null;
   const current = items.find((i) => i.key === (drivenKey ?? pinned ?? shown)) ?? items.find((i) => i.key === fallbackKey);
   const yours = !!drivenKey && current?.key === drivenKey;
   const takeControl = (i: Item) => i.bot && i.macScreen !== undefined && void post("/api/takeover", { botId: i.bot.id, macScreen: i.macScreen });
   const handBack = () => void post("/api/takeover", {}, "DELETE");
   const sendInput = (action: ScreenInput) => driving && void post("/api/input", { botId: driving.botId, macScreen: driving.macScreen, ...action });
-  // Esc hands control back (not while typing in Bops itself), as on a bot's computer.
+  // Esc hands control back (not while typing in SmileDesk itself), as on a bot's computer.
   useEffect(() => {
     if (!yours) return;
     const onKey = (e: KeyboardEvent) => {
@@ -386,7 +386,7 @@ function MacComputerView({ state, mode, onFocus, onBack, onOpenThread, showThrea
       {mode === "panel" && !blocked && followRow && (
         <div className="-mb-1 flex items-center gap-2">
           {following ? (
-            <span className="flex items-center gap-1.5 text-[12px] leading-4 text-[#6B6B6B]" title="Bops shows the window being worked on. Pick one to stay on it.">
+            <span className="flex items-center gap-1.5 text-[12px] leading-4 text-[#6B6B6B]" title="SmileDesk shows the window being worked on. Pick one to stay on it.">
               <span className="size-1.5 animate-pulse rounded-full bg-[#2BB673]" />
               {grid.length ? `Watching ${grid.length} windows at once` : "Following the action"}
             </span>
@@ -523,7 +523,7 @@ function windowFor(s: Session, open: { windowId: number; title: string }[]) {
 
 /**
  * What a tile or the screen shows: a window or a display live from macOS, or a bot's own Chrome on this
- * Mac as a picture Bops takes of it (/api/screen?mac=), about once a second at a tile's 2 fps and up.
+ * Mac as a picture SmileDesk takes of it (/api/screen?mac=), about once a second at a tile's 2 fps and up.
  */
 function Live({ item, fps = 30, maxWidth = 4096, fit = "contain", className = "", onSize }: { item: Item; fps?: number; maxWidth?: number; fit?: "contain" | "cover"; className?: string; onSize?: (w: number, h: number) => void }) {
   if (item.kind !== "browser") return <MacStream sourceId={item.sourceId} fps={fps} maxWidth={maxWidth} fit={fit} className={className} onSize={onSize} />;
@@ -570,10 +570,10 @@ function Blocked({ why }: { why: "app" | "loading" | "permission" | "nothing" })
   if (why === "loading") return <div className="h-full w-full animate-pulse" />;
   const [title, body] =
     why === "app"
-      ? ["Open the Bops app to watch your Mac", "A browser tab can't see your screen. In the Bops app, your displays and the windows bots use show here live."]
+      ? ["Open the SmileDesk app to watch your Mac", "A browser tab can't see your screen. In the SmileDesk app, your displays and the windows bots use show here live."]
       : why === "permission"
-        ? ["Let Bops see your screen", "macOS asks once: turn on Bops under Screen Recording, then quit and reopen Bops."]
-        : ["Nothing to show yet", "Bops can't find a display to show."];
+        ? ["Let SmileDesk see your screen", "macOS asks once: turn on SmileDesk under Screen Recording, then quit and reopen SmileDesk."]
+        : ["Nothing to show yet", "SmileDesk can't find a display to show."];
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-8 text-center">
       <span className="flex size-11 items-center justify-center rounded-2xl bg-ink text-highlighter">
@@ -711,7 +711,7 @@ function MacWatchSheet({ target, onClose }: { target: { app?: string; title?: st
         </div>
         {!picked ? (
           <>
-            <span className="text-[12.5px] leading-[17px] text-[#6B6B6B]">Pick the window. Bops reads its text when it changes (no screenshots, nothing clicked) and tells you when something needs you.</span>
+            <span className="text-[12.5px] leading-[17px] text-[#6B6B6B]">Pick the window. SmileDesk reads its text when it changes (no screenshots, nothing clicked) and tells you when something needs you.</span>
             <div className="flex max-h-[300px] flex-col overflow-y-auto rounded-xl shadow-[0_0_0_1px_#ECECEA]">
               {windows === null ? (
                 <span className="px-3 py-3 text-[12.5px] text-[#9A9A98]">Looking at your windows…</span>

@@ -21,10 +21,10 @@ import { computerGone, endSessionOf, endSessionsOf } from "./sessions";
 import { flushState, getState, stateDevice, stateInCloud, stateReady, stateTooNew, update } from "./store";
 
 /**
- * Bops runners on the bots' computers (runner.ts says what one is), set up and stopped from the Mac and
+ * SmileDesk runners on the bots' computers (runner.ts says what one is), set up and stopped from the Mac and
  * only from there. While the bots work in the Cloud (Orgo's word, runner.ts), each computer some bot
  * works on gets one: a computer as Orgo's map of the workspace has it (GET /api/projects/{id}/bops, which
- * answers only live Bops computers of the user's) and as this Mac has it too. Each step is in
+ * answers only live SmileDesk computers of the user's) and as this Mac has it too. Each step is in
  * AppState.runners, which every Mac and runner of the user's reads: Setting up, then Running once its
  * health check passed (only then does the Mac leave that computer's routines to it), or Couldn't start
  * and why (they stay on the Mac).
@@ -36,38 +36,38 @@ import { flushState, getState, stateDevice, stateInCloud, stateReady, stateTooNe
  * and the script that starts it, which makes a fresh window token each time. Its key is the computer's
  * own ORGO_API_KEY, which Orgo writes on the computer itself and the runner reads there (runner-key.ts):
  * one made with the computer (a template that asks for it: bops-base 0.1.9 on) is left as it is, and a
- * computer without one gets it from Orgo now (PUT /api/computers/{id}/orgo-key), which Bops takes back
+ * computer without one gets it from Orgo now (PUT /api/computers/{id}/orgo-key), which SmileDesk takes back
  * when it stops the runner (RunnerState.keyMade). This Mac never has it, and no command sent carries a
  * key or a token. Never on a computer whose workspace someone else can use (root there, or able to
  * become it; the key is the whole account's): the Mac looks first (members.ts othersCanUse), and Orgo,
- * which sees share links too, has the last word. A newer Bops is never replaced by an older one; the
+ * which sees share links too, has the last word. A newer SmileDesk is never replaced by an older one; the
  * same version built again replaces it only when this Mac set it up last (a dev Mac). One that's up and
  * set up again (a new release) stays up, with its routines, until the new one starts in its place
  * (RunnerState.upgrading); a try that doesn't get that far leaves it as it was.
  *
- * A workspace someone else can use whose chat goes through Bops Cloud (Workspace.chatOn "cloud"), or that Bops Cloud
+ * A workspace someone else can use whose chat goes through SmileDesk Cloud (Workspace.chatOn "cloud"), or that SmileDesk Cloud
  * may move there by itself (Workspace.chatAuto: nobody chose the Mac), keeps its computers' runners, so the bots
- * answer there with no Mac open (Bops Cloud moves it once that runner connects): only a computer whose bots are all of
+ * answer there with no Mac open (SmileDesk Cloud moves it once that runner connects): only a computer whose bots are all of
  * that one workspace (sharedRunnerOk: one that also serves a private workspace never is), and only on the computer's
- * own Orgo identity (an hour long, held to its bots by Bops Cloud), never the account's key. A computer with a key on
+ * own Orgo identity (an hour long, held to its bots by SmileDesk Cloud), never the account's key. A computer with a key on
  * it, or whose identity doesn't answer, has none (install), a runner it had on a key is stopped first and its key
  * revoked, and the way back never gives it a key (stillRuns; RunnerState.shared keeps that past a restart of the
  * Mac). Runners are set up only by an owner's Mac (this look is a Mac loop, and the bundle ships inside the Mac app):
- * the owner's Mac must open a Bops with this change once before any computer of a shared workspace gets its runner,
+ * the owner's Mac must open a SmileDesk with this change once before any computer of a shared workspace gets its runner,
  * and again for each newer runner. A Mac from before this change (0.0.36, 0.0.37) keeps one only while the chat goes
- * through Bops Cloud, and takes one down otherwise: this Mac waits a while before it sets that one up again.
+ * through SmileDesk Cloud, and takes one down otherwise: this Mac waits a while before it sets that one up again.
  *
  * Its computer's Orgo identity (vm-identity.ts) comes first on the runner, and its key is the fallback
  * wherever identity doesn't reach. This release (the identity spec's phase 1) gives every computer its
  * key as before, whatever identity says; the health check says what the runner signs in with
  * (RunnerState.auth). Phase 2 (IDENTITY_ONLY, off until every host runs identity) gives no key to a
- * computer on identity and takes back the one Bops gave once the new build runs on identity. Either
+ * computer on identity and takes back the one SmileDesk gave once the new build runs on identity. Either
  * way a runner is never left with nothing: one with no key and no identity it can use waits
  * (runner-start.ts), its routines fall overdue, and the Mac's look gives its computer a key again
  * (stillRuns, the way back).
  *
  * Stopping one (the bots work on This Mac now, or in browsers on the Mac; its computer was deleted; no
- * bot works on it): its program is stopped and taken off, the key Bops gave its computer revoked (by
+ * bot works on it): its program is stopped and taken off, the key SmileDesk gave its computer revoked (by
  * any Mac of the user's: DELETE /api/computers/{id}/orgo-key, which takes it off a computer that's up
  * too), its threads end, and it's taken out of the state. A key the computer came with stays: it's the
  * computer's, and Orgo revokes it with the computer. A computer asleep isn't woken for that, and it's
@@ -119,7 +119,7 @@ const STILL_RUNS_EVERY_MS = 60 * 60_000;
 const STILL_RUNS_IDENTITY_MS = 15 * 60_000;
 /**
  * Phase 2 of the identity spec (its rollout step 12): no key for a computer whose identity answers, and
- * the key Bops gave taken back once the new runner proves it runs on identity. Off until every host has
+ * the key SmileDesk gave taken back once the new runner proves it runs on identity. Off until every host has
  * run identity through a full roll; until then every computer gets its key as before, whatever identity
  * says (runnerInstallForTests.identityOnly turns it on in the tests).
  */
@@ -128,7 +128,7 @@ const IDENTITY_ONLY = false;
 /* ---------------- The bundle ---------------- */
 
 export type Bundle = { file: string; name: string; version: string; buildId: string; sha256: string };
-/** bops-server-<version>-<BUILD_ID>.tgz (Bops versions are x.y.z; Next's BUILD_ID is letters, digits, _ and -). */
+/** bops-server-<version>-<BUILD_ID>.tgz (SmileDesk versions are x.y.z; Next's BUILD_ID is letters, digits, _ and -). */
 const BUNDLE_NAME = /^bops-server-(\d+\.\d+\.\d+)-([A-Za-z0-9_-]{1,64})\.tgz$/;
 
 /** The sha256 in a bundle's .sha256 file (`<hash>  <name>`, as shasum and sha256sum write it), when it's for that file. */
@@ -248,7 +248,7 @@ export const probeScript = (dirName: string, { ident = false }: { ident?: boolea
 export function wrapperScript(o: { computerId: string; timeZone?: string; orgo: string; cloud: string }): string {
   return [
     "#!/bin/sh",
-    "# The Bops runner on this computer, set up by the Bops app on the user's Mac (lib/server/runner-install.ts).",
+    "# The SmileDesk runner on this computer, set up by the SmileDesk app on the user's Mac (lib/server/runner-install.ts).",
     "# Its window token is made fresh each start and kept nowhere: nothing on this computer needs it.",
     "BOPS_UI_TOKEN=$(od -An -N32 -tx1 /dev/urandom | tr -d ' \\n')",
     "export BOPS_UI_TOKEN",
@@ -357,7 +357,7 @@ export const HEALTH_SCRIPT = [
 
 /**
  * Taking it off a computer: its program stopped and gone, its script and its builds, under the lock.
- * Never the computer's Orgo key: the one Bops gave it comes off with its revoke (stop), and one it came
+ * Never the computer's Orgo key: the one SmileDesk gave it comes off with its revoke (stop), and one it came
  * with is the computer's.
  */
 export const UNINSTALL_SCRIPT = [
@@ -446,9 +446,9 @@ function keptAsIs(id: string, error: string) {
   console.warn(`[runner-install] ${id}: kept as it was (${error})`);
   later(id);
 }
-/** The key Bops gave the computer, carried over to its next state (an entry from before keyMade, with a keyId, counts: runnerKeyMade). */
+/** The key SmileDesk gave the computer, carried over to its next state (an entry from before keyMade, with a keyId, counts: runnerKeyMade). */
 const keyOf = (x: RunnerState | undefined): Pick<RunnerState, "keyMade" | "keyId"> => (runnerKeyMade(x) ? { keyMade: true, ...(x?.keyId ? { keyId: x.keyId } : {}) } : {});
-/** The same state with no key of Bops' (it was taken back; an entry from before keyMade loses its old keyBy with it). */
+/** The same state with no key of SmileDesk's (it was taken back; an entry from before keyMade loses its old keyBy with it). */
 const keyless = (x: RunnerState) => Object.fromEntries(Object.entries(x).filter(([k]) => k !== "keyMade" && k !== "keyId" && k !== "keyBy")) as RunnerState;
 /** What the runner signs in with, when its computer said. */
 const authOf = (auth: RunnerState["auth"]): Pick<RunnerState, "auth"> => (auth ? { auth } : {});
@@ -460,7 +460,7 @@ type Wanted = { projects: Set<string> };
 
 /**
  * The computers that should have a runner, each with the Orgo workspaces whose map lists it: one some
- * bot works on as Orgo's map says (only the user's live Bops computers) and as this Mac says too. Null
+ * bot works on as Orgo's map says (only the user's live SmileDesk computers) and as this Mac says too. Null
  * when Orgo didn't answer for every workspace: then nothing is set up or stopped.
  */
 async function wantedComputers(key: string): Promise<Map<string, Wanted> | null> {
@@ -567,7 +567,7 @@ function busy(id: string): boolean {
 
 /**
  * The runs computer `id`'s runner (`device`) left going of routines it no longer runs (set to run on the
- * Mac since, their result sent to a channel, their bot moved): another Bops runs each of those now, and
+ * Mac since, their result sent to a channel, their bot moved): another SmileDesk runs each of those now, and
  * skips every run of it as "The last run was still going" while that one stays live. Never one paused for
  * the user's OK there (lib/types.ts pausedForOk): nothing of it is left going, and only their reply or Stop
  * touches it; the change is for the routine's runs to come.
@@ -584,12 +584,12 @@ function strays(id: string, device: string): string[] {
  * says it is (one call, which never wakes it or counts as using it). Its routines stay its runner's whatever
  * it says, and wait for it: they're never the Mac's for it. Down and not coming back by itself (stopped,
  * frozen, in error), or asleep with one overdue (nothing woke it: Free hours used up, paused, unfunded), is
- * kept in the state (runner.ts noteDown, RunnerState.down), so every Bops shows why they wait ("Max's
+ * kept in the state (runner.ts noteDown, RunnerState.down), so every SmileDesk shows why they wait ("Max's
  * computer is stopped"), and they run on it once it's up again (Orgo's waker, or the user starting it); up,
  * that's cleared. A thread its runner was running when the computer went down that way is over (its runner
  * is gone with it), failed and saying why: left running, it would hold its routine's next run for good ("The
  * last run was still going"). So is, with its computer asleep, the run its runner left going of a routine it
- * no longer runs (strays): the Bops that runs that routine now would skip each run for it until the computer
+ * no longer runs (strays): the SmileDesk that runs that routine now would skip each run for it until the computer
  * woke, and nothing may ever wake it. A run paused for the user's OK holds nothing there, so neither ends it
  * (sessions.ts endSessionsOf), unless the computer was deleted: their answer carries it on once it's up. "up":
  * it's up with one overdue, or with an answer of the user's its runner hasn't read (answersFor: a run waits on that
@@ -618,7 +618,7 @@ async function lookDown(id: string): Promise<"down" | "up" | undefined> {
 
 /**
  * Whether a computer someone else can use keeps its runner: every bot on it is of one workspace, and that workspace's
- * chat goes through Bops Cloud (Workspace.chatOn "cloud") or Bops Cloud may move it there (chatAuto, never once the
+ * chat goes through SmileDesk Cloud (Workspace.chatOn "cloud") or SmileDesk Cloud may move it there (chatAuto, never once the
  * owner chose the Mac: chatOn "mac"). Its people can use what the bots on it can (they may be root there), so a
  * computer that also serves another workspace's bots, a private one or one shared with others, never does. The runner
  * then signs in with its computer's identity alone (install, stillRuns), which orgo-web answers there only where it
@@ -634,7 +634,7 @@ export function sharedRunnerOk(s: Pick<AppState, "bots" | "workspaces">, id: str
 
 /**
  * One computer that should have a runner: set up, kept as it is, or (someone else can use its workspace) stopped.
- * Someone else can, in a workspace whose chat goes through Bops Cloud (sharedRunnerOk): kept, on its identity alone.
+ * Someone else can, in a workspace whose chat goes through SmileDesk Cloud (sharedRunnerOk): kept, on its identity alone.
  */
 async function keepUp(id: string, w: Wanted, key: string, me: string) {
   if (box.busy.has(id)) return;
@@ -645,15 +645,15 @@ async function keepUp(id: string, w: Wanted, key: string, me: string) {
     if (others === null) return void (await lookDown(id));
     if (!others) continue;
     shared = true;
-    // Kept, on its identity alone: unless a runner of its signs in with a key (one Bops gave, or one it came with), or
+    // Kept, on its identity alone: unless a runner of its signs in with a key (one SmileDesk gave, or one it came with), or
     // hasn't said what it signs in with (a runner from before auth=), stopped first.
     const had = runnerOf(id);
     const keyed = !!had && (runnerKeyMade(had) || (had.status !== "failed" && (had.auth === "key" || had.auth === undefined)));
     if (sharedRunnerOk(getState(), id) && !keyed) continue;
-    // Stopped (and the key Bops gave it revoked), then said why. Once: a computer isn't asked again for nothing.
+    // Stopped (and the key SmileDesk gave it revoked), then said why. Once: a computer isn't asked again for nothing.
     const x = runnerOf(id);
     if (x && (x.status !== "failed" || runnerKeyMade(x))) await stop(id, key, STOPPED.full);
-    // One that failed with no key of Bops' to take back isn't stopped, but its runs are over all the same, one it kept
+    // One that failed with no key of SmileDesk's to take back isn't stopped, but its runs are over all the same, one it kept
     // paused for the user's OK too (failed keeps those): its runner never comes back while someone else can use the workspace.
     else if (x) {
       const user = userNow();
@@ -693,8 +693,8 @@ async function keepUp(id: string, w: Wanted, key: string, me: string) {
   // too: each try wakes the computer before Orgo says so again.
   const retry = box.retry.get(id);
   if (retry && retry.at > Date.now() && (x?.status === "running" || (x?.status === "failed" && x.error !== NO_BUNDLE))) return;
-  // Another Mac took it down a moment ago as someone else can use the workspace (a Bops from before, which keeps none
-  // there until the chat goes through Bops Cloud): set up again only after a while, or the two would take turns each
+  // Another Mac took it down a moment ago as someone else can use the workspace (a SmileDesk from before, which keeps none
+  // there until the chat goes through SmileDesk Cloud): set up again only after a while, or the two would take turns each
   // minute, waking the computer and sending its files every time.
   if (x?.status === "failed" && x.error === FULL_ACCESS && x.by !== me && Date.now() - x.at < RETRY_MIN_MS) return;
   // Only on a computer that's up (Orgo's word for it, a read that never wakes it): every command wakes one that's
@@ -724,8 +724,8 @@ async function install(id: string, bundle: Bundle, key: string, me: string, shar
   // Whether the runner that was up is changed yet (its computer given a key, its files swapped): past that, one that goes wrong couldn't start.
   let touched = false;
   const fail = (error: string) => (upgrade && !touched ? keptAsIs(id, error) : failed(id, error, bundle, me));
-  // A runner reaches what this Mac does: an Orgo or a Bops Cloud on this Mac it never could.
-  if (!ORIGIN.test(orgoAt) || !ORIGIN.test(cloudAt) || LOOPBACK_URL.test(orgoAt) || LOOPBACK_URL.test(cloudAt)) return fail("Orgo or Bops Cloud runs on this Mac, which the computer can't reach");
+  // A runner reaches what this Mac does: an Orgo or a SmileDesk Cloud on this Mac it never could.
+  if (!ORIGIN.test(orgoAt) || !ORIGIN.test(cloudAt) || LOOPBACK_URL.test(orgoAt) || LOOPBACK_URL.test(cloudAt)) return fail("Orgo or SmileDesk Cloud runs on this Mac, which the computer can't reach");
   if (upgrade) mark(id, { ...before, upgrading: { version: bundle.version, buildId: bundle.buildId, by: me, at: Date.now() } });
   else mark(id, { status: "installing", version: bundle.version, buildId: bundle.buildId, by: me, at: Date.now(), ...keyOf(before) });
   const dirName = `${bundle.version}-${bundle.buildId}`;
@@ -748,7 +748,7 @@ async function install(id: string, bundle: Bundle, key: string, me: string, shar
   }
   // Its key: the computer's own ORGO_API_KEY. One it has (made with it from a template that asks for it,
   // or given it before) is left as it is: the runner reads it there. One without gets it from Orgo now,
-  // written on the computer by Orgo itself (nothing of it comes here), and Bops takes that back when it
+  // written on the computer by Orgo itself (nothing of it comes here), and SmileDesk takes that back when it
   // stops the runner (keyMade). Orgo keeps one key per computer and revokes any earlier one itself.
   // Phase 2: a computer whose identity answers gets none (the runner signs in with that), and one whose
   // identity is refused (someone else can use its workspace) gets none and no runner.
@@ -783,7 +783,7 @@ async function install(id: string, bundle: Bundle, key: string, me: string, shar
     return fail(UNHEALTHY[bad]);
   }
   box.retry.delete(id);
-  // Phase 2: the key Bops gave (and only that one: a key the computer came with is Orgo's), taken back
+  // Phase 2: the key SmileDesk gave (and only that one: a key the computer came with is Orgo's), taken back
   // only now that the new build runs on its identity. A try that went wrong before this left the runner
   // that was up, and its key, as they were.
   if (onIdentity && hadKey && up.auth === "identity" && runnerKeyMade(runnerOf(id)) && (await takeKeyBack(id, key))) mark(id, keyless(runnerOf(id)!));
@@ -860,7 +860,7 @@ async function giveKey(id: string, key: string): Promise<{ keyId: string } | { e
   return { error: RUNNER_NO_KEY, backoff: true };
 }
 
-/** Take back the key Bops gave computer `id` (Orgo revokes it, and takes it off the computer when it's up). Gone already counts. */
+/** Take back the key SmileDesk gave computer `id` (Orgo revokes it, and takes it off the computer when it's up). Gone already counts. */
 async function takeKeyBack(id: string, key: string): Promise<boolean> {
   const got = await callOrgo(key, `/api/computers/${encodeURIComponent(id)}/orgo-key`, { method: "DELETE", timeoutMs: 60_000 });
   return got?.status === 200 || got?.status === 404;
@@ -870,7 +870,7 @@ async function takeKeyBack(id: string, key: string): Promise<boolean> {
  * Stop computer `id`'s runner, saying `why` in its threads (they end; a computer deleted says so). It's
  * taken off a computer that's up or gone; one asleep keeps it until it's up again, and runs nothing
  * meanwhile (the state says it's being stopped, and a runner reads the state before it runs anything).
- * The key Bops gave the computer (keyMade) is revoked, by whichever Mac stops it; a key it came with
+ * The key SmileDesk gave the computer (keyMade) is revoked, by whichever Mac stops it; a key it came with
  * stays (the computer's: Orgo revokes it with the computer). It goes from the state once it's off and
  * that key is revoked.
  *
@@ -974,7 +974,7 @@ async function stillRuns(id: string, me: string, key: string): Promise<boolean |
 }
 
 /**
- * A runner with no key and no identity it can use: Orgo gives its computer its key again (Bops' to take
+ * A runner with no key and no identity it can use: Orgo gives its computer its key again (SmileDesk's to take
  * back: keyMade), and supervisord starts it if it's stopped. A runner that's up and waiting picks the key
  * up within 30 seconds (runner-start.ts). Refused: it couldn't start, and why (its routines go back to
  * the Mac). Whether it has its key again (and so goes on).
@@ -1014,7 +1014,7 @@ function signature() {
         .sort()
         .join(",")
     : "";
-  // Each workspace's switch (Bops Cloud's: a computer someone else can use keeps a runner by it, sharedRunnerOk).
+  // Each workspace's switch (SmileDesk Cloud's: a computer someone else can use keeps a runner by it, sharedRunnerOk).
   const switches = (s.workspaces ?? [])
     .map((w) => `${w.id}:${w.chatOn ?? ""}:${w.chatAuto ? "auto" : ""}`)
     .sort()

@@ -35,7 +35,7 @@ import { folderKey, moveWorkspaceFolder, refsOf, skillDeletesOnStart, syncSkills
  * Workspaces: separate teams. Each has its own main bot (Boppy by default, who runs it and whose computer the
  * team's computers fork from), its bots, chats and work. The user's Mac and the Vault are shared.
  *
- * On an orgo-web with per workspace projects, each Bops workspace is an Orgo workspace of its own: a project
+ * On an orgo-web with per workspace projects, each SmileDesk workspace is an Orgo workspace of its own: a project
  * marked product "bops", tied to it by bops_ws_id (Workspace.orgoProjectId). New workspace makes the project,
  * Rename renames it (and a rename on orgo.ai comes here: syncWorkspaceNames), Delete deletes it with what's in
  * it once the user confirmed the list (deletePreview). migrateWorkspacesToOrgo ties the default workspace to
@@ -63,7 +63,7 @@ export type CreateResult = { id: string; chatId: string; orgoProjectId?: string 
  * A new workspace: its own team, starting with its own dental team (Molly, Rosa, Remi and Ruby), and the current one from now on. On an
  * orgo-web with per workspace projects its Orgo workspace is made first, under the same name: when the
  * user's Orgo already has a workspace by that name, nothing is made and they're asked for another
- * (`name_taken`, with "<name> (Bops)" to start from). Orgo not answering doesn't stop it: the project is
+ * (`name_taken`, with "<name> (SmileDesk)" to start from). Orgo not answering doesn't stop it: the project is
  * made later (bindMissingProjects: tried again after a backoff, and at each start and sign-in).
  */
 export async function createWorkspace(name: string): Promise<CreateResult> {
@@ -110,7 +110,7 @@ async function freeOrgoName(name: string): Promise<string> {
   return fits.find((n) => !taken.has(n.toLowerCase())) ?? fits[0];
 }
 
-/** Bops from before workspaces: if any bot has no workspace, make sure "Main" is listed. */
+/** SmileDesk from before workspaces: if any bot has no workspace, make sure "Main" is listed. */
 export function ensureMain() {
   const s = getState();
   if (s.workspaces?.some((w) => w.id === MAIN_WORKSPACE) || !s.bots.some((b) => !b.workspaceId)) return;
@@ -173,7 +173,7 @@ function holdName(to: string, reason: string, asked = false) {
 
 /**
  * The held name is the default's name here for as long as it waits: whatever put another back (another
- * Mac's copy of the state merged in over this one's, an older Bops, a names sync from before this one) is
+ * Mac's copy of the state merged in over this one's, an older SmileDesk, a names sync from before this one) is
  * undone, never taken for the user's choice. True when it was put back.
  */
 function holdDefaultName(): boolean {
@@ -202,7 +202,7 @@ function takeOrgoName(p: OrgoWorkspace) {
 
 /**
  * Try the held default name again (renameDefault): at each start (retryHeldRenameOnStart), sign-in
- * (migrateWorkspacesToOrgo) and names sync (syncWorkspaceNames), so it reaches Orgo as soon as every Bops
+ * (migrateWorkspacesToOrgo) and names sync (syncWorkspaceNames), so it reaches Orgo as soon as every SmileDesk
  * app on the account is new enough, without waiting for a sign-in. One at a time; null when nothing
  * waits, the move onto Orgo workspaces isn't done or was undone, or Orgo can't be asked now (it stays
  * held, and the next one tries).
@@ -225,7 +225,7 @@ export function retryDefaultRename(): Promise<DefaultName | null> {
     .finally(() => (g.bopsWsHeldRetry = undefined)));
 }
 
-/** Once a start, on the Mac (the state route): a held default name is tried again, as the apps may have updated while Bops was closed. */
+/** Once a start, on the Mac (the state route): a held default name is tried again, as the apps may have updated while SmileDesk was closed. */
 export function retryHeldRenameOnStart() {
   if (g.bopsWsHeldStarted || !stateReady()) return;
   g.bopsWsHeldStarted = true;
@@ -250,7 +250,7 @@ export type RenameResult = { ok: true; waiting?: AppsGateReason } | { error: str
 /**
  * Rename a workspace, and its Orgo workspace when it has one: Orgo first, so a name the user's Orgo already
  * has is said back (`name_taken`) and nothing changes. The default workspace's project, while it's still
- * named "bops", takes the new name only once every Bops app on the account is new enough (bopsAppsGate):
+ * named "bops", takes the new name only once every SmileDesk app on the account is new enough (bopsAppsGate):
  * until then the name changes here only, the project keeps "bops" for the older apps, and the result says
  * why (`waiting`); the next start, sign-in or names sync tries again (retryDefaultRename). So does a default
  * renamed while Orgo can't say whether it has per workspace projects (`unreachable`): never renamed here
@@ -333,20 +333,20 @@ const without = (map: MemberAccessMap, key: string): MemberAccessMap => Object.f
  * cancelled). Access that shows them no bot is kept as no entry. A map, once there, stays when its last
  * entry goes (empty): two Macs' changes to it then always go together entry by entry (state-merge.ts),
  * where one with no map at all would take the whole of the other's or none of it. It rides in the synced
- * state, so Bops Cloud reads it from the owner's blob when it builds a member's view; it's never sent to
+ * state, so SmileDesk Cloud reads it from the owner's blob when it builds a member's view; it's never sent to
  * them. Nothing changes (or syncs) when it's already so. The People sheet's server (lib/server/members.ts)
  * is the only writer, besides a bot's deletion (forgetBotAccess).
  *
  * Each entry says when it was set (MemberAccess.at: now, else `how.at`), and `how.invite` that it was set
- * with an invite not yet taken: Bops Cloud shows it only for the membership begun then (member-access.ts
+ * with an invite not yet taken: SmileDesk Cloud shows it only for the membership begun then (member-access.ts
  * currentFor), so someone removed without this Mac seeing it never comes back to their old bots.
  */
 export function setMemberAccess(workspaceId: string, key: string, access: MemberAccess | null, how: { invite?: boolean; at?: number } = {}) {
   // Your Apps: what was sent, else the level kept (a save that sends only bots keeps it). Never a level nobody picked:
   // one not set yet is left so, for giveAppsRead (an entry from before the scope) and the sheet ("not set"). Use its
   // computer: what was sent ("use" on, "none" off), else what was kept (missing reads as off). Kept as "none" once turned
-  // off, so a merge tells it from an entry an older Bops rewrote without it (state-merge.ts keepAppsLevels). The same
-  // rule Bops Cloud keeps an Admin's change by (member-access.ts withEntry).
+  // off, so a merge tells it from an entry an older SmileDesk rewrote without it (state-merge.ts keepAppsLevels). The same
+  // rule SmileDesk Cloud keeps an Admin's change by (member-access.ts withEntry).
   const map = getState().workspaces?.find((w) => w.id === workspaceId)?.memberAccess;
   const next = withEntry(map, key, access, how);
   if (next === map) return;
@@ -364,7 +364,7 @@ export function setMemberAccess(workspaceId: string, key: string, access: Member
 /**
  * Your Apps at Read for everyone a workspace was already shared with, the first time this Mac sees it (the scope is
  * new): every entry without a level gets Read, and the workspace is marked (Workspace.appsScopeAt), in one change. Once
- * only: with the mark there it does nothing, so an entry an older Bops rewrote later (which drops the level) is never
+ * only: with the mark there it does nothing, so an entry an older SmileDesk rewrote later (which drops the level) is never
  * given Read again by this (state-merge.ts keepAppsLevels puts back what it had); an entry with a level is never
  * touched. On the owner's Mac only (a runner never writes access), at start and in the 10 minute look. How many it gave.
  */
@@ -409,9 +409,9 @@ export function forgetBotAccess(state: AppState, botId: string) {
 
 /**
  * The team chart of a workspace (Workspace.chain, lib/chain.ts), from what the window sent: made safe with
- * cleanChain (this workspace's bots, its people's keys) and stamped with now. Only the owner's own Bops
+ * cleanChain (this workspace's bots, its people's keys) and stamped with now. Only the owner's own SmileDesk
  * writes it: the route refuses while a workspace shared with the user is open, and a runner never does.
- * It rides in the synced state (one field: state-merge.ts), so every Bops of the owner's and Bops Cloud
+ * It rides in the synced state (one field: state-merge.ts), so every SmileDesk of the owner's and SmileDesk Cloud
  * follow it; it never goes to a member (cloud/ws-slice.ts). What was kept comes back.
  */
 export function setChain(workspaceId: string, input: unknown): Chain {
@@ -438,7 +438,7 @@ export function forgetBotInChain(state: AppState, botId: string, wsId: string, l
   w.chain = chainWithout(w.chain, botId, lead && lead !== chief?.id ? lead : undefined);
 }
 
-/** One bot's entry on its workspace's chart changed by Bops itself (a field set to undefined goes): its own memory brought in or let go. */
+/** One bot's entry on its workspace's chart changed by SmileDesk itself (a field set to undefined goes): its own memory brought in or let go. */
 export function setChainBot(botId: string, patch: Partial<Record<keyof ChainBot, unknown>>) {
   const b = getState().bots.find((x) => x.id === botId);
   if (!b) return;
@@ -528,7 +528,7 @@ async function runSync(): Promise<SyncResult | null> {
 /**
  * What deleting a workspace takes with it, for the confirm: the computers (its team's here, and what's in
  * its Orgo workspace), its keys (the ones for This workspace), its skills and its apps, the apps its bots
- * made and its CRM files, its routines and its Orbit issues, Bops' and Orgo's together, each once. `orgo`:
+ * made and its CRM files, its routines and its Orbit issues, SmileDesk's and Orgo's together, each once. `orgo`:
  * its Orgo workspace goes too. `memory`: its memory bank goes too (its own, used by no other workspace:
  * memory.ts memoryGoesWith). Throws for the default workspace, and when Orgo doesn't say what's in it
  * (nothing is deleted without the user seeing the list).
@@ -564,12 +564,12 @@ export async function deletePreview(workspaceId: string): Promise<DeletePreview>
   if (!w) throw new WorkspaceError("No such workspace.", 404);
   if (workspaceId === MAIN_WORKSPACE) throw new WorkspaceError(DEFAULT_UNDELETABLE);
   const team = getState().bots.filter((b) => workspaceOf(b) === workspaceId);
-  // The free Bops computer stays when another workspace's bots work on it (it passes to one of them), and
+  // The free SmileDesk computer stays when another workspace's bots work on it (it passes to one of them), and
   // is said by its name when it goes.
   const free = freeComputerOnDelete(getState().bots, workspaceId);
   const computers = team
     .filter((b) => b.computerId && !sharesComputer(b) && !(free?.kept && b.computerId === free.id))
-    .map((b) => ({ id: b.computerId!, name: free && b.computerId === free.id ? "Your free Bops computer" : `${b.name}'s computer` }));
+    .map((b) => ({ id: b.computerId!, name: free && b.computerId === free.id ? "Your free SmileDesk computer" : `${b.name}'s computer` }));
   const keys: string[] = [];
   const skills = refsOf(workspaceId, "skill").map((r) => r.name);
   const apps = refsOf(workspaceId, "app").map((r) => r.name);
@@ -601,7 +601,7 @@ export async function deletePreview(workspaceId: string): Promise<DeletePreview>
     }
     for (const c of there.computers) if (!computers.some((x) => x.id === c.id)) computers.push(c);
     // The free computer made in this workspace's project goes with it, whoever else works on it.
-    for (const c of computers) if (free && c.id === free.id) c.name = "Your free Bops computer";
+    for (const c of computers) if (free && c.id === free.id) c.name = "Your free SmileDesk computer";
     keys.push(...there.keys);
     skills.push(...there.skills);
     apps.push(...there.apps);
@@ -667,9 +667,9 @@ type Step = (typeof STEPS)[number];
 const after = (m: OrgoMigration | undefined, step: Step) => !!m && STEPS.indexOf(m.step as Step) > STEPS.indexOf(step);
 
 /**
- * Each Bops workspace onto an Orgo workspace of its own (on sign-in; .ops-kit/bops-workspaces/DECISIONS.md):
+ * Each SmileDesk workspace onto an Orgo workspace of its own (on sign-in; .ops-kit/bops-workspaces/DECISIONS.md):
  * tie the default one to the "bops" project; give every other workspace an EMPTY project of its own under
- * its name now (a name the user's Orgo already has gets "<name> (Bops)", said in the switcher), the ones
+ * its name now (a name the user's Orgo already has gets "<name> (SmileDesk)", said in the switcher), the ones
  * whose bots use the free computer too; move nothing (every computer stays where it is, most in the "bops"
  * project); give the default's project the user's name for it once every app on the account is new
  * (renameDefault); move the skills folders. Saved after every step, so a stop or a crash resumes. Once done,
@@ -705,7 +705,7 @@ const BIND_RETRY_MAX_MS = 30 * 60_000;
  * (routines, the map, the access set, skills and Orbit all go only for a workspace with one): the default
  * workspace its "bops" project (found, or made as {name: 'bops', product: 'bops', bops_ws_id: 'ws_main'}
  * as its first computer would), every other one a project of its own under its name (orgo.ts
- * orgoProjectFor; a name Orgo already has gets " (Bops)", said in the switcher). Run after the move onto
+ * orgoProjectFor; a name Orgo already has gets " (SmileDesk)", said in the switcher). Run after the move onto
  * Orgo workspaces at each sign-in (migrateWorkspacesToOrgo), once a start (startProjectBinding), and when
  * a new workspace couldn't get one; tried again after a backoff (1 minute, doubling to 30) while Orgo
  * doesn't answer. A per workspace Orgo whose move isn't done yet runs the move first (it chooses the
@@ -806,7 +806,7 @@ function bindLater() {
 /**
  * Once a start (the state route, on the Mac): workspaces with no project get one, skill deletes and a
  * deleted workspace's memory left from before go, and what a bound workspace changed here that Orgo
- * hadn't taken when Bops last quit goes now, as its retries lived in memory only: each one's skills are
+ * hadn't taken when SmileDesk last quit goes now, as its retries lived in memory only: each one's skills are
  * synced (a create, an edit or a bot dropped since its last sync, SkillRef.updatedAt past syncedAt, and
  * what Orgo has), and its Orbit is sent where its index still holds what Orgo hasn't taken (deletes,
  * items or facts: orbitOutbox).
@@ -816,7 +816,7 @@ export function startProjectBinding() {
   g.bopsWsBindStarted = true;
   void bindMissingProjects();
   skillDeletesOnStart();
-  // A deleted workspace's memory that memory didn't take before Bops last quit.
+  // A deleted workspace's memory that memory didn't take before SmileDesk last quit.
   void import("./memory-deletes").then((m) => m.memoryDeletesOnStart()).catch((e: Error) => console.warn(`[memory] deletes from before: ${e.message}`));
   void pushBoundOnStart().catch((e: Error) => console.warn(`[workspaces] sending what waited from before: ${e.message}`));
 }
@@ -886,7 +886,7 @@ async function runMigration(): Promise<MigrationResult> {
   ensureMain();
   save(() => {});
 
-  // 1. The default workspace: its stored project, the one tied to it, the Bops one (rule in DESIGN.md 9), or later
+  // 1. The default workspace: its stored project, the one tied to it, the SmileDesk one (rule in DESIGN.md 9), or later
   // (no "bops" project yet: bindMissingProjects makes it right after the move, at sign-in or start, or the first
   // computer does, as {name:'bops', product:'bops', bops_ws_id:'ws_main'}).
   if (!after(m(), "bind-main")) {
@@ -920,7 +920,7 @@ async function runMigration(): Promise<MigrationResult> {
       const made = await ensureProject(w.id);
       save((x) => {
         if (made.created && !x.created.includes(made.id)) x.created.push(made.id);
-        // Its Orgo name isn't its name here ("orgo (Bops)"): said once in the switcher, also after a stop in between.
+        // Its Orgo name isn't its name here ("orgo (SmileDesk)"): said once in the switcher, also after a stop in between.
         if (!sameName(made.name, w.name) && !(x.renamed ?? []).some((r) => r.wsId === w.id)) (x.renamed ??= []).push({ wsId: w.id, from: w.name, to: made.name });
       });
     }
@@ -934,7 +934,7 @@ async function runMigration(): Promise<MigrationResult> {
     save((x) => (x.step = "folders"));
   }
 
-  // 4. Skills folders from each workspace's Bops id to its project's (bindProject moves them as it binds; this catches any left).
+  // 4. Skills folders from each workspace's SmileDesk id to its project's (bindProject moves them as it binds; this catches any left).
   if (!after(m(), "folders")) {
     for (const w of getState().workspaces ?? []) if (w.orgoProjectId) moveWorkspaceFolder(w.id, folderKey(w));
     save((x) => {
@@ -955,14 +955,14 @@ function currentDefault(): DefaultName {
 
 /**
  * The default workspace's name (DECISIONS.md). "Main" left as it was is "bops" here, its project's name. A
- * name the user gave it here becomes its project's name too, but only once every Bops app on the account is
+ * name the user gave it here becomes its project's name too, but only once every SmileDesk app on the account is
  * new enough (orgo.ts bopsAppsGate): an older app finds its workspace by the name "bops". Until then the
- * project keeps "bops", Bops shows the user's name, and OrgoMigration.defaultRename says why; the next
+ * project keeps "bops", SmileDesk shows the user's name, and OrgoMigration.defaultRename says why; the next
  * start, sign-in or names sync tries again (retryDefaultRename). A held name is the default's name here
  * meanwhile: one that "bops" came back over is put back, never dropped for it (holdDefaultName). A rename
  * on orgo.ai after the user's wins (it's the name here too); one from before it is the name the user's
  * replaces, with no gate (no older app finds the project by "bops" then). A name the user's Orgo already
- * has gets "<name> (Bops)", said in the switcher.
+ * has gets "<name> (SmileDesk)", said in the switcher.
  */
 async function renameDefault(same: () => void): Promise<DefaultName> {
   const main = getState().workspaces?.find((w) => w.id === MAIN_WORKSPACE);
@@ -1039,7 +1039,7 @@ async function renameDefault(same: () => void): Promise<DefaultName> {
 /**
  * Undo migrateWorkspacesToOrgo (DESIGN.md section 8): the Orgo workspaces it made are deleted when they're
  * empty (one with something in it stays), the default's project goes back to the name "bops", and each
- * workspace forgets its project (its skills folder goes back to its Bops id). Everything on Orgo first: a
+ * workspace forgets its project (its skills folder goes back to its SmileDesk id). Everything on Orgo first: a
  * delete or rename Orgo refuses throws before anything changes here, so it's never half undone, and running
  * it again goes on (the ones deleted are off the list).
  */

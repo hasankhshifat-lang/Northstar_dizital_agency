@@ -9,7 +9,7 @@ import { addMessage, getState, update } from "./store";
 /**
  * A change someone made in one of this Mac's shared workspaces from their own window (the "change" act: cloud/change-routes.ts),
  * done here as the owner's own window would do it: through that very route, called in this process with the window's
- * token, for this workspace alone, so every rule the route has holds. Bops Cloud checked it (cloud/members.ts changeTouched);
+ * token, for this workspace alone, so every rule the route has holds. SmileDesk Cloud checked it (cloud/members.ts changeTouched);
  * this checks it again against this state (changeRefused), which may be newer. How it went is kept on the workspace
  * (Workspace.changesDone) for their window, and a change that went is said in the owner's chat as theirs.
  */
@@ -29,7 +29,7 @@ const botIdsOf = (wsId: string) => getState().bots.filter((b) => workspaceOf(b) 
 
 /**
  * Why this Mac won't do a change for someone (`role` and what they may do here, `access`), or null when it will: the same
- * checks as Bops Cloud's, against this state. A bot it names one they have at Write, an app one of the workspace's with
+ * checks as SmileDesk Cloud's, against this state. A bot it names one they have at Write, an app one of the workspace's with
  * Your Apps at Write, every power it needs theirs, the org chart only when they see every bot.
  */
 export function changeRefused(wsId: string, call: ChangeCall, role: "admin" | "member", access: MemberAccess): string | null {
@@ -55,7 +55,7 @@ function withWs(call: ChangeCall, wsId: string, ws: readonly string[] = [], wsQu
 }
 
 /**
- * A group's name key (lib/bot-groups.ts groupNameKey) from the key Bops Cloud sent it by (SharedGroup.key: groupKeyOf),
+ * A group's name key (lib/bot-groups.ts groupNameKey) from the key SmileDesk Cloud sent it by (SharedGroup.key: groupKeyOf),
  * among this workspace's computers and the apps their bots work on; or the key as it came when it isn't one of those.
  */
 function groupNameKeyOf(wsId: string, key: string): string {
@@ -103,14 +103,14 @@ export async function doChange(wsId: string, call: ChangeCall, who: { userId: st
   const r = checkChange(call, { bots: ids, apps: new Set(Object.keys(wsOf(wsId)?.hostedApps ?? {})) });
   if ("why" in r) return keep(wsId, { key, by: who.userId, ok: false, error: r.why, at: Date.now() });
   const { body, query } = withWs(call, wsId, r.route.ws, r.route.wsQuery);
-  // A group's name: by the key Bops Cloud sent it by, as this Mac names it.
+  // A group's name: by the key SmileDesk Cloud sent it by, as this Mac names it.
   if (call.path === "/api/workspaces" && body.computerName && typeof body.computerName === "object") {
     const c = body.computerName as Record<string, unknown>;
     if (typeof c.computer === "string") body.computerName = { ...c, computer: groupNameKeyOf(wsId, c.computer) };
   }
   const load = ROUTES[r.route.path];
   const handler = load ? ((await load())[call.method] as Handler | undefined) : undefined;
-  if (!handler) return keep(wsId, { key, by: who.userId, ok: false, error: "This Bops can't do that yet.", at: Date.now() });
+  if (!handler) return keep(wsId, { key, by: who.userId, ok: false, error: "This SmileDesk can't do that yet.", at: Date.now() });
   const qs = query.toString();
   const request = new Request(`http://127.0.0.1${call.path}${qs ? `?${qs}` : ""}`, {
     method: call.method,

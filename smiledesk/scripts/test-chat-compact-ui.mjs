@@ -1,10 +1,10 @@
 // Tests for Compact in the window (components/app/chat-view.tsx, lib/chat-summary.ts, lib/types.ts threadCompacts): the
 // chat's menu has Compact for the owner, and in a shared workspace for a member with Write on every bot in it (alone
 // there), never with Read; it's off, saying why, while a bot answers and with nothing new since the last one. Pressed,
-// it asks the owner's Bops (POST /api/chats/<id>/compact; a member's goes through /api/workspaces/shared), shows
+// it asks the owner's SmileDesk (POST /api/chats/<id>/compact; a member's goes through /api/workspaces/shared), shows
 // "Compacting…" meanwhile and why when it didn't go. Its line in the chat is a quiet rule, "Compacted" and when (by whom,
 // for a member's), and pressing it shows the chat's summary (the owner's window only: a member's has none). A thread's
-// menu has Compact only where its brain takes it (Claude Code, Bops agent on the computer tool; never Codex), off while
+// menu has Compact only where its brain takes it (Claude Code, SmileDesk agent on the computer tool; never Codex), off while
 // it runs; its line in the thread says "Compacted" and when. Nothing says a dash or Orbit. The .tsx files are compiled
 // with the TypeScript in node_modules as they load, rendered to HTML and, for the clicks, into a DOM (linkedom).
 // Usage: node scripts/test-chat-compact-ui.mjs   (not with --conditions=react-server: these are client components)
@@ -204,7 +204,7 @@ async function menu(box) {
   return [...box.querySelectorAll('[role="menuitem"]')];
 }
 
-await check("the owner's Compact asks their Bops, shows Compacting meanwhile, and nothing more once it went", async () => {
+await check("the owner's Compact asks their SmileDesk, shows Compacting meanwhile, and nothing more once it went", async () => {
   calls.length = 0;
   let finish;
   routes = { "POST /api/chats/bot%3Aboppy/compact": () => new Promise((r) => (finish = () => r({ body: { ok: true } }))) };
@@ -272,7 +272,7 @@ await check("pressing Compact's line shows the chat's summary, and again hides i
   await v.done();
 });
 
-await check("a member with Write compacts through the owner's Bops (shared-act.ts), Compact alone in the menu", async () => {
+await check("a member with Write compacts through the owner's SmileDesk (shared-act.ts), Compact alone in the menu", async () => {
   calls.length = 0;
   routes = { "POST /api/workspaces/shared": { body: { ok: true, key: "k", macOn: true } } };
   const s = shared("write");
@@ -288,7 +288,7 @@ await check("a member with Write compacts through the owner's Bops (shared-act.t
   await v.done();
 });
 
-await check("a thread's Compact: its menu has it where its brain takes it, it asks the owner's Bops, off while it runs; a member's goes through theirs", async () => {
+await check("a thread's Compact: its menu has it where its brain takes it, it asks the owner's SmileDesk, off while it runs; a member's goes through theirs", async () => {
   calls.length = 0;
   routes = { "POST /api/sessions/ses_1/compact": { body: { ok: true } }, "POST /api/workspaces/shared": { body: { ok: true, key: "k", macOn: true } } };
   const s = own();
@@ -303,7 +303,7 @@ await check("a thread's Compact: its menu has it where its brain takes it, it as
   assert.equal(rows[1].getAttribute("title"), "Wait for it to finish.");
   await v.done();
   v = await mount(h(ThreadSheet, sheetProps(s, thread(CODEX))));
-  assert.deepEqual((await menu(v.box)).map((r) => r.textContent.trim()), ["Save as skill"], "Codex as Bops runs it doesn't take one");
+  assert.deepEqual((await menu(v.box)).map((r) => r.textContent.trim()), ["Save as skill"], "Codex as SmileDesk runs it doesn't take one");
   await v.done();
   calls.length = 0;
   const theirs = shared("write");

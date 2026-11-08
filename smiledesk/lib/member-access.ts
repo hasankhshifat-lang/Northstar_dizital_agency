@@ -1,2 +1,2 @@
-/** Who may see and use which bots in a shared workspace: cloud/member-access.ts, shared with Bops Cloud. */
+/** Who may see and use which bots in a shared workspace: cloud/member-access.ts, shared with SmileDesk Cloud. */
 export * from "@/cloud/member-access";

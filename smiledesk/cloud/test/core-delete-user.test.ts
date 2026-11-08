@@ -16,7 +16,7 @@ import { call, dropUsers, fakeOrgo, fakeProvider, gate, keyOf, newNumber, newUse
 
 /**
  * Deleting a user (delete-user.ts): orgo-web's signed POST /v1/internal/delete-user deletes everything
- * Bops Cloud holds for an Orgo user, here and at the providers (numbers given back, the pod and its
+ * SmileDesk Cloud holds for an Orgo user, here and at the providers (numbers given back, the pod and its
  * inboxes, the memory banks under their prefix, stored responses, connected accounts), keeps their mail
  * handles retired and nobody's, answers 200 only once nothing is left (502 when a provider failed, which
  * a retry finishes; 503 while it's still going), and lets nothing of theirs be written again: their
@@ -499,7 +499,7 @@ test("numbers recorded for a user with no AgentPhone sub-account have nothing to
   assert.deepEqual(rows, nothingOf(rows));
 });
 
-test("a user Bops Cloud never heard of is 200 with zeros", async () => {
+test("a user SmileDesk Cloud never heard of is 200 with zeros", async () => {
   const id = newId();
   const asked = { agentphone: agentphone.got.length, agentmail: agentmail.got.length, openai: openai.got.length, composio: composio.got.length };
   const r = await deleteCall({ userId: id });

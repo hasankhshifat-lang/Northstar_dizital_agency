@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 /**
- * Seeing your Mac, live: the Bops Mac app (desktop/main.cjs) lists the displays and windows it can
+ * Seeing your Mac, live: the SmileDesk Mac app (desktop/main.cjs) lists the displays and windows it can
  * show; the page streams one with getUserMedia. The Your Mac tab (mac-computer.tsx) is built on these.
  */
 
@@ -18,7 +18,7 @@ declare global {
 }
 
 const noop = () => () => {};
-/** True inside the Bops Mac app (false while rendering on the server, so the page hydrates cleanly). */
+/** True inside the SmileDesk Mac app (false while rendering on the server, so the page hydrates cleanly). */
 export const useMacApp = () => useSyncExternalStore(noop, () => !!window.bopsMac, () => false);
 
 /** The displays and windows the Mac app can show, checked every few seconds (displays come and go). */

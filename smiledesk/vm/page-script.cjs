@@ -1,11 +1,11 @@
-// Bops: runs a bot's page script (lib/server/computer-task.ts page_script) on the Chrome of one screen
+// SmileDesk: runs a bot's page script (lib/server/computer-task.ts page_script) on the Chrome of one screen
 // of its computer, over CDP, and prints what it returned after a marker line. The script is the body
 // of an async function of (page, context): the tab in front of that screen, and its browser's context.
 // It works on the Chrome the user watches, so a page it opens comes to the front (as browser-front.cjs
 // does for the browser tools). It never closes Chrome: when it's done, it only disconnects.
 // With what it returned comes a receipt (whether the page changed, a dialog, a download, a new tab), so
 // the bot can tell a script that did nothing from one that worked, and whether the bot asked to see the
-// screen (screenshot(), the script's third argument), which Bops then sends it. Once the browser has two
+// screen (screenshot(), the script's third argument), which SmileDesk then sends it. Once the browser has two
 // or more tabs, the receipt lists them (title, address, which is in front). A file the page downloads is
 // saved to the computer's Downloads under the name the site gave it, never over another, and the receipt
 // gives the path: Playwright, attached over CDP, would otherwise leave it in a temp folder of its own under
@@ -29,7 +29,7 @@ let browsing;
 /** What happened while it ran, for its receipt: dialogs (dismissed unless the script answered them), downloads (where each was saved), downloads that couldn't be saved (and why), tabs opened. */
 const happened = { dialogs: [], downloads: [], unsaved: [], opened: 0 };
 /**
- * Downloads being saved: the receipt waits for them, up to SAVE_WAIT_MS after the script ends. Bops gives the whole
+ * Downloads being saved: the receipt waits for them, up to SAVE_WAIT_MS after the script ends. SmileDesk gives the whole
  * run 30 seconds past the script's limit (computer-task.ts pageScript), and the receipt's own reads take up to 2.5 more:
  * this keeps a script stopped at its limit inside that.
  */
@@ -279,7 +279,7 @@ async function front(context) {
   before = await stateOf(page);
   const screenshot = () => {
     look = true;
-    return "(Bops sends you the screen with this script's answer.)";
+    return "(SmileDesk sends you the screen with this script's answer.)";
   };
   try {
     await done({ ok: true, value: shown(await run(page, context, screenshot, (left, right) => sideBySide(browser, context, left, right))) });

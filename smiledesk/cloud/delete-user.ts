@@ -12,7 +12,7 @@ import { forgetUser } from "./turn-guard.ts";
 
 /**
  * Deleting a user: orgo-web's account deletion (lib/account-deletion/job.ts, its bops_cloud step) asks
- * Bops Cloud to delete everything it holds for an Orgo user who deleted their account:
+ * SmileDesk Cloud to delete everything it holds for an Orgo user who deleted their account:
  *
  *   POST /v1/internal/delete-user {userId}
  *   x-bops-timestamp: <Unix seconds>
@@ -29,7 +29,7 @@ import { forgetUser } from "./turn-guard.ts";
  * that a retry could still delete: `{deleted: {table: n}, kept: {table: n},
  * providers: {provider: {what: n}}}`. A provider that failed is 502 with the same and its `error`; one
  * still going after ANSWER_WITHIN_MS is 503 (`pending`), and it goes on: a call meanwhile waits for the
- * same run, and the next one after it finishes what's left. A user Bops Cloud never heard of is 200 with zeros.
+ * same run, and the next one after it finishes what's left. A user SmileDesk Cloud never heard of is 200 with zeros.
  *
  * In order:
  *
@@ -83,7 +83,7 @@ import { forgetUser } from "./turn-guard.ts";
  * the route in what's signed ("{timestamp}.POST /v1/internal/undelete-user.{raw body}", so a signature
  * for one is never good for the other), takes the user out of bops.deleted_users at once: for a deletion
  * staff cancel in orgo-web after its bops_cloud step ran. Nothing deleted comes back; they can sign in and
- * use Bops again from what their Mac still has. 200 `{ok: true, lifted}` (lifted: whether there was one),
+ * use SmileDesk again from what their Mac still has. 200 `{ok: true, lifted}` (lifted: whether there was one),
  * 409 while a delete of theirs still runs. orgo-web doesn't call it yet.
  *
  * Each table, and why:
@@ -123,7 +123,7 @@ import { forgetUser } from "./turn-guard.ts";
  * as a rule, and a call still going after it (a long reasoning answer) is the retry's. Tests shorten them.
  */
 export const deleteTiming = { answerWithinMs: 45_000, callsWithinMs: 30_000 };
-/** How many deletes go to one provider at once (stored responses run to thousands for someone who used Bops a lot). */
+/** How many deletes go to one provider at once (stored responses run to thousands for someone who used SmileDesk a lot). */
 const AT_ONCE = 8;
 
 type Counts = Record<string, number>;

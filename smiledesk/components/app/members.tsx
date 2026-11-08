@@ -38,9 +38,9 @@ import { AppsIcon } from "./made-apps";
 
 /*
  * Team: who sees the user's bots, a section of Settings (from the user's initials at the bottom left of the sidebar). They're the
- * members of the user's Orgo workspace named "bops", which holds the computers of every Bops workspace:
+ * members of the user's Orgo workspace named "bops", which holds the computers of every SmileDesk workspace:
  * the user invites people by email, sends an invite again or cancels it, picks which of the open
- * workspace's bots each person sees in Bops (none, read or write per bot, and for bots made later:
+ * workspace's bots each person sees in SmileDesk (none, read or write per bot, and for bots made later:
  * BotAccess, lib/member-access.ts), makes someone an Admin (every bot, its computer and Your Apps, whatever
  * is picked) or a Member (what's picked) and removes people. Each row says the role: Owner, Admin or Member. Who they are comes from GET /api/members
  * (lib/server/members.ts), which reads Orgo with the user's key, and orgo-web decides who may be added
@@ -57,7 +57,7 @@ export const refreshMembersCount = () => counters.forEach((read) => read());
 
 /**
  * How many people have access besides the user (GET /api/members?count=1): null while it isn't known, and
- * when there's none to show (signed out, self-hosted). Read when someone signs in, again when Bops comes
+ * when there's none to show (signed out, self-hosted). Read when someone signs in, again when SmileDesk comes
  * back to the front (at most once a minute), and after every change in Team.
  */
 export function useMembersCount(state: AppState) {
@@ -109,7 +109,7 @@ export const teamWords = (count: number | null) => (count ? `${count} with acces
 type Ready = Extract<MembersInfo, { state: "ready" }>;
 /** What the route answered: a state, or why it couldn't say ({code, error}). */
 type Read = MembersInfo | (MembersRefusal & { state?: undefined });
-/** A change's answer: its status (0: Bops itself didn't answer) and JSON. */
+/** A change's answer: its status (0: SmileDesk itself didn't answer) and JSON. */
 /** What a change answered, and (`read`) who has access as the sheet read it after, when that read came back. */
 type Answer = { status: number; json: Record<string, unknown>; read?: Read };
 /** A change sent to /api/members; the sheet reads who has access again before it answers. */
@@ -130,7 +130,7 @@ const quiet = `${pill} shrink-0 bg-[#F2F2F0] hover:bg-[#EAEAE7]`;
 
 /**
  * Team: Settings' section of who sees which bots (bops-app.tsx Settings), a part of the page like its others. It
- * reads who has access as it opens, again when Bops comes back to the front and every 30 seconds while it's open,
+ * reads who has access as it opens, again when SmileDesk comes back to the front and every 30 seconds while it's open,
  * showing what it has meanwhile. `onUpgrade` goes to the plans (Settings, Plan and credit); `onClose`, signing out
  * from here leaves Settings too.
  */
@@ -297,7 +297,7 @@ export function Members({
           </div>
         ) : read?.state === "ready" ? (
           <div className="px-[22px] pb-5 pt-5 text-[12px] leading-4 text-[#9A9A98]">
-            People you add sign in with the email you invite. In Bops they see everything of the bots you pick, your chats with them too. On orgo.ai they see every bot&apos;s
+            People you add sign in with the email you invite. In SmileDesk they see everything of the bots you pick, your chats with them too. On orgo.ai they see every bot&apos;s
             computer, like an open inbox, and can ask Orgo&apos;s agent to work on it. {read.keysOnComputers ? "Never your saved logins." : "Never your saved logins or keys."}{" "}
             <a href={read.orgoUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">
               Open on orgo.ai
@@ -312,7 +312,7 @@ export function Members({
 
 /** Who has access, and adding people: the section once Orgo has said. */
 function ReadyView({ info, state, act, onRetry, onUpgrade }: { info: Ready; state: AppState; act: Act; onRetry: () => void; onUpgrade: () => void }) {
-  // Bops' own keys on the computers: said whenever anyone else is in (View only too: Orgo's agent, which
+  // SmileDesk's own keys on the computers: said whenever anyone else is in (View only too: Orgo's agent, which
   // they may use on any of the computers, runs as root there), and when they're why the app has no Full access.
   const someoneElse = info.people.length > 0 || info.invites.length > 0;
   const keys = info.fullAccess === "off" || (info.keysOnComputers && someoneElse);
@@ -320,7 +320,7 @@ function ReadyView({ info, state, act, onRetry, onUpgrade }: { info: Ready; stat
   // Your Apps, beside each person's bots: only where apps are open to the owner (lib/apps-access.ts).
   const apps = appsOwnShown(state);
   const older = useOlderBops(apps);
-  // An Admin's sheet of a workspace shared with them: changes only once orgo-web and Bops Cloud let them (else it reads only, saying why).
+  // An Admin's sheet of a workspace shared with them: changes only once orgo-web and SmileDesk Cloud let them (else it reads only, saying why).
   const readsOnly = !!info.shared && !info.shared.can;
   return (
     <AppsScope.Provider value={{ shown: apps, older, roles: info.fullAccess === "on", keys: info.keysScope !== "not_yet" }}>
@@ -373,13 +373,13 @@ export function sheetBots(state: AppState, wsId?: string, sharedSheet = false): 
 }
 
 /**
- * Whether the sheet shows Your Apps (apps open to the owner), whether a Mac on the account runs a Bops from before it,
- * and whether Bops Cloud gives people their role yet (MembersInfo.fullAccess "on": Admin is offered, and Your Apps
+ * Whether the sheet shows Your Apps (apps open to the owner), whether a Mac on the account runs a SmileDesk from before it,
+ * and whether SmileDesk Cloud gives people their role yet (MembersInfo.fullAccess "on": Admin is offered, and Your Apps
  * reach people; else "not_yet" until it updates).
  */
 const AppsScope = createContext<{ shown: boolean; older: boolean; roles: boolean; keys?: boolean }>({ shown: false, older: false, roles: true });
 
-/** A Mac or runner on the account on a Bops from before (the org chart's check, GET /api/workspaces?olderBops=1), asked only when `ask`. */
+/** A Mac or runner on the account on a SmileDesk from before (the org chart's check, GET /api/workspaces?olderBops=1), asked only when `ask`. */
 function useOlderBops(ask: boolean) {
   const [older, setOlder] = useState(false);
   useEffect(() => {
@@ -869,7 +869,7 @@ function AddSomeone({ info, state, bots, act, onRetry, onUpgrade }: { info: Read
         {line}
       </Section>
     );
-  // Only an upgrade orgo-web offers: with none (Bops plans aren't sold now), no button that leads nowhere.
+  // Only an upgrade orgo-web offers: with none (SmileDesk plans aren't sold now), no button that leads nowhere.
   const upgrade = s.upgrade && (short ? short.upgrade : s.upgrade);
   // An Admin's sheet: the plan is the owner's to change. Ask the owner only when there's more to get (an upgrade orgo-web offers, or the Orgo plan when billed by use).
   if (info.shared)
@@ -1051,7 +1051,7 @@ function RoleLine({ role }: { role: MemberRole }) {
   );
 }
 
-/** Member or Admin, as a segmented control named Role: one choice makes someone an Admin (only once Bops Cloud gives people their role: AppsScope.roles). */
+/** Member or Admin, as a segmented control named Role: one choice makes someone an Admin (only once SmileDesk Cloud gives people their role: AppsScope.roles). */
 function AccessPicker({ value, onChange, disabled }: { value: MemberRole; onChange: (role: MemberRole) => void; disabled?: boolean }) {
   const { roles } = useContext(AppsScope);
   const lines = useRoleLines();
@@ -1061,7 +1061,7 @@ function AccessPicker({ value, onChange, disabled }: { value: MemberRole; onChan
       <div role="radiogroup" aria-label="Their role" className={`flex shrink-0 gap-0.5 rounded-full bg-black/[0.05] p-[3px] ${disabled ? "opacity-50" : ""}`}>
         {(["viewer", "admin"] as const).map((r) => {
           const on = value === r;
-          // Not offered yet: Bops Cloud would give an Admin no bots (someone an Admin already can still be made a Member).
+          // Not offered yet: SmileDesk Cloud would give an Admin no bots (someone an Admin already can still be made a Member).
           const held = r === "admin" && !roles && !on;
           return (
             <button

@@ -12,7 +12,7 @@ import { getState } from "./store";
 /**
  * Dresses a bot's Orgo computer as the bot's own: its wallpaper (the bot's wash, with faint line
  * doodles), Chrome in its color, a home screen on every new tab (mascot, clock, the computer's
- * real apps), and a dock on each screen. Bops renders the bot-specific pages here and the
+ * real apps), and a dock on each screen. SmileDesk renders the bot-specific pages here and the
  * computer's bops-desktop script applies them.
  */
 
@@ -199,7 +199,7 @@ export async function applyDesktop(b: Bot, { restartChrome = true }: { restartCh
     ["/usr/local/bin/bops-desktop", readFileSync(join(process.cwd(), "vm/bin/bops-desktop")), "0755"],
     ["/usr/local/bin/bops-chrome", readFileSync(join(process.cwd(), "vm/bin/bops-chrome")), "0755"],
     ["/usr/local/bin/bops-screen-layout", readFileSync(join(process.cwd(), "vm/bin/bops-screen-layout")), "0755"],
-    // The screen tools and their ledger, kept current with Bops (threads, helpers, one agent per screen).
+    // The screen tools and their ledger, kept current with SmileDesk (threads, helpers, one agent per screen).
     ["/opt/bops/screen_mcp.py", readFileSync(join(process.cwd(), "vm/screen_mcp.py")), "0644"],
     ["/usr/local/bin/bops-screens", readFileSync(join(process.cwd(), "vm/bin/bops-screens")), "0755"],
   ];

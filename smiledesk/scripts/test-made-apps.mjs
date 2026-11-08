@@ -1,5 +1,5 @@
 // Tests for the page an app a bot made runs in (lib/made-app-page.ts), in a real browser: it compiles
-// TSX, renders with React from Bops, styles with Tailwind, keeps data through `window.bops` (answered
+// TSX, renders with React from SmileDesk, styles with Tailwind, keeps data through `window.bops` (answered
 // here the way the window answers it, by message), and shows and reports a problem instead of a blank
 // page. Served with the view route's own sandbox and CSP, in a sandboxed frame like the app's tab.
 // Needs Google Chrome (Playwright drives it). Usage: node scripts/test-made-apps.mjs
@@ -107,7 +107,7 @@ try {
   assert.equal(await app.locator("#said").textContent(), "object");
   const net = await page.frames()[1].evaluate(() => fetch("http://bops.test/counter").then(() => "reached", () => "blocked"));
   assert.equal(net, "blocked", "no network");
-  // A web link goes to the window, which opens it in a tab of Bops.
+  // A web link goes to the window, which opens it in a tab of SmileDesk.
   await app.locator("#link").click();
   assert.deepEqual(await page.evaluate(() => window.opened), ["https://example.com/x"]);
   // Loaded again, it picks up where it was.

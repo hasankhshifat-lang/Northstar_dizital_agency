@@ -5,16 +5,16 @@ import { cloudProxy } from "./cloud";
 import { getState, stateEpoch, updateUnseen } from "./store";
 
 /**
- * What a user's Bops costs to run, as it happens: computers made and removed, numbers and inboxes
+ * What a user's SmileDesk costs to run, as it happens: computers made and removed, numbers and inboxes
  * set up, call minutes, model tokens. The account page totals these by month. Orgo's own compute
  * (the bots' computers' hours) is billed by Orgo and read from Orgo on the account page; these
- * events are the parts Orgo doesn't see. Through Bops Cloud, what AI credit paid for is the cloud's
+ * events are the parts Orgo doesn't see. Through SmileDesk Cloud, what AI credit paid for is the cloud's
  * own count (GET /v1/usage), which the account page shows; each call says which bot and what kind
  * of work it's for (usageTags) so the cloud can count it that way. Tasks on the user's Mac are counted
  * the same way: they run on the Agents API through the cloud, like every task.
  */
 
-/** What a call through Bops Cloud is for, for the cloud to count it (x-bops-bot, x-bops-source): an SDK call's options. Nothing when the app calls a provider directly. */
+/** What a call through SmileDesk Cloud is for, for the cloud to count it (x-bops-bot, x-bops-source): an SDK call's options. Nothing when the app calls a provider directly. */
 export function usageTags(source: NonNullable<UsageEvent["source"]>, botId?: string): { headers?: Record<string, string> } {
   if (!cloudProxy("openai")) return {};
   return { headers: { [USAGE_SOURCE_HEADER]: source, ...(botId ? { [USAGE_BOT_HEADER]: botId } : {}) } };

@@ -19,18 +19,18 @@ function parsed(payload: unknown) {
 }
 
 /**
- * Something that waited in Bops Cloud while this Mac was away, handed over by the tunnel
+ * Something that waited in SmileDesk Cloud while this Mac was away, handed over by the tunnel
  * (lib/server/cloud-tunnel.ts), which acknowledges it to the cloud once this answers 2xx. Only the
  * tunnel can call it: it carries the token only this server knows.
  * - "agentphone": a text to one of the user's numbers, handled as if AgentPhone had just sent it
  *   (a text handled before isn't handled again), with who sent it as the cloud decided (`bopsCaller`).
  * - "call": a call the cloud answered (the owner's, or anyone else's message), as a message in the bot's chat.
- * - "slack": an event from Bops' Slack app for this Mac's bots (Slack's whole envelope, at most a day
+ * - "slack": an event from SmileDesk's Slack app for this Mac's bots (Slack's whole envelope, at most a day
  *   old), handled as if the cloud had just replayed it to /api/channels/slack/events.
- * - "plan": the user's plan changed, or what it brings the main bot did (a number and an inbox Bops
+ * - "plan": the user's plan changed, or what it brings the main bot did (a number and an inbox SmileDesk
  *   Cloud set up, paused or gave back): taken into the state (lib/server/cloud-plan.ts).
  * - "member": something a member with Write did in one of the user's shared workspaces from their own
- *   Bops (lib/server/member-acts.ts), checked again here against this state and done as theirs.
+ *   SmileDesk (lib/server/member-acts.ts), checked again here against this state and done as theirs.
  * A kind this app doesn't know isn't acknowledged, so it waits for one that does.
  */
 export async function POST(request: Request) {

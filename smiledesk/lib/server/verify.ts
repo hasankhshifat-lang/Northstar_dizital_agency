@@ -8,7 +8,7 @@ import { cloudFetch, cloudOn, cloudSessionNow } from "./cloud";
  * as the user (lib/server/phone.ts); an address proved this way joins their own addresses
  * (lib/server/owner-email.ts).
  *
- * - Signed in with Orgo, codes go out through Bops Cloud (cloudVerifyApi), which holds the Twilio
+ * - Signed in with Orgo, codes go out through SmileDesk Cloud (cloudVerifyApi), which holds the Twilio
  *   credentials, keeps its own limits for every user, and says in the session which channels it
  *   sends. Its errors carry Twilio's code, so they read the same here.
  * - Self-hosting, credentials are TWILIO_VERIFY_SERVICE_SID plus an API key (TWILIO_API_KEY_SID and
@@ -99,7 +99,7 @@ const slot = (install: string, channel: Channel, recipient: string) => `${instal
  * without asking again. Gone once the number is verified or removed. Texts only: email asks no OK.
  */
 type Box = {
-  /** A test's stub (setVerifyApiForTests); otherwise each call goes to Bops Cloud or Twilio, whichever is in use then. */
+  /** A test's stub (setVerifyApiForTests); otherwise each call goes to SmileDesk Cloud or Twilio, whichever is in use then. */
   api?: VerifyApi;
   pending: Map<string, Pending>;
   consent: Map<string, number>;
@@ -128,7 +128,7 @@ function twilioAuth(): string | null {
 const twilioOn = () => !!process.env.TWILIO_VERIFY_SERVICE_SID && !!twilioAuth();
 
 /**
- * Whether codes go out on a channel from here: a test's stub, Bops Cloud when its session says it
+ * Whether codes go out on a channel from here: a test's stub, SmileDesk Cloud when its session says it
  * sends them, or this server's own Twilio Verify. Email also needs a sender (emailCodesOn).
  */
 const channelOn = (channel: Channel) => !!box.api || (cloudOn() ? !!cloudSessionNow()?.verify[channel] : twilioOn());
@@ -176,12 +176,12 @@ export const twilioVerifyApi = (fetchImpl: typeof fetch = fetch): VerifyApi => (
   service: async () => ({ mailerSid: (await twilio<{ mailer_sid?: string | null }>("", null, fetchImpl)).mailer_sid || null }),
 });
 
-/** POST /v1/verify/start or /check on Bops Cloud; a refusal becomes an error like Twilio's (HTTP status, Twilio's code, Retry-After). */
+/** POST /v1/verify/start or /check on SmileDesk Cloud; a refusal becomes an error like Twilio's (HTTP status, Twilio's code, Retry-After). */
 async function viaCloud(step: "start" | "check", body: VerifyStartBody | VerifyCheckBody, fetchImpl: typeof fetch): Promise<Verification> {
   const res = await cloudFetch(`/v1/verify/${step}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }, fetchImpl);
   const answer = (await res.json().catch(() => ({}))) as Partial<Verification & VerifyErrorBody>;
   if (!res.ok) {
-    const err = new Error(`Bops Cloud ${res.status} ${answer.code ?? ""}`.trim()) as VerifyError;
+    const err = new Error(`SmileDesk Cloud ${res.status} ${answer.code ?? ""}`.trim()) as VerifyError;
     err.statusCode = res.status;
     if (typeof answer.code === "number") err.code = answer.code;
     const ra = Number(answer.retryAfter ?? res.headers.get("retry-after"));
@@ -191,7 +191,7 @@ async function viaCloud(step: "start" | "check", body: VerifyStartBody | VerifyC
   return answer as Verification;
 }
 
-/** Codes through Bops Cloud, as the signed-in user. It has an email sender when its session says it emails codes. */
+/** Codes through SmileDesk Cloud, as the signed-in user. It has an email sender when its session says it emails codes. */
 export const cloudVerifyApi = (fetchImpl: typeof fetch = fetch): VerifyApi => ({
   create: (to, channel) => viaCloud("start", { to, channel }, fetchImpl),
   check: (to, code) => viaCloud("check", { to, code }, fetchImpl),
@@ -205,7 +205,7 @@ function api(): VerifyApi {
   return twilioVerifyApi();
 }
 
-/** For tests: a stub in place of Twilio or Bops Cloud (null puts the real one back), and a clean slate. */
+/** For tests: a stub in place of Twilio or SmileDesk Cloud (null puts the real one back), and a clean slate. */
 export function setVerifyApiForTests(stub: VerifyApi | null) {
   box.api = stub ?? undefined;
   box.pending.clear();
@@ -324,8 +324,8 @@ export async function startVerification(channel: Channel, to: string, install: s
       const wait = retryAfter(e) ?? 600;
       return { ok: false, error: `Too many codes were sent to this ${words.recipient}. Try again in ${minutes(wait * 1000)} min.`, retryInSec: wait };
     }
-    // Bops Cloud keeps one verified owner per number or address across all its users.
-    if (s === 409) return { ok: false, error: `That ${words.recipient} is already verified on another Bops account.` };
+    // SmileDesk Cloud keeps one verified owner per number or address across all its users.
+    if (s === 409) return { ok: false, error: `That ${words.recipient} is already verified on another SmileDesk account.` };
     if (channel === "email") {
       if (UNMAILABLE.has(errCode(e) ?? 0)) return { ok: false, error: "That doesn't look like an email address." };
       if (s && s >= 400 && s < 500) {
@@ -383,7 +383,7 @@ export async function checkVerification(channel: Channel, to: string, install: s
     }
     if (s === 409) {
       box.pending.delete(key);
-      return { ok: false, error: `That ${words.recipient} is already verified on another Bops account.`, restart: true };
+      return { ok: false, error: `That ${words.recipient} is already verified on another SmileDesk account.`, restart: true };
     }
     if (errCode(e) === 60202) {
       box.pending.delete(key);

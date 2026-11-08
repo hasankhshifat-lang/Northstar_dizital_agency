@@ -3,7 +3,7 @@ import { readFile } from "@/lib/server/files";
 /**
  * A file a bot linked, copied here when the user opened it. Its id is unguessable, so it opens in a tab
  * of its own (like bots' pages). A model wrote it, so HTML and SVG run sandboxed, as pages do; a kind
- * Bops doesn't show downloads.
+ * SmileDesk doesn't show downloads.
  */
 export async function GET(_request: Request, ctx: RouteContext<"/api/files/[fileId]">) {
   const { fileId } = await ctx.params;

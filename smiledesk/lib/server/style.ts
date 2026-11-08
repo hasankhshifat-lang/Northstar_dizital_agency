@@ -2,8 +2,8 @@ import "server-only";
 import { ownerName } from "./store";
 
 /**
- * How every bot writes and speaks (WRITING, SPEAKING), what it knows about Bops (ABOUT_BOPS), how it
- * asks (ASKING) and how its answer is tidied (tidyAnswer). The text lives in cloud/style.ts, which Bops
+ * How every bot writes and speaks (WRITING, SPEAKING), what it knows about SmileDesk (ABOUT_BOPS), how it
+ * asks (ASKING) and how its answer is tidied (tidyAnswer). The text lives in cloud/style.ts, which SmileDesk
  * Cloud imports too: it answers the main bot's chat from the iPhone, so a bot says the same things on
  * the Mac and in the cloud.
  */

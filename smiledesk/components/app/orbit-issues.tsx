@@ -23,7 +23,7 @@ import { CloseButton, useNow } from "./ui";
  *   GET    /api/orbit/issues/{id}/source?ws=  the email or thread itself (source-view.tsx)
  *
  * One copy per account and workspace, shared by the sidebar and the page, read when the first of them
- * opens, when Bops comes back in sight, and every minute while it's in sight.
+ * opens, when SmileDesk comes back in sight, and every minute while it's in sight.
  */
 
 export type IssueStatus = "open" | "waiting_them" | "waiting_us" | "done";
@@ -116,7 +116,7 @@ type Shared = {
   user: string;
   ws: string;
   list: IssueList | null;
-  /** Bops couldn't be reached for them while there's no list to show (null: none failed): the page says so, with Try again. */
+  /** SmileDesk couldn't be reached for them while there's no list to show (null: none failed): the page says so, with Try again. */
   failed: string | null;
   users: Set<() => void>;
   asked: number;
@@ -175,8 +175,8 @@ function read(s: Shared) {
       // No issues to be had: an empty list, so the section says so.
       else if (!s.list && asked >= s.shown) show(s, { issues: [], tags: [] }, asked);
     })
-    // Bops itself out of reach: said too.
-    .catch(() => fail(s, asked, "Couldn't reach Bops."))
+    // SmileDesk itself out of reach: said too.
+    .catch(() => fail(s, asked, "Couldn't reach SmileDesk."))
     .finally(() => {
       s.reading--;
     });
@@ -276,7 +276,7 @@ async function update(user: string, ws: string, id: string, patch: IssuePatch): 
     return null;
   } catch {
     if (before) patchHere(s, (all) => all.map((i) => (i.id === id ? before : i)));
-    return "Couldn't reach Bops. Try again.";
+    return "Couldn't reach SmileDesk. Try again.";
   }
 }
 
@@ -301,7 +301,7 @@ async function remove(user: string, ws: string, id: string): Promise<string | nu
     patchHere(s, (all) => all.filter((i) => i.id !== id));
     return null;
   } catch {
-    return "Couldn't reach Bops. Try again.";
+    return "Couldn't reach SmileDesk. Try again.";
   }
 }
 

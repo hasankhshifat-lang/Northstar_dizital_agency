@@ -6,22 +6,22 @@ import { isBrowserMethod, POINTER_KINDS, type BrowserActivity, type BrowserFrame
  * runner (lib/server/browser-runner.ts), and in the local two-person stack's stand-in computer
  * (scripts/dev-two-person.mjs), the same code both places.
  *
- * - It keeps a socket to Bops Cloud (WS /v1/browser/runner, signed in as the computer), which tells it who watches
+ * - It keeps a socket to SmileDesk Cloud (WS /v1/browser/runner, signed in as the computer), which tells it who watches
  *   each bot's browser now ("watch").
  * - A bot watched: the screen its task holds (`screenFor`) is captured, as a CDP screencast of the tab in front of
- *   that screen's Chrome (DevTools on 127.0.0.1, port 9200 + display), and each frame goes to Bops Cloud for those
+ *   that screen's Chrome (DevTools on 127.0.0.1, port 9200 + display), and each frame goes to SmileDesk Cloud for those
  *   viewers, never kept anywhere but as the screen's latest (sent again to someone who starts watching). Nobody
  *   watching, no frame is sent; LINGER_MS after the last viewer left, the capture stops.
- * - Take over: one person at a time has control of a screen (Bops Cloud let only someone who may: cloud/browser.ts),
+ * - Take over: one person at a time has control of a screen (SmileDesk Cloud let only someone who may: cloud/browser.ts),
  *   and the runner's own takeover goes with it (`onControl`: the thread on that screen pauses, as when the owner takes
  *   it over, and goes on once it's handed back). While they have it, a bot step that asks (`whenFree`) waits. They
- *   hand it back, or it goes back when they stop watching. The owner can take it from a member (Bops Cloud says so:
+ *   hand it back, or it goes back when they stop watching. The owner can take it from a member (SmileDesk Cloud says so:
  *   `over`); a member never takes it from anyone.
  * - What the bot is doing with a screen's browser (`activity`: browsing, idle, a sign-in it asked a person for), and
- *   whether a step waits on whoever has control: said to Bops Cloud as it changes, watched or not, so a Watch chip can
+ *   whether a step waits on whoever has control: said to SmileDesk Cloud as it changes, watched or not, so a Watch chip can
  *   say the bot is browsing before anyone watches (nothing is captured for that).
  * - In control, they send CDP input: only BROWSER_METHODS, each with its parameters checked (cleanInput: a page to
- *   go to is http or https only). Anything else is refused here, whatever Bops Cloud passed on.
+ *   go to is http or https only). Anything else is refused here, whatever SmileDesk Cloud passed on.
  * - Its tabs: a captured screen's Chrome's tabs ("tabs": id, title, address, oldest first, and which is in front) go to
  *   its viewers as they change. In control, a person opens a new tab at a page, switches to or closes a tab it listed
  *   (through the DevTools address, never a CDP session on the browser), and handing back puts the tab the bot had in
@@ -42,7 +42,7 @@ export const LINGER_MS = 5_000;
 const FRONT_EVERY_MS = 1_500;
 /** Frames waiting to go out past this are dropped (a slow link): the next frame says the same. */
 const BACKLOG_BYTES = 4 * 1024 * 1024;
-/** A person in control whose socket to Bops Cloud is gone this long has it handed back (nothing would let them hand it back otherwise). */
+/** A person in control whose socket to SmileDesk Cloud is gone this long has it handed back (nothing would let them hand it back otherwise). */
 const LOST_CONTROL_MS = 60_000;
 const RECONNECT_MIN_MS = 2_000;
 const RECONNECT_MAX_MS = 60_000;
@@ -91,9 +91,9 @@ export function pointerOf(payload: unknown): BrowserPointer | null {
 
 export type RelayScreen = { display: number; port: number };
 export type RelayOptions = {
-  /** Bops Cloud's address (http or https). */
+  /** SmileDesk Cloud's address (http or https). */
   url: () => string;
-  /** The computer's sign-in for Bops Cloud (Authorization and device), or null while it has none. */
+  /** The computer's sign-in for SmileDesk Cloud (Authorization and device), or null while it has none. */
   headers: () => Record<string, string> | null;
   /** The computer's screens and their Chrome's DevTools ports. */
   screens: () => RelayScreen[];
@@ -188,7 +188,7 @@ export function cleanInput(method: string, params: unknown): Record<string, unkn
         return null;
       }
       if (u.protocol !== "http:" && u.protocol !== "https:") return null;
-      // Never the ports of this computer's own DevTools, Bops or the relay, on any host: a page there acts on the browser
+      // Never the ports of this computer's own DevTools, SmileDesk or the relay, on any host: a page there acts on the browser
       // past these rules, and too many names reach this computer to tell them apart (localhost., *.localhost, any 127
       // address, an IPv4 in IPv6, a public name pointed here).
       const port = Number(u.port || (u.protocol === "https:" ? 443 : 80));
@@ -496,7 +496,7 @@ class Screen {
     return freed;
   }
 
-  /** What the bot is doing here, to Bops Cloud, when it changed (or `again`: a new socket): its viewers hear it, watching or not. */
+  /** What the bot is doing here, to SmileDesk Cloud, when it changed (or `again`: a new socket): its viewers hear it, watching or not. */
   sayDoing(again = false) {
     const bot = this.doing?.bot ?? this.controller?.bot;
     if (!bot) return;
@@ -592,7 +592,7 @@ class RelayCore {
     return this.socket?.readyState === WebSocket.OPEN;
   }
 
-  /** To Bops Cloud; a frame (`droppable`) is left out while the link is backed up. Whether it went. */
+  /** To SmileDesk Cloud; a frame (`droppable`) is left out while the link is backed up. Whether it went. */
   send(m: RunnerToBrowser, droppable = false): boolean {
     const s = this.socket;
     if (!s || s.readyState !== WebSocket.OPEN) return false;
@@ -625,32 +625,32 @@ class RelayCore {
     this.socket = s;
     s.on("open", () => {
       this.retry = RECONNECT_MIN_MS;
-      this.log("connected to Bops Cloud");
-      // Bops Cloud keeps what each bot is doing only while this is connected: said again to a new socket.
+      this.log("connected to SmileDesk Cloud");
+      // SmileDesk Cloud keeps what each bot is doing only while this is connected: said again to a new socket.
       for (const sc of this.screens.values()) sc.sayDoing(true);
     });
     s.on("message", (data) => {
       try {
         this.heard(JSON.parse(String(data)) as BrowserToRunner);
       } catch (e) {
-        this.log(`a message from Bops Cloud: ${(e as Error).message}`);
+        this.log(`a message from SmileDesk Cloud: ${(e as Error).message}`);
       }
     });
     s.on("unexpected-response", (_req, res) => {
-      this.log(`Bops Cloud answered ${res.statusCode}`);
+      this.log(`SmileDesk Cloud answered ${res.statusCode}`);
       res.resume();
     });
     s.on("error", () => {});
     s.on("close", () => {
       if (this.socket !== s) return;
       this.socket = null;
-      // Nobody is heard watching till it's back (Bops Cloud says who again then); someone in control keeps it a while.
+      // Nobody is heard watching till it's back (SmileDesk Cloud says who again then); someone in control keeps it a while.
       for (const sc of this.screens.values()) {
         sc.bots.clear();
         sc.unwatched();
       }
       this.botScreen.clear();
-      // Back by then and watching again (Bops Cloud said so since), they keep it; else it's handed back. A reconnect
+      // Back by then and watching again (SmileDesk Cloud said so since), they keep it; else it's handed back. A reconnect
       // alone isn't them back: after a cloud restart nobody may watch again, and the thread would wait for good.
       if (!this.lost && !this.stopped)
         this.lost = setTimeout(() => {
@@ -679,7 +679,7 @@ class RelayCore {
     const sc = this.screenOf(m.bot);
     if (!sc) return m.who && this.refuse(m.bot, m.who.id, "Its browser isn't open right now.");
     if (m.t === "take") {
-      // The owner takes it from whoever has it (Bops Cloud says `over` only for the owner); anyone else waits their turn.
+      // The owner takes it from whoever has it (SmileDesk Cloud says `over` only for the owner); anyone else waits their turn.
       if (sc.controller && sc.controller.who.id !== m.who.id && !m.over) return this.refuse(m.bot, m.who.id, `${sc.controller.who.name} has control.`);
       if (sc.controller?.who.id !== m.who.id) sc.setController({ who: m.who, bot: m.bot });
       return;

@@ -1,16 +1,13 @@
 <!doctype html>
 <!--
-  What the Bops window shows while its server starts: Boppy (lib/mascot.ts, the main bot awake, as on
-  bops.bot) listening to music, bopping to the beat while notes drift out of its headphones, singing
-  along, its eyes glancing about and blinking now and then. CSS only, transform and opacity only, and
-  still with reduced motion.
-  components/app/mascot.tsx (BoppyLoading) draws the same scene for the app's own first load, so one
-  hands over to the other without a jump.
+  What the SmileDesk window shows while its server starts: the Northstar mark, breathing gently. CSS
+  only, transform and opacity only, and still with reduced motion. components/app/mascot.tsx
+  (BoppyLoading) draws the same scene for the app's own first load, so one hands over to the other.
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Bops</title>
+<title>SmileDesk</title>
 <style>
   html, body { margin: 0; height: 100%; background: #fff; }
   body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; font: 13px/1.5 -apple-system, system-ui, sans-serif; color: #6B6B6B; -webkit-app-region: drag; user-select: none; }
@@ -82,17 +79,14 @@
   }
   /* Still with reduced motion: the face's own selectors, since a plainer one loses to them however late it comes. */
   @media (prefers-reduced-motion: reduce) { .boppy, .shadow, .boppy g[transform="translate(.6 -1.4)"], .boppy g[transform="translate(.6 -1.4)"] ellipse, .boppy ellipse[cy="26.6"] { animation: none; } .note { display: none; } }
+  /* SmileDesk: the Northstar mark, breathing gently (components/app/mascot.tsx BoppyLoading does the same). */
+  .mark { display: block; margin: 12px auto 0; animation: breathe 1.8s ease-in-out infinite; }
+  @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.94); opacity: 0.8; } }
+  @media (prefers-reduced-motion: reduce) { .mark { animation: none; } }
 </style>
 </head>
 <body>
-  <div class="scene" aria-hidden="true">
-    <div class="shadow"></div>
-    <svg class="note l" viewBox="0 0 24 24"><g fill="#0A0A0A"><ellipse cx="7" cy="17.5" rx="3.3" ry="2.5" transform="rotate(-20 7 17.5)"/><rect x="9.4" y="4" width="1.8" height="13.6" rx=".9"/><path d="M11.2 4c0 3.2 4.8 3.8 4.8 7.6-.9-1.7-2.7-2.4-4.8-2.7z"/></g></svg>
-    <svg class="note r" viewBox="0 0 24 24"><g fill="#0A0A0A"><ellipse cx="6" cy="18.3" rx="3" ry="2.3" transform="rotate(-20 6 18.3)"/><ellipse cx="17.6" cy="16.3" rx="3" ry="2.3" transform="rotate(-20 17.6 16.3)"/><rect x="8.1" y="6.2" width="1.7" height="12" rx=".85"/><rect x="19.7" y="4.2" width="1.7" height="12" rx=".85"/><path d="M8.1 6.2 21.4 3.6v2.9L8.1 9.1z"/></g></svg>
-    <svg class="note l" viewBox="0 0 24 24"><g fill="#0A0A0A"><ellipse cx="6" cy="18.3" rx="3" ry="2.3" transform="rotate(-20 6 18.3)"/><ellipse cx="17.6" cy="16.3" rx="3" ry="2.3" transform="rotate(-20 17.6 16.3)"/><rect x="8.1" y="6.2" width="1.7" height="12" rx=".85"/><rect x="19.7" y="4.2" width="1.7" height="12" rx=".85"/><path d="M8.1 6.2 21.4 3.6v2.9L8.1 9.1z"/></g></svg>
-    <svg class="note r" viewBox="0 0 24 24"><g fill="#0A0A0A"><ellipse cx="7" cy="17.5" rx="3.3" ry="2.5" transform="rotate(-20 7 17.5)"/><rect x="9.4" y="4" width="1.8" height="13.6" rx=".9"/><path d="M11.2 4c0 3.2 4.8 3.8 4.8 7.6-.9-1.7-2.7-2.4-4.8-2.7z"/></g></svg>
-    <svg class="boppy" viewBox="0 0 40 40"><g transform="translate(20 21.4) scale(.92) translate(-20 -20)"><g transform="rotate(-9 20 20)"><path d="M5.3 17.6C4.4 8.4 11.1 2 20 2s15.6 6.4 14.7 15.6" fill="none" stroke="#0A0A0A" stroke-width="4.4" stroke-linecap="round"/><path d="M5.3 17.6C4.4 8.4 11.1 2 20 2s15.6 6.4 14.7 15.6" fill="none" stroke="#E9FF3B" stroke-width="2.8" stroke-linecap="round"/><path d="M20 6c8.5 0 14 6 14 13.5S28.5 34 20 34 6 27 6 19.5 11.5 6 20 6z" fill="#0A0A0A"/><g transform="translate(.6 -1.4)"><ellipse cx="15.5" cy="20" rx="2.2" ry="2.9" fill="#fff"/><ellipse cx="24.5" cy="20" rx="2.2" ry="2.9" fill="#fff"/></g><ellipse cx="20.8" cy="26.6" rx="1.35" ry="1.65" fill="#fff"/><rect x="4" y="16" width="7" height="11" rx="3.5" fill="#E9FF3B" stroke="#0A0A0A" stroke-width="1.8"/><rect x="29" y="16" width="7" height="11" rx="3.5" fill="#E9FF3B" stroke="#0A0A0A" stroke-width="1.8"/></g></g></svg>
-  </div>
-  <div>Starting Bops…</div>
+  <div class="scene" aria-hidden="true"><img class="mark" src="northstar-mark.png" alt="" width="70" height="72"></div>
+  <div>Starting SmileDesk…</div>
 </body>
 </html>

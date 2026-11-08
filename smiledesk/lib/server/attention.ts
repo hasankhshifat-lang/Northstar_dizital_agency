@@ -7,7 +7,7 @@ import { addMessage, getState, ownerName, stateReady, update } from "./store";
 /**
  * The user's attention, spent carefully. Each piece of news (something new on a watched screen, a
  * finished task) gets one of three levels from Jev, given what they're doing right now:
- *   now:   worth interrupting them (the screen comes forward, a chime, a notification if Bops is behind)
+ *   now:   worth interrupting them (the screen comes forward, a chime, a notification if SmileDesk is behind)
  *   quiet: it shows where it belongs (the chat, the sidebar's New), no interruption
  *   later: held, and told together in one "While you were busy" message when they're free
  */
@@ -116,7 +116,7 @@ export function flush() {
 if (g.bopsDigestTimer) clearInterval(g.bopsDigestTimer);
 if (loopHere("digest")) g.bopsDigestTimer = setInterval(() => stateReady() && flush(), 60_000);
 
-/** A finished task's result: if Jev says it's worth interrupting the user for, it chimes (and notifies, if Bops is behind). */
+/** A finished task's result: if Jev says it's worth interrupting the user for, it chimes (and notifies, if SmileDesk is behind). */
 export function pingIfWorthIt(messageId: string, title: string, answer: string) {
   void urgency({ kind: "task", what: title, news: answer }).then((level) => {
     if (level !== "now") return;

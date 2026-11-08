@@ -33,7 +33,7 @@ import { setMemberAccess } from "./workspaces";
  * The People sheet's server (app/api/members): who can see the user's bots' computers on Orgo, and
  * changes to that. It's the membership of the user's own Orgo workspace named "bops", found and never
  * made (findBopsWorkspace), never a workspace the app names: an id from the request is never read. Every
- * call runs on the signed-in key alone (orgoMembers), and only where the state lives in Bops Cloud: a
+ * call runs on the signed-in key alone (orgoMembers), and only where the state lives in SmileDesk Cloud: a
  * self-hosted or hosted server can keep its own keys on the bots' computers, so it points at orgo.ai.
  *
  * orgo-web decides who may be added (Free nobody, Pro 2 people, Max up to 5) and sends its numbers with
@@ -43,16 +43,16 @@ import { setMemberAccess } from "./workspaces";
  * added from here until it has shipped (ORGO_NOT_READY). Taking access away always works. Nothing here
  * logs or tracks an email.
  *
- * What each person may do with the Bops workspace's bots (none, read or write per bot, and for the bots
- * not named: lib/member-access.ts) is Bops' own, kept here on that workspace (Workspace.memberAccess,
- * setMemberAccess) by their email, or a guest's user id. It's the Bops workspace whose Orgo workspace the
- * sheet lists (sheetWs), where Bops Cloud reads it. It's kept once Orgo has the invite or the change,
+ * What each person may do with the SmileDesk workspace's bots (none, read or write per bot, and for the bots
+ * not named: lib/member-access.ts) is SmileDesk's own, kept here on that workspace (Workspace.memberAccess,
+ * setMemberAccess) by their email, or a guest's user id. It's the SmileDesk workspace whose Orgo workspace the
+ * sheet lists (sheetWs), where SmileDesk Cloud reads it. It's kept once Orgo has the invite or the change,
  * never under a key the window sent, and forgotten when they're removed or their invite is cancelled, or
  * when Orgo no longer lists them or lists them as joined since it was set, as the sheet or the Mac's look
- * at the runners reads (forgetGone). Each entry says when it was set, and whether with an invite, so Bops
+ * at the runners reads (forgetGone). Each entry says when it was set, and whether with an invite, so SmileDesk
  * Cloud shows it only for the membership it was set for (member-access.ts currentFor).
  *
- * Use its computer is orgo-web's to keep (it decides root on the bots' computers on orgo.ai, and Bops Cloud goes by
+ * Use its computer is orgo-web's to keep (it decides root on the bots' computers on orgo.ai, and SmileDesk Cloud goes by
  * it), so a change to it goes to orgo-web first (orgoMembers.setComputer) and is kept here only once orgo-web took it;
  * one orgo-web turns down changes nothing, the bots picked with it neither. The copy here follows orgo-web's list too
  * (followComputer), and the sheet shows orgo-web's where it says. It comes with Write (fitComputer): access that leaves
@@ -84,22 +84,22 @@ const done = (got: Got) => !!got && got.status >= 200 && got.status < 300;
 /* ---------------- Full access ---------------- */
 
 /**
- * Whether Bops puts keys of its own on the bots' computers, which someone with Full access (root there)
+ * Whether SmileDesk puts keys of its own on the bots' computers, which someone with Full access (root there)
  * could read: the apps key and this Mac's tailnet address in /opt/bops/apps.json when the server listens
  * beyond this Mac (BOPS_LISTEN_ALL=1), the executor's key (BOPS_COMPUTER_TOOL=0), Tailscale's auth key,
- * the Orgo key a Bops runner signs in with (the computer's own, for the whole account: runner-install.ts)
+ * the Orgo key a SmileDesk runner signs in with (the computer's own, for the whole account: runner-install.ts)
  * on a computer that has one.
  */
 const keysOnComputers = () => reachableFromComputers() || !computerToolOn() || !!process.env.TAILSCALE_AUTH_KEY || runnerKeys();
-/** A computer has a Bops runner, or is getting one, or still has the key Bops gave it (being stopped). */
+/** A computer has a SmileDesk runner, or is getting one, or still has the key SmileDesk gave it (being stopped). */
 const runnerKeys = () => Object.values(getState().runners ?? {}).some((x) => x.status === "running" || x.status === "installing" || runnerKeyMade(x));
 
 /**
- * Whether the sheet offers Admin: once this Mac's Bops Cloud says it gives an Admin their role (cloud-caps.ts "roles":
+ * Whether the sheet offers Admin: once this Mac's SmileDesk Cloud says it gives an Admin their role (cloud-caps.ts "roles":
  * before that it goes by entries alone, and an Admin, who's kept none, would see no bot there), "not_yet" until then. A
- * Bops whose state isn't in Bops Cloud (self-hosted, a hosted server) has no Bops Cloud to wait for. Bops Cloud and
+ * SmileDesk whose state isn't in SmileDesk Cloud (self-hosted, a hosted server) has no SmileDesk Cloud to wait for. SmileDesk Cloud and
  * orgo-web give an Admin their role from orgo-web alone, whatever this Mac says, and a Member with Use its computer is
- * root on the computers all the same; Bops keeps its account keys off the computers of any workspace with someone else
+ * root on the computers all the same; SmileDesk keeps its account keys off the computers of any workspace with someone else
  * in it (othersCanUse), and the sheet says when other keys are there (keysOnComputers). Making someone a Member, or
  * removing them, is never held back.
  */
@@ -204,11 +204,11 @@ export function seatsOf(json: Record<string, unknown>): { seats: MemberSeats; se
   return seats ? { seats } : { seats: null, seatsError: "PLAN_UNAVAILABLE" };
 }
 
-/** Everyone's access to the bots of the Bops workspace whose sheet this is (Workspace.memberAccess). */
+/** Everyone's access to the bots of the SmileDesk workspace whose sheet this is (Workspace.memberAccess). */
 const accessMapOf = (wsId: string): MemberAccessMap | undefined => getState().workspaces?.find((w) => w.id === wsId)?.memberAccess;
 
 /**
- * The Bops workspace whose people an Orgo workspace's are, where their bot access is kept and Bops Cloud
+ * The SmileDesk workspace whose people an Orgo workspace's are, where their bot access is kept and SmileDesk Cloud
  * reads it (the project's bops_ws_id): the one tied to it (Workspace.orgoProjectId), else the default,
  * whose "bops" project findBopsWorkspace falls back to for a workspace with none of its own (an Orgo
  * without per workspace projects, or the move to them undone). Never simply the one open.
@@ -220,7 +220,7 @@ const sheetWs = (orgoWorkspace: string) => getState().workspaces?.find((w) => w.
  * waiting, is forgotten: removed or gone on orgo.ai, left on their own, their invite cancelled or used up
  * there. So coming back any way (an orgo.ai invite, a link) never brings their old bots back with them.
  * Someone listed is too, when Orgo says when their membership began (`joined_at`) and their entry was set
- * before it (member-access.ts currentFor): removed and back again while no Mac on this Bops looked. One set
+ * before it (member-access.ts currentFor): removed and back again while no Mac on this SmileDesk looked. One set
  * with the invite they joined by is tied to that membership now (its `at` the join), so it goes the same
  * way after another. Only entries kept before Orgo was asked (`before`) and still the same ones: one an
  * invite or a change kept meanwhile is newer than the list. Nothing goes when the list doesn't say both
@@ -259,7 +259,7 @@ function forgetGone(wsId: string, before: MemberAccessMap | undefined, json: Rec
 /**
  * Use its computer as orgo-web keeps it, which its list gives the owner (each member's bopsComputerUse): the copy kept
  * here follows it, so the sheet shows what orgo-web goes by, and an off kept here that orgo-web no longer has (set there,
- * or someone removed on orgo.ai and back) never holds Bops Cloud or this Mac back. Only for a member the list says it of
+ * or someone removed on orgo.ai and back) never holds SmileDesk Cloud or this Mac back. Only for a member the list says it of
  * (an orgo-web before it says it of nobody), on an entry kept before Orgo was asked and still the same one (one a change
  * kept meanwhile is newer than the list), and never an entry made for it: someone with no bots kept has no Write.
  */
@@ -338,7 +338,7 @@ export function listOf(json: Record<string, unknown>, workspace: string, access:
 
 /* ---------------- Reading who has access ---------------- */
 
-/** `workspace`: the Orgo workspace; `wsId`: the Bops workspace whose sheet it is (where bot access is kept). */
+/** `workspace`: the Orgo workspace; `wsId`: the SmileDesk workspace whose sheet it is (where bot access is kept). */
 type Sheet = { kind: "ready"; workspace: string; wsId: string; info: Ready };
 type Loaded = Sheet | { kind: "state"; info: MembersInfo } | { kind: "refused"; answer: Answer };
 
@@ -348,7 +348,7 @@ type Loaded = Sheet | { kind: "state"; info: MembersInfo } | { kind: "refused"; 
  * the user into (the workspace deleted or renamed on orgo.ai) is looked up again once.
  */
 async function load(key: string, { fresh = false } = {}): Promise<Loaded> {
-  // The Bops workspace open, read once: the sheet is for its Orgo workspace's people.
+  // The SmileDesk workspace open, read once: the sheet is for its Orgo workspace's people.
   const ws = getState().workspace;
   let found = await findBopsWorkspace(key, { fresh, wsId: ws });
   for (let again = true; ; again = false) {
@@ -432,7 +432,7 @@ export async function membersCount(): Promise<Answer> {
 
 /**
  * Whether someone besides the owner can use an Orgo workspace of the user's, as far as Orgo's members
- * list shows it: any other member (View only too, guests too), or an invite still open. A Bops runner
+ * list shows it: any other member (View only too, guests too), or an invite still open. A SmileDesk runner
  * signs in with its computer's own key, which is the whole account's, so it's never set up there
  * (runner-install.ts). Orgo also counts a live share link, which this list doesn't show: its own answer
  * when the computer's key is asked for (409 full_access_member) has the last word. Null when Orgo didn't say.
@@ -476,16 +476,16 @@ export async function forgetGoneMembers(key: string): Promise<void> {
   }
 }
 
-/* ---------------- Changes (from the Bops window only: app/api/members) ---------------- */
+/* ---------------- Changes (from the SmileDesk window only: app/api/members) ---------------- */
 
-/** The signed-in key, where the state is in Bops Cloud. */
+/** The signed-in key, where the state is in SmileDesk Cloud. */
 async function signedIn(): Promise<{ key: string } | Answer> {
   if (!stateInCloud()) return no(409, "SELF_HOSTED", WORDS.selfHosted);
   const key = await loadOrgoKey();
   return key ? { key } : no(401, "SIGNED_OUT", WORDS.noKey, { why: "no_key" });
 }
 
-/** Where a change goes: the Orgo workspace, and the Bops workspace whose sheet it is (where bot access is kept). */
+/** Where a change goes: the Orgo workspace, and the SmileDesk workspace whose sheet it is (where bot access is kept). */
 type Where = { workspace: string; wsId: string };
 
 /** The user's "bops" workspace for a change, looked up now (never an id kept from before, never the app's). */
@@ -512,7 +512,7 @@ const memberIdIn = (v: unknown) => (typeof v === "string" && /^[A-Za-z0-9_-]{1,1
 const accessIn = (v: unknown) => (v === undefined ? undefined : cleanAccess(v));
 /** An invite's access: never Use its computer (orgo-web keeps it on a membership, and there's none yet), so "use" is kept as off. */
 const inviteAccess = (a: MemberAccess | null | undefined) => (a && a.computer === "use" ? { ...a, computer: "none" as const } : a);
-/** The ids of the bots in Bops workspace `wsId`: what Write is counted on (fitComputer). */
+/** The ids of the bots in SmileDesk workspace `wsId`: what Write is counted on (fitComputer). */
 const botIdsOf = (wsId: string) => getState().bots.filter((b) => workspaceOf(b) === wsId).map((b) => b.id);
 
 /**
@@ -540,10 +540,10 @@ export async function computerInOrgo(key: string, workspace: string, memberId: s
 
 /**
  * Keys on or off for a member, in orgo-web (MEMBER_KEYS_ROUTE), with the caller's own key (the owner's, or an Admin's from
- * their Bops: lib/server/shared-people.ts): null once orgo-web took it (its answer says the value it now keeps is this
+ * their SmileDesk: lib/server/shared-people.ts): null once orgo-web took it (its answer says the value it now keeps is this
  * one), else why not in the app's words. One that can't keep it yet (503 KEYS_UNAVAILABLE; an orgo-web before it, which
  * wants a role, 400; or an answer without the value) is KEYS_NOT_READY: "Keys can't be given yet". orgo-web's other
- * refusals: a workspace that isn't Bops' (409 KEYS_BOPS_ONLY), a share link's guest (409 KEYS_GUEST), an Admin (409
+ * refusals: a workspace that isn't SmileDesk's (409 KEYS_BOPS_ONLY), a share link's guest (409 KEYS_GUEST), an Admin (409
  * admin_always: theirs always) and the owner (400 owner_always); the sheet sends neither of the last two.
  */
 export async function keysInOrgo(key: string, workspace: string, memberId: string, on: boolean): Promise<Answer | null> {
@@ -657,7 +657,7 @@ export async function invite(body: { email?: unknown; role?: unknown; access?: u
   if (info.you.email?.toLowerCase() === email) return no(400, "SELF", WORDS.self);
   if (info.people.some((p) => p.email?.toLowerCase() === email)) return no(409, "ALREADY_IN", WORDS.alreadyIn(email));
   const waiting = info.invites.find((i) => i.email === email);
-  // Only orgo-web's own seats let anyone in, a resend too: it holds the workspace to the plan, and Bops never
+  // Only orgo-web's own seats let anyone in, a resend too: it holds the workspace to the plan, and SmileDesk never
   // stands in for that. None at all is an orgo-web before that rule; none it could read, a plan to read again.
   if (!info.seats)
     return info.seatsError === "ORGO_NOT_READY" ? no(503, "ORGO_NOT_READY", WORDS.orgoNotReadyShort) : counted(no(503, "PLAN_UNAVAILABLE", WORDS.planUnavailableShort));
@@ -759,7 +759,7 @@ export async function changeAccess(body: { memberId?: unknown; role?: unknown; a
   if (next && keys) {
     if (use !== undefined) {
       const refused = await computerInOrgo(who.key, where.workspace, memberId, use);
-      // Off where orgo-web can't keep it yet (a database without its column, an orgo-web before it): Bops Cloud then goes
+      // Off where orgo-web can't keep it yet (a database without its column, an orgo-web before it): SmileDesk Cloud then goes
       // by the copy here, so off is kept here all the same. Only ever off: on waits for orgo-web.
       if (refused && !(use === false && "code" in refused.body && refused.body.code === "COMPUTER_NOT_READY")) return refused;
     }

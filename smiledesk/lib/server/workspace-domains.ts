@@ -44,12 +44,12 @@ import { sameState } from "./store";
  * domain in it. The registrant goes from the window to Orgo in the one request that buys, never kept or
  * logged here; who the user registered their last one to (`contact`) goes only to the window.
  *
- * Bops on a bot's computer (persist.ts onRunner) has no domains: orgo-web refuses every domain call there
+ * SmileDesk on a bot's computer (persist.ts onRunner) has no domains: orgo-web refuses every domain call there
  * (its permissions keep them off a computer's key), so nothing is asked of Orgo and it says so. Only an
  * @orgo.ai account reaches any of this (the routes, lib/apps-access.ts).
  */
 
-const RUNNER = "Domains are changed from the Bops app on your Mac.";
+const RUNNER = "Domains are changed from the SmileDesk app on your Mac.";
 const NOT_ON_ORGO = "This workspace isn't on Orgo yet, so it can't have domains.";
 const NOT_OURS = "That isn't one of this workspace's domains.";
 const SIGN_IN = "Sign in with Orgo to see this workspace's domains.";
@@ -60,7 +60,7 @@ const UNREACHED_CHANGE = "Couldn't reach Orgo just now.";
 const STATUSES: readonly AppDomainStatus[] = ["pending", "verifying", "active", "failed", "disabled"];
 
 /**
- * Orgo turned a domains call down, in plain words (dnsRefused); one that never got an answer Bops can read
+ * Orgo turned a domains call down, in plain words (dnsRefused); one that never got an answer SmileDesk can read
  * (a dropped connection, a timeout, an answer that isn't JSON) is `words`, never Node's own.
  */
 const plainly = (e: unknown, words: string) => {
@@ -68,7 +68,7 @@ const plainly = (e: unknown, words: string) => {
   return r instanceof HostedAppError ? r : new HostedAppError(words, 502);
 };
 
-/** Before any Orgo call: Bops on the Mac (not a bot's computer), the workspace there, and signed in with Orgo. */
+/** Before any Orgo call: SmileDesk on the Mac (not a bot's computer), the workspace there, and signed in with Orgo. */
 async function ready(wsId: string, ours: () => boolean): Promise<void> {
   if (onRunner()) throw new HostedAppError(RUNNER, 403);
   if (!workspace(wsId)) throw new HostedAppError("That workspace is gone.", 404);
@@ -78,7 +78,7 @@ async function ready(wsId: string, ours: () => boolean): Promise<void> {
 }
 
 /**
- * The Orgo workspace a Bops workspace's domains are listed and bought under: the one its main bot's
+ * The Orgo workspace a SmileDesk workspace's domains are listed and bought under: the one its main bot's
  * computer is in, as an app's tab asks it of the app's computer (domainsProjectOf), so both read and buy
  * into the same one; else its own project. Null: not on Orgo yet (no call made when there's no computer to
  * ask about). Orgo not answering is said (DOMAINS_UNREACHED), never taken for not on Orgo.

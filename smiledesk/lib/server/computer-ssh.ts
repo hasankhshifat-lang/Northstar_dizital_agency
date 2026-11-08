@@ -13,19 +13,19 @@ import { userDir } from "./store";
  * setup): the computer's own SSH, which Orgo gives each computer (sshd there takes keys only, on a port of its
  * host's), for a Local's preview here (local-preview.ts carries each of its connections through a tunnel).
  *
- * Bops has a key pair of its own for it, made once in the signed-in user's folder on this Mac (ssh/id_ed25519,
+ * SmileDesk has a key pair of its own for it, made once in the signed-in user's folder on this Mac (ssh/id_ed25519,
  * 0600, never sent anywhere; its .pub beside it). Before each tunnel its public key is put in the computer's
  * /root/.ssh/authorized_keys through Orgo's bash, once, every other line kept: Orgo writes that file whole with
  * its own keys when SSH is turned on and on each start, so it's looked at every time. Orgo is asked to turn SSH on
  * (with this key) only while it's off, so keys the user set there are never replaced. The computer's host key is
- * read the same way and pinned in a known_hosts of Bops' own, and ssh connects only to that key.
+ * read the same way and pinned in a known_hosts of SmileDesk's own, and ssh connects only to that key.
  *
  * A tunnel is /usr/bin/ssh with nothing but one forward: a socket of its own on this Mac (in a folder only this
  * user can open) to that port of the computer's loopback, no command and no other forward, none of the user's
  * ssh config, agent or known hosts.
  */
 
-/** Which ssh and ssh-keygen run (overridable only for scripts/test-hosted-apps.mjs: Bops never sets them). */
+/** Which ssh and ssh-keygen run (overridable only for scripts/test-hosted-apps.mjs: SmileDesk never sets them). */
 const SSH_BIN = () => process.env.BOPS_SSH_BIN || "/usr/bin/ssh";
 const KEYGEN_BIN = () => process.env.BOPS_SSH_KEYGEN_BIN || "/usr/bin/ssh-keygen";
 
@@ -58,7 +58,7 @@ const making = (g.bopsSshKeys ??= new Map<string, Promise<string>>());
 
 const PUB = /^ssh-ed25519 [A-Za-z0-9+/]+={0,3}/;
 
-/** Bops' key pair on this Mac: its folder, its private key's path and its public key's line, made the first time and the same after. */
+/** SmileDesk's key pair on this Mac: its folder, its private key's path and its public key's line, made the first time and the same after. */
 export async function sshKey(): Promise<{ dir: string; key: string; pub: string }> {
   const root = userDir();
   if (!root) throw new SshError("no-key");
@@ -102,8 +102,8 @@ async function makeKey(dir: string, key: string): Promise<string> {
 const HOST = /^[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?$/;
 
 /**
- * `computerId`'s sshd made ready for this Mac: Orgo asked where it is (and to turn it on with Bops' key, only when
- * it's off), Bops' key put in its authorized_keys (once: every other line kept), and its host key read there and
+ * `computerId`'s sshd made ready for this Mac: Orgo asked where it is (and to turn it on with SmileDesk's key, only when
+ * it's off), SmileDesk's key put in its authorized_keys (once: every other line kept), and its host key read there and
  * pinned here. SshError says why not.
  */
 export async function sshPlace(computerId: string): Promise<SshPlace> {
@@ -117,7 +117,7 @@ export async function sshPlace(computerId: string): Promise<SshPlace> {
   const host = typeof s.ipv4_host === "string" && HOST.test(s.ipv4_host) ? s.ipv4_host : null;
   const port = typeof s.ipv4_port === "number" && Number.isInteger(s.ipv4_port) && s.ipv4_port >= 1 && s.ipv4_port <= 65535 ? s.ipv4_port : null;
   if (!s.enabled || !host || !port) throw new SshError("no-address");
-  // (Its authorized_keys below is root's: a Bops computer's SSH is.)
+  // (Its authorized_keys below is root's: a SmileDesk computer's SSH is.)
   const user = s.ssh_user ?? "root";
   if (user !== "root") throw new SshError("refused", `its SSH is ${user}'s`);
   const body = k.pub.split(" ")[1];
@@ -143,7 +143,7 @@ export async function sshPlace(computerId: string): Promise<SshPlace> {
     .catch((e: unknown) => Promise.reject(new SshError("no-answer", (e as Error)?.message)));
   const hostKey = /^BOPS_SSH_HOSTKEY=(ssh-ed25519 [A-Za-z0-9+/]+={0,3})$/m.exec(r.output)?.[1];
   if (!/^BOPS_SSH_KEY=ok$/m.test(r.output) || !hostKey) throw new SshError("no-answer", r.output.trim().slice(-200));
-  // Pinned: this host and port is that key, in Bops' own known_hosts (one line each, the newest read).
+  // Pinned: this host and port is that key, in SmileDesk's own known_hosts (one line each, the newest read).
   const knownHosts = join(/*turbopackIgnore: true*/ k.dir, "known_hosts");
   const name = port === 22 ? host : `[${host}]:${port}`;
   const had = existsSync(/*turbopackIgnore: true*/ knownHosts) ? readFileSync(/*turbopackIgnore: true*/ knownHosts, "utf8") : "";

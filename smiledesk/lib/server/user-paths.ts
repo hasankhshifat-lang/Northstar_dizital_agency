@@ -3,7 +3,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 /**
- * Where each Orgo user's things on this Mac go. Bops keeps the state itself in Bops Cloud
+ * Where each Orgo user's things on this Mac go. SmileDesk keeps the state itself in SmileDesk Cloud
  * (persist-cloud.ts), but some things stay on the Mac: images attached in chat, pages bots made,
  * memory reviews, phone secrets and call logs (.data/users/<id>/), and each bot's Chrome profile and
  * the bots' workspace (~/.bops/users/<id>/, ~/.bops/chrome/<id>/). Each user's are their own, so

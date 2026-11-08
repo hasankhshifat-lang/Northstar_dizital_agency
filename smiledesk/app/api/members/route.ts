@@ -7,13 +7,13 @@ export const dynamic = "force-dynamic";
 
 /*
  * The People sheet: who can see the user's bots' computers on Orgo (lib/server/members.ts). Not under
- * /api/workspaces, which is Bops' own workspaces (teams of bots). Every answer is JSON: what was asked,
+ * /api/workspaces, which is SmileDesk's own workspaces (teams of bots). Every answer is JSON: what was asked,
  * or {code, error} saying why not (plan refusals are 402 with `upgrade`, the plan that has room).
  */
 
 /**
- * Adding people, changing what they can do and removing them happen only in the Bops window
- * (ui-token.ts): never from a bot, a page a bot's Chrome reached, a channel, a call or Bops Cloud. A
+ * Adding people, changing what they can do and removing them happen only in the SmileDesk window
+ * (ui-token.ts): never from a bot, a page a bot's Chrome reached, a channel, a call or SmileDesk Cloud. A
  * bot talked into it must never be able to give someone the user's computers.
  */
 const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ code: "WINDOW_ONLY", error: WORDS.windowOnly }, { status: 403 }));

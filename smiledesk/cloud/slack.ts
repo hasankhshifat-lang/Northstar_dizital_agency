@@ -8,7 +8,7 @@ import { queueForMac, requestMac } from "./tunnel.ts";
 import { recordUsage } from "./usage.ts";
 
 /**
- * Bops' own Slack app (slack/manifest.json; at Orgo, the "Bops" app): every workspace that installed
+ * SmileDesk's own Slack app (slack/manifest.json; at Orgo, the "SmileDesk" app): every workspace that installed
  * it sends its events to one address, /hooks/slack, and the cloud passes each to the Macs of the
  * users whose bots it's for. Owner: edge builder.
  *

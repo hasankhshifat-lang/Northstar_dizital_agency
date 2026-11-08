@@ -11,7 +11,7 @@
 // window says has a dash or says Orbit.
 //
 // The state lives in a throwaway folder (a self-hosted store), the Keychain is never there, and the network is
-// off: nothing reaches a real service. Bops Cloud's side is test-delete-messages-cloud.mjs and cloud/test.
+// off: nothing reaches a real service. SmileDesk Cloud's side is test-delete-messages-cloud.mjs and cloud/test.
 // Usage: node --conditions=react-server scripts/test-delete-messages.mjs
 import assert from "node:assert/strict";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
@@ -177,7 +177,7 @@ await check("several picked in a chat go in one change, are gone from the saved 
   let r;
   const n = await changesIn(async () => (r = await del(BOPPY, { ids: ["m1", "m2", "m3"] })));
   assert.equal(r.status, 200);
-  assert.equal(n, 1, "one change to the state, so one save and one batch of removals to Bops Cloud");
+  assert.equal(n, 1, "one change to the state, so one save and one batch of removals to SmileDesk Cloud");
   assert.equal(r.body.deleted, 3);
   assert.equal(r.body.between, 0);
   assert.match(r.body.restore, /^del_/);
@@ -195,7 +195,7 @@ await check("Undo is Restore: they come back in time order under their ids, and 
   assert.deepEqual(ids(), ["m1", "m2", "m3", "o1", "m4"]);
   assert.deepEqual(back.body.deleted, []);
   await S.flushState();
-  assert.deepEqual(onDisk().messages.map((m) => m.id), ["m1", "m2", "m3", "o1", "m4"], "and in the saved state again, so they go up to Bops Cloud as written again");
+  assert.deepEqual(onDisk().messages.map((m) => m.id), ["m1", "m2", "m3", "o1", "m4"], "and in the saved state again, so they go up to SmileDesk Cloud as written again");
   reset();
 });
 
@@ -366,16 +366,16 @@ await check("Delete now says first what it takes: messages and threads, older or
   const g = await q("?clear=90");
   assert.equal(
     P.clearLine(g, 0),
-    "This deletes 5 messages and 2 threads older than 90 days from Bops Cloud and all your Macs, and 1 file and 1 line of notes from this Mac. It can't be undone. Knowledge keeps what it learned from them.",
+    "This deletes 5 messages and 2 threads older than 90 days from SmileDesk Cloud and all your Macs, and 1 file and 1 line of notes from this Mac. It can't be undone. Knowledge keeps what it learned from them.",
   );
   assert.equal(
     P.clearLine(g, 30),
-    "This deletes 5 messages and 2 threads older than 90 days from Bops Cloud and all your Macs, and 1 file and 1 line of notes from this Mac. You can restore the messages and threads from Recently deleted on this Mac for 30 days. The files and notes can't be restored. Knowledge keeps what it learned from them.",
+    "This deletes 5 messages and 2 threads older than 90 days from SmileDesk Cloud and all your Macs, and 1 file and 1 line of notes from this Mac. You can restore the messages and threads from Recently deleted on this Mac for 30 days. The files and notes can't be restored. Knowledge keeps what it learned from them.",
   );
-  assert.equal(P.clearLine({ olderThan: 30, bot: "otto", messages: 1, threads: 0, files: 0, lines: 0 }, 7, "Otto"), "This deletes Otto's 1 message older than 30 days from Bops Cloud and all your Macs. You can restore the messages and threads from Recently deleted on this Mac for 7 days. Knowledge keeps what it learned from them.");
+  assert.equal(P.clearLine({ olderThan: 30, bot: "otto", messages: 1, threads: 0, files: 0, lines: 0 }, 7, "Otto"), "This deletes Otto's 1 message older than 30 days from SmileDesk Cloud and all your Macs. You can restore the messages and threads from Recently deleted on this Mac for 7 days. Knowledge keeps what it learned from them.");
   assert.equal(P.clearLine({ olderThan: 365, messages: 0, threads: 0, files: 0, lines: 0 }, 0), "There's nothing older than a year to delete.");
   assert.equal(P.clearLine({ olderThan: null, bot: "otto", messages: 0, threads: 0, files: 0, lines: 0 }, 0, "Otto"), "Otto has nothing to delete.");
-  assert.equal(P.clearLine(null, 0, "Otto"), "Bops couldn't check what this deletes. It deletes Otto's messages and threads from Bops Cloud and all your Macs. Knowledge keeps what it learned from them.");
+  assert.equal(P.clearLine(null, 0, "Otto"), "SmileDesk couldn't check what this deletes. It deletes Otto's messages and threads from SmileDesk Cloud and all your Macs. Knowledge keeps what it learned from them.");
 });
 
 await check("Delete now, Gone at once: for good, in one change, with the files and notes it said, and never what's in use", async () => {

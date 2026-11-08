@@ -1,6 +1,6 @@
 # SmileDesk
 
-**A dental clinic's front office, run by AI bots.** SmileDesk is a fork of [Bops](https://github.com/OrgoAI/bops) (FSL-1.1-ALv2), customised for dental practices by NorthStar Dizital. It is based on Bops but is not the official Bops app.
+**A dental clinic's front office, run by AI bots.** SmileDesk is a fork of [Bops](https://github.com/OrgoAI/bops) (FSL-1.1-ALv2), customised for dental practices by NorthStar Dizital. It is based on Bops but is not the official Bops app, and carries the Northstar logo.
 
 Every workspace starts with a four-bot team:
 
@@ -50,15 +50,28 @@ Each bot's procedure lives in its **How I work** (Settings for that bot), so you
 - `lib/routine-catalog.ts`: the eight dental starters (`DENTAL_ROUTINES`), plus Google Business Profile as a known app.
 - `scripts/test-dental-clinic.mjs`: new tests. `scripts/test-routine-suggestions.mjs`: updated for the extra starters.
 - `package.json`: renamed to SmileDesk (app id `com.northstardizital.smiledesk`, no publishing to OrgoAI's releases).
+- The name and logo across the app: see [Name and logo](#name-and-logo).
 
 Tests: `node --conditions=react-server scripts/test-dental-clinic.mjs` and `scripts/test-routine-suggestions.mjs`.
 
-## Before you distribute it
+## Name and logo
 
-Bops' [TRADEMARK.md](TRADEMARK.md) says a modified version you distribute or offer as a service needs its own name and logo. This fork renames the package and app bundle. **Still to do before you ship it to clinics:**
+Bops' [TRADEMARK.md](TRADEMARK.md) asks that a modified version you distribute has its own name and logo. Done here:
 
-- The in-app text still says "Bops" in many places.
-- The icon (`desktop/icon.png`, `build/`) and the bot mascots are still Bops'.
+- **Name.** "Bops" is "SmileDesk" throughout the app, the desktop window, the macOS menu, notifications, the bots' prompts, and the website in `site/`. The main bot's fallback name is Molly, not Boppy.
+- **Logo.** The Northstar "N" mark (cut from the agency's `assets/logo.png`) is on the app icon (`desktop/icon.png`, `desktop/icon.icns`), the favicon, the sign-in card, the startup and error screens, the first load, and the picture the bots use in Slack, Discord and Telegram (`brand/smiledesk-512.png`). `public/brand/` holds the mark and the full logo.
+- **Updates.** The desktop app no longer checks bops.bot for new versions (`UPDATES_ON` in `desktop/main.cjs`), so it never offers official Bops builds. Turn it back on once SmileDesk has its own update feed.
+
+Kept on purpose, because they are not branding:
+
+- Lowercase `bops` in code: environment variables (`BOPS_*`), folders (`~/.bops`), ids, and the Orgo workspace named "bops" where the bots' computers live.
+- The `X-Bops-User` header, and the name "Bops" sent to Orgo's sign-in and the judgment service, which may expect it.
+- Links to files on bops.bot (`download/Bops.dmg`).
+
+Still to do before you ship it to clinics:
+
+- The bots are still drawn as Bops' mascots (`lib/mascot.ts`), which are also covered by its trademark.
+- The social share picture `site/og.png` is still Bops'.
 - `scripts/release.sh` signs with Orgo's Apple Developer team. Use your own.
 
 Also note: the FSL license allows using, changing and self-hosting this fork, but not offering it as a product or hosted service that competes with Bops. Running it for a clinic yourself is fine. Check the [LICENSE](LICENSE) before you sell it as a hosted service.

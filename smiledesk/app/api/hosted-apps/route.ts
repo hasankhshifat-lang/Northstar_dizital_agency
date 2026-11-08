@@ -33,10 +33,10 @@ export async function GET(request: Request) {
 /**
  * Add app (AddAppAsk in lib/hosted-apps.ts): a new app the workspace's main bot builds on its computer, put
  * live once it's built when `deploy`. Answers AddAppAnswer (the task, in that bot's chat), or { error, field? }
- * (409 for a name another app has). It starts work on a computer, so it's done only from the Bops window.
+ * (409 for a name another app has). It starts work on a computer, so it's done only from the SmileDesk window.
  */
 export async function POST(request: Request) {
-  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "Apps can only be added in the Bops app." }, { status: 403 }));
+  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "Apps can only be added in the SmileDesk app." }, { status: 403 }));
   if (unready) return unready;
   // Only an @orgo.ai account has apps on the web for now (lib/apps-access.ts).
   if (!appsOpen(getState())) return Response.json({ error: "Not found" }, { status: 404 });

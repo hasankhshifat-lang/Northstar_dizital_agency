@@ -1,13 +1,13 @@
 // Tests for where a deleted message goes, end to end (lib/server/remove.ts, persist-cloud.ts, deleted.ts,
 // cloud/state.ts): on a signed in Mac, several deleted at once, a chat's every message, and Delete now each go
-// up to Bops Cloud as removed rows (json NULL, a new seq) that every other Mac and the iPhone read as gone;
+// up to SmileDesk Cloud as removed rows (json NULL, a new seq) that every other Mac and the iPhone read as gone;
 // Undo (Restore) writes them again, with a new seq, so they read as back; a removal made on another Mac takes
 // the message out here, with its image when nothing is kept of what's deleted; and the copy in Recently
-// deleted stays on this Mac only, never in Bops Cloud.
+// deleted stays on this Mac only, never in SmileDesk Cloud.
 //
-// Bops Cloud is the real one (cloud/server.ts, run as a child process) on the local test Postgres
+// SmileDesk Cloud is the real one (cloud/server.ts, run as a child process) on the local test Postgres
 // (BOPS_TEST_DATABASE_URL, as cloud/test/edge-fakes.ts: 127.0.0.1:55432); Orgo is a fake on 127.0.0.1; the
-// Keychain is a folder; Bops Cloud's tunnel, the relay, the bots' sessions and the Mac check are stand-ins.
+// Keychain is a folder; SmileDesk Cloud's tunnel, the relay, the bots' sessions and the Mac check are stand-ins.
 // Nothing reaches a real service.
 // Usage: node --conditions=react-server scripts/test-delete-messages-cloud.mjs
 import assert from "node:assert/strict";
@@ -100,7 +100,7 @@ await new Promise((r) => orgoServer.listen(0, "127.0.0.1", r));
 const ORGO = `http://127.0.0.1:${orgoServer.address().port}`;
 process.env.BOPS_ORGO_ORIGIN = ORGO;
 
-/* ---------------- Bops Cloud: the real server, on the test Postgres ---------------- */
+/* ---------------- SmileDesk Cloud: the real server, on the test Postgres ---------------- */
 
 const db = new pg.Pool({ connectionString: DB, max: 2 });
 try {
@@ -119,9 +119,9 @@ cloud.child = spawn(process.execPath, [join(root, "cloud/server.ts")], {
 });
 cloud.child.stdout.on("data", (d) => (cloud.log += d));
 cloud.child.stderr.on("data", (d) => (cloud.log += d));
-await until(() => cloud.log.includes(`listening on 127.0.0.1:${cloudPort}`), "Bops Cloud to start", 20_000);
+await until(() => cloud.log.includes(`listening on 127.0.0.1:${cloudPort}`), "SmileDesk Cloud to start", 20_000);
 
-/** A call to the cloud as another of the user's devices makes it: another Mac, or what Bops for iPhone reads (rows after its cursor). */
+/** A call to the cloud as another of the user's devices makes it: another Mac, or what SmileDesk for iPhone reads (rows after its cursor). */
 async function asOther(path, init = {}) {
   const res = await fetch(`${CLOUD}${path}`, {
     method: init.method ?? "GET",
@@ -207,7 +207,7 @@ const privacy = async (body) => {
   const res = await PrivacyRoute.POST(new Request("http://localhost/api/privacy", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }));
   return { status: res.status, body: await res.json() };
 };
-const flush = async () => assert.equal(await S.flushState(10_000), true, "saved to Bops Cloud");
+const flush = async () => assert.equal(await S.flushState(10_000), true, "saved to SmileDesk Cloud");
 const ids = () => S.getState().messages.filter((m) => m.chatId === CHAT).map((m) => m.id);
 const say = (id, text, at) => S.update((s) => s.messages.push({ id, chatId: CHAT, role: id.startsWith("b") ? "bot" : "user", ...(id.startsWith("b") ? { botId: "boppy" } : {}), text, at }));
 
@@ -232,7 +232,7 @@ try {
     const after = await rowsAfter(start);
     assert.deepEqual(after.rows.map(([id, t]) => [id, t]).sort(), [["b1", null], ["u1", null]], "removed: json NULL, a new seq");
     assert.deepEqual(await live(), ["b2", "b3", "u2", "u3"]);
-    // The copy stays on this Mac only: nothing of it in Bops Cloud.
+    // The copy stays on this Mac only: nothing of it in SmileDesk Cloud.
     const blob = JSON.stringify((await asOther("/v1/state")).body);
     assert.ok(!blob.includes(out.restore) && !blob.includes("Booked for Tuesday"));
   });
@@ -300,7 +300,7 @@ if (stray.length) {
   failures++;
   console.error(`FAIL stray warnings\n  ${stray.join("\n  ")}`);
 }
-quiet.info(`\ndelete messages, Mac and Bops Cloud: ${passed} passed, ${failures} failed`);
+quiet.info(`\ndelete messages, Mac and SmileDesk Cloud: ${passed} passed, ${failures} failed`);
 if (!failures) rmSync(scratch, { recursive: true, force: true });
 else quiet.info(`The throwaway folder is kept for a look: ${scratch}`);
 process.exit(failures ? 1 : 0);

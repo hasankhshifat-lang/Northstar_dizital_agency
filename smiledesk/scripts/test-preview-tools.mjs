@@ -4,7 +4,7 @@
 // Local only once it runs (why on hover until then); the Fix it panel (only
 // for a Local that stopped by itself, a page that answered 5xx, or a dev server on a port of its own, said instead of
 // Starting; Fix it is a normal message in the bot's chat tagged
-// appNote, then a counted press, a Bops that doesn't count them yet tolerated, one ask however fast it's pressed again
+// appNote, then a counted press, a SmileDesk that doesn't count them yet tolerated, one ask however fast it's pressed again
 // until that one is in; after two presses with a good version
 // known, Go back first, which says what it undoes before it puts it back); Select (its script's answer read as data,
 // every part capped, whatever the page sends; a picture of the box and a line in the bot's message box, unsent, Cmd
@@ -273,7 +273,7 @@ await test("the loop breaker: two Fix it presses since its last good run, and a 
 
 const RAW = { route: "/pricing", tag: "button", role: "", text: "Sign up", id: "", classes: ["cta"], testId: "", heading: "Pro", box: { x: 10, y: 20, w: 80, h: 30 } };
 
-await test("a pick from the page: every part checked and capped in Bops, whatever the page sent", () => {
+await test("a pick from the page: every part checked and capped in SmileDesk, whatever the page sent", () => {
   assert.deepEqual(P.pickedOf(RAW), RAW);
   const long = P.pickedOf({ ...RAW, text: `  Sign\u0000 up\u202e now ${"x".repeat(500)}`, heading: "🎉".repeat(100) });
   assert.ok([...long.text].length <= 80 && long.text.endsWith("…"), "80 characters at most");
@@ -341,7 +341,7 @@ await test("the picks a message carries (Message.picks), as the server keeps the
   assert.deepEqual(P.picksOf({ line: a, code: "a" }, text), []);
 });
 
-await test("a pick's picture: its box and a little around it, inside the page's window as Bops measures it", () => {
+await test("a pick's picture: its box and a little around it, inside the page's window as SmileDesk measures it", () => {
   assert.deepEqual(P.captureRect({ x: 10, y: 20, w: 80, h: 30 }, { w: 390, h: 800 }), { x: 0, y: 4, width: 106, height: 62 });
   assert.deepEqual(P.captureRect({ x: 300, y: 700, w: 200, h: 300 }, { w: 390, h: 800 }), { x: 284, y: 684, width: 106, height: 116 }, "cut at the window's edges");
   assert.equal(P.captureRect({ x: 0, y: 2000, w: 50, h: 20 }, { w: 390, h: 800 }), null, "out of view: the whole window instead");
@@ -795,13 +795,13 @@ await test("a dev server on a port of its own (mismatch: one that ignores $PORT)
   await t.done();
 });
 
-await test("Fix it: a normal message in the bot's chat, tagged appNote, the lines fenced; then the press counted, a Bops that doesn't count them yet tolerated", async () => {
+await test("Fix it: a normal message in the bot's chat, tagged appNote, the lines fenced; then the press counted, a SmileDesk that doesn't count them yet tolerated", async () => {
   const t = await previewTab({ local: site("failed", { port: null, error: "Error: Cannot find module 'zod'" }), more: { "POST /api/chats/bot%3Aboppy/messages": { body: { ok: true } } } });
   await click(button(t.box, "Fix it"));
   await waitFor(() => t.box.querySelector('[data-preview-fix] [role="status"]'), "asked");
   const posts = calls.filter((c) => c.method === "POST");
   assert.deepEqual(posts[0], { url: "/api/chats/bot%3Aboppy/messages", method: "POST", body: { text: "recipe-box's Local stopped. Fix it.\n\n```\nError: Cannot find module 'zod'\n```", appNote: true } });
-  assert.deepEqual(posts[1].body, { ws: t.ws, action: "fix" }, "counted (this Bops answers 404: asked all the same)");
+  assert.deepEqual(posts[1].body, { ws: t.ws, action: "fix" }, "counted (this SmileDesk answers 404: asked all the same)");
   assert.equal(t.box.querySelector('[data-preview-fix] [role="status"]').textContent, "Asked Boppy to fix it.");
   assert.equal(t.box.querySelector('[data-preview-fix] [role="alert"]'), null);
   await t.done();
@@ -896,13 +896,13 @@ await test("the loop breaker: after two presses, Go back to the version that wor
   await t.done();
 });
 
-await test("going back with a Bops that can't yet, or while it's blocked, or refused: plain words", async () => {
+await test("going back with a SmileDesk that can't yet, or while it's blocked, or refused: plain words", async () => {
   const good = { at: id("c3"), when: Math.round((NOW - 2 * 3_600_000) / 1000) };
   const failing = site("failed", { port: null, error: "x", fixes: 3, lastGood: good });
   const old = await previewTab({ local: failing });
   assert.ok(old.box.querySelector("[data-preview-worked]").textContent.startsWith("It last worked 2 h ago,"), "a time a computer said in seconds");
   await click(old.box.querySelector("[data-preview-back]"));
-  assert.equal(old.box.querySelector('[data-preview-fix] [role="alert"]').textContent, "Going back isn't in this version of Bops yet.");
+  assert.equal(old.box.querySelector('[data-preview-fix] [role="alert"]').textContent, "Going back isn't in this version of SmileDesk yet.");
   await old.done();
   const blocked = await previewTab({ local: failing, more: { "GET /api/hosted-apps/recipe-box": { body: { later: [], blocked: "Boppy is working on it now — wait for it." } } } });
   await click(blocked.box.querySelector("[data-preview-back]"));
@@ -948,7 +948,7 @@ await test("Select: S turns it on; a click's picture (its box, padded) and its l
   assert.equal(t.attached[0].chatId, "bot:boppy");
   assert.equal(t.attached[0].files.length, 1);
   assert.equal(t.attached[0].files[0].type, "image/png");
-  assert.ok([...t.attached[0].line].length < 160 && t.attached[0].line.startsWith('On /pricing, the button "xxxx'), "capped in Bops");
+  assert.ok([...t.attached[0].line].length < 160 && t.attached[0].line.startsWith('On /pricing, the button "xxxx'), "capped in SmileDesk");
   assert.ok(t.attached[0].line.endsWith(' under "Pro"'), "in plain words");
   assert.equal(t.attached[0].code, "button.cta.cta.cta", "where it is in the page's code, apart");
   assert.deepEqual([t.attached[1].line, t.attached[1].code], ['On /pricing, the link "Docs"', "a"]);

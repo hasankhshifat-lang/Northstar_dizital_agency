@@ -8,9 +8,9 @@ export const dynamic = "force-dynamic";
 
 /**
  * Signing a Claude Code brain in with the user's Claude plan, on a bot's computer (lib/server/brains.ts
- * startSignIn): only from the Bops window, which then shows that screen so the user signs in on it.
+ * startSignIn): only from the SmileDesk window, which then shows that screen so the user signs in on it.
  */
-const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Brains can only be changed in the Bops app." }, { status: 403 }));
+const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Brains can only be changed in the SmileDesk app." }, { status: 403 }));
 const failed = (e: unknown) => Response.json({ error: (e as Error).message }, { status: e instanceof BrainError ? e.status : 500 });
 
 /**

@@ -11,10 +11,10 @@ import { honchoPrefix } from "../session.ts";
 import { call, dropUsers, fakeProvider, listen, newUserId, prepareDb, startCloud, type Got, type Listening } from "./core-fakes.ts";
 
 /**
- * What a computer's runner may touch of its user's Bops (computer-scope.ts, state.ts, proxy.ts, session.ts,
+ * What a computer's runner may touch of its user's SmileDesk (computer-scope.ts, state.ts, proxy.ts, session.ts,
  * server.ts): a state write only of its runner's own work (its threads, its bots' routines' runs and how
  * they're doing), never a state its user hasn't got or a whole one; messages only in its bots' chats,
- * and only those read; no mail key in its session, its mail through Bops Cloud in its bots' inboxes
+ * and only those read; no mail key in its session, its mail through SmileDesk Cloud in its bots' inboxes
  * only; texts only from its bots' lines to the user's verified numbers; Composio only in its bots'
  * accounts (read-only ones read only), never connecting or deleting one; Honcho only in its bots'
  * memory banks; its sockets and long answers held to it while they're open.
@@ -40,7 +40,7 @@ const json = (res: ServerResponse, status: number, body: unknown) => res.writeHe
 /**
  * Orgo's profile: `key-<u>` the user's key, `orgo_vm_<u>~<d>` (or `orgo_vm_soon-…`, ending in 1.5 s) a
  * computer's token, `ck-<u>~<d>` its key, `ck-unbound-<u>` a computer key Orgo never bound. `#<n>` after
- * any of them is the same one again, which Bops Cloud kept no answer for: a sign-in afresh.
+ * any of them is the same one again, which SmileDesk Cloud kept no answer for: a sign-in afresh.
  */
 function profile(req: IncomingMessage, res: ServerResponse) {
   const sent = /^Bearer (.+)$/.exec(req.headers.authorization ?? "")?.[1] ?? "";
@@ -217,7 +217,7 @@ test("a computer's state write: its own threads, its bots' routines' runs and ho
   assert.equal((await computerPut(u, `key-${u}`, (s) => s.bots[0].keys!.push("STRIPE_SECRET_KEY"))).status, 200);
 });
 
-test("a computer's requests for the user's OK: its own bots', added unanswered and taken out; never a reply (its own included), never another's; the user's own Bops replies", T, async () => {
+test("a computer's requests for the user's OK: its own bots', added unanswered and taken out; never a reply (its own included), never another's; the user's own SmileDesk replies", T, async () => {
   clearAuthCache();
   const u = await seeded("asks");
   const me = deviceIdOf(u, D1);
@@ -235,9 +235,9 @@ test("a computer's requests for the user's OK: its own bots', added unanswered a
     ["its own request rejected", (s) => (asks(s)[0].reply = { reply: "reject", by: me, at: 2 }), "appApprovals.apr-1"],
     ["what it asks changed", (s) => (asks(s)[0].preview = "to: everyone@acme.example"), "appApprovals.apr-1"],
     ["one added answered", (s) => asks(s).push(ask({ id: "apr-yes", reply: { reply: "once", by: me, at: 2 } })), "appApprovals.apr-yes"],
-    ["another Bops's request stopped", (s) => (asks(s)[1].reply = { reply: "reject", reason: "stopped", by: me, at: 2 }), "appApprovals.apr-mac"],
-    ["another Bops's request taken out", (s) => asks(s).splice(1, 1), "appApprovals.apr-mac"],
-    ["a request as another Bops", (s) => asks(s).push(ask({ id: "apr-as-mac", askedBy: "mac-device" })), "appApprovals.apr-as-mac"],
+    ["another SmileDesk's request stopped", (s) => (asks(s)[1].reply = { reply: "reject", reason: "stopped", by: me, at: 2 }), "appApprovals.apr-mac"],
+    ["another SmileDesk's request taken out", (s) => asks(s).splice(1, 1), "appApprovals.apr-mac"],
+    ["a request as another SmileDesk", (s) => asks(s).push(ask({ id: "apr-as-mac", askedBy: "mac-device" })), "appApprovals.apr-as-mac"],
     ["a request for another computer's bot", (s) => asks(s).push(ask({ id: "apr-iris", botId: "iris" })), "appApprovals.apr-iris"],
   ];
   for (const [what, change, path] of refused) {
@@ -247,7 +247,7 @@ test("a computer's requests for the user's OK: its own bots', added unanswered a
     assert.ok(r.json.paths.includes(path), `${what}: ${JSON.stringify(r.json.paths)}`);
   }
   assert.equal(asks((await stateNow(u)).state)[0].reply, undefined, "still waiting on the owner");
-  // The owner replies from their own Bops (the user's own key): taken; and the computer takes out its own request once it read it.
+  // The owner replies from their own SmileDesk (the user's own key): taken; and the computer takes out its own request once it read it.
   assert.equal((await computerPut(u, `key-${u}`, (s) => (asks(s)[0].reply = { reply: "once", by: "mac-device", at: 3 }))).status, 200);
   assert.equal((await computerPut(u, vm(u), (s) => ((s as Record<string, unknown>).appApprovals = asks(s).filter((a) => a.id !== "apr-1")))).status, 200);
   // Cancelled by the computer that asked (taken out unanswered): taken.
@@ -355,7 +355,7 @@ test("a computer ends the chat run it began of a bot moved off it during the tur
   assert.equal((await post({ upsert: [said("as-boppy", { role: "bot", botId: "main" })], remove: [] })).status, 403, "nor as another bot");
   // The Mac runs Max's routine next: nothing more of that routine's from the computer.
   assert.equal((await computerPut(u, `key-${u}`, (s) => Object.assign(s.routines[2], { nextRunAt: 300, lastRunAt: 200, last: { at: 200, status: "ok" } }))).status, 200);
-  assert.equal((await post({ upsert: [said("after-mac", { role: "bot", botId: "helper" })], remove: [] })).status, 403, "another Bops' run: nothing of its");
+  assert.equal((await post({ upsert: [said("after-mac", { role: "bot", botId: "helper" })], remove: [] })).status, 403, "another SmileDesk's run: nothing of its");
   assert.equal((await post({ upsert: [said("answer", { role: "bot", botId: "helper", ping: false })], remove: [] })).status, 403, "nor a change to what it said before");
 });
 
@@ -399,7 +399,7 @@ test("a computer's messages: written and read in its bots' chats only", T, async
   assert.deepEqual(d2.json.messages.map((m: { id: string }) => m.id).sort(), ["m-iris", "r-2"]);
 });
 
-test("a computer's messages: its bots' words and Bops' notes only, never the user's or another bot's", T, async () => {
+test("a computer's messages: its bots' words and SmileDesk's notes only, never the user's or another bot's", T, async () => {
   clearAuthCache();
   const u = await seeded("msg-who");
   const post = (key: string, body: { readonly upsert: readonly unknown[]; readonly remove: readonly string[] }) => call(cloud.url, "POST", "/v1/messages", { key, headers: asNew(u), json: body });
@@ -421,7 +421,7 @@ test("a computer's messages: its bots' words and Bops' notes only, never the use
     assert.equal(r.status, 403, what);
     assert.deepEqual(r.json.paths, [path], what);
   }
-  // Its own bots' words and Bops' notes go, and it may change and take out its own.
+  // Its own bots' words and SmileDesk's notes go, and it may change and take out its own.
   const ok = await post(vm(u), { upsert: [said("r-max", { role: "bot", botId: "helper", text: "Done" }), said("r-note", { role: "system", text: "Routine · Daily" }), said("r-handed", { role: "system", from: "main", text: "Boppy handed this to Max" })], remove: [] });
   assert.equal(ok.status, 200, ok.text);
   assert.equal((await post(vm(u), { upsert: [said("r-max", { role: "bot", botId: "helper", text: "Done, twice" })], remove: ["r-note"] })).status, 200);
@@ -432,7 +432,7 @@ test("a computer's messages: its bots' words and Bops' notes only, never the use
   assert.equal((kept.get("b-iris") as Record<string, unknown>).botId, "iris");
 });
 
-test("a member's stamp is Bops Cloud's to write: never a new or changed one from a computer, nor from the owner's Mac in a workspace whose chat goes through Bops Cloud; one sent back as kept is fine", T, async () => {
+test("a member's stamp is SmileDesk Cloud's to write: never a new or changed one from a computer, nor from the owner's Mac in a workspace whose chat goes through SmileDesk Cloud; one sent back as kept is fine", T, async () => {
   clearAuthCache();
   const u = await seeded("stamp");
   const post = (key: string, upsert: unknown[]) => call(cloud.url, "POST", "/v1/messages", { key, headers: asNew(u), json: { upsert, remove: [] } });
@@ -473,12 +473,12 @@ test("a member's stamp is Bops Cloud's to write: never a new or changed one from
   assert.equal((await post(`key-${u}`, [{ ...row("m-iris", { role: "user", member: sam }), chatId: "bot:iris" }])).status, 200);
   const all = await call(cloud.url, "GET", "/v1/messages?after=0&limit=100", { key: `key-${u}`, headers: asNew(u) });
   const kept = new Map(all.json.messages.filter((m: { json: unknown }) => m.json).map((m: { id: string; json: Record<string, unknown> }) => [m.id, m.json]));
-  assert.deepEqual((kept.get("m-sam") as Record<string, unknown>).member, sam, "the stamp as Bops Cloud vouched for it");
+  assert.deepEqual((kept.get("m-sam") as Record<string, unknown>).member, sam, "the stamp as SmileDesk Cloud vouched for it");
   assert.equal(kept.has("m-new") || kept.has("x-bot"), false);
   assert.equal((kept.get("m-plain") as Record<string, unknown>).member, undefined);
 });
 
-test("a computer's session holds no mail key; its mail goes through Bops Cloud, its bots' inboxes only, on the pod key", T, async () => {
+test("a computer's session holds no mail key; its mail goes through SmileDesk Cloud, its bots' inboxes only, on the pod key", T, async () => {
   clearAuthCache();
   const u = await seeded("mail");
   const mine = await call(cloud.url, "POST", "/v1/session", { key: `key-${u}` });
@@ -670,7 +670,7 @@ test("a computer's socket ends with its token, and its socket or long answer as 
     assert.ok(await within(3000, () => answer.endedAt > 0), "ended once Orgo turned it down");
     assert.ok(answer.endedAt >= downAt && answer.endedAt - downAt < 1000, `ended ${answer.endedAt - downAt} ms after`);
     // A long answer outlives its token while the same computer keeps signing in afresh (its runner on
-    // its own key, every 100 ms here), and not past that. Each sign-in is one Bops Cloud kept no answer
+    // its own key, every 100 ms here), and not past that. Each sign-in is one SmileDesk Cloud kept no answer
     // for (`#<n>`), so when Orgo last said it's good never goes back to nothing in between.
     clearAuthCache();
     const long = await watch(`orgo_vm_soon-${u}~${D2}`, true);

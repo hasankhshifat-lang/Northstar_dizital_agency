@@ -1,8 +1,8 @@
-// Tests for the app's side of Bops Cloud (lib/server/cloud.ts, persist-cloud.ts, cloud-tunnel.ts and the
+// Tests for the app's side of SmileDesk Cloud (lib/server/cloud.ts, persist-cloud.ts, cloud-tunnel.ts and the
 // modules that switch to it): the session, every provider through the cloud and directly (self-hosting),
 // codes through the cloud, the webhook routes' tunnel token, Slack through the cloud's app (its events,
 // pairing codes, where the bots are), app actions that ask first, the state in the cloud (what goes up and
-// how, merged with another Mac's), routing through this Mac on by default, the tunnel, and Restart Bops
+// how, merged with another Mac's), routing through this Mac on by default, the tunnel, and Restart SmileDesk
 // saving to the cloud first, against a fake cloud. Whose state is whose across sign-ins, against the real cloud, is test-profiles.mjs. Nothing reaches a real service or
 // the real Keychain: the cloud and this Mac's server are fakes on 127.0.0.1, every other address answers
 // from a stub (or not at all), and `security`, `codex` and `orgo-relay` are stand-ins.
@@ -355,10 +355,10 @@ await until(() => Cl.cloudSessionNow(), "the session again");
 
 // What goes wrong, in words the app can show; a failure stands 10 seconds before the cloud is asked again.
 const problems = [
-  [{ status: 401, json: { error: "Sign in with Orgo" } }, 401, "Bops Cloud didn't accept your Orgo sign-in. Sign out and sign in again."],
-  [{ status: 503, json: { error: "db down" } }, 503, "Bops Cloud isn't working right now (503). Try again in a minute."],
-  [{ status: 403, json: { error: "This Orgo account can't use Bops yet" } }, 403, "This Orgo account can't use Bops yet"],
-  [{ status: 200, body: "<html>" }, 200, "Bops Cloud sent back something Bops couldn't read."],
+  [{ status: 401, json: { error: "Sign in with Orgo" } }, 401, "SmileDesk Cloud didn't accept your Orgo sign-in. Sign out and sign in again."],
+  [{ status: 503, json: { error: "db down" } }, 503, "SmileDesk Cloud isn't working right now (503). Try again in a minute."],
+  [{ status: 403, json: { error: "This Orgo account can't use SmileDesk yet" } }, 403, "This Orgo account can't use SmileDesk yet"],
+  [{ status: 200, body: "<html>" }, 200, "SmileDesk Cloud sent back something SmileDesk couldn't read."],
 ];
 for (const [answer, status, message] of problems) {
   cloud.handle = (r) => (r.path === "/v1/session" ? answer : cloudDefault(r));
@@ -370,7 +370,7 @@ for (const [answer, status, message] of problems) {
 }
 process.env.BOPS_CLOUD_URL = "http://127.0.0.1:9";
 Cl.forgetCloudSession();
-await assert.rejects(Cl.cloudSession(), (e) => e instanceof Cl.CloudError && e.status === 0 && e.message === "Couldn't reach Bops Cloud. Check your internet connection.");
+await assert.rejects(Cl.cloudSession(), (e) => e instanceof Cl.CloudError && e.status === 0 && e.message === "Couldn't reach SmileDesk Cloud. Check your internet connection.");
 process.env.BOPS_CLOUD_URL = CLOUD;
 cloud.handle = null;
 await withSession(SESSION);
@@ -445,13 +445,13 @@ for (const r of since(n)) {
 // A workspace's number: its webhook goes where the session says, and the secret the cloud kept stays there.
 apAnswers.set("GET /numbers?limit=100", { data: [{ id: "num_1", phoneNumber: "+14155550100", agentId: null, type: "sms" }] });
 apAnswers.set("GET /agents?limit=100", { data: [] });
-apAnswers.set("POST /agents", { id: "agt_ws", name: "Bops · Main (Boppy)" });
+apAnswers.set("POST /agents", { id: "agt_ws", name: "SmileDesk · Main (Boppy)" });
 apAnswers.set("POST /agents/agt_ws/webhook", { secret: "kept-by-cloud", url: "https://cloud.example/hooks/agentphone" });
 n = cloud.requests.length;
 await P.assignWorkspaceLine(MAIN_WORKSPACE, "+14155550100", "parent");
 const hook = since(n).find((r) => r.path === "/proxy/agentphone/v1/agents/agt_ws/webhook");
 assert.equal(json(hook).url, SESSION.agentphone.hookUrl);
-// Its calls go to its agent (which Bops just made in voice mode "webhook"), and the cloud is told the line is the main bot's, with its 15 minutes for the first caller.
+// Its calls go to its agent (which SmileDesk just made in voice mode "webhook"), and the cloud is told the line is the main bot's, with its 15 minutes for the first caller.
 const routing = since(n).filter((r) => r.path === "/proxy/agentphone/v1/numbers/num_1/voice-routing");
 assert.deepEqual(routing.map((r) => [r.method, json(r)]), [["PATCH", { method: "agent" }]]);
 assert.equal(json(since(n).find((r) => r.path === "/proxy/agentphone/v1/agents" && r.method === "POST")).voiceMode, "webhook");
@@ -464,7 +464,7 @@ assert.deepEqual(P.hookSecrets(), []);
 assert.equal(S.getState().workspaces[0].line.agentId, "agt_ws");
 // A bot's own number gets its own webhook on the cloud (self-hosting has the sub-account's).
 apAnswers.set("GET /numbers?limit=100", { data: [] });
-apAnswers.set("POST /agents", { id: "agt_own", name: "Boppy (Bops)" });
+apAnswers.set("POST /agents", { id: "agt_own", name: "Boppy (SmileDesk)" });
 apAnswers.set("POST /numbers", { id: "num_own", phoneNumber: "+14155550101", agentId: "agt_own" });
 apAnswers.set("POST /agents/agt_own/webhook", { secret: "kept-by-cloud" });
 n = cloud.requests.length;
@@ -609,7 +609,7 @@ const toolkitPage = (url) =>
   /[?&]cursor=p2(&|$)/.test(url)
     ? { items: [TOOLKITS[0], ...TOOLKITS.slice(4)], next_cursor: null, total_pages: 2, current_page: 2, total_items: TOOLKITS.length }
     : { items: TOOLKITS.slice(0, 4), next_cursor: "p2", total_pages: 2, current_page: 1, total_items: TOOLKITS.length };
-const orgoSlackSetup = { id: "ac_slack", uuid: "ac_slack", name: "Bops", toolkit: { slug: "slackbot", logo: "" }, no_of_connections: 1, status: "ENABLED", is_composio_managed: false, auth_scheme: "OAUTH2" };
+const orgoSlackSetup = { id: "ac_slack", uuid: "ac_slack", name: "SmileDesk", toolkit: { slug: "slackbot", logo: "" }, no_of_connections: 1, status: "ENABLED", is_composio_managed: false, auth_scheme: "OAUTH2" };
 const picked = (apps) => apps.map((a) => `${a.app}:${a.auth}`);
 const CLOUD_PICKS = ["gmail:oauth", "slackbot:oauth", "acmecrm:key", "keyonly:key", "hackernews:open"];
 g.bopsComposio2.catalog = g.bopsComposio2.loadingCatalog = undefined;
@@ -659,7 +659,7 @@ cloud.handle = (r) => {
 n = cloud.requests.length;
 await assert.rejects(C.connectApp("acmecrm"));
 const keySetup = since(n).find((r) => r.method === "POST" && r.path === "/proxy/composio/api/v3.1/auth_configs");
-assert.deepEqual(json(keySetup).auth_config, { type: "use_custom_auth", name: "Acme CRM (Bops)", authScheme: "API_KEY", credentials: {} });
+assert.deepEqual(json(keySetup).auth_config, { type: "use_custom_auth", name: "Acme CRM (SmileDesk)", authScheme: "API_KEY", credentials: {} });
 assert.ok(!S.getState().connecting?.length, "nothing waiting after a failed start");
 cloud.handle = null;
 
@@ -794,7 +794,7 @@ console.log("usage: quick checks counted here at Typesafe's tokens, and every ca
   assert.ok(asked.every((a) => a.auth === `Bearer ${g.bopsOrgoKey}` && a.tz), "with the Orgo key, days on this Mac's clock");
   const t = info.usage.thisMonth;
   assert.equal(t.from, "cloud");
-  assert.equal(t.tokens, 1_100 + 50 + 606_000 + 940 + 1_200, "Bops' model tokens, from the cloud: Codex's and this Mac's own copy left out");
+  assert.equal(t.tokens, 1_100 + 50 + 606_000 + 940 + 1_200, "SmileDesk's model tokens, from the cloud: Codex's and this Mac's own copy left out");
   assert.deepEqual(t.tokensBySource, { chat: 1_100, other: 50, session: 606_000, call: 940, decide: 1_200 });
   const sum = (xs) => xs.reduce((s, x) => s + x, 0);
   assert.equal(sum(Object.values(t.tokensBySource)), t.tokens);
@@ -847,7 +847,7 @@ assert.equal(await Cl.executorKey(), "sk-exec-restricted");
 await selfHosted({ OPENAI_EXECUTOR_API_KEY: "sk-exec-self" }, async () => assert.equal(await Cl.executorKey(), "sk-exec-self"));
 console.log("providers: through the cloud on the Orgo key, and directly when self-hosting");
 
-/* ---------------- AI credit: out of it, and the Bops plan from Orgo ---------------- */
+/* ---------------- AI credit: out of it, and the SmileDesk plan from Orgo ---------------- */
 
 const L = await import(`${root}/lib/server/plan.ts`);
 // What the cloud answers a call that would spend when the user's AI credit is used up.
@@ -895,7 +895,7 @@ S.update((s) => (s.credits = { out: true, at: Date.now() }));
 await selfHosted({}, async () => assert.equal(await Cl.creditsOut(), false));
 S.update((s) => (s.credits = undefined));
 
-// The Bops plan, as the account page shows it: Orgo's answer in the app's words (money in micro-dollars, times in ms).
+// The SmileDesk plan, as the account page shows it: Orgo's answer in the app's words (money in micro-dollars, times in ms).
 assert.deepEqual(await L.readBopsPlan(KEY), {
   billing: "plan",
   tier: "pro_bops",
@@ -913,7 +913,7 @@ assert.equal(await L.readBopsPlan(KEY), null);
 bopsPlan.answer = () => Response.json({ tier: "scale_v2", name: "Scale", credit: { left_micros: 0 } });
 assert.equal(await L.readBopsPlan(KEY), null);
 bopsPlan.answer = null;
-assert.equal(await L.readBopsPlan(KEY), null, "an Orgo without Bops plans");
+assert.equal(await L.readBopsPlan(KEY), null, "an Orgo without SmileDesk plans");
 
 /* Billing by use (lib/bops-billing.ts): orgo-web's answer read in one place, never taken for Free. */
 const B = await import(`${root}/lib/bops-billing.ts`);
@@ -988,7 +988,7 @@ assert.equal(B.canWake({ balanceCents: 10, computer: { hourlyCents: 11 } }), fal
 assert.equal(B.canWake({ computer: { hourlyCents: 11 } }), true, "a balance Orgo didn't say isn't a short one");
 bopsPlan.answer = null;
 
-// Billed by use (Bops Cloud's session says so): the bots' words say Orgo credit and Add credit, Bops' plans
+// Billed by use (SmileDesk Cloud's session says so): the bots' words say Orgo credit and Add credit, SmileDesk's plans
 // and credit aren't sold from the app, numbers and the main bot's inbox are allowed, and an owner's view drops the Add credit.
 const usageSession = { ...SESSION, plan: { tier: "free_bops", limits: true, billing: "usage" } };
 await withSession(usageSession);
@@ -997,7 +997,7 @@ assert.equal(Cl.outOfCreditWords(), "I'm out of Orgo credit, so I've stopped. Ad
 const refused = L.usageRefusal();
 assert.equal(refused.status, 409);
 assert.deepEqual(await refused.json(), {
-  error: "Bops plans aren't sold any more. You pay only for what you use, from your Orgo credit. Add credit on Orgo.",
+  error: "SmileDesk plans aren't sold any more. You pay only for what you use, from your Orgo credit. Add credit on Orgo.",
   code: "bops_usage_billing",
   url: "https://www.orgo.ai/settings/billing",
 });
@@ -1008,7 +1008,7 @@ const PI = await import(`${root}/lib/plan-includes.ts`);
 assert.equal(PI.numberShort("usage", 4, { isPlanBot: false }), null);
 assert.deepEqual(PI.numberShort("usage", 5, { isPlanBot: false }), { text: "You have 5 phone numbers, the most one account can have for now.", upgrade: null });
 assert.equal(PI.emailShort("usage", 0, { isPlanBot: true }), null, "the main bot's inbox is free");
-assert.deepEqual(PI.emailShort("usage", 1, { isPlanBot: false }), { text: "Bops includes 1 email, for your main bot.", upgrade: null });
+assert.deepEqual(PI.emailShort("usage", 1, { isPlanBot: false }), { text: "SmileDesk includes 1 email, for your main bot.", upgrade: null });
 assert.equal(PI.peopleShort({ plan: "usage", limit: 2, used: 1, caps: { pro_bops: 2, max_bops: 5 } }, { withAccess: 1, invited: 0 }), null);
 assert.deepEqual(PI.peopleShort({ plan: "usage", limit: 0, used: 0, caps: { pro_bops: 2, max_bops: 5 } }, { withAccess: 0, invited: 0 }), {
   text: "Your Orgo plan includes no one else. Upgrade your Orgo plan on orgo.ai to add more.",
@@ -1020,7 +1020,7 @@ assert.equal(SH.ownerCredit(Cl.outOfCreditWords()), "I'm out of Orgo credit, so 
 assert.equal(SH.ownerCredit("I'm out of AI credit, so I've stopped. Upgrade in Settings to keep me going."), "I'm out of AI credit, so I've stopped. It's the owner's credit: only they can add more.");
 assert.equal(SH.ownerCredit("Anything else, as it is."), "Anything else, as it is.");
 assert.equal(SH.ownerCredit(SH.ownerCredit(Cl.outOfCreditWords())), SH.ownerCredit(Cl.outOfCreditWords()), "said once, however many times it's read");
-// The card bops.bot and the sheet show, with orgo-web's prices when it said them; no dashes, no Bops plan named.
+// The card bops.bot and the sheet show, with orgo-web's prices when it said them; no dashes, no SmileDesk plan named.
 assert.deepEqual(PI.usageCard({ hourlyCents: 12, numberCents: 350 }).lines.map((l) => l.text).slice(0, 3), ["Your computer: $0.12 an hour while it works, free while it sleeps", "AI at Orgo's rate", "New Orgo accounts start with $5 of credit"]);
 for (const line of [PI.USAGE_CARD.name, PI.USAGE_CARD.computers.detail, ...PI.USAGE_CARD.lines.map((l) => l.text), B.OUT_OF_CREDIT_WAKE, B.extensionLine(Date.now())])
   assert.ok(!/[\u2013\u2014]|Orbit|\bPro\b|\bMax\b/.test(line), line);
@@ -1038,7 +1038,7 @@ S.update((s) => (s.credits = undefined));
 await withSession(SESSION);
 assert.equal(Cl.billedByUse(), false);
 assert.equal(L.usageRefusal(), null);
-assert.equal(FH.computerOutOfCredit(noCredit), undefined, "on Bops' plans, Orgo's own codes aren't read as Orgo credit");
+assert.equal(FH.computerOutOfCredit(noCredit), undefined, "on SmileDesk's plans, Orgo's own codes aren't read as Orgo credit");
 assert.equal(Cl.outOfCreditWords(), Cl.OUT_OF_CREDIT);
 
 // Paying and managing: Orgo's checkout or billing page for the browser, asked with the Orgo key; its refusals in plain words.
@@ -1048,9 +1048,9 @@ web.answer = (c) => {
   billing.push(c);
   if (c.path === "/api/bops/checkout") {
     const { tier } = JSON.parse(c.body);
-    return tier === "max_bops" ? Response.json({ error: "Bops plans aren't on yet", code: "bops_plans_off" }, { status: 503 }) : Response.json({ url: "https://checkout.stripe.com/c/pay/cs_test_1" });
+    return tier === "max_bops" ? Response.json({ error: "SmileDesk plans aren't on yet", code: "bops_plans_off" }, { status: 503 }) : Response.json({ url: "https://checkout.stripe.com/c/pay/cs_test_1" });
   }
-  if (c.path === "/api/bops/portal") return Response.json({ error: "No Bops plan", code: "no_bops_plan" }, { status: 409 });
+  if (c.path === "/api/bops/portal") return Response.json({ error: "No SmileDesk plan", code: "no_bops_plan" }, { status: 409 });
   return null;
 };
 assert.deepEqual(await L.bopsBillingLink(KEY, { tier: "pro_bops" }), { url: "https://checkout.stripe.com/c/pay/cs_test_1" });
@@ -1058,11 +1058,11 @@ assert.deepEqual([billing[0].method, billing[0].headers.authorization, JSON.pars
 assert.deepEqual(await L.bopsBillingLink(KEY, { tier: "max_bops" }), { error: "Upgrades open soon.", status: 503, soon: true });
 assert.deepEqual(await L.bopsBillingLink(KEY, "manage"), { error: "You don't have a paid plan to manage yet.", status: 409 });
 assert.equal(billing.at(-1).path, "/api/bops/portal");
-// An Orgo without Bops billing yet (no such route): upgrades open soon, not an error.
+// An Orgo without SmileDesk billing yet (no such route): upgrades open soon, not an error.
 web.answer = (c) => (c.host === "www.orgo.ai" && c.path.startsWith("/api/bops/") ? new Response("Not found", { status: 404 }) : providers(c));
 assert.deepEqual(await L.bopsBillingLink(KEY, { tier: "pro_bops" }), { error: "Upgrades open soon.", status: 404, soon: true });
 web.answer = providers;
-console.log("AI credit: out of it from the cloud's 402, rechecked with Orgo, the Bops plan and its pages from Orgo");
+console.log("AI credit: out of it from the cloud's 402, rechecked with Orgo, the SmileDesk plan and its pages from Orgo");
 
 /* ---------------- Codes through the cloud ---------------- */
 
@@ -1089,7 +1089,7 @@ assert.deepEqual(json(since(n)[1]), { to: "+15551230001", code: "123456" });
 const starts = [
   [429, { error: "x", code: 60203, retryAfter: 120 }, "Too many codes were sent to this number. Try again in 2 min."],
   [400, { error: "x", code: 60200 }, "That number can't get a text. Check it and try again."],
-  [409, { error: "Verified on another account" }, "That number is already verified on another Bops account."],
+  [409, { error: "Verified on another account" }, "That number is already verified on another SmileDesk account."],
   [401, { error: "Sign in with Orgo" }, "Checking numbers by text isn't working on this server right now."],
   [503, { error: "x" }, "Couldn't send a code right now. Try again in a minute."],
 ];
@@ -1102,7 +1102,7 @@ for (const [i, [status, body, error]] of starts.entries()) {
 const checks = [
   [404, { error: "x", code: 20404 }, "That code can't be used anymore. Send a new one.", true],
   [429, { error: "x", code: 60202 }, "Too many wrong codes. Send a new one.", true],
-  [409, { error: "Verified on another account" }, "That number is already verified on another Bops account.", true],
+  [409, { error: "Verified on another account" }, "That number is already verified on another SmileDesk account.", true],
   [400, { error: "x" }, "Enter the 6-digit code from the text.", undefined],
 ];
 for (const [i, [status, body, error, restart]] of checks.entries()) {
@@ -1241,7 +1241,7 @@ res = await EV.POST(request("/api/cloud/event", { "x-bops-cloud": token }, JSON.
 assert.equal(res.status, 400);
 console.log("routes: the tunnel's token is taken as checked, everything else is checked as before");
 
-/* ---------------- Bops addresses: each workspace's handle, picked once; a plan's number and inbox ---------------- */
+/* ---------------- SmileDesk addresses: each workspace's handle, picked once; a plan's number and inbox ---------------- */
 
 {
 const HANDLE = await import(`${root}/app/api/mail/handle/route.ts`);
@@ -1300,7 +1300,7 @@ const mainWs = () => S.getState().workspaces.find((x) => x.id === MAIN_WORKSPACE
 let made = inboxesMade.length;
 n = cloud.requests.length;
 assert.equal(await M.ensureInbox(main().id), null);
-assert.ok(mainWs().mailPick && !mainWs().mailPick.offer, "Pick your Bops address");
+assert.ok(mainWs().mailPick && !mainWs().mailPick.offer, "Pick your SmileDesk address");
 assert.equal(inboxesMade.length, made);
 assert.equal(since(n).filter((r) => r.path === "/v1/mail/handle").length, 0);
 // As the user types: checked with the cloud, with the main bot's address on it.
@@ -1312,7 +1312,7 @@ assert.deepEqual(await r.json().then((j) => [j.status, j.suggestion, j.address])
 r = await HANDLE.POST(new Request("http://127.0.0.1:3210/api/mail/handle", { method: "POST", body: JSON.stringify({ workspaceId: MAIN_WORKSPACE, handle: "taken-one" }) }));
 assert.deepEqual([r.status, (await r.json()).suggestion], [409, "taken-one2"]);
 assert.ok(mainWs().mailPick, "still waiting");
-// "Use this address": claimed, and the inbox is made on it with the client id Bops Cloud uses for a plan's.
+// "Use this address": claimed, and the inbox is made on it with the client id SmileDesk Cloud uses for a plan's.
 r = await HANDLE.POST(new Request("http://127.0.0.1:3210/api/mail/handle", { method: "POST", body: JSON.stringify({ workspaceId: MAIN_WORKSPACE, handle: "tiger" }) }));
 assert.equal(r.status, 200);
 assert.deepEqual([mainWs().mailSlug, mainWs().mailClaimed, mainWs().mailPick], ["tiger", true, undefined]);
@@ -1340,7 +1340,7 @@ S.update((s) => {
   s.workspaces = s.workspaces.filter((w) => w.id === MAIN_WORKSPACE);
 });
 
-// A plan Bops Cloud set up while the Mac was closed: the number and inbox come in as a "plan" event.
+// A plan SmileDesk Cloud set up while the Mac was closed: the number and inbox come in as a "plan" event.
 S.update((s) => {
   delete s.bots[0].mail;
   delete s.bots[0].email;
@@ -1361,7 +1361,7 @@ assert.deepEqual(
 );
 assert.ok(said().some((t) => t.includes("+1 (415) 555-0142") && t.includes("in the next 15 minutes")));
 assert.deepEqual([main().email, main().mail.inboxId, main().mail.plan], ["boppy@test.bops.bot", "boppy@test.bops.bot", true]);
-assert.deepEqual([mainWs().mailSlug, mainWs().mailClaimed, mainWs().mailPick?.offer], ["test", true, true], "the app offers to change the address Bops picked");
+assert.deepEqual([mainWs().mailSlug, mainWs().mailClaimed, mainWs().mailPick?.offer], ["test", true, true], "the app offers to change the address SmileDesk picked");
 assert.equal(said().length - before, 2, "said once, however often it's handed over");
 // A move to billing by use (or any plan the session doesn't have): the session is asked for again, so the
 // limits and the words that go by it follow at once; nothing is said in the chat for it.
@@ -1452,7 +1452,7 @@ console.log("addresses: picked once per workspace (checked as typed, chosen late
 
 /* ---------------- Slack through the cloud, and pairing ---------------- */
 
-// Bops' own Slack app on the cloud (CloudSession.slack): the main bot is in #general of the Acme
+// SmileDesk's own Slack app on the cloud (CloudSession.slack): the main bot is in #general of the Acme
 // workspace through the user's Slack account, not paired yet. Slack's API is reached through the cloud's Composio proxy.
 const SLACK_SESSION = { ...SESSION, slack: { appId: "A0C6UNXT54J" } };
 const linksPut = () => cloud.requests.filter((x) => x.method === "PUT" && x.path === "/v1/slack/links");
@@ -1516,7 +1516,7 @@ let before = posted().length;
 res = await viaTunnel(dm("my code is 424242"));
 assert.equal(res.status, 200);
 await until(() => posted().length > before, "the pairing hint");
-assert.match(posted().at(-1).markdown_text, /To pair with me, send me the code shown in Bops/);
+assert.match(posted().at(-1).markdown_text, /To pair with me, send me the code shown in SmileDesk/);
 assert.equal(posted().at(-1).icon_url, "https://cloud.example/mascot/main-0A0A0A.png", "the bot's picture, from the cloud");
 {
   // The cloud counts the bot's Slack post for the bot and the app (its Composio calls, at $0 for now).
@@ -1545,7 +1545,7 @@ await sleep(150);
 assert.equal(link().owner, "U0ANA", "only while unpaired");
 // The bot knows where it's in Slack, and what a message from there looks like.
 const mainBot = () => S.getState().bots.find((b) => b.isMain);
-assert.match(K.placesNote(mainBot(), "chat"), /in Slack \(Acme: #general, direct messages with the Bops app\)/);
+assert.match(K.placesNote(mainBot(), "chat"), /in Slack \(Acme: #general, direct messages with the SmileDesk app\)/);
 assert.match(K.placesNote(mainBot(), "chat"), /A message marked \[in Slack\] is .+ writing to you there/);
 assert.match(K.placesNote(mainBot(), "task"), /in Slack \(Acme: #general.*your final answer goes back there on its own/);
 // The owner in a channel shared with another workspace (Slack names the installation's workspace in
@@ -1578,7 +1578,7 @@ await CH.syncSlackLinks({ now: true });
 assert.equal(json(linksPut().at(-1)).links[0].pairing, false, "the cloud stops sending strangers' DMs once no code can pair");
 // Linking needs the cloud's Slack app.
 await withSession(SESSION);
-await assert.rejects(CH.linkSlack("boppy", "ca_slack", []), /Slack isn't available in Bops yet/);
+await assert.rejects(CH.linkSlack("boppy", "ca_slack", []), /Slack isn't available in SmileDesk yet/);
 // Done: no bot in Slack, and the cloud told so.
 await withSession(SLACK_SESSION);
 S.update((s) => {
@@ -1644,7 +1644,7 @@ S.update((s) => {
 cloud.handle = null;
 console.log("slack: through the cloud's app (events over the tunnel or waiting, links told), pairing codes exact, fresh, once; apps ask before a send; bots told their apps, the gateway and where they're reached");
 
-/* ---------------- The state in Bops Cloud: what goes up, and how ---------------- */
+/* ---------------- The state in SmileDesk Cloud: what goes up, and how ---------------- */
 
 // (What the calls above set going in the background settles first: a bot's reply, a call's note.)
 await sleep(1000);
@@ -1936,10 +1936,10 @@ assert.ok(cloud.stateRequests.some((x) => x.path === "/v1/state/backups"), "the 
 S.update((s) => (s.relay = undefined));
 console.log("routing: on by default where Orgo offers it, off when the user says so");
 
-// A computer whose proxy is already on (residential): Orgo only changes the route underneath, so Bops
+// A computer whose proxy is already on (residential): Orgo only changes the route underneath, so SmileDesk
 // restarts its Chrome (each screen's page kept) when it goes through this Mac and when it comes back.
 orgo.offered = true;
-// The script Bops sends to the computer is read from vm/bin under the working folder (the scratch one here).
+// The script SmileDesk sends to the computer is read from vm/bin under the working folder (the scratch one here).
 mkdirSync(join(scratch, "vm/bin"), { recursive: true });
 symlinkSync(join(root, "vm/bin/bops-keep-screens"), join(scratch, "vm/bin/bops-keep-screens"));
 orgo.computer = { id: "c_route", mode: "residential", deviceId: null, proxyOn: true, ran: [] };
@@ -2025,7 +2025,7 @@ for (const [i, path] of ["/api/state", "/api/auth/signout", "//evil.example/api/
   assert.equal(out.status, 403, String(path));
 }
 assert.equal(mac.requests.length, seen, "none of them reached the server");
-// Bops' Slack app's events are one of the webhooks.
+// SmileDesk's Slack app's events are one of the webhooks.
 c1.ws.send(JSON.stringify({ t: "req", id: "sl1", method: "POST", path: "/api/channels/slack/events", headers: { "content-type": "application/json" }, body: Buffer.from(JSON.stringify({ type: "url_verification", challenge: "c1" })).toString("base64") }));
 const sl1 = await frame(c1, (f) => f.t === "res" && f.id === "sl1", "the Slack event's answer");
 assert.deepEqual([sl1.status, JSON.parse(Buffer.from(sl1.body, "base64").toString("utf8"))], [200, { challenge: "c1" }]);
@@ -2125,7 +2125,7 @@ await sleep(1500);
 assert.equal(cloud.connections.length, 4, "stays closed signed out");
 console.log("tunnel: requests replayed with the token, events acked once handled, reconnects with backoff");
 
-/* ---------------- Restart Bops: saved to Bops Cloud, sessions dropped, still signed in ---------------- */
+/* ---------------- Restart SmileDesk: saved to SmileDesk Cloud, sessions dropped, still signed in ---------------- */
 
 const RESTART = await import(`${root}/app/api/restart/route.ts`);
 await signIn();
@@ -2144,7 +2144,7 @@ assert.equal(S.unsentState(), true);
 assert.equal((await RESTART.POST(new Request("http://192.168.1.20:3210/api/restart", { method: "POST" }))).status, 403);
 const restarted = await RESTART.POST(new Request("http://localhost:3210/api/restart", { method: "POST" }));
 assert.deepEqual(await restarted.json(), { ok: true, pid: process.pid });
-// Up in the user's Bops Cloud before the answer, where the new server loads it from: the message on its own, then the rest.
+// Up in the user's SmileDesk Cloud before the answer, where the new server loads it from: the message on its own, then the rest.
 assert.equal(S.unsentState(), false, "nothing left to send");
 assert.ok(msgPosts().slice(posts0).some((r) => sentJson(r).upsert.some((m) => m.id === lastWords.id && m.text === "Restarting now")), "the new message went up");
 assert.equal(blobPuts().length, p0 + 1, "and the rest, once");
@@ -2152,18 +2152,18 @@ assert.equal(sentJson(blobPuts().at(-1)).state.owner.about, "just before the res
 assert.equal(blobPuts().at(-1).headers["x-bops-user"], USER.id, "the signed-in user's");
 assert.equal(stateOf(USER.id).blob.owner.about, "just before the restart");
 await until(() => c5.closed === 1000, "the tunnel closed");
-assert.equal(g.bopsCloud.session, undefined, "the Bops Cloud session (and its keys) dropped");
+assert.equal(g.bopsCloud.session, undefined, "the SmileDesk Cloud session (and its keys) dropped");
 assert.equal(g.bopsOrgoPlan, undefined, "the Orgo plan dropped");
 assert.equal(g.bopsOrgoKey, KEY, "still signed in");
 assert.equal(S.getState().account?.user.id, USER.id);
 assert.equal(S.stateUser(), USER.id, "with their state still loaded");
-// Bops Cloud not taking the state: the restart goes ahead all the same (it's what fixes a stuck
+// SmileDesk Cloud not taking the state: the restart goes ahead all the same (it's what fixes a stuck
 // server) and says so; what's unsent goes up once the cloud is back (and once more on the way out).
 cloud.stateHandle = (r) => (r.method === "GET" ? undefined : { status: 503, json: { error: "down" } });
 S.update((s) => (s.owner.about = "while the cloud is down"));
 const offline = await (await RESTART.POST(new Request("http://localhost:3210/api/restart", { method: "POST" }))).json();
 assert.deepEqual([offline.ok, offline.pid], [false, process.pid]);
-assert.match(offline.error, /Some changes hadn't reached Bops Cloud yet/);
+assert.match(offline.error, /Some changes hadn't reached SmileDesk Cloud yet/);
 assert.equal(S.unsentState(), true);
 // On the way out (the Mac app stops the server next), still not taken: kept in the user's folder on
 // this Mac, for the next start to send. Nothing is lost to a restart while offline.
@@ -2182,9 +2182,9 @@ await Cl.cloudSession();
 assert.equal(since(n).filter((r) => r.path === "/v1/session").length, 1, "the session asked again");
 await T.stopCloud();
 signOut();
-console.log("restart: the state saved to the user's Bops Cloud first, the cloud session and plan dropped, still signed in");
+console.log("restart: the state saved to the user's SmileDesk Cloud first, the cloud session and plan dropped, still signed in");
 
-// A Mac still on v0.0.29 went on in memory while Bops Cloud refused it (426: a v0.0.30 Mac wrote the
+// A Mac still on v0.0.29 went on in memory while SmileDesk Cloud refused it (426: a v0.0.30 Mac wrote the
 // state since) and kept what it did on quitting, to update: its copy never undoes the newer work. Where
 // both changed something the cloud's stands; of its messages only the ones it added go in. A copy kept
 // by an app at the cloud's level still merges as a save would.
@@ -2206,7 +2206,7 @@ console.log("restart: the state saved to the user's Bops Cloud first, the cloud 
     base,
     msgHashes: [[m1.id, fpOf(m1)], [m2.id, fpOf(m2)]],
     blob: { ...base, bots: [{ ...sam, computerStatus: "asleep" }] },
-    messages: [{ ...m2, text: "Failed: Bops Cloud answered 426 (state_too_new)" }, m3],
+    messages: [{ ...m2, text: "Failed: SmileDesk Cloud answered 426 (state_too_new)" }, m3],
     at: 1,
     ...(level ? { level } : {}),
   });
@@ -2231,15 +2231,15 @@ console.log("restart: the state saved to the user's Bops Cloud first, the cloud 
   seed("u6", 4);
   await signIn("orgo_key_6", { id: "u6" });
   assert.equal(S.getState().bots.find((b) => b.id === "sam").name, "Sam", "this Mac's copy of a bot changed on both");
-  assert.deepEqual(texts(), { m2: "Failed: Bops Cloud answered 426 (state_too_new)", m3: "Sam, add Dana to the list" }, "its changes and removals stand");
+  assert.deepEqual(texts(), { m2: "Failed: SmileDesk Cloud answered 426 (state_too_new)", m3: "Sam, add Dana to the list" }, "its changes and removals stand");
   assert.equal(await S.flushState(5000), true);
   signOut();
 
-  // Refused, the older Mac went on running every routine from memory while the newer Bops ran them too: two
-  // "Stretch" reminders (Bops Cloud has the newer Bops's two), a run's chip, its failed thread and the note
+  // Refused, the older Mac went on running every routine from memory while the newer SmileDesk ran them too: two
+  // "Stretch" reminders (SmileDesk Cloud has the newer SmileDesk's two), a run's chip, its failed thread and the note
   // of it, and a note that one didn't run. None of that comes back with it; the user's own message and
   // thread do.
-  const TOO_NEW = "Another of your Macs is on a newer Bops. Update Bops on this Mac to keep your chats in sync.";
+  const TOO_NEW = "Another of your Macs is on a newer SmileDesk. Update SmileDesk on this Mac to keep your chats in sync.";
   const stretch = (id, at) => ({ id, chatId: "bot:sam", role: "bot", botId: "sam", text: "Stretch", at, routine: { id: "r_stretch" } });
   states.set("u7", {
     version: 5,
@@ -2277,12 +2277,12 @@ console.log("restart: the state saved to the user's Bops Cloud first, the cloud 
   assert.deepEqual(
     Object.keys(texts()).sort(),
     ["booked", "book", "m1", "m2", "m3", "r1", "r2"].sort(),
-    "the newer Bops's two reminders, and the user's own; none of what its routines made while refused",
+    "the newer SmileDesk's two reminders, and the user's own; none of what its routines made while refused",
   );
   assert.deepEqual(S.getState().sessions.map((x) => x.id), ["ses_user"], "the user's own thread; not the routine's failed one, nor one that failed for the refusal");
   signOut();
 }
-console.log("kept on a Mac: a copy an older Bops kept never undoes newer work, nor brings back what its routines did while refused; one at the cloud's level merges as a save");
+console.log("kept on a Mac: a copy an older SmileDesk kept never undoes newer work, nor brings back what its routines did while refused; one at the cloud's level merges as a save");
 
 // An action's inputs get the fields its schema pins to one value (a const) where the bot left them out:
 // NOTION_APPEND_TEXT_BLOCKS lists each block's `type` as optional, then refuses a block without it.
@@ -2339,8 +2339,8 @@ console.log("notices: passed on as the cloud sends them and put away there; none
 // own version check and usage reports (self-hosting), and Orgo for routing.
 const stubbed = new Set(["api.openai.com", "api.agentphone.ai", "api.agentmail.to", "api.honcho.dev", "backend.composio.dev", "api.typesafe.ai", "registry.npmjs.org", "telemetry.composio.dev", "www.orgo.ai"]);
 assert.deepEqual(web.calls.filter((c) => !stubbed.has(c.host)), []);
-// Every call to Bops Cloud said which app it came from, sockets too (cloud/app-version.ts keeps old apps
-// out by it), and so did every call to Orgo's API (orgo-web takes a Bops computer off its server only for
+// Every call to SmileDesk Cloud said which app it came from, sockets too (cloud/app-version.ts keeps old apps
+// out by it), and so did every call to Orgo's API (orgo-web takes a SmileDesk computer off its server only for
 // apps that wait for it to wake: app-version.ts orgoHeaders); a provider called directly (self-hosting)
 // never hears it, and Orgo never hears the usage switch.
 const unsaid = [...cloud.requests, ...cloud.stateRequests].filter((r) => r.headers["x-bops-version"] !== "9.9.9").map((r) => `${r.method} ${r.path}`);
@@ -2353,7 +2353,7 @@ assert.ok(tunnels.length > 0 && tunnels.every((u) => u.level === "4"), `every tu
 const noticeCalls = cloud.requests.filter((r) => r.path.startsWith("/v1/notices"));
 assert.ok(noticeCalls.length > 0 && noticeCalls.every((r) => r.headers["x-bops-state-level"] === "4"), "and every call for notices");
 assert.ok(cloud.requests.some((r) => r.path.startsWith("/proxy/openai/")) && cloud.requests.some((r) => r.path.startsWith("/proxy/composio")), "through the providers' proxies too");
-// And every proxy's call and socket, OpenAI's SDK's included: Bops Cloud refuses them to an app below
+// And every proxy's call and socket, OpenAI's SDK's included: SmileDesk Cloud refuses them to an app below
 // level 4 once one at 4 wrote the user's state (cloud/state.ts behindState), so one that didn't say would refuse this app itself.
 const unleveled = cloud.requests.filter((r) => r.path.startsWith("/proxy/") && r.headers["x-bops-state-level"] !== "4").map((r) => `${r.method} ${r.path}`);
 assert.deepEqual(unleveled, [], "every proxy call says its state level");

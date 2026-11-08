@@ -36,7 +36,7 @@ const test = (name, f) => {
 // disk: { free } bytes on the disk Squirrel unpacks to (undefined: can't tell). squirrel: the fake acts
 // as Squirrel.Mac does after a failed download (see the top of desktop/updates.cjs): each updater
 // (setFeedURL) keeps the zip it fetched, so its next check answers update-not-available at once.
-function make({ inApps = true, execPath = "/Applications/Bops.app/Contents/MacOS/Bops", env = {}, writable = true, unsigned = false, file, clock = { t: 0 }, disk = {}, squirrel = false } = {}) {
+function make({ inApps = true, execPath = "/Applications/SmileDesk.app/Contents/MacOS/SmileDesk", env = {}, writable = true, unsigned = false, file, clock = { t: 0 }, disk = {}, squirrel = false } = {}) {
   const dir = mkdtempSync(join(scratch, "user-"));
   if (file !== undefined) writeFileSync(join(dir, "updates.json"), file);
   const fake = new EventEmitter();
@@ -55,7 +55,7 @@ function make({ inApps = true, execPath = "/Applications/Bops.app/Contents/MacOS
     fake.cached = false;
   };
   const app = { getPath: () => dir, isInApplicationsFolder: () => inApps };
-  // The bundle's write check, without a real Bops.app.
+  // The bundle's write check, without a real SmileDesk.app.
   const accessSync = (p) => {
     if (!writable) throw Object.assign(new Error(`EACCES ${p}`), { code: "EACCES" });
   };
@@ -117,7 +117,7 @@ test("switch off: it waits for Download", () => {
 test("downloaded is ready; a newer release then waits for the Restart", () => {
   const { u, fake } = make();
   u.found(v91);
-  fake.emit("update-downloaded", {}, "", "Bops 0.0.91");
+  fake.emit("update-downloaded", {}, "", "SmileDesk 0.0.91");
   assert.equal(u.ready(), true);
   assert.equal(u.state().version, "0.0.91");
   u.found(v91);
@@ -265,8 +265,8 @@ test("latest.json must name this version's zip on bops.bot", () => {
 test("a copy that can't replace itself is bops.bot and never downloads", () => {
   for (const opts of [
     { inApps: false },
-    { execPath: "/private/var/folders/x/AppTranslocation/ABC/d/Bops.app/Contents/MacOS/Bops" },
-    { execPath: "/Volumes/Bops/Bops.app/Contents/MacOS/Bops" },
+    { execPath: "/private/var/folders/x/AppTranslocation/ABC/d/SmileDesk.app/Contents/MacOS/SmileDesk" },
+    { execPath: "/Volumes/SmileDesk/SmileDesk.app/Contents/MacOS/SmileDesk" },
     { writable: false },
     { unsigned: true },
   ]) {
@@ -312,7 +312,7 @@ test("the page hears each change once", () => {
 
 // What Squirrel said on a Mac with 1.4 GB free (ditto unpacking), and when even the zip can't be saved.
 const DITTO_FULL =
-  "ditto: /Users/x/Library/Caches/ai.orgo.bops.ShipIt/update.OrPCGvx/Bops.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/te.lproj/locale.pak: No space left on device\nditto: Couldn't read pkzip signature.";
+  "ditto: /Users/x/Library/Caches/ai.orgo.bops.ShipIt/update.OrPCGvx/SmileDesk.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/te.lproj/locale.pak: No space left on device\nditto: Couldn't read pkzip signature.";
 const ZIP_FULL = "You can’t save the file “Bops-0.0.91-arm64-mac.zip” because there isn’t enough space.: There isn’t enough space. Remove some files from the volume, and then try again.";
 
 test("out of space: says so, asked or not, and the switch waits for room", () => {
@@ -416,7 +416,7 @@ test("after a failed download the next try fetches it, not Squirrel's cached zip
   assert.equal(fake.feeds.length, 2);
   assert.equal(u.state().phase, "downloading");
   assert.equal(sent.at(-1).phase, "downloading");
-  fake.emit("update-downloaded", {}, "", "Bops 0.0.91");
+  fake.emit("update-downloaded", {}, "", "SmileDesk 0.0.91");
   assert.equal(u.state().phase, "ready");
 
   // The switch's own retry after a failure too; and no new updater when nothing failed.
@@ -429,7 +429,7 @@ test("after a failed download the next try fetches it, not Squirrel's cached zip
   m.u.found(v91);
   assert.equal(m.fake.feeds.length, 2);
   assert.equal(m.u.state().phase, "downloading");
-  m.fake.emit("update-downloaded", {}, "", "Bops 0.0.91");
+  m.fake.emit("update-downloaded", {}, "", "SmileDesk 0.0.91");
   m.u.found(v92);
   assert.equal(m.fake.feeds.length, 2);
 

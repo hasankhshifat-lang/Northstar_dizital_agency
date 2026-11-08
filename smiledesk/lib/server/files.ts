@@ -13,7 +13,7 @@ import { bot, getState, userDir } from "./store";
 /**
  * Files bots link in their answers ([report](/workspace/report.md)): written on the bot's Orgo computer,
  * or on this Mac in the bot's own task folder (or, with Full access, the user's own folders). Neither is a
- * URL the user's browser can open, so when they click one, Bops copies it here (.data/users/<id>/files)
+ * URL the user's browser can open, so when they click one, SmileDesk copies it here (.data/users/<id>/files)
  * under an unguessable id and opens /api/files/<id> in a tab. Copies, not live: clicking again fetches it
  * fresh, and copies go after a day.
  */
@@ -70,8 +70,8 @@ async function fetchFile(botId: string, href: string): Promise<Buffer> {
   // On this Mac: only the app on it reads its files, only ones the bot linked, and only where that bot can
   // write: its own Mac tasks' folders, or the user's home folder when Full access is on (MacState.fullAccess),
   // as its executor can (executor-sandbox.ts). A bot writes its own answers, so its link alone proves nothing.
-  if (onPostgres()) throw new Error("That file is on a Mac, so it opens in Bops on that Mac.");
-  if (!linkedBy(botId, href)) throw new Error("Bops only opens files a bot linked.");
+  if (onPostgres()) throw new Error("That file is on a Mac, so it opens in SmileDesk on that Mac.");
+  if (!linkedBy(botId, href)) throw new Error("SmileDesk only opens files a bot linked.");
   const raw = href.startsWith("file://") ? decodeURIComponent(href.slice(7)) : href.startsWith("~/") ? join(homedir(), href.slice(2)) : href;
   // Checked where it really is: a link (a symlink the task made) can't lead out of those folders.
   const real = realOrNull(posix.normalize(raw));
@@ -81,7 +81,7 @@ async function fetchFile(botId: string, href: string): Promise<Buffer> {
     .map(realOrNull)
     .filter((r): r is string => !!r);
   if (!roots.some((r) => real.startsWith(`${r}/`)))
-    throw new Error(full ? "Bops only opens files in your home folder." : "Bops opens files on your Mac only from the bot's own task folder, unless Full access is on.");
+    throw new Error(full ? "SmileDesk only opens files in your home folder." : "SmileDesk opens files on your Mac only from the bot's own task folder, unless Full access is on.");
   if (statSync(/*turbopackIgnore: true*/ real).size > MAX_BYTES) throw new Error(`${basename(real)} is too big to open here (25 MB at most).`);
   return readFileSync(/*turbopackIgnore: true*/ real);
 }
@@ -98,7 +98,7 @@ function realOrNull(path: string) {
 /** Copy a file a bot linked to where the user can open it. Returns the URL that serves it. */
 export async function openFile(botId: string, href: string) {
   const DIR = filesDir();
-  if (!DIR) throw new Error("Sign in to Bops first.");
+  if (!DIR) throw new Error("Sign in to SmileDesk first.");
   const bytes = await fetchFile(botId, href);
   mkdirSync(DIR, { recursive: true });
   // Copies made more than a day ago go: they're for opening now, not a second home for the user's files.

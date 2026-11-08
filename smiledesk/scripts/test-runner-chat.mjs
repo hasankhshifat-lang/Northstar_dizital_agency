@@ -1,12 +1,12 @@
 // Tests for chat answered on a bot's computer (lib/server/runner-chat.ts, turn-context.ts): a runner claims each turn
-// Bops Cloud owes its computer (only once it's sure it's on its own computer; a 409 or 410 does nothing more), reads the
-// state until it has the message, answers it in the turn's context (its rows carry the turn and Bops Cloud's clock,
+// SmileDesk Cloud owes its computer (only once it's sure it's on its own computer; a 409 or 410 does nothing more), reads the
+// state until it has the message, answers it in the turn's context (its rows carry the turn and SmileDesk Cloud's clock,
 // never before the message), beats while it runs (at once, as "tools", the first time it does something that can't be
 // done twice; a 409 stops it and nothing more is said), and says it's done with its tapback, or paused for an OK, from
 // which the turn goes on as itself. A message it can't read fails with a note. Its stream (GET /v1/runner/live) gives it
 // turns, "turn-cancel" stops one, and "state" reads the state now. Nothing on the Mac.
 //
-// Bops Cloud, the store and the model are fakes (below): the turn's own run is a stand-in for chat.ts answerMessage
+// SmileDesk Cloud, the store and the model are fakes (below): the turn's own run is a stand-in for chat.ts answerMessage
 // (test-chat-tools.mjs runs the real one in a turn's context).
 // Usage: node --conditions=react-server scripts/test-runner-chat.mjs
 import assert from "node:assert/strict";
@@ -60,16 +60,16 @@ const until = async (ok, what, ms = 3000) => {
   }
 };
 
-/* ---------------- Fakes: the state, Bops Cloud ---------------- */
+/* ---------------- Fakes: the state, SmileDesk Cloud ---------------- */
 
 const state = { messages: [], appApprovals: [] };
 let pulls = 0;
-/** What a pull brings in (a message Bops Cloud wrote, the first time it's read). */
+/** What a pull brings in (a message SmileDesk Cloud wrote, the first time it's read). */
 let onPull = () => {};
-/** Every call this runner made to Bops Cloud, and what each path answers (status, body). */
+/** Every call this runner made to SmileDesk Cloud, and what each path answers (status, body). */
 const sent = [];
 const answers = new Map();
-/** The runner's stream: what Bops Cloud sends down it. */
+/** The runner's stream: what SmileDesk Cloud sends down it. */
 let stream = null;
 const enc = new TextEncoder();
 globalThis.__fake = {
@@ -102,7 +102,7 @@ globalThis.__fake = {
 const TC = await import(`${root}/lib/server/turn-context.ts`);
 const R = await import(`${root}/lib/server/runner-chat.ts`);
 
-/** Bops Cloud's answer to a claim: its clock `ahead` ms ahead of this computer's. */
+/** SmileDesk Cloud's answer to a claim: its clock `ahead` ms ahead of this computer's. */
 const claimed = (id, messageId, humanAt, ahead = 0, member) => ({
   status: 200,
   body: { ok: true, now: Date.now() + ahead, turn: { id, messageId, chatId: "bot:max", botId: "max", humanAt, seq: 1, ...(member ? { member } : {}) } },
@@ -120,7 +120,7 @@ const ev = (id, messageId = `m_${id}`) => ({ id, messageId, chatId: "bot:max", b
 
 /* ---------------- One turn ---------------- */
 
-await check("a turn is claimed, answered in its context on Bops Cloud's clock, and done with its tapback", async () => {
+await check("a turn is claimed, answered in its context on SmileDesk Cloud's clock, and done with its tapback", async () => {
   reset();
   const T = Date.now() + 60_000;
   state.messages.push({ id: "m1", chatId: "bot:max", role: "user", text: "hi", at: T });
@@ -132,7 +132,7 @@ await check("a turn is claimed, answered in its context on Bops Cloud's clock, a
       seen = { chatId, messageId, member, turn: TC.currentTurn()?.id };
       const row = TC.stamp({ id: "a1", chatId, role: "bot", botId: "max", text: "hello", at: Date.now() });
       state.messages.push(row);
-      // Its tapback on the message, as chat.ts's react leaves it here: Bops Cloud writes it.
+      // Its tapback on the message, as chat.ts's react leaves it here: SmileDesk Cloud writes it.
       state.messages[0].reactions = [{ by: "max", type: "like", at: Date.now() }];
       return { text: "hello" };
     },
@@ -141,14 +141,14 @@ await check("a turn is claimed, answered in its context on Bops Cloud's clock, a
   assert.deepEqual(seen, { chatId: "bot:max", messageId: "m1", member: { userId: "u2", email: "u2@example.com", name: "Wren", ref: "k1" }, turn: "t1" });
   const row = state.messages.find((m) => m.id === "a1");
   assert.equal(row.turn, "t1");
-  assert.ok(row.at >= Date.now() + 50_000, "on Bops Cloud's clock, a minute ahead of this computer's");
+  assert.ok(row.at >= Date.now() + 50_000, "on SmileDesk Cloud's clock, a minute ahead of this computer's");
   assert.ok(row.at > T);
   assert.deepEqual(paths(), ["claim", "done"]);
   assert.deepEqual(sent[1].body, { state: "done", react: "like" });
   assert.equal(TC.turnsRunning(), false);
 });
 
-await check("a reply is marked on its computer from before its claim until its end is said to Bops Cloud, failed or not; an upgrade's hold stops a new one before its claim, unless it's stale", async () => {
+await check("a reply is marked on its computer from before its claim until its end is said to SmileDesk Cloud, failed or not; an upgrade's hold stops a new one before its claim, unless it's stale", async () => {
   const { mkdtempSync, readdirSync, writeFileSync, utimesSync } = await import("node:fs");
   const { tmpdir } = await import("node:os");
   const base = mkdtempSync(`${tmpdir()}/bops-turns-`);
@@ -174,7 +174,7 @@ await check("a reply is marked on its computer from before its claim until its e
     assert.deepEqual([atClaim, during, atDone], [[id], [id], [id]], `${id}: marked at its claim, while it runs, and as its end is said`);
     assert.deepEqual(readdirSync(dir), [], `${id}: gone after`);
   }
-  // An upgrade holds the runner: a new reply isn't claimed (Bops Cloud gives it again), and leaves no mark.
+  // An upgrade holds the runner: a new reply isn't claimed (SmileDesk Cloud gives it again), and leaves no mark.
   reset();
   writeFileSync(hold, "");
   let ran = 0;
@@ -223,7 +223,7 @@ await check("a reply is marked on its computer from before its claim until its e
   R.runnerChatForTests({});
 });
 
-await check("an Admin's turn (TurnMember.role, as Bops Cloud found it taking their words) is answered as an Admin's: the role goes down to the turn", async () => {
+await check("an Admin's turn (TurnMember.role, as SmileDesk Cloud found it taking their words) is answered as an Admin's: the role goes down to the turn", async () => {
   reset();
   const T = Date.now();
   state.messages.push({ id: "m_admin", chatId: "bot:max", role: "user", text: "hi", at: T });
@@ -238,7 +238,7 @@ await check("an Admin's turn (TurnMember.role, as Bops Cloud found it taking the
   });
   await R.answerTurn(ev("t_admin", "m_admin"));
   assert.deepEqual(seen, { userId: "u3", email: "u3@example.com", name: "Ivy", ref: "k3", role: "admin" });
-  // Any other role Bops Cloud might send is no role: a member's turn, by their entry.
+  // Any other role SmileDesk Cloud might send is no role: a member's turn, by their entry.
   reset();
   state.messages.push({ id: "m_other", chatId: "bot:max", role: "user", text: "hi", at: T });
   answers.set("claim", claimed("t_other", "m_other", T, 0, { userId: "u3", name: "Ivy", ref: "k4", role: "owner" }));
@@ -251,7 +251,7 @@ await check("a row of another chat or bot, or one added with no turn, is as it w
   assert.deepEqual(TC.stamp(plain), plain);
 });
 
-await check("not on its own computer, or Bops Cloud says no: nothing is run or said", async () => {
+await check("not on its own computer, or SmileDesk Cloud says no: nothing is run or said", async () => {
   reset();
   let ran = 0;
   R.runnerChatForTests({ identity: async () => "unknown", answer: async () => (ran++, null) });
@@ -322,7 +322,7 @@ await check("what can't be done twice is said at once as a beat with tools; a be
   assert.ok(!paths().includes("done"), "nothing said for a turn taken back");
 });
 
-await check("a turn paused for an OK says so with its request, which carries the turn, and goes on as itself only through Bops Cloud's resume", async () => {
+await check("a turn paused for an OK says so with its request, which carries the turn, and goes on as itself only through SmileDesk Cloud's resume", async () => {
   reset();
   const T = Date.now();
   state.messages.push({ id: "m7", chatId: "bot:max", role: "user", text: "pay it", at: T });
@@ -338,7 +338,7 @@ await check("a turn paused for an OK says so with its request, which carries the
   });
   await R.answerTurn(ev("t7", "m7"));
   assert.deepEqual(sent.at(-1).body, { state: "paused", approvalId: "ask1" });
-  // A restart (or an upgrade) here since: nothing kept in memory is needed, Bops Cloud gives its clock and the message's time.
+  // A restart (or an upgrade) here since: nothing kept in memory is needed, SmileDesk Cloud gives its clock and the message's time.
   R.runnerChatForTests({ identity: async () => "same" });
   sent.length = 0;
   answers.set("resume", { status: 200, body: { ok: true, now: Date.now() + 30_000, humanAt: T } });
@@ -353,17 +353,17 @@ await check("a turn paused for an OK says so with its request, which carries the
   assert.equal(inTurn?.id, "t7");
   const a7 = state.messages.find((m) => m.id === "a7");
   assert.equal(a7.turn, "t7");
-  assert.ok(a7.at >= Date.now() + 20_000, "on Bops Cloud's clock");
+  assert.ok(a7.at >= Date.now() + 20_000, "on SmileDesk Cloud's clock");
   assert.deepEqual(paths(), ["resume", "done"]);
   assert.deepEqual(sent[0].body, { approvalId: "ask1" });
-  // One not asked on a turn of Bops Cloud's (from before this build) goes on as it is.
+  // One not asked on a turn of SmileDesk Cloud's (from before this build) goes on as it is.
   sent.length = 0;
   let plain;
   await R.resumeAsTurn({ id: "ask_unknown", botId: "max", chatId: "bot:max", resume: { engine: "chat" } }, async () => ((plain = TC.currentTurn()), {}));
   assert.deepEqual([plain, sent.length], [undefined, 0]);
 });
 
-await check("a paused turn Bops Cloud ended meanwhile (its member's access taken away, past its day), or that it never answers about, never runs the approved action", async () => {
+await check("a paused turn SmileDesk Cloud ended meanwhile (its member's access taken away, past its day), or that it never answers about, never runs the approved action", async () => {
   reset();
   R.runnerChatForTests({ identity: async () => "same", retryMs: [1, 1] });
   const ask = { id: "ask9", botId: "max", chatId: "bot:max", resume: { engine: "chat", cloudTurn: "t9" } };
@@ -378,7 +378,7 @@ await check("a paused turn Bops Cloud ended meanwhile (its member's access taken
   }
 });
 
-await check("a beat on its way when the turn pauses lands first; a done Bops Cloud didn't answer is sent again", async () => {
+await check("a beat on its way when the turn pauses lands first; a done SmileDesk Cloud didn't answer is sent again", async () => {
   reset();
   const T = Date.now();
   state.messages.push({ id: "m10", chatId: "bot:max", role: "user", text: "x", at: T });
@@ -415,7 +415,7 @@ await check("a beat on its way when the turn pauses lands first; a done Bops Clo
   answers.set("done", () => (++n < 3 ? { status: n === 1 ? 0 : 502, body: null } : { status: 200, body: { ok: true } }));
   R.runnerChatForTests({ identity: async () => "same", retryMs: [1, 1], answer: async () => ({ text: "hi" }) });
   await R.answerTurn(ev("t11", "m11"));
-  assert.equal(sent.filter((x) => x.path.endsWith("/done")).length, 3, "until Bops Cloud answers it");
+  assert.equal(sent.filter((x) => x.path.endsWith("/done")).length, 3, "until SmileDesk Cloud answers it");
 });
 
 /* ---------------- The stream ---------------- */

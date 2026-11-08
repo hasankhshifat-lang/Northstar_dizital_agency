@@ -5,14 +5,14 @@ import { notReady } from "@/lib/server/ready";
 export const dynamic = "force-dynamic";
 
 /**
- * A workspace's part of its bots' addresses on Bops Cloud (lib/server/mail.ts, cloud/handles.ts),
- * for "Pick your Bops address" and Settings, Email.
+ * A workspace's part of its bots' addresses on SmileDesk Cloud (lib/server/mail.ts, cloud/handles.ts),
+ * for "Pick your SmileDesk address" and Settings, Email.
  * GET ?workspace=<id>&try=<handle>: whether it can be the workspace's (available, taken, invalid or
  * yours), a free suggestion, the workspace's handle now and how many changes are left, and the main
  * bot's address on it.
  */
 export async function GET(request: Request) {
-  if (!cloudOn()) return Response.json({ error: "Addresses are picked with Bops Cloud only." }, { status: 404 });
+  if (!cloudOn()) return Response.json({ error: "Addresses are picked with SmileDesk Cloud only." }, { status: 404 });
   const url = new URL(request.url);
   const workspace = url.searchParams.get("workspace") ?? "";
   try {
@@ -24,12 +24,12 @@ export async function GET(request: Request) {
 
 /**
  * { workspaceId, handle }: use it (claimed, or the workspace moves to it); { workspaceId } alone: choose
- * later (Bops claims the suggestion); { workspaceId, keep: true }: keep the one Bops picked.
+ * later (SmileDesk claims the suggestion); { workspaceId, keep: true }: keep the one SmileDesk picked.
  */
 export async function POST(request: Request) {
   const unready = notReady();
   if (unready) return unready;
-  if (!cloudOn()) return Response.json({ error: "Addresses are picked with Bops Cloud only." }, { status: 404 });
+  if (!cloudOn()) return Response.json({ error: "Addresses are picked with SmileDesk Cloud only." }, { status: 404 });
   const { workspaceId, handle, keep } = (await request.json().catch(() => ({}))) as { workspaceId?: string; handle?: string; keep?: boolean };
   if (!workspaceId) return Response.json({ error: "Which workspace?" }, { status: 400 });
   if (keep) {

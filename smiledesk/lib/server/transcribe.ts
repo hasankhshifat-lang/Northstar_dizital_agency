@@ -7,7 +7,7 @@ import { usageTags } from "./usage";
 /**
  * The chat's mic: what the user said, as text for the composer (they read it, then send it). One
  * gpt-transcribe call per recording, told the names it may hear (the user's, their bots') so they're
- * spelled right. Through Bops Cloud its seconds are counted for the bot the chat is with.
+ * spelled right. Through SmileDesk Cloud its seconds are counted for the bot the chat is with.
  */
 
 const client = openaiClient();
@@ -23,7 +23,7 @@ export async function transcribe(audio: Blob, botId?: string): Promise<string> {
   const ext = /mp4|m4a|aac/.test(audio.type) ? "m4a" : /ogg/.test(audio.type) ? "ogg" : /wav/.test(audio.type) ? "wav" : "webm";
   const file = await toFile(audio, `recording.${ext}`, { type: audio.type || "audio/webm" });
   const r = await client.audio.transcriptions.create(
-    { model: MODEL, file, prompt: `A message typed into Bops, a chat app with AI bots. Names that may come up: ${[...new Set(names)].join(", ")}.` },
+    { model: MODEL, file, prompt: `A message typed into SmileDesk, a chat app with AI bots. Names that may come up: ${[...new Set(names)].join(", ")}.` },
     usageTags("chat", botId),
   );
   return r.text.trim();

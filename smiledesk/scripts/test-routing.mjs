@@ -300,7 +300,7 @@ const post = async (mod, body) => {
   const res = await mod.POST(new Request("http://localhost:3210/x", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }));
   return { status: res.status, body: await res.json() };
 };
-// What Bops would run a task on: the old rule's pick and the router's, whatever BOPS_ROUTER says.
+// What SmileDesk would run a task on: the old rule's pick and the router's, whatever BOPS_ROUTER says.
 process.env.BOPS_ROUTER = "off";
 const RouteApi = await import(`${root}/app/api/route/route.ts`);
 jevAnswers = jev({ difficulty: "deep", hard: 0.5 });

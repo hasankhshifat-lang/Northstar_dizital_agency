@@ -553,7 +553,7 @@ await test("what failed, in plain words: signed out (Sign in again in Logins), g
   }
 });
 
-await test("an issue from an app Bops can't show: nothing read, nothing drawn (its summary and Open link stay)", async () => {
+await test("an issue from an app SmileDesk can't show: nothing read, nothing drawn (its summary and Open link stay)", async () => {
   const m = await mount(h(IssueSource, { issue: { ...ISSUE, sourceApp: "plain" }, ws: "w1" }));
   try {
     assert.equal(calls.length, 0);
@@ -640,7 +640,7 @@ await test("a reply that didn't go says why and keeps the words; Slack's box say
   const n = await mount(h(IssueSource, { issue: ISSUE, ws: "w1" }));
   try {
     assert.ok(!n.box.querySelector("textarea"));
-    assert.ok(said(n.box).includes("Bops can't tell who to reply to here. Reply in Gmail."));
+    assert.ok(said(n.box).includes("SmileDesk can't tell who to reply to here. Reply in Gmail."));
   } finally {
     await n.done();
   }

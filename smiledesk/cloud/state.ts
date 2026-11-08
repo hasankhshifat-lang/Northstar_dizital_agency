@@ -33,7 +33,7 @@ import { forgetTelemetryChoice } from "./analytics.ts";
 import { autoRoute, chatAutoFor, keepChatOn, nudgeRunners, recheckTurns, routedWorkspaces, turnRowsMayWrite } from "./turns.ts";
 
 /**
- * The app's state, kept here for each user (protocol.ts, "The app's state in Bops Cloud"). Owner: edge builder.
+ * The app's state, kept here for each user (protocol.ts, "The app's state in SmileDesk Cloud"). Owner: edge builder.
  *
  * A signed-in Mac keeps no state of its own: it loads it from here at sign-in and writes each change
  * back (lib/server/persist-cloud.ts). The chat messages are rows in bops.chat_messages, written one by
@@ -169,7 +169,7 @@ export function stateLevelOf(req: IncomingMessage): number {
   return /^\d{1,4}$/.test(said) ? Math.max(Number(said), STATE_PROTOCOL) : STATE_PROTOCOL;
 }
 
-const TOO_NEW = "Another of your Macs is on a newer Bops. Update Bops on this Mac to keep your chats in sync.";
+const TOO_NEW = "Another of your Macs is on a newer SmileDesk. Update SmileDesk on this Mac to keep your chats in sync.";
 
 /** 426 when a newer app than the call's wrote the user's state (`protocol`, the row's). */
 function requireLevel(req: IncomingMessage, protocol: number) {
@@ -545,7 +545,7 @@ async function putOver(req: IncomingMessage, res: ServerResponse, user: CloudUse
   if (!wholeNumber(base)) throw new HttpError(400, "base must be a whole number, 0 or more");
   let json = toJson(blobOf(state));
   let written = state;
-  // A computer's runner writes as its own device, which Bops Cloud sets (server.ts computerCheck).
+  // A computer's runner writes as its own device, which SmileDesk Cloud sets (server.ts computerCheck).
   const writer = user.computer?.device || deviceOf(req);
   const level = stateLevelOf(req);
   let raised = false;
@@ -568,9 +568,9 @@ async function putOver(req: IncomingMessage, res: ServerResponse, user: CloudUse
       json = toJson(next);
       written = next;
     } else {
-      // The switch of each workspace's chat as Bops Cloud keeps it (turns.ts keepChatOn): a Bops from before drops it,
-      // and one that never heard of a change of it (Bops Cloud may move a workspace by itself) doesn't have it yet.
-      // An account with no row, that Bops Cloud doesn't move workspaces for, and with no mark of either left: nothing to put back.
+      // The switch of each workspace's chat as SmileDesk Cloud keeps it (turns.ts keepChatOn): a SmileDesk from before drops it,
+      // and one that never heard of a change of it (SmileDesk Cloud may move a workspace by itself) doesn't have it yet.
+      // An account with no row, that SmileDesk Cloud doesn't move workspaces for, and with no mark of either left: nothing to put back.
       const rows = await routedWorkspaces(c, user.id);
       const on = chatAutoFor(user.id);
       const kept = rows.size || on || (Array.isArray(written.workspaces) ? written.workspaces : []).some((w) => isObject(w) && (w.chatAuto !== undefined || w.chatAutoOff !== undefined)) ? keepChatOn(written, rows, on) : written;
@@ -585,13 +585,13 @@ async function putOver(req: IncomingMessage, res: ServerResponse, user: CloudUse
       [user.id, json, level, writer],
     );
     raised = level > row.protocol;
-    // The Mac takes the version it's answered as what it sent: one more, Bops Cloud's, has it read what was put back.
+    // The Mac takes the version it's answered as what it sent: one more, SmileDesk Cloud's, has it read what was put back.
     if (mirrored) await c.query("UPDATE bops.app_state SET version = version + 1, writer = 'cloud', updated_at = now() WHERE user_id = $1", [user.id]);
     return Number(r.rows[0].version);
   });
   if (version === null) {
     const now = await readRow(user.id);
-    const body: CloudStateConflict = { error: "Your Bops changed on another Mac", code: STATE_CONFLICT, version: now?.version ?? 0, state: now && user.computer ? forComputer(now.state, user.computer) : (now?.state ?? {}) };
+    const body: CloudStateConflict = { error: "Your SmileDesk changed on another Mac", code: STATE_CONFLICT, version: now?.version ?? 0, state: now && user.computer ? forComputer(now.state, user.computer) : (now?.state ?? {}) };
     return sendZipped(req, res, 409, body);
   }
   sendJson(res, 200, { version });
@@ -618,7 +618,7 @@ async function putBackup(req: IncomingMessage, res: ServerResponse, user: CloudU
   const list = Array.isArray(state.messages) ? state.messages.filter((m) => isObject(m) && typeof m.id === "string" && m.id).map(messageOf) : [];
   await tx(async (c) => {
     const row = await lockUser(c, user.id);
-    if (row.protocol >= STATE_PROTOCOL) throw new HttpError(426, "Update Bops to keep your chats in sync");
+    if (row.protocol >= STATE_PROTOCOL) throw new HttpError(426, "Update SmileDesk to keep your chats in sync");
     await c.query(`UPDATE bops.app_state SET state = $2::jsonb, version = $3, writer = NULL, updated_at = now() WHERE user_id = $1`, [user.id, toJson(blobOf(state)), version]);
     // The upload is the whole state: its messages are all there are.
     await upsertMessages(c, user.id, list);
@@ -705,11 +705,11 @@ const postMessages: Route = {
 };
 
 /**
- * A computer writes and removes only its bots' messages and Bops' notes, in its bots' chats, or about
+ * A computer writes and removes only its bots' messages and SmileDesk's notes, in its bots' chats, or about
  * threads and routines' runs of its own in theirs (computer-scope.ts computersMessage: their bot may have
  * moved off it since the run began, and a run's words may come after its end is recorded): each new one,
  * and each it changes or removes as it's kept, must be one. Never the user's words or another bot's, so a
- * key read off a computer can't speak for them. One that carries a turn's id (its answer to a message Bops Cloud
+ * key read off a computer can't speak for them. One that carries a turn's id (its answer to a message SmileDesk Cloud
  * took) only while its device holds or last held that turn (turns.ts turnRowsMayWrite). Else 403.
  */
 async function computerMayWrite(c: pg.PoolClient, user: CloudUser, msgs: Msg[], remove: string[]) {
@@ -726,7 +726,7 @@ async function computerMayWrite(c: pg.PoolClient, user: CloudUser, msgs: Msg[], 
   const was = new Map(kept.map((k) => [k.id, k.json]));
   const refused = [
     ...msgs.filter((m) => !computersMessage({ ...(JSON.parse(m.json) as Record<string, unknown>), chatId: m.chatId }, bots, chats, threads, runs)).map((m) => m.id),
-    // Never a member's stamp it made or changed (computer-scope.ts memberStampKept): only Bops Cloud says a member said it.
+    // Never a member's stamp it made or changed (computer-scope.ts memberStampKept): only SmileDesk Cloud says a member said it.
     ...msgs.filter((m) => !memberStampKept(JSON.parse(m.json) as Record<string, unknown>, was.get(m.id))).map((m) => m.id),
     // One already taken out holds only its chat.
     ...kept.filter((k) => (k.json ? !computersMessage({ ...k.json, chatId: k.chat_id }, bots, chats, threads, runs) : !chats.has(k.chat_id))).map((k) => k.id),
@@ -737,8 +737,8 @@ async function computerMayWrite(c: pg.PoolClient, user: CloudUser, msgs: Msg[], 
 }
 
 /**
- * The owner's own write (a Mac, the phone's Bops): in a chat of a workspace whose people's words go through Bops Cloud
- * (computer-scope.ts cloudChatOn), never a member's stamp it made or changed (memberStampKept), as for a computer: Bops
+ * The owner's own write (a Mac, the phone's SmileDesk): in a chat of a workspace whose people's words go through SmileDesk Cloud
+ * (computer-scope.ts cloudChatOn), never a member's stamp it made or changed (memberStampKept), as for a computer: SmileDesk
  * Cloud is the only one that says a member said it there. A row sent back with its stamp as kept (a tapback rewrites
  * it whole) is fine, and so is anything in a workspace still on the owner's Mac. Else 403 MEMBER_STAMP.
  */
@@ -751,7 +751,7 @@ async function stampsMayWrite(c: pg.PoolClient, user: CloudUser, msgs: Msg[]) {
   const kept = (await c.query<{ id: string; json: Record<string, unknown> | null }>("SELECT id, json FROM bops.chat_messages WHERE user_id = $1 AND id = ANY($2::text[])", [user.id, there.map((x) => x.m.id)])).rows;
   const was = new Map(kept.map((k) => [k.id, k.json]));
   const refused = there.filter((x) => !memberStampKept(x.json, was.get(x.m.id))).map((x) => `messages.${x.m.id}`);
-  if (refused.length) throw new HttpError(403, "Only Bops Cloud says someone you shared with said something here.", { code: MEMBER_STAMP, paths: refused.slice(0, 20) });
+  if (refused.length) throw new HttpError(403, "Only SmileDesk Cloud says someone you shared with said something here.", { code: MEMBER_STAMP, paths: refused.slice(0, 20) });
 }
 
 /**

@@ -2,13 +2,13 @@ import "server-only";
 import { checkIdentity, IDENTITY_EVERY_MS, runnerComputer, startRunsOn, watchIdentity, WHO_AM_I_EVERY_MS } from "./runner";
 
 /**
- * A computer's Bops runner starting (instrumentation.ts, BOPS_RUNNER=1; runner.ts says what it is). It
+ * A computer's SmileDesk runner starting (instrumentation.ts, BOPS_RUNNER=1; runner.ts says what it is). It
  * has no window to poll /api/state, which is what starts the Mac's loops, so it starts its own here, and
  * only those a runner runs (persist.ts RUNNER_LOOPS): its credential (its computer's Orgo identity, else
  * its own ORGO_API_KEY, which Orgo writes when the computer is made from a template that asks for it, or
  * when the Mac sets the runner up on one without it: orgo-auth.ts runnerKey; none yet, it waits for one),
  * a look that it's on its own computer (again while a task of its own runs, and before it runs anything:
- * runner.ts checkIdentity; on identity, its VMM asked every minute too), the user's state from Bops
+ * runner.ts checkIdentity; on identity, its VMM asked every minute too), the user's state from SmileDesk
  * Cloud, then the routines timer, asking Orgo where the bots work, and saying its computer is in use
  * while a task of its own runs. Its threads and the mirror of its own routines
  * start from the timer, as they do on the Mac. The look comes before the state: a copy of the computer
@@ -21,7 +21,7 @@ const LOOPBACK = /^(127(?:\.\d{1,3}){3}|::1|localhost)$/i;
 
 /**
  * Why a runner won't start with these settings, or null when it may. It answers on loopback only, with
- * a window token (nothing has it: no request but the open ones gets in), keeps the state in Bops Cloud
+ * a window token (nothing has it: no request but the open ones gets in), keeps the state in SmileDesk Cloud
  * (never a file or Postgres), knows its computer, and is that computer as a device. Its key isn't a
  * setting: startRunner reads it from its computer.
  */
@@ -29,7 +29,7 @@ export function runnerRefusal(env: Record<string, string | undefined>): string |
   if ((env.BOPS_UI_TOKEN ?? "").length < 16) return "BOPS_UI_TOKEN isn't set";
   if (!LOOPBACK.test(env.HOSTNAME ?? "")) return "HOSTNAME isn't this computer's loopback (127.0.0.1)";
   if (env.BOPS_LISTEN_ALL === "1") return "BOPS_LISTEN_ALL is set: a runner answers on loopback only";
-  if (env.BOPS_DATABASE_URL || env.BOPS_SELF_HOSTED === "1") return "a runner keeps the state in Bops Cloud, not in Postgres or a file";
+  if (env.BOPS_DATABASE_URL || env.BOPS_SELF_HOSTED === "1") return "a runner keeps the state in SmileDesk Cloud, not in Postgres or a file";
   if (!UUID.test(env.BOPS_RUNNER_COMPUTER ?? "")) return "BOPS_RUNNER_COMPUTER isn't a computer's id";
   if ((env.BOPS_DEVICE_SEED ?? "").toLowerCase() !== env.BOPS_RUNNER_COMPUTER!.toLowerCase()) return "BOPS_DEVICE_SEED isn't the computer's id";
   return null;
@@ -54,7 +54,7 @@ const g = globalThis as unknown as {
  * 30 seconds, and starts once one is there: stopping would only have supervisord start it again forever,
  * which no look from the Mac could tell from a runner that runs (its log says `[runner] auth: none`, and
  * the Mac gives its computer a key when it looks: runner-install.ts stillRuns). The look at its computer,
- * then the state, are tried again until they're in (Orgo or Bops Cloud down for now), waiting longer
+ * then the state, are tried again until they're in (Orgo or SmileDesk Cloud down for now), waiting longer
  * each time.
  */
 export async function startRunner() {
@@ -95,7 +95,7 @@ export async function startRunner() {
   await import("./routines");
   const { startActivityBeat } = await import("./free-hours");
   startActivityBeat();
-  // The chat turns Bops Cloud owes this computer, in a workspace whose chat goes through it (runner-chat.ts).
+  // The chat turns SmileDesk Cloud owes this computer, in a workspace whose chat goes through it (runner-chat.ts).
   const { startRunnerChat } = await import("./runner-chat");
   startRunnerChat();
   // Its bots' browsers, for the owner and the members who may watch them (browser-runner.ts).

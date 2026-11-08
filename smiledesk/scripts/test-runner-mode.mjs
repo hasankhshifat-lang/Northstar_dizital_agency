@@ -1,4 +1,4 @@
-// Tests for a computer's Bops runner mode (BOPS_RUNNER=1, lib/server/runner.ts): the allow-list of what
+// Tests for a computer's SmileDesk runner mode (BOPS_RUNNER=1, lib/server/runner.ts): the allow-list of what
 // runs by itself there (persist.ts RUNNER_LOOPS: the routines timer, the mirror of its own routines, its
 // own threads, the in-use beat; every other loop or timer of lib/server returns early, checked in each
 // module that has one), what it starts with (runner-start.ts: refusing to start without a window token,
@@ -9,7 +9,7 @@
 // never ORGO_API_KEY from its environment or a CLI login), no Keychain, the in-use beat as the runner's
 // and only for its own tasks, and chooseWhere never picking the Mac there.
 //
-// The modules each one talks to are fakes (below), so nothing reaches Orgo, Bops Cloud or the Keychain.
+// The modules each one talks to are fakes (below), so nothing reaches Orgo, SmileDesk Cloud or the Keychain.
 // Usage: node --conditions=react-server scripts/test-runner-mode.mjs
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -267,7 +267,7 @@ if (ORGO) {
       await assert.rejects(O.orgo.computer(C1), (e) => e.status === 401);
       assert.equal(await O.apiKey(), "sk_second", "read again after the 401");
       assert.equal((await O.orgo.computer(C1)).id, C1);
-      assert.deepEqual(globalThis.__fake.bound.at(-1), { user: "u1", key: "sk_second" }, "Bops Cloud gets the new one too");
+      assert.deepEqual(globalThis.__fake.bound.at(-1), { user: "u1", key: "sk_second" }, "SmileDesk Cloud gets the new one too");
       // The same through callOrgo (the Mac's and the runner's direct calls).
       valid = "sk_third";
       writeFileSync(home.secrets, "export ORGO_API_KEY=sk_third\n", { mode: 0o600 });
@@ -285,7 +285,7 @@ if (ORGO) {
       globalThis.bopsRunnerKeyRead.next = 0;
       assert.equal(await O.apiKey(), "sk_fourth", "and after it");
       assert.equal(globalThis.bopsRunnerKeyRead.wait, 5000, "a new one starts the wait over");
-      // Its key taken off the computer (Bops took it back): none, so it runs nothing.
+      // Its key taken off the computer (SmileDesk took it back): none, so it runs nothing.
       rmSync(home.secrets);
       valid = "none";
       assert.equal((await O.callOrgo(await O.apiKey(), "/api/bops/settings"))?.status, 401);
@@ -358,7 +358,7 @@ const ALLOWED = {
   "desktop.ts": "a page's script",
   "phone.ts": "one call's (the loop is startPhone's)",
   "channels.ts": "one link's (the listeners are startChannels')",
-  "browser-runner.ts": "the runner's browser loop (loopHere(\"browser\")): what each screen's browser is doing, said to Bops Cloud as it changes",
+  "browser-runner.ts": "the runner's browser loop (loopHere(\"browser\")): what each screen's browser is doing, said to SmileDesk Cloud as it changes",
   "permission.ts": "reading the state while one of its own requests for the user's OK is unanswered and it's up (listenForAnswers), so their reply reaches the paused run; and a brain's held call looking for its reply (heldAsk)",
 };
 await check("every loop and timer in lib/server is the Mac's behind its gate, or one a runner runs", () => {
@@ -406,8 +406,8 @@ await check("a runner refuses to start without a window token, off loopback, on 
   no({ HOSTNAME: "10.0.0.5" }, /HOSTNAME/);
   no({ HOSTNAME: "bops-computer" }, /HOSTNAME/);
   no({ BOPS_LISTEN_ALL: "1" }, /loopback only/);
-  no({ BOPS_DATABASE_URL: "postgres://x" }, /Bops Cloud/);
-  no({ BOPS_SELF_HOSTED: "1" }, /Bops Cloud/);
+  no({ BOPS_DATABASE_URL: "postgres://x" }, /SmileDesk Cloud/);
+  no({ BOPS_SELF_HOSTED: "1" }, /SmileDesk Cloud/);
   no({ BOPS_RUNNER_COMPUTER: "not-an-id" }, /BOPS_RUNNER_COMPUTER/);
   no({ BOPS_DEVICE_SEED: "c2c2c2c2-0000-4000-8000-000000000002" }, /BOPS_DEVICE_SEED/);
 });
@@ -468,11 +468,11 @@ await check("a runner's key: /root/.orgo-secrets.env, then /root/.env, as Orgo q
   delete globalThis.bopsOrgoKey;
   delete globalThis.bopsRunnerKeyRead;
   assert.equal(await A.loadOrgoKey(), "sk_runner_key");
-  await assert.rejects(A.signIn("sk_other", { id: "u2" }), /Bops app on your Mac/);
-  await assert.rejects(A.signOut(), /Bops app on your Mac/);
+  await assert.rejects(A.signIn("sk_other", { id: "u2" }), /SmileDesk app on your Mac/);
+  await assert.rejects(A.signOut(), /SmileDesk app on your Mac/);
   const Kc = await import(`${root}/lib/server/keychain.ts`);
   assert.equal(await Kc.getSecret("anything"), null);
-  await assert.rejects(Kc.setSecret("anything", "x"), /only in the Bops app on your Mac/);
+  await assert.rejects(Kc.setSecret("anything", "x"), /only in the SmileDesk app on your Mac/);
   K.runnerKeyForTests.files(undefined);
   delete process.env.BOPS_RUNNER_IDENTITY;
   rmSync(home.dir, { recursive: true, force: true });
@@ -493,7 +493,7 @@ await check("a runner says its computer is in use as the runner's, only while a 
   assert.equal(posts.length, 0, "nothing running: nothing said (not even once)");
   state.sessions = [{ id: "s1", status: "running", runsOn: "cloud", by: "mac-device" }];
   await F.sayInUse();
-  assert.equal(posts.length, 0, "another Bops's task isn't this one's to say");
+  assert.equal(posts.length, 0, "another SmileDesk's task isn't this one's to say");
   state.sessions = [{ id: "s2", status: "running", runsOn: "cloud", by: "me" }];
   await F.sayInUse();
   assert.deepEqual(posts, [{ path: "/api/bops/computer/active", body: { via: "runner" } }]);

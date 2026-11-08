@@ -7,7 +7,7 @@ import { changeRouteOf } from "@/cloud/change-routes";
  * changes anything through the app's own routes: every call that would (anything but a GET) to the app's own
  * server is answered here with 403 and the read only line, without going out, wherever in the window it's made.
  * What a member with Write does there (chat, reply, answer, stop) goes only through /api/workspaces/shared, to
- * the owner's Bops by way of Bops Cloud (shared-act.ts), never a route that would act on the user's own bot of
+ * the owner's SmileDesk by way of SmileDesk Cloud (shared-act.ts), never a route that would act on the user's own bot of
  * that id. Only what leaves
  * or switches the workspace, signing in and out, notices, usage events, what's on screen and what's the
  * user's own (their vault, account and name) go through. Nor do the reads the server answers from the
@@ -21,7 +21,7 @@ import { changeRouteOf } from "@/cloud/change-routes";
  * The calls that still go while it's open: the switcher (leaving, switching, its names, and an Admin's live screen of a
  * bot there, /api/workspaces/shared/screen, which takes the computer from the shared copy), signing in and out,
  * notices, usage events, what's on screen, the user's own vault, account and name, the shared bot's browser
- * (/api/browser: Bops Cloud decides who may watch it), and a file added for a shared bot (/api/bots/files: the same).
+ * (/api/browser: SmileDesk Cloud decides who may watch it), and a file added for a shared bot (/api/bots/files: the same).
  */
 const ALLOWED = [
   /^\/api\/workspaces(\/|\?|$)/,
@@ -32,15 +32,15 @@ const ALLOWED = [
   /^\/api\/vault(\/|\?|$)/,
   /^\/api\/account(\/|\?|$)/,
   /^\/api\/owner(-email)?(\/|\?|$)/,
-  // The bot's browser (bot-browser.tsx): asked of Bops Cloud for the shared workspace's bot (lib/server/browser-view.ts
-  // names its project), never the user's own bot of that id; Bops Cloud lets through only an Admin, or Write with Use its computer.
+  // The bot's browser (bot-browser.tsx): asked of SmileDesk Cloud for the shared workspace's bot (lib/server/browser-view.ts
+  // names its project), never the user's own bot of that id; SmileDesk Cloud lets through only an Admin, or Write with Use its computer.
   /^\/api\/browser(\?|$)/,
   // Keys (keys.tsx: Logins and a bot's key card in the chat): while a shared workspace is open, every keys route acts on
   // that workspace's own keys alone (lib/server/shared-keys.ts: orgo-web with the user's own Orgo key, which checks they
-  // have Keys there; a bot's switch is an act through Bops Cloud), never the user's own vault or bots.
+  // have Keys there; a bot's switch is an act through SmileDesk Cloud), never the user's own vault or bots.
   /^\/api\/keys(\/|\?|$)/,
   // A file added in a chat or dropped on a bot's screen (attachments.tsx sendFile): while a shared workspace is open it goes
-  // on the owner's computer Bops Cloud names for that bot (lib/server/shared.ts sharedFileTarget), for an Admin, with the
+  // on the owner's computer SmileDesk Cloud names for that bot (lib/server/shared.ts sharedFileTarget), for an Admin, with the
   // user's own Orgo key; never on the user's own bot of that id. (attachments.tsx sendFile asks sendRefused: XMLHttpRequest.)
   /^\/api\/bots\/files(\?|$)/,
 ];

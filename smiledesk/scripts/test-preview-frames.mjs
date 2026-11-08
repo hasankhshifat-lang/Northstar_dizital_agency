@@ -31,7 +31,7 @@ function fake() {
     fromPartition: (p) => {
       if (!sessions.has(p)) {
         const set = [];
-        sessions.set(p, { partition: p, ua: "Mozilla/5.0 Chrome/140.0 Electron/38.1.0 Bops/0.0.33 Safari/537.36", setUserAgent(u) { this.ua = u; }, getUserAgent() { return this.ua; }, set, cookies: { set: async (c) => void set.push(c) } });
+        sessions.set(p, { partition: p, ua: "Mozilla/5.0 Chrome/140.0 Electron/38.1.0 SmileDesk/0.0.33 Safari/537.36", setUserAgent(u) { this.ua = u; }, getUserAgent() { return this.ua; }, set, cookies: { set: async (c) => void set.push(c) } });
       }
       return sessions.get(p);
     },
@@ -60,7 +60,7 @@ await check("a preview partition's session is prepared once: a plain Chrome's us
   f.attach(PART);
   f.attach(PART);
   const s = f.sessions.get(PART);
-  assert.equal(s.ua, "Mozilla/5.0 Chrome/140.0 Safari/537.36", "no Electron/ nor Bops/ in it");
+  assert.equal(s.ua, "Mozilla/5.0 Chrome/140.0 Safari/537.36", "no Electron/ nor SmileDesk/ in it");
   assert.deepEqual(f.fenced, [PART], "fenced once");
   assert.equal(f.frames.isPreview(s), true);
   assert.equal(P.isPreviewPartition(PART), true);

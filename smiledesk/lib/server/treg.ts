@@ -9,7 +9,7 @@ import { bot, installId, ownerName } from "./store";
 
 /**
  * Business data for bots, through treg (treg.to): one token in front of 3,800+ data endpoints from
- * 100+ providers, each billed per call at the provider's own rate. Bops gives every bot:
+ * 100+ providers, each billed per call at the provider's own rate. SmileDesk gives every bot:
  *
  * - business_search: the jobs a business needs most, by name: companies by industry, technology or
  *   place, lookalikes, people by title and company, a company's or person's profile, a work email
@@ -20,7 +20,7 @@ import { bot, installId, ownerName } from "./store";
  *   words and called by id.
  *
  * Every call goes through `call` below, the one place that talks to treg. Signed in with Orgo, it goes
- * through Bops Cloud (/proxy/treg), which holds the token, tags the call with the user and bot, caps
+ * through SmileDesk Cloud (/proxy/treg), which holds the token, tags the call with the user and bot, caps
  * it, and pays it from the user's AI credit at what treg charged. With TREG_TOKEN in this Mac's
  * settings (self-hosting, or trying business data before the cloud has it), treg is reached directly
  * with that token instead, and paid from that token's treg team, not AI credit. The catalog itself
@@ -33,10 +33,10 @@ import { bot, installId, ownerName } from "./store";
 
 const TREG = (process.env.TREG_URL || "https://treg.to").replace(/\/+$/, "");
 
-/** This Mac's own treg token (TREG_TOKEN), which wins over Bops Cloud's. */
+/** This Mac's own treg token (TREG_TOKEN), which wins over SmileDesk Cloud's. */
 const ownToken = () => process.env.TREG_TOKEN?.trim() || "";
 
-/** treg is set up: this Mac's own token, or through Bops Cloud (the session says so). */
+/** treg is set up: this Mac's own token, or through SmileDesk Cloud (the session says so). */
 export const tregOn = () => !!ownToken() || (cloudOn() && !!cloudSessionNow()?.treg);
 
 /** Whether a bot has business data: treg is on and the user didn't turn it off for this bot. */
@@ -369,7 +369,7 @@ type Endpoint = {
   input?: { body?: Record<string, unknown> | unknown[]; queryParams?: Record<string, unknown>; query?: Record<string, unknown>; pathParams?: Record<string, unknown> };
 };
 
-/** What Bops lets a bot call: on treg's own keys (no account connected to treg), not a long-running job, not replaced by a newer one. */
+/** What SmileDesk lets a bot call: on treg's own keys (no account connected to treg), not a long-running job, not replaced by a newer one. */
 const callable = (e: Endpoint) => ["data", "routed", "utility"].includes(e.kind ?? "") && e.scope !== "own_account" && !e.async && e.platform_eligible !== false && !e.superseded_by;
 
 const endpoints = new Map<string, { at: number; e: Endpoint | null }>();
@@ -407,7 +407,7 @@ function inputsOf(e: Endpoint) {
   return [...fields(e.input?.pathParams, "path"), ...fields(e.input?.queryParams ?? e.input?.query, "query"), ...fields(e.input?.body, "body")];
 }
 
-/** find_data: the open catalog's search, only what Bops can call, cut down to what the model needs. */
+/** find_data: the open catalog's search, only what SmileDesk can call, cut down to what the model needs. */
 export async function findData(botId: string, query: string): Promise<string> {
   const b = bot(botId);
   if (!b || !dataOn(b)) return "You don't have business data.";
@@ -443,13 +443,13 @@ export async function getData(botId: string, endpointId: string, input: unknown,
   if (!b || !dataOn(b)) return "You don't have business data.";
   const e = await endpointOf(endpointId.trim());
   if (!e) return `No endpoint ${endpointId}. Use find_data to get the exact id.`;
-  if (!callable(e)) return `${endpointId} can't be used from Bops yet (it needs an account of its own, or it's a long-running job). Use find_data for another.`;
+  if (!callable(e)) return `${endpointId} can't be used from SmileDesk yet (it needs an account of its own, or it's a long-running job). Use find_data for another.`;
   const method = e.method?.toUpperCase() === "GET" ? "GET" : "POST";
   const queryKeys = [...Object.keys(e.input?.pathParams ?? {}), ...Object.keys(e.input?.queryParams ?? e.input?.query ?? {})];
   const usd = Number(e.cost?.usd) || 0;
   const run = (max: number) => call(botId, e.id, method, input ?? {}, max, queryKeys).then((a) => readable(a, e.id));
   if (usd <= CAP) return run(CAP);
-  if (usd > MOST) return `${e.id} costs ${price(e)} a call, more than Bops allows. Use find_data for another.`;
+  if (usd > MOST) return `${e.id} costs ${price(e)} a call, more than SmileDesk allows. Use find_data for another.`;
   const dear = () => run(Math.min(MOST, usd * 1.5 + 0.01));
   if (opts.approved) return dear();
   // The card reads "<bot> wants to use a paid lookup", with which one, what it does, its price and what goes in.

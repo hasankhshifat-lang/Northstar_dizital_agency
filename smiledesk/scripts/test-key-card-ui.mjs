@@ -47,7 +47,7 @@ globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} }
 globalThis.sessionStorage = globalThis.localStorage;
 globalThis.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
 
-/** The fake Bops server: what GET /api/keys answers, what a save answers, and every request the window made. */
+/** The fake SmileDesk server: what GET /api/keys answers, what a save answers, and every request the window made. */
 const VALUE = "ntn_fake_typed_value_5e1";
 const PROVIDERS = [
   { name: "NOTION_API_KEY", label: "Notion", where: "notion.so/my-integrations", tip: "Share only the pages the bots need with the integration.", readOnly: false },
@@ -173,7 +173,7 @@ async function mount(state, a = ask(), answerer = "you") {
   return { box, answers, draw, done: () => act(async () => r.unmount()).then(() => box.remove()) };
 }
 
-await test("closed: the Logins form for the service the bot named, the value in an empty password field, Save off until something is typed, the bot picked, and Bops' own line for what it is", async () => {
+await test("closed: the Logins form for the service the bot named, the value in an empty password field, Save off until something is typed, the bot picked, and SmileDesk's own line for what it is", async () => {
   sent.length = 0;
   const m = await mount(stateWith([ask()]));
   try {
@@ -212,14 +212,14 @@ await test("typing then Save: the Logins save (the vault name, the value, the bo
 });
 
 await test("a save that fails says why, keeps what was typed, and doesn't answer the card; Esc doesn't put it away; Not now answers no", async () => {
-  bops.saveSays = "Bops couldn't reach Orgo. Check the internet and try again.";
+  bops.saveSays = "SmileDesk couldn't reach Orgo. Check the internet and try again.";
   const m = await mount(stateWith([ask()]));
   try {
     const card = m.box.querySelector("[data-key-card]");
     const field = card.querySelector('input[aria-label="Key"]');
     await input(field, VALUE);
     await submit(card.querySelector("form"));
-    assert.equal(card.querySelector('[role="alert"]').textContent, "Bops couldn't reach Orgo. Check the internet and try again.");
+    assert.equal(card.querySelector('[role="alert"]').textContent, "SmileDesk couldn't reach Orgo. Check the internet and try again.");
     assert.equal(field.value, VALUE, "kept for another try");
     assert.deepEqual(m.answers, []);
     await act(async () => (field.dispatchEvent(Object.assign(new win.Event("keydown", { bubbles: true, cancelable: true }), { key: "Escape" })), await settle()));
@@ -302,7 +302,7 @@ await test("Done waits for a write of the key's row (a bot's switch) to finish, 
   }
 });
 
-await test("a shared workspace's save answers the card once the bot's switch has landed (the owner's Bops does it), saying so meanwhile; Go on without it answers anyway", async () => {
+await test("a shared workspace's save answers the card once the bot's switch has landed (the owner's SmileDesk does it), saying so meanwhile; Go on without it answers anyway", async () => {
   bops.shared = { keys: true, acts: true };
   const shared = { projectId: "p1", name: "Acme", owner: "Dee", role: "admin", wsId: "ws_main", keys: true, keyActs: true };
   const state = stateWith([ask()], { shared });
@@ -313,14 +313,14 @@ await test("a shared workspace's save answers the card once the bot's switch has
     await submit(card.querySelector("form"));
     assert.deepEqual(sent.findLast((x) => x.url === "/api/keys" && x.method === "POST").body, { name: "NOTION_API_KEY", value: VALUE, botIds: ["boppy"], scope: "workspace" });
     assert.deepEqual(m.answers, [], "not before the switch lands");
-    assert.match(card.querySelector("[data-key-waits]").textContent, /^Saved\. Boppy can use it once the workspace's Bops lets it\./);
+    assert.match(card.querySelector("[data-key-waits]").textContent, /^Saved\. Boppy can use it once the workspace's SmileDesk lets it\./);
     // On its way: the window shows the bot with the key already (lib/server/shared-core.ts switchedKeys) while the switch
-    // waits for the owner's Bops: still not answered.
+    // waits for the owner's SmileDesk: still not answered.
     const on = state.bots.map((b) => ({ ...b, keys: ["NOTION_API_KEY"] }));
     await m.draw({ ...state, bots: on, shared: { ...shared, keySends: [{ key: "k1", botId: "boppy", name: "NOTION_API_KEY", on: true, state: "waiting" }] } });
     assert.deepEqual(m.answers, [], "a switch on its way isn't one that landed");
     assert.match(card.querySelector("[data-key-waits]").textContent, /Waiting for the workspace's Mac to open\.$/);
-    // The owner's Bops did it: the bot has the key and nothing of it waits, and the card answers.
+    // The owner's SmileDesk did it: the bot has the key and nothing of it waits, and the card answers.
     await m.draw({ ...state, bots: on, shared: { ...shared, keySends: [] } });
     assert.deepEqual(m.answers, ["once"]);
   } finally {

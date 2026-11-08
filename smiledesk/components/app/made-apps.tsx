@@ -9,9 +9,9 @@ import { electron, OpenLink } from "./panel-tabs";
 import { ago, post, useNow } from "./ui";
 
 /*
- * Apps the bots make (lib/server/made-apps.ts), in Bops' right panel: an app's tab (built live, then
+ * Apps the bots make (lib/server/made-apps.ts), in SmileDesk's right panel: an app's tab (built live, then
  * used, and changed by talking to its bot in the chat beside it), every app as a tile (Apps), and the
- * line a build leaves in the chat. Follows the Paper designs (Bops → Apps).
+ * line a build leaves in the chat. Follows the Paper designs (SmileDesk → Apps).
  */
 
 /** Open an app in the right panel (bops-app.tsx); null where there's no panel. */
@@ -102,7 +102,7 @@ function AppFrame({
     const handle = async (m: Bridged | undefined, reply: (answer: Bridged) => void) => {
       if (loads.current > 1 || !m || m.bops !== 1) return;
       if (m.event === "error") return problem.current?.(m.message ?? "Something went wrong.");
-      // A web link in the app: the user sees the whole address and says yes before a tab of Bops opens it.
+      // A web link in the app: the user sees the whole address and says yes before a tab of SmileDesk opens it.
       if (m.event === "open") {
         const url = typeof m.url === "string" ? m.url : "";
         // In a browser, only right after the user did something (a click in the frame counts here too).
@@ -157,7 +157,7 @@ function AppFrame({
   return <iframe ref={frameRef} src={path} sandbox="allow-scripts" title={app.title} className={look} onLoad={() => void loads.current++} />;
 }
 
-/** A web link an app asked to open: the whole address, opened in a tab of Bops only if the user says so. */
+/** A web link an app asked to open: the whole address, opened in a tab of SmileDesk only if the user says so. */
 function OpenAsk({ app, url, onAnswer }: { app: MadeApp; url: string; onAnswer: (yes: boolean) => void }) {
   return (
     <div className="mx-4 mb-3 flex shrink-0 flex-col gap-2 rounded-[14px] bg-white p-3 shadow-[0_0_0_1px_#0A0A0A]">
@@ -249,7 +249,7 @@ export function MadeAppTab({ state, appId }: { state: AppState; appId: string })
             <rect x="1.5" y="2" width="9" height="6.5" rx="1" stroke="#3A3A38" strokeWidth="1.2" />
             <path d="M4 10.5h4" stroke="#3A3A38" strokeWidth="1.2" strokeLinecap="round" />
           </svg>
-          Runs in Bops
+          Runs in SmileDesk
         </span>
         {app.versions.length > 1 && tab("history", "History")}
         {tab("code", "Code")}

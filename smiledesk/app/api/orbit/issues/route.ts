@@ -6,7 +6,7 @@ import { notReady } from "@/lib/server/ready";
 export const dynamic = "force-dynamic";
 
 /*
- * Orbit's Issues (lib/server/orbit-issues.ts), for the window. Only the Bops window may call these
+ * Orbit's Issues (lib/server/orbit-issues.ts), for the window. Only the SmileDesk window may call these
  * (proxy.ts). `ws` is the workspace, the current one when not given.
  */
 

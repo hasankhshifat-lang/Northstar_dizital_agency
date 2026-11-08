@@ -10,7 +10,7 @@ import { ensurePlanInbox, ensurePlanPhone, hasPlanLine, mainBotOf, pausePlanItem
 import { queueForMac } from "./tunnel.ts";
 
 /**
- * Each user's Bops plan in the cloud, and what changes with it. orgo-web keeps the plan
+ * Each user's SmileDesk plan in the cloud, and what changes with it. orgo-web keeps the plan
  * (profiles.bops_tier, written by its Stripe webhook), which bops_app can't read, so:
  *
  * - **orgo-web tells the cloud** (POST /v1/internal/plan-changed {userId, tier, at}, signed with
@@ -33,7 +33,7 @@ import { queueForMac } from "./tunnel.ts";
  *   none, Pro 1, Max up to 5) are all the user can hold; proxy.ts asks requireRoomForNumber before a
  *   purchase. The app holds each plan to its emails the same way (CloudSession.plan). Beyond the
  *   main bot's, which the plan brings, Max's numbers and emails come only when the user asks.
- * - **Billed by use** (protocol.ts BopsBilling "usage"): no Bops plan at all, so nothing is paused
+ * - **Billed by use** (protocol.ts BopsBilling "usage"): no SmileDesk plan at all, so nothing is paused
  *   or given back for being "on Free". The main bot gets its inbox (free), keeps the plan's number if
  *   it had one, and the user may buy numbers up to BOPS_USAGE's, each paid from their Orgo credit like
  *   any other (the credit gate decides, never the tier kept here). orgo-web's notice says it as
@@ -45,7 +45,7 @@ import { queueForMac } from "./tunnel.ts";
 const isTier = (x: unknown): x is BopsTier => typeof x === "string" && Object.hasOwn(BOPS_TIERS, x);
 export const paidTier = (t: BopsTier) => t !== "free_bops";
 
-/** The user's plan as the cloud last heard it, and how they're billed: Free on Bops' plans until it hears otherwise. */
+/** The user's plan as the cloud last heard it, and how they're billed: Free on SmileDesk's plans until it hears otherwise. */
 export type KeptPlan = { tier: BopsTier; billing: BopsBilling };
 
 export async function planOf(userId: string): Promise<KeptPlan> {
@@ -107,9 +107,9 @@ export async function recordTier(
 }
 
 /**
- * What orgo-web said, as the cloud keeps it: a Bops tier on Bops' plans, or billing by use (with any
+ * What orgo-web said, as the cloud keeps it: a SmileDesk tier on SmileDesk's plans, or billing by use (with any
  * tier, or none: it may be an Orgo plan's key, and is kept as free_bops). Null when it doesn't fit:
- * billing it doesn't know, or a tier that isn't Bops' on Bops' plans (never taken for Free).
+ * billing it doesn't know, or a tier that isn't SmileDesk's on SmileDesk's plans (never taken for Free).
  */
 export function saidPlan(x: { tier?: unknown; billing?: unknown } | null | undefined): { tier: BopsTier; billing?: BopsBilling } | null {
   if (!x) return null;

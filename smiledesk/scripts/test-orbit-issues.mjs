@@ -163,7 +163,7 @@ globalThis.fetch = async (input, init) => {
   if (url.origin === "https://api.honcho.dev") return honchoAnswer(req, url);
   if (url.origin === "https://api.openai.com" && url.pathname === "/v1/responses") {
     const b = JSON.parse(await req.text());
-    // Only the bots' turns are faked here (they have tools); anything else (sorting Orbit, Bops noting a fact) answers nothing.
+    // Only the bots' turns are faked here (they have tools); anything else (sorting Orbit, SmileDesk noting a fact) answers nothing.
     if (!Array.isArray(b.tools)) return json(response("resp_other", [said(b.text?.format?.name === "memory_items" ? '{"facts":[]}' : "NONE")]));
     asked.push(b);
     const next = answers.shift();
@@ -234,7 +234,7 @@ async function check(name, fn) {
 }
 const DASHES = /[‒–—―]/;
 const noDashes = (text, where = "") => assert.ok(!DASHES.test(String(text)), `a dash ${where}: ${text}`);
-/** Everything Bops said to the user or a bot, checked for dashes at the end. */
+/** Everything SmileDesk said to the user or a bot, checked for dashes at the end. */
 const spoken = [];
 const hear = (x) => (spoken.push(typeof x === "string" ? x : JSON.stringify(x)), x);
 const request = async (handler, method, path, body, params) => {
@@ -641,7 +641,7 @@ const ACCOUNTS = () => [
   { id: "ca_slack", app: "slack", appName: "Slack", name: "Acme", status: "active", at: 1, workspaceId: MAIN },
 ];
 const withAccounts = (accounts = ACCOUNTS()) => S.update((s) => void (s.accounts = accounts));
-/** A call to the source routes, from the Bops window unless `window` is false. */
+/** A call to the source routes, from the SmileDesk window unless `window` is false. */
 const src = async (handler, method, path, { body, id, window = true } = {}) => {
   const init = { method, headers: { "content-type": "application/json", ...(window ? { "x-bops-window": WINDOW } : {}) } };
   if (body !== undefined) init.body = JSON.stringify(body);
@@ -746,7 +746,7 @@ await check("what failed, in plain words: signed out (every account, or the one 
   assert.deepEqual([r.status, r.body.code, r.body.error], [409, "no_account", "No Discord bot is connected. Connect one in Logins to see the thread here."]);
   const tsOnly = (await open(MAIN, { title: "A ts alone", sourceApp: "slack", externalId: TS })).body.issue;
   r = await source(tsOnly.id);
-  assert.deepEqual([r.status, r.body.code, r.body.error], [422, "unparsed", "Bops can't tell which Slack thread this is."]);
+  assert.deepEqual([r.status, r.body.code, r.body.error], [422, "unparsed", "SmileDesk can't tell which Slack thread this is."]);
   const plain = (await open(MAIN, { title: "A ticket", sourceApp: "plain", externalId: "th_plain_1" })).body.issue;
   r = await source(plain.id);
   assert.deepEqual([r.status, r.body.code], [422, "unsupported"]);
@@ -785,13 +785,13 @@ await check("Slack: the thread from its channel and ts (a reply's ts finds its t
   assert.deepEqual([r.body.source.channel, r.body.source.message], [{ id: "222222222222222222", name: "builds" }, "333333333333333333"]);
 });
 
-await check("only from the Bops window, and never with a shared workspace open: nothing read, nothing sent", async () => {
+await check("only from the SmileDesk window, and never with a shared workspace open: nothing read, nothing sent", async () => {
   withAccounts();
   IS.sourceKeptForTests.clear();
   gmailHas({ [T_HOME]: "ca_gmail_home" });
   const k = cx.ran.length;
   let r = await src(RS.GET, "GET", `/api/orbit/issues/${gmailIssue.id}/source?ws=${MAIN}`, { id: gmailIssue.id, window: false });
-  assert.deepEqual([r.status, r.body.code, r.body.error], [403, "window", "Only the Bops app can show the original."]);
+  assert.deepEqual([r.status, r.body.code, r.body.error], [403, "window", "Only the SmileDesk app can show the original."]);
   r = await replyTo(gmailIssue.id, { text: "Hi", nonce: "nonce-window-0001" }, { window: false });
   assert.deepEqual([r.status, r.body.code], [403, "window"]);
   r = await src(RDS.GET, "GET", "/api/drafts/source?messageId=m&draftId=d", { window: false });

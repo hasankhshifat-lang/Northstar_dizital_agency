@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// The user's own apps and windows for a Bops task on their Mac with Full access: a small MCP server
+// The user's own apps and windows for a SmileDesk task on their Mac with Full access: a small MCP server
 // (stdio) that the task's executor starts in place of `cua-driver mcp` (lib/server/local.ts macUiMcp).
 // It runs Cua Driver's own MCP server and passes on only what a task may do with it, since Cua's tools
 // reach any window and take any arguments:
 // - Some apps are off limits, hidden from the lists and refused as a target (by name, by bundle id and by
-//   the app bundles the process runs from): Bops itself and its helpers (its window holds every chat,
+//   the app bundles the process runs from): SmileDesk itself and its helpers (its window holds every chat,
 //   payment approvals and its settings), Cua Driver, System Settings and the system's password and
 //   permission prompts, Keychain Access and Passwords, password managers, terminals (and editors, script
 //   and automation apps that run commands), remote sessions (remote desktop, SSH, VM consoles), AI agent
@@ -17,8 +17,8 @@
 //   only read (get_text, query_dom): no JavaScript in it, nothing that turns on JavaScript from Apple
 //   Events. An app is launched without a command line or a debugging port. Arguments of the wrong type
 //   are refused, not passed on.
-// This is a second layer, for a task that stays on its tools. It isn't what protects Bops: a task with Full
-// access also has a shell, as the user, which can run cua-driver itself or reach Bops' own server. What
+// This is a second layer, for a task that stays on its tools. It isn't what protects SmileDesk: a task with Full
+// access also has a shell, as the user, which can run cua-driver itself or reach SmileDesk's own server. What
 // protects payment approvals, "Just do it" and Full access has to be outside the task's reach (asking for
 // Touch ID or the user's password; the window's token out of a file the user's processes can read).
 // Usage: node mac-ui-mcp.mjs --cua <path to cua-driver>
@@ -61,11 +61,11 @@ const LAUNCH_KEEPS = ["bundle_id", "name", "urls"];
 /**
  * Apps off limits: what to call it, then its names (as macOS shows them, or its bundle's name on disk)
  * and its bundle ids. Matched on the name Cua gives, and on the bundle id and name of every app bundle in
- * the path of the process (Bops' helpers live inside Bops.app; the Codex app's program is called ChatGPT).
+ * the path of the process (SmileDesk's helpers live inside SmileDesk.app; the Codex app's program is called ChatGPT).
  */
 const OFF_LIMITS = [
-  // Any build of Bops ("Bops", "Bops Beta", "Bops Dev", "Bops Helper (Renderer)").
-  ["Bops", /^(bops\b.*|electron(\s+helper\b.*)?)$/, /^(ai\.orgo\.bops|com\.github\.electron)(\.|$)/],
+  // Any build of SmileDesk ("SmileDesk", "SmileDesk Beta", "SmileDesk Dev", "SmileDesk Helper (Renderer)").
+  ["SmileDesk", /^(smiledesk\b.*|bops\b.*|electron(\s+helper\b.*)?)$/, /^(com\.northstardizital\.smiledesk|ai\.orgo\.bops|com\.github\.electron)(\.|$)/],
   ["Cua Driver", /^(cua ?driver|cua-driver|cua-spacesd)$/, /^com\.trycua\./],
   [
     "System Settings",
@@ -98,7 +98,7 @@ const OFF_LIMITS = [
     /^(paste|maccy|pastebot|copyclip( \d+)?|flycut|clipy|pastenow|jumpcut|unclutter|clipboard manager.*)$/,
     /^(com\.wiheads\.paste|org\.p0deje\.maccy|com\.tapbots\.pastebot|com\.fiplab\.copyclip|com\.generalarcade\.flycut|com\.clipy-app\.|com\.pastenow\.|net\.sf\.jumpcut|com\.eon\.unclutter)/,
   ],
-  // Force quitting anything (Bops too) from a button, erasing disks, installing software.
+  // Force quitting anything (SmileDesk too) from a button, erasing disks, installing software.
   [
     "a system utility",
     /^(activity monitor|disk utility|installer|migration assistant|boot camp assistant|directory utility)$/,
@@ -106,20 +106,20 @@ const OFF_LIMITS = [
   ],
 ];
 /** The apps off limits, as a task is told. */
-export const OFF_LIMITS_SAID = "Bops itself, System Settings, Keychain Access, password managers, terminals and apps that run commands, remote sessions, AI agent apps, clipboard managers and Activity Monitor";
+export const OFF_LIMITS_SAID = "SmileDesk itself, System Settings, Keychain Access, password managers, terminals and apps that run commands, remote sessions, AI agent apps, clipboard managers and Activity Monitor";
 /** The names any of them goes by, for a line of text that isn't JSON. */
 const MENTIONS =
   /\b(bops|electron|cua ?driver|cua-driver|system settings|system preferences|securityagent|keychain access|passwords|1password|bitwarden|dashlane|lastpass|keepassxc|terminal|iterm2?|warp|alacritty|kitty|wezterm|ghostty|script editor|automator|shortcuts|visual studio code|vscodium|cursor|xcode|docker|nomachine|screen sharing|remote desktop|windows app|utm|teamviewer|anydesk|iphone mirroring|codex|chatgpt|claude|paste|maccy|activity monitor|disk utility)\b/i;
 
-/** The app bundles a path runs from ("/Applications/Bops.app/Contents/Frameworks/Bops Helper.app/…" has two), and its program's name. */
+/** The app bundles a path runs from ("/Applications/SmileDesk.app/Contents/Frameworks/SmileDesk Helper.app/…" has two), and its program's name. */
 const bundlesIn = (path) =>
   typeof path === "string" && path ? [...[...path.matchAll(/([^/]+)\.(?:app|bundle)(?=\/|$)/gi)].map((m) => m[1]), path.split("/").filter(Boolean).at(-1) ?? ""] : [];
 
-/** The app bundle folders a path runs from, outermost first ("/Applications/Bops.app", "/Applications/Bops.app/…/Bops Helper.app"). */
+/** The app bundle folders a path runs from, outermost first ("/Applications/SmileDesk.app", "/Applications/SmileDesk.app/…/SmileDesk Helper.app"). */
 export const appDirsIn = (path) => (typeof path === "string" ? [...path.matchAll(/\.app(?=\/|$)/gi)].map((m) => path.slice(0, m.index + 4)) : []);
 
 /**
- * What makes an app off limits ("Bops", "a terminal"…), or null: by its name, its bundle id (`bundleId`,
+ * What makes an app off limits ("SmileDesk", "a terminal"…), or null: by its name, its bundle id (`bundleId`,
  * or `bundleIds` for every app bundle its process runs from), or where its process runs from.
  */
 export function offLimits({ name, bundleId, bundleIds, path } = {}) {
@@ -128,7 +128,7 @@ export function offLimits({ name, bundleId, bundleIds, path } = {}) {
   for (const [what, byName, byId] of OFF_LIMITS) if (names.some((n) => byName.test(n)) || ids.some((id) => byId.test(id))) return what;
   return null;
 }
-const offLimitsWhy = (what) => `${what === "Bops" ? "Bops itself is" : `${what} is`} off limits to Bops tasks. Say so and stop if the task needs it.`;
+const offLimitsWhy = (what) => `${what === "SmileDesk" ? "SmileDesk itself is" : `${what} is`} off limits to SmileDesk tasks. Say so and stop if the task needs it.`;
 
 const MODIFIERS = { cmd: "cmd", command: "cmd", "⌘": "cmd", meta: "cmd", super: "cmd", ctrl: "ctrl", control: "ctrl", "⌃": "ctrl", option: "option", opt: "option", alt: "option", "⌥": "option", shift: "shift", "⇧": "shift", fn: "fn" };
 const SHORTCUTS = { q: "quitting an app", w: "closing a window or tab", c: "copying", x: "cutting", v: "pasting" };
@@ -203,7 +203,7 @@ export function refusedMenu(path) {
 /**
  * An element of a window a click may not press: a menu item (a context menu's Copy or Paste, an app
  * menu's Quit) whose title is one of those, or a window's close button. From the window's last
- * get_window_state; null when Bops didn't see the element (a click by position).
+ * get_window_state; null when SmileDesk didn't see the element (a click by position).
  */
 export function refusedElement(el) {
   if (!el || typeof el !== "object") return null;
@@ -224,7 +224,7 @@ const isInt = (n) => Number.isInteger(n) && n > 0;
 const strings = (x, min = 0) => Array.isArray(x) && x.length >= min && x.every((k) => typeof k === "string");
 
 /**
- * A tool call, as Bops passes it on: `{ ok: true, args }` with the arguments Cua gets, or `{ ok: false,
+ * A tool call, as SmileDesk passes it on: `{ ok: true, args }` with the arguments Cua gets, or `{ ok: false,
  * why }` with what the task is told instead. `ctx.app(pid)` says what's running as that pid: the path of
  * its program, the bundle ids of the app bundles it runs from, its name, and its windows (`{ path,
  * bundleIds, name, windows: [{ window_id, app_name }] }`), or null when nothing is. `ctx.element(args)`
@@ -233,7 +233,7 @@ const strings = (x, min = 0) => Array.isArray(x) && x.length >= min && x.every((
  */
 export async function vet(tool, raw, ctx) {
   const no = (why) => ({ ok: false, why });
-  if (!TOOLS.includes(tool)) return no(`${tool} isn't one of the Mac tools Bops tasks can use.`);
+  if (!TOOLS.includes(tool)) return no(`${tool} isn't one of the Mac tools SmileDesk tasks can use.`);
   const args = raw && typeof raw === "object" && !Array.isArray(raw) ? { ...raw } : {};
   if (args.delivery_mode !== undefined && args.delivery_mode !== "background")
     return no(`Only in the background: delivery_mode "${args.delivery_mode}" would bring the window in front of the user. If input in the background doesn't land, say so and stop.`);
@@ -273,7 +273,7 @@ export async function vet(tool, raw, ctx) {
   }
 
   // Everything else reads or acts on one window: it names the window, which has to be that app's, of an app tasks may use.
-  if (!WINDOW.has(tool)) return no(`${tool} isn't one of the Mac tools Bops tasks can use.`);
+  if (!WINDOW.has(tool)) return no(`${tool} isn't one of the Mac tools SmileDesk tasks can use.`);
   if (!isInt(args.pid) || !isInt(args.window_id)) return no("Name the window: pass its pid and window_id (from list_windows).");
   const app = await ctx.app(args.pid);
   if (!app) return no(`Nothing is running as pid ${args.pid}: get it from list_windows.`);
@@ -294,17 +294,17 @@ export async function vet(tool, raw, ctx) {
   if (tool === "press_key" || tool === "hotkey") {
     const keys = tool === "hotkey" ? args.keys : [...(args.modifiers ?? []), args.key];
     const does = refusedKeys(keys);
-    if (does) return no(`Not allowed: that shortcut is for ${does}, which Bops tasks don't do.`);
+    if (does) return no(`Not allowed: that shortcut is for ${does}, which SmileDesk tasks don't do.`);
   }
   if (tool === "invoke_menu") {
     const item = refusedMenu(args.path);
-    if (item) return no(`Not allowed: ${item} isn't a menu item Bops tasks use (no quitting, closing, copying, cutting or pasting, nothing in the Apple menu).`);
+    if (item) return no(`Not allowed: ${item} isn't a menu item SmileDesk tasks use (no quitting, closing, copying, cutting or pasting, nothing in the Apple menu).`);
   }
-  // Pressing an element Bops saw: not a menu item that quits, closes, copies, cuts or pastes (a context menu's Paste), nor a window's close button.
+  // Pressing an element SmileDesk saw: not a menu item that quits, closes, copies, cuts or pastes (a context menu's Paste), nor a window's close button.
   if (INPUT.has(tool) || tool === "set_value") {
     const el = (args.element_token !== undefined || args.element_index !== undefined) && ctx.element ? await ctx.element(args) : null;
     const item = refusedElement(el);
-    if (item) return no(`Not allowed: ${item} isn't something Bops tasks press (no quitting, closing, copying, cutting or pasting).`);
+    if (item) return no(`Not allowed: ${item} isn't something SmileDesk tasks press (no quitting, closing, copying, cutting or pasting).`);
   }
   if (tool === "page") {
     if (!PAGE_READS.includes(args.action)) return no(`page only reads a tab (get_text, query_dom): "${args.action}" isn't allowed.`);
@@ -329,10 +329,10 @@ export function trimTools(tools) {
       if (WINDOW.has(t.name)) schema.required = [...new Set([...(schema.required ?? []), "pid", "window_id"])];
       if (Array.isArray(schema.required)) schema.required = schema.required.filter((k) => k in props);
       const note = WINDOW.has(t.name)
-        ? ` In Bops: name the window with pid and window_id (from list_windows); in the background only. ${OFF_LIMITS_SAID} are off limits.`
+        ? ` In SmileDesk: name the window with pid and window_id (from list_windows); in the background only. ${OFF_LIMITS_SAID} are off limits.`
         : t.name === "launch_app"
-          ? ` In Bops: no command line or debugging port, and not apps that are off limits (${OFF_LIMITS_SAID}).`
-          : " In Bops: apps that are off limits to tasks aren't listed.";
+          ? ` In SmileDesk: no command line or debugging port, and not apps that are off limits (${OFF_LIMITS_SAID}).`
+          : " In SmileDesk: apps that are off limits to tasks aren't listed.";
       return { ...t, description: `${t.description ?? ""}${note}`, inputSchema: schema };
     });
 }
@@ -432,7 +432,7 @@ function main() {
   });
   process.stdin.on("end", () => child.kill());
 
-  // Requests to Cua, the task's and Bops' own, each under an id of this server's.
+  // Requests to Cua, the task's and SmileDesk's own, each under an id of this server's.
   let n = 0;
   const waiting = new Map();
   /** Task request ids by this server's, so a cancel reaches the right one. */
@@ -458,12 +458,12 @@ function main() {
       return done?.(m);
     }
     // Cua asking the task's side something (sampling, elicitation, roots): nothing is answered for the user.
-    if (m.id !== undefined) return toCua({ jsonrpc: "2.0", id: m.id, ...(m.method === "roots/list" ? { result: { roots: [] } } : { error: { code: -32601, message: "not available through Bops" } }) });
-    // Its notifications: progress and log lines go on; Bops' list of tools doesn't change.
+    if (m.id !== undefined) return toCua({ jsonrpc: "2.0", id: m.id, ...(m.method === "roots/list" ? { result: { roots: [] } } : { error: { code: -32601, message: "not available through SmileDesk" } }) });
+    // Its notifications: progress and log lines go on; SmileDesk's list of tools doesn't change.
     if (m.method === "notifications/progress" || m.method === "notifications/message") send(m);
   });
 
-  /** Cua's answer to one of its tools, for Bops' own checks. */
+  /** Cua's answer to one of its tools, for SmileDesk's own checks. */
   const call = async (name, args) => {
     const r = await ask("tools/call", { name, arguments: args });
     return r.result ?? null;

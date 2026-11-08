@@ -10,9 +10,9 @@ import { getState, update } from "./store";
 import { turnsRunning } from "./turn-context";
 
 /**
- * Billed by use, the size of the user's free Bops computer: Medium or Large, as Orgo's plan read lists them
+ * Billed by use, the size of the user's free SmileDesk computer: Medium or Large, as Orgo's plan read lists them
  * with their prices (lib/bops-billing.ts). Pick your computer asks once per account (sizeView's `needed`),
- * and Settings switches it any time after (switchSize). A user on Bops' plans, or an orgo-web that lists no
+ * and Settings switches it any time after (switchSize). A user on SmileDesk's plans, or an orgo-web that lists no
  * sizes, is never asked and never switches: their computer stays the size Orgo makes it.
  *
  * Orgo bills the computer at its new size from the moment it changes, and keeps its disk. A switch is made
@@ -33,7 +33,7 @@ async function usageNow(): Promise<UsageTerms | null> {
   return (await readBopsPlan(key).catch(() => null))?.usage ?? null;
 }
 
-/** The free Bops computer's id: the plan read's, else Orgo's compute limits' (an orgo-web whose plan read names none). */
+/** The free SmileDesk computer's id: the plan read's, else Orgo's compute limits' (an orgo-web whose plan read names none). */
 async function computerIdOf(u: UsageTerms): Promise<string | null> {
   if (u.computer.id !== undefined) return u.computer.id;
   return (await orgoPlan({ fresh: true }).catch(() => null))?.freeComputerId ?? null;
@@ -154,7 +154,7 @@ async function trySwitch(id: string, offer: SizeOffer, change: "bops" | "plan", 
 }
 
 /**
- * Switch the user's free Bops computer to `size`, or with none yet, keep it as the size one is made at.
+ * Switch the user's free SmileDesk computer to `size`, or with none yet, keep it as the size one is made at.
  * Either way the account has answered Pick your computer. Done, the plan is read again and the live views
  * stream it afresh (WebRTC needs Large's 4 cores). One switch at a time.
  */

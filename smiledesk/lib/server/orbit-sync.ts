@@ -80,7 +80,7 @@ const FOUND_ROUTE = new Set(["issue_not_found", "item_not_found"]);
 /**
  * One call to the workspace's Orbit routes on the signed-in key: its status and JSON; null when Orgo
  * didn't answer or no one is signed in; "off" without an Orgo project or the routes (a 404 or 405 that
- * isn't about the thing asked for, or a workspace that isn't a Bops one there: left alone 6 hours).
+ * isn't about the thing asked for, or a workspace that isn't a SmileDesk one there: left alone 6 hours).
  */
 export async function orbitCall(
   ws: string,
@@ -122,7 +122,7 @@ const txt = (s: string | undefined | null, max: number) => (s ? cleanText(s, max
 
 /**
  * An item as orgo-web takes it, or null for one that stays on this Mac: learned only from private lines,
- * hidden by the user, or not one of Bops's ids. A line from a private line goes empty, and a private
+ * hidden by the user, or not one of SmileDesk's ids. A line from a private line goes empty, and a private
  * fact's source never goes. Sources newest first, 100 at most.
  */
 export function itemPayload(bank: string, e: OrbitEntry) {

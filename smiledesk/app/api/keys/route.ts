@@ -7,23 +7,23 @@ import { fromBopsWindow } from "@/lib/server/ui-token";
 export const dynamic = "force-dynamic";
 
 /**
- * Keys change, and are listed, only from the Bops window (ui-token.ts): a page a bot's Chrome reached this
+ * Keys change, and are listed, only from the SmileDesk window (ui-token.ts): a page a bot's Chrome reached this
  * server with mustn't see which keys there are, add one, or let a bot use one.
  */
-const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Keys can only be changed in the Bops app." }, { status: 403 }));
+const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Keys can only be changed in the SmileDesk app." }, { status: 403 }));
 
 const failed = (e: unknown) => Response.json({ error: (e as Error).message }, { status: e instanceof KeysError ? e.status : 500 });
 
 const scopeOf = (v: unknown) => (v === "workspace" ? "workspace" : "all");
 
 /**
- * The services Bops can call, the keys set in the user's Orgo vault that the current workspace sees (names
+ * The services SmileDesk can call, the keys set in the user's Orgo vault that the current workspace sees (names
  * only: the account's, scope "all", and its own, scope "workspace") and which bots may use each.
  * `workspaceKeys`: whether this workspace can have keys of its own (it has its own Orgo workspace).
  *
  * In a workspace shared with the user (lib/server/shared-keys.ts): its own keys as orgo-web lists them, then the owner's,
  * read only (`owner`), each with the bots that may use them; `shared` says whether the user has Keys there and whether the
- * owner's Bops takes their bots' switches. Without Keys, none.
+ * owner's SmileDesk takes their bots' switches. Without Keys, none.
  */
 export async function GET(request: Request) {
   const unready = notReady() ?? notFromWindow(request);
@@ -90,7 +90,7 @@ export async function PATCH(request: Request) {
   const b = (await request.json().catch(() => ({}))) as { name?: unknown; botId?: unknown; allowed?: unknown };
   if (typeof b.name !== "string" || typeof b.botId !== "string" || typeof b.allowed !== "boolean") return Response.json({ error: "which key, which bot, and allowed or not?" }, { status: 400 });
   try {
-    // A shared workspace's bot: the owner's Bops switches it ("key" act through Bops Cloud), shown switched meanwhile.
+    // A shared workspace's bot: the owner's SmileDesk switches it ("key" act through SmileDesk Cloud), shown switched meanwhile.
     if (sharedOpen()) {
       const no = await sharedGrant(b.name, b.botId, b.allowed);
       return no ? Response.json({ error: no.error }, { status: no.status }) : Response.json({ ok: true });

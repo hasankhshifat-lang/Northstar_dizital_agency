@@ -1,9 +1,9 @@
 /**
- * Orgo's plans, as Bops shows them. A Bops user is an Orgo user. Every user has one free Bops computer
- * (the main bot's, made by Bops from the Bops template, off their Orgo plan, whatever the plan).
+ * Orgo's plans, as SmileDesk shows them. A SmileDesk user is an Orgo user. Every user has one free SmileDesk computer
+ * (the main bot's, made by SmileDesk from the SmileDesk template, off their Orgo plan, whatever the plan).
  *
- * Where the Bops plan decides (Bops Cloud holds plans to what they include, and Orgo counts Bops
- * computers: OrgoPlan.bops), a bot's own computer is a Bops computer too: Max includes up to 3, the free
+ * Where the SmileDesk plan decides (SmileDesk Cloud holds plans to what they include, and Orgo counts SmileDesk
+ * computers: OrgoPlan.bops), a bot's own computer is a SmileDesk computer too: Max includes up to 3, the free
  * one included, and Free and Pro the free one only (lib/plan-includes.ts). Once Max's are all taken, one
  * comes from the Orgo plan instead, when it has room (ownOnOrgoPlan). Elsewhere (self-hosted, or an
  * older Orgo), any more come out of the Orgo plan: Hacker includes 1 computer, Startup 4, Scale 16, and
@@ -33,31 +33,31 @@ export type OrgoPlan = {
   /** A custom deal with Orgo sets the plan's computers or memory: moving up a plan Orgo sells doesn't change them. */
   deal?: boolean;
   /**
-   * The user's one free Bops computer (orgo-web's bops_free, not counted in `inUse`): its id, or null
-   * while there's none (Bops makes it next, for a main bot). Unknown when Orgo didn't say: an Orgo
-   * from before free Bops computers, where every computer is on the plan as before, or one that
+   * The user's one free SmileDesk computer (orgo-web's bops_free, not counted in `inUse`): its id, or null
+   * while there's none (SmileDesk makes it next, for a main bot). Unknown when Orgo didn't say: an Orgo
+   * from before free SmileDesk computers, where every computer is on the plan as before, or one that
    * didn't answer (limitsUnread).
    */
   freeComputerId?: string | null;
   /**
-   * Orgo didn't answer for the counts, the memory and the free Bops computer (compute-limits failed or
+   * Orgo didn't answer for the counts, the memory and the free SmileDesk computer (compute-limits failed or
    * timed out, or the user owns no workspace to ask about): unknown for now, not missing from Orgo.
    */
   limitsUnread?: true;
   /**
-   * The Bops plan's computers, when the Bops plan decides them (Bops Cloud's plan limits are on, and
-   * Orgo counts them: compute-limits' bops_computers_limit): the plan, how many Bops computers it
+   * The SmileDesk plan's computers, when the SmileDesk plan decides them (SmileDesk Cloud's plan limits are on, and
+   * Orgo counts them: compute-limits' bops_computers_limit): the plan, how many SmileDesk computers it
    * includes (the free one included), and Max's others besides the free one. Then a bot's own computer
-   * is one more of these, made fresh from the Bops template; on Max, once they're all taken, one on the
+   * is one more of these, made fresh from the SmileDesk template; on Max, once they're all taken, one on the
    * Orgo plan, fresh from the template too (ownOnOrgoPlan).
    */
   bops?: { tier: BopsTier; limit: number; extras: string[] };
 };
 
-/** The free Bops computer's memory in GB: the Bops template's, which it's made at whatever the plan. */
+/** The free SmileDesk computer's memory in GB: the SmileDesk template's, which it's made at whatever the plan. */
 export const FREE_COMPUTER_RAM = 16;
 
-/** Bops makes the free computer next: Orgo offers free Bops computers, and the user's isn't made yet. */
+/** SmileDesk makes the free computer next: Orgo offers free SmileDesk computers, and the user's isn't made yet. */
 export const freeComputerOpen = (plan: OrgoPlan | null | undefined) => plan?.freeComputerId === null;
 
 /** Every plan key Orgo has, with Orgo's name for it and the computers it allows (orgo-web lib/subscription-tiers.ts). */
@@ -84,23 +84,23 @@ const SOLD_PLANS = [
   { name: "Scale", computers: 16 },
 ];
 
-/** Orgo's name for a plan key. A key Bops doesn't know shows as itself. */
+/** Orgo's name for a plan key. A key SmileDesk doesn't know shows as itself. */
 export const planName = (tier: string) => TIERS[tier.toLowerCase()]?.name ?? tier.charAt(0).toUpperCase() + tier.slice(1).replace(/_v\d+$/, "");
 
-/** The computers a plan key allows, when Bops knows the key. */
+/** The computers a plan key allows, when SmileDesk knows the key. */
 export const planComputers = (tier: string): number | undefined => TIERS[tier.toLowerCase()]?.computers;
 
 /**
  * Why the plan can't take another computer: it includes none ("none"), they're all in use ("count"),
  * one computer can't be that big ("size"), the plan's memory is used up ("memory"), or one computer
- * can't have that much disk ("disk"). Bops sees all but the last in the plan's numbers; that one only
+ * can't have that much disk ("disk"). SmileDesk sees all but the last in the plan's numbers; that one only
  * when Orgo turns a computer down (planRefusal in lib/server/plan.ts).
  */
 export type PlanShort = "none" | "count" | "size" | "memory" | "disk" | "bops";
 
 /**
- * Why the Bops plan has no room for `more` Bops computers (lib/plan-includes.ts computerShort), with
- * the plan that has room ("max", or null on Max); null when it has room. Undefined when the Bops plan
+ * Why the SmileDesk plan has no room for `more` SmileDesk computers (lib/plan-includes.ts computerShort), with
+ * the plan that has room ("max", or null on Max); null when it has room. Undefined when the SmileDesk plan
  * doesn't decide (OrgoPlan.bops): then the Orgo plan does, as before.
  */
 export function bopsComputerShort(plan: OrgoPlan | null | undefined, more = 1) {
@@ -110,11 +110,11 @@ export function bopsComputerShort(plan: OrgoPlan | null | undefined, more = 1) {
   return s ? { short: "bops" as const, text: s.text, upgrade: s.upgrade === "max" ? ("max" as const) : null } : null;
 }
 
-/** Memory sizes Orgo makes computers in, in GB, largest first: from the Bops template's 16 down (orgo-web lib/computer-sizes.ts). */
+/** Memory sizes Orgo makes computers in, in GB, largest first: from the SmileDesk template's 16 down (orgo-web lib/computer-sizes.ts). */
 const RAM_SIZES = [16, 8, 4];
 
 /**
- * The memory Bops makes the main bot's computer with, in GB: the plan's memory split evenly across the
+ * The memory SmileDesk makes the main bot's computer with, in GB: the plan's memory split evenly across the
  * computers it includes, in one of Orgo's sizes. That's 8 GB on Hacker, Startup and Scale, and every
  * copy of it is as big, so the plan runs out of computers before memory: Startup fits 4 (of the
  * template's 16 GB it would fit 2). Less when a new computer can't have that much now (the plan's
@@ -151,7 +151,7 @@ export function planShort(plan: OrgoPlan | null | undefined, more = 1, ram?: num
 }
 
 /**
- * Computers the user's bots have on their Orgo plan, each counted once: the Bops plan's aren't (the free
+ * Computers the user's bots have on their Orgo plan, each counted once: the SmileDesk plan's aren't (the free
  * one and Max's others, by `plan`; Orgo doesn't count them in use either). The rest of those in use are
  * elsewhere in their Orgo account.
  */
@@ -161,17 +161,17 @@ export const bopsComputers = (bots: Pick<Bot, "computerId" | "freeComputer">[], 
 };
 
 /**
- * Whether a bot's own computer comes from the Orgo plan though the Bops plan decides: on Max, once its
- * Bops computers are all taken, while the Orgo plan has room for one more at computerRam's size (fresh
- * from the Bops template: a copy of a Bops computer can't be made, as it's on a Bops host). Free and Pro
+ * Whether a bot's own computer comes from the Orgo plan though the SmileDesk plan decides: on Max, once its
+ * SmileDesk computers are all taken, while the Orgo plan has room for one more at computerRam's size (fresh
+ * from the SmileDesk template: a copy of a SmileDesk computer can't be made, as it's on a SmileDesk host). Free and Pro
  * don't: they're shown Max.
  */
 export const ownOnOrgoPlan = (plan: OrgoPlan | null | undefined) =>
   plan?.bops?.tier === "max_bops" && !!bopsComputerShort(plan, 1) && !planShort(plan, 1, computerRam(plan));
 
 /**
- * Whether a bot's own computer is a Bops one (the free one or one of Max's): the one it has, or, before
- * it has one, the one it would get. False where the Bops plan doesn't decide.
+ * Whether a bot's own computer is a SmileDesk one (the free one or one of Max's): the one it has, or, before
+ * it has one, the one it would get. False where the SmileDesk plan doesn't decide.
  */
 export const ownIsBops = (plan: OrgoPlan | null | undefined, b: Pick<Bot, "computerId">) =>
   !!plan?.bops && (b.computerId ? b.computerId === plan.freeComputerId || plan.bops.extras.includes(b.computerId) : !bopsComputerShort(plan, 1));
@@ -189,21 +189,21 @@ const upFor = (short: PlanShort, plan: OrgoPlan | null | undefined) => (short ==
 /**
  * Why, in plain words with the numbers, and the plan that has room: "Your Orgo Hacker plan includes 1
  * computer, and it's in use. Orgo Startup includes 4." `bops` is how many computers the bots have (the rest
- * in use are outside Bops). `main` is the main bot's name: every other computer is a copy of its
+ * in use are outside SmileDesk). `main` is the main bot's name: every other computer is a copy of its
  * computer, so a bot can't have its own until the main bot has one.
  */
 export function planShortText(short: PlanShort, plan: OrgoPlan | null | undefined, opts: { bops?: number; main?: string } = {}) {
-  // The Bops plan's own words, when it decides.
-  if (short === "bops") return bopsComputerShort(plan, 1)?.text ?? `Max includes up to ${BOPS_TIERS.max_bops.computers} Bops computers.`;
-  // Always "Orgo" by name: an Orgo plan is never the user's Bops plan (Free, Pro or Max).
+  // The SmileDesk plan's own words, when it decides.
+  if (short === "bops") return bopsComputerShort(plan, 1)?.text ?? `Max includes up to ${BOPS_TIERS.max_bops.computers} SmileDesk computers.`;
+  // Always "Orgo" by name: an Orgo plan is never the user's SmileDesk plan (Free, Pro or Max).
   const name = plan?.name ? `Orgo ${plan.name}` : "Orgo";
   const main = opts.main ?? "the main bot";
   const up = upFor(short, plan);
   // A custom deal is changed by asking Orgo, not on its own.
   const ask = plan?.deal ? "ask Orgo to change your plan" : undefined;
-  // With the free Bops computer, "none" is about any more than that one.
+  // With the free SmileDesk computer, "none" is about any more than that one.
   if (short === "none")
-    return `Your ${name} plan doesn't include ${plan?.freeComputerId !== undefined ? "computers besides your free Bops one" : "cloud computers"}.${up ? ` Orgo ${up.name} includes ${up.computers}.` : ""}`;
+    return `Your ${name} plan doesn't include ${plan?.freeComputerId !== undefined ? "computers besides your free SmileDesk one" : "cloud computers"}.${up ? ` Orgo ${up.name} includes ${up.computers}.` : ""}`;
   if (short === "memory") return `Your ${name} plan doesn't have the memory left for another computer.${up ? ` Orgo ${up.name} has more.` : ` Delete a computer, or ${ask ?? "add memory on Orgo"}.`}`;
   // Only a copy can be too big: the main bot's computer is made to fit the plan (computerRam). Not its disk, though.
   if (short === "size") return `Your ${name} plan doesn't allow another computer as big as ${main}'s.`;
@@ -213,7 +213,7 @@ export function planShortText(short: PlanShort, plan: OrgoPlan | null | undefine
   const n = plan.computers;
   const u = plan.inUse;
   const outside = opts.bops === undefined ? 0 : Math.max(0, u - opts.bops);
-  const where = !outside ? "" : outside >= u ? " outside Bops" : `, ${outside} of them outside Bops`;
+  const where = !outside ? "" : outside >= u ? " outside SmileDesk" : `, ${outside} of them outside SmileDesk`;
   const all = n === 1 ? "it's" : n === 2 ? "both are" : `all ${n} are`;
   const used =
     u === n
@@ -230,7 +230,7 @@ export function planShortText(short: PlanShort, plan: OrgoPlan | null | undefine
  * this one (or, on a custom deal, to see what it allows).
  */
 export function planFix(short: PlanShort, plan: OrgoPlan | null | undefined): { label: string; tab: "plan" | "usage" } {
-  // Bops' own plans are changed in the app (Settings), never on Orgo's pages: the app shows its own button.
+  // SmileDesk's own plans are changed in the app (Settings), never on Orgo's pages: the app shows its own button.
   if (short === "bops") return { label: "Upgrade to Max", tab: "plan" };
   const up = upFor(short, plan);
   if (up) return { label: `Upgrade to Orgo ${up.name}`, tab: "plan" };
@@ -240,7 +240,7 @@ export function planFix(short: PlanShort, plan: OrgoPlan | null | undefined): { 
 
 /**
  * Why the main bot's computer can't be made now, in plain words, or null when it can (or Orgo didn't
- * say). The bots that share it can't work in the cloud without it. Never with free Bops computers: the
+ * say). The bots that share it can't work in the cloud without it. Never with free SmileDesk computers: the
  * main bot gets the free one, or one on the plan when it has room, else it shares the free one with the
  * main bot that has it (lib/server/plan.ts makeMainComputer).
  */
@@ -251,7 +251,7 @@ export function mainComputerShort(plan: OrgoPlan | null | undefined, bots: Bot[]
 }
 
 /**
- * Why a main bot that works on the free Bops computer (another workspace's main bot has it) can't have
+ * Why a main bot that works on the free SmileDesk computer (another workspace's main bot has it) can't have
  * one of its own on the plan now, in plain words, or null when it can (or Orgo didn't say).
  */
 export function mainOwnShort(plan: OrgoPlan | null | undefined, bots: Bot[], main: Pick<Bot, "name">) {
@@ -264,13 +264,13 @@ export function mainOwnShort(plan: OrgoPlan | null | undefined, bots: Bot[], mai
 /**
  * Why a bot in this workspace can't have a computer of its own now, in plain words, or null when it can
  * (or Orgo didn't say). It takes one more computer, as big as the computer it's copied from (the main
- * bot's, or the free Bops computer the main bot shares), and the main bot's first when that has none:
+ * bot's, or the free SmileDesk computer the main bot shares), and the main bot's first when that has none:
  * the free one when that's next (it takes no room on the plan), else one at computerRam's size.
  */
 export function ownComputerShort(plan: OrgoPlan | null | undefined, bots: Bot[], workspaceId: string) {
   const ws = mainBot(bots, workspaceId);
   const main = ws && workBot(ws, bots);
-  // A Bops computer of its own, and the main bot's first when it has none; on Max with them all taken, one on the Orgo plan.
+  // A SmileDesk computer of its own, and the main bot's first when it has none; on Max with them all taken, one on the Orgo plan.
   const bops = bopsComputerShort(plan, main?.computerId ? 1 : 2);
   if (bops !== undefined) return bops && main?.computerId && ownOnOrgoPlan(plan) ? null : bops;
   const short = main?.computerId

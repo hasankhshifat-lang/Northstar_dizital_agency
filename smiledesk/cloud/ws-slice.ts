@@ -157,7 +157,7 @@ const WATCH: Spec = {
 /**
  * What one of its bots asked the owner's OK for, while it waits (lib/types.ts AppApproval): shown read only, so
  * someone given that bot sees what its thread waits on. Never the reply, which device asked, or what resumes its
- * run: answering is the owner's alone, from a Bops of their own.
+ * run: answering is the owner's alone, from a SmileDesk of their own.
  */
 const APPROVAL: Spec = { id: true, botId: true, chatId: true, threadId: true, routineId: true, action: true, resources: true, preview: true, kind: true, api: { label: true, method: true, path: true, change: { repo: true, branch: true, base: true, at: true, files: [{ path: true, op: true, bytes: true }] } }, askedFor: true, reason: true, at: true };
 /** A message as a member reads it: what the chat shows, never where it came from on the owner's side (inbox, channel, phone ids) or a CRM file's copy. */
@@ -197,7 +197,7 @@ const MESSAGE: Spec = {
   asked: [{ botId: true, question: true, answer: true, questionId: true }],
   memory: { fact: true, undone: true },
   crm: { file: true, added: true, changed: true, created: true, undone: true },
-  // Bops' own line in its bot's voice (a thread it couldn't finish): a shared workspace reads it as the owner's (lib/server/shared-core.ts viewState).
+  // SmileDesk's own line in its bot's voice (a thread it couldn't finish): a shared workspace reads it as the owner's (lib/server/shared-core.ts viewState).
   bops: true,
   // Compact's line (lib/server/chat-summary.ts): only the line. The chat's summary is the owner's (Chat.summary isn't in CHAT): it's
   // written from every message there, some a member isn't shown (a bot hidden from them, the owner's apps).
@@ -236,15 +236,15 @@ export type SliceViewer = {
   computerUse?: boolean;
   /** The owner's sign in email, as orgo-web says it (WsAccess.ownerEmail): whether the workspace has apps (appsOpenFor). */
   ownerEmail?: string;
-  /** Whether the owner's Bops is new enough for an Admin's acts (protocol.ts ADMIN_POWERS_MIN_VERSION): SharedWsSlice.adminActs. */
+  /** Whether the owner's SmileDesk is new enough for an Admin's acts (protocol.ts ADMIN_POWERS_MIN_VERSION): SharedWsSlice.adminActs. */
   adminActs?: boolean;
   /** Whether it publishes for an Admin (protocol.ts ADMIN_PUBLISH_MIN_VERSION): SharedWsSlice.adminPublish. */
   adminPublish?: boolean;
   /** Their Keys as orgo-web said it (WsAccess.keys), when it did: keysOf. */
   keys?: boolean;
-  /** Whether the owner's Bops takes the "key" act (protocol.ts KEYS_MIN_VERSION): SharedWsSlice.keyActs. */
+  /** Whether the owner's SmileDesk takes the "key" act (protocol.ts KEYS_MIN_VERSION): SharedWsSlice.keyActs. */
   keyActs?: boolean;
-  /** Whether the owner's Bops takes the "change" act (change-routes.ts CHANGES_MIN_VERSION): SharedWsSlice.changes. */
+  /** Whether the owner's SmileDesk takes the "change" act (change-routes.ts CHANGES_MIN_VERSION): SharedWsSlice.changes. */
   changes?: boolean;
 };
 /** The owner, as sharedSlice takes them (who they are doesn't change what they see: all of it). */
@@ -278,7 +278,7 @@ export { adminAccess };
  * the owner's state has it turned off for them ("none": the owner's Mac turns it off in orgo-web first, so this only
  * closes the moments before orgo-web's notice lands, and a turn taken before it). From an orgo-web that doesn't say,
  * the owner's state alone (member-access.ts MemberAccess.computer). The owner's state counts only on an entry that's
- * for their membership now (currentFor). What Bops Cloud goes by before it owes a turn to a computer or wakes one for
+ * for their membership now (currentFor). What SmileDesk Cloud goes by before it owes a turn to a computer or wakes one for
  * someone's words, and on each claim, beat, pause and resume after (turns.ts memberStill).
  */
 export function computerUseOf(workspace: Record<string, unknown> | null, viewer: SliceViewer): boolean {
@@ -302,7 +302,7 @@ function keptComputer(workspace: Record<string, unknown> | null, viewer: SliceVi
  */
 export const keysOf = (viewer: SliceViewer): boolean => viewer.role !== "owner" && holdsKeys(viewer.role, viewer.keys);
 
-/** The most key names a slice carries (a vault has far fewer Bops can call). */
+/** The most key names a slice carries (a vault has far fewer SmileDesk can call). */
 const MAX_KEY_NAMES = 100;
 
 /**
@@ -342,9 +342,9 @@ const SITE_SEEN = {
 const SITE_SEEN_WRITE: Spec = { ...SITE_SEEN, previewPassword: true };
 
 /**
- * A Write viewer's sites (as SITE_SEEN_WRITE kept them) with each Preview's password as Bops Cloud keeps it from whoever
+ * A Write viewer's sites (as SITE_SEEN_WRITE kept them) with each Preview's password as SmileDesk Cloud keeps it from whoever
  * set it last (Workspace.previewPasswords, cloud/preview-passwords.ts: "<app>/<site>"), for a site whose Preview link is
- * the one it was set for: that one over the copy the owner's Mac read (appsForMembers), which stays for a site Bops
+ * the one it was set for: that one over the copy the owner's Mac read (appsForMembers), which stays for a site SmileDesk
  * Cloud has none for. One for a link the site no longer has is never shown. One a share never reached is put right by
  * the owner's Mac as it reads Orgo for members (lib/server/apps-for-members.ts fixCloudCopy), and each sender keeps
  * trying its newest for about 20 minutes (lib/server/preview-password-share.ts).
@@ -360,7 +360,7 @@ function withCloudPasswords(app: string, sites: unknown, kept: Record<string, un
   });
 }
 const COMMIT_SEEN: Spec = { id: true, message: true, author: true, at: true, changes: { added: true, modified: true, deleted: true } };
-/** `env`: where it went, its Preview or Published (none: from a Bops before, Published's). */
+/** `env`: where it went, its Preview or Published (none: from a SmileDesk before, Published's). */
 const DEPLOY_SEEN: Spec = { id: true, state: true, at: true, rollback: true, when: true, live: true, canRollback: true, site: true, env: true };
 const ACT_SEEN: Spec = { key: true, userId: true, name: true, act: true, site: true, domain: true, env: true, ok: true, said: true, at: true };
 const SETTINGS_SEEN: Spec = { port: true, install: true, build: true, start: true, health: true };
@@ -385,7 +385,7 @@ export const ownerAppsOpen = (viewer: SliceViewer): boolean => appsOpenTo(viewer
  * bot (only one they see), address, whether it lost its computer and its sites' names; of what the owner's Mac read for
  * members (Workspace.appsForMembers) its head, sites (each with its Preview's link and state), history, deploys and
  * members' acts; each site's settings, its Preview's password and the workspace's own domains only at Write. The
- * password is the one Bops Cloud keeps from whoever set it last (Workspace.previewPasswords: withCloudPasswords), else
+ * password is the one SmileDesk Cloud keeps from whoever set it last (Workspace.previewPasswords: withCloudPasswords), else
  * the owner's Mac's copy; it changes their slice, so a Write viewer watching gets a new fingerprint and reads it. Never
  * its variables, tokens, keys, logs, error text, computer or project ids.
  */
@@ -401,7 +401,7 @@ export function appsFor(workspace: Record<string, unknown> | null, viewer: Slice
   if (!isObject(workspace.hostedApps)) return { level: write ? "write" : "read", at: 0, list: [] };
   const seen = isObject(workspace.appsForMembers) ? workspace.appsForMembers : {};
   const seenApps = isObject(seen.apps) ? seen.apps : {};
-  // Each Preview's password as whoever set it last told Bops Cloud: Write only, over the owner's Mac's copy.
+  // Each Preview's password as whoever set it last told SmileDesk Cloud: Write only, over the owner's Mac's copy.
   const passwords = write && isObject(workspace.previewPasswords) ? workspace.previewPasswords : {};
   const list: SharedApp[] = Object.entries(workspace.hostedApps)
     .filter(([name, h]) => /^[a-z0-9-]{1,64}$/.test(name) && isObject(h))
@@ -577,7 +577,7 @@ export function sliceOf(blob: Record<string, unknown>, ws: string, viewer?: Slic
     apps = appThreadsFor(blob, access, viewer);
   }
   const ids = new Set(bots.map((b) => b.id));
-  // What those bots ask the owner's OK for, while it waits: only there when there's any (an older Bops Cloud sent none).
+  // What those bots ask the owner's OK for, while it waits: only there when there's any (an older SmileDesk Cloud sent none).
   const approvals = list(blob.appApprovals).filter((a) => ids.has(a.botId) && a.reply === undefined && !apps.has(a.threadId));
   return {
     workspace,
@@ -627,7 +627,7 @@ export function sharedSlice(blob: Record<string, unknown>, ws: string, viewer: S
   const keyNames = keys ? keyNamesOf(s.workspace) : undefined;
   // What they may change (member-access.ts Power: an Admin every one), and whether they see every bot (the org chart is theirs only then).
   const can = access ? powersOf(viewer.role, access.can) : undefined;
-  // A bot's settings to someone with Bot settings (an Admin always), once the owner's Bops takes a Member's (`changes`).
+  // A bot's settings to someone with Bot settings (an Admin always), once the owner's SmileDesk takes a Member's (`changes`).
   const settings = viewer.role === "admin" || (!!viewer.changes && !!can?.includes("bots"));
   const botSpec = settings ? (keys ? ADMIN_KEYS_BOT : ADMIN_BOT) : keys ? KEYS_BOT : BOT;
   const seesAll = !!access && seesEveryBot(access, list(blob.bots).flatMap((b) => (typeof b.id === "string" && wsOfBot(b) === ws ? [b.id] : [])));
@@ -651,15 +651,15 @@ export function sharedSlice(blob: Record<string, unknown>, ws: string, viewer: S
     ...(groups ? { groups } : {}),
     ...(sites ? { sites } : {}),
     ...(screens ? { screens } : {}),
-    // The owner's Bops takes an Admin's acts (members.ts adminGate), said to anyone but the owner: an Admin answers the
+    // The owner's SmileDesk takes an Admin's acts (members.ts adminGate), said to anyone but the owner: an Admin answers the
     // owner's own asks then, and a Member's window says an Admin can. An Admin's says when it can't yet (ownerOld).
     ...(access && viewer.adminActs ? { adminActs: true as const } : access && viewer.role === "admin" ? { ownerOld: true as const } : {}),
-    // An Admin's Publish in Your Apps, once the owner's Bops takes it (members.ts adminGate).
+    // An Admin's Publish in Your Apps, once the owner's SmileDesk takes it (members.ts adminGate).
     ...(access && viewer.role === "admin" && viewer.adminPublish ? { adminPublish: true as const } : {}),
-    // Keys (keysOf), what the workspace's bots see of keys, and whether the owner's Bops takes their "key" act: part of
+    // Keys (keysOf), what the workspace's bots see of keys, and whether the owner's SmileDesk takes their "key" act: part of
     // the fingerprint, so being given Keys, a key added or the owner updating gives them a new one.
     ...(keys ? { keys: true as const, ...(keyNames ? { keyNames } : {}), ...(viewer.keyActs ? { keyActs: true as const } : {}) } : {}),
-    // What they may change (member-access.ts Power), whether the owner's Bops takes it, and how their last changes went (changedFor).
+    // What they may change (member-access.ts Power), whether the owner's SmileDesk takes it, and how their last changes went (changedFor).
     // Part of the fingerprint: a switch turned on or off, the owner updating, or a change done gives them a new one.
     ...(can?.length ? { can, ...(viewer.changes ? { changes: true as const } : {}), ...changedFor(s.workspace, viewer) } : {}),
     // The org chart, to someone who may change it and sees every bot (one who doesn't would see ids of bots hidden from them).
@@ -738,9 +738,9 @@ const heldText = (lines: string[]) => `${HELD_HEAD}${lines.map((t) => `• ${t}`
  * kept, by its threads all being ones such a bot handed over (`handed`: handedByOthers). The main bot's
  * digest of what every bot's watches found (Message.held) tells them only the lines of bots they see,
  * and isn't shown when none is theirs; one from before its lines said whose they were, never. Nor, with
- * `bots`, anything of the owner's apps: a made app's line (Message.madeApp), Bops' note about one
+ * `bots`, anything of the owner's apps: a made app's line (Message.madeApp), SmileDesk's note about one
  * (Message.appNote), or a message of their app threads only (`apps`: appThreadsFor), whose chips go from
- * any other; but a made app's line and Bops' note about one of a bot in `appBots` (Orgo's team with Write
+ * any other; but a made app's line and SmileDesk's note about one of a bot in `appBots` (Orgo's team with Write
  * on it: appBotsFor), in its own chat or by it.
  */
 export function sharedMessage(json: Record<string, unknown>, bots?: ReadonlySet<string>, handed?: ReadonlySet<string>, apps?: ReadonlySet<string>, appBots?: ReadonlySet<string>): Record<string, unknown> | null {

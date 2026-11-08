@@ -1,7 +1,7 @@
 // Tests for calls to a bot's number answered on this Mac (lib/server/phone-voice.ts): each of the
 // caller's turns through AgentPhone's voice agent, answered with OpenAI as the bot. The owner gets the
 // whole bot (work handed to its chat as a call in the app does it), anyone else a bot that only takes a
-// message; who's calling is Bops Cloud's verdict when there is one; a first call that claimed the line
+// message; who's calling is SmileDesk Cloud's verdict when there is one; a first call that claimed the line
 // links that phone; the call's transcript lands in the bot's chat; slow answers stream a filler first.
 // Also the webhook route (a forged verdict on a direct delivery is ignored) and texts that follow the
 // cloud's verdict (lib/server/phone.ts). OpenAI is a fake on localhost and the state a throwaway file
@@ -145,7 +145,7 @@ const until = async (check, what, ms = 5000) => {
   assert.deepEqual(await V.voiceTurn(turn(OWNER, "", call)), { text: `Hi Alex, it's ${main.name}. What's up?` }, "spoken words only");
   const first = lastPhone();
   // The hello doesn't wait on the whole prompt: a quick one, while the whole one is built for the next turns.
-  assert.match(first.instructions, new RegExp(`^You are ${main.name}, Alex's chief of staff in Bops, on a phone call with Alex\\.`));
+  assert.match(first.instructions, new RegExp(`^You are ${main.name}, Alex's chief of staff in SmileDesk, on a phone call with Alex\\.`));
   assert.match(first.instructions, /Each of your replies is spoken aloud by a voice that reads your text/);
   assert.deepEqual(first.tools.map((t) => t.name), ["delegate", "end_call"]);
   assert.deepEqual(first.reasoning, { effort: "low" });
@@ -157,7 +157,7 @@ const until = async (check, what, ms = 5000) => {
   phoneReply = () => ({ tools: [{ name: "delegate", args: { request: "Email Jordan the deck", say: "On it, I'll send it now." } }] });
   assert.deepEqual(await V.voiceTurn(turn(OWNER, "Can you email Jordan the deck?", call)), { text: "On it, I'll send it now." });
   const whole = lastPhone().instructions;
-  assert.match(whole, new RegExp(`^You are ${main.name}, Alex's chief of staff in Bops, on a phone call with Alex\\.`));
+  assert.match(whole, new RegExp(`^You are ${main.name}, Alex's chief of staff in SmileDesk, on a phone call with Alex\\.`));
   assert.match(whole, /Alex called your phone number, and you picked up\. Each of your replies is spoken aloud/, "the whole prompt from the second turn on");
   assert.match(whole, /call delegate with what they asked/);
   assert.doesNotMatch(whole, /Hello\? Can you hear me\?/, "no GPT-Live greeting");
@@ -213,7 +213,7 @@ const until = async (check, what, ms = 5000) => {
   assert.equal(card.ping, true);
 }
 
-/* ---------------- Bops Cloud's verdict ---------------- */
+/* ---------------- SmileDesk Cloud's verdict ---------------- */
 
 {
   // The cloud says it isn't the owner, even for a number this Mac counts: the cloud wins.
@@ -281,7 +281,7 @@ const until = async (check, what, ms = 5000) => {
     const sig = `sha256=${createHmac("sha256", "whsec-test").update(`${ts}.${body}`).digest("hex")}`;
     return route.POST(new Request("http://127.0.0.1:3210/api/phone/agentphone", { method: "POST", headers: { "content-type": "application/json", "x-webhook-timestamp": ts, "x-webhook-signature": sig, ...headers }, body }));
   };
-  // A verdict on a delivery that didn't come through Bops Cloud's tunnel is anyone's to write: ignored.
+  // A verdict on a delivery that didn't come through SmileDesk Cloud's tunnel is anyone's to write: ignored.
   const call = `call_${++n}`;
   phoneReply = () => ({ text: "Hi, can I take a message?" });
   const res = await post(turn("+12125550111", "Hi, it's me", call), { "x-bops-caller": JSON.stringify({ owner: true }) });

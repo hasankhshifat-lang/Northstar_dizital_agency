@@ -4,7 +4,7 @@ import { HttpError } from "./http.ts";
 import { APP_CLIENT_HEADER, APP_UPDATE_REQUIRED, APP_VERSION_HEADER, IOS_CLIENT, USAGE_MIN_APP_VERSION } from "./protocol.ts";
 
 /**
- * Which Bops app each user is on, and keeping old ones out. Every call from the app says its version
+ * Which SmileDesk app each user is on, and keeping old ones out. Every call from the app says its version
  * (APP_VERSION_HEADER, lib/server/app-version.ts); apps before 0.0.18 say nothing. The latest is kept
  * with the user's account: bops.cloud_accounts.app_version (NULL for an app that didn't say) and
  * app_seen_at, written when it changes and otherwise at most every few minutes.
@@ -14,9 +14,9 @@ import { APP_CLIENT_HEADER, APP_UPDATE_REQUIRED, APP_VERSION_HEADER, IOS_CLIENT,
  * (/v1/state, /v1/messages): those still go through, so nothing the old app holds is lost, and the updated
  * app picks it up. Read again every minute, so it takes effect without a deploy.
  *
- * Bops for iPhone says so (APP_CLIENT_HEADER "ios") with its own version numbers. Those never touch the
+ * SmileDesk for iPhone says so (APP_CLIENT_HEADER "ios") with its own version numbers. Those never touch the
  * Mac's: they're kept in cloud_accounts.ios_version and ios_seen_at (only for a user the cloud has set up
- * from a Mac: the phone never makes the account row, whose making counts a new Bops user), and held to
+ * from a Mac: the phone never makes the account row, whose making counts a new SmileDesk user), and held to
  * app_policy.ios_block_below instead of block_below. The phone's calls are only its chat's (cloud/agent.ts).
  */
 
@@ -29,7 +29,7 @@ export function appVersionOf(req: IncomingMessage): string | null {
   return v && VERSION.test(v) ? v : null;
 }
 
-/** Whether a call (or a socket) is from Bops for iPhone: it says x-bops-client: ios. */
+/** Whether a call (or a socket) is from SmileDesk for iPhone: it says x-bops-client: ios. */
 export function fromIphone(req: IncomingMessage): boolean {
   const h = req.headers[APP_CLIENT_HEADER];
   return (Array.isArray(h) ? h[0] : h)?.trim().toLowerCase() === IOS_CLIENT;
@@ -51,7 +51,7 @@ export function noteAppVersion(userId: string, version: string | null): void {
   note(`mac:${userId}`, version, "UPDATE bops.cloud_accounts SET app_version = $2, app_seen_at = now() WHERE user_id = $1", userId);
 }
 
-/** The same for Bops for iPhone: its own columns, so the Mac's version stays the Mac's. */
+/** The same for SmileDesk for iPhone: its own columns, so the Mac's version stays the Mac's. */
 export function noteIphoneVersion(userId: string, version: string | null): void {
   note(`ios:${userId}`, version, "UPDATE bops.cloud_accounts SET ios_version = $2, ios_seen_at = now() WHERE user_id = $1", userId);
 }
@@ -68,9 +68,9 @@ function note(key: string, version: string | null, sql: string, userId: string) 
   });
 }
 
-export const UPDATE_BOPS = "This version of Bops is too old to keep working. Update it from bops.bot to keep going.";
+export const UPDATE_BOPS = "This version of SmileDesk is too old to keep working. Update it from bops.bot to keep going.";
 /** What an iPhone app too old for the cloud is told (it shows its own words, with a way to the App Store). */
-export const UPDATE_BOPS_IPHONE = "This version of Bops for iPhone is too old to keep working. Update it to keep going.";
+export const UPDATE_BOPS_IPHONE = "This version of SmileDesk for iPhone is too old to keep working. Update it to keep going.";
 
 /** Calls an old app still makes: its state's, so nothing it holds is lost. */
 const OPEN_TO_OLD_APPS = /^\/v1\/(state|messages)(\/|$)/;
@@ -115,14 +115,14 @@ export function requireAppVersion(path: string, version: string | null): void {
   throw new HttpError(426, UPDATE_BOPS, { code: APP_UPDATE_REQUIRED, ...extra });
 }
 
-export const UPDATE_BOPS_USAGE = "Bops now bills by what you use, from your Orgo credit. Update Bops from bops.bot to keep going.";
+export const UPDATE_BOPS_USAGE = "SmileDesk now bills by what you use, from your Orgo credit. Update SmileDesk from bops.bot to keep going.";
 
 /** How each user is billed, as last read (a minute at most), so the gate below costs a query a minute per user, not one a call. */
 const billed = new Map<string, { usage: boolean; at: number }>();
 
 /**
  * 426 for a Mac app older than USAGE_MIN_APP_VERSION (or one that doesn't say) when the user is billed
- * by use (protocol.ts BopsBilling): it would show them Bops' Free plan and sell them Bops credit that
+ * by use (protocol.ts BopsBilling): it would show them SmileDesk's Free plan and sell them SmileDesk credit that
  * nothing spends. Its state's calls still go through, as with block_below. Not for a computer's runner
  * (it isn't the app the user sees). A failure to read the billing lets the call through.
  */

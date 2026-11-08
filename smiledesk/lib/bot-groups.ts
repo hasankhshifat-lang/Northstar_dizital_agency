@@ -42,7 +42,7 @@ export const GROUP_WORDS = {
 
 /** One computer's bots, as the sidebar groups them. */
 export type BotGroup = {
-  /** Its own key (the computer's id; in a shared workspace the one Bops Cloud gave it): what's folded is kept by it. */
+  /** Its own key (the computer's id; in a shared workspace the one SmileDesk Cloud gave it): what's folded is kept by it. */
   key: string;
   /** The computer's id, the owner's own only. */
   computerId?: string;
@@ -111,7 +111,7 @@ export function defaultComputerName(ws: Pick<Workspace, "hostedApps"> | undefine
  * The open workspace's groups (BotGroup): each computer with two or more bots on it besides the main bot, in the order
  * its first bot comes in `state.bots`. None on a Mac that runs the bots itself (every bot has its own browsers there:
  * lib/screens.ts computerOf), nor for a computer not made yet (nothing to name). In a workspace shared with the user,
- * the groups Bops Cloud said (SharedOpen.groups), as far as the bots shown go.
+ * the groups SmileDesk Cloud said (SharedOpen.groups), as far as the bots shown go.
  */
 export function botGroups(state: GroupState): BotGroup[] {
   if (state.shared) return sharedGroups(state);
@@ -162,7 +162,7 @@ function sharedGroups(state: GroupState): BotGroup[] {
     return [
       {
         key: g.key,
-        // Renamed by the key Bops Cloud sent it by: the owner's Mac finds the group (lib/server/change-acts.ts).
+        // Renamed by the key SmileDesk Cloud sent it by: the owner's Mac finds the group (lib/server/change-acts.ts).
         nameKey: g.key,
         name: own || (host ? GROUP_WORDS.computerOf(host.name) : GROUP_WORDS.sharedComputer),
         named: !!own,
@@ -234,7 +234,7 @@ export const siteName = (link: BotSite) => (link.site === link.app ? link.app : 
 /**
  * What the sidebar says under a bot's name in place of its role, when it works on a site (siteOf): the site's domain
  * (`domains`, by bot id, as the owner's Mac last read them: components/app/bot-groups.tsx useSiteDomains), else the
- * site's name. In a workspace shared with the user, its domains as Bops Cloud sent its apps (SharedOpen.apps), when
+ * site's name. In a workspace shared with the user, its domains as SmileDesk Cloud sent its apps (SharedOpen.apps), when
  * the owner gave them Your Apps; the link itself comes only with that. Undefined: none, or its app or site is gone.
  */
 export function siteLabel(state: Pick<AppState, "workspace" | "workspaces" | "shared">, b: Pick<Bot, "id" | "workspaceId">, domains?: Record<string, string | null>): string | undefined {

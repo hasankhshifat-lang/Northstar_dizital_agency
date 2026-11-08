@@ -20,7 +20,7 @@ import { othersThread, outsideThread, type AppApproval, type Session } from "@/l
 
 /**
  * A thread on a bot's Orgo computer, run on the Responses API's own `computer` tool: the model sees
- * its screen and asks for clicks and keys, and Bops does them on that screen (xdotool, the way the
+ * its screen and asks for clicks and keys, and SmileDesk does them on that screen (xdotool, the way the
  * screen MCP does) and sends the screen back. Next to it: web search, a shell on the computer, and
  * the user's apps. Every new cloud thread runs on it (BOPS_COMPUTER_TOOL=0 puts them back on an Agents API
  * session); a thread keeps the runner it started on.
@@ -111,7 +111,7 @@ export type ComputerTurn = {
   /** How fast its `calls`th model call of this turn runs (routing.ts speedFor): fast while someone's waiting on it. */
   speed?: (calls: number) => Speed;
   /**
-   * Read what changed elsewhere meanwhile (sessions.ts: the state, from Bops Cloud), before a step that
+   * Read what changed elsewhere meanwhile (sessions.ts: the state, from SmileDesk Cloud), before a step that
    * went over a nap is made again: the Mac may have ended the thread while its computer slept, and then
    * the turn is stopped (its signal) rather than carrying on.
    */
@@ -137,12 +137,12 @@ async function steps(t: ComputerTurn, ws: { socket?: ResponsesSocket | null }): 
   // A run paused for the user's OK ended its turn there; the turn that carries it on has an hour of its own.
   const ranFor = () => Date.now() - started;
   // Business data and the user's CRM run in this process (treg.ts, crm.ts), so the task has them wherever its computer is.
-  // Not the CRM for a task someone outside Bops started (Session.fromOutside), as for a chat turn of theirs.
-  // read_skill always: every bot has Bops' own skills, under their labels (sessions.ts lists them in its instructions).
+  // Not the CRM for a task someone outside SmileDesk started (Session.fromOutside), as for a chat turn of theirs.
+  // read_skill always: every bot has SmileDesk's own skills, under their labels (sessions.ts lists them in its instructions).
   // call_api with the user's keys (keys.ts), and change_files with a GitHub key (repo-change.ts): a read runs at once;
   // anything that changes something asks, on a card someone answers, every time (never an Always allow here: the
   // task's browser reads pages anyone could have written). It pauses the run till then (NeedsOk), as in the chat.
-  // Not for a task someone outside Bops started, like the CRM. Not bank, payroll or compliance keys (chatOnly):
+  // Not for a task someone outside SmileDesk started, like the CRM. Not bank, payroll or compliance keys (chatOnly):
   // the task's browser and shell can reach any site, so a page could have it type what they answer anywhere.
   // One a member with Write started or told something (memberThread) has the logins its bot has: they reach the
   // owner's logins only through the bots they may tell, every write asks the owner, and a saved site login signs in
@@ -262,7 +262,7 @@ async function steps(t: ComputerTurn, ws: { socket?: ResponsesSocket | null }): 
         });
       }
     }
-    if (notes.length) input.push({ role: "user", content: [{ type: "input_text", text: `(From Bops: ${notes.join(" ")})` }] });
+    if (notes.length) input.push({ role: "user", content: [{ type: "input_text", text: `(From SmileDesk: ${notes.join(" ")})` }] });
   }
 }
 
@@ -303,7 +303,7 @@ async function answerPaused(t: ComputerTurn, a: AppApproval, call: { name: strin
       const owed = x.owed?.find((w) => w.id === callId);
       if (owed) owed.output = output;
     });
-  // An Always allow never answers a task's write (taskWrite): one from an older Bops, which still offered it or spread it
+  // An Always allow never answers a task's write (taskWrite): one from an older SmileDesk, which still offered it or spread it
   // from another card, is declined here, so the task asks again and someone answers that card itself.
   if (a.reply?.reply === "always" && taskWrite(a)) {
     const why = "Not done: an Always allow doesn't count for a change a task makes. Ask again: it needs Allow once on its own card.";
@@ -315,7 +315,7 @@ async function answerPaused(t: ComputerTurn, a: AppApproval, call: { name: strin
     keep(declined(a));
     return { type: "function_call_output", call_id: callId, output: declined(a) };
   }
-  keep("Not known: Bops stopped while doing it, so it may or may not have happened. Check before doing it again.");
+  keep("Not known: SmileDesk stopped while doing it, so it may or may not have happened. Check before doing it again.");
   const answered = await runFunction(t, { type: "function_call", call_id: callId, name: call.name, arguments: call.arguments }, guard, { approved: true, asked: a });
   const output = "pause" in answered ? "Failed: it still needs the user's OK." : answered.output;
   keep(typeof output === "string" ? output : (output.find((c) => c.type === "input_text")?.text ?? ""));
@@ -599,7 +599,7 @@ const VAULT_TOOL = {
   type: "function",
   name: "sign_in_from_vault",
   description:
-    "Sign in on a sign-in or verification code page with a login the user saved in Logins: Bops finds the page on your screen, fills the saved username, password or 2FA code straight into it and submits; you never see them. Call it whenever a page asks you to sign in, and never type a password yourself. It says whether that worked.",
+    "Sign in on a sign-in or verification code page with a login the user saved in Logins: SmileDesk finds the page on your screen, fills the saved username, password or 2FA code straight into it and submits; you never see them. Call it whenever a page asks you to sign in, and never type a password yourself. It says whether that worked.",
   parameters: { type: "object", additionalProperties: false, required: [], properties: {} },
   strict: true,
 };
@@ -715,12 +715,12 @@ export function pageLook(g: PageGuard, script: string, r: { text: string; run?: 
 }
 
 /**
- * A task that's someone else's work (lib/types.ts othersThread): one someone outside Bops started, or a member with
+ * A task that's someone else's work (lib/types.ts othersThread): one someone outside SmileDesk started, or a member with
  * Write started or told something, or a part of one. It has none of the owner's CRM.
  */
 const outsideTask = (id: string) => othersThread(session(id), session);
 /**
- * A stranger's task (lib/types.ts outsideThread): one someone outside Bops started, or a part of one. It has none of
+ * A stranger's task (lib/types.ts outsideThread): one someone outside SmileDesk started, or a part of one. It has none of
  * the owner's logins either: their saved site logins, keys and Connected apps.
  */
 const strangersTask = (id: string) => outsideThread(session(id), session);

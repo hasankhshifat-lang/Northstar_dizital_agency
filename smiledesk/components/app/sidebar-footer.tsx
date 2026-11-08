@@ -31,7 +31,7 @@ export function footerPillOf({ rest, hover, last }: { rest: FooterPage; hover?: 
   return hover ?? last ?? rest;
 }
 
-/** Where the pill is kept between windows: this window's storage, a convenience (nothing in Bops' state). */
+/** Where the pill is kept between windows: this window's storage, a convenience (nothing in SmileDesk's state). */
 const LAST_PILL_KEY = "bops.footer.lastPill";
 const isFooterPage = (k: unknown): k is FooterPage => k === "vault" || k === "routines" || k === "knowledge" || k === "apps";
 /** The last one when storage can't be used (a private window): for as long as this window is open. */

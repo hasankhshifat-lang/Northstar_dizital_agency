@@ -5,7 +5,7 @@ import { outbox } from "./sync-outbox";
 
 /**
  * A deleted workspace's memory goes from Honcho too (remove.ts deleteWorkspace; orgo-web's project delete
- * makes no Honcho call, and Bops is what made the bank): its own bank whole when no other workspace uses
+ * makes no Honcho call, and SmileDesk is what made the bank): its own bank whole when no other workspace uses
  * it, else only its Orbit issues' sessions in the bank it shares (memory.ts memoryGoesWith). Kept in an
  * outbox on disk (sync-outbox.ts) until memory took it, so a quit or memory not answering loses none of
  * it: tried again after a backoff of 1 to 30 minutes and at the next start. A bank another workspace
@@ -139,7 +139,7 @@ function later() {
   live.timer.unref?.();
 }
 
-/** What waited from an earlier run of Bops goes now (once a start, from workspaces.ts startProjectBinding). */
+/** What waited from an earlier run of SmileDesk goes now (once a start, from workspaces.ts startProjectBinding). */
 export function memoryDeletesOnStart() {
   if (onRunner() || !box.restore().length) return;
   void flushMemoryDeletes().catch((e: Error) => console.warn(`[memory] deleting a workspace's memory: ${e.message}`));

@@ -675,7 +675,7 @@ const kept = async (userId: string) => (await query<{ tier: string; billing: str
 test("billed by use: the notice is taken with any tier or none, a billing it doesn't know is refused, and an Orgo tier is never taken for Free", async () => {
   const { id } = await paidUser();
   assert.equal((await notice({ userId: id, billing: "metered", at: at() })).status, 400, "billing it doesn't know");
-  assert.equal((await notice({ userId: id, tier: "hacker_v2", at: at() })).status, 400, "an Orgo tier on Bops' plans isn't Free");
+  assert.equal((await notice({ userId: id, tier: "hacker_v2", at: at() })).status, 400, "an Orgo tier on SmileDesk's plans isn't Free");
   assert.equal((await notice({ userId: id, tier: "hacker_v2", billing: "plan", at: at() })).status, 400);
   assert.equal(await kept(id), undefined, "nothing kept from those");
   const r = await notice({ userId: id, billing: "usage", tier: "hacker_v2", at: at() });
@@ -767,10 +767,10 @@ test("an app too old to know billing by use is told to update, for a user billed
   // 0.0.33 to 0.0.36 shipped without billing by use: held to it too.
   assert.equal((await ask(id, "/v1/usage", "0.0.36")).status, 426);
   assert.equal(r.json.code, "app_update_required");
-  assert.match(r.json.error, /Update Bops from bops\.bot/);
+  assert.match(r.json.error, /Update SmileDesk from bops\.bot/);
   assert.equal((await ask(id, "/v1/usage")).status, 426, "an app that doesn't say");
   assert.notEqual((await ask(id, "/v1/state", "0.0.32")).status, 426, "its state's calls still go through");
   assert.notEqual((await ask(id, "/v1/usage", "0.0.37")).status, 426);
-  assert.notEqual((await ask(other.id, "/v1/usage", "0.0.32")).status, 426, "a user on Bops' plans isn't held to it");
+  assert.notEqual((await ask(other.id, "/v1/usage", "0.0.32")).status, 426, "a user on SmileDesk's plans isn't held to it");
   await settle(id);
 });

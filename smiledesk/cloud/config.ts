@@ -1,5 +1,5 @@
 /**
- * Bops Cloud's settings, all from the environment (the deploy decrypts Orgo's prod secrets into
+ * SmileDesk Cloud's settings, all from the environment (the deploy decrypts Orgo's prod secrets into
  * it). Read when used, not at import, so tests can set them per case.
  */
 
@@ -38,14 +38,14 @@ export const config = {
   composioKey: () => env("COMPOSIO_API_KEY"),
   /**
    * Composio sign-in setups (auth config ids, comma-separated) that Macs may see and use besides
-   * Composio's own and the ones made through the cloud: Orgo's own OAuth apps, such as Bops' Slack app.
+   * Composio's own and the ones made through the cloud: Orgo's own OAuth apps, such as SmileDesk's Slack app.
    */
   composioAuthConfigs: () =>
     env("BOPS_COMPOSIO_AUTH_CONFIGS")
       .split(",")
       .map((x) => x.trim())
       .filter(Boolean),
-  /** Bops' own Slack app: its id (handed to the Macs) and the secret its events are signed with (/hooks/slack). */
+  /** SmileDesk's own Slack app: its id (handed to the Macs) and the secret its events are signed with (/hooks/slack). */
   slackAppId: () => env("BOPS_SLACK_APP_ID"),
   slackSigningSecret: () => env("BOPS_SLACK_SIGNING_SECRET"),
   typesafeKey: () => env("TYPESAFE_API_KEY"),
@@ -80,13 +80,13 @@ export const config = {
    */
   planSecret: () => env("BOPS_CLOUD_PLAN_SECRET"),
   /**
-   * The secret Bops Cloud signs its asks to wake a bot's computer with (POST <orgo>/api/internal/bops/wake, turns.ts): the
+   * The secret SmileDesk Cloud signs its asks to wake a bot's computer with (POST <orgo>/api/internal/bops/wake, turns.ts): the
    * same BOPS_CLOUD_WAKE_SECRET on both sides, 32+ random bytes. Unset: a computer with no runner listening isn't woken for
    * chat, and its turn waits until it's up or runs out of time.
    */
   wakeSecret: () => env("BOPS_CLOUD_WAKE_SECRET"),
   /**
-   * Chat through Bops Cloud by default (turns.ts autoRoute, chatAutoFor): "on" moves every owner's workspaces once their
+   * Chat through SmileDesk Cloud by default (turns.ts autoRoute, chatAutoFor): "on" moves every owner's workspaces once their
    * bots' computers can answer there, a list of Orgo user ids (commas) only theirs (a canary). Unset or "off": nothing
    * moves there by itself. "revert": the same, and every workspace it moved goes back to the owner's Mac at start. A
    * workspace it moved goes back to the Mac whenever its computers can't answer, whatever this says.

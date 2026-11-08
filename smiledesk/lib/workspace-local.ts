@@ -1,7 +1,7 @@
 import { MAIN_WORKSPACE } from "@/lib/types";
 
 /**
- * What this window keeps for a workspace in localStorage goes with the workspace: every Bops key that
+ * What this window keeps for a workspace in localStorage goes with the workspace: every SmileDesk key that
  * names it as one of its parts (bops.knowledge.seen.<user>.<ws>, bops.crm.view.<ws>.<file>,
  * bops.<group>.open.<user>.<ws>.<section>, bops.<group>.group.<user>.<ws>). Workspace ids are random
  * (ws_...), so no other key has one as a part. Never the default workspace's. Answers how many went;

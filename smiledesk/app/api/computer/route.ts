@@ -59,7 +59,7 @@ export async function POST(request: Request) {
   return Response.json({ ok: true });
 }
 
-/** Delete a bot's computer (only ever one in the Bops workspace); it gets a fresh one on its next task. */
+/** Delete a bot's computer (only ever one in the SmileDesk workspace); it gets a fresh one on its next task. */
 export async function DELETE(request: Request) {
   const unready = notReady();
   if (unready) return unready;

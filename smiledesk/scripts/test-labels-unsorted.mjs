@@ -1,8 +1,8 @@
-// Tests for Unsorted, Bops' label suggestions and a label renamed in one step (lib/skill-labels.ts,
+// Tests for Unsorted, SmileDesk's label suggestions and a label renamed in one step (lib/skill-labels.ts,
 // lib/server/skill-bundle.ts, lib/server/workspace-skills.ts, lib/server/skill-label-model.ts, app/api/skills):
 // Unsorted is no label (none, empty, "Other" or "Unsorted" in any case), never kept as one in the state, a
 // SKILL.md or Orgo's column, and a skill kept as "Other" before is Unsorted; a skill nobody gave a label gets
-// Bops' suggestion (labelBy "auto"), from its words, then one model call for the skills made within a couple of
+// SmileDesk's suggestion (labelBy "auto"), from its words, then one model call for the skills made within a couple of
 // seconds (one new label a call at most; off, offline or no answer: the label from its words), kept out of its
 // SKILL.md and Orgo until it's confirmed, changed or published; the model's call itself (the LIGHT model, not
 // stored, a strict schema, low effort); and a rename: here at once (every skill's label and SKILL.md), then
@@ -231,9 +231,9 @@ await check("Kept as Other or Unsorted before: Unsorted, no label, from now on; 
 
 /* ---------------- Suggestions ---------------- */
 
-await check("A new skill: its own label, the skill's; none: Bops' suggestion from its words, kept out of its SKILL.md and Orgo until confirmed", async () => {
+await check("A new skill: its own label, the skill's; none: SmileDesk's suggestion from its words, kept out of its SKILL.md and Orgo until confirmed", async () => {
   const mark = orgo.calls.length;
-  // Bops' words decide only while the workspace has no labels of its own, so these two come first.
+  // SmileDesk's words decide only while the workspace has no labels of its own, so these two come first.
   const guess = make("ws_a", "Inbox sweep", "Sort the Gmail inbox each morning");
   assert.deepEqual([guess.label, guess.labelBy], ["Email", "auto"]);
   const pub = make("ws_a", "Invoice run", "Send the invoices on Friday");
@@ -317,7 +317,7 @@ await check("The model: skills made within a couple of seconds in one call, amon
     W.labelSuggestForTests.ask = undefined;
     batches()?.clear();
   }
-  // Without Bops Cloud (self hosted here) the model isn't asked at all: the words decide.
+  // Without SmileDesk Cloud (self hosted here) the model isn't asked at all: the words decide.
   const before = asked.length;
   make("ws_a", "Clean the garage", "Once a month");
   await W.labelSuggestForTests.run("ws_a");

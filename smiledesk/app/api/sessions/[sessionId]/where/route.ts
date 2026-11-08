@@ -3,7 +3,7 @@ import { notReady } from "@/lib/server/ready";
 
 /**
  * The user says where a thread runs: answering "Mac or cloud?", moving a cloud thread to their Mac
- * (`move: true`: a stuck one, or one Bops offered to move), or turning that offer down (`move: false`).
+ * (`move: true`: a stuck one, or one SmileDesk offered to move), or turning that offer down (`move: false`).
  */
 export async function POST(request: Request, ctx: RouteContext<"/api/sessions/[sessionId]/where">) {
   const unready = notReady();

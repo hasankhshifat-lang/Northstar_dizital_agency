@@ -1,15 +1,15 @@
 // Tests for who may use what (lib/types.ts levelOf, lib/server/composio.ts, lib/server/access-sync.ts): every bot
 // has Read & act in every account of its workspace by default (not another workspace's), the user's own choice
-// for a bot wins (read, act, or none), and a channel app (Bops' Slack app) has no default; a bot's Composio session holds the apps it has by default, read
-// only where it was set so, and nothing it may not use; a task someone outside Bops started gets no apps; a write
+// for a bot wins (read, act, or none), and a channel app (SmileDesk's Slack app) has no default; a bot's Composio session holds the apps it has by default, read
+// only where it was set so, and nothing it may not use; a task someone outside SmileDesk started gets no apps; a write
 // asks the user (the run pauses for it: lib/server/permission.ts) unless the bot's rules allow it, and Always allow
 // saves such a rule; only the user replies, never a bot's computer; each
 // workspace's whole set goes to its Orgo project as the PUT orgo-web takes, a use goes to the log, and an Orgo
 // without the routes (404) is left alone; a use Orgo didn't take waits in an outbox on disk (written at once
-// as Bops quits) and goes after a restart, once, with its entry's id each time (clientId). After an upgrade from v0.0.28 every bot has exactly what it had
+// as SmileDesk quits) and goes after a restart, once, with its entry's id each time (clientId). After an upgrade from v0.0.28 every bot has exactly what it had
 // there in an account from before (only where it was given it), while one connected from now on is every bot's.
 //
-// The store, Bops Cloud, the vault's keys, Orgo and Composio are fakes: nothing reaches a real service.
+// The store, SmileDesk Cloud, the vault's keys, Orgo and Composio are fakes: nothing reaches a real service.
 // Usage: node --conditions=react-server scripts/test-access.mjs
 import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
@@ -134,14 +134,14 @@ globalThis.__fake = {
     stateReady: () => true,
     userDir: () => scratch,
     watchChanges: () => {},
-    // What runs once changes from elsewhere came in (another Bops's, merged in): arrive() stands in for that.
+    // What runs once changes from elsewhere came in (another SmileDesk's, merged in): arrive() stands in for that.
     watchArrivals: (name, fn) => void arrivals.set(name, fn),
     // No state loads whole in these tests (a sign-in, a restart): nothing to run.
     watchLoads: () => {},
     pullState: async () => {},
     stateEpoch: () => 1,
     statePulledAt: () => 0,
-    // This Bops's device: the Mac's, or a computer's runner's (as it records its routines' runs and its asks).
+    // This SmileDesk's device: the Mac's, or a computer's runner's (as it records its routines' runs and its asks).
     stateDevice: () => (process.env.BOPS_RUNNER === "1" ? "dev_runner" : "dev_mac"),
     ownSession: (s) => (s.by ? s.by === globalThis.__fake.store.stateDevice() : process.env.BOPS_RUNNER !== "1"),
   },
@@ -186,7 +186,7 @@ await check("every bot reads and acts everywhere by default; the user's choice w
   assert.equal(T.levelOf(bot("boppy"), account("ca_lo")), null);
   assert.equal(T.levelOf(bot("iris"), account("ca_notion")), "read");
   assert.equal(T.levelOf(bot("iris"), account("ca_hubspot")), null, "none is no access");
-  assert.equal(T.levelOf(bot("boppy"), account("ca_slack")), null, "Bops' Slack app only when given");
+  assert.equal(T.levelOf(bot("boppy"), account("ca_slack")), null, "SmileDesk's Slack app only when given");
   assert.equal(T.levelOf({ access: { ca_slack: "act" } }, account("ca_slack")), "act");
   assert.equal(T.accessIsDefault(bot("iris"), account("ca_gmail")), true);
   assert.equal(T.accessIsDefault(bot("iris"), account("ca_hubspot")), false);
@@ -209,11 +209,11 @@ await check("a bot's Composio session holds the apps it has by default, read onl
   assert.match(C.appList(bot("iris")), /^Gmail \(sam@acme\.com: read & act\), Notion \(Work: read only\)$/);
 });
 
-await check("a task someone outside Bops started gets no apps, nor a part of one", async () => {
+await check("a task someone outside SmileDesk started gets no apps, nor a part of one", async () => {
   const n = created.length;
   state.sessions.push({ id: "ses_out_part", botId: "iris", partOf: "ses_out", replies: [] });
   for (const sessionId of ["ses_out", "ses_out_part"]) {
-    assert.match(await C.findAppActions("iris", "find emails", { sessionId }), /^Not on this task: someone outside Bops asked for it/, sessionId);
+    assert.match(await C.findAppActions("iris", "find emails", { sessionId }), /^Not on this task: someone outside SmileDesk asked for it/, sessionId);
     assert.match(await C.runAppAction("iris", "GMAIL_FETCH_EMAILS", {}, { sessionId }), /^Not on this task/, sessionId);
   }
   assert.equal(created.length, n);
@@ -420,7 +420,7 @@ await check("a member with Write answers as themselves (member-acts.ts): their a
   state.appApprovals = [];
 });
 
-await check("a request shows who and what its inputs name, as best Bops can tell, for the user to read: whatever the input is called, nested anywhere, all of them", () => {
+await check("a request shows who and what its inputs name, as best SmileDesk can tell, for the user to read: whatever the input is called, nested anywhere, all of them", () => {
   assert.deepEqual(C.resourcesOf({ recipient_email: "ava@acme.example", subject: "Hi", body: "Write to max@acme.example if you need me" }), ["ava@acme.example"], "an address in the text reaches no one");
   assert.deepEqual(C.resourcesOf({ recipient_email: "ava@acme.example", extra_recipients: ["eve@evil.example"] }), ["ava@acme.example", "eve@evil.example"], "Gmail's extra recipients");
   assert.deepEqual(C.resourcesOf({ to_email: "ava@acme.example", cc_emails: ["eve@evil.example"], bcc_emails: ["dana@acme.example"] }), ["ava@acme.example", "eve@evil.example", "dana@acme.example"], "Outlook's cc and bcc");
@@ -431,7 +431,7 @@ await check("a request shows who and what its inputs name, as best Bops can tell
   assert.equal(C.resourcesOf({ to: Array.from({ length: 12 }, (_, i) => `p${i}@acme.example`) }).length, 12, "however many");
 });
 
-await check("on a computer's runner an action goes as on the Mac: the bot's rule covers it there too, and on the user's yes it's made with the runner's own credential only, nothing of their answer sent to Bops Cloud", async () => {
+await check("on a computer's runner an action goes as on the Mac: the bot's rule covers it there too, and on the user's yes it's made with the runner's own credential only, nothing of their answer sent to SmileDesk Cloud", async () => {
   const cloud = globalThis.__fake.cloud;
   const was = { ...cloud };
   const made = [];
@@ -447,7 +447,7 @@ await check("on a computer's runner an action goes as on the Mac: the bot's rule
     // An empty file input in the call the user said yes to: it goes as it is (Composio drops it before sending).
     assert.equal(await C.runAppAction("boppy", "GMAIL_SEND_EMAIL", { to: "dana@acme.example", attachment: "" }, { sessionId: "ses_mine" }, null, { approved: true }), '{"ok":true}', "their yes");
     assert.equal(executed.length, ran + 2);
-    assert.ok(made.every((o) => !Object.keys(o.defaultHeaders ?? {}).some((h) => /^x-bops-ok$/i.test(h))), "no answer named to Bops Cloud");
+    assert.ok(made.every((o) => !Object.keys(o.defaultHeaders ?? {}).some((h) => /^x-bops-ok$/i.test(h))), "no answer named to SmileDesk Cloud");
   } finally {
     globalThis.__fake.composio.made = realMade;
     Object.assign(cloud, was);
@@ -456,7 +456,7 @@ await check("on a computer's runner an action goes as on the Mac: the bot's rule
   }
 });
 
-await check("only the user replies, from a Bops of their own: a bot's computer can't (it writes no reply), nor anyone for a request that isn't waiting", async () => {
+await check("only the user replies, from a SmileDesk of their own: a bot's computer can't (it writes no reply), nor anyone for a request that isn't waiting", async () => {
   state.appApprovals = [{ id: "apr_run", botId: "iris", threadId: "ses_routine", askedBy: "dev_runner", action: "GMAIL_SEND_EMAIL in Gmail (sam@acme.com)", resources: ["dana@acme.example"], preview: "to: dana@acme.example", at: 1, resume: { engine: "responses", responseId: "resp_1", callId: "call_1", call: { name: "use_app", arguments: "{}" } } }];
   process.env.BOPS_RUNNER = "1";
   try {
@@ -502,7 +502,7 @@ await check("on the way out the outbox is written at once, not half a second lat
   await C.runAppAction("iris", "GMAIL_FETCH_EMAILS", {}, { sessionId: "ses_exit" });
   assert.equal(existsSync(file), false, "not written yet: it's due in half a second");
   await globalThis.__bopsExitWork.get("outbox:access-uses")();
-  assert.deepEqual(JSON.parse(readFileSync(file, "utf8")).entries.map((e) => e.item.viaId), ["ses_exit"], "written as Bops goes");
+  assert.deepEqual(JSON.parse(readFileSync(file, "utf8")).entries.map((e) => e.item.viaId), ["ses_exit"], "written as SmileDesk goes");
   await A.accessSyncForTests.flushAll();
   A.accessSyncForTests.reset();
   O.outboxForTests.restart();
@@ -521,7 +521,7 @@ await check("a use Orgo didn't take waits in an outbox on disk: after a quit and
   const file = join(scratch, "outbox", "access-uses.json");
   const kept = JSON.parse(readFileSync(file, "utf8")).entries;
   assert.deepEqual(kept.map((e) => [e.wsId, e.item.viaId]), [["ws_main", "ses_outbox"]], "kept on disk with its workspace");
-  // Bops quits (what's in memory is gone) and starts again, with Orgo back.
+  // SmileDesk quits (what's in memory is gone) and starts again, with Orgo back.
   A.accessSyncForTests.reset();
   O.outboxForTests.restart();
   orgoAnswer = (method) => ({ status: method === "PUT" ? 200 : 201, json: {} });
@@ -621,7 +621,7 @@ await check("accounts connected from now on are every bot's of their workspace; 
   });
   const levels = (a) => state.bots.map((b) => T.levelOf(b, a));
   // Found in Composio, connected where this Mac didn't see who was picked (a Mac still on v0.0.28, whose
-  // state Bops Cloud keeps out until it's updated): nobody's until given, Just do it can't use it either.
+  // state SmileDesk Cloud keeps out until it's updated): nobody's until given, Just do it can't use it either.
   await C.syncApps();
   assert.deepEqual([account("ca_found")?.workspaceId, account("ca_found")?.onlyGiven], ["ws_main", true]);
   assert.deepEqual(levels(account("ca_found")), [null, null, null, null, null]);
@@ -727,7 +727,7 @@ await check("signing in again keeps the account's check (it moves to the new acc
   assert.deepEqual(suggested.map((x) => [x.fn, x.args[0]]), [["dropChecks", "ca_gmail6"]]);
 });
 
-await check("POST /api/apps takes How often from the Bops window only, as a schedule Bops keeps", async () => {
+await check("POST /api/apps takes How often from the SmileDesk window only, as a schedule SmileDesk keeps", async () => {
   const route = await import(`${root}/app/api/apps/route.ts`);
   const post = (body, headers = {}) => route.POST(new Request("http://localhost/api/apps", { method: "POST", headers: { "content-type": "application/json", ...headers }, body: JSON.stringify(body) }));
   state.connecting = [];

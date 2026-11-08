@@ -145,7 +145,7 @@ const dollars = (micros: number) => `$${(Math.max(0, micros) / 1e6).toFixed(2)}`
 const turnsIn = (json: unknown): Seen[] => (isObject(json) && Array.isArray(json.data) ? (json.data as Turn[]) : []).filter((t): t is Seen => typeof t?.id === "string");
 const lead = () => (guardTiming.everyMs + guardTiming.stopMs) / 1000;
 
-/** In the words for how the user is billed (credit.ts creditWords): AI credit on Bops' plans, Orgo credit billed by use. */
+/** In the words for how the user is billed (credit.ts creditWords): AI credit on SmileDesk's plans, Orgo credit billed by use. */
 const emptyVerdict = (billing: BopsBilling): Verdict => ({ code: AI_CREDIT_EMPTY, message: creditWords(billing).empty });
 // No amounts in these: an app before 0.0.16 sends a task's failure on by email, text or channel too.
 const lowVerdict = (billing: BopsBilling): Verdict => ({ code: AI_CREDIT_LOW, message: creditWords(billing).stopped });

@@ -1,7 +1,7 @@
 /**
  * When routines run: the next time a schedule comes due, how a schedule reads, and how a moment reads
  * next to now. The same code for the app on a Mac (lib/server/routines.ts, the bot panel, the Autopilot
- * page) and for Bops Cloud later, so a routine runs at the same moments wherever it runs. Both import
+ * page) and for SmileDesk Cloud later, so a routine runs at the same moments wherever it runs. Both import
  * this file, so it stays erasable TypeScript with no imports: plain constants and pure functions only.
  *
  * Times of day ("HH:MM", 24h; "9 AM" reads too) are wall clock times in a time zone: an IANA name such
@@ -313,7 +313,7 @@ function allowedFrom(t: number, s: Windowed, tz?: string): number | undefined {
  * says so. Further back: refused.
  */
 export function resolveOnce(at: number, now: number, tz?: string): { at: number; moved: boolean } | { refused: string } {
-  if (!Number.isFinite(at) || !Number.isFinite(now)) return { refused: "That isn't a time Bops can read." };
+  if (!Number.isFinite(at) || !Number.isFinite(now)) return { refused: "That isn't a time SmileDesk can read." };
   if (at > now) return { at, moved: false };
   if (now - at <= JUST_NOW) return { at: now, moved: false };
   if (now - at > DAY) return { refused: "That time has passed." };
@@ -414,7 +414,7 @@ export function normalizeSchedule(input: unknown): { schedule: ScheduleLike } | 
   switch (s.kind) {
     case "once": {
       const at = typeof s.at === "number" ? s.at : typeof s.at === "string" ? Date.parse(s.at) : NaN;
-      return Number.isFinite(at) ? { schedule: { kind: "once", at } } : { error: "That isn't a time Bops can read." };
+      return Number.isFinite(at) ? { schedule: { kind: "once", at } } : { error: "That isn't a time SmileDesk can read." };
     }
     case "daily":
     case "weekdays": {
@@ -451,7 +451,7 @@ export function normalizeSchedule(input: unknown): { schedule: ScheduleLike } | 
       return "error" in w ? w : { schedule: { kind: "before_event", minutes: m, source: "googlecalendar", ...w } };
     }
   }
-  return { error: "That isn't a schedule Bops knows." };
+  return { error: "That isn't a schedule SmileDesk knows." };
 }
 
 /* ---------------- How it reads ---------------- */

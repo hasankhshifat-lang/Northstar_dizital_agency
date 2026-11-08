@@ -1,4 +1,4 @@
-// Tests for a computer that's asleep (Free's Bops computer, suspended after 15 minutes nobody used it):
+// Tests for a computer that's asleep (Free's SmileDesk computer, suspended after 15 minutes nobody used it):
 // nothing the app does to look at it wakes it, and nothing takes it for gone. The computer view reads the
 // computer's status only, never its screens (app/api/computer); a screenshot Orgo
 // answers with 409 computer_asleep is asleep, never gone (app/api/screen, healIfGone); how often the app
@@ -21,7 +21,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 // A file store, loaded at once and always ready (lib/server/persist.ts); the Mac app's ways (cloud.ts cloudOn,
-// so Bops says when its computer is in use) once it's loaded, below.
+// so SmileDesk says when its computer is in use) once it's loaded, below.
 process.env.BOPS_SELF_HOSTED = "1";
 for (const k of ["ORGO_API_KEY", "BOPS_ORGO_WORKSPACE", "BOPS_ORGO_TEMPLATE", "BOPS_DATABASE_URL", "AGENTMAIL_API_KEY", "BOPS_MAIL_DOMAIN", "OPENAI_API_KEY", "TAILSCALE_AUTH_KEY", "BOPS_WEBRTC", "BOPS_SCREEN_STREAM"])
   delete process.env[k];
@@ -269,7 +269,7 @@ assert.equal(asked("POST", "/api/bops/computer/active", n), 1);
 assert.equal(asked("POST", `/api/computers/${PC}/resume`, n), 0, "nothing to wake");
 X.returnControl();
 // Free's 10 hours this month used: it can't wake, so control goes straight back, and the bot says why in Orgo's words.
-const usedUp = "Your free Bops computer has used its 10 hours this month. It's back on November 1, or upgrade to Pro to keep it on.";
+const usedUp = "Your free SmileDesk computer has used its 10 hours this month. It's back on November 1, or upgrade to Pro to keep it on.";
 asleepFor();
 pc.refuse = () => json(402, { error: usedUp, code: "bops_free_hours" });
 await X.takeOver("boppy", 100);

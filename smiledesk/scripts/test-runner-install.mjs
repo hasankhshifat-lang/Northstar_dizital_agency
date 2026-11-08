@@ -1,4 +1,4 @@
-// Tests for setting Bops runners up on the bots' computers and stopping them (lib/server/runner-install.ts),
+// Tests for setting SmileDesk runners up on the bots' computers and stopping them (lib/server/runner-install.ts),
 // against a fake Orgo: which computers get one (each a bot works on, as Orgo's map and this Mac both have
 // it), what goes to a computer (no command ever carries a key, the window token or the upload's link), the
 // version rules (never an older one over a newer; the same version again only from the Mac that set it up
@@ -9,7 +9,7 @@
 // the workspace, the health check (loopback only), a runner marked up that's gone from its computer, a
 // computer down or asleep with its routines overdue (they wait for it, saying why: never the Mac's for it),
 // Orgo's copy of the routines following each runner up or down, and the stop (This Mac, the bots in
-// browsers on the Mac, a computer deleted, no bot on it any more: taken off, the key Bops gave revoked by
+// browsers on the Mac, a computer deleted, no bot on it any more: taken off, the key SmileDesk gave revoked by
 // any Mac, its threads ended). What the runner signs in with (the health check's auth=, kept as
 // RunnerState.auth), its computer's identity in this release (phase 1: the key step as before, whatever
 // identity answers), the way back (a runner with no key and no identity it can use gets its key again,
@@ -359,15 +359,15 @@ await check("a computer that came with its key (a template that asks for it): no
   await I.lookAtRunners();
   const x = runner();
   assert.equal(x?.status, "running", JSON.stringify(x));
-  assert.deepEqual([x.keyMade, x.keyId], [undefined, undefined], "not Bops' key");
+  assert.deepEqual([x.keyMade, x.keyId], [undefined, undefined], "not SmileDesk's key");
   assert.ok(!orgo.calls.some((c) => c.path.includes("/orgo-key")), "Orgo isn't asked for a key");
   orgo.mode = "mac";
   await I.lookAtRunners();
   assert.equal(runner(), undefined, "stopped and out of the state");
   assert.equal(pc(C1).program, false, "taken off its computer");
   assert.equal(pc(C1).key, true, "its key stays: the computer's, revoked with it");
-  assert.ok(!orgo.calls.some((c) => c.path.includes("/orgo-key")), "and never revoked by Bops");
-  // Set up again later (a new release): still the computer's own, and still not marked as Bops'.
+  assert.ok(!orgo.calls.some((c) => c.path.includes("/orgo-key")), "and never revoked by SmileDesk");
+  // Set up again later (a new release): still the computer's own, and still not marked as SmileDesk's.
   reset();
   pc(C1).key = true;
   pc(C1).current = "0.0.28-old";
@@ -377,11 +377,11 @@ await check("a computer that came with its key (a template that asks for it): no
   assert.ok(!orgo.calls.some((c) => c.path.includes("/orgo-key")));
 });
 
-await check("the key Bops gave is kept across a set-up again, and taken back once at the stop (200 or 404 is done)", async () => {
+await check("the key SmileDesk gave is kept across a set-up again, and taken back once at the stop (200 or 404 is done)", async () => {
   reset();
   await I.lookAtRunners();
   assert.deepEqual([runner().keyMade, runner().keyId], [true, "key-1"]);
-  // A newer release: the computer has the key Bops gave it, so it isn't asked for again, and it stays Bops' to take back.
+  // A newer release: the computer has the key SmileDesk gave it, so it isn't asked for again, and it stays SmileDesk's to take back.
   rmSync(join(scratch, "dist-runner"), { recursive: true, force: true });
   mkdirSync(join(scratch, "dist-runner"));
   bundle("bops-server-0.0.30-buildB2.tgz");
@@ -396,7 +396,7 @@ await check("the key Bops gave is kept across a set-up again, and taken back onc
   await I.lookAtRunners();
   assert.equal(runner(), undefined);
   assert.equal(orgo.calls.filter((c) => c.method === "DELETE" && c.path === `/api/computers/${C1}/orgo-key`).length, 1);
-  // Orgo didn't answer the revoke: it stays Stopping with the key still Bops' to take back, and the next look tries again.
+  // Orgo didn't answer the revoke: it stays Stopping with the key still SmileDesk's to take back, and the next look tries again.
   reset();
   await I.lookAtRunners();
   orgo.deleteAnswer = { status: 503, json: {} };
@@ -420,7 +420,7 @@ await check("set up and up to date: nothing more is sent, and a computer asleep 
   assert.ok(!orgo.calls.some((c) => c.method !== "GET"), "nothing but reads");
 });
 
-await check("a computer asleep is never woken to set a runner up: not to upgrade one that's up after a Bops update, not for a first one, not to try again one that didn't start; up, it's set up", async () => {
+await check("a computer asleep is never woken to set a runner up: not to upgrade one that's up after a SmileDesk update, not for a first one, not to try again one that didn't start; up, it's set up", async () => {
   // An older runner up on a computer asleep, nothing overdue, nothing running there: the 0.0.29 bundle waits for it.
   reset();
   pc(C1).key = true;
@@ -432,7 +432,7 @@ await check("a computer asleep is never woken to set a runner up: not to upgrade
   assert.equal(orgo.bash.length, 0, "no command: one would wake it");
   assert.equal(pc(C1).status, "suspended", "still asleep");
   assert.deepEqual([runner().status, runner().version, runner().upgrading], ["running", "0.0.28", undefined], "the old runner kept as it is");
-  // None there yet (the first look in the Cloud), and one that didn't start, after a Bops restart (no backoff in memory).
+  // None there yet (the first look in the Cloud), and one that didn't start, after a SmileDesk restart (no backoff in memory).
   for (const before of [undefined, { status: "failed", version: "0.0.29", buildId: "buildA1", by: ME, error: "its computer didn't answer", at: Date.now() - 60_000 }]) {
     reset();
     pc(C1).status = "suspended";
@@ -477,7 +477,7 @@ await check("versions: a newer one replaces it, never an older one; the same ver
   await I.lookAtRunners();
   assert.equal(runner().status, "running");
   assert.equal(runner().version, "0.0.29");
-  assert.deepEqual([runner().keyMade, runner().keyId], [true, "key-other"], "the key another Mac had Orgo give it stays Bops' to take back");
+  assert.deepEqual([runner().keyMade, runner().keyId], [true, "key-other"], "the key another Mac had Orgo give it stays SmileDesk's to take back");
   assert.ok(!orgo.calls.some((c) => c.path.includes("/orgo-key")), "no new key, and theirs isn't revoked");
   // The computer has a newer one than the state says: it's never replaced.
   reset();
@@ -525,7 +525,7 @@ await check("someone else can use the workspace: no runner, nothing on the compu
     assert.deepEqual([runner().status, runner().error, runner().keyMade], ["failed", error, undefined], String(status));
     assert.ok(!bashText().includes("__BOPS_INSTALLED__"));
   }
-  // Someone else can use it after it was set up: stopped and taken off, the key Bops gave revoked.
+  // Someone else can use it after it was set up: stopped and taken off, the key SmileDesk gave revoked.
   reset();
   await I.lookAtRunners();
   orgo.full = true;
@@ -548,7 +548,7 @@ await check("no bundle, a bad health check, a computer Orgo's map doesn't have: 
   reset();
   writeFileSync(join(scratch, "dist-runner", `${BUNDLE}.sha256`), `${"0".repeat(64)}  another.tgz\n`);
   assert.equal(I.findBundle(), null);
-  // Up but never signed in (Bops Cloud refused its key, say): stopped, and said why.
+  // Up but never signed in (SmileDesk Cloud refused its key, say): stopped, and said why.
   reset();
   orgo.health = "__BOPS_NO_STATE__";
   await I.lookAtRunners();
@@ -564,7 +564,7 @@ await check("no bundle, a bad health check, a computer Orgo's map doesn't have: 
   orgo.bash.length = 0;
   await I.lookAtRunners();
   assert.equal(orgo.bash.length, 0, "not before then");
-  // A computer this Mac has but Orgo's map doesn't (not one of the user's live Bops computers): none.
+  // A computer this Mac has but Orgo's map doesn't (not one of the user's live SmileDesk computers): none.
   reset();
   orgo.map = [C2];
   await I.lookAtRunners();
@@ -588,12 +588,12 @@ await check("This Mac: the runner is taken off its computer, its key revoked, it
   await I.lookAtRunners();
   assert.equal(runner(), undefined, "gone from the state");
   assert.equal(pc(C1).program, false);
-  assert.equal(pc(C1).key, false, "the key Bops gave it, taken off by Orgo with its revoke");
+  assert.equal(pc(C1).key, false, "the key SmileDesk gave it, taken off by Orgo with its revoke");
   assert.ok(orgo.bash.some((b) => b.command.includes("__BOPS_OFF__")));
   const off = orgo.bash.find((b) => b.command.includes("__BOPS_OFF__")).command;
   assert.match(off, /supervisorctl stop bops-runner/);
   assert.match(off, /rm -f \/etc\/supervisor\/conf\.d\/bops-runner\.conf \/opt\/bops\/runner\/run\.sh\n/);
-  assert.ok(!/orgo-secrets|\/root\/\.env|ORGO_API_KEY/.test(off), "the computer's key is never Bops' to delete");
+  assert.ok(!/orgo-secrets|\/root\/\.env|ORGO_API_KEY/.test(off), "the computer's key is never SmileDesk's to delete");
   assert.ok(orgo.calls.some((c) => c.method === "DELETE" && c.path === `/api/computers/${C1}/orgo-key`), "its key revoked");
   assert.deepEqual(orgo.ended, [{ device: `device:u1:${C1}`, why: "Stopped: routines run on your Mac now." }]);
   assert.ok(!orgo.calls.some((c) => c.path.endsWith("/bops")), "Orgo's map isn't needed for that");
@@ -610,7 +610,7 @@ await check("stopping: an asleep computer isn't woken (its key is revoked), a de
   assert.equal(orgo.bash.length, 0, "not woken");
   assert.equal(pc(C1).status, "suspended");
   assert.equal(runner().status, "stopping", "taken off when it's up");
-  assert.deepEqual([runner().keyMade, runner().keyId], [undefined, undefined], "but the key Bops gave it revoked now");
+  assert.deepEqual([runner().keyMade, runner().keyId], [undefined, undefined], "but the key SmileDesk gave it revoked now");
   pc(C1).status = "running";
   await I.lookAtRunners();
   assert.equal(runner(), undefined);
@@ -635,7 +635,7 @@ await check("stopping: an asleep computer isn't woken (its key is revoked), a de
   assert.ok(orgo.calls.some((c) => c.method === "DELETE" && c.path === `/api/computers/${C1}/orgo-key`), "its key revoked");
   assert.equal(runner(), undefined, "and it's out of the state");
   assert.equal(pc(C1).program, false, "taken off its computer");
-  // An entry from before keyMade (a key made by the old bops-runner-key route, with keyBy): it loads, counts as Bops' key, and is revoked.
+  // An entry from before keyMade (a key made by the old bops-runner-key route, with keyBy): it loads, counts as SmileDesk's key, and is revoked.
   reset();
   pc(C1).key = true;
   state.runners = { [C1]: { status: "running", version: "0.0.29", buildId: "buildA1", by: "other", keyId: "key-old", keyBy: "other", at: Date.now() } };
@@ -643,7 +643,7 @@ await check("stopping: an asleep computer isn't woken (its key is revoked), a de
   await I.lookAtRunners();
   assert.equal(orgo.calls.filter((c) => c.method === "DELETE" && c.path === `/api/computers/${C1}/orgo-key`).length, 1, "revoked");
   assert.equal(runner(), undefined);
-  // And one set up again keeps it as Bops' (keyMade), without its old keyBy.
+  // And one set up again keeps it as SmileDesk's (keyMade), without its old keyBy.
   reset();
   pc(C1).key = true;
   pc(C1).current = "0.0.28-old";
@@ -765,7 +765,7 @@ await check("one that's up isn't set up again while it answers a reply (a restar
   assert.ok(script.includes("trap 'rm -f /var/run/bops/upgrading' EXIT"), "the hold goes when the script ends, whatever happens");
 });
 
-await check("a runner kept on for a run paused for the owner's OK (routines moved to the Mac) whose workspace is then shared: that run ends for good with it, as no runner is left to read the answer; so does one of a runner that failed with no key of Bops' to take back", async () => {
+await check("a runner kept on for a run paused for the owner's OK (routines moved to the Mac) whose workspace is then shared: that run ends for good with it, as no runner is left to read the answer; so does one of a runner that failed with no key of SmileDesk's to take back", async () => {
   const device = `device:u1:${C1}`;
   const paused = () => {
     const run = { id: "ses_kept", botId: "boppy", chatId: "bot:boppy", sentVia: "routine", title: "Weekly email", goal: "x", host: "orgo", status: "queued", by: device, steps: [], replies: [], createdAt: Date.now() - 60_000 };
@@ -787,7 +787,7 @@ await check("a runner kept on for a run paused for the owner's OK (routines move
   assert.deepEqual(orgo.endedForGood, [device], "ended for good, the paused run with it");
   assert.equal(pc(C1).program, false, "taken off its computer");
   assert.deepEqual([runner().status, runner().error], ["failed", "someone else can use this workspace"]);
-  // A runner on its computer's identity (no key of Bops') that failed with a run it kept paused, then shared: the same.
+  // A runner on its computer's identity (no key of SmileDesk's) that failed with a run it kept paused, then shared: the same.
   reset();
   state.runners = { [C1]: { status: "failed", version: "0.0.29", buildId: "buildA1", by: ME, error: "its runner didn't answer", at: Date.now() } };
   paused();
@@ -811,7 +811,7 @@ await check("a runner that failed with a run paused for the owner's OK, whose co
     ["its bot moved off it", () => (state.bots = state.bots.map((b) => ({ ...b, computerId: undefined, computer: undefined })))],
   ]) {
     reset();
-    // Its program died on the computer while the run waited (the Mac's look found it gone: stillRuns), the key Bops gave it still there.
+    // Its program died on the computer while the run waited (the Mac's look found it gone: stillRuns), the key SmileDesk gave it still there.
     state.runners = { [C1]: { status: "failed", version: "0.0.29", buildId: "buildA1", by: ME, error: "it stopped on its computer", at: Date.now(), keyMade: true, keyId: "key-1" } };
     paused();
     before();
@@ -943,7 +943,7 @@ await check("a runner marked up that left a routine well past its time, and is g
   assert.equal(orgo.bash.length, 0);
   assert.equal(runner().status, "running");
   assert.deepEqual(orgo.down, [[C1, "suspended"]]);
-  assert.equal(runner().down?.status, "suspended", "in the state, for every Bops to show");
+  assert.equal(runner().down?.status, "suspended", "in the state, for every SmileDesk to show");
   // Up again at the next look: cleared.
   pc(C1).status = "running";
   orgo.supervisor = undefined;
@@ -1013,7 +1013,7 @@ await check("a runner the Mac marks failed: the threads it was running end, so n
   assert.deepEqual(orgo.ended, []);
 });
 
-await check("a runner marked up whose computer is down and doesn't come back by itself (stopped, frozen, in error): its overdue routines wait for it at each look, saying why, set up again or not, and are never taken over; one waking, or a status Bops doesn't know, says nothing", async () => {
+await check("a runner marked up whose computer is down and doesn't come back by itself (stopped, frozen, in error): its overdue routines wait for it at each look, saying why, set up again or not, and are never taken over; one waking, or a status SmileDesk doesn't know, says nothing", async () => {
   for (const status of ["frozen", "stopped", "error"]) {
     reset();
     await I.lookAtRunners();
@@ -1028,7 +1028,7 @@ await check("a runner marked up whose computer is down and doesn't come back by 
     assert.equal(runner().down?.status, status, `${status}: at each look`);
     assert.equal(pc(C1).status, status, `${status}: never started`);
   }
-  // On its way up (or a status Bops doesn't know), or gone from Orgo: nothing to say.
+  // On its way up (or a status SmileDesk doesn't know), or gone from Orgo: nothing to say.
   for (const status of ["starting", "resuming", "suspending", "gone"]) {
     reset();
     await I.lookAtRunners();
@@ -1198,7 +1198,7 @@ await check("the way back: a runner with no key and no identity it can use gets 
   await I.lookAtRunners();
   assert.equal(keyCalls("PUT"), 1);
   assert.equal(orgo.starts, 0, "it's up: it picks the key up itself");
-  // Identity answers but the runner says it has nothing (Bops Cloud can't take it yet, say): a key all the same.
+  // Identity answers but the runner says it has nothing (SmileDesk Cloud can't take it yet, say): a key all the same.
   reset();
   pc(C1).key = true;
   await I.lookAtRunners();
@@ -1311,7 +1311,7 @@ await check("phase 2 (IDENTITY_ONLY): no key where identity answers, none and no
   }
 });
 
-await check("phase 2: the key Bops gave is taken back only once the new build runs on identity, never when its upload, install or health fails, and never one the computer came with", async () => {
+await check("phase 2: the key SmileDesk gave is taken back only once the new build runs on identity, never when its upload, install or health fails, and never one the computer came with", async () => {
   const upFrom = () => {
     reset();
     T.identityOnly(true);
@@ -1369,7 +1369,7 @@ await check("phase 2: the key Bops gave is taken back only once the new build ru
 
 /* ---------------- The commands as shell ---------------- */
 
-await check("a shared workspace whose chat goes through Bops Cloud keeps its runner, on its computer's identity alone: never a key given, none on it, one up on a key stopped first, the way back never gives one; a computer that serves another workspace too never does", async () => {
+await check("a shared workspace whose chat goes through SmileDesk Cloud keeps its runner, on its computer's identity alone: never a key given, none on it, one up on a key stopped first, the way back never gives one; a computer that serves another workspace too never does", async () => {
   const cloudPath = () => (state.workspaces[0].chatOn = "cloud");
   // Shared and on the cloud path, identity answering: set up with no key, saying it runs on identity.
   reset();
@@ -1417,7 +1417,7 @@ await check("a shared workspace whose chat goes through Bops Cloud keeps its run
     assert.ok(!bashText().includes("__BOPS_INSTALLED__"), `ident=${ident} key=${key}`);
   }
 
-  // One up on the key Bops gave, before the workspace was shared and turned to the cloud path: stopped first (the key
+  // One up on the key SmileDesk gave, before the workspace was shared and turned to the cloud path: stopped first (the key
   // revoked), then set up again on identity alone.
   reset();
   await I.lookAtRunners();
@@ -1445,15 +1445,15 @@ await check("a shared workspace whose chat goes through Bops Cloud keeps its run
   two.bots[0] = { ...two.bots[0], computerId: undefined, computer: "shared" };
   assert.equal(I.sharedRunnerOk(two, C1), false, "the free computer serving two workspaces");
   assert.equal(I.sharedRunnerOk({ ...state, workspaces: [{ id: "ws_main" }] }, C1), false, "the switch off");
-  // Bops Cloud may move it by itself (chatAuto): kept too, unless the owner chose the Mac.
-  assert.equal(I.sharedRunnerOk({ ...state, workspaces: [{ id: "ws_main", chatAuto: true }] }, C1), true, "Bops Cloud may move it");
+  // SmileDesk Cloud may move it by itself (chatAuto): kept too, unless the owner chose the Mac.
+  assert.equal(I.sharedRunnerOk({ ...state, workspaces: [{ id: "ws_main", chatAuto: true }] }, C1), true, "SmileDesk Cloud may move it");
   assert.equal(I.sharedRunnerOk({ ...state, workspaces: [{ id: "ws_main", chatOn: "mac", chatAuto: true }] }, C1), false, "the owner chose the Mac");
   assert.equal(I.sharedRunnerOk({ ...state, workspaces: [{ id: "ws_main", chatOn: "mac" }] }, C1), false, "the Mac, chosen");
   assert.equal(I.sharedRunnerOk({ ...two, workspaces: [{ id: "ws_main", chatAuto: true }, { id: "ws_two", chatAuto: true }] }, C1), false, "never two workspaces");
 });
 
-await check("a shared workspace Bops Cloud may move by itself gets its runner on identity alone, so Bops Cloud can move it; one whose owner chose the Mac gets none; another Mac's take down waits a while", async () => {
-  // Bops Cloud may move it (chatAuto), identity answering: set up with no key, marked shared on its state.
+await check("a shared workspace SmileDesk Cloud may move by itself gets its runner on identity alone, so SmileDesk Cloud can move it; one whose owner chose the Mac gets none; another Mac's take down waits a while", async () => {
+  // SmileDesk Cloud may move it (chatAuto), identity answering: set up with no key, marked shared on its state.
   reset();
   orgo.full = true;
   state.workspaces[0].chatAuto = true;

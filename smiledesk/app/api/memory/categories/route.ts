@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 /*
  * The categories that fill themselves from memory (lib/server/memory-categories.ts), for the sidebar
- * and their page. Only the Bops window may call these (proxy.ts). `ws` is the workspace, the current
+ * and their page. Only the SmileDesk window may call these (proxy.ts). `ws` is the workspace, the current
  * one when not given.
  */
 
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
         forgetItems(ws, ids as string[]);
         break;
       case "deleteEverywhere": {
-        if (b.preview === true) return Response.json({ sessions: await deletePreview(ws, b.id ?? ""), note: "These chats stay in your Bops chat history; their memory copy is deleted." });
+        if (b.preview === true) return Response.json({ sessions: await deletePreview(ws, b.id ?? ""), note: "These chats stay in your SmileDesk chat history; their memory copy is deleted." });
         const gone = await deleteEverywhere(ws, b.id ?? "", b.sessions);
         return Response.json({ ...snapshot(ws), deleted: gone.map((x) => x.name) });
       }

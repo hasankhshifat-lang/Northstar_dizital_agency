@@ -13,7 +13,7 @@ import { dropUploads, uploadPath, uploadsDir } from "./uploads";
  * Recently deleted (Settings → Your data, AppState.privacy.deletedDays): with a number of days set, what the
  * user deletes (a message or several, a chat's every message, a finished thread with what it said in the chat,
  * a group chat, or Delete now's messages and threads as one) still goes from
- * the chat and from Bops Cloud at once, as a delete always did, but a copy stays on the Mac it was deleted
+ * the chat and from SmileDesk Cloud at once, as a delete always did, but a copy stays on the Mac it was deleted
  * on, and only there, in the user's folder (.data/users/<id>/deleted/): one JSON file per delete, with a
  * folder beside it for the images its messages showed, the pages they linked to and its threads' last frames,
  * moved there (what a message still in the chats shows stays where it is too, linked, not copied). Orgo never has it. The
@@ -25,7 +25,7 @@ import { dropUploads, uploadPath, uploadsDir } from "./uploads";
  * and a thread started for it, Session.secret) is never in a copy: it goes for good at once (remove.ts
  * leaveBehind), and so does everything on a hosted server, which is no one's Mac.
  *
- * Restore puts it back where it was, under the ids it had: Bops Cloud takes a message it holds as removed
+ * Restore puts it back where it was, under the ids it had: SmileDesk Cloud takes a message it holds as removed
  * (its row kept, json NULL, for other Macs to hear it went) as written again, with a new seq (cloud/state.ts
  * upsertMessages: NULL is distinct from anything), so every Mac and the iPhone read it as new and show it
  * again, and a reply to it, a tapback or a routine's report still finds it. A row swept since (after 30
@@ -555,7 +555,7 @@ function restoreMany(dir: string, e: Entry): RestoreResult {
  * (`current`: privacy.ts choicesFresh): on a Mac that isn't current, a copy past its time by what this Mac holds
  * goes back as the user asks, as it would if they'd since kept copies longer on another Mac, and nothing goes by
  * those choices (back in the chats, the sweep takes it, once current, only if the keep the user chose last
- * does). Whatever of it is in the chats already isn't doubled. Back in the state, it goes up to Bops Cloud with
+ * does). Whatever of it is in the chats already isn't doubled. Back in the state, it goes up to SmileDesk Cloud with
  * the next save as written again (its removed row, a new seq), so every Mac and the iPhone show it again.
  */
 export function restoreDeleted(entryId: string, { current = false }: { current?: boolean } = {}): RestoreResult {

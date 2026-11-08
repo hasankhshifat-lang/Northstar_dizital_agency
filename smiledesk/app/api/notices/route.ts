@@ -2,7 +2,7 @@ import { dismissNotice, readNotices } from "@/lib/server/notices";
 
 export const dynamic = "force-dynamic";
 
-/** Orgo's notices for the signed-in user (lib/server/notices.ts): none when Bops Cloud can't be asked. */
+/** Orgo's notices for the signed-in user (lib/server/notices.ts): none when SmileDesk Cloud can't be asked. */
 export async function GET() {
   return Response.json({ notices: await readNotices().catch(() => []) });
 }

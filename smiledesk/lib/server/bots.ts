@@ -137,10 +137,10 @@ export async function createBot(name: string, role?: string, workspaceId?: strin
 /**
  * Switch a bot between working on the main bot's computer ("shared") and its own ("own"). Only while
  * it has no cloud work going (threads, watched screens, the user driving one of its screens), since
- * those hold screens on the computer it's leaving. Going to shared deletes its own computer (Bops
+ * those hold screens on the computer it's leaving. Going to shared deletes its own computer (SmileDesk
  * workspace only), so nothing is left running unused; going to own forks one on its next task, and
  * only when the user's Orgo plan has room for it (the refusal says why, with the numbers). A main bot
- * that works on the free Bops computer (lib/server/plan.ts shareFree) can go to one of its own on the
+ * that works on the free SmileDesk computer (lib/server/plan.ts shareFree) can go to one of its own on the
  * plan the same way, and its team with it; a main bot never goes back.
  */
 export async function setComputer(botId: string, mode: "shared" | "own"): Promise<{ ok: true } | { error: string }> {

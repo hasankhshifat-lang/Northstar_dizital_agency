@@ -286,7 +286,7 @@ const IG0 = {
 const KEEP = ["proxy.ts", "clients/cclc/"];
 const CFG = (last, more = {}) => ({ repo: "OrgoAI/orgo-brandlord", branch: "main", path: "formula", keep: KEEP, ...more, ...(last ? { last } : {}) });
 const link = async (cfg = CFG()) => linkMirror("ws_1", "fourcorners", cfg);
-const publish = (at, last, more) => mirrorPublish("ws_1", "fourcorners", at, CFG(last, more), "bops; Bops");
+const publish = (at, last, more) => mirrorPublish("ws_1", "fourcorners", at, CFG(last, more), "bops; SmileDesk");
 const writes = () => gh.calls.filter((c) => !c.startsWith("GET"));
 const code = (c) => (e) => e instanceof MirrorError && e.extra?.code === c;
 
@@ -437,7 +437,7 @@ await check("Bring in GitHub's changes: GitHub's version wins where both changed
   const last = await link();
   gh.push({ "formula/lib/look.ts": "teal", "formula/clients/fourcorners/new.ts": "x" });
   ig.change({ "lib/look.ts": "logo orange", "AGENTS.md": "agents v2" });
-  const pulled = await mirrorPull("ws_1", "fourcorners", CFG(last), "bops; Bops");
+  const pulled = await mirrorPull("ws_1", "fourcorners", CFG(last), "bops; SmileDesk");
   assert.deepEqual(pulled.took, ["lib/look.ts"]);
   assert.match(pulled.said, /Took GitHub's version of lib\/look\.ts/);
   assert.equal(ig.files().get("lib/look.ts"), "teal");

@@ -32,7 +32,7 @@ import { CloseButton, currentWorkspace, refreshState } from "./ui";
  * profile; the owner's, and in a workspace shared with someone theirs with the Org chart switch (an Admin always). The tree is drawn from the
  * state at once; a card dragged onto another, a line's popover, the switch and the bot's sheet each save
  * the whole chart at once (PATCH /api/workspaces { id, chain }), with an Undo for a few seconds, and put it
- * back when Bops says no. People's levels are the People sheet's own (PATCH /api/members).
+ * back when SmileDesk says no. People's levels are the People sheet's own (PATCH /api/members).
  */
 
 /** Every word the chart says, in one place (the tests read them for dashes and the old name). */
@@ -110,7 +110,7 @@ export const CHART_WORDS = {
   cancel: "Cancel",
   giveBot: (p: string) => `Give ${p} a bot`,
   newBotFor: (p: string) => `Make a new bot for ${p}`,
-  olderBops: "One of your Macs runs an older Bops. These rules hold there once it updates.",
+  olderBops: "One of your Macs runs an older SmileDesk. These rules hold there once it updates.",
   sheetSub: (what: string, lead: string) => `${what} · reports to ${lead}`,
   chiefSub: "Chief of staff · every bot reports to it",
   people: "Team",
@@ -249,7 +249,7 @@ function layoutOf(t: Team, heightOf: (id: string) => number): { boxes: Map<strin
   return { boxes, rows, width, height: PAD + OWNER_H + root.height + ghost + (Object.values(t.chain.pairs ?? {}).some(Boolean) ? 96 : 28) };
 }
 
-/** A chain as Bops would keep it, to tell whether a change changes anything (`at` aside). */
+/** A chain as SmileDesk would keep it, to tell whether a change changes anything (`at` aside). */
 function sameChain(a: Chain, b: Chain) {
   const norm = (v: unknown): unknown =>
     v && typeof v === "object" && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort(([x], [y]) => (x < y ? -1 : 1)).map(([k, x]) => [k, norm(x)])) : v;
@@ -300,7 +300,7 @@ function cantLead(t: Team, id: string, lead: string, name: (id: string) => strin
 }
 
 /**
- * People, from Bops (GET `source`: /api/members, or a shared workspace's for an Admin), null while not known, or when there
+ * People, from SmileDesk (GET `source`: /api/members, or a shared workspace's for an Admin), null while not known, or when there
  * are none to show (signed out, self hosted, a shared workspace's for someone who doesn't manage its people: `source` null).
  */
 function usePeople(given?: ChartPerson[] | null, source: string | null = "/api/members") {
@@ -347,7 +347,7 @@ type UndoTo = { chain: Chain; levels?: LevelChange[] };
 export function useChartEditor(state: AppState, givenPeople?: ChartPerson[] | null) {
   const wsId = currentWorkspace(state);
   const ws = state.workspaces?.find((w) => w.id === wsId);
-  // A change being saved, shown at once; Bops' copy comes back with the state. In a workspace shared with the user, the
+  // A change being saved, shown at once; SmileDesk's copy comes back with the state. In a workspace shared with the user, the
   // owner's Mac makes it a moment later (lib/server/change-relay.ts): shown until the copy has it (`sentKey`), or says why not.
   const [pending, setPending] = useState<Chain | null>(null);
   const [sent, setSent] = useState<{ key: string; before: Chain | undefined } | null>(null);
@@ -368,7 +368,7 @@ export function useChartEditor(state: AppState, givenPeople?: ChartPerson[] | nu
   const peopleSource = !state.shared ? "/api/members" : state.shared.role === "admin" ? "/api/workspaces/shared/people" : null;
   const { people, room, reload } = usePeople(givenPeople, peopleSource);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // A Mac or runner on the account on a Bops from before the chart (GET /api/workspaces?olderBops=1): said under it.
+  // A Mac or runner on the account on a SmileDesk from before the chart (GET /api/workspaces?olderBops=1): said under it.
   const [older, setOlder] = useState(false);
   useEffect(() => {
     let gone = false;
@@ -389,13 +389,13 @@ export function useChartEditor(state: AppState, givenPeople?: ChartPerson[] | nu
   useEffect(() => () => void (toastTimer.current && clearTimeout(toastTimer.current)), []);
 
   /**
-   * Save the whole chart: shown at once, put back when Bops says no. Says Saved (or `said`), with an Undo to what it
-   * was (and to people's `levels` changed with it), unless `undoable` is false. Nothing is sent, or said, when Bops
+   * Save the whole chart: shown at once, put back when SmileDesk says no. Says Saved (or `said`), with an Undo to what it
+   * was (and to people's `levels` changed with it), unless `undoable` is false. Nothing is sent, or said, when SmileDesk
    * would keep the same chart. True when it's kept.
    */
   const save = async (next: Chain, o: { undoable?: boolean; said?: string; levels?: LevelChange[] } = {}): Promise<boolean> => {
     const was = chain;
-    // Shown as Bops keeps it; sent whole, as Bops cleans it again with what it has (people just given a bot too).
+    // Shown as SmileDesk keeps it; sent whole, as SmileDesk cleans it again with what it has (people just given a bot too).
     const shown = cleanChain(next, t.bots, ws?.memberAccess);
     if (!o.levels?.length && sameChain(shown, cleanChain(chain, t.bots, ws?.memberAccess))) return true;
     setPending(shown);
@@ -419,7 +419,7 @@ export function useChartEditor(state: AppState, givenPeople?: ChartPerson[] | nu
       ok = false;
     }
     if (!ok) {
-      // Back to what Bops keeps.
+      // Back to what SmileDesk keeps.
       setPending(null);
       say(CHART_WORDS.failed, { error: true });
       return false;
@@ -530,7 +530,7 @@ export function TeamChart({
   onClose?: () => void;
   /** A bot whose sheet is open from the start (from its profile). */
   focus?: string;
-  /** Who sees the bots (tests, and a page drawn without Bops): read from People when not given. */
+  /** Who sees the bots (tests, and a page drawn without SmileDesk): read from People when not given. */
   people?: ChartPerson[] | null;
   /** The sidebar's + (a new bot). */
   onMakeBot?: () => void;
@@ -709,7 +709,7 @@ export function TeamChart({
                   </button>
                 </div>
               ))}
-            {/* A Mac or runner on the account on a Bops from before the chart: it runs turns by the old rules until it updates. */}
+            {/* A Mac or runner on the account on a SmileDesk from before the chart: it runs turns by the old rules until it updates. */}
             {older && (
               <p className="px-[26px] pt-2 text-[12px] leading-4 text-[#B54708]" data-older-bops>
                 {CHART_WORDS.olderBops}
@@ -1381,7 +1381,7 @@ export function BotTeamFields({
   // when its footer has the button (`preset`); else it's held here, and the button is drawn here (`inline`).
   const own = useState<string | null>(presetKey ?? null);
   const [presetOpen, setPresetOpen] = preset ?? own;
-  // "Works for" someone who sees no bot yet: kept only once they have Write (Bops keeps no "for" without their access).
+  // "Works for" someone who sees no bot yet: kept only once they have Write (SmileDesk keeps no "for" without their access).
   const [askFor, setAskFor] = useState<string | null>(null);
   const ws = state.workspaces?.find((w) => w.id === t.ws);
   const hasAccess = (key: string) => !!ws?.memberAccess && Object.hasOwn(ws.memberAccess, key);

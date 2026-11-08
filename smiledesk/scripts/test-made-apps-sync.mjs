@@ -258,7 +258,7 @@ globalThis.fetch = async (input, init) => {
   throw new TypeError(`fetch failed (the test is offline: ${url.host})`);
 };
 
-/* ---------------- Bops ---------------- */
+/* ---------------- SmileDesk ---------------- */
 
 const S = await import(`${root}/lib/server/store.ts`);
 const A = await import(`${root}/lib/server/made-apps.ts`);
@@ -401,7 +401,7 @@ await check("Orgo away: every change waits in the outbox on disk; after a restar
   O.outboxForTests.writeAll();
   const box = JSON.parse(readFileSync(join(S.userDir(), "outbox", "made-apps.json"), "utf8")).entries.map((e) => `${e.item.op} ${e.item.appId === notes ? "notes" : "todo"}`);
   assert.deepEqual(box, ["app notes", "version notes", "data notes", "delete todo"], "the deleted one's record and code aren't worth sending");
-  // Bops quits: the outboxes and the list are written, memory forgets them.
+  // SmileDesk quits: the outboxes and the list are written, memory forgets them.
   O.outboxForTests.restart();
   T.restart();
   assert.equal(S.getState().madeApps, undefined, "forgotten in memory");
@@ -570,7 +570,7 @@ await check("A title or note cut at an emoji is cut before it, so Orgo takes the
   assert.equal(a.versions[0].note, `${"y".repeat(119)}🎉`, "the note from the change asked for, 120 characters");
   assert.equal(there(party)?.title, a.title, "Orgo took its record");
   assert.ok(there(party).versions.get(1).sha256, "and its code");
-  // Kept from before this Bops: half an emoji and a NUL in its title and note. Sent without them.
+  // Kept from before this SmileDesk: half an emoji and a NUL in its title and note. Sent without them.
   S.update((s) => {
     const x = s.madeApps.find((y) => y.id === party);
     x.title = "Half \uD83C";

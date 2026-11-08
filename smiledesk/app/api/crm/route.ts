@@ -5,7 +5,7 @@ import { currentWorkspaceId } from "@/lib/server/workspaces";
 export const dynamic = "force-dynamic";
 
 /*
- * The CRM's files (lib/server/crm.ts), for the sidebar. Only the Bops window may call these (proxy.ts):
+ * The CRM's files (lib/server/crm.ts), for the sidebar. Only the SmileDesk window may call these (proxy.ts):
  * they read and change the user's own files. `ws` is the workspace, the current one when not given.
  */
 

@@ -33,7 +33,7 @@ import * as usage from "./usage.ts";
 import * as verify from "./verify.ts";
 
 /**
- * Bops Cloud. One process serves every user: each module owns its routes (session.ts, proxy.ts,
+ * SmileDesk Cloud. One process serves every user: each module owns its routes (session.ts, proxy.ts,
  * verify.ts, lines.ts, handles.ts, plans.ts, ops.ts, tunnel.ts, hooks.ts, slack.ts, state.ts, pages.ts,
  * usage.ts, agent.ts, live.ts, members.ts, turns.ts, delete-user.ts, browser.ts, preview-passwords.ts) and this file only puts them together. See README.md.
  */
@@ -90,7 +90,7 @@ function requestUrl(req: IncomingMessage): URL | null {
 
 /**
  * Which app a signed-in call came from: kept with the user's account (a Mac's, never a computer's runner's), and an
- * app too old for the cloud is told to update (app-version.ts). Bops for iPhone's version is its own: it never stands in for the Mac's.
+ * app too old for the cloud is told to update (app-version.ts). SmileDesk for iPhone's version is its own: it never stands in for the Mac's.
  * A Mac's app that a newer one locked out of the user's state, and that runs its routines all the same,
  * is refused the proxies (state.ts behindState). A computer's runner stops its own on that.
  */
@@ -100,8 +100,8 @@ async function appCheck(req: IncomingMessage, user: CloudUser, path: string) {
     noteIphoneVersion(user.id, version);
     return requireIphoneVersion(version);
   }
-  // The Mac's only: a computer's runner is a Bops the Mac set up, and saying it would stand in for the Mac (turns.ts,
-  // whether the owner's Bops keeps to chat through Bops Cloud).
+  // The Mac's only: a computer's runner is a SmileDesk the Mac set up, and saying it would stand in for the Mac (turns.ts,
+  // whether the owner's SmileDesk keeps to chat through SmileDesk Cloud).
   if (!user.computer) noteAppVersion(user.id, version);
   requireAppVersion(path, version);
   if (!user.computer) await requireUsageAppVersion(user.id, path, version);
@@ -110,7 +110,7 @@ async function appCheck(req: IncomingMessage, user: CloudUser, path: string) {
 
 /**
  * A computer signed in as itself (its runner: auth.ts CloudUser.computer) calls only the routes marked
- * for it (`allowed`), and only as its own device: Bops Cloud sets that from the computer's id, and a
+ * for it (`allowed`), and only as its own device: SmileDesk Cloud sets that from the computer's id, and a
  * device header that says another is refused. That's which device wrote, and a guard against a runner
  * set up wrong; it bounds nothing, as anyone with the token can work the same device out. An identity
  * token Orgo named no computer for is refused everywhere.
@@ -188,7 +188,7 @@ export function makeServer(): Server {
       const err = e as Error;
       const status = e instanceof HttpError ? e.status : 500;
       if (status >= 500) console.error(`[cloud] ${req.method} ${url.pathname}: ${err.stack ?? err.message}`);
-      // An error Bops didn't mean (not an HttpError) on a user's call goes to usage events: type and frames only (analytics-rules.ts).
+      // An error SmileDesk didn't mean (not an HttpError) on a user's call goes to usage events: type and frames only (analytics-rules.ts).
       if (status >= 500 && !(e instanceof HttpError)) captureCloudException(e, req, user?.id ?? null, route?.path ?? "");
       if (!res.headersSent) sendJson(res, status, { error: status >= 500 && !(e instanceof HttpError) ? "Something went wrong" : err.message, ...(e instanceof HttpError ? e.extra : {}) });
       else res.destroy();

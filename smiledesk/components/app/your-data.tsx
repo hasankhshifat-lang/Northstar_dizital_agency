@@ -31,7 +31,7 @@ import { post } from "./ui";
  * it goes, with this Mac's numbers; how long chats and calls are kept (a shorter choice says what it deletes
  * now and asks once); what a delete leaves behind, with Recently deleted to restore from (fewer days says
  * how many copies go, here now and on the other Macs at their next check, and asks once too); and what none
- * of it covers yet. Asking never fails open: when Bops can't say what a choice deletes, it still asks, in
+ * of it covers yet. Asking never fails open: when SmileDesk can't say what a choice deletes, it still asks, in
  * general. Delete now, beside the keep, deletes everything, or what's older, in every chat or one bot's, once:
  * it says what it takes and asks once too, and with days to keep what's deleted it's one item in Recently
  * deleted. The user's own: not shown in a shared workspace (bops-app.tsx), whose server refuses it too, nor
@@ -121,10 +121,10 @@ function WhereKept({ info }: { info: PrivacyInfo }) {
       where: "Kept in this Mac's Keychain. A bot signing in fills them into that site's page, never into a chat or a model.",
       how: "Remove one in Logins, or disconnect its channel.",
     },
-    { kind: "Keys bots use", where: "Orgo's vault, encrypted. Bops keeps only their names.", how: "Delete one in Logins." },
+    { kind: "Keys bots use", where: "Orgo's vault, encrypted. SmileDesk keeps only their names.", how: "Delete one in Logins." },
     {
       kind: "Chats, routines and settings",
-      where: "Bops Cloud, Orgo's database, so your Macs and iPhone match.",
+      where: "SmileDesk Cloud, Orgo's database, so your Macs and iPhone match.",
       how: "Delete a message from its menu, or several from a chat's menu, or delete or keep them for less time below.",
       extra: <span className="text-[12px] leading-4 text-[#3A3A38]">{many(info.messages, "message")}</span>,
     },
@@ -183,15 +183,15 @@ function DeletedRow({ item, busy, act }: { item: DeletedItem; busy: boolean; act
   );
 }
 
-/** Settings → Your data. Nothing until it's loaded, or when the server won't say (a shared workspace, outside the Bops window, a hosted server). */
+/** Settings → Your data. Nothing until it's loaded, or when the server won't say (a shared workspace, outside the SmileDesk window, a hosted server). */
 export function YourData() {
   const [info, setInfo] = useState<PrivacyInfo | null>(null);
   const [busy, setBusy] = useState(false);
-  /** A shorter keep, or fewer days for what's deleted, waiting on the user's yes: with what it deletes (null: Bops couldn't say). */
+  /** A shorter keep, or fewer days for what's deleted, waiting on the user's yes: with what it deletes (null: SmileDesk couldn't say). */
   const [asking, setAsking] = useState<{ keepDays: KeepDays; goes: KeepGoes | null } | null>(null);
   const [askingDeleted, setAskingDeleted] = useState<{ deletedDays: DeletedDays; goes: DeletedGoes | null } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  /** Delete now: which bot's (empty: every bot's), the ask with what it takes (null: Bops couldn't say), and what's said after. */
+  /** Delete now: which bot's (empty: every bot's), the ask with what it takes (null: SmileDesk couldn't say), and what's said after. */
   const [clearBot, setClearBot] = useState("");
   const [askingClear, setAskingClear] = useState<{ choice: ClearChoice; goes: ClearGoes | null } | null>(null);
   const [clearNote, setClearNote] = useState<string | null>(null);
@@ -230,7 +230,7 @@ export function YourData() {
     return null;
   };
   const botName = (id?: string) => (id ? info.bots?.find((b) => b.id === id)?.name : undefined);
-  /** Delete now asks first, with what it takes (Bops couldn't say: it asks anyway); with nothing to take, it says so and asks nothing. */
+  /** Delete now asks first, with what it takes (SmileDesk couldn't say: it asks anyway); with nothing to take, it says so and asks nothing. */
   const pickClear = async (k: KeepDays) => {
     setAsking(null);
     setAskingDeleted(null);
@@ -253,7 +253,7 @@ export function YourData() {
     const what = [c.messages ? many(c.messages, "message") : "", c.threads ? many(c.threads, "thread") : "", c.files ? many(c.files, "file") : "", c.lines ? many(c.lines, "line of notes", "lines of notes") : ""].filter(Boolean);
     setClearNote(what.length ? `Deleted ${what.join(", ")}.${c.restore ? " The messages and threads are in Recently deleted below." : ""}` : "Nothing was left to delete.");
   };
-  /** A shorter keep first says what it deletes now, and goes once the user says so (nothing to delete: it just goes; Bops couldn't say: it asks anyway). */
+  /** A shorter keep first says what it deletes now, and goes once the user says so (nothing to delete: it just goes; SmileDesk couldn't say: it asks anyway). */
   const pickKeep = async (k: KeepDays) => {
     setAsking(null);
     setAskingDeleted(null);
@@ -283,7 +283,7 @@ export function YourData() {
     <div className="flex flex-col gap-2 px-[22px] pt-4">
       <div className="flex flex-col gap-0.5">
         <span className="text-[13px] font-semibold">Your data</span>
-        <span className={sub}>Where Bops keeps your things, how long, and what a delete leaves behind.</span>
+        <span className={sub}>Where SmileDesk keeps your things, how long, and what a delete leaves behind.</span>
       </div>
 
       <WhereKept info={info} />
@@ -292,7 +292,7 @@ export function YourData() {
         <div className="flex flex-col gap-0.5">
           <span className="text-[13px] font-medium">Keep chats and calls</span>
           <span className={sub}>
-            Older messages and finished threads are deleted from Bops Cloud and all your Macs, with each Mac&apos;s call notes, last screens, and the images and pages no kept message shows.
+            Older messages and finished threads are deleted from SmileDesk Cloud and all your Macs, with each Mac&apos;s call notes, last screens, and the images and pages no kept message shows.
           </span>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -319,7 +319,7 @@ export function YourData() {
         <div className="flex flex-col gap-2 border-t border-[#F0F0EE] pt-2.5">
           <div className="flex flex-col gap-0.5">
             <span className="text-[13px] font-medium">Delete now</span>
-            <span className={sub}>Deletes messages and finished threads once, from Bops Cloud and all your Macs. What you keep above stays as it is.</span>
+            <span className={sub}>Deletes messages and finished threads once, from SmileDesk Cloud and all your Macs. What you keep above stays as it is.</span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {CLEAR_OPTIONS.map((k) => (
@@ -371,9 +371,9 @@ export function YourData() {
         <div className="flex flex-col gap-0.5">
           <span className="text-[13px] font-medium">When you delete something</span>
           <span className={sub}>
-            Messages, threads and group chats you delete leave your chats and Bops Cloud at once.
+            Messages, threads and group chats you delete leave your chats and SmileDesk Cloud at once.
             {info.deletedDays
-              ? " A copy stays on this Mac only, so you can restore it. Bops Cloud never gets the copy, and what you kept between us is never copied."
+              ? " A copy stays on this Mac only, so you can restore it. SmileDesk Cloud never gets the copy, and what you kept between us is never copied."
               : " Its images on this Mac go too."}
           </span>
         </div>
@@ -412,7 +412,7 @@ export function YourData() {
       {left && <span className="text-[12px] leading-4 text-[#3A3A38]">{left}</span>}
       {error && <span className="text-[12px] leading-4 text-[#B42318]">{error}</span>}
       <span className={sub}>
-        Not covered yet: Honcho keeps what it learned from chats and calls until you forget it in Knowledge. OpenAI keeps answers to chats and tasks 30 days. Start over keeps a copy of your chats in Bops Cloud.
+        Not covered yet: Honcho keeps what it learned from chats and calls until you forget it in Knowledge. OpenAI keeps answers to chats and tasks 30 days. Start over keeps a copy of your chats in SmileDesk Cloud.
       </span>
     </div>
   );

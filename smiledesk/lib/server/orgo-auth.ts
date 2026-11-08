@@ -8,9 +8,9 @@ import { bindSignIn, getState, releaseSignOut, update } from "./store";
 import { cloudHeld, isIdentityToken, onTurnedDown, tokenRejected, vmIdentity, vmIdentityRejected } from "./vm-identity";
 
 /**
- * Signing in with Orgo. A Bops user is an Orgo user: the app signs in through Orgo's device-code
+ * Signing in with Orgo. A SmileDesk user is an Orgo user: the app signs in through Orgo's device-code
  * flow (the same one the Orgo CLI and Orgo for Mac use), and the Orgo API key it gets back lives in
- * the Mac's Keychain. Everything Bops does on Orgo (the "bops" workspace, the bots' computers, the
+ * the Mac's Keychain. Everything SmileDesk does on Orgo (the "bops" workspace, the bots' computers, the
  * account page) runs on that key, so it all lands in the user's own Orgo account and plan.
  *
  * A computer's runner (lib/server/runner.ts) never signs in: it signs in as its computer, with the
@@ -22,7 +22,7 @@ import { cloudHeld, isIdentityToken, onTurnedDown, tokenRejected, vmIdentity, vm
  * bound to it) isn't used: the runner waits, and the Mac's way back gives the computer its own
  * (runner-install.ts).
  *
- * BOPS_ORGO_ORIGIN points Bops at another Orgo (staging, local); the default is production.
+ * BOPS_ORGO_ORIGIN points SmileDesk at another Orgo (staging, local); the default is production.
  */
 
 export const orgoOrigin = () => (process.env.BOPS_ORGO_ORIGIN || "https://www.orgo.ai").replace(/\/+$/, "");
@@ -42,7 +42,7 @@ const g = globalThis as unknown as {
   bopsRunnerKeyRead?: { next: number; wait: number; key?: string | null; file?: string; rejected?: string; reading?: Promise<string | null> };
   /**
    * A runner: what it signs in with now (said in its log and its auth file, which the Mac reads:
-   * runner-install.ts), the identity token in use, the key file Bops Cloud gets meanwhile (`cloud`, for
+   * runner-install.ts), the identity token in use, the key file SmileDesk Cloud gets meanwhile (`cloud`, for
    * the credential `for`: cloudKey), and the pick under way.
    */
   bopsRunnerAuth?: {
@@ -186,7 +186,7 @@ function leave(why: string) {
  *   the key file meanwhile;
  * - none here: the key file (fileKey), as before identity.
  * A token for another user than the state's stops the runner (this computer was given to another
- * account). The credential that changes goes to Bops Cloud too (bindSignIn; for the same user that only
+ * account). The credential that changes goes to SmileDesk Cloud too (bindSignIn; for the same user that only
  * swaps the key its calls carry), and what it is now goes in the log as `[runner] auth: identity`,
  * `auth: key` or `auth: none`, at start and on every change. `again`: ask identity and read the files
  * now (a runner waiting for a credential, runner-start.ts; its VM changed, runner.ts).
@@ -238,7 +238,7 @@ async function pick(again: boolean): Promise<string | null> {
       return null;
     }
   }
-  // Bops Cloud can't take a computer's identity yet (bops_cloud_not_ready): it (and Orgo's profile) gets
+  // SmileDesk Cloud can't take a computer's identity yet (bops_cloud_not_ready): it (and Orgo's profile) gets
   // the key file meanwhile, while Orgo's other calls keep the token. Said as `key`: the runner needs it.
   let cloud = cred;
   if (as === "identity" && cloudHeld()) {
@@ -264,8 +264,8 @@ function writeAuthWord(as: RunnerAuth) {
 }
 
 /**
- * The runner's credential is `cred` now: in memory for every call, and `cloud` (the same, but while Bops
- * Cloud can't take identity: cloudKey) in Bops Cloud's calls; what it is said in the log and the auth
+ * The runner's credential is `cred` now: in memory for every call, and `cloud` (the same, but while SmileDesk
+ * Cloud can't take identity: cloudKey) in SmileDesk Cloud's calls; what it is said in the log and the auth
  * file when it changes.
  */
 function takeUp(cred: string | null, as: RunnerAuth, cloud: string | null = cred) {
@@ -282,7 +282,7 @@ function takeUp(cred: string | null, as: RunnerAuth, cloud: string | null = cred
   }
   a.cloud = cred && cloud && cloud !== cred ? { for: cred, key: cloud } : undefined;
   const user = getState().account?.user.id;
-  if (cloud && hadCloud && cloud !== hadCloud && user) void bindSignIn(user, cloud).catch((e: Error) => console.warn(`[runner] the new key for Bops Cloud: ${e.message}`));
+  if (cloud && hadCloud && cloud !== hadCloud && user) void bindSignIn(user, cloud).catch((e: Error) => console.warn(`[runner] the new key for SmileDesk Cloud: ${e.message}`));
   const word: RunnerAuth = a.cloud ? "key" : as;
   if (a.word !== word) {
     a.word = word;
@@ -297,7 +297,7 @@ export const runnerAuth = (): RunnerAuth | undefined => g.bopsRunnerAuth?.word;
 /** On a runner waiting for a credential, or whose VM changed: identity asked and the files read now (runnerKey with `again`). */
 export const lookForRunnerKey = (): Promise<string | null> => runnerKey({ again: true });
 
-// A token turned down anywhere (Orgo, Bops Cloud: vm-identity.ts vmIdentityRejected): the next credential now, not at the next caller's.
+// A token turned down anywhere (Orgo, SmileDesk Cloud: vm-identity.ts vmIdentityRejected): the next credential now, not at the next caller's.
 onTurnedDown(() => {
   if (onRunner()) void runnerKey().catch(() => {});
 });
@@ -357,7 +357,7 @@ function setKey(key: string | null) {
 /**
  * The signed-in user's Orgo API key, if it's been loaded (call loadOrgoKey() first on a cold start). On
  * a runner, its credential: an identity token due for its refresh, or turned down, is replaced meanwhile
- * (the calls that read this alone, Bops Cloud's and the models', never wait on it).
+ * (the calls that read this alone, SmileDesk Cloud's and the models', never wait on it).
  */
 export function orgoKey(): string | null {
   const key = g.bopsOrgoKey ?? null;
@@ -367,14 +367,14 @@ export function orgoKey(): string | null {
 }
 
 /**
- * The credential for Bops Cloud (and Orgo's profile, which Bops Cloud asks): the signed-in key; on a
- * runner whose identity Bops Cloud can't take yet (bops_cloud_not_ready), its key file meanwhile.
+ * The credential for SmileDesk Cloud (and Orgo's profile, which SmileDesk Cloud asks): the signed-in key; on a
+ * runner whose identity SmileDesk Cloud can't take yet (bops_cloud_not_ready), its key file meanwhile.
  */
 export function cloudKey(): string | null {
   const key = orgoKey();
   const c = g.bopsRunnerAuth?.cloud;
   if (!onRunner() || !key || c?.for !== key) return key;
-  // Its 10 minutes are up: identity is tried with Bops Cloud again (the key file until that's settled).
+  // Its 10 minutes are up: identity is tried with SmileDesk Cloud again (the key file until that's settled).
   if (!cloudHeld()) void runnerKey().catch(() => {});
   return c.key;
 }
@@ -383,10 +383,10 @@ export function cloudKey(): string | null {
 export const signedInUser = (): OrgoUser | null => getState().account?.user ?? null;
 
 export async function signIn(apiKey: string, user: OrgoUser) {
-  if (onRunner()) throw new Error("Sign in from the Bops app on your Mac.");
+  if (onRunner()) throw new Error("Sign in from the SmileDesk app on your Mac.");
   const before = signedInUser();
   const was = keyNow();
-  // First this user's own state is loaded (from Bops Cloud, their file, or Postgres): the sign-in is refused if it can't be.
+  // First this user's own state is loaded (from SmileDesk Cloud, their file, or Postgres): the sign-in is refused if it can't be.
   await bindSignIn(user.id, apiKey);
   // Their key comes in with their state, at once, before the Keychain is written: background work (the
   // 10-minute look at the bots' computers, routing through this Mac, a screen's view) never runs on the
@@ -433,7 +433,7 @@ async function giveBack(before: OrgoUser | null, was: ReturnType<typeof keyNow>)
 }
 
 export async function signOut() {
-  if (onRunner()) throw new Error("Sign out from the Bops app on your Mac.");
+  if (onRunner()) throw new Error("Sign out from the SmileDesk app on your Mac.");
   await releaseSignOut();
   await deleteSecret(KEY_ACCOUNT);
   setKey(null);

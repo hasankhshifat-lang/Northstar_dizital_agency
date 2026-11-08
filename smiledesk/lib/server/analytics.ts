@@ -11,10 +11,10 @@ import { onExit } from "./persist";
 import { getState } from "./store";
 
 /**
- * The Mac's usage events (README, Privacy): orgo-web's lib/analytics-server.ts for Bops, through
+ * The Mac's usage events (README, Privacy): orgo-web's lib/analytics-server.ts for SmileDesk, through
  * posthog-node to the same project, with the Orgo user id as the person. Only what's listed in
  * cloud/analytics-rules.ts leaves, cleaned there; never content. Nothing is sent unless this Mac may
- * (telemetryHere), the app is signed in with Orgo and on Bops Cloud, and the user's switch is on.
+ * (telemetryHere), the app is signed in with Orgo and on SmileDesk Cloud, and the user's switch is on.
  */
 
 type Client = Pick<PostHog, "capture" | "captureException" | "flush" | "shutdown">;
@@ -23,7 +23,7 @@ const g = globalThis as unknown as { bopsPosthog?: Client };
 /** Whether the Mac sends usage events now. */
 export const analyticsOn = () => telemetryHere() && cloudOn() && !!getState().account && !getState().analyticsOff;
 
-/** Which Bops this is, with orgo-web's values for its `environment` property. */
+/** Which SmileDesk this is, with orgo-web's values for its `environment` property. */
 export function telemetryEnvironment(): "production" | "staging" | "development" {
   if (process.env.NODE_ENV !== "production") return "development";
   const cloud = cloudUrl();
@@ -40,7 +40,7 @@ function client(): Client {
   return g.bopsPosthog;
 }
 
-/** The plan as events name it: the Bops tier, or "usage" for a user billed by use (cloud/plans.ts planLabel). */
+/** The plan as events name it: the SmileDesk tier, or "usage" for a user billed by use (cloud/plans.ts planLabel). */
 const plan = () => {
   const p = cloudSessionNow()?.plan;
   return p?.billing === "usage" ? ("usage" as const) : p?.tier;
@@ -86,7 +86,7 @@ export function trackServerEvent<E extends EventsBy<"mac_server">>(
   }
 }
 
-/** An unexpected error in the Mac's server (instrumentation.ts): its type and where in Bops' code, never its message. Never throws. */
+/** An unexpected error in the Mac's server (instrumentation.ts): its type and where in SmileDesk's code, never its message. Never throws. */
 export function captureServerException(err: unknown, routePath?: string): void {
   try {
     const uid = getState().account?.user.id;

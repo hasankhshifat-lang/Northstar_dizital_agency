@@ -4,10 +4,10 @@ import { workspaceOf, type AppState } from "@/lib/types";
 
 /**
  * The app's side of Live (cloud/live.ts, cloud/README.md "Live"), without the server: what this Mac's
- * bots are doing and what changed (LivePublisher), the stream from Bops Cloud and what it says
+ * bots are doing and what changed (LivePublisher), the stream from SmileDesk Cloud and what it says
  * (LiveSubscriber), and what the user's bots are doing on their other devices (RemoteMoods). Clocks,
  * timers and the network come in from outside, so the tests drive them; lib/server/live.ts wires them
- * to the store, the signed-in key and Bops Cloud.
+ * to the store, the signed-in key and SmileDesk Cloud.
  *
  * None of it is ever in the way: a reply never waits on it, every failure is quiet and tried again
  * later, and with the stream down the app reads the state as it always has (every 30 seconds).
@@ -32,7 +32,7 @@ const running = (status: string) => status === "queued" || status === "starting"
  * the app), typing or asking a teammate in a chat (thinking), and the call the user is on (speaking,
  * which wins). Only the bots that aren't idle. Typing is this Mac's alone (never synced), and so are
  * `runs` (the threads this server runs: one another Mac runs is in the state too, and is that Mac's to say).
- * Bops Cloud knows no coding (cloud/protocol.ts LIVE_MOODS: it turns an unknown mood down), so a bot coding
+ * SmileDesk Cloud knows no coding (cloud/protocol.ts LIVE_MOODS: it turns an unknown mood down), so a bot coding
  * here (codingThread) is working there, as it is whatever its caption says and whatever else it does but talk.
  */
 export function localMoods(state: AppState, here: { runs: ReadonlySet<string>; callBot: string | null }): Map<string, HereMood> {
@@ -81,7 +81,7 @@ export type Send = (ws: string, events: LiveEventIn[]) => Promise<number>;
 type Pending = { moods: Map<string, LiveEventIn>; sessions: Map<string, LiveEventIn>; others: LiveEventIn[] };
 
 /**
- * Sends this Mac's moods, threads, routines and calls to Bops Cloud: a mood when it changes (idle when
+ * Sends this Mac's moods, threads, routines and calls to SmileDesk Cloud: a mood when it changes (idle when
  * it ends) and again every 5 seconds while it holds, a thread when its status or activity changes and
  * once more when this Mac stops running it. Changes gather for a moment and go one POST per workspace;
  * what didn't go is merged with what came since (the newest mood or status wins) and tried again later.
@@ -198,7 +198,7 @@ export class LivePublisher {
           const status = await this.send(ws, events.slice(i, i + BATCH)).catch(() => 0);
           if (status >= 200 && status < 300) continue;
           if (status === 404 || status === 405 || status === 401 || status === 403) {
-            // A Bops Cloud without Live yet, or one that won't take this key: nothing goes for a while, and nothing is kept.
+            // A SmileDesk Cloud without Live yet, or one that won't take this key: nothing goes for a while, and nothing is kept.
             this.quietUntil = this.clock.now() + (status === 401 || status === 403 ? REFUSED_MS : NO_LIVE_MS);
             this.pending.clear();
             this.failures = 0;
@@ -263,9 +263,9 @@ const sessionEvent = (id: string, s: HereSession): LiveEventIn => ({ type: "sess
 /* ---------------- What the user's other devices say ---------------- */
 
 /** A bot's mood on another device, as the window gets it. */
-/** `waking`: Bops Cloud is waking the bot's computer to answer in that chat (cloud/turns.ts, a "turn" event). */
+/** `waking`: SmileDesk Cloud is waking the bot's computer to answer in that chat (cloud/turns.ts, a "turn" event). */
 export type RemoteMood = { mood: Exclude<LiveMood, "idle">; chatId?: string; waking?: true };
-/** How long a computer is shown waking at most without word from Bops Cloud (its turn's deadline). */
+/** How long a computer is shown waking at most without word from SmileDesk Cloud (its turn's deadline). */
 const WAKING_MS = 10 * 60_000;
 
 /**
@@ -275,7 +275,7 @@ const WAKING_MS = 10 * 60_000;
  */
 export class RemoteMoods {
   private moods = new Map<string, RemoteMood & { expiresAt: number }>();
-  /** The bots whose computer Bops Cloud is waking to answer, by bot id: where, and until when at most. */
+  /** The bots whose computer SmileDesk Cloud is waking to answer, by bot id: where, and until when at most. */
   private waking = new Map<string, { chatId: string; expiresAt: number }>();
   private timer?: Timer;
   private onChange: () => void;
@@ -304,7 +304,7 @@ export class RemoteMoods {
     this.changed(before);
   }
 
-  /** Where a turn of chat through Bops Cloud stands (a "turn" event): its computer waking, or not any more. */
+  /** Where a turn of chat through SmileDesk Cloud stands (a "turn" event): its computer waking, or not any more. */
   turn(e: { botId: string; chatId: string; state: string }) {
     const before = this.key();
     if (e.state === "waking") this.waking.set(e.botId, { chatId: e.chatId, expiresAt: this.clock.now() + WAKING_MS });
@@ -368,7 +368,7 @@ const RECONNECT_MAX_MS = 60_000;
 const HELD_MS = 60_000;
 /** Nothing at all for this long (the cloud says something every 15 seconds): the connection is taken for dead. */
 export const SILENT_MS = 45_000;
-/** How long Bops waits before asking again a cloud without Live (404), or one that turned the key down (401, 403: REFUSED_MS). */
+/** How long SmileDesk waits before asking again a cloud without Live (404), or one that turned the key down (401, 403: REFUSED_MS). */
 const NOT_THERE_MS = 15 * 60_000;
 /**
  * "state" and "reset" events close together are one read of the state, and the stream reads it at most
@@ -386,7 +386,7 @@ export type SubscriberDeps = {
   headers: () => Record<string, string> | null;
   /** This device's id (BOPS_DEVICE_HEADER): its own events are left out. */
   self: () => string;
-  /** Read the state from Bops Cloud now. */
+  /** Read the state from SmileDesk Cloud now. */
   pull: () => void;
   moods: RemoteMoods;
   /**
@@ -399,7 +399,7 @@ export type SubscriberDeps = {
 };
 
 /**
- * One stream from Bops Cloud for the workspace the user is in. A "state" from another device, or a
+ * One stream from SmileDesk Cloud for the workspace the user is in. A "state" from another device, or a
  * "reset", reads the state now; moods go into RemoteMoods. Dropped, it comes back with its
  * Last-Event-ID after a backoff with jitter; a cloud without Live is asked again only every 15 minutes.
  * Nothing changes about the regular reads meanwhile.

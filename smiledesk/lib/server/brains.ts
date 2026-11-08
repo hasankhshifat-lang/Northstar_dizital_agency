@@ -11,12 +11,12 @@ import { sameComputer, workComputer } from "./screens";
 import { addMessage, bot, getState, id, sameState, update } from "./store";
 
 /**
- * Brains: the agent a bot's tasks run on, when the user brings their own instead of Bops agent (Bops'
- * own, on AI credit). Claude Code, which Bops installs unmodified on the bot's computer at a pinned
+ * Brains: the agent a bot's tasks run on, when the user brings their own instead of SmileDesk agent (SmileDesk's
+ * own, on AI credit). Claude Code, which SmileDesk installs unmodified on the bot's computer at a pinned
  * version, signed in with the user's own Claude plan or run on their own Anthropic key; or Codex, on
- * their own OpenAI key. Bops never pays for these runs and never handles the plan's login: the user
+ * their own OpenAI key. SmileDesk never pays for these runs and never handles the plan's login: the user
  * signs in through Claude Code's own sign-in, in a terminal on one of the bot's screens that they drive
- * live in Bops, and the login stays in that brain's folder on that computer (vm/bin/bops-brain). Bops
+ * live in SmileDesk, and the login stays in that brain's folder on that computer (vm/bin/bops-brain). SmileDesk
  * only ever asks Claude Code whether it's signed in, and keeps what it says about whose account it is
  * (BrainSignIn). A key brain names its key in the Vault; the key goes to the computer only as a file the
  * run reads and deletes (bops-brain run --key-file), like the executor's key (vm/bin/bops-exec).
@@ -28,13 +28,13 @@ import { addMessage, bot, getState, id, sameState, update } from "./store";
 
 /** Claude Code's version on every computer: npm's stable one when it was pinned. */
 export const CLAUDE_CODE_VERSION = "2.1.292";
-/** Where Bops installs it on a computer (npm's global prefix there), and the binary. */
+/** Where SmileDesk installs it on a computer (npm's global prefix there), and the binary. */
 export const CLAUDE_PREFIX = "/opt/bops/claude";
 export const CLAUDE_BIN = `${CLAUDE_PREFIX}/bin/claude`;
 /** Codex, in the computer's image (orgo/bops-base.mjs), at the version the image pins (ensureCodex fetches it onto a computer without it). */
 export const CODEX_BIN = "/usr/local/bin/codex";
 export const CODEX_VERSION = "0.160.0";
-/** OpenCode on every computer: npm's opencode-ai at the version Bops checked (its run --standalone, --session and JSON events), never on a PATH. */
+/** OpenCode on every computer: npm's opencode-ai at the version SmileDesk checked (its run --standalone, --session and JSON events), never on a PATH. */
 export const OPENCODE_VERSION = "2.0.27";
 export const OPENCODE_PREFIX = "/opt/bops/opencode";
 export const OPENCODE_BIN = `${OPENCODE_PREFIX}/bin/opencode`;
@@ -43,7 +43,7 @@ export const BRAINS_DIR = "/root/.bops/brains";
 export const brainDir = (brainId: string) => `${BRAINS_DIR}/${brainId}`;
 
 /** What a brain route answers in a build without brains (BRAINS_ON): there's nothing there. Null in one with them. */
-export const brainsOff = () => (BRAINS_ON ? null : Response.json({ error: "This version of Bops has no brains." }, { status: 404 }));
+export const brainsOff = () => (BRAINS_ON ? null : Response.json({ error: "This version of SmileDesk has no brains." }, { status: 404 }));
 
 /** A brain call turned down, with its HTTP status and words for the user. */
 export class BrainError extends Error {
@@ -164,7 +164,7 @@ function followProfiles(before: Map<string, BotAi>) {
     .catch((e: Error) => console.warn(`[brains] bots' computers after a change: ${e.message}`));
 }
 
-/** Rename a brain, change which bots may use it, or (a key brain) where its key is. A bot taken off it goes back to Bops agent. */
+/** Rename a brain, change which bots may use it, or (a key brain) where its key is. A bot taken off it goes back to SmileDesk agent. */
 export function updateBrain(brainId: string, p: { name?: string; bots?: string[]; keyScope?: KeyScope }): Brain {
   const x = need(brainId);
   if (p.name !== undefined && !cleanName(p.name)) throw new BrainError("Give it a name.", 400);
@@ -193,7 +193,7 @@ export function updateBrain(brainId: string, p: { name?: string; bots?: string[]
 
 /**
  * One bot on a brain's chips (Settings, Brain): it uses it now ("use"), may pick it in its profile ("may"),
- * or neither ("none", back to Bops agent if it used it).
+ * or neither ("none", back to SmileDesk agent if it used it).
  */
 export function setBrainBot(brainId: string, botId: string, level: "use" | "may" | "none"): Brain {
   const x = need(brainId);
@@ -215,7 +215,7 @@ export function setBrainBot(brainId: string, botId: string, level: "use" | "may"
   return brainById(brainId)!;
 }
 
-/** A bot's brain from its profile: one it may use, or null for Bops agent. */
+/** A bot's brain from its profile: one it may use, or null for SmileDesk agent. */
 export function setBotBrain(botId: string, brainId: string | null) {
   const b = bot(botId);
   if (!b) throw new BrainError("No such bot.", 404);
@@ -237,7 +237,7 @@ export function setBotBrain(botId: string, brainId: string | null) {
 }
 
 /**
- * Take a brain away: its bots go back to Bops agent, a sign-in going stops, what it's running stops (letGo),
+ * Take a brain away: its bots go back to SmileDesk agent, a sign-in going stops, what it's running stops (letGo),
  * and on every computer it has a folder on (signed in or signing in there, or a thread of it ran there),
  * that thread's process stops, Claude Code signs out and the folder goes (in the background, best effort:
  * a computer that's gone has nothing left to remove).
@@ -252,7 +252,7 @@ export function removeBrain(brainId: string) {
     s.brains = (s.brains ?? []).filter((y) => y.id !== brainId);
     for (const b of s.bots) {
       if (b.brain === brainId) delete b.brain;
-      // Its agents go from every bot's profile (one that was a Default leaves Bops agent as the Default).
+      // Its agents go from every bot's profile (one that was a Default leaves SmileDesk agent as the Default).
       if (b.ai?.agents.some((a) => a.account === brainId)) {
         const agents = b.ai.agents.filter((a) => a.account !== brainId);
         const ai = { agents, default: agents.some((a) => a.id === b.ai!.default) ? b.ai.default : "bops" };
@@ -277,7 +277,7 @@ export function removeBrain(brainId: string) {
 
 /* ---------------- Claude Code on a computer ---------------- */
 
-/** Each computer's install of Claude Code, once per run of Bops; one that failed is tried again next time. */
+/** Each computer's install of Claude Code, once per run of SmileDesk; one that failed is tried again next time. */
 const claudeReady = new Map<string, Promise<void>>();
 
 /** The shell that installs the pinned Claude Code (npm's own package, its scripts and all) unless that version is there, and says so. */
@@ -306,12 +306,12 @@ export function ensureClaudeCode(computerId: string): Promise<void> {
   return ready;
 }
 
-/** Each computer's Codex, checked once per run of Bops; one that failed is tried again next time. */
+/** Each computer's Codex, checked once per run of SmileDesk; one that failed is tried again next time. */
 const codexReady = new Map<string, Promise<void>>();
 
 /**
  * The shell that makes sure a computer has Codex (CODEX_BIN, as its image puts it there: `codex exec-server`
- * runs Bops agent's tools with it), and when it hasn't, fetches the release the image pins from GitHub, as
+ * runs SmileDesk agent's tools with it), and when it hasn't, fetches the release the image pins from GitHub, as
  * the image does, unchanged. Says "codex" and its version.
  */
 export function codexInstallCommand() {
@@ -337,12 +337,12 @@ export function ensureCodex(computerId: string): Promise<void> {
   return ready;
 }
 
-/** The brain scripts every computer needs, kept matching this copy of Bops: sign-ins and runs, and a thread's process (bops-agent: cli-agents.ts). */
+/** The brain scripts every computer needs, kept matching this copy of SmileDesk: sign-ins and runs, and a thread's process (bops-agent: cli-agents.ts). */
 const BRAIN_TOOLS = [
   ["vm/bin/bops-brain", "/usr/local/bin/bops-brain"],
   ["vm/bin/bops-brain-browser", "/usr/local/bin/bops-brain-browser"],
   ["vm/bin/bops-agent", "/usr/local/bin/bops-agent"],
-  // A key run's gate (bops-brain run), and the executor that takes a bot's own bin (a bot with a profile's Bops agent).
+  // A key run's gate (bops-brain run), and the executor that takes a bot's own bin (a bot with a profile's SmileDesk agent).
   ["vm/bin/bops-ai-gate", "/usr/local/bin/bops-ai-gate"],
   ["vm/bin/bops-exec", "/usr/local/bin/bops-exec"],
 ] as const;
@@ -360,12 +360,12 @@ export async function ensureBrainTools(computerId: string) {
   for (const f of files) {
     if (have.includes(`${f.md5}  ${f.dst}`)) continue;
     const r = await orgo.bash(computerId, `echo ${f.body.toString("base64")} | base64 -d > ${f.dst} && chmod 0755 ${f.dst} && echo ok`, 30);
-    if (!r.output.includes("ok")) throw new BrainError(`Bops couldn't set up the computer for its brains (${r.output.trim().slice(0, 120)}).`, 502);
+    if (!r.output.includes("ok")) throw new BrainError(`SmileDesk couldn't set up the computer for its brains (${r.output.trim().slice(0, 120)}).`, 502);
   }
   toolsChecked.set(computerId, want);
 }
 
-/** Each computer's install of OpenCode, once per run of Bops; one that failed is tried again next time. */
+/** Each computer's install of OpenCode, once per run of SmileDesk; one that failed is tried again next time. */
 const openCodeReady = new Map<string, Promise<void>>();
 
 /** The shell that installs the pinned OpenCode (npm's own package) unless that version is there, and says so. */
@@ -397,7 +397,7 @@ export function ensureOpenCode(computerId: string): Promise<void> {
 export type BrainStatus = { loggedIn: boolean; method?: string; account?: BrainSignIn["account"] };
 
 /**
- * Claude Code's `auth status --json`, kept to what Bops may keep: whether it's signed in, how
+ * Claude Code's `auth status --json`, kept to what SmileDesk may keep: whether it's signed in, how
  * (authMethod), and whose account (email, orgName, subscriptionType as `plan`). Anything else it says
  * (its folder, the org's id, a provider) is dropped. Null when there's no answer to read.
  */
@@ -481,10 +481,10 @@ const signingIn = (brainId: string, patch: Brain["signingIn"]) =>
   });
 
 /**
- * Sign a plan brain in on the computer `botId` works on, there and then, by the user: Bops wakes the
+ * Sign a plan brain in on the computer `botId` works on, there and then, by the user: SmileDesk wakes the
  * computer (or makes it), takes one of its free screens for them (a takeover, so no task starts there),
  * makes sure Claude Code is on it, and opens Claude Code's own sign-in in a terminal on that screen, its
- * page in that screen's Chrome. The app shows that screen and the user signs in on it. Bops asks Claude
+ * page in that screen's Chrome. The app shows that screen and the user signs in on it. SmileDesk asks Claude
  * Code every few seconds until it says it's signed in (then hands the screen back and says so in the
  * bot's chat), the user gives up (hands the screen back and doesn't finish soon after), or it's been
  * signInTiming.maxMs. Returns the screen at once; the rest goes on behind (Brain.signingIn says how).
@@ -501,7 +501,7 @@ export async function startSignIn(brainId: string, botId: string): Promise<{ bot
   if (!c.computerId || c.computerStatus !== "ready") {
     const { ensureComputer } = await import("./sessions");
     await ensureComputer(c.id);
-    if (!fresh()) throw new BrainError("Bops signed out meanwhile.", 409);
+    if (!fresh()) throw new BrainError("SmileDesk signed out meanwhile.", 409);
     c = workComputer(bot(botId)!);
   }
   const computerId = c.computerId;

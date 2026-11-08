@@ -144,7 +144,7 @@ async function answered<R>(url: string, init: RequestInit, timeoutMs: number, si
 }
 
 /**
- * One call to Orgo's API, saying which Bops it is (orgoHeaders). `wait`: an action on a computer that's
+ * One call to Orgo's API, saying which SmileDesk it is (orgoHeaders). `wait`: an action on a computer that's
  * waking (WAKE_CODES) is made again once it can be, for up to wakeWaitMs; on by default for POST and
  * PATCH, off for a read and a delete. A read of a computer that's asleep answers 409 computer_asleep at
  * once, for the caller to wake it with an action (computerAsleepError); a delete is the user's, and
@@ -278,12 +278,12 @@ export type OrgoScreen = { id: string; display: string; width: number; height: n
 export type OrgoComputer = { id: string; name: string; status: string; cpu: number; ram: number; os: string };
 
 /**
- * Bops computers live in Bops' own Orgo workspaces; nothing outside them is ever created or deleted here.
+ * SmileDesk computers live in SmileDesk's own Orgo workspaces; nothing outside them is ever created or deleted here.
  *
- * On an orgo-web with per workspace projects (each project says its `product`), each Bops workspace is an
- * Orgo workspace of its own, marked product "bops" and tied to the Bops one by `bops_ws_id`
+ * On an orgo-web with per workspace projects (each project says its `product`), each SmileDesk workspace is an
+ * Orgo workspace of its own, marked product "bops" and tied to the SmileDesk one by `bops_ws_id`
  * (Workspace.orgoProjectId; lib/server/workspaces.ts binds them). On an Orgo without them (today's), every
- * Bops workspace's computers live in the one the user owns named "bops" (any case, so an older "Bops" is
+ * SmileDesk workspace's computers live in the one the user owns named "bops" (any case, so an older "SmileDesk" is
  * kept), made the first time, exactly as before: nothing else is made, moved or renamed there.
  * BOPS_ORGO_WORKSPACE pins one instead, but only without a signed-in user: a pinned id belongs to the
  * self-hoster's key, not to whoever signs in.
@@ -322,7 +322,7 @@ const g = globalThis as unknown as {
 };
 
 /**
- * How many computers Bops has made or deleted since the server started. What's known about the plan's
+ * How many computers SmileDesk has made or deleted since the server started. What's known about the plan's
  * computers in use (lib/server/plan.ts) is read again after a change.
  */
 export const computerChanges = () => g.bopsComputerChanges ?? 0;
@@ -331,13 +331,13 @@ const changed = () => void (g.bopsComputerChanges = computerChanges() + 1);
 /**
  * The computers this server made (a create, a fork or a clone) and hasn't had ready yet, by id. Only
  * such a computer may be deleted by a setup that fails (ensureComputer in sessions.ts, which keeps the
- * mark on the bot as computerNeverReady): one Bops didn't make (the user's free computer taken up again,
+ * mark on the bot as computerNeverReady): one SmileDesk didn't make (the user's free computer taken up again,
  * one from another Mac) or once had working is never deleted for a failed setup, whatever Orgo says.
  */
 const madeHere = (g.bopsMadeHere ??= new Set());
 /** Whether this server made the computer and hasn't had it ready since (madeReady). */
 export const madeByThisServer = (computerId: string) => madeHere.has(computerId);
-/** The computer is ready: from now on it may hold the user's work, so it's no longer one Bops just made. */
+/** The computer is ready: from now on it may hold the user's work, so it's no longer one SmileDesk just made. */
 export const madeReady = (computerId: string) => void madeHere.delete(computerId);
 const made = <C extends { id: string }>(c: C) => (madeHere.add(c.id), c);
 
@@ -349,8 +349,8 @@ export const ownedWorkspaces = async () => {
 };
 
 /**
- * The Bops workspaces others shared with the user (lib/shared.ts): ones they're an admin or a member of,
- * each its own Bops workspace (bops_ws_id), so being in it shows that workspace alone. An Orgo without
+ * The SmileDesk workspaces others shared with the user (lib/shared.ts): ones they're an admin or a member of,
+ * each its own SmileDesk workspace (bops_ws_id), so being in it shows that workspace alone. An Orgo without
  * per workspace projects has none: its one "bops" project holds every workspace of its owner's.
  */
 export async function sharedWorkspaces(): Promise<SharedWorkspace[]> {
@@ -392,7 +392,7 @@ async function confirmPerWorkspace() {
 export const perWorkspaceUnconfirmed = () => g.bopsOrgoPerWorkspace?.marked === true && g.bopsOrgoPerWorkspace.on === null;
 
 /**
- * A Bops tie orgo-web said back: true when its answer carries the bops_ws_id asked for (only the code for
+ * A SmileDesk tie orgo-web said back: true when its answer carries the bops_ws_id asked for (only the code for
  * per workspace projects does); false for a 4xx or an answer without it (an orgo-web with only the column
  * answers 400 Unsupported field, or makes a plain project), so nothing is tied here. Throws when Orgo didn't
  * answer or failed (5xx), to be tried again.
@@ -411,8 +411,8 @@ export async function tieProject(projectId: string, wsId: string): Promise<boole
 }
 
 /**
- * Whether each Bops workspace is an Orgo workspace of its own here: true only once Orgo's list shows it
- * (projects carry `product`). False, or not known yet (null), and Bops works as before: one "bops" project.
+ * Whether each SmileDesk workspace is an Orgo workspace of its own here: true only once Orgo's list shows it
+ * (projects carry `product`). False, or not known yet (null), and SmileDesk works as before: one "bops" project.
  */
 export async function perWorkspaceProjects({ fresh = false } = {}): Promise<boolean | null> {
   // Undone on this Mac (revertWorkspaceMigration): the one "bops" project, as before.
@@ -424,12 +424,12 @@ export async function perWorkspaceProjects({ fresh = false } = {}): Promise<bool
   return g.bopsOrgoPerWorkspace?.key === key ? g.bopsOrgoPerWorkspace.on : null;
 }
 
-/** Whether a workspace is Bops': marked product "bops" where Orgo marks them, else named "bops". */
+/** Whether a workspace is SmileDesk's: marked product "bops" where Orgo marks them, else named "bops". */
 export const isBops = (w: Pick<OrgoWorkspace, "name" | "product">) => (w.product != null ? w.product === "bops" : w.name.trim().toLowerCase() === WORKSPACE);
 
 /**
  * The default workspace's project among the user's own: the one tied to it (bops_ws_id "ws_main"), else
- * the Bops one named "bops", else the Bops one with the most computers, else the oldest.
+ * the SmileDesk one named "bops", else the SmileDesk one with the most computers, else the oldest.
  */
 export function pickMainProject(owned: OrgoWorkspace[], freeComputerId?: string | null): OrgoWorkspace | undefined {
   // An Orgo without per workspace projects: the first one named "bops", exactly as before.
@@ -518,11 +518,11 @@ export function bindProject(wsId: string, projectId: string, orgoName?: string, 
 export const nameTaken = (e: unknown) =>
   e instanceof OrgoError && e.status === 400 && (e.code === "WORKSPACE_NAME_TAKEN" || /already exists|name.*taken/i.test(e.said ?? e.message));
 
-/** The names tried for a Bops workspace whose name the user's Orgo already has: "orgo (Bops)", then "orgo (Bops 2)", and so on. */
-export const collisionNames = (name: string) => [name, `${name} (Bops)`, ...Array.from({ length: 8 }, (_, i) => `${name} (Bops ${i + 2})`)];
+/** The names tried for a SmileDesk workspace whose name the user's Orgo already has: "orgo (SmileDesk)", then "orgo (SmileDesk 2)", and so on. */
+export const collisionNames = (name: string) => [name, `${name} (SmileDesk)`, ...Array.from({ length: 8 }, (_, i) => `${name} (SmileDesk ${i + 2})`)];
 
 /**
- * A Bops workspace's own Orgo project, made now when it has none: marked product "bops" and tied to it,
+ * A SmileDesk workspace's own Orgo project, made now when it has none: marked product "bops" and tied to it,
  * under its own name. `interactive`: the user is naming it (New workspace), so a name the user's Orgo
  * already has is said back (OrgoError, nameTaken) for them to pick another; otherwise the next free one
  * of collisionNames is used and noted.
@@ -552,7 +552,7 @@ export async function ensureProject(wsId: string, opts: { interactive?: boolean;
         // An orgo-web without the code made a plain Orgo project: it goes again, and this workspace stays on the "bops" project.
         if (g.bopsOrgoPerWorkspace) g.bopsOrgoPerWorkspace.on = null;
         await deleteProject(made.id).catch((e: Error) => console.warn(`[workspaces] deleting the plain project ${made.id.slice(0, 8)}: ${e.message}`));
-        throw new Error("Orgo didn't make it a Bops workspace");
+        throw new Error("Orgo didn't make it a SmileDesk workspace");
       }
       await confirmPerWorkspace();
       // orgo-web's create answers created_at, not updated_at: a project just made was last changed then.
@@ -595,7 +595,7 @@ export async function orgoProjectFor(wsId: string = MAIN_WORKSPACE): Promise<str
   return made.id;
 }
 
-/** Every Bops project the user owns (on an Orgo without per workspace projects, the one "bops" project). */
+/** Every SmileDesk project the user owns (on an Orgo without per workspace projects, the one "bops" project). */
 export async function bopsProjects(): Promise<string[]> {
   if (process.env.BOPS_ORGO_WORKSPACE && !(await loadOrgoKey())) return [process.env.BOPS_ORGO_WORKSPACE];
   if ((await perWorkspaceProjects()) !== true) return [await bopsWorkspace()];
@@ -632,8 +632,8 @@ export type BopsWorkspaceFound =
  * The user's own "bops" workspace, found and never made, with `key` (theirs, signed in): the id
  * bopsWorkspace() already has for them (unless `fresh`), else the one they own named "bops" (any case,
  * spaces trimmed). Never one shared with them, never another of theirs (unlike ownedWorkspace), and
- * nothing is made (unlike bopsWorkspace): "none" until Bops made it (workspaces.ts bindMissingProjects at
- * sign-in or start, every account signed in to Bops, or a bot's first computer). The people
+ * nothing is made (unlike bopsWorkspace): "none" until SmileDesk made it (workspaces.ts bindMissingProjects at
+ * sign-in or start, every account signed in to SmileDesk, or a bot's first computer). The people
  * the user adds are this workspace's members (lib/server/members.ts).
  */
 export async function findBopsWorkspace(key: string, { fresh = false, wsId }: { fresh?: boolean; wsId?: string } = {}): Promise<BopsWorkspaceFound> {
@@ -673,17 +673,17 @@ export type OrgoInvite = { email?: unknown; role?: unknown; status?: unknown; to
  * the value now kept; 403 for anyone but the owner; 404 "Member not found" for someone who isn't a member; 400
  * owner_always for the owner (who always has it); 503 COMPUTER_USE_UNAVAILABLE on a database without its column; and,
  * from an orgo-web before it, 400 (a role was required). GET gives the owner each member's (OrgoMember.bopsComputerUse),
- * and Bops Cloud reads the caller's from bops-role (cloud/protocol.ts WsAccess.computerUse).
+ * and SmileDesk Cloud reads the caller's from bops-role (cloud/protocol.ts WsAccess.computerUse).
  */
 export const MEMBER_COMPUTER_ROUTE = { method: "PATCH", path: "/api/workspaces/{projectId}/members", field: "bopsComputerUse" } as const;
 
 /**
  * orgo-web's route for a member's Keys (project_members.bops_keys: they manage the workspace's own keys and pick which
  * bots use a key, cloud/protocol.ts SharedWsSlice.keys): its members route again, called by the owner's Mac with the
- * owner's key, or an Admin's Bops with theirs. PATCH {memberId, bopsKeys: boolean} answers {success: true, bopsKeys} with
+ * owner's key, or an Admin's SmileDesk with theirs. PATCH {memberId, bopsKeys: boolean} answers {success: true, bopsKeys} with
  * the value now kept (an Admin's is always true); 503 KEYS_UNAVAILABLE on an orgo-web without its column; and, from an
  * orgo-web before it, 400 (a role was required). GET gives the owner and Admins each member's (OrgoMember.bopsKeys), and
- * Bops Cloud reads the caller's from bops-role (cloud/protocol.ts WsAccess.keys).
+ * SmileDesk Cloud reads the caller's from bops-role (cloud/protocol.ts WsAccess.keys).
  */
 export const MEMBER_KEYS_ROUTE = { method: "PATCH", path: "/api/workspaces/{projectId}/members", field: "bopsKeys" } as const;
 
@@ -718,7 +718,7 @@ export const orgoMembers = {
   /** Change someone's role. Orgo's words here: "member" (a Member) or "admin" (an Admin). */
   setRole: (key: string, workspace: string, memberId: string, role: "member" | "admin") =>
     callOrgo<Record<string, unknown>>(key, `/api/workspaces/${encodeURIComponent(workspace)}/members`, { method: "PATCH", body: { memberId, role } }),
-  /** Keys for a member, on or off (MEMBER_KEYS_ROUTE): orgo-web keeps it, and its bops-keys routes and Bops Cloud go by it. */
+  /** Keys for a member, on or off (MEMBER_KEYS_ROUTE): orgo-web keeps it, and its bops-keys routes and SmileDesk Cloud go by it. */
   setKeys: (key: string, workspace: string, memberId: string, on: boolean) =>
     callOrgo<Record<string, unknown>>(key, MEMBER_KEYS_ROUTE.path.replace("{projectId}", encodeURIComponent(workspace)), {
       method: MEMBER_KEYS_ROUTE.method,
@@ -734,27 +734,27 @@ export const orgoMembers = {
 
 /**
  * Sam's computer launches from this template (built from orgo/bops-base.mjs; keep the versions in
- * step): Orgo's own copy, which every account can use and which is the only one a free Bops computer
+ * step): Orgo's own copy, which every account can use and which is the only one a free SmileDesk computer
  * is made from (orgo-web lib/curated-templates.ts). BOPS_ORGO_TEMPLATE points at your own build
  * when the default isn't in your Orgo account.
  */
 export const BOPS_TEMPLATE = process.env.BOPS_ORGO_TEMPLATE || "system/bops-base@0.1.11";
 /**
- * Every Bops computer's disk, in GB: what Orgo makes them with (orgo-web BOPS_COMPUTER_DISK_GB) and grows
+ * Every SmileDesk computer's disk, in GB: what Orgo makes them with (orgo-web BOPS_COMPUTER_DISK_GB) and grows
  * older ones to when they wake. Copies inherit their source's disk; growDisk asks for no more than Orgo allows.
  */
 export const BOPS_DISK_GB = Number(process.env.BOPS_DISK_GB) || 80;
-/** Every screen on a Bops computer: 4:3, like the template's boot screen (orgo/bops-base.mjs). */
+/** Every screen on a SmileDesk computer: 4:3, like the template's boot screen (orgo/bops-base.mjs). */
 export const BOPS_SCREEN = { width: 1280, height: 960 };
 
 const grown = new Set<string>();
 
 /**
- * Whether Bops streams the boot screen over Orgo's WebRTC (UDP): on unless BOPS_WEBRTC=0. Only at the
+ * Whether SmileDesk streams the boot screen over Orgo's WebRTC (UDP): on unless BOPS_WEBRTC=0. Only at the
  * screen's real size, though: Orgo's WebRTC gateway fits a screen inside its host's limit by shrinking
- * the screen itself (1280x720 unless the host sets ORGO_RTC_WIDTH/HEIGHT, so a 1280x960 Bops screen
+ * the screen itself (1280x720 unless the host sets ORGO_RTC_WIDTH/HEIGHT, so a 1280x960 SmileDesk screen
  * comes out 960x720), and never sizes it back. The app sees that in the size Orgo says it streams at,
- * stops, and streams over VNC, and Bops puts the screen back (orgo.screenShrunk). Off, Bops doesn't
+ * stops, and streams over VNC, and SmileDesk puts the screen back (orgo.screenShrunk). Off, SmileDesk doesn't
  * turn WebRTC on for computers and the app streams over VNC (through Orgo).
  */
 export const webrtcWanted = () => process.env.BOPS_WEBRTC !== "0";
@@ -778,16 +778,16 @@ export const rtcShrunk = (computerId: string) => (rtcShrank.get(computerId) ?? 0
 
 export const orgo = {
   /**
-   * A new computer in the Bops workspace, from the Bops template, with `ram` GB of memory: the plan's
+   * A new computer in the SmileDesk workspace, from the SmileDesk template, with `ram` GB of memory: the plan's
    * memory per computer (computerRam in lib/orgo-plans.ts), so the plan runs out of computers before
    * memory, as every copy of this one is as big. Its vCPUs are the template's 4, as many as one computer
    * on the user's plan can have (Hacker 1, Startup 2, Scale 4). Without `ram` Orgo gives it the
    * template's 16 GB, as far as the plan allows. A computer the template's size resumes from its golden
    * snapshot; a smaller one boots fresh, which takes longer.
    *
-   * `free`: the user's one free Bops computer (bops_free), off their Orgo plan, at the template's size
+   * `free`: the user's one free SmileDesk computer (bops_free), off their Orgo plan, at the template's size
    * whatever the plan (Orgo sets it; no `ram` is sent). Orgo makes it only when the user has none yet,
-   * in their own "bops" workspace, from Orgo's Bops template; otherwise this is an ordinary create.
+   * in their own "bops" workspace, from Orgo's SmileDesk template; otherwise this is an ordinary create.
    * `size` with `free` (bops_size): billed by use, the size it's made at, one Orgo listed in its plan read
    * (lib/server/plan.ts makeFree). Without one Orgo makes it Large, as for every app before sizes.
    */
@@ -813,7 +813,7 @@ export const orgo = {
   },
 
   /**
-   * Switch the free Bops computer to `size` (lib/server/computer-size.ts switchSize), the way Orgo's plan
+   * Switch the free SmileDesk computer to `size` (lib/server/computer-size.ts switchSize), the way Orgo's plan
    * read said (`change`): billed by the hour, Orgo's switch for it (POST /api/bops/computer/size), which
    * bills the new size from the moment it changes; part of the user's Orgo plan, Orgo's own resize (PATCH
    * /api/computers/{id}/resize), under the plan's rules. Either may restart it (`restarted`). Its disk stays.
@@ -865,7 +865,7 @@ export const orgo = {
   /**
    * Turn on Orgo's WebRTC (UDP) video for a computer, so its screen streams over UDP rather than VNC.
    * It's one setting on Orgo's side (POST /computers/{id}/webrtc): nothing restarts. Orgo forgets it
-   * when a computer stops, so Bops turns it on when it sets a computer up and again whenever the view
+   * when a computer stops, so SmileDesk turns it on when it sets a computer up and again whenever the view
    * finds nobody chose (see /api/vnc). Only then: a choice someone made on Orgo (off too) stands. And
    * only while the computer runs: a stopped one has no record on Orgo (instance_details is null), and
    * saving the choice would make one, which Orgo then takes for a running computer. Orgo turns it down
@@ -898,7 +898,7 @@ export const orgo = {
     await call("PATCH", `/computers/${computerId}/screens/${screenId(99)}`, BOPS_SCREEN);
   },
 
-  /** Every computer in Bops' workspaces (and only those): every Bops project's, where each workspace has its own. */
+  /** Every computer in SmileDesk's workspaces (and only those): every SmileDesk project's, where each workspace has its own. */
   bopsComputers: async () => {
     const out: { id: string; name: string }[] = [];
     for (const p of await bopsProjects())
@@ -907,15 +907,15 @@ export const orgo = {
   },
 
   /**
-   * Delete a computer, but only one in the Bops workspace (or the one BOPS_ORGO_WORKSPACE pinned:
-   * computers made there before sign-in are Bops' too, when the account that signed in can reach them).
+   * Delete a computer, but only one in the SmileDesk workspace (or the one BOPS_ORGO_WORKSPACE pinned:
+   * computers made there before sign-in are SmileDesk's too, when the account that signed in can reach them).
    */
   remove: async (computerId: string) => {
     const epoch = stateEpoch();
     const c = await call<{ project_id?: string; workspace_id?: string }>("GET", `/computers/${computerId}`);
     const where = c.workspace_id ?? c.project_id;
     if ((!where || !(await bopsProjects()).includes(where)) && (!where || where !== process.env.BOPS_ORGO_WORKSPACE))
-      throw new Error(`refusing to delete ${computerId}: not a Bops computer`);
+      throw new Error(`refusing to delete ${computerId}: not a SmileDesk computer`);
     await call("DELETE", `/computers/${computerId}`);
     changed();
     recordUsage("computer.remove", {}, epoch);
@@ -958,7 +958,7 @@ export const orgo = {
     (await call<{ screens: OrgoScreen[] }>("GET", `/computers/${computerId}/screens`)).screens,
 
   /**
-   * Start another screen. Bops computers are 4:3 (see BOPS_SCREEN); we pass the size because Orgo
+   * Start another screen. SmileDesk computers are 4:3 (see BOPS_SCREEN); we pass the size because Orgo
    * still records a template computer's boot screen as 1280x720 and would size new screens to that.
    */
   createScreen: (computerId: string) => call<OrgoScreen>("POST", `/computers/${computerId}/screens`, BOPS_SCREEN),
@@ -1045,7 +1045,7 @@ export const renameProject = (projectId: string, name: string) =>
  * Delete one of the user's Orgo workspaces with everything in it (orgo-web's POST /api/projects/{id}/delete:
  * it has no DELETE). orgo-web refuses before it deletes anything (a computer whose memory is moving, a
  * device it holds), so a refusal leaves the workspace whole. Only after the user confirmed what goes with it
- * (deletePreview), or for a Bops workspace this app just made and that is empty.
+ * (deletePreview), or for a SmileDesk workspace this app just made and that is empty.
  */
 export const deleteProject = (projectId: string) => call<{ success?: boolean }>("POST", `/projects/${encodeURIComponent(projectId)}/delete`, undefined, { wait: false });
 
@@ -1058,7 +1058,7 @@ export type OrgoDeletePreview = {
   /** The apps its bots made and its CRM files, by name (an orgo-web that keeps them: madeApps [{ title }], crmFiles [{ name }]). */
   madeApps: string[];
   crmFiles: string[];
-  /** Its routines and Orbit issues, by title, from an orgo-web that lists them (routines [{ title }], orbitIssues [{ title }]); none from one that doesn't (Bops lists its own). */
+  /** Its routines and Orbit issues, by title, from an orgo-web that lists them (routines [{ title }], orbitIssues [{ title }]); none from one that doesn't (SmileDesk lists its own). */
   routines: string[];
   issues: string[];
   /** An orgo-web that counted skills and apps (563ed1cf6) instead of naming them: how many it has, names unknown. */
@@ -1094,7 +1094,7 @@ export async function deletePreview(projectId: string): Promise<OrgoDeletePrevie
   };
 }
 
-/** The first Bops release that finds its default workspace by bops_ws_id, not by the name "bops" (lib/types.ts). */
+/** The first SmileDesk release that finds its default workspace by bops_ws_id, not by the name "bops" (lib/types.ts). */
 export { WORKSPACE_APPS_SINCE };
 
 /** Whether version a ("0.0.31") is older than b. */
@@ -1106,7 +1106,7 @@ export const olderVersion = (a: string, b: string) => {
 };
 
 /**
- * The Bops version each app on the account last sent (GET /api/bops/apps, as bopsAppsGate reads it; never Bops
+ * The SmileDesk version each app on the account last sent (GET /api/bops/apps, as bopsAppsGate reads it; never SmileDesk
  * Cloud's), the ones that sent one; null when Orgo doesn't say (signed out, an orgo-web without the route, Orgo
  * not answering).
  */
@@ -1121,13 +1121,13 @@ export async function bopsAppVersions(): Promise<string[] | null> {
 }
 
 /**
- * Whether every Bops app on this account is new enough for the default's project to take the user's
- * name (DECISIONS.md: only once every Bops app on the account is the new version).
+ * Whether every SmileDesk app on this account is new enough for the default's project to take the user's
+ * name (DECISIONS.md: only once every SmileDesk app on the account is the new version).
  *
  * How it can be known: orgo-web keeps, per API key (each sign-in on a Mac gets its own key, so per Mac),
- * the version each Bops app last sent while it used a Bops computer (public.bops_app_seen, the same record
- * that decides whether a Bops computer may leave its host). Bops asks for it at GET /api/bops/apps:
- * `{ apps: [{ app_version, caller, seen_at }] }`, keys seen in the last 90 days. Bops Cloud's
+ * the version each SmileDesk app last sent while it used a SmileDesk computer (public.bops_app_seen, the same record
+ * that decides whether a SmileDesk computer may leave its host). SmileDesk asks for it at GET /api/bops/apps:
+ * `{ apps: [{ app_version, caller, seen_at }] }`, keys seen in the last 90 days. SmileDesk Cloud's
  * bops.cloud_accounts.app_version is not used: it is one value per account, the last app that called
  * wins, so an old Mac and a new one take turns and a new version there says nothing about the other Mac.
  *
@@ -1143,7 +1143,7 @@ export async function bopsAppsGate(): Promise<{ ok: boolean; reason: AppsGateRea
   const r = await callOrgo<{ apps?: unknown }>(key, "/api/bops/apps");
   if (!r || r.status >= 500) return { ok: false, reason: "unreachable", apps: 0 };
   if (r.status !== 200 || !Array.isArray(r.json.apps)) return { ok: false, reason: "no_signal", apps: 0 };
-  // Bops Cloud calls for the user too; it isn't an app on a Mac.
+  // SmileDesk Cloud calls for the user too; it isn't an app on a Mac.
   const apps = (r.json.apps as { app_version?: unknown; caller?: unknown }[]).filter((a) => a && typeof a === "object" && a.caller !== "cloud");
   if (!apps.length) return { ok: false, reason: "no_record", apps: 0 };
   for (const a of apps) {
@@ -1237,7 +1237,7 @@ export type OrgoDeployProject = {
   repo?: string | null;
   /** The Ingot repo it builds (source "ingot"), as "<project>/<name>". */
   ingot_repo?: string | null;
-  /** The changeset every deploy that names none builds, when one is kept (Bops keeps none: those build the newest on main). */
+  /** The changeset every deploy that names none builds, when one is kept (SmileDesk keeps none: those build the newest on main). */
   ingot_at?: string | null;
   url: string | null;
   /** The port its app listens on there (each project on a computer has its own). */
@@ -1352,7 +1352,7 @@ export type OrgoPublicUrl = { id: string; url: string; hostname: string; label: 
 
 /**
  * A public URL's password as orgo-web keeps it (null: it has none), and the cookie a browser that typed it gets
- * (__Host-orgo_pass, 30 days), so Bops' own view of it opens without the password page.
+ * (__Host-orgo_pass, 30 days), so SmileDesk's own view of it opens without the password page.
  */
 export type OrgoUrlPassword = { password: string | null; cookie: { name: string; value: string } | null };
 
@@ -1360,8 +1360,8 @@ export type OrgoUrlPassword = { password: string | null; cookie: { name: string;
 export type OrgoPublicUrls = { enabled: boolean; base_domain?: string; limit?: number; account_limit?: number; account_used?: number; public_urls?: OrgoPublicUrl[] };
 
 /**
- * orgo-web's public URLs (lib/public-urls): a computer's https://<label>.orgo.dev, each to one port. Bops makes
- * an app's Preview link with one (its label chosen by Bops, so it stays the same: app-labels.ts), before its
+ * orgo-web's public URLs (lib/public-urls): a computer's https://<label>.orgo.dev, each to one port. SmileDesk makes
+ * an app's Preview link with one (its label chosen by SmileDesk, so it stays the same: app-labels.ts), before its
  * deploy project's first deploy, so the project adopts it and never owns it. A list never wakes the computer.
  * A write orgo-web answers 404 without a code (public URLs not open here) is HOSTING_CLOSED.
  */
@@ -1445,7 +1445,7 @@ export type OrgoBoughtDomain = {
 /**
  * The workspace's bought domains (GET /projects/{id}/domains): `registrar` when buying is open to this
  * account, `can_buy` when this key may (full access, a person's own key), and `last_contact`, who they
- * registered their last one to, which only goes back to the window (Bops never keeps it).
+ * registered their last one to, which only goes back to the window (SmileDesk never keeps it).
  */
 export type OrgoBoughtList = { enabled?: boolean; registrar?: boolean; can_buy?: boolean; renewals_enabled?: boolean; domains?: OrgoBoughtDomain[]; last_contact?: Record<string, unknown> | null };
 

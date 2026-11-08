@@ -1,7 +1,7 @@
 import "server-only";
 
 /**
- * What the user has in front of them in Bops right now: the chat and thread open, and whether the
+ * What the user has in front of them in SmileDesk right now: the chat and thread open, and whether the
  * window is in front (the app says so as it changes, and every few seconds while it's open:
  * app/api/view). A task whose thread or chat is open in the window in front is being watched, so its
  * steps run fast (routing.ts speedFor); one nobody is looking at runs at standard speed.

@@ -10,7 +10,7 @@ import { getState, ownerName, patchSession, session, update } from "./store";
  * the page text and answers at once: is something here only the user can get past, does the bot need
  * to get past it for its task, and does the page show private data. On a sign-in or verification
  * page a second call matches the page's fields (which one takes the email, the password, the code)
- * so Bops can draw a native card that fills them. Runs wherever the mirror can reach: the Mac, or
+ * so SmileDesk can draw a native card that fills them. Runs wherever the mirror can reach: the Mac, or
  * Orgo over the tailnet.
  */
 
@@ -200,7 +200,7 @@ export function watchScreen(botId: string, display: number, endpoint: string, se
     const read = await readScreen(botId, display, endpoint, session(sessionId)?.goal ?? "", sessionId);
     if (!read || stopped) return;
     // A sign-in the vault can handle by itself (a saved login set to sign in by itself) never needs the user. Not on a
-    // stranger's work (lib/types.ts outsideThread: someone outside Bops asked for it). On a member's (memberThread) too:
+    // stranger's work (lib/types.ts outsideThread: someone outside SmileDesk asked for it). On a member's (memberThread) too:
     // it signs in only with a login its bot has, and one that asks first waits for the owner's card, as for anyone.
     if (read.blocker && read.form && !outsideThread(session(sessionId), session)) {
       const { autoSignIn } = await import("./vault");

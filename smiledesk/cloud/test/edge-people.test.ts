@@ -8,7 +8,7 @@ import type { SharedWsState } from "../protocol.ts";
 import { dropUsers, fakeOrgo, keyOf, newUserId, prepareDb, startCloud, type Listening } from "./edge-fakes.ts";
 
 /**
- * An Admin's powers that don't wait for the owner's Mac, over the real Bops Cloud path and Postgres: the bots a Member has
+ * An Admin's powers that don't wait for the owner's Mac, over the real SmileDesk Cloud path and Postgres: the bots a Member has
  * (GET and POST /v1/ws/<project>/people), written into the owner's state as a new version the owner's Mac merges in;
  * where chat is answered (PATCH /v1/ws/<project>/routing); and waking a bot's computer (POST /v1/ws/<project>/wake).
  * Who's who comes from orgo-web's list with the Admin's own key. Every name, email and id is made up.
@@ -127,7 +127,7 @@ test("an Admin reads the bots each Member has, only for people orgo-web lists to
   assert.deepEqual((await call(owner, "GET", "people")).json.code, "own_workspace");
 });
 
-test("orgo-web says the Admin may not change people (its scope or kill switch): Bops Cloud neither reads nor writes them", async () => {
+test("orgo-web says the Admin may not change people (its scope or kill switch): SmileDesk Cloud neither reads nor writes them", async () => {
   const list = people[PROJECT] as Record<string, unknown>;
   list.can = { managePeople: false };
   try {
@@ -148,7 +148,7 @@ test("an Admin gives a Member bots with every Mac closed: a new version of the o
   assert.deepEqual((await slice(member)).levels, { ivy: "read" });
   const r = await call(admin, "POST", "people", { who: { memberId: member }, access: { others: "none", bots: { max: "write", ivy: "read" }, computer: "use" } });
   assert.equal(r.status, 200, JSON.stringify(r.json));
-  assert.equal(await version(), base + 1, "written once, by Bops Cloud");
+  assert.equal(await version(), base + 1, "written once, by SmileDesk Cloud");
   const e = (await kept())[memberEmail];
   assert.deepEqual([e.bots, e.computer, typeof e.at], [{ max: "write", ivy: "read" }, "use", "number"]);
   assert.deepEqual((await slice(member)).levels, { max: "write", ivy: "read" }, "the Member sees Max at Write at their next read");
@@ -209,7 +209,7 @@ test("waking a bot's computer: an Admin may (as a message would, with the owner'
   assert.equal((await call(admin, "POST", "wake", { botId: "nobody" })).status, 404);
 });
 
-test("an Allow once or Deny to an ask of a bot's computer's runner, with the owner's Mac away: Bops Cloud writes it there now, named as theirs; Always allow, a routine's, or an ask of the owner's Mac, waits for the Mac", async () => {
+test("an Allow once or Deny to an ask of a bot's computer's runner, with the owner's Mac away: SmileDesk Cloud writes it there now, named as theirs; Always allow, a routine's, or an ask of the owner's Mac, waits for the Mac", async () => {
   // Its computer can't be woken (billed by the hour, and the owner hasn't let messages wake it): the chat says why.
   const woken: string[] = [];
   resetMembers({ wake: async (_u, desktop) => (woken.push(desktop), { ok: false, state: "hourly", why: "Max's computer is paid by the hour, and Owner hasn't let messages wake it, so Max can't answer this." }) });
@@ -222,7 +222,7 @@ test("an Allow once or Deny to an ask of a bot's computer's runner, with the own
   const act = (key: string, a: unknown) => call(admin, "POST", "act", { key, act: a });
   const r = await act("k_cloud_answer_1", { act: "answer", askId: "ask-run-1", reply: "reject", message: "Not that one" });
   assert.deepEqual([r.status, r.json.macOn], [202, true]);
-  assert.equal(await version(), before + 1, "written by Bops Cloud at once");
+  assert.equal(await version(), before + 1, "written by SmileDesk Cloud at once");
   const kept = (await query<{ state: Record<string, unknown> }>("SELECT state FROM bops.app_state WHERE user_id = $1", [owner])).rows[0].state;
   const reply = (kept.appApprovals as Record<string, unknown>[]).find((x) => x.id === "ask-run-1")!.reply as Record<string, unknown>;
   assert.deepEqual([reply.reply, reply.message, reply.by, (reply.member as { userId: string }).userId], ["reject", "Not that one", "cloud", admin]);
@@ -246,7 +246,7 @@ test("an Allow once or Deny to an ask of a bot's computer's runner, with the own
   const v = await version();
   const always = await act("k_cloud_answer_3", { act: "answer", askId: "ask-run-2", reply: "always" });
   const mac = await act("k_cloud_answer_4", { act: "answer", askId: "ask-mac-1", reply: "once" });
-  // (An Admin's answer waits for the owner's Bops to take an Admin's acts: here it doesn't say its version, so 409.)
+  // (An Admin's answer waits for the owner's SmileDesk to take an Admin's acts: here it doesn't say its version, so 409.)
   assert.ok([202, 409].includes(always.status) && [202, 409].includes(mac.status), `${always.status} ${mac.status}`);
   assert.equal(await version(), v, "nothing written for them");
   await query("DELETE FROM bops.cloud_pending WHERE user_id = $1", [owner]);
@@ -257,6 +257,6 @@ test("an Allow once or Deny to an ask of a bot's computer's runner, with the own
 test("an Admin's chat switch refused for the owner's own reasons says it in the Admin's words", async () => {
   // (Answering every chat by itself isn't on for this owner: turns.ts chatAutoFor.)
   const r = await call(admin, "PATCH", "routing", { mode: "auto" });
-  if (r.status === 409) assert.deepEqual([r.json.code, r.json.error], ["chat_auto_off", "Bops Cloud can't answer this workspace by itself yet, so the owner's Mac keeps answering it."]);
+  if (r.status === 409) assert.deepEqual([r.json.code, r.json.error], ["chat_auto_off", "SmileDesk Cloud can't answer this workspace by itself yet, so the owner's Mac keeps answering it."]);
   else assert.equal(r.status, 200, JSON.stringify(r.json));
 });

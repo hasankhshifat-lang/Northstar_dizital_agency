@@ -23,7 +23,7 @@ export function allows(b: Pick<Bot, "autoApprove" | "permissions">, action: stri
 }
 
 /**
- * The rule Always allow saves for `action`, none when the bot's rules allow it already. Its resource is "*", as a Bops
+ * The rule Always allow saves for `action`, none when the bot's rules allow it already. Its resource is "*", as a SmileDesk
  * from before reads a rule (an action and a resource), so there too it covers that action for anyone.
  */
 export function alwaysRule(action: string, had: readonly PermissionRule[] = []): PermissionRule | null {
@@ -40,13 +40,13 @@ export const toDo = (action: string) => action.replace(/^([A-Z])(?=[a-z])/, (c) 
 export const askHeadline = (botName: string, a: Pick<AppApproval, "action" | "reason">) => (a.reason ? `${botName} wants to: ${a.reason}` : `${botName} wants to ${toDo(a.action)}`);
 
 /**
- * What a call with one of the user's keys does, in Bops' own words from its service and method, never the bot's (its
+ * What a call with one of the user's keys does, in SmileDesk's own words from its service and method, never the bot's (its
  * reason can be wrong, or planted by a page it read): "GitHub · adds or changes something", "Stripe · deletes something".
  * A query sent as a POST (GraphQL) and a GET that asks (Slack's) can do anything, and say so.
  */
 export function apiFacts(api: Pick<NonNullable<AppApproval["api"]>, "label" | "method" | "path" | "change">) {
   // A change to files in one go: how many it changes and deletes, in which repository and on which branch
-  // ("GitHub · changes 2 files in acme/site, on site/orange"): the repository is Bops' to say, never the bot's reason.
+  // ("GitHub · changes 2 files in acme/site, on site/orange"): the repository is SmileDesk's to say, never the bot's reason.
   if (api.change) {
     const gone = api.change.files.filter((f) => f.op === "delete").length;
     const kept = api.change.files.length - gone;
@@ -100,7 +100,7 @@ export function mailRule(b: Pick<Bot, "autoApprove" | "permissions">, s?: Pick<B
 /**
  * Bot rules with Replies to others set to `effect`: every "Send an email" rule goes, and one comes back in its place, so
  * the pick holds whatever Just do it says later. Never keeps an ask rule (BotSettings.mailNever says the rest), which a
- * Bops from before reads as it is. Every other action's rules stay, in order.
+ * SmileDesk from before reads as it is. Every other action's rules stay, in order.
  */
 export function withMailRule(rules: readonly PermissionRule[] | undefined, effect: MailRule): PermissionRule[] {
   const rest = (rules ?? []).filter((r) => r.action !== SEND_EMAIL);

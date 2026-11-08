@@ -7,7 +7,7 @@ import { HttpError } from "./http.ts";
 import { ACCOUNT_DELETED } from "./protocol.ts";
 
 /**
- * Postgres for Bops Cloud: the `bops` schema in orgo-web's database, as the `bops_app` role, which
+ * Postgres for SmileDesk Cloud: the `bops` schema in orgo-web's database, as the `bops_app` role, which
  * can reach that schema only (db/README.md). One small pool for the whole process.
  */
 

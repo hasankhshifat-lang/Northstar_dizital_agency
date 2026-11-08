@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
  * The domain each bot of the workspace (`?ws=`, the current one by default) that works on a site shows under its name
  * in the sidebar (lib/server/bot-groups.ts botSiteDomains): { domains: { [botId]: domain | null } }, null for a site
  * with none (the sidebar says the site's name then). From Orgo alone, kept a few minutes: reading it never wakes a
- * computer. Nothing while a workspace shared with the user is open (Bops Cloud sends its own), or apps aren't open here.
+ * computer. Nothing while a workspace shared with the user is open (SmileDesk Cloud sends its own), or apps aren't open here.
  */
 export async function GET(request: Request) {
   const unready = notReady();

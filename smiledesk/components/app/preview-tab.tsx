@@ -517,7 +517,7 @@ export function PreviewTab({
       </div>
       <div className={`relative flex min-h-0 flex-1 justify-center ${px ? "bg-[#F7F7F6] p-3" : ""}`}>
         <div data-preview-frame={width} className={`relative flex min-h-0 w-full flex-col ${px ? "overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_#E6E6E3]" : ""}`} style={px ? { maxWidth: px } : undefined}>
-          {/* (Only in the Mac app: a plain browser opens it in a tab of its own, never a frame on Bops' own origin.) */}
+          {/* (Only in the Mac app: a plain browser opens it in a tab of its own, never a frame on SmileDesk's own origin.) */}
           {showView && createElement("webview", { ref: setView, src, partition, allowpopups: "true", className: "min-h-0 flex-1" })}
           {words && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/95 px-8 text-center">

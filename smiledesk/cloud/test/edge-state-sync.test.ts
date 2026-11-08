@@ -225,7 +225,7 @@ test("builds from before: their whole-state upload is taken until a newer build 
   assert.equal((await putState(id, 6, { owner: { name: "New" } })).status, 200);
   const refused = await oldPut({ owner: { name: "Old again" }, messages: [] }, 7);
   assert.equal(refused.status, 426);
-  assert.match(((await refused.json()) as { error: string }).error, /Update Bops/);
+  assert.match(((await refused.json()) as { error: string }).error, /Update SmileDesk/);
   assert.deepEqual((await loadState(id))?.state, { owner: { name: "New" } });
   assert.equal((await page(id, 0)).messages.length, 2);
 });
@@ -237,7 +237,7 @@ const EVERY = { id: "rtn_every", botId: "boppy", title: "Inbox", goal: "Check my
 const noticesOf = async (userId: string, headers: Record<string, string> = {}) =>
   ((await (await call(userId, "/v1/notices", { headers })).json()) as { notices: { id: string; title: string }[] }).notices;
 
-test("once a Mac on a newer Bops wrote the user's state, an older Mac is kept out of it: reads, merges, writes and the tunnel refused, and told to update", async () => {
+test("once a Mac on a newer SmileDesk wrote the user's state, an older Mac is kept out of it: reads, merges, writes and the tunnel refused, and told to update", async () => {
   const id = user("level");
   const older = { device: "mac-old" };
   const newer = { device: "mac-new", headers: NEWER };
@@ -257,7 +257,7 @@ test("once a Mac on a newer Bops wrote the user's state, an older Mac is kept ou
     assert.equal(res.status, 426, what);
     const body = (await res.json()) as { error: string; code: string; state?: unknown };
     assert.equal(body.code, "state_too_new", what);
-    assert.match(body.error, /Update Bops on this Mac/, what);
+    assert.match(body.error, /Update SmileDesk on this Mac/, what);
     assert.equal(body.state, undefined, `${what}: nothing of the state with it`);
   };
   await refused(await call(id, "/v1/state", older), "its read");
@@ -282,7 +282,7 @@ test("once a Mac on a newer Bops wrote the user's state, an older Mac is kept ou
   assert.deepEqual(rows.messages.map((m) => m.id), ["msg_000001"]);
   // Its tunnel too (it would take the newer Mac's), and its notices say to update; the newer Mac's don't.
   await assert.rejects(connectMac(cloud.url, id), /426/);
-  assert.deepEqual((await noticesOf(id)).filter((n) => n.id === "0").map((n) => n.title), ["Update Bops on this Mac"]);
+  assert.deepEqual((await noticesOf(id)).filter((n) => n.id === "0").map((n) => n.title), ["Update SmileDesk on this Mac"]);
   assert.equal((await noticesOf(id, NEWER)).filter((n) => n.id === "0").length, 0);
 
   // The newer Mac goes on as before.

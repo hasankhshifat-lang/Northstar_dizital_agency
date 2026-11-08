@@ -1,5 +1,5 @@
 /**
- * What a computer's runner may touch of its user's Bops (a runner signed in as its computer: auth.ts
+ * What a computer's runner may touch of its user's SmileDesk (a runner signed in as its computer: auth.ts
  * CloudUser.computer). The user's state is one blob that every Mac and runner of theirs shares, and the
  * Mac mirrors parts of it to orgo-web on the user's own key: each bot's keys and app access (bops_access),
  * and which computer each bot works on (bops_bots.desktop_id). orgo-web pins a runner's own calls
@@ -12,17 +12,17 @@
  *   computer of its own, to another workspace) while its runner runs one of its threads or one of its
  *   routines' runs (a chat run, RoutineRun.by), and that thread, the clock and record of the routine whose
  *   run it is (Routine.last.sessionId, or that run's time), the threads that run starts, and its bot's words
- *   and Bops' notes about them in its chat (Message.routine, also once the run's end is recorded, until
+ *   and SmileDesk's notes about them in its chat (Message.routine, also once the run's end is recorded, until
  *   another run is) still come from that runner, so the run ends once, with its result. Nothing new for
- *   that bot: no other thread started, no other run recorded, and no thread moved to another bot or chat. So a runner does a run's work only once Bops Cloud has its start
+ *   that bot: no other thread started, no other run recorded, and no thread moved to another bot or chat. So a runner does a run's work only once SmileDesk Cloud has its start
  *   (lib/server/store.ts startLanded): one refused because the move landed first is taken back there, and
- *   the Bops that has the bot now runs it;
+ *   the SmileDesk that has the bot now runs it;
  * - how a bot on it is doing on its computer (computerStatus, computerRam, computerNeverReady,
  *   wakeFailed, tailnet) and its Composio session (composio);
  * - its own requests for the user's OK (appApprovals, AppApproval.askedBy its device) of its bots, or of a thread
  *   of its own: added unanswered, and taken out (cancelled, or read once answered). Never a reply: that's the
- *   user's, from a Bops of their own (a person's action), so a computer never says yes to itself, and never
- *   anything of another Bops's request;
+ *   user's, from a SmileDesk of their own (a person's action), so a computer never says yes to itself, and never
+ *   anything of another SmileDesk's request;
  * - when an app account was last used (accounts[].usedAt), a brain's sign-in on this computer
  *   (brains[].signIns for its computer id), news held for later about a bot on it (digest, added only),
  *   which thread last held a screen of it (screenLog), the usage ledger (shown on the account page
@@ -37,12 +37,12 @@
  *   sites, its GitHub mirror's place, or anything else of a workspace.
  * Anything else (bots added, moved or given keys or app access, routines added, edited or taken out,
  * another device's threads, the rest of a workspace, logins, channels, phone numbers, Macs' own settings) is refused
- * (403 computer_not_allowed). Its chat messages are only its bots' words and Bops' notes, in its bots'
+ * (403 computer_not_allowed). Its chat messages are only its bots' words and SmileDesk's notes, in its bots'
  * chats (computersMessage: never the user's or another bot's), and the services
- * it reaches through Bops Cloud are held to its bots too (proxy.ts: their memory banks, app accounts,
+ * it reaches through SmileDesk Cloud are held to its bots too (proxy.ts: their memory banks, app accounts,
  * inboxes and texting lines).
  *
- * Pure, with no imports but node:crypto (a Preview label's seal): Bops Cloud checks with it (state.ts, proxy.ts), a
+ * Pure, with no imports but node:crypto (a Preview label's seal): SmileDesk Cloud checks with it (state.ts, proxy.ts), a
  * runner keeps to it before it sends (keepAllowed in lib/server/persist-cloud.ts, so a runner never sends what would
  * be refused), and the Mac holds a computer's write to it again when it reads one (the second guard, persist-cloud.ts).
  * Which bot works where follows lib/types.ts workBot exactly (scripts/test-computer-scope.mjs checks).
@@ -108,7 +108,7 @@ export type OwnThread = { botId: string; chatId: string };
 
 /**
  * The threads its runner already has in `state` (Session.by its device), by id: still its own after their
- * bot moved off the computer, to their end (writeDenials, computersMessage). Another Bops runs that bot's
+ * bot moved off the computer, to their end (writeDenials, computersMessage). Another SmileDesk runs that bot's
  * routines from then on, and waits for such a run to end (lib/server/routines.ts strayRun).
  */
 export function threadsOf(state: Blob, device: string): Map<string, OwnThread> {
@@ -137,7 +137,7 @@ export type OwnRun = OwnThread & { at: number; status?: unknown };
  * status: their bot, its chat, and when that run began. What that run posts in the chat (Message.routine: a
  * chat run's result, its notes and chip, a ping or a "Couldn't send" after it) stays its runner's to write
  * from when it began, its end recorded or not, until another run is (computersMessage): the end may reach
- * Bops Cloud before its words do, and its bot may have moved off the computer meanwhile.
+ * SmileDesk Cloud before its words do, and its bot may have moved off the computer meanwhile.
  */
 export function runsBy(state: Blob, device: string): Map<string, OwnRun> {
   const out = new Map<string, OwnRun>();
@@ -148,17 +148,17 @@ export function runsBy(state: Blob, device: string): Map<string, OwnRun> {
   return out;
 }
 
-/** Its bot's words or Bops' note, from none other (Message.from), when `bot(id)` says which bots are its. */
+/** Its bot's words or SmileDesk's note, from none other (Message.from), when `bot(id)` says which bots are its. */
 const saidBy = (m: Blob, bot: (id: unknown) => boolean) => (m.from === undefined || bot(m.from)) && (m.role === "bot" ? bot(m.botId) : m.role === "system" && (m.botId === undefined || bot(m.botId)));
 
 /**
  * Whether its runner may write a message like this one, or change or remove one kept like it: in one of
- * its bots' chats (chatsOn), and its bots' own words (role bot, one of `bots`) or a note from Bops (role
+ * its bots' chats (chatsOn), and its bots' own words (role bot, one of `bots`) or a note from SmileDesk (role
  * system, naming none of the others), never the user's words nor another bot's. Or one about threads of
  * its own (`threads`, threadsOf: a run's chip, its result), each of them, in their chat, said by their bot
- * or Bops, or one of a routine's run of its own (`runs`, runsBy: Message.routine, a chat run's result, chip
+ * or SmileDesk, or one of a routine's run of its own (`runs`, runsBy: Message.routine, a chat run's result, chip
  * and notes, posted since that run began, its end recorded or not), in its bot's chat, said by that bot or
- * Bops: that bot may have moved off the computer since the run began. A map with no `at` (runsOf, a run
+ * SmileDesk: that bot may have moved off the computer since the run began. A map with no `at` (runsOf, a run
  * still going) takes any of that routine's.
  */
 export function computersMessage(m: Blob, bots: Set<string>, chats: Set<string>, threads?: Map<string, OwnThread>, runs?: Map<string, OwnThread & { at?: number }>): boolean {
@@ -179,9 +179,9 @@ export function computersMessage(m: Blob, bots: Set<string>, chats: Set<string>,
 
 /**
  * Whether a message written over the row kept by its id (`kept`, its JSON; none for a new one) keeps that row's member
- * stamp (Message.member: someone the owner gave Write said it, as Bops Cloud vouched): it carries none, or the same
- * one. A new or changed stamp is Bops Cloud's alone to write (cloud/members.ts), never a computer's (state.ts
- * computerMayWrite), nor an owner's Mac's in a workspace whose chat goes through Bops Cloud (cloudChatOn), and neither
+ * stamp (Message.member: someone the owner gave Write said it, as SmileDesk Cloud vouched): it carries none, or the same
+ * one. A new or changed stamp is SmileDesk Cloud's alone to write (cloud/members.ts), never a computer's (state.ts
+ * computerMayWrite), nor an owner's Mac's in a workspace whose chat goes through SmileDesk Cloud (cloudChatOn), and neither
  * changes the words under one or what they reply to. One sent back as it was (a tapback rewrites the whole row) is fine.
  */
 export const memberStampKept = (m: Blob, kept: Blob | null | undefined): boolean =>
@@ -190,9 +190,9 @@ export const memberStampKept = (m: Blob, kept: Blob | null | undefined): boolean
   (isObject(kept) && kept.member !== undefined && same(m.member, kept.member) && m.text === kept.text && (m.replyTo ?? null) === (kept.replyTo ?? null));
 
 /**
- * Whether the chat `chatId` is in a workspace whose people's words go through Bops Cloud first (Workspace.chatOn:
+ * Whether the chat `chatId` is in a workspace whose people's words go through SmileDesk Cloud first (Workspace.chatOn:
  * "cloud", the per workspace switch, off by default): its own workspace, else its first bot's; a bot's own chat
- * (bot:<id>) its bot's. Then only Bops Cloud writes a member's stamp there (memberStampKept).
+ * (bot:<id>) its bot's. Then only SmileDesk Cloud writes a member's stamp there (memberStampKept).
  */
 export function cloudChatOn(state: Blob, chatId: string): boolean {
   const bots = listOf(state.bots);
@@ -305,7 +305,7 @@ const cleanId = (s: string) => s.replace(/[^A-Za-z0-9_-]/g, "-").slice(0, 200);
 
 /**
  * The memory banks its bots' workspaces use (lib/server/memory.ts bindingOf, signed in): a workspace's
- * shared one, else its own ("bops" for the default workspace, "bops-<workspace>" for the others). Bops
+ * shared one, else its own ("bops" for the default workspace, "bops-<workspace>" for the others). SmileDesk
  * Cloud puts the user's prefix in front (session.ts honchoPrefix).
  */
 export function banksOn(state: Blob, desktopId: string): Set<string> {
@@ -336,7 +336,7 @@ const FREE = new Set(["usage", "credits"]);
 const HOSTING_RUN = new Set(["queuedAt", "projectId", "preview", "localPort", "toldGoogle", "passwordSet"]);
 /** An app's record as a new app's first home on a computer keeps it (hosted-apps.ts movedTo, appWork): its bot and computer, and what it runs with. */
 const HOSTING_NEW = new Set(["botId", "computerId", "copies", ...HOSTING_RUN]);
-/** A computer gives a new app its first home only while its workspace has fewer apps than this (the owner's Bops adds more): each is in every bot's prompt there (hostedAppsLine). */
+/** A computer gives a new app its first home only while its workspace has fewer apps than this (the owner's SmileDesk adds more): each is in every bot's prompt there (hostedAppsLine). */
 export const MAX_APPS_FROM_COMPUTER = 100;
 
 /** Orgo's ids (a deploy project's, a deploy's), an app's name (lib/hosted-apps.ts isAppName), a Preview label, a Local's address told for Google. */
@@ -365,7 +365,7 @@ const RUN_SHAPE: Record<string, (v: unknown) => boolean> = {
 /**
  * Whether `label` is a Preview label sealed for this app's repo ("<its workspace's Orgo project>/<name>") and site, as
  * lib/server/app-labels.ts sealOf makes one: only that one is a computer's to keep as a site's Preview label copy.
- * Another's (another app's, another computer's, a name the owner chose) would have the owner's Bops take that link
+ * Another's (another app's, another computer's, a name the owner chose) would have the owner's SmileDesk take that link
  * from where it is (hosted-apps.ts previewElsewhere) for this app.
  */
 function sealedFor(label: string, project: string | undefined, name: string | undefined, site: string): boolean {
@@ -438,7 +438,7 @@ const lastOk = (last: unknown, mirror: Blob) =>
 /**
  * Whether app record `h` of workspace `wsId` (Workspace.hostedApps[name]) has its home on the scope's computer: not lost,
  * on that computer, and its bot one of that computer's bots in that workspace. hostingChangeAllowed holds a record to
- * it before and after a computer's write, and Bops Cloud holds a computer's Preview password to it (cloud/preview-passwords.ts):
+ * it before and after a computer's write, and SmileDesk Cloud holds a computer's Preview password to it (cloud/preview-passwords.ts):
  * a computer tells only its own apps'.
  */
 export function appHomeHere(wsId: string, h: unknown, sc: HostingScope): boolean {
@@ -453,7 +453,7 @@ export function appHomeHere(wsId: string, h: unknown, sc: HostingScope): boolean
  * site and of each of its sites (the same sites, in order), a bot of its own in that workspace added to work in a copy,
  * and where its GitHub mirror last matched (github.last, the mirror itself kept). Or a new app's first home here for
  * one of its bots, with no more than that (and a name an app can have). Never one taken out, moved, given away or lost.
- * Pure: Bops Cloud, a runner and the owner's Mac ask the same (writeDenials, keepAllowed; hosted-apps.ts keepHosting).
+ * Pure: SmileDesk Cloud, a runner and the owner's Mac ask the same (writeDenials, keepAllowed; hosted-apps.ts keepHosting).
  * Without `name`, a Preview label is never taken.
  */
 export function hostingChangeAllowed(wsId: string, was: unknown, now: unknown, sc: HostingScope, name?: string): boolean {
@@ -758,7 +758,7 @@ export function writeDenials(stored: Blob, next: Blob, scope: Scope): string[] {
 /**
  * `mine` with what the computer may not write put back as it was in `base`: what a runner sends (so it's
  * never refused), and what the Mac takes of a computer's write. `held` says what was put back. `force`:
- * paths Bops Cloud refused anyway ("routines.<id>", "workspaces"), put back too.
+ * paths SmileDesk Cloud refused anyway ("routines.<id>", "workspaces"), put back too.
  */
 export function keepAllowed(base: Blob, mine: Blob, scope: Scope, force: Iterable<string> = []): { blob: Blob; held: string[] } {
   const r = keepAll(base, mine, scope, new Set([...force].map((p) => p.split(".").slice(0, 2).join("."))));
@@ -769,7 +769,7 @@ export function keepAllowed(base: Blob, mine: Blob, scope: Scope, force: Iterabl
 
 /**
  * A workspace without the Preview passwords kept for its members (null: it keeps none): the copy the owner's Mac read
- * for them (appsForMembers' sites' previewPassword), and the one Bops Cloud keeps from whoever set each last
+ * for them (appsForMembers' sites' previewPassword), and the one SmileDesk Cloud keeps from whoever set each last
  * (Workspace.previewPasswords, cloud/preview-passwords.ts), each on its own: either one is left out wherever it is.
  */
 function withoutPasswords(w: unknown): Blob | null {
@@ -851,7 +851,7 @@ function readList(list: unknown, read: (x: Blob) => Blob | null): unknown {
 
 /**
  * The state as a computer reads it (cloud/state.ts: GET /v1/state, and a write's 409): only what the bots on it
- * need (botsOn, across every workspace one of them is in), never the rest of its user's Bops. A bot runs as root on
+ * need (botsOn, across every workspace one of them is in), never the rest of its user's SmileDesk. A bot runs as root on
  * its computer and a web page can steer it, and a computer in a workspace shared with others is theirs to use too
  * (lib/server/runner-install.ts keepUp): so its bots, its bots' chats (chatsOn), their threads and its own, their
  * routines and the runs of its own (runsBy), their watches, made apps and requests for the user's OK and its own,
@@ -859,9 +859,9 @@ function readList(list: unknown, read: (x: Blob) => Blob | null): unknown {
  * holding the free computer) who it is and where it works (TEAMMATE): what workBot, a hand-off and a main bot's
  * mail go by. Never another workspace, another workspace's bots, chats, threads or routines, or a teammate's keys,
  * access or persona. Nor the Preview password of each site the owner's Mac keeps for members at Your Apps Write
- * (Workspace.appsForMembers, lib/hosted-apps.ts AppForMembers), nor the one Bops Cloud keeps from whoever set it last
+ * (Workspace.appsForMembers, lib/hosted-apps.ts AppForMembers), nor the one SmileDesk Cloud keeps from whoever set it last
  * (Workspace.previewPasswords): a runner never needs them (lib/server/apps-for-members.ts seeApps is the owner's Mac's
- * alone, and a runner tells Bops Cloud a password it set without reading any back), nor another bot's procedures or channel links. Everything else is as it is
+ * alone, and a runner tells SmileDesk Cloud a password it set without reading any back), nor another bot's procedures or channel links. Everything else is as it is
  * (the account, the owner, its usage, and not narrowed yet: held news (digest, whose items have no id to put back by),
  * the owner's phones and emails, the Macs, screens and the connected apps' account names). A write puts back what this left out (withHeldBack). With no
  * scope, only the passwords are left out.

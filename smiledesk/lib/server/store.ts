@@ -10,7 +10,7 @@ import { DENTAL_TEAM } from "@/lib/dental-clinic";
 import { userBopsHome, userChromeDir, userDataDir } from "./user-paths";
 
 /**
- * The app's state: one in-process object, the signed-in Orgo user's. The Mac app keeps it in Bops
+ * The app's state: one in-process object, the signed-in Orgo user's. The Mac app keeps it in SmileDesk
  * Cloud (persist-cloud.ts), a self-hosted install in a file per user, a hosted server in Postgres per
  * user (BOPS_DATABASE_URL); lib/server/persist.ts.
  */
@@ -23,8 +23,8 @@ const freshMain = (): Bot => ({ ...seedBots.find((b) => b.isMain)!, computerId: 
 
 const botChat = (botId: string, at = Date.now()): Chat => ({ id: botChatId(botId), kind: "bot", botIds: [botId], createdAt: at, typing: [] });
 
-/** Why a thread this Bops was running when it stopped ended (migrate): its routine records the run failed with it (routines.ts endedAtStart). */
-export const RESTARTED = "Bops restarted while this was running";
+/** Why a thread this SmileDesk was running when it stopped ended (migrate): its routine records the run failed with it (routines.ts endedAtStart). */
+export const RESTARTED = "SmileDesk restarted while this was running";
 
 /** Bring older saved state up to the current shape: every bot has a chat, sessions are threads. */
 function migrate(raw: Record<string, unknown>): AppState {
@@ -35,12 +35,12 @@ function migrate(raw: Record<string, unknown>): AppState {
   state.chats ??= [];
   for (const b of state.bots) if (!state.chats.some((c) => c.id === botChatId(b.id))) state.chats.push({ ...botChat(b.id, 0), workspaceId: b.workspaceId });
   for (const c of state.chats) c.typing = [];
-  // An app's build that isn't going on in this process (made-apps.ts keeps those) stopped when Bops did: it isn't building.
+  // An app's build that isn't going on in this process (made-apps.ts keeps those) stopped when SmileDesk did: it isn't building.
   const builds = (globalThis as { __bopsAppBuilds?: Map<string, unknown> }).__bopsAppBuilds;
   for (const a of state.madeApps ?? [])
     if (a.building && !builds?.has(a.id)) {
       delete a.building;
-      a.error = "Bops closed before it was done. Ask again.";
+      a.error = "SmileDesk closed before it was done. Ask again.";
     }
   // Workspaces: everything from before belongs to the first one, "Main". Each workspace has a main bot.
   state.workspaces ??= [{ id: MAIN_WORKSPACE, name: "Main", createdAt: Date.now() }];
@@ -63,9 +63,9 @@ function migrate(raw: Record<string, unknown>): AppState {
     } satisfies Message;
   });
 
-  // Requests for the user's OK as every Bops of theirs keeps them (lib/server/permission.ts). One from before they
+  // Requests for the user's OK as every SmileDesk of theirs keeps them (lib/server/permission.ts). One from before they
   // were requests (an ask with a status, and no record of what resumes its run) had a run that waited in memory,
-  // gone with the Bops that asked, and goes. One of this Bops's held by its run in memory (a brain's call:
+  // gone with the SmileDesk that asked, and goes. One of this SmileDesk's held by its run in memory (a brain's call:
   // resume "held") is gone with that run. A paused run's (any other) stays: the request and OpenAI are enough.
   const me = store.device();
   state.appApprovals = (state.appApprovals ?? []).filter(
@@ -78,9 +78,9 @@ function migrate(raw: Record<string, unknown>): AppState {
     old.replies ??= [];
     old.title ??= old.goal.slice(0, 48);
     old.host ??= "orgo";
-    // Sessions mid-flight when this server stopped can't resume their stream. Another Bops's (another
+    // Sessions mid-flight when this server stopped can't resume their stream. Another SmileDesk's (another
     // Mac's, a computer's runner: Session.by) are still going there, and stay as they are, but one
-    // another Mac left behind (leftBehind) ends here, as this Bops's now. Never a run paused for the user's
+    // another Mac left behind (leftBehind) ends here, as this SmileDesk's now. Never a run paused for the user's
     // OK (lib/types.ts pausedForOk): nothing of it was in this server, and it goes on once they answer (one that was
     // starting to go on from their answer is picked up again, queued).
     if ((old.status === "queued" || old.status === "starting" || old.status === "running") && ownSession(old)) {
@@ -107,7 +107,7 @@ function migrate(raw: Record<string, unknown>): AppState {
   state.host ??= "orgo";
   state.owner ??= { name: "" };
   state.takeover = undefined;
-  // Nor what said it to the user's other Bops (sessions.ts keepDriving).
+  // Nor what said it to the user's other SmileDesk (sessions.ts keepDriving).
   state.driving = undefined;
   delete state.samThinking;
   // Whose backup this state was, from when the Mac kept its own copy: the state is always the signed-in user's now.
@@ -127,7 +127,7 @@ function migrate(raw: Record<string, unknown>): AppState {
  * with a workspace that's still here (a deleted workspace's go with it) and the bots still here that may use
  * it, and signed in only on computers a bot still has (one replaced since says nothing now). A sign-in that
  * was going when the server stopped can't be watched any more, so it goes (one that failed stays, saying
- * why); a bot whose brain is gone is on Bops agent again. Safe to run repeatedly.
+ * why); a bot whose brain is gone is on SmileDesk agent again. Safe to run repeatedly.
  */
 function brains(state: AppState) {
   if (!state.brains) return;
@@ -151,10 +151,10 @@ function brains(state: AppState) {
 
 /**
  * Each bot's AI profile (lib/agents.ts, Bot.ai) as this build keeps it, and its brains moved over: a bot on one
- * or more brains' lists ("may use") gets an agent for each, after Bops agent, and the brain it used (Bot.brain,
+ * or more brains' lists ("may use") gets an agent for each, after SmileDesk agent, and the brain it used (Bot.brain,
  * when that still let it in) becomes its Default; one on none, and with no brain, gets nothing (no profile is
- * today's Bops agent). A profile is cleaned (lib/agents.ts cleanAi: an account of another workspace goes) and one
- * equal to the default is dropped. Then the older fields are kept in step for older Bops: Bot.brain is the
+ * today's SmileDesk agent). A profile is cleaned (lib/agents.ts cleanAi: an account of another workspace goes) and one
+ * equal to the default is dropped. Then the older fields are kept in step for older SmileDesk: Bot.brain is the
  * Default's account when the Default is Claude Code or Codex, and each brain's bots are those with an agent on it.
  * Threads are never rewritten (lib/agents.ts threadAgent reads an old one's brainRun). Safe to run repeatedly.
  */
@@ -267,7 +267,7 @@ const access: StateAccess = {
     for (const fn of goneWatchers.values()) fn(gone);
   },
 };
-// A computer's runner keeps the user's state where their Mac does, in Bops Cloud, whatever else is set (instrumentation.ts refuses to start one that sets it).
+// A computer's runner keeps the user's state where their Mac does, in SmileDesk Cloud, whatever else is set (instrumentation.ts refuses to start one that sets it).
 const store: Persistence = onRunner() ? cloudStore(access) : onPostgres() ? pgStore(access) : selfHosted() ? fileStore(access) : cloudStore(access);
 // The version starts somewhere random each boot, so a page that polled before a restart can't mistake a new state for its own.
 g.__bops2 ??= { state: migrate(store.initial() ?? {}), version: Math.floor(Math.random() * 1e9) };
@@ -276,8 +276,8 @@ tidyResults(box.state);
 ownerMarks(box.state);
 
 /**
- * Run `fn` each time a user's state has loaded whole here (a sign-in, Bops or a computer's runner starting), by
- * name so a code reload replaces it: what changed on their other Bops while this one was down or signed out came in
+ * Run `fn` each time a user's state has loaded whole here (a sign-in, SmileDesk or a computer's runner starting), by
+ * name so a code reload replaces it: what changed on their other SmileDesk while this one was down or signed out came in
  * with it, and no change from elsewhere (watchArrivals) says so. Soon after the load, once whoever loaded it has
  * finished landing it; and soon after it's watched, when a state is loaded already (the module watching loaded after
  * it, as on a runner, which loads the state before it starts its loops).
@@ -301,7 +301,7 @@ export async function hydrateState() {
   loadedSince(epoch);
 }
 /**
- * Called by signIn() before the key and account land: swaps in this user's saved state (from Bops
+ * Called by signIn() before the key and account land: swaps in this user's saved state (from SmileDesk
  * Cloud with their Orgo `key`, from their file, from Postgres). Throws StateLoadError when it can't,
  * and the sign-in is refused: nobody works on (or saves into) another user's state.
  */
@@ -316,27 +316,27 @@ export const releaseSignOut = () => store.signOut();
 export const stateReady = () => store.ready();
 /** Whose state is in memory (null: nobody's). */
 export const stateUser = () => store.user();
-/** Whether the store is the Mac app's, in Bops Cloud: no state without a signed-in user. */
+/** Whether the store is the Mac app's, in SmileDesk Cloud: no state without a signed-in user. */
 export const stateInCloud = () => !onPostgres() && !selfHosted();
 /** Save what's changed now, and wait up to `ms`: true when it's all saved (a sign-out asks before going on without). */
 export const flushState = (ms = 10_000) => store.flush(ms);
 /** Changes not saved yet. */
 export const unsentState = () => store.unsent();
-/** Read what another Mac of the user's changed, now (Bops Cloud said so). */
+/** Read what another Mac of the user's changed, now (SmileDesk Cloud said so). */
 export const pullState = () => store.pull();
 /** When what another Mac of the user's changed was last read in full (0: not yet). */
 export const statePulledAt = () => store.pulledAt();
 /** This server as the user's state knows it (Session.by); null signed out, or for a state that's only ever this server's. */
 export const stateDevice = () => store.device();
-/** A newer Bops of the user's wrote their state, so this one runs no routines and says nothing is in use until it's updated. */
+/** A newer SmileDesk of the user's wrote their state, so this one runs no routines and says nothing is in use until it's updated. */
 export const stateTooNew = () => store.tooNew();
 /**
- * Whether these messages, gone from the state here, are gone from Bops Cloud too as far as this Mac knows (its
+ * Whether these messages, gone from the state here, are gone from SmileDesk Cloud too as far as this Mac knows (its
  * last save took their removal); null for a store that doesn't keep the state elsewhere, whose flushState says.
  */
 export const removalsUp = (ids: readonly string[]): boolean | null => (store.removedUp ? store.removedUp(ids) : null);
 /**
- * Whether Bops Cloud's copy of the state, as this server last saved or read it, holds none of these threads:
+ * Whether SmileDesk Cloud's copy of the state, as this server last saved or read it, holds none of these threads:
  * their delete is up. Null for a store that doesn't keep the state elsewhere, whose flushState says.
  */
 export function threadsUp(ids: readonly string[]): boolean | null {
@@ -347,22 +347,22 @@ export function threadsUp(ids: readonly string[]): boolean | null {
   return !(Array.isArray(copy.sessions) ? (copy.sessions as { id?: unknown }[]) : []).some((x) => typeof x?.id === "string" && want.has(x.id));
 }
 
-/** How long Bops waits before it tries again to save a change Bops Cloud couldn't be reached for (changeLanded). */
+/** How long SmileDesk waits before it tries again to save a change SmileDesk Cloud couldn't be reached for (changeLanded). */
 const START_AGAIN_MS = 5_000;
 
 /**
  * Whether a change made here (`has`: whether a state holds it) is saved where the user's state lives, saved now:
- * in Bops Cloud's copy, or by the store itself elsewhere (a hosted server's Postgres). What must never happen twice
- * waits on this, so a crash or restart right after can't load a state from before the change. Waits while Bops
- * Cloud can't be reached; false once the change is gone from here, when everything is saved and Bops Cloud still
- * hasn't it, or when another account's state came in or a newer Bops wrote it.
+ * in SmileDesk Cloud's copy, or by the store itself elsewhere (a hosted server's Postgres). What must never happen twice
+ * waits on this, so a crash or restart right after can't load a state from before the change. Waits while SmileDesk
+ * Cloud can't be reached; false once the change is gone from here, when everything is saved and SmileDesk Cloud still
+ * hasn't it, or when another account's state came in or a newer SmileDesk wrote it.
  */
 export async function changeLanded(has: (state: Record<string, unknown>) => boolean): Promise<boolean> {
   const epoch = stateEpoch();
   for (;;) {
     const saved = await store.flush(30_000).catch(() => false);
     if (stateEpoch() !== epoch || store.tooNew()) return false;
-    // In Bops Cloud's copy, where the state lives there; else saved by the store itself.
+    // In SmileDesk Cloud's copy, where the state lives there; else saved by the store itself.
     const cloud = store.cloudCopy?.();
     if (store.cloudCopy ? !!cloud && has(cloud) : saved) return true;
     if (saved || !has(box.state as unknown as Record<string, unknown>)) return false;
@@ -371,10 +371,10 @@ export async function changeLanded(has: (state: Record<string, unknown>) => bool
 }
 
 /**
- * On a computer's runner: whether Bops Cloud took the start of a run made here (`has`: whether a state holds
- * it, its thread or its routine's record), saved now (changeLanded). A run's work waits on this. Bops Cloud refuses a start
+ * On a computer's runner: whether SmileDesk Cloud took the start of a run made here (`has`: whether a state holds
+ * it, its thread or its routine's record), saved now (changeLanded). A run's work waits on this. SmileDesk Cloud refuses a start
  * that reaches it after the Mac moved the run's bot off this computer (cloud/computer-scope.ts: nothing new
- * of a bot not on it), the merge takes it back here (persist-cloud.ts mergeIn), and the Bops that has the
+ * of a bot not on it), the merge takes it back here (persist-cloud.ts mergeIn), and the SmileDesk that has the
  * bot now runs it, once. A start that landed first is this runner's to finish, its bot moved or not.
  * Anywhere but a runner: true.
  */
@@ -405,7 +405,7 @@ export const LEFT_BEHIND = "Stopped: the Mac running it went quiet (closed, asle
  * work, holds nothing on that Mac, and is the user's to answer or Stop.
  * One queued there waits behind its others (all its bot's screens busy, as many as run on that Mac at
  * once), so it's that Mac at work on them that says it's still there, never the queued one's own quiet.
- * Nothing ends a thread but the Bops that runs it, so one whose Mac quit, crashed or sleeps would stay live
+ * Nothing ends a thread but the SmileDesk that runs it, so one whose Mac quit, crashed or sleeps would stay live
  * here for good. One left behind is this Mac's to end: Stop fails it, its queue may pick it up, a restart
  * fails it, and asking for the same job again (or replying to it) doesn't wait on it (sessions.ts). The
  * Mac that left it, back, stops it when it hears (sessions.ts letGoOfEnded). Never on a runner: a Mac's
@@ -465,10 +465,10 @@ export function sameState() {
   const epoch = stateEpoch();
   return () => epoch === stateEpoch();
 }
-/** This install of Bops: made once, kept in state. Shared services carry it (AgentMail's pod and inboxes, Composio's user). */
+/** This install of SmileDesk: made once, kept in state. Shared services carry it (AgentMail's pod and inboxes, Composio's user). */
 export function installId() {
   // Signed out on the Mac app the state is nobody's: nothing outside (an inbox, a pod) is made for nobody.
-  if (!store.ready()) throw new Error("Sign in to Bops first.");
+  if (!store.ready()) throw new Error("Sign in to SmileDesk first.");
   if (!box.state.installId) update((s) => void (s.installId ??= randomBytes(4).toString("hex")));
   return box.state.installId!;
 }
@@ -532,7 +532,7 @@ export const chat = (chatId: string) => box.state.chats.find((c) => c.id === cha
 export const session = (sessionId: string) => box.state.sessions.find((s) => s.id === sessionId);
 
 export function addMessage(m: Omit<Message, "id" | "at">) {
-  // On a runner's chat turn, its bot's rows carry the turn and Bops Cloud's clock (turn-context.ts).
+  // On a runner's chat turn, its bot's rows carry the turn and SmileDesk Cloud's clock (turn-context.ts).
   const message: Message = stamp({ id: id("msg"), at: Date.now(), ...m });
   update((s) => {
     // About a thread started for something the user kept between us (its result, chips or notes): kept between us too.
@@ -591,7 +591,7 @@ export function patchSession(sessionId: string, patch: Partial<Session> | ((s: S
 export async function resetState() {
   await store.backup();
   // Starting over isn't signing out: who's signed in stays (their key stays in the Keychain), and
-  // the bots call them by their Orgo name again, as on a first sign-in. What Bops has cost so far
+  // the bots call them by their Orgo name again, as on a first sign-in. What SmileDesk has cost so far
   // stays too, and so do this Mac's routing switch and the user's other Macs' own settings.
   // The user's usage data switch stays as they set it, and so do their Your data choices (how long
   // chats are kept). Everything else goes: the bots with their chats, threads, routines and procedures.

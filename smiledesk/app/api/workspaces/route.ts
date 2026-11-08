@@ -11,8 +11,8 @@ import { runnersSoon } from "@/lib/server/runner-install";
 
 /**
  * `?preview=<id>`: what deleting that workspace takes with it, for the confirm (its computers, keys, skills
- * and apps, Bops' and its Orgo workspace's). 400 for the default workspace, 502 when Orgo didn't say.
- * `?olderBops=1`: whether a Mac or runner on the account runs a Bops older than the team chart's, for the
+ * and apps, SmileDesk's and its Orgo workspace's). 400 for the default workspace, 502 when Orgo didn't say.
+ * `?olderBops=1`: whether a Mac or runner on the account runs a SmileDesk older than the team chart's, for the
  * chart's note ({ older }).
  */
 export async function GET(request: Request) {
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
 /**
  * A new workspace: its own team, starting with its own Boppy. It becomes the current one. Where Orgo has a
- * workspace per Bops workspace, its Orgo workspace is made too; a name the user's Orgo already has comes
+ * workspace per SmileDesk workspace, its Orgo workspace is made too; a name the user's Orgo already has comes
  * back as 409 `name_taken` with a name to suggest, and nothing is made.
  */
 export async function POST(request: Request) {
@@ -53,11 +53,11 @@ export async function POST(request: Request) {
  * already had was seen. `syncNames`: take renames made on orgo.ai (the sidebar asks every 10 minutes). `revertOrgoMove`: undo the move onto Orgo workspaces
  * (revertWorkspaceMigration, DESIGN.md section 8), for a rollback. `favorites` (with `id`): the kinds pinned to
  * the sidebar, the whole list in order (setFavorites). `chain` (with `id`): the workspace's team chart, whole
- * (setChain), only from the Bops window and never while a workspace shared with the user is open; what was kept
+ * (setChain), only from the SmileDesk window and never while a workspace shared with the user is open; what was kept
  * comes back. `computerName` (with `id`): { computer, name } names one of its computers, the one its bots' group in the
  * sidebar is called (lib/bot-groups.ts; an empty name gives it its default back), the owner's alone as the chart is;
- * answers { ok, name }. `chat` (with `id`): "mac" or "auto", the owner's switch for its chat through Bops Cloud
- * (lib/server/cloud-chat.ts setChatRouting), the owner's alone too; Bops Cloud's words when it refuses.
+ * answers { ok, name }. `chat` (with `id`): "mac" or "auto", the owner's switch for its chat through SmileDesk Cloud
+ * (lib/server/cloud-chat.ts setChatRouting), the owner's alone too; SmileDesk Cloud's words when it refuses.
  */
 export async function PATCH(request: Request) {
   const unready = notReady();

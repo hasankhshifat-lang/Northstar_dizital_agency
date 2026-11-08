@@ -102,7 +102,7 @@ test("after the 15 minutes, or with no window open, a stranger claims nothing", 
   assert.deepEqual(await owners(never.userId), []);
 });
 
-test("a tapback, a withheld number, another Bops number, or a number another account verified can't claim a line", async () => {
+test("a tapback, a withheld number, another SmileDesk number, or a number another account verified can't claim a line", async () => {
   const { userId, phone } = await setUp();
   assert.deepEqual(await callerVerdict(userId, phone, newNumber()), { owner: false }, "no claim asked for");
   assert.deepEqual(await callerVerdict(userId, phone, "", "call"), { owner: false });
@@ -111,7 +111,7 @@ test("a tapback, a withheld number, another Bops number, or a number another acc
   assert.deepEqual(await callerVerdict(userId, phone, other.phone, "call"), { owner: false }, "a bot's number calling");
   const theirs = newNumber();
   await setUp({}, [theirs]);
-  assert.deepEqual(await callerVerdict(userId, phone, theirs, "call"), { owner: false }, "verified on another Bops account");
+  assert.deepEqual(await callerVerdict(userId, phone, theirs, "call"), { owner: false }, "verified on another SmileDesk account");
   assert.equal((await lineRow(phone)).owner_number, null, "still open for its real owner");
   const mine = newNumber();
   assert.deepEqual(await callerVerdict(userId, phone, mine, "call"), { owner: true, claimed: "call" });

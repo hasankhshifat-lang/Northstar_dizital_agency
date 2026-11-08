@@ -7,7 +7,7 @@ import { HttpError } from "./http.ts";
 import { ACCOUNT_DELETED } from "./protocol.ts";
 
 /**
- * Who is calling. A Bops user is an Orgo user: the Mac sends the user's Orgo API key as a Bearer
+ * Who is calling. A SmileDesk user is an Orgo user: the Mac sends the user's Orgo API key as a Bearer
  * token, and Orgo says whose it is (GET /api/user/profile, the same call the app makes after
  * sign-in). The cloud never keeps the key itself: only who it belonged to, by its SHA-256, for a
  * few minutes.
@@ -18,7 +18,7 @@ import { ACCOUNT_DELETED } from "./protocol.ts";
  * (CloudUser.computer), which server.ts lets call only the routes its runner needs (Route.computer),
  * and only as that computer's device. An `orgo_vm_` token is a computer whatever Orgo says: one whose
  * profile has no principal is refused on every route. A computer's answer is kept 30 seconds at most
- * (and never past a token's end), so a computer deleted, moved, joined or paused reaches Bops Cloud
+ * (and never past a token's end), so a computer deleted, moved, joined or paused reaches SmileDesk Cloud
  * within that. A computer's key Orgo hasn't bound to its computer (an old one: `computer_key: true`
  * without the computer scope) is a computer Orgo named no computer for, refused everywhere too.
  *

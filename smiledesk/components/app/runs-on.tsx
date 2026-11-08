@@ -15,7 +15,7 @@ export type RunsOnInfo = { runsOn: "cloud" | "mac" | null; missing: boolean; asl
 
 const CHOICES = [
   { id: "cloud", name: "Cloud", line: "Tasks keep running when your Mac is closed." },
-  { id: "mac", name: "This Mac", line: "Only while Bops is open on this Mac." },
+  { id: "mac", name: "This Mac", line: "Only while SmileDesk is open on this Mac." },
 ] as const;
 
 /**
@@ -43,7 +43,7 @@ function computersOf(state: AppState): { id: string; host: Bot }[] {
 }
 
 /**
- * Settings, Where routines run: Cloud (the default: each computer's own Bops runs its bots' task routines,
+ * Settings, Where routines run: Cloud (the default: each computer's own SmileDesk runs its bots' task routines,
  * so they keep running with the Mac closed; reminders and chat runs are the Mac's either way) or This Mac, as Orgo keeps it for every Mac of the user's. An
  * Orgo that can't keep it yet shows This Mac and says so; one that didn't answer shows neither picked,
  * and says so. In the Cloud, each computer's runner and how it is. `info` is null until /api/runs-on

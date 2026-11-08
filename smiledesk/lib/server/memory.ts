@@ -26,7 +26,7 @@ import { recordTokens, usageTags } from "./usage";
  * forget it), keeps private lines out of prompts, finds facts that were learned wrong, and tells
  * personal facts from work ones when they copy memory between workspaces.
  *
- * Signed in with Orgo, Honcho is reached through Bops Cloud (lib/server/cloud.ts), and every bank
+ * Signed in with Orgo, Honcho is reached through SmileDesk Cloud (lib/server/cloud.ts), and every bank
  * there carries the user's own prefix (bankFor).
  */
 
@@ -34,7 +34,7 @@ const on = () => (cloudOn() ? !!cloudSessionNow()?.honcho : !!process.env.HONCHO
 /** Facts out of a message: a small job of a fixed shape, for Luna (routing.ts LIGHT). */
 const MODEL = () => setting(LIGHT(), "BOPS_MEMORY_MODEL");
 
-/** Which Honcho workspace (bank) a Bops workspace's memory lives in, and the user's peer in it. */
+/** Which Honcho workspace (bank) a SmileDesk workspace's memory lives in, and the user's peer in it. */
 export type Binding = { bank: string; peer: string };
 
 /** Honcho ids allow letters, digits, _ and -. */
@@ -65,7 +65,7 @@ export function scopeOf(botId: string): MemoryScope {
   return ownMemory(st, botId) ? { ws, bot: botId, readsTeam: readsTeam(st, botId) } : { ws };
 }
 
-/** The scope's bank: the workspace's, or a bot's own in it, "<team bank>-bot-<id>" with the team's peer (under the user's prefix in Bops Cloud: bankFor). */
+/** The scope's bank: the workspace's, or a bot's own in it, "<team bank>-bot-<id>" with the team's peer (under the user's prefix in SmileDesk Cloud: bankFor). */
 export function bindingOf(w: Where): Binding {
   const sc = scopeIn(w);
   const team = getState().workspaces?.find((x) => x.id === sc.ws)?.memory ?? ownBank(sc.ws);
@@ -80,7 +80,7 @@ export const ownsBank = (ws: string) => bindingOf(ws).bank === ownBank(ws).bank;
 
 /**
  * The workspace a bank belongs to: the one whose own bank it is (the first workspace for the user's
- * own bank), else the first workspace using it. The bank's card and the facts from no Bops chat are its.
+ * own bank), else the first workspace using it. The bank's card and the facts from no SmileDesk chat are its.
  */
 export function bankOwner(bank: string): string {
   const all = [MAIN_WORKSPACE, ...(getState().workspaces ?? []).map((w) => w.id).filter((id) => id !== MAIN_WORKSPACE)];
@@ -91,8 +91,8 @@ export function bankOwner(bank: string): string {
 const notesSession = (ws: string) => `bops-notes-${clean(ws)}`;
 
 /**
- * The Bops workspace a memory session belongs to: a chat's (by its bot), a task's (by its bot), or a
- * workspace's notes; null for a session Bops doesn't know (the user's other agents, a chat since deleted).
+ * The SmileDesk workspace a memory session belongs to: a chat's (by its bot), a task's (by its bot), or a
+ * workspace's notes; null for a session SmileDesk doesn't know (the user's other agents, a chat since deleted).
  */
 export function sessionWorkspace(sessionId: string | null): string | null {
   if (!sessionId) return null;
@@ -109,7 +109,7 @@ export function sessionWorkspace(sessionId: string | null): string | null {
   return null;
 }
 
-/** The user said something in this Bops chat after `at` (this Mac's clock): what a forgotten item needs to come back. */
+/** The user said something in this SmileDesk chat after `at` (this Mac's clock): what a forgotten item needs to come back. */
 export function saidSince(sessionId: string | null, at: number): boolean {
   if (!sessionId?.startsWith("bops-chat-")) return false;
   const st = getState();
@@ -141,7 +141,7 @@ const g = globalThis as unknown as { bopsMemory2?: Live };
 const live: Live = (g.bopsMemory2 ??= { banks: new Map(), privacy: new Map(), kinds: new Map() });
 
 /**
- * A bank's Honcho client. Through Bops Cloud it's on the user's Orgo key, and the bank's Honcho
+ * A bank's Honcho client. Through SmileDesk Cloud it's on the user's Orgo key, and the bank's Honcho
  * workspace is named with the user's prefix in front (u-<user>-bops, u-<user>-bops-<workspace>), the
  * only ones the cloud lets them reach. The SDK resolves its paths ("/v3/…") against the host alone,
  * so the cloud's /proxy/honcho is put in front of each.
@@ -314,7 +314,7 @@ export async function memoryBlock(where: Where, about: string, ms = 2500, { sear
 
 /**
  * Add what was said to Honcho (so it keeps learning about the user). `kind` is chat or task; the id is
- * the Bops chat or thread. Fire and forget: memory never holds up a reply.
+ * the SmileDesk chat or thread. Fire and forget: memory never holds up a reply.
  */
 export function saveToMemory(where: Where, kind: "chat" | "task", id: string, messages: { who: string; text: string }[], metadata: Record<string, unknown> = {}) {
   if (!on()) return;
@@ -395,7 +395,7 @@ export function learn(where: Where, fact: string, chatId?: string, opts: { auto?
     const notes = sc.bot || ownsBank(ws) ? undefined : await notesFor(b, ws);
     const [made] = await p.conclusions.create([{ content: text, ...(notes ? { sessionId: notes } : {}) }]);
     x.recent.push({ id: made.id, text, at: Date.now() });
-    // A fact saved by hand or by a bot is sorted into the categories in seconds; one Bops noted on its
+    // A fact saved by hand or by a bot is sorted into the categories in seconds; one SmileDesk noted on its
     // own from what the user said waits to be sorted with the next few (each sort is a model call).
     if (!sc.bot) categoriesNudge(ws, opts.auto ? "saved" : "learned");
     let best = -1;
@@ -499,7 +499,7 @@ export function rememberMessage(ws: Where, chatId: string, messageId: string, sa
   void (async () => {
     const owner = ownerName();
     const a = await decide(
-      { app: `Bops: ${owner}'s team of AI assistants` },
+      { app: `SmileDesk: ${owner}'s team of AI assistants` },
       {
         worth: WORTH_REMEMBERING(said),
         secret: {
@@ -851,13 +851,13 @@ export async function memoryInfo(ws: string) {
   };
 }
 
-/** Where a fact was learned, in words: a chat or task in Bops, or the user's other agents. */
+/** Where a fact was learned, in words: a chat or task in SmileDesk, or the user's other agents. */
 function sourceOf(sessionId: string | null) {
   if (!sessionId || sessionId.startsWith("bops-notes-")) return "Saved by hand";
   const st = getState();
   for (const c of st.chats) if (sessionId === `bops-chat-${clean(c.id)}`) return c.kind === "bot" ? `Chat with ${bot(c.botIds[0])?.name ?? "a bot"}` : (c.title ?? "Group chat");
   for (const s of st.sessions) if (sessionId === `bops-task-${clean(s.id)}`) return `Task: ${s.title}`;
-  return sessionId.startsWith("bops-") ? "Bops" : "Your other agents";
+  return sessionId.startsWith("bops-") ? "SmileDesk" : "Your other agents";
 }
 
 /** Facts worth showing: Jev drops what looks learned wrong (each fact asked once). If Jev can't answer, all stay. */
@@ -976,7 +976,7 @@ export const forgetFact = (ws: Where, id: string) => forget(bindingOf(ws), id);
  * (signed out) throws: nothing is brought in, and the bank stays kept apart for the next try.
  */
 export async function bringIn(botId: string): Promise<number> {
-  if (!on()) throw new Error("Memory isn't on right now, so nothing was brought in. Try again once Bops is signed in.");
+  if (!on()) throw new Error("Memory isn't on right now, so nothing was brought in. Try again once SmileDesk is signed in.");
   const ws = wsOf(botId);
   const own = ownBankOf(botId);
   // (A list memory can't give throws, so a bank is never deleted with facts left in it.)
@@ -1200,7 +1200,7 @@ export async function dream(ws: string) {
  * the bank it uses whole (every session, message and fact in it) when no other workspace uses that bank
  * (its own, or one it shared from a workspace deleted since); otherwise (`whole` false) only its Orbit
  * issues' sessions there. Never the user's own bank (the default's, maybe their other agents' too), nor
- * one Bops didn't name (bops-<workspace>). Null with memory off, and for the default workspace. Asked
+ * one SmileDesk didn't name (bops-<workspace>). Null with memory off, and for the default workspace. Asked
  * while the workspace is still listed: its binding is read from it.
  */
 export function memoryGoesWith(ws: string): { binding: Binding; whole: boolean } | null {

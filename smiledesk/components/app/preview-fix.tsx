@@ -16,15 +16,15 @@ import { AskInPlace, post } from "./ui";
  * until that ask is in (a double click asks once). After two presses with no good run between (lib/app-preview.ts
  * goBackTo), it leads with going back to the version that last ran well, which first says what that undoes (GET
  * /api/hosted-apps/[name]?restore=), then puts it back as a new change on top (POST { action: "restore", to }).
- * Fix it and going back are the owner's only. A Bops without those routes yet says so in plain words.
+ * Fix it and going back are the owner's only. A SmileDesk without those routes yet says so in plain words.
  */
 
 const DARK = "whitespace-nowrap rounded-full bg-ink px-3 py-1.5 text-[12.5px] font-semibold leading-4 text-white disabled:bg-[#E6E6E3] disabled:text-[#9A9A98]";
 const LIGHT = "whitespace-nowrap rounded-full px-3 py-1.5 text-[12.5px] font-medium leading-4 text-ink shadow-[0_0_0_1px_#E2E2DF] hover:bg-[#F7F7F6] disabled:text-[#9A9A98]";
 const QUIET = "whitespace-nowrap rounded-full px-2.5 py-1.5 text-[12.5px] font-medium leading-4 text-[#6B6B6B] hover:bg-[#F2F2F0] disabled:opacity-40";
 
-/** What a Bops without a route says (it isn't in this version yet). */
-const NOT_HERE = "Going back isn't in this version of Bops yet.";
+/** What a SmileDesk without a route says (it isn't in this version yet). */
+const NOT_HERE = "Going back isn't in this version of SmileDesk yet.";
 const missing = (status?: number) => status === 404 || status === 405;
 /** When, from a time a computer said (its seconds, or milliseconds). */
 const msOf = (when: number) => (when < 1e12 ? when * 1000 : when);
@@ -86,7 +86,7 @@ export function FixPanel({
       setBusy(null);
       return setError(`Couldn't ask ${bot.name}. Try again.`);
     }
-    // Counted on its computer, for the loop breaker. (A Bops that doesn't count them yet answers 400 or 404: asked all the same.)
+    // Counted on its computer, for the loop breaker. (A SmileDesk that doesn't count them yet answers 400 or 404: asked all the same.)
     const c = await post(`${at}/local`, { ws, action: "fix", ...(site ? { site } : {}), ...(copy ? { bot: copy } : {}) }).catch(() => null);
     const j = c?.ok ? ((await c.json().catch(() => null)) as LocalAnswer | null) : null;
     if (j?.sites) onLocal(j);
@@ -103,7 +103,7 @@ export function FixPanel({
     const r = await fetch(`${at}?ws=${encodeURIComponent(ws)}&restore=${encodeURIComponent(back.at)}`, { cache: "no-store" }).catch(() => null);
     const j = (await r?.json().catch(() => null)) as { error?: string } | null;
     setBusy(null);
-    if (!r || missing(r.status)) return setError(r ? NOT_HERE : "Couldn't reach Bops. Try again.");
+    if (!r || missing(r.status)) return setError(r ? NOT_HERE : "Couldn't reach SmileDesk. Try again.");
     const p = r.ok ? restorePlanOf(j) : null;
     if (!p) return setError(undash(j?.error || "Couldn't read what going back undoes. Try again."));
     setPlan(p);

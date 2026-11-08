@@ -43,7 +43,7 @@ import { readAllowed } from "./view-only";
  * with light marks and its reactions. Under either, a Reply box for the user's own words, sent once.
  *
  * Every word is drawn as text: an email's HTML was made text on the server and is never put in the page (this
- * window can reach Bops' own API, so a script in an email must never run here), no picture of an email's is
+ * window can reach SmileDesk's own API, so a script in an email must never run here), no picture of an email's is
  * loaded (tracking pixels), and a link opens the way the app opens any (a tab of its own), only http, https or
  * mailto. In a workspace shared with the user nothing is read: a line says only its owner can see the original.
  */
@@ -57,7 +57,7 @@ function useSource(url: string | null): Source {
   useEffect(() => {
     if (!url) return;
     let on = true;
-    const down: SourceAnswer = { error: "Couldn't reach Bops. Try again.", code: "down" };
+    const down: SourceAnswer = { error: "Couldn't reach SmileDesk. Try again.", code: "down" };
     void fetch(tick ? `${url}${url.includes("?") ? "&" : "?"}fresh=1` : url, { cache: "no-store" })
       .then(async (r) => (await r.json().catch(() => null)) as SourceAnswer | null)
       .then((j) => on && setGot({ url, answer: j && ("source" in j || "error" in j) ? j : down }))
@@ -80,7 +80,7 @@ function useSource(url: string | null): Source {
 type IssueLike = { id: string; sourceApp?: string; url?: string; history?: { at: number; who?: string; text: string; kind?: string }[] };
 
 /**
- * The issue's email or thread, with a Reply box under it; nothing for an app Bops can't show (its summary and
+ * The issue's email or thread, with a Reply box under it; nothing for an app SmileDesk can't show (its summary and
  * Open link say it all). `onReplied`: a reply went (its history has a new line).
  */
 export function IssueSource({ issue, ws, onReplied }: { issue: IssueLike; ws: string; onReplied?: () => void }) {
@@ -119,10 +119,10 @@ export function IssueSource({ issue, ws, onReplied }: { issue: IssueLike; ws: st
             key={`${answer.source.app}.${answer.source.app === "gmail" ? answer.source.threadId : answer.source.channel.id}`}
             source={answer.source}
             initial={drafted?.text ?? ""}
-            hint={drafted ? `${drafted.who && drafted.who !== "Bops" ? `${drafted.who} drafted this reply` : "A reply drafted for this issue"}. Change it as you like.` : undefined}
+            hint={drafted ? `${drafted.who && drafted.who !== "SmileDesk" ? `${drafted.who} drafted this reply` : "A reply drafted for this issue"}. Change it as you like.` : undefined}
             send={async (text, all, nonce) => {
               const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ws, text, all, nonce }) }).catch(() => null);
-              if (!r) return { error: "Couldn't reach Bops. Try again." };
+              if (!r) return { error: "Couldn't reach SmileDesk. Try again." };
               const j = ((await r.json().catch(() => null)) ?? {}) as { ok?: boolean; error?: string; sent?: { at: number; to: string }; logged?: boolean };
               if (!r.ok || !j.ok || !j.sent) return { error: j.error ?? "It didn't send." };
               onReplied?.();
@@ -544,7 +544,7 @@ function ReplyBox({ source, initial, hint, send }: { source: IssueSource; initia
   const [done, setDone] = useState<Sent | null>(null);
   const mail = source.app === "gmail" ? source.reply : undefined;
   if (source.app === "gmail" && !mail)
-    return <div className="border-t border-[#F0F0EE] px-3.5 py-2.5 text-[12.5px] leading-[18px] text-[#6B6B6B]">{"Bops can't tell who to reply to here. Reply in Gmail."}</div>;
+    return <div className="border-t border-[#F0F0EE] px-3.5 py-2.5 text-[12.5px] leading-[18px] text-[#6B6B6B]">{"SmileDesk can't tell who to reply to here. Reply in Gmail."}</div>;
   const others = mail ? mail.all.to.length + mail.all.cc.length : 0;
   const go = async () => {
     const words = text.trim();
@@ -552,7 +552,7 @@ function ReplyBox({ source, initial, hint, send }: { source: IssueSource; initia
     going.current = true;
     setBusy(true);
     setError(null);
-    const r = await send(words, all && others > 0, nonceOf()).catch(() => ({ error: "Couldn't reach Bops. Try again." }));
+    const r = await send(words, all && others > 0, nonceOf()).catch(() => ({ error: "Couldn't reach SmileDesk. Try again." }));
     going.current = false;
     setBusy(false);
     if ("error" in r) return setError(r.error);

@@ -48,10 +48,10 @@ import { bot, getState, ownerName, update, userDir } from "./store";
 import { outbox } from "./sync-outbox";
 
 /**
- * Skills and apps: a workspace's ways of doing a kind of job (skills) and the tools Bops built that bots
+ * Skills and apps: a workspace's ways of doing a kind of job (skills) and the tools SmileDesk built that bots
  * run (apps), each a folder in the Agent Skill shape (SKILL.md and its files). On the Mac the folders are
  * the source: <userDir>/workspaces/<id>/skills/<slug>/ and apps/<slug>/, where <id> is the workspace's
- * Orgo project once it has one (else its Bops id). The state keeps what each is (Workspace.skills,
+ * Orgo project once it has one (else its SmileDesk id). The state keeps what each is (Workspace.skills,
  * Workspace.apps: SkillRef) so the window and the bots' prompts never read a folder to list them.
  *
  * Versions: the folder is what's being worked on (a draft); Publish copies it into
@@ -70,18 +70,18 @@ import { outbox } from "./sync-outbox";
  * deleted. Without a record (the first sync, one too old, an orgo-web without it) the whole list is read,
  * and a skill this Mac had from Orgo's project (SkillRef.remotePid) that Orgo no longer lists is taken as
  * deleted there the same way. Script approvals made here go to Orgo too (POST and DELETE
- * …/skills/approvals with the person's Bops sign-in key, through an outbox kept on disk, after the skill's
+ * …/skills/approvals with the person's SmileDesk sign-in key, through an outbox kept on disk, after the skill's
  * own sync so Orgo knows the script; one Orgo can't place yet is sent again only once a sync sent a file
- * with that content), and a sync takes the approvals the person signed in here made on orgo.ai or in Bops
+ * with that content), and a sync takes the approvals the person signed in here made on orgo.ai or in SmileDesk
  * on another Mac (never another member's: theirs doesn't run a script on this Mac), and revokes made
  * there. The Mac keeps them in step: a computer's runner never syncs or sends a delete.
  *
  * Labels (lib/skill-labels.ts): every skill is listed under one (SkillRef.label), so a bot with many looks
  * at a few labels first, opens the one that fits the job (read_skill with label), and only then reads a
- * skill. Bops' own skills (lib/builtin-skills.ts) are every bot's, under labels of their own. A label
+ * skill. SmileDesk's own skills (lib/builtin-skills.ts) are every bot's, under labels of their own. A label
  * chosen for a skill (given when it's made or moved, or in the SKILL.md it came with) is kept in its
  * SKILL.md as metadata.label, so it syncs with Orgo. One without is Unsorted (UNSORTED: no label kept,
- * here, in its SKILL.md or in Orgo's column), and Bops suggests one (SkillRef.labelBy "auto"): from its
+ * here, in its SKILL.md or in Orgo's column), and SmileDesk suggests one (SkillRef.labelBy "auto"): from its
  * words (guessLabel), else, or when the workspace has labels of its own, by one small model call for the
  * skills made or imported within a couple of seconds (suggestLabels). A suggestion stays in the state,
  * with Confirm and Change in Skills, until it's confirmed, changed or the skill is published. A version
@@ -90,7 +90,7 @@ import { outbox } from "./sync-outbox";
  * …/skill-labels/rename), through an outbox kept on disk until Orgo took it.
  *
  * The SKILL.md form is the Agent Skills spec's (skill-bundle.ts toSpecForm): name (the folder's own, which a
- * folder imported must say when it says one), description, and Bops' own fields as strings in metadata
+ * folder imported must say when it says one), description, and SmileDesk's own fields as strings in metadata
  * (label, version, risk, runs-on, requires-secrets). Every write here is in that form; the form from before
  * (top level version, risk, runs_on, requires_secrets, label) is read too, so nothing kept or synced before
  * stops working, and a skill takes the new form on its next write.
@@ -98,7 +98,7 @@ import { outbox } from "./sync-outbox";
  * Which bot has which (lib/skill-labels.ts botHasSkill, the one rule for every list, read, copy to a computer
  * and count): a skill's own bot list when it names any; else the bot's labels (Bot.skillLabels: unset is
  * every label). So a new skill in a label goes to every bot that has the label, and naming bots on one skill
- * stays the exception. Bops' own skills are every bot's. Orgo keeps the same (orgo-web's skills.label column,
+ * stays the exception. SmileDesk's own skills are every bot's. Orgo keeps the same (orgo-web's skills.label column,
  * which a sync sends with a PATCH once orgo-web's skill JSON says "label", and bops_bots.skill_labels through
  * bops-sync.ts). What the owner wrote about a label (Workspace.skillLabelInfo, orgo-web's skill_labels) is
  * optional: its about line is what a prompt shows for the label, else its skills' names.
@@ -150,7 +150,7 @@ const listKey = (kind: SkillKind) => (kind === "app" ? "apps" : "skills") as "ap
 /** The workspace by id, or undefined. */
 export const workspaceById = (wsId: string): Workspace | undefined => getState().workspaces?.find((w) => w.id === wsId);
 
-/** Its folder's name: the Orgo project's id once it has one, else its Bops id. Safe as a path either way. */
+/** Its folder's name: the Orgo project's id once it has one, else its SmileDesk id. Safe as a path either way. */
 export const folderKey = (w: Pick<Workspace, "id" | "orgoProjectId">) => (w.orgoProjectId ?? w.id).replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 80) || "_";
 
 /** <userDir>/workspaces, or null signed out on the Mac app. */
@@ -229,7 +229,7 @@ export const skillRefId = (r: SkillRef) => r.legacyId ?? r.slug;
 /**
  * The words that place a skill nobody gave a label, read in its name and description (whole words, any
  * case). Plain rules, free: the most hits wins (one in the name counts twice), the first here on a tie, and
- * none is UNSORTED. These are Bops' preset labels, which a model's suggestion may pick too (suggestLabels).
+ * none is UNSORTED. These are SmileDesk's preset labels, which a model's suggestion may pick too (suggestLabels).
  */
 const LABEL_WORDS: { label: string; words: RegExp }[] = [
   { label: "Email", words: /\b(e-?mails?|inbox(es)?|gmail|outlook|mailbox(es)?|newsletters?)\b/g },
@@ -247,7 +247,7 @@ const LABEL_WORDS: { label: string; words: RegExp }[] = [
 ];
 
 /**
- * The label a skill's own words place it under (LABEL_WORDS), or UNSORTED. Bops' own label for apps only for
+ * The label a skill's own words place it under (LABEL_WORDS), or UNSORTED. SmileDesk's own label for apps only for
  * someone apps are open to (lib/apps-access.ts): anyone else's deploy or git skill goes by its other words.
  */
 export function guessLabel(name: string, description: string, apps = appsOpen(getState())): string {
@@ -296,17 +296,17 @@ function labelRefs(wsId: string) {
 
 /** A ref's label as it's listed (one never looked at: from its words, as labelRefs gives it). */
 const labelOfRef = (r: SkillRef) => (r.label ? cleanLabel(r.label) : r.labelBy ? UNSORTED : guessLabel(r.name, r.description));
-/** Bops' suggestion, not confirmed yet: listed under it here, kept out of its SKILL.md and Orgo. */
+/** SmileDesk's suggestion, not confirmed yet: listed under it here, kept out of its SKILL.md and Orgo. */
 const suggested = (r: SkillRef) => r.labelBy === "auto" && !!r.label;
 /** Its label as its SKILL.md and Orgo have it: a suggestion is none there (Unsorted) until it's confirmed. */
 const sentLabelOf = (r: SkillRef) => (suggested(r) ? UNSORTED : labelOfRef(r));
 
-/** Bops' preset labels (LABEL_WORDS), the apps one only where apps are open. */
+/** SmileDesk's preset labels (LABEL_WORDS), the apps one only where apps are open. */
 const presetLabels = (apps = appsOpen(getState())) => LABEL_WORDS.filter((w) => apps || w.label !== APPS_LABEL).map((w) => w.label);
 
 /**
  * A label for a skill of this workspace, spelled as one already in use when it's the same one (sameLabel:
- * "email" is the workspace's "Email"): Bops' own labels, then the workspace's, then those guessLabel gives
+ * "email" is the workspace's "Email"): SmileDesk's own labels, then the workspace's, then those guessLabel gives
  * and UNSORTED; else a new one, as given.
  */
 export function knownLabel(wsId: string, label: unknown): string {
@@ -325,7 +325,7 @@ const SUGGEST_MAX = 40;
 /** A dash used as punctuation: any of the long ones, or a hyphen with a space on each side ("Follow-up" is a word). */
 const DASHED = /[\u2012-\u2015]|\s-\s/;
 
-/** The workspace's own labels: those its skills are under or the owner wrote about, not Bops' preset ones nor Unsorted. */
+/** The workspace's own labels: those its skills are under or the owner wrote about, not SmileDesk's preset ones nor Unsorted. */
 function ownLabels(wsId: string): string[] {
   const presets = presetLabels();
   return workspaceLabels(wsId).filter((l) => !isUnsorted(l) && !presets.some((p) => sameLabel(p, l)));
@@ -339,7 +339,7 @@ export type AskLabels = (skills: { i: number; name: string; description: string 
 /** Tests: a stand in for the model, and a batch run now instead of after its wait. */
 export const labelSuggestForTests: { ask?: AskLabels; run: (wsId: string) => Promise<void> } = { run: (wsId) => suggestLabels(wsId) };
 
-/** The small model through Bops Cloud (skill-label-model.ts), only when the cloud carries it: self hosted, signed out or offline, none. */
+/** The small model through SmileDesk Cloud (skill-label-model.ts), only when the cloud carries it: self hosted, signed out or offline, none. */
 const askModel: AskLabels = async (skills, labels) => {
   const { cloudProxy } = await import("./cloud");
   if (!cloudProxy("openai")) return null;
@@ -362,7 +362,7 @@ function queueSuggest(wsId: string, kind: SkillKind, slug: string) {
 
 /**
  * The skills waiting for a label (queueSuggest), in one call of a small model (labelBy "auto" for each it
- * places): it picks among the workspace's own labels (Bops' preset ones while it has none), and may add one new short label at
+ * places): it picks among the workspace's own labels (SmileDesk's preset ones while it has none), and may add one new short label at
  * most. Off, out of credit, offline or an answer that isn't usable: each keeps the label from its words, or
  * none. One whose label was chosen meanwhile keeps that.
  */
@@ -375,7 +375,7 @@ async function suggestLabels(wsId: string) {
   const open = (r: SkillRef | undefined): r is SkillRef => !!r && r.labelBy === "auto";
   const refs = [...b.keys].map((k) => findRef(wsId, k.startsWith("app:") ? "app" : "skill", k.slice(k.indexOf(":") + 1))).filter(open).slice(0, SUGGEST_MAX);
   if (!refs.length) return;
-  // The workspace's own labels once it has some, else Bops' preset ones: never both, so the two don't mix.
+  // The workspace's own labels once it has some, else SmileDesk's preset ones: never both, so the two don't mix.
   const own = ownLabels(wsId);
   const choices = [...new Map((own.length ? own : presetLabels()).map((l) => [l.toLowerCase(), cleanLabel(l)])).values()];
   const picked = await (labelSuggestForTests.ask ?? askModel)(refs.map((r, i) => ({ i, name: r.name, description: cut(r.description, 300) })), choices).catch(() => null);
@@ -420,7 +420,7 @@ export function setLabelSuggest(wsId: string, on: boolean): boolean {
 
 /**
  * Every label of a workspace's own skills and apps, the ones the owner wrote about first in their order, Unsorted
- * last: the rows of Who has what, and what a bot with every label has. Bops' own skills aren't counted: they're
+ * last: the rows of Who has what, and what a bot with every label has. SmileDesk's own skills aren't counted: they're
  * every bot's.
  */
 export function workspaceLabels(wsId: string): string[] {
@@ -505,7 +505,7 @@ export function renameLabel(wsId: string, from: string, to: string): number {
   // As it's listed ("ops" is the workspace's "Ops"), before its skills move.
   const was = knownLabel(wsId, from);
   const moving = refsOf(wsId).filter((r) => sameLabel(labelOfRef(r), from));
-  // Orgo's rename moves every skill it has under `from`. Unsorted there holds Bops' suggestions too (never sent),
+  // Orgo's rename moves every skill it has under `from`. Unsorted there holds SmileDesk's suggestions too (never sent),
   // which stay where they're listed here: then each skill moved goes on its own, as an older orgo-web takes it.
   const pid = workspaceById(wsId)?.orgoProjectId;
   const each = !!pid && (renameRoutes.get(pid) === false || (isUnsorted(from) && refsOf(wsId).some((r) => suggested(r) && !!r.remoteId)));
@@ -558,22 +558,22 @@ export function setLabelAbout(wsId: string, label: string, about: string): Skill
   return workspaceById(wsId)?.skillLabelInfo ?? [];
 }
 
-/** Bops' own skills this account has (lib/builtin-skills.ts): the apps ones only where apps are open (lib/apps-access.ts). */
+/** SmileDesk's own skills this account has (lib/builtin-skills.ts): the apps ones only where apps are open (lib/apps-access.ts). */
 const ownSkills = () => builtinSkills(appsOpen(getState()));
 
-/** One of Bops' own skills (lib/builtin-skills.ts): by slug, then its name (case, spacing and dashes aside). */
+/** One of SmileDesk's own skills (lib/builtin-skills.ts): by slug, then its name (case, spacing and dashes aside). */
 function findBuiltin(nameOrSlug: string): BuiltinSkill | undefined {
   const want = nameOrSlug.trim().replace(/^["“']|["”']$/g, "");
   const own = ownSkills();
   return own.find((s) => s.slug === want) ?? own.find((s) => s.name === want) ?? own.find((s) => procedureKey(s.name) === procedureKey(want));
 }
 
-/** One skill or app as a label lists it: the workspace's own, or Bops' (`builtin`). */
+/** One skill or app as a label lists it: the workspace's own, or SmileDesk's (`builtin`). */
 type Listed = { label: string; name: string; description: string; kind: SkillKind; slug: string; builtin: boolean };
 
 const builtinListed = (s: BuiltinSkill): Listed => ({ label: cleanLabel(s.label), name: s.name, description: oneLine(s.description), kind: "skill", slug: s.slug, builtin: true });
 
-/** What a bot has, as its labels list it: Bops' own in their order, then its workspace's in the order they were made. */
+/** What a bot has, as its labels list it: SmileDesk's own in their order, then its workspace's in the order they were made. */
 function listedFor(botId: string): Listed[] {
   if (!bot(botId)) return [];
   const mine = [...skillsFor(botId)].sort((a, b) => a.createdAt - b.createdAt || a.name.localeCompare(b.name));
@@ -588,7 +588,7 @@ const ABOUT_MAX = 160;
 const titleOf = (x: Listed) => (x.kind === "app" ? `${x.name} (app)` : x.name);
 
 /**
- * Skills under their labels: Bops' own labels first, in their order (only those with a skill), then the
+ * Skills under their labels: SmileDesk's own labels first, in their order (only those with a skill), then the
  * workspace's by how many skills each has, Unsorted last. A workspace label's `about` is what the owner wrote
  * about it (`info`), else its skills' names.
  */
@@ -598,7 +598,7 @@ function grouped(list: Listed[], info?: SkillLabelInfo[]): Grouped[] {
   const theirs: Grouped[] = [];
   for (const x of list) {
     let g = ours.find((y) => sameLabel(y.label, x.label)) ?? theirs.find((y) => sameLabel(y.label, x.label));
-    // A built-in skill under a label BUILTIN_LABELS doesn't name is still Bops' own, listed with them.
+    // A built-in skill under a label BUILTIN_LABELS doesn't name is still SmileDesk's own, listed with them.
     // A workspace label's line: what the owner wrote about it (Workspace.skillLabelInfo), else its skills' names.
     if (!g) {
       const told = x.builtin ? "" : cut(oneLine(labelInfoOf(info, x.label)?.about ?? ""), ABOUT_MAX);
@@ -620,7 +620,7 @@ const infoFor = (botId: string) => {
   return b ? workspaceById(workspaceOf(b))?.skillLabelInfo : undefined;
 };
 
-/** A bot's labels: Bops' own, then its workspace's skills and apps by label, each with how many and which. */
+/** A bot's labels: SmileDesk's own, then its workspace's skills and apps by label, each with how many and which. */
 export function skillGroups(botId: string): SkillGroup[] {
   return grouped(listedFor(botId), infoFor(botId)).map((g) => ({ label: g.label, about: g.about, builtin: g.builtin, count: g.count, slugs: g.slugs }));
 }
@@ -713,7 +713,7 @@ function readBundle(dir: string | null): Bundle | null {
 
 /**
  * What a bot reads: the published version's folder (the working folder when that version isn't on this
- * Mac). A skill moved from a procedure on another Mac (the state came from Bops Cloud, its folder didn't)
+ * Mac). A skill moved from a procedure on another Mac (the state came from SmileDesk Cloud, its folder didn't)
  * is written again here from the procedure kept in the state.
  */
 function publishedBundle(wsId: string, r: SkillRef): Bundle | null {
@@ -850,7 +850,7 @@ export type NewSkill = {
   name: string;
   description: string;
   body: string;
-  /** The label it goes under (one already in use when it's the same, knownLabel; Unsorted for none). None given: the frontmatter's, else Bops' suggestion. */
+  /** The label it goes under (one already in use when it's the same, knownLabel; Unsorted for none). None given: the frontmatter's, else SmileDesk's suggestion. */
   label?: string | null;
   frontmatter?: Record<string, unknown>;
   files?: FileIn[];
@@ -870,7 +870,7 @@ const teamIds = (wsId: string) => new Set(getState().bots.filter((b) => workspac
  * A new skill or app in a workspace: written to its folder, and listed. Checked strictly (no secrets,
  * no junk, the caps). A draft unless `status` says published (then its first version is published too).
  * Its label, in layers: the one given (a bot's create_skill, Orgo's column), else its frontmatter's (kept in
- * its SKILL.md either way), else Bops' suggestion (labelBy "auto", kept in the state until it's confirmed,
+ * its SKILL.md either way), else SmileDesk's suggestion (labelBy "auto", kept in the state until it's confirmed,
  * changed or published): from its words (guessLabel), and, when they place it nowhere or the workspace has
  * labels of its own, a small model's pick a moment later (queueSuggest), for one made here. A skill's only:
  * an app naming none is Unsorted, since its label is changed nowhere in Skills.
@@ -904,7 +904,7 @@ export function createSkill(wsId: string, input: NewSkill): { ref: SkillRef; war
   const fm = frontmatterOf(slug, description, extra);
   // Suggestions are a skill's only: an app's label is changed nowhere in Skills, so one would never be confirmed.
   const suggest = said === undefined && kind === "skill";
-  // Bops' keyword guess only where the workspace has no labels of its own yet: one that has some keeps to
+  // SmileDesk's keyword guess only where the workspace has no labels of its own yet: one that has some keeps to
   // them (the model picks among them, or one new label), so a preset never lands beside the owner's own
   // ("Support" beside "Support playbook"). No answer from the model then leaves it Unsorted.
   const guess = suggest && !ownLabels(wsId).length ? keptLabel(guessLabel(name, description)) : undefined;
@@ -948,13 +948,13 @@ export function createSkill(wsId: string, input: NewSkill): { ref: SkillRef; war
 /**
  * create_skill on a computer's runner (chat.ts): the skill saved straight in Orgo as a draft (POST
  * /api/projects/{project}/skills), with the computer's own Orgo sign in (orgo.ts apiKey there: never the owner's key),
- * so the owner's Bops brings it in on its next sync (syncSkills: one only on Orgo comes here) and it stays a draft
+ * so the owner's SmileDesk brings it in on its next sync (syncSkills: one only on Orgo comes here) and it stays a draft
  * until they or an Admin publish it in Skills, as one made on the Mac does. Always status draft, type skill, for the
  * bot of this turn alone (`botId`), which must work on this computer, in this workspace's Orgo project, which must be
  * the computer's own: orgo-web takes nothing else from a computer's own sign in, and its refusals are said in plain
  * words. Checked here as createSkill checks one (its name, its description, no secret, its label); Orgo checks the
  * rest. Nothing is kept on the computer or in its state: a computer may not write a workspace's skills
- * (cloud/computer-scope.ts), and the owner's Bops keeps their folders. Answers its name, or why it wasn't saved.
+ * (cloud/computer-scope.ts), and the owner's SmileDesk keeps their folders. Answers its name, or why it wasn't saved.
  */
 export async function saveSkillFromComputer(wsId: string, input: { name: string; description: string; body: string; label: string | null; botId: string }): Promise<{ ok: true; name: string } | { ok: false; why: string }> {
   const pid = workspaceById(wsId)?.orgoProjectId;
@@ -1113,7 +1113,7 @@ export function publishSkill(wsId: string, kind: SkillKind, slug: string, opts: 
   // The description as the folder has it (a bot's edit waits there until now).
   const said = typeof b.frontmatter.description === "string" ? oneLine(b.frontmatter.description) : "";
   const description = said && said.length <= BUNDLE_LIMITS.description && !scanSecrets("SKILL.md", said).length ? said : r.description;
-  // Its label as it's listed now (Bops' suggestion goes into its SKILL.md from this version on, as the owner's).
+  // Its label as it's listed now (SmileDesk's suggestion goes into its SKILL.md from this version on, as the owner's).
   const fm = withLabel(frontmatterOf(slug, description, b.frontmatter), labelOfRef(r));
   const skillMd = renderSkillMd(withVersion(fm, version), b.body);
   const sha = bundleSha(skillMd, b.files);
@@ -1128,7 +1128,7 @@ export function publishSkill(wsId: string, kind: SkillKind, slug: string, opts: 
     x.version = version;
     x.description = description;
     x.status = "published";
-    // Bops' suggestion, published, is kept like a chosen one (in every version's SKILL.md from now on).
+    // SmileDesk's suggestion, published, is kept like a chosen one (in every version's SKILL.md from now on).
     if (x.labelBy === "auto") x.labelBy = "user";
     x.risk = riskOf(b.frontmatter) ?? x.risk;
     x.runsOn = runsOnOf(b.frontmatter) ?? x.runsOn;
@@ -1277,23 +1277,23 @@ export const COMPUTER_APPS = "/workspace/capabilities/apps";
 
 /**
  * A label's line in a prompt: its name, how many skills, and what they're for. A built-in label's words are
- * Bops' own, so the workspace's skills under it are named first, or they'd be out of sight.
+ * SmileDesk's own, so the workspace's skills under it are named first, or they'd be out of sight.
  */
 const labelLine = (g: Grouped) => {
   const own = g.builtin ? g.items.filter((x) => !x.builtin).map(titleOf) : [];
-  return `- ${cut(`${g.label} (${g.count}): ${own.length ? `${cut(own.join(", "), ABOUT_MAX)}, and Bops' own: ` : ""}${g.about}`, NOTE_LINE_MAX)}`;
+  return `- ${cut(`${g.label} (${g.count}): ${own.length ? `${cut(own.join(", "), ABOUT_MAX)}, and SmileDesk's own: ` : ""}${g.about}`, NOTE_LINE_MAX)}`;
 };
 /** A skill's line under a label: its name and description. */
 const skillLine = (x: Listed) => cut(`${titleOf(x)}: ${x.description}`, NOTE_LINE_MAX);
 /** A bot's labels in a few words, for an answer that didn't find what was asked. */
 const labelsSaid = (groups: Grouped[]) => (groups.length ? groups.map((g) => `${g.label} (${g.count})`).join(", ") : "none yet");
 
-/** read_skill with a label: its skills, one line each, Bops' own first. */
+/** read_skill with a label: its skills, one line each, SmileDesk's own first. */
 function labelText(g: Grouped): string {
   return [`${g.label} (${g.count})${g.builtin || g.told ? `: ${g.about}` : ""}`, "Read the one that fits with read_skill and name, then follow it.", ...g.items.map((x) => `- ${skillLine(x)}`)].join("\n");
 }
 
-/** read_skill of one of Bops' own skills: its body and files (text, never a script), or one file. Not counted as a use. */
+/** read_skill of one of SmileDesk's own skills: its body and files (text, never a script), or one file. Not counted as a use. */
 function readBuiltin(s: BuiltinSkill, file?: string | null): string {
   const files = s.files ?? [];
   if (file?.trim()) {
@@ -1303,7 +1303,7 @@ function readBuiltin(s: BuiltinSkill, file?: string | null): string {
     return `${s.name}, ${f.path}:\n${f.content.length > FILE_CAP ? `${f.content.slice(0, FILE_CAP)}\n(cut short)` : f.content}`;
   }
   return [
-    `Skill: ${s.name} (Bops' own)`,
+    `Skill: ${s.name} (SmileDesk's own)`,
     s.body.trim(),
     files.length ? `Its files (read one with read_skill and file; on your computer they're in ${COMPUTER_SKILLS}/${s.slug}/):\n${files.map((f) => `- ${f.path}`).join("\n")}` : "",
   ]
@@ -1313,7 +1313,7 @@ function readBuiltin(s: BuiltinSkill, file?: string | null): string {
 
 /**
  * read_skill: a skill or app in full for a bot about to do a job (its SKILL.md body and the list of its
- * files, a read counted as a use), or one file of it with `file`; one of Bops' own the same way. With
+ * files, a read counted as a use), or one file of it with `file`; one of SmileDesk's own the same way. With
  * `label` (and no skill named), that label's skills, one line each. A label given as the name opens it
  * too. When there's nothing by that name, it says so and lists the bot's labels.
  */
@@ -1420,9 +1420,9 @@ export function countUse(botId: string, r: SkillRef) {
  * The list for a bot's prompts, in layers: one line per label (how many skills, what they're for), and
  * the rule: open the label that fits the job (read_skill with label), then read the skill. A workspace
  * with few skills of its own (NOTE_SMALL) has them listed under their labels at once, each label a
- * heading (Bops' own skills stay inside theirs). At most NOTE_MAX
+ * heading (SmileDesk's own skills stay inside theirs). At most NOTE_MAX
  * labels. In a fixed order (labels by size, skills in the order they were made), so a read doesn't
- * reorder it and the prompt's lead stays cached. Empty when the bot has none, Bops' own included. `propose`: a
+ * reorder it and the prompt's lead stays cached. Empty when the bot has none, SmileDesk's own included. `propose`: a
  * chat turn, which has propose_skill_change (skill-proposals.ts): a step found wrong, missing or out of date is
  * proposed as a change there rather than only said.
  */
@@ -1434,7 +1434,7 @@ export function skillsNote(botId: string, opts: { propose?: boolean } = {}): str
   const shown = groups.slice(0, NOTE_MAX);
   const more = groups.length - shown.length;
   return [
-    `Your skills: how your workspace does jobs it was shown before, and Bops' own, under labels. When a job fits a label, open it with read_skill and label to see its skills, then read the one that fits with read_skill and name, and follow it.${small && mine ? " One listed here you can read at once." : ""} ${opts.propose ? `When a step of one was wrong, missing or out of date, propose the change with propose_skill_change: nothing changes until ${ownerName()} accepts it.` : "Tell the user if a step no longer works."}`,
+    `Your skills: how your workspace does jobs it was shown before, and SmileDesk's own, under labels. When a job fits a label, open it with read_skill and label to see its skills, then read the one that fits with read_skill and name, and follow it.${small && mine ? " One listed here you can read at once." : ""} ${opts.propose ? `When a step of one was wrong, missing or out of date, propose the change with propose_skill_change: nothing changes until ${ownerName()} accepts it.` : "Tell the user if a step no longer works."}`,
     ...shown.flatMap((g) => {
       if (!small) return [labelLine(g)];
       // Few: each label a heading with the workspace's own skills under it (a workspace label's names say nothing more).
@@ -1456,14 +1456,14 @@ export function skillsIndexNote(botId: string, owner = "the user"): string {
   const shown = groups.slice(0, NOTE_MAX);
   const more = groups.length - shown.length;
   return [
-    `Your skills: how your workspace does jobs it was shown before, and Bops' own, as folders on your computer under labels. Before a job, read ${COMPUTER_SKILLS}/INDEX.md first, open the label that fits the job there, then read that skill's SKILL.md in its folder and follow it. Tell ${owner} if a step no longer works.`,
+    `Your skills: how your workspace does jobs it was shown before, and SmileDesk's own, as folders on your computer under labels. Before a job, read ${COMPUTER_SKILLS}/INDEX.md first, open the label that fits the job there, then read that skill's SKILL.md in its folder and follow it. Tell ${owner} if a step no longer works.`,
     ...shown.map(labelLine),
     ...(more > 0 ? [`(${more} more labels in INDEX.md.)`] : []),
   ].join("\n");
 }
 
 /** What a script nobody approved yet holds where it would run: never its content, so approval is a real gate. */
-const WAITING = "#!/bin/sh\n# This script is waiting for approval in Bops, in Skills, in Knowledge. Its content arrives once it's approved.\necho 'Not approved yet: ask to have it approved in Skills, in Knowledge.' >&2\nexit 1\n";
+const WAITING = "#!/bin/sh\n# This script is waiting for approval in SmileDesk, in Skills, in Knowledge. Its content arrives once it's approved.\necho 'Not approved yet: ask to have it approved in Skills, in Knowledge.' >&2\nexit 1\n";
 /** A bundle's files as they go to a task folder or a computer: scripts approved run; others are WAITING, not executable. */
 function shipped(files: BundleFile[], approved: Set<string>) {
   return files.map((f) => (isScript(f) && !approved.has(f.sha256) ? { ...f, content: WAITING, data: undefined, executable: false } : { ...f, executable: f.executable && approved.has(f.sha256) }));
@@ -1627,20 +1627,20 @@ export function adoptProcedures(): number {
 
 /* ---------------- On a computer ---------------- */
 
-/** One of Bops' own skills as a folder: its SKILL.md (with its label) and its text files. */
+/** One of SmileDesk's own skills as a folder: its SKILL.md (with its label) and its text files. */
 function builtinBundle(s: BuiltinSkill): Bundle {
   const frontmatter = withLabel({ name: s.slug, description: oneLine(s.description) }, cleanLabel(s.label));
   const files: BundleFile[] = (s.files ?? []).map((f) => ({ path: f.path, content: f.content, sha256: sha256Hex(f.content), size: byteLength(f.content), executable: false }));
   return { frontmatter, body: s.body, skillMd: renderSkillMd(frontmatter, s.body), files };
 }
 
-/** A folder for a task or a computer, and how its label lists it. `builtin`: one of Bops' own, whose files need no approval. */
+/** A folder for a task or a computer, and how its label lists it. `builtin`: one of SmileDesk's own, whose files need no approval. */
 type Shipping = Listed & { bundle: Bundle; wsId: string };
 
 /**
  * What goes in a task's skills folder: the bot's published skills (and apps), each as its folder. On a
  * computer several workspaces' bots share (the free one), the skills of every bot that works there.
- * `builtins`: Bops' own too, after them (a slug of theirs already taken gets a number).
+ * `builtins`: SmileDesk's own too, after them (a slug of theirs already taken gets a number).
  */
 function bundlesFor(botIds: string[], opts: { builtins?: boolean } = {}): Shipping[] {
   const out: Shipping[] = [];
@@ -1672,7 +1672,7 @@ function bundlesFor(botIds: string[], opts: { builtins?: boolean } = {}): Shippi
 const computerFolder = (x: { kind: SkillKind; slug: string }) => `${x.kind === "app" ? COMPUTER_APPS : COMPUTER_SKILLS}/${x.slug}`;
 
 /**
- * INDEX.md beside the skills on a computer: every folder there under its label (Bops' own labels first,
+ * INDEX.md beside the skills on a computer: every folder there under its label (SmileDesk's own labels first,
  * as a bot's prompt lists them), each skill's name, what it's for, and its folder. A brain reads it first.
  */
 function skillsIndex(list: Shipping[]): string {
@@ -1681,7 +1681,7 @@ function skillsIndex(list: Shipping[]): string {
   return [
     "# Skills, by label",
     "",
-    "How your workspace does jobs it was shown before, and Bops' own. Open the label that fits the job, then read that skill's SKILL.md in its folder and follow it. A script nobody approved yet says so when it runs: ask to have it approved in Skills, in Knowledge.",
+    "How your workspace does jobs it was shown before, and SmileDesk's own. Open the label that fits the job, then read that skill's SKILL.md in its folder and follow it. A script nobody approved yet says so when it runs: ask to have it approved in Skills, in Knowledge.",
     ...groups.flatMap((g) => [
       "",
       `## ${g.label} (${g.count})`,
@@ -1729,10 +1729,10 @@ const PIECE = 96 * 1024;
 
 /**
  * The bot's skills and apps copied to its Orgo computer, fresh: /workspace/capabilities/skills/<slug>/
- * and capabilities/apps/<slug>/ (on a shared computer, every sharer's), Bops' own skills beside them, and
+ * and capabilities/apps/<slug>/ (on a shared computer, every sharer's), SmileDesk's own skills beside them, and
  * INDEX.md listing them all by label (skillsIndex). Scripts nobody approved yet arrive without their
  * executable bit. Sent in pieces small enough for one bash call each. Answers how many of the workspace's own
- * folders went there (Bops' own always do). A computer's runner has the skills' files only as far as they
+ * folders went there (SmileDesk's own always do). A computer's runner has the skills' files only as far as they
  * were made there (they're synced to the Mac alone): missing any of them, it leaves the folder as the Mac
  * copied it rather than clear it.
  */
@@ -1743,7 +1743,7 @@ export async function copySkillsToComputer(botId: string, computerId: string, ba
   // Nothing to copy and nothing copied there before (by this server, or as far as it knows): nothing to clear either.
   const me = bot(botId);
   const approved = me ? approvedIn(workspaceOf(me)) : new Set<string>();
-  // Bops' own files are never scripts, and are Bops' to vouch for: as they are.
+  // SmileDesk's own files are never scripts, and are SmileDesk's to vouch for: as they are.
   const filesOf = (x: Shipping) => (x.builtin ? x.bundle.files : shipped(x.bundle.files, approved));
   const index = bundles.length ? skillsIndex(bundles) : "";
   const copied = (g.bopsSkillsCopied ??= new Map());
@@ -1856,7 +1856,7 @@ const noteLabelColumn = (pid: string, list: unknown[] | undefined) => {
 };
 /** Projects whose whole list this run read once to learn whether Orgo keeps the column, for a move waiting. */
 const labelProbed = (g.bopsSkillsLabelProbed ??= new Set());
-/** A label as orgo-web's column takes it: null for Unsorted, and for Bops' suggestion not confirmed yet. */
+/** A label as orgo-web's column takes it: null for Unsorted, and for SmileDesk's suggestion not confirmed yet. */
 const columnLabel = (r: SkillRef) => keptLabel(sentLabelOf(r)) ?? null;
 /** Orgo's column as a label here: null, empty, "Other" or "Unsorted" is Unsorted. */
 const labelOfColumn = (x: { label?: string | null }) => cleanLabel(x.label);
@@ -1956,7 +1956,7 @@ function deletesLater() {
   g.bopsSkillsDeleteTimer.unref?.();
 }
 
-/** Deletes and label renames left in the outboxes by an earlier run of Bops go now (once a start: the skills route's first sync, or a sign-in). */
+/** Deletes and label renames left in the outboxes by an earlier run of SmileDesk go now (once a start: the skills route's first sync, or a sign-in). */
 export function skillDeletesOnStart() {
   if (onRunner()) return;
   if (renamesOut.restore().length) void flushRenames().catch((e: Error) => console.warn(`[skills] label rename: ${e.message}`));
@@ -2095,7 +2095,7 @@ const approvalsOut = outbox<ApprovalChange>("skill-approvals", 2000);
 /** `approved_by`: the Orgo user who approved it. */
 type RemoteApproval = { sha256: string; path_hint?: string | null; approved_by?: string | null; approved_at?: string };
 const g2 = globalThis as unknown as { bopsApprovalsTimer?: ReturnType<typeof setTimeout>; bopsApprovalsTries?: number; bopsApprovalsSaid?: boolean; bopsApprovalsParked?: Set<string> };
-/** Outbox entries Orgo couldn't place (unknown_sha), by id: sent again only after a sync sent a file with that content (or once a run of Bops). */
+/** Outbox entries Orgo couldn't place (unknown_sha), by id: sent again only after a sync sent a file with that content (or once a run of SmileDesk). */
 const parked = (g2.bopsApprovalsParked ??= new Set<string>());
 
 /** An approval made or taken back here: sent to Orgo now (or once the script's skill is there). */
@@ -2113,7 +2113,7 @@ function approvalChanged(wsId: string, sha256: string, on: boolean, path?: strin
  * published skill until it's published) stays on this Mac without a retry on a timer, and goes again only
  * after a sync sent a file with that content (`pushed`) or at the next start; one whose script is in none
  * of the workspace's skills any more (changed again, or deleted) goes from the outbox. One Orgo didn't
- * take for now is tried again after a backoff. The key must be the person's Bops sign-in key (orgo-web's
+ * take for now is tried again after a backoff. The key must be the person's SmileDesk sign-in key (orgo-web's
  * session_required otherwise): one that isn't gives up, said in the log once. True when none is left
  * waiting for a retry.
  */
@@ -2152,7 +2152,7 @@ async function flushApprovals(wsId?: string, pushed?: Set<string>): Promise<bool
       continue;
     }
     if (code === "session_required") {
-      if (!g2.bopsApprovalsSaid) console.warn("[skills] Orgo takes script approvals only from a person signed in to Bops; this key isn't, so they stay on this Mac");
+      if (!g2.bopsApprovalsSaid) console.warn("[skills] Orgo takes script approvals only from a person signed in to SmileDesk; this key isn't, so they stay on this Mac");
       g2.bopsApprovalsSaid = true;
       approvalsOut.done([e.id]);
       continue;
@@ -2197,7 +2197,7 @@ function markApproval(wsId: string, sha256: string, on: boolean) {
 
 /**
  * Orgo's approvals here (GET …/skills/approvals): one the person signed in here made (on orgo.ai, or in
- * Bops on another Mac: approved_by) is taken, another member's never (it doesn't run a script on this
+ * SmileDesk on another Mac: approved_by) is taken, another member's never (it doesn't run a script on this
  * Mac); one Orgo had and no longer lists was revoked there and goes here too; one made here that Orgo
  * never had is sent, while its script is in one of the workspace's skills. What waits to be sent from here
  * stands.

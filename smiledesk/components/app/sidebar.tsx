@@ -101,7 +101,7 @@ export function Sidebar({
   onCompose: () => void;
   onSettings: () => void;
   onAccount: () => void;
-  /** The setup screen: what this Mac gives Bops (setup.tsx). */
+  /** The setup screen: what this Mac gives SmileDesk (setup.tsx). */
   onSetup: () => void;
   onVault: () => void;
   /** The apps the bots made (made-apps.tsx). */
@@ -352,9 +352,9 @@ export function Sidebar({
           <AutopilotSections state={state} query={query} onOpen={onOpenAutopilot} onOpenWatch={onOpenWatch} />
         </div>
       )}
-      {/* A newer Bops: downloading, ready to Restart into, or out on bops.bot (the Mac app checks and downloads it). */}
+      {/* A newer SmileDesk: downloading, ready to Restart into, or out on bops.bot (the Mac app checks and downloads it). */}
       <UpdateNotice />
-      {/* The first time a workspace gets email: "Pick your Bops address" (or an offer to change one Bops picked), a card here. */}
+      {/* The first time a workspace gets email: "Pick your SmileDesk address" (or an offer to change one SmileDesk picked), a card here. */}
       {!state.shared && <MailAddressStep state={state} />}
       {/* A notice from Orgo, one at a time, a card here too (notice-popup.tsx). */}
       <NoticeCard />
@@ -524,7 +524,7 @@ function AppStack({ state }: { state: AppState }) {
 
 /**
  * You, at the bottom of the sidebar: your initials, and a menu with Team (who sees your bots, in Settings), Settings,
- * your plan and usage (Settings, Plan and credit), this Mac's permissions (Settings, This Mac), Restart Bops (in the Mac
+ * your plan and usage (Settings, Plan and credit), this Mac's permissions (Settings, This Mac), Restart SmileDesk (in the Mac
  * app; restart.tsx, asked in place) and signing out. A grey count on the initials' corner says how many people have
  * access besides you (members.tsx TeamCount), as Team in the menu does. Like the footer's other buttons it's a slot
  * that grows into the pill while pointed at (`expanded`), with your name (or email) after the initials. While something
@@ -556,7 +556,7 @@ export function YouMenuView({
   onTeam?: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  // Restart Bops, asked in place in the menu: the row turns into its question.
+  // Restart SmileDesk, asked in place in the menu: the row turns into its question.
   const [restart, setRestart] = useState(false);
   const read = useMembersCount(state);
   const team = given === undefined ? read : given;
@@ -672,13 +672,13 @@ export function YouMenuView({
             ) : (
               <button role="menuitem" onClick={() => setRestart(true)} className={item}>
                 <RestartIcon />
-                Restart Bops
+                Restart SmileDesk
               </button>
             ))}
           {user && (
             <>
               <div className="mx-2 my-1 h-px bg-[#ECECEA]" />
-              {/* Asked in place when changes haven't reached Bops Cloud; else the app goes to the sign in screen. */}
+              {/* Asked in place when changes haven't reached SmileDesk Cloud; else the app goes to the sign in screen. */}
               {leaving.ask ?? (
                 <button role="menuitem" disabled={leaving.busy} onClick={() => void leaving.signOut()} className={`${item} text-[#6B6B6B] hover:text-[#B42318] disabled:opacity-50`}>
                   <span className="w-[15px] shrink-0" />
@@ -847,14 +847,14 @@ const NAMES_SYNC_MS = 10 * 60_000;
  * Why Orgo still shows the default workspace as "bops" while it has the user's name here, by the reason
  * it waits (OrgoMigration.defaultRename, lib/server/workspaces.ts HeldReason): an app that's older, that
  * didn't say its version, none on record yet, or an Orgo that can't tell (old_app, silent_app, no_record,
- * no_signal) all wait for every app to be updated; the rest say what they wait for. Bops tries again by
+ * no_signal) all wait for every app to be updated; the rest say what they wait for. SmileDesk tries again by
  * itself at each start, sign-in and names sync.
  */
 export function heldNameNote(reason: string): string {
-  if (reason === "unreachable") return "Orgo keeps the name bops for now: Bops couldn't reach Orgo, and tries again by itself.";
+  if (reason === "unreachable") return "Orgo keeps the name bops for now: SmileDesk couldn't reach Orgo, and tries again by itself.";
   if (reason === "no_project") return "Orgo gets this name once its Orgo workspace is made, with your first computer.";
   if (reason === "no_free_name") return "Orgo keeps the name bops: your Orgo already has workspaces with this name.";
-  return `Orgo keeps the name bops until every Bops app you use is updated to ${WORKSPACE_APPS_SINCE}.`;
+  return `Orgo keeps the name bops until every SmileDesk app you use is updated to ${WORKSPACE_APPS_SINCE}.`;
 }
 
 export function WorkspaceSwitcher({
@@ -875,7 +875,7 @@ export function WorkspaceSwitcher({
   // Workspaces others shared with the user (lib/shared.ts), read each time the menu opens.
   const [shared, setShared] = useState<SharedWorkspace[]>(sharedList ?? []);
   const [naming, setNaming] = useState<null | { id?: string; name: string }>(null);
-  // The workspace whose Delete was pressed: what goes with it once Bops (and Orgo) said, and what went wrong.
+  // The workspace whose Delete was pressed: what goes with it once SmileDesk (and Orgo) said, and what went wrong.
   const [deleting, setDeleting] = useState<null | { id: string; preview?: DeletePreview; error?: string; busy?: boolean }>(null);
   // What Orgo said about a name (one the user's Orgo already has), shown over the field until it changes.
   const [problem, setProblem] = useState<string | null>(null);
@@ -959,7 +959,7 @@ export function WorkspaceSwitcher({
       }
       close();
     } catch {
-      setProblem("Couldn't reach Bops. Try again.");
+      setProblem("Couldn't reach SmileDesk. Try again.");
     } finally {
       setBusy(false);
     }
@@ -975,7 +975,7 @@ export function WorkspaceSwitcher({
       if (!res.ok) return setProblem(j.error ?? "Couldn't open it. Try again.");
       close();
     } catch {
-      setProblem("Couldn't reach Bops. Try again.");
+      setProblem("Couldn't reach SmileDesk. Try again.");
     } finally {
       setBusy(false);
     }
@@ -992,7 +992,7 @@ export function WorkspaceSwitcher({
       const j = (await res.json().catch(() => ({}))) as DeletePreview & { error?: string };
       setDeleting((d) => (d?.id === id ? (res.ok ? { id, preview: j } : { id, error: j.error ?? "Couldn't tell what's in it. Try again." }) : d));
     } catch {
-      setDeleting((d) => (d?.id === id ? { id, error: "Couldn't reach Bops. Try again." } : d));
+      setDeleting((d) => (d?.id === id ? { id, error: "Couldn't reach SmileDesk. Try again." } : d));
     }
   };
   const confirmDelete = async () => {
@@ -1008,7 +1008,7 @@ export function WorkspaceSwitcher({
       }
       else setDeleting({ id, preview, error: j.error ?? "That didn't work, so nothing was deleted. Try again." });
     } catch {
-      setDeleting({ id, preview, error: "Couldn't reach Bops. Try again." });
+      setDeleting({ id, preview, error: "Couldn't reach SmileDesk. Try again." });
     }
   };
   const renamed = state.orgoMigration?.renamed ?? [];

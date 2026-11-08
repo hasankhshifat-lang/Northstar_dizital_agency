@@ -7,11 +7,11 @@ import { Spinner } from "./mascot";
 import { currentWorkspace, post } from "./ui";
 
 /*
- * "Pick your Bops address": a workspace's part of its bots' addresses (tiger in boppy@tiger.bops.bot),
- * unique across every Bops user (lib/server/mail.ts, cloud/handles.ts).
+ * "Pick your SmileDesk address": a workspace's part of its bots' addresses (tiger in boppy@tiger.bops.bot),
+ * unique across every SmileDesk user (lib/server/mail.ts, cloud/handles.ts).
  *
  * Why it's asked like this. Not at sign-up: an address is worth picking once there's mail to get, and
- * a question before Bops has done anything for you is friction before the value. Not as an empty
+ * a question before SmileDesk has done anything for you is friction before the value. Not as an empty
  * field: a blank box makes people stop and think up a name (choice paralysis), so it comes prefilled
  * with a suggestion that's already free (your Orgo name, or the workspace's), and most people just
  * press the one button. It's checked as you type, so "taken" never arrives after you've committed, and
@@ -34,7 +34,7 @@ const tidy = (s: string) =>
 
 async function ask(workspaceId: string, tried: string): Promise<Check | { error: string }> {
   const r = await fetch(`/api/mail/handle?${new URLSearchParams({ workspace: workspaceId, try: tried })}`, { cache: "no-store" }).catch(() => null);
-  if (!r) return { error: "Couldn't reach Bops." };
+  if (!r) return { error: "Couldn't reach SmileDesk." };
   const j = (await r.json().catch(() => ({}))) as Check & { error?: string };
   return r.ok ? j : { error: j.error ?? "Couldn't check that right now." };
 }
@@ -42,7 +42,7 @@ async function ask(workspaceId: string, tried: string): Promise<Check | { error:
 /**
  * The step itself, never over the app: `card`, a card in the sidebar above its footer (MailAddressStep, unasked: it
  * takes no focus), or `inline`, in place under its row in Settings, Email and phone (EmailAddresses). `pick`: the
- * workspace's first address; `offer`: Bops picked one, keep it or pick another; `change`: from Settings. It rises in as
+ * workspace's first address; `offer`: SmileDesk picked one, keep it or pick another; `change`: from Settings. It rises in as
  * it opens, unless `still` (see MailAddressStep). Esc in it puts it away for now, and only it.
  */
 export function AddressForm({
@@ -90,7 +90,7 @@ export function AddressForm({
     }, 300);
   };
   useEffect(() => () => clearTimeout(timer.current), []);
-  // Never in the way: Esc in it puts it away for now (a first address is asked again next time Bops opens, and
+  // Never in the way: Esc in it puts it away for now (a first address is asked again next time SmileDesk opens, and
   // claimed for the user after a day), and only it: preventDefault keeps the page it's on.
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key !== "Escape") return;
@@ -146,13 +146,13 @@ export function AddressForm({
   };
 
   const titleId = `mail-address-${place}-${workspaceId}`;
-  const bot = check?.bot ?? "Boppy";
-  const title = mode === "pick" ? "Pick your Bops address" : mode === "offer" ? "Your Bops address" : "Change your Bops address";
+  const bot = check?.bot ?? "Molly";
+  const title = mode === "pick" ? "Pick your SmileDesk address" : mode === "offer" ? "Your SmileDesk address" : "Change your SmileDesk address";
   const intro =
     mode === "pick"
       ? `Your bots get email at this address. Anyone can write to ${bot} here.`
       : mode === "offer"
-        ? `Bops picked ${current ?? "this"}.bops.bot for you. Keep it, or change your address now.`
+        ? `SmileDesk picked ${current ?? "this"}.bops.bot for you. Keep it, or change your address now.`
         : `${bot}'s main address moves to the new one. Mail to the old addresses still arrives.`;
   const note = !value
     ? null
@@ -250,7 +250,7 @@ export function AddressForm({
 
 /**
  * Steps that have been on screen, kept while the step is away (it's unmounted while the sidebar is folded
- * to its rail, and comes back when it opens). Only one not shown before rises in, and not as Bops opens.
+ * to its rail, and comes back when it opens). Only one not shown before rises in, and not as SmileDesk opens.
  */
 const shownSteps = new Set<string>();
 let stepMounted = false;
@@ -258,7 +258,7 @@ let stepMounted = false;
 const putAway = new Set<string>();
 const awayListeners = new Set<() => void>();
 
-/** The workspace whose address waits to be picked (or has one Bops picked, to offer a change), the one looked at first. */
+/** The workspace whose address waits to be picked (or has one SmileDesk picked, to offer a change), the one looked at first. */
 function useMailStep(state: AppState) {
   const [, redraw] = useState(0);
   useEffect(() => {
@@ -278,7 +278,7 @@ function useMailStep(state: AppState) {
 }
 
 /**
- * Shows the step when a workspace is waiting for its address (or has one Bops picked, to offer a
+ * Shows the step when a workspace is waiting for its address (or has one SmileDesk picked, to offer a
  * change), as a card in the sidebar above its footer (sidebar.tsx): never over the app, and it takes no
  * focus. Gone once the user answers (the state says so).
  */
@@ -296,7 +296,7 @@ export function MailAddressStep({ state }: { state: AppState }) {
 export function MailAddressRail({ state, onOpen }: { state: AppState; onOpen: () => void }) {
   const { w } = useMailStep(state);
   if (!w?.mailPick) return null;
-  const tip = w.mailPick.offer ? "Your Bops address: keep it or change it" : "Pick your Bops address";
+  const tip = w.mailPick.offer ? "Your SmileDesk address: keep it or change it" : "Pick your SmileDesk address";
   return (
     <button
       onClick={onOpen}
@@ -313,7 +313,7 @@ export function MailAddressRail({ state, onOpen }: { state: AppState; onOpen: ()
   );
 }
 
-/** Settings, Email (Bops Cloud): each workspace's address (`only`: one workspace's), with Change, or Pick for one that has none yet. */
+/** Settings, Email (SmileDesk Cloud): each workspace's address (`only`: one workspace's), with Change, or Pick for one that has none yet. */
 export function EmailAddresses({ state, only }: { state: AppState; only?: string }) {
   const [open, setOpen] = useState<{ id: string; name: string; mode: Mode } | null>(null);
   const rows = (state.workspaces ?? []).filter((w) => (w.mailClaimed || w.mailPick) && (!only || w.id === only));

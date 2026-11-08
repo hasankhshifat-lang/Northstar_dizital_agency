@@ -7,7 +7,7 @@ import { KEEP_MS, slackSigned } from "../slack.ts";
 import * as tunnel from "../tunnel.ts";
 import { connectMac, dropUsers, fakeComposio, fakeOrgo, keyOf, newUserId, pending, prepareDb, seedUser, slackHeaders, startCloud, until, type FakeMac, type Listening } from "./edge-fakes.ts";
 
-/** Bops' Slack app (cloud/slack.ts): its events at /hooks/slack, who each one goes to, and PUT /v1/slack/links. */
+/** SmileDesk's Slack app (cloud/slack.ts): its events at /hooks/slack, who each one goes to, and PUT /v1/slack/links. */
 
 process.env.BOPS_SLACK_SIGNING_SECRET = "slack-signing-secret-for-tests";
 process.env.COMPOSIO_API_KEY = "composio-test-not-a-real-key";
@@ -174,7 +174,7 @@ test("a direct message goes to the user it's with; one nobody has yet goes to th
 test("a direct message from the person a bot is paired with goes to its user, even when they paired in a channel and the Mac doesn't know that DM yet", async () => {
   const owner = `U${id()}`;
   const fromOwner = (teamId: string, channel: string) => envelope(teamId, { type: "message", channel, channel_type: "im", user: owner, text: "can you check the deck?" });
-  // Paired by "@Bops 123456" in a channel: the Mac knows the owner, not their direct message with the app.
+  // Paired by "@SmileDesk 123456" in a channel: the Mac knows the owner, not their direct message with the app.
   const pairedInChannel = await withLinks("slack-owner", { team, channels: [`C${id()}`], owners: [owner] });
   const pairing = await withLinks("slack-owner-pairing", { team, pairing: true });
   const sameIdElsewhere = await withLinks("slack-owner-other", { team: otherTeam, owners: [owner], pairing: true });

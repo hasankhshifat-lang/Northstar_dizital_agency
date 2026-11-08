@@ -60,7 +60,7 @@ test("handles: 3 to 30 letters, digits and dashes, no reserved words", () => {
   assert.equal(handleProblem("ti_ger"), "Use letters, numbers and dashes only.");
   assert.equal(handleProblem("-tiger"), "Start and end with a letter or a number.");
   assert.equal(handleProblem("ti--ger"), "Use one dash at a time.");
-  for (const r of ["www", "mail", "api", "admin", "support", "main", "bops", "orgo", "team", "help", "main-7"]) assert.equal(handleProblem(r), "That one is kept for Bops.", r);
+  for (const r of ["www", "mail", "api", "admin", "support", "main", "bops", "orgo", "team", "help", "main-7"]) assert.equal(handleProblem(r), "That one is kept for SmileDesk.", r);
 });
 
 test("the default workspace is suggested from the Orgo name, else the email; a taken one gets a number", async () => {
@@ -95,7 +95,7 @@ test("GET /v1/mail/handle answers available, taken, invalid or yours, always wit
   r = await check(other, "ws_main", w);
   assert.deepEqual([r.json.status, r.json.problem, r.json.suggestion], ["taken", "Someone already has that one.", `${w}2`]);
   r = await check(other, "ws_main", "mail");
-  assert.deepEqual([r.json.status, r.json.problem], ["invalid", "That one is kept for Bops."]);
+  assert.deepEqual([r.json.status, r.json.problem], ["invalid", "That one is kept for SmileDesk."]);
   assert.match(r.json.suggestion, /^mail\d+$/);
   // The user's other workspace can't have the same handle either.
   r = await check(tiger, "ws_two", w);

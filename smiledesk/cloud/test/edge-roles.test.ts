@@ -7,7 +7,7 @@ import type { MemberActPayload, SharedWsState } from "../protocol.ts";
 import { dropUsers, fakeOrgo, keyOf, newUserId, pending, prepareDb, startCloud, until, type Listening } from "./edge-fakes.ts";
 
 /**
- * Owner, Admin and Member over the real Bops Cloud path: the owner's Mac uploads its state as the real app does
+ * Owner, Admin and Member over the real SmileDesk Cloud path: the owner's Mac uploads its state as the real app does
  * (toShared, which drops `account`), orgo-web's bops-role says each caller's role and the owner's email, and each GETs
  * /v1/ws/<project>/state. In a workspace of Orgo's team both get Your Apps (the bug was: nobody did); an Admin with no
  * entry at all gets every bot, its computer and Your Apps at Write; an Admin's act carries the role for the owner's

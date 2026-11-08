@@ -4,9 +4,9 @@ import { sharedOpen } from "@/lib/server/shared";
 import { OWNERS_KEY, sharedRemove } from "@/lib/server/shared-keys";
 import { fromBopsWindow } from "@/lib/server/ui-token";
 
-/** Take a key out of the user's Orgo vault (?scope=workspace: this workspace's own), and from every bot that could use it. Only from the Bops window. */
+/** Take a key out of the user's Orgo vault (?scope=workspace: this workspace's own), and from every bot that could use it. Only from the SmileDesk window. */
 export async function DELETE(request: Request, ctx: RouteContext<"/api/keys/[name]">) {
-  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "Keys can only be changed in the Bops app." }, { status: 403 }));
+  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "Keys can only be changed in the SmileDesk app." }, { status: 403 }));
   if (unready) return unready;
   const { name } = await ctx.params;
   const scope = new URL(request.url).searchParams.get("scope") === "workspace" ? "workspace" : "all";

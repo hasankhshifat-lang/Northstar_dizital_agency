@@ -2,7 +2,7 @@
 // kind, says writes ask first, and has no dashes), offering, turning on and putting off starters
 // (lib/server/routine-suggestions.ts, with the real lib/server/routines.ts), learning a workspace's tags
 // from a sample (a fake background turn), the note the bots see, and the routes (app/api/routines/
-// suggestions and its dismiss: the Bops window only; and DELETE /api/routines, where deleting a Connected
+// suggestions and its dismiss: the SmileDesk window only; and DELETE /api/routines, where deleting a Connected
 // App's check is its How often back at Only when asked).
 //
 // The store, sessions, phone, mail, channels and chat modules are fakes, so nothing reaches a real
@@ -265,7 +265,7 @@ await check("idempotent: a starter the bot runs already is offered as already an
 
 await check("refused: an unknown bot, an app with no starters, a starter of another app, a bad schedule", () => {
   assert.deepEqual(S.acceptStarters("gmail", "bot_none", [{ id: "gmail-alerts" }]), { created: [], error: "No such bot." });
-  assert.equal(S.acceptStarters("notion", "bot_main", [{ id: "x" }]).error, "Bops has no routines for that app yet.");
+  assert.equal(S.acceptStarters("notion", "bot_main", [{ id: "x" }]).error, "SmileDesk has no routines for that app yet.");
   const other = S.acceptStarters("hubspot", "bot_main", [{ id: "gmail-alerts" }]);
   assert.deepEqual(other.created, []);
   assert.match(other.errors[0], /No routine called "gmail-alerts"/);
@@ -609,7 +609,7 @@ await check("dismiss clears the waiting suggestion", async () => {
   assert.equal(state.suggest, undefined);
 });
 
-await check("a check deleted in the app (DELETE /api/routines) is its account back at Only when asked: no check left, the bot no longer told of it, its starters offered again; only from the Bops window", async () => {
+await check("a check deleted in the app (DELETE /api/routines) is its account back at Only when asked: no check left, the bot no longer told of it, its starters offered again; only from the SmileDesk window", async () => {
   const routinesRoute = await import("@/app/api/routines/route");
   const del = (id, headers = {}) => new Request("http://localhost/api/routines", { method: "DELETE", headers: { "content-type": "application/json", ...headers }, body: JSON.stringify({ id }) });
   // How often keeps nothing but the check itself (routine-catalog.ts CHECK_TEMPLATE): Iris checks Gmail every 15 minutes.
@@ -623,7 +623,7 @@ await check("a check deleted in the app (DELETE /api/routines) is its account ba
   try {
     const no = await routinesRoute.DELETE(del(r.id));
     assert.equal(no.status, 403);
-    assert.match((await no.json()).error, /only be changed in the Bops app/);
+    assert.match((await no.json()).error, /only be changed in the SmileDesk app/);
     assert.equal(checksOf("ca_work").length, 1);
     const ok = await routinesRoute.DELETE(del(r.id, { cookie: "bops_window=window-token-for-tests" }));
     assert.deepEqual([ok.status, await ok.json()], [200, { ok: true }]);

@@ -2,7 +2,7 @@ import "server-only";
 import { spawn, type ChildProcess } from "node:child_process";
 
 /**
- * This Mac awake while a task runs. Bops' server runs on the user's Mac, so a Mac that idles to sleep
+ * This Mac awake while a task runs. SmileDesk's server runs on the user's Mac, so a Mac that idles to sleep
  * mid-task stops the task with it: its model call waits out its 5 minutes and the thread says it's
  * stuck. While any task holds it, `caffeinate -i` keeps the Mac from idle sleep (the display may still
  * sleep, and closing the lid on battery still sleeps it); it ends with the last task, or with this server
@@ -50,7 +50,7 @@ setInterval(() => {
 /** Whether the Mac slept at any point after `since`. */
 export const sleptSince = (since: number) => naps.some((n) => n.to > since);
 
-/** When this server started: it wasn't running before (Bops was quit, or not yet open). */
+/** When this server started: it wasn't running before (SmileDesk was quit, or not yet open). */
 const started = Date.now();
 
 /**

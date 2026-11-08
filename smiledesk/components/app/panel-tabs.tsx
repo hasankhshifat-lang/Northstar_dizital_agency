@@ -32,7 +32,7 @@ export type PanelTab =
   /** A CRM file (crm.tsx), in the workspace it belongs to. */
   | { id: string; kind: "crm"; ws: string; file: string }
   /**
-   * What Bops knows, one section at a time (memory-categories.tsx; Issues, orbit-issues.tsx): one tab per workspace, at the item
+   * What SmileDesk knows, one section at a time (memory-categories.tsx; Issues, orbit-issues.tsx): one tab per workspace, at the item
    * asked for (`focus`), or with a search filled in (`query`: Show all, from the sidebar's search; it's
    * taken off once the page has filled it in). `focusAt` is when they were asked for, so asking again
    * for the same one shows it again.
@@ -70,7 +70,7 @@ export const BROWSER_TAB = "browser";
 
 /**
  * Whether the viewer has `bot`'s browser in a tab beside its computer's: the owner, for a bot on a computer that's up; an
- * Admin of a shared workspace (whose computer tab is the live view, SharedScreen), for a bot whose computer Bops Cloud
+ * Admin of a shared workspace (whose computer tab is the live view, SharedScreen), for a bot whose computer SmileDesk Cloud
  * shows them (SharedOpen.screens).
  */
 export const browserBeside = (state: AppState, bot: Bot | undefined): bot is Bot =>
@@ -78,8 +78,8 @@ export const browserBeside = (state: AppState, bot: Bot | undefined): bot is Bot
 
 /**
  * Whether the viewer may use `bot`'s browser here: the owner and an Admin (beside the computer, browserBeside); a Member
- * the owner gave Write on it and Use its computer (in place of the computer, seesBrowser). Bops Cloud checks again
- * before it shows a frame (cloud/browser.ts mayUseBrowser, by Bops Cloud's roles).
+ * the owner gave Write on it and Use its computer (in place of the computer, seesBrowser). SmileDesk Cloud checks again
+ * before it shows a frame (cloud/browser.ts mayUseBrowser, by SmileDesk Cloud's roles).
  */
 export const browsesHere = (state: AppState, bot: Bot | undefined): bot is Bot => browserBeside(state, bot) || (!!bot && seesBrowser(state, bot));
 
@@ -152,7 +152,7 @@ export const OpenBotLocal = createContext<((botId: string, url: string) => void)
 export const LocalOnly = createContext<readonly { id: string; name: string }[] | null>(null);
 
 /**
- * The session an app's preview loads in: its own, per Bops user, workspace, app, site and copy (`bot`: a bot's copy
+ * The session an app's preview loads in: its own, per SmileDesk user, workspace, app, site and copy (`bot`: a bot's copy
  * of the app), so its cookies, storage and service workers never mix with another app's, another site's of it or
  * another copy's (each on its own localhost port, and cookies don't go by port), a web tab's, or the window's (whose
  * cookie is on localhost too). The app's own site of its own folder keeps the name it always had, so a sign in there
@@ -174,7 +174,7 @@ export const hostOf = (url: string) => {
 
 /**
  * The tabs the bar has shown, kept while it's away (it's unmounted while the side panel is hidden). A
- * tab that opens later slides in; the ones there when Bops opened, or back as the panel shows again,
+ * tab that opens later slides in; the ones there when SmileDesk opened, or back as the panel shows again,
  * are simply there.
  */
 const shownTabs = new Set<string>();
@@ -253,7 +253,7 @@ function Tab({ state, tab: t, on, closable, onPick, onClose }: { state: AppState
     t.kind === "browser"
       ? `${b?.name ?? "Bot"}'s browser`
       : t.kind === "computer"
-      ? // A shared workspace's computers are its owner's, whichever bot's name the owner's Bops gives them; a bot whose
+      ? // A shared workspace's computers are its owner's, whichever bot's name the owner's SmileDesk gives them; a bot whose
         // browser the viewer sees there (seesBrowser) shows it in this tab.
         state.shared
         ? b && seesBrowser(state, b)

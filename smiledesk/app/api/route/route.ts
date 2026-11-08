@@ -2,7 +2,7 @@ import { notReady } from "@/lib/server/ready";
 import { routeTask } from "@/lib/server/routing";
 
 /**
- * What Bops would run a task on (lib/server/routing.ts), without starting it: the old rule's pick
+ * What SmileDesk would run a task on (lib/server/routing.ts), without starting it: the old rule's pick
  * and the router's, whatever BOPS_ROUTER says. For the comparison runs (scripts/bench-tasks.mjs --grid).
  */
 export async function POST(request: Request) {

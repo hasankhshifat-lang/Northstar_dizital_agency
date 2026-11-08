@@ -18,7 +18,7 @@ export function telemetryHere(): boolean {
 }
 
 /**
- * What tells Bops Cloud which app is calling, for every call to it (cloud/app-version.ts), which state
+ * What tells SmileDesk Cloud which app is calling, for every call to it (cloud/app-version.ts), which state
  * it may be given (STATE_LEVEL: once it has written a user's state, older Macs are kept out of it), and,
  * on a Mac that sends no usage events, that the cloud should send none for what it does either.
  */
@@ -28,8 +28,8 @@ export const appHeaders = (): Record<string, string> => {
 };
 
 /**
- * What tells orgo-web which Bops app is calling, for every call to Orgo's API: the version alone, never
- * a usage switch (an API call isn't a usage event). Orgo takes a Bops computer off its server while it
+ * What tells orgo-web which SmileDesk app is calling, for every call to Orgo's API: the version alone, never
+ * a usage switch (an API call isn't a usage event). Orgo takes a SmileDesk computer off its server while it
  * sleeps only when every app its owner uses waits for it to wake again rather than taking it for broken
  * (this release and later: lib/server/orgo.ts, sessions.ts ensureComputer); an older app, or one that
  * doesn't say, keeps the user's computer where it is.
@@ -40,9 +40,9 @@ export const orgoHeaders = (): Record<string, string> => {
 };
 
 /**
- * Says this Bops knows a Bops workspace is an Orgo workspace of its own (lib/server/workspaces.ts): an
+ * Says this SmileDesk knows a SmileDesk workspace is an Orgo workspace of its own (lib/server/workspaces.ts): an
  * orgo-web with per workspace projects answers it with each project's own computers. An app before this
- * one doesn't send it, and orgo-web lists every Bops project's computers in its "bops" one for it, so it
+ * one doesn't send it, and orgo-web lists every SmileDesk project's computers in its "bops" one for it, so it
  * never takes a computer moved to another workspace for gone.
  */
 export const BOPS_APP_HEADER = "x-bops-app";

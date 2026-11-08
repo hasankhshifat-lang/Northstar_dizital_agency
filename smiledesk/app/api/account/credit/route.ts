@@ -17,7 +17,7 @@ const IDEMPOTENCY_KEY = /^[\x21-\x7e]{8,255}$/;
  * an automatic reload: only when someone presses Pay.
  *
  * GET: {off: true} when there's no adding credit here (Orgo doesn't sell it yet, or the app doesn't work
- * through Bops Cloud, whose credit it is). Else {card, pending}: the card a top-up would charge (null:
+ * through SmileDesk Cloud, whose credit it is). Else {card, pending}: the card a top-up would charge (null:
  * none, so Checkout) and the payments whose credit is on its way (null: Orgo couldn't say). {error}
  * when Orgo couldn't look.
  */

@@ -354,10 +354,10 @@ test("billed by use, the 402 and the 403 say Orgo credit and Add credit, never U
   const { shortOfCredit, outOfCredit } = await import("../credit.ts");
   assert.equal(shortOfCredit("usage").message, "There isn't enough Orgo credit left to start this task. Add credit in Settings to keep your bots going.");
   assert.match(shortOfCredit().message, /AI credit.*Upgrade/);
-  assert.equal(outOfCredit().extra?.billing, undefined, "Bops' plans: as before");
+  assert.equal(outOfCredit().extra?.billing, undefined, "SmileDesk's plans: as before");
 });
 
-test("POST /v1/session gives a user billed by use no Bops $5: Orgo's signup credit is their start", async () => {
+test("POST /v1/session gives a user billed by use no SmileDesk $5: Orgo's signup credit is their start", async () => {
   const u = await newUser();
   await billedByUse(u);
   const r = await as(u, "POST", "/v1/session", undefined, NEW_APP);
@@ -539,7 +539,7 @@ test("billed by use, a month charged by a pass that stopped before moving on is 
   assert.equal((await planEvents(u)).length, 0, "nothing to tell");
 });
 
-test("a number paused for its month comes back on when the user is moved back to Bops' plans: nothing bills it by the month there", async () => {
+test("a number paused for its month comes back on when the user is moved back to SmileDesk's plans: nothing bills it by the month there", async () => {
   const { u, digits } = await usageNumber();
   await renew();
   await setCredit(u, { free: 0 });

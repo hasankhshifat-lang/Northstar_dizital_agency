@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bops",
+  title: "SmileDesk",
   description: "AI coworkers with their own computers.",
 };
 

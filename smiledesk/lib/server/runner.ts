@@ -12,9 +12,9 @@ import { getState, pullState, statePulledAt, update } from "./store";
 import { identityHere, identityVmId, whoAmI } from "./vm-identity";
 
 /**
- * Where the user's bots work, and which Bops runs each routine. Where they work is the user's to pick
+ * Where the user's bots work, and which SmileDesk runs each routine. Where they work is the user's to pick
  * (Settings: Cloud, the default, or This Mac), and Orgo keeps it (GET and PUT /api/bops/settings). In
- * Cloud, a computer of the bots' with a Bops runner of its own (AppState.runners, set up from the Mac)
+ * Cloud, a computer of the bots' with a SmileDesk runner of its own (AppState.runners, set up from the Mac)
  * runs the tasks of the bots that work on it, so they keep running while the Mac is closed: Orgo wakes
  * that computer when one comes due (orgo-web lib/bops-routine-wake.ts, from the routines mirror,
  * routine-sync.ts), start to finish: nothing of a run is ever handed to the Mac in the middle of it (a run
@@ -32,7 +32,7 @@ import { identityHere, identityVmId, whoAmI } from "./vm-identity";
  * Orgo id, and so is BOPS_DEVICE_SEED, which makes its device id: persist-cloud.ts deviceIdFor). It
  * runs nothing it isn't sure of: where the bots work as Orgo said under a minute ago, and the state as
  * read under 40 seconds ago, neither from before a nap (its computer suspended in between). No routine
- * runs on two Bops at once: each decides from the same shared state, and a routine that leaves one Bops
+ * runs on two SmileDesk at once: each decides from the same shared state, and a routine that leaves one SmileDesk
  * for another (a switch to This Mac, a runner being set up again or stopped, its bot moved to another
  * computer, the routine set to run on the Mac) waits HANDOVER_MS on the one it goes to, or until the
  * runner's stop is confirmed, while the one it leaves hears of it (a runner reads the state at least
@@ -49,7 +49,7 @@ export { onRunner };
 
 /**
  * Where a runner lives on its computer (runner-install.ts writes them): its supervisord program and the
- * script that starts it. Its key isn't Bops': it's the computer's own ORGO_API_KEY, in the files Orgo
+ * script that starts it. Its key isn't SmileDesk's: it's the computer's own ORGO_API_KEY, in the files Orgo
  * writes it in (runner-key.ts).
  */
 export const RUNNER_CONF = "/etc/supervisor/conf.d/bops-runner.conf";
@@ -72,7 +72,7 @@ export { MAC_WORDS, needsNoComputer };
 
 /**
  * Whether a routine's runs need the user's Mac, decided before a run starts (lib/types.ts routineOnMac, which
- * the app shows by too), with the state as this Bops has it. The Mac runs these (runsHere), and Orgo never
+ * the app shows by too), with the state as this SmileDesk has it. The Mac runs these (runsHere), and Orgo never
  * wakes a computer for them (the routines mirror's onMac).
  */
 export function pinnedToMac(r: Pick<Routine, "botId" | "where" | "goal" | "reminder" | "run" | "fromOutside" | "deliverTo" | "procedure" | "macPick">, b: Pick<Bot, "runsOn"> | undefined): boolean {
@@ -80,7 +80,7 @@ export function pinnedToMac(r: Pick<Routine, "botId" | "where" | "goal" | "remin
 }
 
 /**
- * On the Mac, in Cloud: a task left to Bops (where auto) whose runs a computer's runner would take, with no
+ * On the Mac, in Cloud: a task left to SmileDesk (where auto) whose runs a computer's runner would take, with no
  * pick of the Mac's for its goal now (Routine.macPick). The Mac works one out (routines.ts pickWhere), as
  * the runner, with no Mac, can't.
  */
@@ -209,10 +209,10 @@ export function startRunsOn() {
 /** Settings: where the user's bots work from now on. Never from a runner. */
 export async function setRunsOn(to: RunsOn): Promise<{ error?: string; missing?: true }> {
   const user = userNow();
-  if (onRunner() || !user) return { error: "Sign in to Bops first." };
+  if (onRunner() || !user) return { error: "Sign in to SmileDesk first." };
   const { apiKey, callOrgo } = await import("./orgo");
   const key = await apiKey().catch(() => "");
-  if (!key) return { error: "Sign in to Bops first." };
+  if (!key) return { error: "Sign in to SmileDesk first." };
   const res = await callOrgo(key, SETTINGS, { method: "PUT", body: { runsOn: to }, timeoutMs: TIMEOUT_MS });
   if (res?.status === 404 || res?.status === 405) {
     hear(user, "mac", Date.now() + MISSING_RETRY_MS);
@@ -396,7 +396,7 @@ export function runnerHasWork(now = Date.now()): boolean {
 }
 
 /**
- * Whether a routine just came to this Bops from another that may still run it, which hasn't heard yet:
+ * Whether a routine just came to this SmileDesk from another that may still run it, which hasn't heard yet:
  * on the Mac, one seen with a computer's runner under HANDOVER_MS ago (that runner being set up again
  * or failing, its bot moved to a computer with none, the routine set to run on the Mac), unless that
  * runner's stop is confirmed (it's out of the state); on a runner, one seen as not its own under
@@ -440,7 +440,7 @@ export function runnerComputerOf(device: string | undefined): string | null {
 
 /**
  * Whether `device` is a computer's runner that failed (a thread's Session.by): its program died or stopped on the
- * computer, so nothing there reads a reply or a Stop for its threads, and another Bops ends them (sessions.ts
+ * computer, so nothing there reads a reply or a Stop for its threads, and another SmileDesk ends them (sessions.ts
  * stopSession). False for a Mac's.
  */
 export function runnerFailed(device: string | undefined): boolean {
@@ -462,7 +462,7 @@ export function runnerUpFor(device: string | undefined, botId: string): string |
 }
 
 /**
- * Whether computer `id`'s runner runs Bops release `since` or a later one (this one's own version when this one is older
+ * Whether computer `id`'s runner runs SmileDesk release `since` or a later one (this one's own version when this one is older
  * still, as a build in development is, so it never holds itself back): what's new in `since` is handed to it only then.
  * One being upgraded runs the one it had till that's done. False when its version can't be told.
  */
@@ -489,7 +489,7 @@ export function overdueOn(id: string, now = Date.now()): boolean {
 const runnerKey = (id: string) => Object.keys(getState().runners ?? {}).find((k) => k.toLowerCase() === id.toLowerCase());
 
 /**
- * On the Mac: what a look at computer `id` found (runner-install.ts lookDown), kept in the state so every Bops
+ * On the Mac: what a look at computer `id` found (runner-install.ts lookDown), kept in the state so every SmileDesk
  * shows why its routines wait (RunnerState.down): down and not coming back by itself (stopped, frozen, in
  * error), or asleep with one of its routines overdue (nothing woke it), as Orgo said; `status` undefined, it's
  * up, and its runner runs them as they come due. Its routines stay its runner's either way.
@@ -532,7 +532,7 @@ export type CameHere = { since: number };
  *   no runner up (none, being set up, couldn't start, or stopped, or the switch to This Mac is
  *   HANDOVER_MS old). Until Orgo answers, a computer whose runner is up keeps its routines, asleep or down
  *   too: they wait for it (RunnerState.down). A reminder or a chat run is always the Mac's.
- * Either way, one that just came from another Bops waits HANDOVER_MS first (handedOver). On the Mac, one
+ * Either way, one that just came from another SmileDesk waits HANDOVER_MS first (handedOver). On the Mac, one
  * that was a runner's says since when it's the Mac's (CameHere).
  */
 export function runsHere(r: Routine, now = Date.now()): boolean | CameHere {

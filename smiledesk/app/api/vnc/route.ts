@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * Where the app can stream a screen's real desktop. Orgo streams the boot screen (display 99) itself:
- * through its noVNC proxy, and over WebRTC too when it's on for the computer (Bops turns it on, see
+ * through its noVNC proxy, and over WebRTC too when it's on for the computer (SmileDesk turns it on, see
  * orgo.webrtc), with the screen's real size (BOPS_SCREEN) so the app can tell a stream Orgo shrank the
  * screen for. Both take the computer's VNC password as ?token=, so no Orgo key reaches the page.
  * The other screens run their own VNC bridges on 5981 + display (6081-6083). Over the tailnet
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   // The computer it works on: its own, or the main bot's when it shares.
   const c = b && workComputer(b);
   const boot = display === ORGO_STREAM_DISPLAY;
-  // Another of Bops' screens goes over the tailnet when the computer is on it, else through Orgo when that's on.
+  // Another of SmileDesk's screens goes over the tailnet when the computer is on it, else through Orgo when that's on.
   const viaOrgo = boot || (!c?.tailnet && screenStreamWanted() && DISPLAYS.includes(display));
   if (!c?.computerId || getState().host !== "orgo" || (!viaOrgo && !c.tailnet)) return Response.json({ error: "no live desktop for this screen" }, { status: 409 });
   const computerId = c.computerId;

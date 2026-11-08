@@ -231,7 +231,7 @@ function channelOn(channel: Channel) {
     throw new HttpError(503, channel === "email" ? "Adding another email by code isn't available yet." : "Checking numbers by text isn't set up on this cloud.");
 }
 
-const TAKEN = "That number is already verified on another Bops account.";
+const TAKEN = "That number is already verified on another SmileDesk account.";
 
 async function start(user: CloudUser, body: Partial<VerifyStartBody>): Promise<VerifyResult> {
   const channel = body.channel;

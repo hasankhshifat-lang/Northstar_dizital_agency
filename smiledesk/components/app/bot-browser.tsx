@@ -26,7 +26,7 @@ import { BrowserGoTo, hostOf, toAddress } from "./panel-tabs";
  * A link opened here (BrowserGoTo: one in the bot's message, a web tab's "Open in Boppy's browser") goes there in the
  * viewer's control at once, unless a bot step is using the browser right then: then it asks first, over the page. It
  * opens in a new tab, the bot's own page left as it was (a sign in the bot asked for opens on its own page instead),
- * where the computer's runner and Bops Cloud know tabs (the stream says "tabs"); else in the tab in front, as before.
+ * where the computer's runner and SmileDesk Cloud know tabs (the stream says "tabs"); else in the tab in front, as before.
  *
  * The browser's tabs show as a strip once it has two or more, oldest first, so none moves as the front changes; the one
  * in front is raised (form, not colour). Pressing another switches to it, taking over first when nobody has control (as
@@ -88,9 +88,9 @@ export function BotBrowser({ bot, project = "", hidden = false, inset = false }:
   const [refused, setRefused] = useState<Refused | null>(null);
   const [connected, setConnected] = useState<boolean | null>(null);
   const [activity, setActivity] = useState<BrowserActivity | null>(null);
-  // The browser's tabs, once the stream says them (null: a runner or Bops Cloud from before tabs; links open in place).
+  // The browser's tabs, once the stream says them (null: a runner or SmileDesk Cloud from before tabs; links open in place).
   const [tabs, setTabs] = useState<{ tabs: BrowserTab[]; front: string | null } | null>(null);
-  // The stream cut (Bops not answering): said in place of the page, with Try again (a new stream: `attempt`).
+  // The stream cut (SmileDesk not answering): said in place of the page, with Try again (a new stream: `attempt`).
   const [cut, setCut] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [note, setNote] = useState<string | null>(null);
@@ -197,7 +197,7 @@ export function BotBrowser({ bot, project = "", hidden = false, inset = false }:
         return;
       }
       // One of their inputs refused (no code): said for a moment. The stream refused (a code): said in place of the
-      // page, and not asked again, unless it's something passing (Bops Cloud out of reach), which is.
+      // page, and not asked again, unless it's something passing (SmileDesk Cloud out of reach), which is.
       if (!e.code) return setNote(e.why);
       setCut(false);
       setRefused({ why: e.why, code: e.code });
@@ -226,7 +226,7 @@ export function BotBrowser({ bot, project = "", hidden = false, inset = false }:
   const act = (body: { act: "take" | "release" | "input"; method?: BrowserMethod; params?: unknown }) => {
     const run = sending.current.then(async () => {
       const res = await fetch("/api/browser", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ bot: bot.id, ...(project ? { project } : {}), ...body }) }).catch(() => null);
-      if (!res) return setNote("Couldn't reach Bops. Try again.");
+      if (!res) return setNote("Couldn't reach SmileDesk. Try again.");
       if (!res.ok) setNote(((await res.json().catch(() => ({}))) as { error?: string }).error ?? "That didn't go through.");
     });
     sending.current = run.catch(() => {});
@@ -293,7 +293,7 @@ export function BotBrowser({ bot, project = "", hidden = false, inset = false }:
     else await act({ act: "input", method: "Page.navigate", params: { url } });
   };
 
-  // Out of reach: the computer isn't connected, the stream is cut, or Bops Cloud can't be reached (it comes back by itself).
+  // Out of reach: the computer isn't connected, the stream is cut, or SmileDesk Cloud can't be reached (it comes back by itself).
   const away = connected === false ? "computer" : cut || refused?.code === "unreachable" ? "cut" : null;
   const { look, line, action } = lookOf({ bot: bot.name, control, activity, owner: !project, reachable: !away });
   // Nobody has it and the page is there: pressing the page takes over.
@@ -570,7 +570,7 @@ function DriverFace({ look, bot, by, you }: { look: Look; bot: Bot; by: BrowserP
 }
 
 /**
- * What a bot is doing with its browser, while `on` (a Watch chip's, bops-app.tsx): Bops Cloud's activity-only stream,
+ * What a bot is doing with its browser, while `on` (a Watch chip's, bops-app.tsx): SmileDesk Cloud's activity-only stream,
  * which isn't watching (its computer captures nothing for it). Null while off, or before it says.
  */
 export function useBrowserActivity(botId: string | null, project: string, on: boolean): BrowserActivity | null {

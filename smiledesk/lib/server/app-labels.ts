@@ -6,7 +6,7 @@ import { createHash, randomInt } from "node:crypto";
  * Preview, Published). Each is 12 lowercase letters and digits: 8 random (`head`, at least one a letter, so
  * never all digits, which orgo-web's checkLabel refuses) and a 4 character `seal` made from what it's for
  * (Preview or Prod), the app's Ingot repo, the site and the head. So any Mac recognizes a site's Preview and
- * Prod among its computer's projects and public URLs without Bops' state (isLabelOf), and a Preview's link,
+ * Prod among its computer's projects and public URLs without SmileDesk's state (isLabelOf), and a Preview's link,
  * once made, is found again and never changes (the user registers it in Google sign in once).
  * About 41 bits of randomness. Not a secret: a certificate for it shows up in public logs once visited.
  */
@@ -42,7 +42,7 @@ export function isLabelOf(kind: LabelKind, label: unknown, repo: string, site: s
 
 /**
  * A Preview name the owner chose ahead (registered in Google sign in already): 12 lowercase letters and
- * digits, the first a letter. It carries no seal, so Bops keeps it in its state copy and finds it on Orgo by
+ * digits, the first a letter. It carries no seal, so SmileDesk keeps it in its state copy and finds it on Orgo by
  * that (AppHosting.preview); null when it isn't one.
  */
 export function labelGiven(v: unknown): string | null {

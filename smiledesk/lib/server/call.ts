@@ -36,9 +36,9 @@ const FEMALE: readonly string[] = CALL_VOICES.slice(5);
 const genders = new Map<string, "female" | "male">();
 export async function voiceFor(b: Bot) {
   const voice = await chooseVoice(b);
-  // Kept on the bot, so Bops Cloud answers its calls in the same voice while the Mac is away.
+  // Kept on the bot, so SmileDesk Cloud answers its calls in the same voice while the Mac is away.
   if (b.voice !== voice) update(() => void (b.voice = voice));
-  // The one picked on its settings page, when there is one: kept apart from `voice`, which stays what a Bops from before writes too.
+  // The one picked on its settings page, when there is one: kept apart from `voice`, which stays what a SmileDesk from before writes too.
   const picked = settingsOf(getState(), b).callVoice;
   return isCallVoice(picked) ? picked : voice;
 }
@@ -49,7 +49,7 @@ export async function rememberVoices() {
 }
 
 async function chooseVoice(b: Bot) {
-  if (b.isMain && (b.name === "Boppy" || b.name === "Sam")) return "cedar";
+  if (b.isMain && (b.name === "Molly" || b.name === "Boppy" || b.name === "Sam")) return "cedar";
   let g = genders.get(b.name);
   if (!g) {
     const a = await decide(
@@ -85,8 +85,8 @@ export async function voicePrompt(b: Bot, how: "live" | "turns" = "live") {
     .map((m) => `${m.role === "user" ? owner : b.name}: ${m.text.slice(0, 300)}`)
     .join("\n");
   return [
-    `You are ${b.name}, ${b.isMain ? `${owner}'s chief of staff` : `${owner}'s ${b.role} bot`} in Bops, on a phone call with ${owner}. ${ownerLine()}`,
-    // What the user wrote on its profile (How I work), short: their preferences, never Bops' rules.
+    `You are ${b.name}, ${b.isMain ? `${owner}'s chief of staff` : `${owner}'s ${b.role} bot`} in SmileDesk, on a phone call with ${owner}. ${ownerLine()}`,
+    // What the user wrote on its profile (How I work), short: their preferences, never SmileDesk's rules.
     howIWork(owner, personaOf(b).text?.slice(0, MAX_PERSONA_CHARS), true, personaOf(b).by),
     "Talk like a capable teammate on a call: short, warm, natural. One or two sentences at a time. No lists.",
     SPEAKING,

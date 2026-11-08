@@ -282,9 +282,9 @@ await test("picked on the settings page: the line's voice follows, and Picked fo
   assert.deepEqual(setVoice().slice(before).map((g) => [g.path, g.json.voice]), [["/v1/agents/agt_ws", "11labs-Laura"]]);
   assert.deepEqual(ws().lineVoices.agt_ws, { for: "sage", id: "11labs-Laura", name: "Laura" });
   const s = S.getState();
-  assert.equal(W.lineVoiceNote(s, sam(), "agt_ws", "sage", "+1 (415) 555 0199"), "Calls in Bops use this voice. Calls to +1 (415) 555 0199 use Laura, the closest phone voice.");
-  assert.equal(W.lineVoiceNote(s, sam(), "agt_ws", "cedar", "+1 (415) 555 0199"), "Calls in Bops use this voice. Calls to +1 (415) 555 0199 use the line's own voice for now.");
-  assert.equal(W.lineVoiceNote(s, sam(), undefined, "sage", "+1 (415) 555 0199"), "Calls in Bops use this voice. Calls to +1 (415) 555 0199 use the line's own voice for now.");
+  assert.equal(W.lineVoiceNote(s, sam(), "agt_ws", "sage", "+1 (415) 555 0199"), "Calls in SmileDesk use this voice. Calls to +1 (415) 555 0199 use Laura, the closest phone voice.");
+  assert.equal(W.lineVoiceNote(s, sam(), "agt_ws", "cedar", "+1 (415) 555 0199"), "Calls in SmileDesk use this voice. Calls to +1 (415) 555 0199 use the line's own voice for now.");
+  assert.equal(W.lineVoiceNote(s, sam(), undefined, "sage", "+1 (415) 555 0199"), "Calls in SmileDesk use this voice. Calls to +1 (415) 555 0199 use the line's own voice for now.");
   await patch({ callVoice: null });
   await until(() => ws().lineVoices?.agt_ws?.for === "cedar", "back to the one picked for its name");
   assert.equal(phone.voiceOf.agt_ws, "11labs-Adrian");
@@ -294,12 +294,12 @@ await test("picked on the settings page: the line's voice follows, and Picked fo
   await patch({ callVoice: "marin" });
   await until(() => ws().lineVoices?.agt_ws?.for === "marin", "Marin");
   assert.deepEqual(ws().lineVoices.agt_ws, { for: "marin", id: "openai-Marin", name: "Marin", exact: true });
-  assert.equal(W.lineVoiceNote(S.getState(), sam(), "agt_ws", "marin", "+1 (415) 555 0199"), "Calls in Bops and calls to +1 (415) 555 0199 use this voice.");
+  assert.equal(W.lineVoiceNote(S.getState(), sam(), "agt_ws", "marin", "+1 (415) 555 0199"), "Calls in SmileDesk and calls to +1 (415) 555 0199 use this voice.");
   await patch({ callVoice: null });
   await until(() => ws().lineVoices?.agt_ws?.for === "cedar", "Cedar again");
 });
 
-await test("without AgentPhone's voices (it can't say, or a Bops Cloud from before), nothing changes", async () => {
+await test("without AgentPhone's voices (it can't say, or a SmileDesk Cloud from before), nothing changes", async () => {
   globalThis.bopsPhoneVoices = undefined;
   phone.voicesStatus = 404;
   const before = setVoice().length;
@@ -309,7 +309,7 @@ await test("without AgentPhone's voices (it can't say, or a Bops Cloud from befo
   assert.deepEqual(await P.syncLineVoices(sam().id), []);
   assert.equal(setVoice().length, before, "no voice set");
   assert.deepEqual(ws().lineVoices, kept, "what calls to the number sound like stays as it was");
-  assert.equal(W.lineVoiceNote(S.getState(), sam(), "agt_ws", "ash", "+1 (415) 555 0199"), "Calls in Bops use this voice. Calls to +1 (415) 555 0199 use the line's own voice for now.", "so the page says the line's own voice");
+  assert.equal(W.lineVoiceNote(S.getState(), sam(), "agt_ws", "ash", "+1 (415) 555 0199"), "Calls in SmileDesk use this voice. Calls to +1 (415) 555 0199 use the line's own voice for now.", "so the page says the line's own voice");
   phone.voicesStatus = 200;
   await patch({ callVoice: null });
   await until(() => ws().lineVoices?.agt_ws?.for === "cedar", "Cedar once AgentPhone says again");

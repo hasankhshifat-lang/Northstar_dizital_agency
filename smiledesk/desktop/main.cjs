@@ -1,5 +1,5 @@
 /**
- * Bops for Mac. A native window around the Bops app: it starts the app's local server if one
+ * SmileDesk for Mac. A native window around the SmileDesk app: it starts the app's local server if one
  * isn't already running, opens the window with the Mac title bar from the design, and on quit
  * stops what it started, including the bots' background browsers.
  */
@@ -25,11 +25,11 @@ const URL = `http://localhost:${PORT}`;
  * and the window, which keeps its localhost address, is told localhost is 127.0.0.1.
  */
 const LOCAL = `http://127.0.0.1:${PORT}`;
-// Bops' port only: other localhost pages (a dev server in a tab) still reach ::1.
+// SmileDesk's port only: other localhost pages (a dev server in a tab) still reach ::1.
 app.commandLine.appendSwitch("host-resolver-rules", `MAP localhost:${PORT} 127.0.0.1:${PORT}`);
 
 /**
- * The Bops window's token (lib/server/ui-token.ts): what only the window may do (turn on Full access,
+ * The SmileDesk window's token (lib/server/ui-token.ts): what only the window may do (turn on Full access,
  * change a bot's settings) needs it, so a page that reached the server some other way (a bot's Chrome
  * on this Mac) can't. Kept in Application Support, readable by this user only, so the window and a
  * server already running from an earlier start have the same one.
@@ -50,7 +50,7 @@ function windowToken() {
   return token;
 }
 /**
- * Where the server asks this app to read a page in a browser (desktop/render.cjs): a socket in Bops'
+ * Where the server asks this app to read a page in a browser (desktop/render.cjs): a socket in SmileDesk's
  * Application Support folder, readable by this user only, the same each start (so a server found running
  * from an earlier start reaches it too). A path too long for a socket goes in this user's own temp folder.
  */
@@ -76,7 +76,7 @@ let mainWin;
 let pipWin;
 
 /**
- * Startup and other trouble the window can't show, for support: ~/Library/Logs/Bops/main.log (the
+ * Startup and other trouble the window can't show, for support: ~/Library/Logs/SmileDesk/main.log (the
  * server's own output is in server.log). Never throws.
  */
 function mainLog(text) {
@@ -98,7 +98,7 @@ const output = (file, args, timeout = 3000) =>
 /*
  * Apps opened from Finder get a bare PATH; borrow the login shell's so node and codex resolve. Asked
  * without blocking the window and cut off hard: an interactive zsh ignores the SIGTERM a plain
- * timeout sends, so a slow or stuck ~/.zshrc used to hold Bops on its splash for as long as it ran.
+ * timeout sends, so a slow or stuck ~/.zshrc used to hold SmileDesk on its splash for as long as it ran.
  * The PATH comes between markers, so what an rc file prints (a banner, a notice) stays out of it, and
  * it's taken as soon as it arrives, even when the rc left a background job holding the output open.
  * Asked once per launch; a server started again later uses the same.
@@ -180,16 +180,16 @@ const realpath = (p) => {
   }
 };
 
-/** Where the bundled server runs: ~/Library/Application Support/Bops/server. */
+/** Where the bundled server runs: ~/Library/Application Support/SmileDesk/server. */
 const serverHome = () => path.join(app.getPath("userData"), "server");
 
 /*
  * Who answers on the port. Only our own server will do: it proves it was started with this window's
  * token (an HMAC of a fresh nonce, app/api/health/route.ts; a mark anyone could read and replay
  * wouldn't do), and in a release it runs this very build from this very app. Anything else answering
- * there used to be taken as Bops all the same, and left the window stuck: another copy's server
+ * there used to be taken as SmileDesk all the same, and left the window stuck: another copy's server
  * whose files were replaced since (its pages ask for scripts that are gone), or one with another
- * token (every call refused, "Loading Bops…" for good). A Bops server on its way out says so (503).
+ * token (every call refused, "Loading SmileDesk…" for good). A SmileDesk server on its way out says so (503).
  */
 async function whoAnswers() {
   const nonce = crypto.randomBytes(16).toString("hex");
@@ -202,14 +202,14 @@ async function whoAnswers() {
   const health = await res.json().catch(() => null);
   if (res.status === 503 && health?.bops && health.stopping) return { up: false, stopping: true };
   if (!res.ok || !health?.bops) return { up: true, bops: false };
-  // A development server: as before, any Bops will do.
+  // A development server: as before, any SmileDesk will do.
   if (!isRelease()) return { up: true, bops: true, mine: true };
   const want = crypto.createHmac("sha256", windowToken()).update(nonce).digest("hex");
   const proven = typeof health.proof === "string" && /^[0-9a-f]{64}$/.test(health.proof) && crypto.timingSafeEqual(Buffer.from(health.proof, "hex"), Buffer.from(want, "hex"));
   const build = ourBuild();
   const why =
     health.proof === undefined
-      ? "a Bops from before 0.0.27"
+      ? "a SmileDesk from before 0.0.27"
       : !proven
         ? "started for another window"
         : build && health.build !== build
@@ -240,13 +240,13 @@ async function listener() {
 /** "Docker (pid 812)", for the trouble page and the log. */
 const named = (l) => (l ? `${l.name} (pid ${l.pid})` : null);
 
-/** A Bops server by its process: Next renames its process ("next-server (v16…)"), and before that it's the Helper. */
-const looksLikeBops = (l) => !!l && (l.comm.startsWith("next-server") || l.comm.includes("Bops Helper"));
+/** A SmileDesk server by its process: Next renames its process ("next-server (v16…)"), and before that it's the Helper. */
+const looksLikeBops = (l) => !!l && (l.comm.startsWith("next-server") || l.comm.includes("SmileDesk Helper"));
 
 /*
- * A server Bops may stop: a Bops server of this user's, running in this Mac's Application Support,
+ * A server SmileDesk may stop: a SmileDesk server of this user's, running in this Mac's Application Support,
  * and either started by this app or left behind by one that's gone (its parent is launchd). One a
- * Bops that's still open is using is never stopped (the single instance lock below keeps a second
+ * SmileDesk that's still open is using is never stopped (the single instance lock below keeps a second
  * copy from opening, but an old copy from before it can still be open).
  */
 const stoppable = (l) =>
@@ -254,7 +254,7 @@ const stoppable = (l) =>
 
 /**
  * Stops a server by its process group (its bots' tools with it): SIGINT first, which lets one in the
- * middle of its last save to Bops Cloud finish it (up to 5s, lib/server/persist.ts), then SIGKILL.
+ * middle of its last save to SmileDesk Cloud finish it (up to 5s, lib/server/persist.ts), then SIGKILL.
  * Waits for the process to end as well as the port (one stuck before it listened holds none).
  * Resolves whether the port is free.
  */
@@ -300,7 +300,7 @@ function packagedServer() {
   if (!fs.existsSync(path.join(dir, "server.js"))) return null;
   // The app bundle is read-only (and sealed by its signature), but the server keeps its state in
   // .data/ under its working folder and reads vm/ and node_modules/ from there. So it runs in
-  // ~/Library/Application Support/Bops/server, where everything but .data links into the bundle.
+  // ~/Library/Application Support/SmileDesk/server, where everything but .data links into the bundle.
   const home = serverHome();
   fs.mkdirSync(path.join(home, ".data"), { recursive: true });
   for (const name of fs.readdirSync(dir)) {
@@ -312,7 +312,7 @@ function packagedServer() {
     if (st) fs.unlinkSync(link);
     fs.symlinkSync(path.join(dir, name), link);
   }
-  // Settings for this Mac (self-hosting, testing) go in ~/Library/Application Support/Bops/.env.local;
+  // Settings for this Mac (self-hosting, testing) go in ~/Library/Application Support/SmileDesk/.env.local;
   // the app itself ships with no keys.
   let env = {};
   try {
@@ -321,13 +321,13 @@ function packagedServer() {
   const relay = path.join(process.resourcesPath, "bin", "orgo-relay");
   // The ingot command for the bots' computers, which the server copies onto one that works on an app (lib/server/ingot.ts).
   const ingot = path.join(process.resourcesPath, "bin", "ingot");
-  // What the server prints, for support: ~/Library/Logs/Bops/server.log. Each start adds to it (an
+  // What the server prints, for support: ~/Library/Logs/SmileDesk/server.log. Each start adds to it (an
   // earlier start's error is often the one that matters); it starts over once it passes 5 MB.
   fs.mkdirSync(app.getPath("logs"), { recursive: true });
   const logFile = path.join(app.getPath("logs"), "server.log");
   const big = (fs.statSync(logFile, { throwIfNoEntry: false })?.size ?? 0) > 5 * 1024 * 1024;
   const log = fs.openSync(logFile, big ? "w" : "a");
-  fs.writeSync(log, `\n--- Bops ${app.getVersion()} starting, ${new Date().toISOString()}\n`);
+  fs.writeSync(log, `\n--- SmileDesk ${app.getVersion()} starting, ${new Date().toISOString()}\n`);
   // WebRTC stays off in the shipped app until every Orgo host's WebRTC gateway streams a 1280x960 screen
   // at its real size (ORGO_RTC_HEIGHT=960; otherwise it shrinks the bot's screen, lib/server/orgo.ts
   // webrtcWanted). Then this default goes. A Mac's .env.local can still say BOPS_WEBRTC=1.
@@ -350,9 +350,9 @@ function nodeBinary() {
 let serverEnded;
 /** Quitting or restarting: the server going away then is expected. */
 let leaving = false;
-/** A server of ours this app found running (left by a Bops that quit badly) and uses: watched, and stopped on quit, like one it started. */
+/** A server of ours this app found running (left by a SmileDesk that quit badly) and uses: watched, and stopped on quit, like one it started. */
 let adopted;
-/** Our server being stopped because it never answered: killed outright if Bops quits meanwhile (it has nothing to save). */
+/** Our server being stopped because it never answered: killed outright if SmileDesk quits meanwhile (it has nothing to save). */
 let lettingGo;
 
 async function spawnServer() {
@@ -368,7 +368,7 @@ async function spawnServer() {
       // binary, macOS listed the server in the Dock as a second app ("exec"). server.js changes into
       // its folder on start; keeping the working folder in Application Support is what lets the
       // server write its state. Its server lets a request take as long as it needs (requestTimeout 0,
-      // as Bops Cloud's does): a file added for a bot streams through it to storage at the uplink's
+      // as SmileDesk Cloud's does): a file added for a bot streams through it to storage at the uplink's
       // speed (lib/server/bot-files.ts), and Node's default 5 minutes would cut a big one off.
       spawn(nodeBinary(), ["-e", SERVER_BOOT], {
         cwd: packaged.home,
@@ -379,13 +379,13 @@ async function spawnServer() {
           ELECTRON_RUN_AS_NODE: "1",
           BOPS_SERVER_JS: path.join(packaged.dir, "server.js"),
           NODE_ENV: "production",
-          // The server exits on SIGTERM itself, after its last work (the state saved to Bops Cloud, or self-hosted to its file).
+          // The server exits on SIGTERM itself, after its last work (the state saved to SmileDesk Cloud, or self-hosted to its file).
           NEXT_MANUAL_SIG_HANDLE: "true",
           PORT: String(PORT),
           BOPS_UI_TOKEN: windowToken(),
           BOPS_RENDER_SOCKET: renderSocket(),
           // Only this Mac can reach the bundled server, unless its settings say BOPS_LISTEN_ALL=1:
-          // bot computers' app calls and phone webhooks reach Bops over the tailnet, so they need
+          // bot computers' app calls and phone webhooks reach SmileDesk over the tailnet, so they need
           // it (proxy.ts then lets other addresses reach only those paths).
           HOSTNAME: packaged.env.BOPS_LISTEN_ALL === "1" ? "0.0.0.0" : "127.0.0.1",
         },
@@ -407,7 +407,7 @@ async function spawnServer() {
     if (server === child) server = undefined;
   });
   child.once("exit", (code, signal) => {
-    // Only the current server's end counts: one Bops stopped on purpose was let go first.
+    // Only the current server's end counts: one SmileDesk stopped on purpose was let go first.
     if (server !== child) return;
     serverEnded = signal ? `stopped by ${signal}` : `exited with code ${code}`;
     server = undefined;
@@ -419,7 +419,7 @@ async function spawnServer() {
 
 /**
  * Watches a server this app found running and uses, which it has no exit event for: when it goes,
- * Bops starts its own. Only one that's ours to stop (`ours`) is stopped on quit (`adopted`).
+ * SmileDesk starts its own. Only one that's ours to stop (`ours`) is stopped on quit (`adopted`).
  */
 let adoptedWatch;
 let found;
@@ -448,10 +448,10 @@ function watchAdopted(pid, ours = false) {
  * Has our own server answering on the port, or says why it can't. Waits against a deadline, and
  * looks at what holds the port each time round:
  * - our server answering: done;
- * - an old Bops server of this user's (a Bops that quit badly; perhaps a since replaced copy): stopped, and ours started;
- * - another Bops (one still open, another user's) or another program answering there: we can't use the port;
- * - the port taken by a program that isn't Bops and doesn't answer: the same, right away;
- * - the port taken by a Bops server that doesn't answer (starting, on its way out, or stuck): wait, then stop it if it may be stopped;
+ * - an old SmileDesk server of this user's (a SmileDesk that quit badly; perhaps a since replaced copy): stopped, and ours started;
+ * - another SmileDesk (one still open, another user's) or another program answering there: we can't use the port;
+ * - the port taken by a program that isn't SmileDesk and doesn't answer: the same, right away;
+ * - the port taken by a SmileDesk server that doesn't answer (starting, on its way out, or stuck): wait, then stop it if it may be stopped;
  * - the port free: start ours (again, if it stopped).
  */
 const START_MS = 60_000;
@@ -465,7 +465,7 @@ async function startOrFind() {
   let stopped = false;
   let silentSince = 0;
   for (;;) {
-    if (leaving) return { ok: false, reason: "error", detail: "Bops is quitting" };
+    if (leaving) return { ok: false, reason: "error", detail: "SmileDesk is quitting" };
     const who = await whoAnswers();
     if (who.up && who.mine) {
       // One found running: watched, and stopped on quit, only when it's ours to stop.
@@ -478,10 +478,10 @@ async function startOrFind() {
       const l = await listener();
       if (!stopped && stoppable(l)) {
         stopped = true;
-        mainLog(`an old Bops server (pid ${l.pid}, ${who.why ?? "not Bops"}) holds the port: stopping it`);
+        mainLog(`an old SmileDesk server (pid ${l.pid}, ${who.why ?? "not SmileDesk"}) holds the port: stopping it`);
         if (await stopProcess(l.pid)) continue;
       }
-      mainLog(`port ${PORT} answered by ${who.bops ? `another Bops (${who.why})` : "something else"}: ${named(l) ?? "unknown"}`);
+      mainLog(`port ${PORT} answered by ${who.bops ? `another SmileDesk (${who.why})` : "something else"}: ${named(l) ?? "unknown"}`);
       return { ok: false, reason: who.bops ? "other-bops" : "port-taken", detail: named(l) };
     }
     if (!(await portTaken())) {
@@ -493,26 +493,26 @@ async function startOrFind() {
         await spawnServer();
       }
     } else if (isRelease() && !server) {
-      // Taken by something we didn't start, and nothing answers. Not Bops at all: say so now. A Bops
+      // Taken by something we didn't start, and nothing answers. Not SmileDesk at all: say so now. A SmileDesk
       // server: give it a while (it may be starting, or saving on its way out), then stop it if it's
       // ours to stop, or say so if it isn't. (Our own server starting is just waited on.)
       const l = await listener();
       if (l && !looksLikeBops(l)) {
-        mainLog(`port ${PORT} held by ${named(l)}, which isn't Bops${who.stopping ? " (it answers as a Bops on its way out)" : " and doesn't answer"}`);
+        mainLog(`port ${PORT} held by ${named(l)}, which isn't SmileDesk${who.stopping ? " (it answers as a SmileDesk on its way out)" : " and doesn't answer"}`);
         return { ok: false, reason: "port-taken", detail: named(l) };
       }
       if (!silentSince) {
         silentSince = started;
-        mainLog(`port ${PORT} held by ${named(l) ?? "a program Bops can't see"}${who.stopping ? ", a Bops on its way out" : ", not answering"}: waiting`);
+        mainLog(`port ${PORT} held by ${named(l) ?? "a program SmileDesk can't see"}${who.stopping ? ", a SmileDesk on its way out" : ", not answering"}: waiting`);
       }
       if (!stopped && l && Date.now() - silentSince > SILENT_MS) {
         if (!stoppable(l)) {
-          const why = l.uid !== process.getuid() ? "another user's" : realpath(l.home ?? "") !== realpath(serverHome()) ? `it runs in ${l.home ?? "a folder Bops can't see"}` : `its parent is pid ${l.ppid}`;
+          const why = l.uid !== process.getuid() ? "another user's" : realpath(l.home ?? "") !== realpath(serverHome()) ? `it runs in ${l.home ?? "a folder SmileDesk can't see"}` : `its parent is pid ${l.ppid}`;
           mainLog(`${named(l)} hasn't answered in ${SILENT_MS / 1000}s and isn't ours to stop (${why})`);
           return { ok: false, reason: "other-bops", detail: named(l) };
         }
         stopped = true;
-        mainLog(`the Bops server (pid ${l.pid}) holds the port but hasn't answered in ${SILENT_MS / 1000}s: stopping it`);
+        mainLog(`the SmileDesk server (pid ${l.pid}) holds the port but hasn't answered in ${SILENT_MS / 1000}s: stopping it`);
         await stopProcess(l.pid);
         continue;
       }
@@ -520,7 +520,7 @@ async function startOrFind() {
     if (Date.now() - started > START_MS) {
       if (!server && (await portTaken())) {
         const l = await listener();
-        mainLog(`no server after ${START_MS / 1000}s, port held by ${named(l) ?? "a program Bops can't see"}`);
+        mainLog(`no server after ${START_MS / 1000}s, port held by ${named(l) ?? "a program SmileDesk can't see"}`);
         return { ok: false, reason: looksLikeBops(l) || !l ? "other-bops" : "port-taken", detail: named(l) };
       }
       mainLog(`no server after ${START_MS / 1000}s${serverEnded ? ` (it ${serverEnded})` : ""}`);
@@ -540,9 +540,9 @@ async function startOrFind() {
   }
 }
 
-/** Boppy bopping to music while the server starts (desktop/splash.html). */
+/** The Northstar mark while the server starts (desktop/splash.html). */
 const SPLASH = path.join(__dirname, "splash.html");
-/** What the window shows when Bops can't start, with Try again (desktop/trouble.html). */
+/** What the window shows when SmileDesk can't start, with Try again (desktop/trouble.html). */
 const TROUBLE = path.join(__dirname, "trouble.html");
 
 /** When the server stopped or the page failed lately, to tell one that keeps failing from one that failed once. */
@@ -623,7 +623,7 @@ function showTrouble(win, { reason, detail }) {
 /*
  * The server stopped, or the app's page didn't load or its renderer went: start again from the
  * splash, once per incident (an open under way takes it on). More than three in two minutes, and
- * the window says Bops keeps stopping instead of trying forever.
+ * the window says SmileDesk keeps stopping instead of trying forever.
  */
 let reopening = false;
 const GONE_RANK = { load: 0, server: 1, page: 2 };
@@ -655,7 +655,7 @@ async function serverGone(what = "server") {
       // The trouble page itself crashed: the same words again, a few times; then a dialog, which needs no page.
       if (failures.length <= 8) return showTrouble(win, lastTrouble ?? { reason: "page-crashed", detail: lastPageGone });
       mainLog("the trouble page keeps crashing: asking in a dialog");
-      const { response } = await dialog.showMessageBox(win, { type: "warning", message: "Bops' window keeps crashing", detail: `Try again, and if it happens again, send us the logs (${app.getPath("logs")}).`, buttons: ["Try again", "Quit"], defaultId: 0, cancelId: 1 });
+      const { response } = await dialog.showMessageBox(win, { type: "warning", message: "SmileDesk's window keeps crashing", detail: `Try again, and if it happens again, send us the logs (${app.getPath("logs")}).`, buttons: ["Try again", "Quit"], defaultId: 0, cancelId: 1 });
       mainLog(`dialog: ${response === 1 ? "Quit" : "Try again"}`);
       if (response === 1) return app.quit();
       failures = [];
@@ -680,7 +680,7 @@ ipcMain.handle("startup-retry", async () => {
 });
 ipcMain.handle("startup-logs", () => shell.openPath(app.getPath("logs")));
 
-/** Brings the Bops window forward, or opens it again when it was closed (the Mac previews' window can outlive it). */
+/** Brings the SmileDesk window forward, or opens it again when it was closed (the Mac previews' window can outlive it). */
 function showMain() {
   if (!mainWin || mainWin.isDestroyed()) return void createWindow();
   if (mainWin.isMinimized()) mainWin.restore();
@@ -694,12 +694,12 @@ async function createWindow() {
     height: 860,
     minWidth: 1180,
     minHeight: 640,
-    title: "Bops",
+    title: "SmileDesk",
     titleBarStyle: "hiddenInset",
     trafficLightPosition: { x: 14, y: 14 },
     backgroundColor: "#FFFFFF",
     icon: ICON,
-    // Web pages open as tabs inside Bops (see components/app/panel-tabs.tsx). The preload lets the
+    // Web pages open as tabs inside SmileDesk (see components/app/panel-tabs.tsx). The preload lets the
     // Your Mac tab show this Mac's screens and windows live (see components/app/mac-screens.tsx).
     webPreferences: { webviewTag: true, preload: path.join(__dirname, "preload.cjs") },
   });
@@ -797,15 +797,15 @@ ipcMain.handle("copy-secret", async (_, value) => {
 
 /*
  * Skills on this Mac (lib/server/workspace-skills.ts): a folder picked in Finder to import as a skill (only
- * its path goes to the page; Bops' own server reads it), and a skill's folder shown in Finder. Only a
- * folder under a workspaces folder Bops keeps skills in is shown, never any other path the page names.
+ * its path goes to the page; SmileDesk's own server reads it), and a skill's folder shown in Finder. Only a
+ * folder under a workspaces folder SmileDesk keeps skills in is shown, never any other path the page names.
  */
 ipcMain.handle("pick-folder", async (event) => {
   const win = BrowserWindow.fromWebContents(event.sender) ?? undefined;
   const r = await dialog.showOpenDialog(win, { title: "Import a skill", buttonLabel: "Import", properties: ["openDirectory"] });
   return r.canceled || !r.filePaths[0] ? null : r.filePaths[0];
 });
-/** The real path of a folder the page may show: under a Bops data folder's workspaces (no "..", no link out), and never a bundle such as an .app. */
+/** The real path of a folder the page may show: under a SmileDesk data folder's workspaces (no "..", no link out), and never a bundle such as an .app. */
 function skillFolderToShow(dir) {
   if (typeof dir !== "string" || !path.isAbsolute(dir)) return null;
   let real;
@@ -835,7 +835,7 @@ ipcMain.handle("reveal-folder", async (_, dir) => {
 /*
  * Screen Recording. macOS only answers "granted" or "denied" here, never "not asked yet", and it
  * only lists an app under Screen Recording (and shows its prompt) once the app has tried to capture.
- * So Bops remembers in its data folder that it has asked, and until then reports "not-determined"
+ * So SmileDesk remembers in its data folder that it has asked, and until then reports "not-determined"
  * so the page offers Allow; asking is trying to list the screens.
  */
 const screenAskedFile = () => path.join(app.getPath("userData"), "screen-asked.json");
@@ -864,7 +864,7 @@ async function askScreen() {
  * getUserMedia (chromeMediaSource "desktop"). macOS asks the user once to allow Screen Recording.
  */
 ipcMain.handle("mac-screens", async () => {
-  // The first time, ask: that lists Bops under Screen Recording and shows macOS's prompt.
+  // The first time, ask: that lists SmileDesk under Screen Recording and shows macOS's prompt.
   if (screenStatus() === "not-determined") await askScreen();
   const access = screenStatus();
   const displays = screen.getAllDisplays().map((d, i) => ({
@@ -874,8 +874,8 @@ ipcMain.handle("mac-screens", async () => {
     height: d.size.height,
     primary: d.id === screen.getPrimaryDisplay().id,
   }));
-  // The display Bops is on: showing it shows Bops inside Bops, so the tab prefers another.
-  // The Bops window itself (a page being read in a hidden window is a window too).
+  // The display SmileDesk is on: showing it shows SmileDesk inside SmileDesk, so the tab prefers another.
+  // The SmileDesk window itself (a page being read in a hidden window is a window too).
   const win = mainWin && !mainWin.isDestroyed() ? mainWin : BrowserWindow.getAllWindows().find((w) => w.isVisible());
   const bopsOn = win ? String(screen.getDisplayMatching(win.getBounds()).id) : undefined;
   if (access !== "granted") return { access, displays, sources: [], bopsOn };
@@ -885,11 +885,11 @@ ipcMain.handle("mac-screens", async () => {
 ipcMain.handle("mac-screen-settings", () => shell.openExternal("x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"));
 
 /*
- * What Bops asks macOS for, all in one place (components/app/setup.tsx, and Settings → This Mac):
+ * What SmileDesk asks macOS for, all in one place (components/app/setup.tsx, and Settings → This Mac):
  * Screen Recording (to show your Mac live), the Microphone (calls with bots) and Notifications.
- * Bops itself never drives other apps' windows (bots on your Mac only browse, in a Chrome of their
+ * SmileDesk itself never drives other apps' windows (bots on your Mac only browse, in a Chrome of their
  * own), so Accessibility is only read here, never prompted for from setup. With Full access on
- * (Settings → This Mac), bots script apps and read files as Bops. Full Disk Access can only be read
+ * (Settings → This Mac), bots script apps and read files as SmileDesk. Full Disk Access can only be read
  * here (its pane opens); Automation is asked for up front, app by app (askAutomation), so no prompt
  * comes up in the middle of a task.
  */
@@ -937,7 +937,7 @@ function askNotify() {
       }
       resolve(status);
     };
-    const n = new Notification({ title: "Bops", body: "Your bots can tell you when something needs you.", silent: true });
+    const n = new Notification({ title: "SmileDesk", body: "Your bots can tell you when something needs you.", silent: true });
     n.once("show", () => done("granted"));
     n.once("failed", () => done("denied"));
     const timer = setTimeout(() => done(notifyKnown() ?? "not-determined"), 30_000);
@@ -947,7 +947,7 @@ function askNotify() {
 
 /*
  * Full access: the apps bots script on this Mac (their instructions name these), by bundle id. Each
- * needs its own Automation grant, which macOS only asks for when Bops first sends the app an Apple
+ * needs its own Automation grant, which macOS only asks for when SmileDesk first sends the app an Apple
  * event.
  */
 const SCRIPTED_APPS = [
@@ -981,8 +981,8 @@ function fullDiskStatus() {
 const run = (file, args, timeout) => new Promise((resolve) => execFile(file, args, { timeout }, (error, stdout, stderr) => resolve({ error, out: `${stdout}${stderr}` })));
 
 /*
- * Bops' Automation answer for each app, read without asking (AEDeterminePermissionToAutomateTarget, in
- * osascript, which macOS counts as Bops). The privacy database it was read from is hidden on macOS 27
+ * SmileDesk's Automation answer for each app, read without asking (AEDeterminePermissionToAutomateTarget, in
+ * osascript, which macOS counts as SmileDesk). The privacy database it was read from is hidden on macOS 27
  * (fullDiskStatus). macOS only answers for an app that's running, so each app's last answer is kept in
  * the app's data folder, and one never answered reads as not asked yet ("Allow apps" asks again, and
  * an app already allowed shows no prompt).
@@ -1080,7 +1080,7 @@ ipcMain.handle("perm-request", async (_, id) => {
   if (id === "microphone") {
     await systemPreferences.askForMediaAccess("microphone").catch(() => false);
   } else if (id === "screen") {
-    // Asking for the screens is what makes macOS list Bops under Screen Recording and show its prompt.
+    // Asking for the screens is what makes macOS list SmileDesk under Screen Recording and show its prompt.
     await askScreen();
   } else if (id === "accessibility") {
     systemPreferences.isTrustedAccessibilityClient(true);
@@ -1092,24 +1092,24 @@ ipcMain.handle("perm-request", async (_, id) => {
   return permStatus(id);
 });
 ipcMain.handle("perm-settings", (_, id) => (PANES[id] ? shell.openExternal(PANES[id]) : undefined));
-// Screen Recording was turned on after Bops started: it works once Bops restarts.
+// Screen Recording was turned on after SmileDesk started: it works once SmileDesk restarts.
 ipcMain.handle("perm-screen-restart", () => mac && screenAtLaunch !== "granted" && systemPreferences.getMediaAccessStatus("screen") === "granted");
 
 /*
- * Restart Bops (components/app/restart.tsx, the Screen Recording card's Restart, and the update notice's
+ * Restart SmileDesk (components/app/restart.tsx, the Screen Recording card's Restart, and the update notice's
  * Restart, which installs a new version downloaded meanwhile: see "New versions"). A clean one:
- * the server lets go first (POST /api/restart: the signed-in user's state saved to Bops Cloud, the cached
- * Bops Cloud session and Orgo plan dropped), then it's stopped, and Bops
+ * the server lets go first (POST /api/restart: the signed-in user's state saved to SmileDesk Cloud, the cached
+ * SmileDesk Cloud session and Orgo plan dropped), then it's stopped, and SmileDesk
  * opens again and starts a new one. Who's signed in stays (the key is in the Keychain), and so does
  * everything they have: the server saves once more on its way out, before its port closes.
  *
  * A server that doesn't answer is stopped all the same. One this app didn't start (left running by
- * an earlier Bops that quit badly) is stopped by its process id in a release build, once it's surely
- * Bops' own; a development server someone started themselves is left running.
+ * an earlier SmileDesk that quit badly) is stopped by its process id in a release build, once it's surely
+ * SmileDesk's own; a development server someone started themselves is left running.
  */
 let restarting;
 /** The clean stop a restart starts with (and a quit with a new version staged): the server let go and stopped, its port free. */
-async function stopForRestart(why = "Restart Bops") {
+async function stopForRestart(why = "Restart SmileDesk") {
   mainLog(why);
   let pid;
   // A server that doesn't answer isn't asked (that only waited out the 20s).
@@ -1121,9 +1121,9 @@ async function stopForRestart(why = "Restart Bops") {
     } catch (e) {
       mainLog(`restart: the server didn't let go cleanly: ${e?.message ?? e}`);
     }
-  else mainLog(`restart: ${who.up ? "the server answering isn't this Bops'" : "the server isn't answering"}`);
+  else mainLog(`restart: ${who.up ? "the server answering isn't this SmileDesk's" : "the server isn't answering"}`);
   leaving = true;
-  // Wait for the port to close (its last save gets up to 5s), so the new Bops starts its own server
+  // Wait for the port to close (its last save gets up to 5s), so the new SmileDesk starts its own server
   // instead of finding the old one still answering and then losing it. One that won't let go is
   // stopped hard.
   if (stopServer() || (await stopOtherServer(pid))) for (let i = 0; i < 28 && (await portTaken()); i++) await sleep(250);
@@ -1148,9 +1148,9 @@ function restart() {
     // A new version staged: macOS puts it in place of this one and opens it (Squirrel.Mac's ShipIt),
     // once the server above is gone. Otherwise this same app opens again.
     if (updates?.ready()) {
-      mainLog(`restart: installing Bops ${updates.state().version}`);
+      mainLog(`restart: installing SmileDesk ${updates.state().version}`);
       // Squirrel can still fail to install it (its staged copy gone, say): it then says so ("error") and
-      // Bops stays open with no server. So this same app opens again instead, when it hasn't quit within
+      // SmileDesk stays open with no server. So this same app opens again instead, when it hasn't quit within
       // 15s or says it can't.
       let fellBack = false;
       const fallBack = (why) => {
@@ -1161,7 +1161,7 @@ function restart() {
         app.exit(0);
       };
       autoUpdater.once("error", (e) => fallBack(e?.message ?? e));
-      setTimeout(() => fallBack("Bops was still open after 15s"), 15_000).unref?.();
+      setTimeout(() => fallBack("SmileDesk was still open after 15s"), 15_000).unref?.();
       try {
         autoUpdater.quitAndInstall();
       } catch (e) {
@@ -1176,7 +1176,7 @@ function restart() {
 }
 ipcMain.handle("relaunch", () => restart());
 
-/** Stops a release build's server this app didn't start (the one on the port, which gave this process id if it answered), once it's surely Bops' own. Says whether it did. */
+/** Stops a release build's server this app didn't start (the one on the port, which gave this process id if it answered), once it's surely SmileDesk's own. Says whether it did. */
 async function stopOtherServer(pid) {
   if (!isRelease()) return false;
   const l = await listener();
@@ -1198,7 +1198,7 @@ async function stopOtherServer(pid) {
 
 /*
  * The Mac previews, popped out: a small window that floats over every app and every Space. Drag it
- * by its bar, resize it; closing it puts the previews back in the corner of Bops.
+ * by its bar, resize it; closing it puts the previews back in the corner of SmileDesk.
  */
 ipcMain.handle("mac-pip-open", () => {
   if (pipWin && !pipWin.isDestroyed()) return pipWin.focus();
@@ -1227,19 +1227,21 @@ ipcMain.handle("mac-pip-close", () => pipWin?.close());
 ipcMain.handle("mac-show-main", () => showMain());
 
 /*
- * New versions. Bops gets them itself: it asks bops.bot for the newest release (download/latest.json,
+ * New versions. SmileDesk gets them itself: it asks bops.bot for the newest release (download/latest.json,
  * written by Orgo's download-publish.sh) at launch and every hour, and when there's a newer one than
  * this app it's downloaded in the app (desktop/updates.cjs). With "Download updates automatically" on
  * (Settings → This Mac, the default) that happens quietly; with it off the page's notice
  * (components/app/update-notice.tsx) says it's out and the user clicks Download. Either way, once it's
  * downloaded the notice says it's ready, with Restart: a clean restart installs it, and so does
- * quitting Bops. What's new in it shows under that when the file says (its "notes", a few short lines;
+ * quitting SmileDesk. What's new in it shows under that when the file says (its "notes", a few short lines;
  * an older file has none). A copy that can't replace itself (opened from the DMG or Downloads, or in a
  * folder this user can't write) sends the user to bops.bot instead, as before.
  *
  * Only release builds ask. Nothing here throws or shows an error: what goes wrong is only logged, in
- * ~/Library/Logs/Bops/updates.log (each change once, not every hour).
+ * ~/Library/Logs/SmileDesk/updates.log (each change once, not every hour).
  */
+/** SmileDesk has no update feed yet: bops.bot's is official SmileDesk, never this fork. */
+const UPDATES_ON = false;
 const LATEST_URL = "https://bops.bot/download/latest.json";
 const SITE_URL = "https://bops.bot";
 const dismissedFile = () => path.join(app.getPath("userData"), "update-dismissed.json");
@@ -1292,7 +1294,7 @@ function releaseNotes(notes) {
 /**
  * What the page shows: the newer version, what's new in it and where it's at ({ version, notes, phase,
  * asked, failed, why }), unless there's none or the user put its notice away. One put away while it's ready
- * still installs when Bops quits.
+ * still installs when SmileDesk quits.
  */
 function updateInfo() {
   const u = updates?.state();
@@ -1312,7 +1314,7 @@ async function checkForUpdate() {
     const version = String(latest?.version ?? "");
     if (!versionParts(version)) return updateNote(`couldn't check: no version in ${feed}`);
     const found = isNewer(version, app.getVersion()) ? { version, notes: releaseNotes(latest.notes) } : undefined;
-    updateNote(found ? `Bops ${version} is out (this is ${app.getVersion()})` : `up to date (${app.getVersion()}, bops.bot has ${version})`);
+    updateNote(found ? `SmileDesk ${version} is out (this is ${app.getVersion()})` : `up to date (${app.getVersion()}, bops.bot has ${version})`);
     newer = found;
     if (!found || !updates) return;
     // The zip it names must be this version's, on bops.bot: otherwise nothing's fetched and the notice
@@ -1340,36 +1342,39 @@ ipcMain.handle("update-download", () => {
   if (!updates || updates.state().phase === "manual") return shell.openExternal(SITE_URL);
   if (newer) updates.download(newer.version, { asked: true });
 });
-// Restart: installs the downloaded version, the same clean restart as Restart Bops.
+// Restart: installs the downloaded version, the same clean restart as Restart SmileDesk.
 ipcMain.handle("update-install", () => restart());
 // Settings → This Mac's switch. Not there (null) in a build that doesn't update.
 ipcMain.handle("update-auto", () => (updates ? { auto: updates.auto(), canSelfUpdate: updates.canSelfUpdate() } : null));
 ipcMain.handle("update-set-auto", (_, on) => updates?.setAuto(!!on) ?? null);
 
-app.setName("Bops");
+app.setName("SmileDesk");
 /*
- * One Bops at a time. Every copy shares the same Application Support folder and server, so a second
+ * One SmileDesk at a time. Every copy shares the same Application Support folder and server, so a second
  * one (another copy opened from a download, say) brings the first to the front and closes, instead
  * of the two fighting over the server.
  */
 const first = app.requestSingleInstanceLock();
 if (!first) {
   // `npm run app` shares the installed app's folder: say why it closed.
-  if (!app.isPackaged) console.error("Bops is already open (the installed app, or another npm run app). Quit it to run this one.");
+  if (!app.isPackaged) console.error("SmileDesk is already open (the installed app, or another npm run app). Quit it to run this one.");
   app.quit();
 }
 app.on("second-instance", () => app.isReady() && showMain());
 app.whenReady().then(() => {
   if (!first) return;
-  mainLog(`Bops ${app.getVersion()} opening (pid ${process.pid})`);
+  mainLog(`SmileDesk ${app.getVersion()} opening (pid ${process.pid})`);
   if (process.platform === "darwin" && fs.existsSync(ICON)) app.dock.setIcon(nativeImage.createFromPath(ICON));
   // Release builds only: not `npm run app`, nor a build that runs the source folder (desktop/repo.json).
   if (isRelease()) {
-    updates = createUpdates({ autoUpdater, app, fs, path, note: updateNote, send: sendUpdate });
-    // macOS logging out or shutting down quits Bops itself: that quit isn't held (see before-quit).
+    // macOS logging out or shutting down quits SmileDesk itself: that quit isn't held (see before-quit).
     powerMonitor.on("shutdown", () => (systemQuit = true));
-    void checkForUpdate();
-    setInterval(() => void checkForUpdate(), 60 * 60_000);
+    // SmileDesk: never offer official SmileDesk releases from bops.bot. Turn on once SmileDesk has a feed of its own.
+    if (UPDATES_ON) {
+      updates = createUpdates({ autoUpdater, app, fs, path, note: updateNote, send: sendUpdate });
+      void checkForUpdate();
+      setInterval(() => void checkForUpdate(), 60 * 60_000);
+    }
   }
   // The apps the bots make: their own session, where nothing but their pages loads (before any window can show one).
   appFrames = installAppFrames({ app, session, server: URL, preload: path.join(__dirname, "app-frame-preload.cjs"), log: mainLog });
@@ -1387,14 +1392,14 @@ app.whenReady().then(() => {
 app.on("window-all-closed", () => app.quit());
 
 /*
- * Quitting with a new version downloaded installs it: macOS swaps it in once Bops is gone. So the
+ * Quitting with a new version downloaded installs it: macOS swaps it in once SmileDesk is gone. So the
  * server is stopped cleanly first (as a restart does), not left exiting while the app is replaced.
  * Once: the quit after it goes through. A restart already running did its own stop. At most 10s, so
  * Cmd+Q never hangs for long; will-quit stops whatever is left.
  *
- * Not when macOS itself quits Bops (log out, shut down, restart): holding that quit cancels the log
- * out ("Bops interrupted log out"). Then will-quit stops the server as on any quit, and the new
- * version still goes in once Bops is gone.
+ * Not when macOS itself quits SmileDesk (log out, shut down, restart): holding that quit cancels the log
+ * out ("SmileDesk interrupted log out"). Then will-quit stops the server as on any quit, and the new
+ * version still goes in once SmileDesk is gone.
  */
 let quitStopped = false;
 let systemQuit = false;
@@ -1402,10 +1407,10 @@ app.on("before-quit", (e) => {
   if (quitStopped || restarting || systemQuit || !updates?.ready()) return;
   quitStopped = true;
   e.preventDefault();
-  void Promise.race([stopForRestart(`Quit: installing Bops ${updates.state().version}`), sleep(10_000)]).finally(() => app.quit());
+  void Promise.race([stopForRestart(`Quit: installing SmileDesk ${updates.state().version}`), sleep(10_000)]).finally(() => app.quit());
 });
 
-/** Stops the server Bops started or uses (and the bots' browsers). Says whether there was one. */
+/** Stops the server SmileDesk started or uses (and the bots' browsers). Says whether there was one. */
 function stopServer() {
   const pid = server?.pid ?? adopted;
   if (!pid) return false;
@@ -1436,7 +1441,7 @@ app.on("will-quit", () => {
       } catch {}
     }
   const pid = server?.pid ?? adopted;
-  // A server too stuck to act on SIGTERM would outlive Bops: stopped hard once its exit work's 8s are up.
+  // A server too stuck to act on SIGTERM would outlive SmileDesk: stopped hard once its exit work's 8s are up.
   if (stopServer() && pid)
     try {
       spawn("/bin/sh", ["-c", `sleep 10; kill -KILL -${pid} 2>/dev/null || kill -KILL ${pid} 2>/dev/null`], { detached: true, stdio: "ignore" }).unref();

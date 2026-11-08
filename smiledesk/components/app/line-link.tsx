@@ -50,7 +50,7 @@ function minutesLeft(until: number, now: number) {
 
 /**
  * Whose phone a bot's number is linked to: the first phone to call or text a new number in its 15
- * minutes becomes the user's (Bops Cloud keeps it), and calls and texts from it count as them. Shows
+ * minutes becomes the user's (SmileDesk Cloud keeps it), and calls and texts from it count as them. Shows
  * "Call or text … from your phone in the next 15 minutes to make it yours" while that runs, then
  * "Linked to …" with a way to unlink it; a number with neither offers to start the 15 minutes. Shows
  * nothing where numbers aren't linked this way (not signed in with Orgo, or self-hosting).

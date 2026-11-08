@@ -1,19 +1,19 @@
 // Tests for brains (lib/types.ts Brain and brainOf, lib/server/brains.ts, app/api/brains, vm/bin/bops-brain,
-// components/app/brains.tsx): a bot's brain is Bops agent unless it picked one it's still on; the saved state
-// is brought to the current shape; brains are added, renamed, given bots and removed (its bots back on Bops
+// components/app/brains.tsx): a bot's brain is SmileDesk agent unless it picked one it's still on; the saved state
+// is brought to the current shape; brains are added, renamed, given bots and removed (its bots back on SmileDesk
 // agent, signed out on its computers); Claude Code is installed at its pinned version from npm, unchanged,
 // once per computer; Claude Code's own sign-in opens in a terminal on a free screen of the bot's computer,
-// which the user is handed, its page in that screen's Chrome, and Bops asks Claude Code until it's signed in,
+// which the user is handed, its page in that screen's Chrome, and SmileDesk asks Claude Code until it's signed in,
 // then keeps only who's signed in (never the login, nor anything else Claude Code says) and hands the screen
 // back; a sign-in that fails, or that the user leaves, says why; a login folder copied to another computer is
 // never used there; sign-out is Claude Code's own; every Claude Code here runs with no Anthropic key or token
 // from its environment, and a key brain's key comes in a file that's read and deleted, never on a command
-// line; the routes are for the Bops window only; Settings' Brain section and a bot's Brain read right; a
+// line; the routes are for the SmileDesk window only; Settings' Brain section and a bot's Brain read right; a
 // thread and a bot's profile say which brain ran it (or its tasks run on), and a thread Claude Code ran offers
 // Open in terminal, and while it's open there says where and that a reply closes it; all with no long dashes.
 //
 // Orgo is a fake fetch on a made-up origin whose computers run each command here, in a throwaway folder: the
-// real vm/bin/bops-brain (as Bops installed it on the fake computer) with a fake Claude Code, Codex, terminal
+// real vm/bin/bops-brain (as SmileDesk installed it on the fake computer) with a fake Claude Code, Codex, terminal
 // and Chrome, in an environment with Anthropic keys and tokens planted in it. Nothing reaches a real service.
 // Usage: node scripts/test-brains.mjs
 //        REAL_CLAUDE=1 node scripts/test-brains.mjs   (also asks this Mac's own Claude Code about an empty folder)
@@ -117,7 +117,7 @@ mkdirSync(LOG);
 const SLOW = join(scratch, "slow-login");
 const STOP = join(scratch, "stop");
 const fake = (name, body) => writeFileSync(join(fakebin, name), `#!/bin/bash\n${body}\n`, { mode: 0o755 });
-// Claude Code as far as Bops uses it: its version, and its own auth status, login and logout, writing down
+// Claude Code as far as SmileDesk uses it: its version, and its own auth status, login and logout, writing down
 // every run (its arguments, then its whole environment). Its login is a file in its folder, as the real one's is.
 fake(
   "claude",
@@ -164,7 +164,7 @@ const claudeRuns = () =>
 
 /* ---------------- A fake Orgo whose computers run commands here ---------------- */
 
-/** What a computer's environment has besides Bops' own: keys and tokens Claude Code would use first. */
+/** What a computer's environment has besides SmileDesk's own: keys and tokens Claude Code would use first. */
 const PLANTED = { ANTHROPIC_API_KEY: "sk-ant-api03-PLANTED", ANTHROPIC_AUTH_TOKEN: "planted-auth-token", CLAUDE_CODE_OAUTH_TOKEN: "planted-oauth-token", ANTHROPIC_BASE_URL: "https://planted.test", CLAUDECODE: "1" };
 const pcs = new Map();
 const pc = (id) => {
@@ -303,13 +303,13 @@ S.update((s) => {
 
 /* ---------------- The model ---------------- */
 
-await test("a bot's brain is Bops agent unless it picked one that's there and still has it", () => {
+await test("a bot's brain is SmileDesk agent unless it picked one that's there and still has it", () => {
   const x = { id: "brain_a", kind: "claude", name: "Claude Code", auth: "plan", bots: ["otto"], workspaceId: "ws_main", createdAt: 1 };
   const state = { brains: [x] };
-  assert.equal(T.brainOf({ id: "otto" }, state), undefined, "no brain picked: Bops agent");
+  assert.equal(T.brainOf({ id: "otto" }, state), undefined, "no brain picked: SmileDesk agent");
   assert.equal(T.brainOf({ id: "otto", brain: "brain_a" }, state), x);
-  assert.equal(T.brainOf({ id: "rook", brain: "brain_a" }, state), undefined, "taken off its chips: Bops agent");
-  assert.equal(T.brainOf({ id: "otto", brain: "brain_gone" }, state), undefined, "a brain that's gone: Bops agent");
+  assert.equal(T.brainOf({ id: "rook", brain: "brain_a" }, state), undefined, "taken off its chips: SmileDesk agent");
+  assert.equal(T.brainOf({ id: "otto", brain: "brain_gone" }, state), undefined, "a brain that's gone: SmileDesk agent");
   assert.equal(T.brainOf({ id: "otto", brain: "brain_a" }, {}), undefined);
   assert.deepEqual(T.BRAIN_KEYS, { claude: "ANTHROPIC_API_KEY", codex: "OPENAI_API_KEY" });
 });
@@ -325,7 +325,7 @@ await test("a plan brain is ready where it's signed in on the computer the bot w
   assert.equal(T.brainReady({ ...plan, auth: "key", keyName: "ANTHROPIC_API_KEY" }, bot("rook"), st), true);
 });
 
-await test("a saved state's brains come back in shape: real bots only, Codex on a key, no sign-in left going, a gone brain is Bops agent", async () => {
+await test("a saved state's brains come back in shape: real bots only, Codex on a key, no sign-in left going, a gone brain is SmileDesk agent", async () => {
   const file = join(userDataDir("u-norm"), "state.json");
   mkdirSync(join(file, ".."), { recursive: true });
   writeFileSync(
@@ -359,7 +359,7 @@ await test("a saved state's brains come back in shape: real bots only, Codex on 
   assert.deepEqual(cx.bots, []);
   assert.equal(cx.signingIn.failed, "it took too long.", "a failed one stays, saying why");
   assert.equal(st.bots.find((b) => b.id === "boppy").brain, "brain_ok");
-  assert.equal(st.bots.find((b) => b.id === "otto").brain, undefined, "its brain is gone: Bops agent");
+  assert.equal(st.bots.find((b) => b.id === "otto").brain, undefined, "its brain is gone: SmileDesk agent");
   // Back to the state the rest of the tests use.
   await S.releaseSignOut();
   S.update((s) => Object.assign(s, before));
@@ -383,7 +383,7 @@ await test("brains are added to the workspace with the bots picked, named after 
   assert.equal(y.name, "Claude Code 2");
   assert.equal(y.keyName, "ANTHROPIC_API_KEY");
   assert.equal(y.keyScope, "workspace");
-  assert.equal(bot("boppy").brain, undefined, "without use, the bot may pick it but still has Bops agent");
+  assert.equal(bot("boppy").brain, undefined, "without use, the bot may pick it but still has SmileDesk agent");
   const z = B.addBrain({ kind: "codex", auth: "key", bots: ["boppy"] });
   assert.equal(z.name, "Codex");
   assert.equal(z.keyName, "OPENAI_API_KEY");
@@ -400,11 +400,11 @@ await test("a brain is renamed, and its bots set one by one: uses it, can pick i
   B.setBrainBot(planId, "boppy", "use");
   assert.equal(bot("boppy").brain, planId);
   B.setBrainBot(planId, "boppy", "none");
-  assert.equal(bot("boppy").brain, undefined, "taken off: back on Bops agent");
+  assert.equal(bot("boppy").brain, undefined, "taken off: back on SmileDesk agent");
   assert.equal(brain(planId).bots.includes("boppy"), false);
   assert.throws(() => B.setBrainBot(planId, "kai", "use"), /No such bot here/);
   B.updateBrain(planId, { bots: ["otto"] });
-  assert.equal(bot("rook").brain, undefined, "a bot taken off the list goes back to Bops agent");
+  assert.equal(bot("rook").brain, undefined, "a bot taken off the list goes back to SmileDesk agent");
   B.updateBrain(planId, { bots: ["otto", "rook"], name: "Claude Code" });
   assert.throws(() => B.setBotBrain("boppy", planId), /isn't on that brain/);
   B.setBotBrain("rook", planId);
@@ -419,7 +419,7 @@ await test("a brain is renamed, and its bots set one by one: uses it, can pick i
 
 /* ---------------- Claude Code on a computer ---------------- */
 
-await test("Claude Code is npm's own package at the pinned version, into Bops' folder, once per computer", async () => {
+await test("Claude Code is npm's own package at the pinned version, into SmileDesk's folder, once per computer", async () => {
   const cmd = B.claudeInstallCommand();
   assert.equal(B.CLAUDE_CODE_VERSION, "2.1.292");
   assert.match(cmd, /npm install -g --prefix \/opt\/bops\/claude --no-audit --no-fund --loglevel=error @anthropic-ai\/claude-code@2\.1\.292 /);
@@ -441,7 +441,7 @@ await test("the brain scripts go on a computer as they are in vm/bin, and only w
   for (const f of ["bops-brain", "bops-brain-browser"]) assert.equal(readFileSync(join(pc("pc-main").bin, f), "utf8"), readFileSync(join(root, "vm/bin", f), "utf8"));
   const n = pc("pc-main").commands.length;
   await B.ensureBrainTools("pc-main");
-  assert.equal(pc("pc-main").commands.length, n, "checked once per run of Bops");
+  assert.equal(pc("pc-main").commands.length, n, "checked once per run of SmileDesk");
 });
 
 await test("Claude Code's status is kept to whether it's signed in, how, and whose account", () => {
@@ -471,7 +471,7 @@ await test("a sign-in opens Claude Code's own on a free screen of the bot's comp
   assert.ok(sessionCalls.some((x) => x[0] === "ensureScreens" && x[1] === "pc-main"));
   // The terminal on screen 101, running Claude Code's own login.
   assert.match(lines("terminal.log"), new RegExp(`--disable-server --title Sign in to Claude Code .* -x .*bops-brain sign-in ${planId} 101`));
-  // Claude Code's own sign-in as it is by default (its Claude subscription one): Bops adds no choice of its own.
+  // Claude Code's own sign-in as it is by default (its Claude subscription one): SmileDesk adds no choice of its own.
   const login = claudeRuns().find((r) => r.args === "auth login");
   assert.ok(login, "claude auth login");
   assert.equal(login.env.DISPLAY, ":101");
@@ -664,7 +664,7 @@ await test("a sign-in asked for on another computer closes the one going first: 
 
 /* ---------------- Routes ---------------- */
 
-await test("the routes are the Bops window's only, and add, change, sign in and remove brains", async () => {
+await test("the routes are the SmileDesk window's only, and add, change, sign in and remove brains", async () => {
   const outside = await R.POST(new Request("http://localhost:3210/api/brains", { method: "POST", body: JSON.stringify({ kind: "claude", auth: "plan" }) }));
   assert.equal(outside.status, 403);
   assert.equal((await RS.POST(new Request("http://localhost:3210/api/brains/sign-in", { method: "POST", body: JSON.stringify({ brainId: planId, botId: "otto" }) }))).status, 403);
@@ -693,7 +693,7 @@ await test("the routes are the Bops window's only, and add, change, sign in and 
   assert.equal((await RS.DELETE(fromWindow("/api/brains/sign-in", { brainId: planId }, "DELETE"))).status, 200);
   assert.equal((await RO.POST(fromWindow("/api/brains/sign-out", { brainId: planId, botId: "otto" }))).status, 200);
   assert.equal(T.signInOn(brain(planId), "pc-main"), undefined);
-  // Removing one: its bots back on Bops agent.
+  // Removing one: its bots back on SmileDesk agent.
   assert.equal((await R.DELETE(fromWindow("/api/brains", { id: cx.id }, "DELETE"))).status, 200);
   assert.equal(brain(cx.id), undefined);
   assert.equal(bot("boppy").brain, undefined);
@@ -715,7 +715,7 @@ await test("removing a plan brain signs it out and deletes its folder on the com
 /* ---------------- Real Claude Code on this Mac (REAL_CLAUDE=1 only) ---------------- */
 
 if (REAL_CLAUDE)
-  await test("this Mac's own Claude Code says an empty brain folder isn't signed in, as Bops reads it", async () => {
+  await test("this Mac's own Claude Code says an empty brain folder isn't signed in, as SmileDesk reads it", async () => {
     const real = execFileSync("/bin/bash", ["-c", "command -v claude"], { encoding: "utf8" }).trim();
     const brains = join(scratch, "real-brains");
     mkdirSync(join(brains, "brain_real"), { recursive: true });
@@ -748,12 +748,12 @@ const BRAINS = [
   { id: "b_other", kind: "codex", name: "Codex elsewhere", auth: "key", keyName: "OPENAI_API_KEY", bots: [], workspaceId: "ws_two", createdAt: 5 },
 ];
 
-await test("Settings, Brain: Bops agent first with its bots, then each brain and how it signs in", () => {
+await test("Settings, Brain: SmileDesk agent first with its bots, then each brain and how it signs in", () => {
   const html = renderToStaticMarkup(h(BrainSettings, { state: withBrain(view(BRAINS), "otto", "b_max"), onShowScreen: noop, onOpenVault: noop }));
   const t = text(html);
   noDashes(t, "Settings, Brain");
-  assert.match(t, /^Brain What your bots work with\. Bops agent runs on your credit\. Claude Code and Codex run on your own plan or key\. Add a brain/);
-  assert.match(t, /Bops agent Credit Boppy Rook Claude Code/, "Bops agent's bots: those on no brain");
+  assert.match(t, /^Brain What your bots work with\. SmileDesk agent runs on your credit\. Claude Code and Codex run on your own plan or key\. Add a brain/);
+  assert.match(t, /SmileDesk agent Credit Boppy Rook Claude Code/, "SmileDesk agent's bots: those on no brain");
   assert.match(t, /Claude Code Max plan · signed in on Boppy's computer Sign in on Rook's computer/, "Rook's own computer isn't signed in");
   assert.match(t, /Otto .*Rook not picked/);
   assert.match(t, /Sign out on Boppy's computer/);
@@ -789,32 +789,32 @@ await test("adding a brain asks how it signs in, in Claude Code's own words, eve
   assert.doesNotMatch(codex, /Claude plan/);
 });
 
-await test("a bot's Brain: Bops agent or the brains it's on, and Sign in where its plan brain isn't signed in", () => {
+await test("a bot's Brain: SmileDesk agent or the brains it's on, and Sign in where its plan brain isn't signed in", () => {
   const none = renderToStaticMarkup(h(BotBrain, { state: view([]), bot: bot("otto"), onShowScreen: noop, className: "" }));
   assert.equal(none, "", "no brain has it: nothing");
   const signed = text(renderToStaticMarkup(h(BotBrain, { state: withBrain(view(BRAINS), "otto", "b_max"), bot: { ...bot("otto"), brain: "b_max" }, onShowScreen: noop, className: "" })));
   noDashes(signed, "a bot's Brain");
-  assert.equal(signed, "Brain Claude Code on your Max plan Bops agent Claude Code");
+  assert.equal(signed, "Brain Claude Code on your Max plan SmileDesk agent Claude Code");
   const notHere = text(renderToStaticMarkup(h(BotBrain, { state: withBrain(view(BRAINS), "rook", "b_max"), bot: { ...bot("rook"), brain: "b_max" }, onShowScreen: noop, className: "" })));
   noDashes(notHere, "a bot's Brain, not signed in");
-  assert.match(notHere, /^Brain Not signed in on Rook's computer Bops agent Claude Code Claude Code 3 Sign in with your Claude plan on Rook's computer to use it\. Sign in$/);
+  assert.match(notHere, /^Brain Not signed in on Rook's computer SmileDesk agent Claude Code Claude Code 3 Sign in with your Claude plan on Rook's computer to use it\. Sign in$/);
   const agent = text(renderToStaticMarkup(h(BotBrain, { state: view(BRAINS), bot: bot("boppy"), onShowScreen: noop, className: "" })));
-  assert.equal(agent, "Brain Bops agent, on your credit Bops agent Claude Code 2");
+  assert.equal(agent, "Brain SmileDesk agent, on your credit SmileDesk agent Claude Code 2");
   const key = text(renderToStaticMarkup(h(BotBrain, { state: withBrain(view(BRAINS), "boppy", "b_key"), bot: { ...bot("boppy"), brain: "b_key" }, onShowScreen: noop, className: "" })));
-  assert.equal(key, "Brain Claude Code on your Anthropic key Bops agent Claude Code 2");
+  assert.equal(key, "Brain Claude Code on your Anthropic key SmileDesk agent Claude Code 2");
   // A sign-in going on Rook's computer: Otto, signed in on Boppy's, still says so, with no Show of Rook's screen.
   const going = BRAINS.map((x) => (x.id === "b_max" ? { ...x, signingIn: { botId: "rook", computerId: "pc-rook", display: 102, at: 5 } } : x));
   const otto = text(renderToStaticMarkup(h(BotBrain, { state: withBrain(view(going), "otto", "b_max"), bot: { ...bot("otto"), brain: "b_max" }, onShowScreen: noop, className: "" })));
-  assert.equal(otto, "Brain Claude Code on your Max plan Bops agent Claude Code");
+  assert.equal(otto, "Brain Claude Code on your Max plan SmileDesk agent Claude Code");
   const rook = text(renderToStaticMarkup(h(BotBrain, { state: withBrain(view(going), "rook", "b_max"), bot: { ...bot("rook"), brain: "b_max" }, onShowScreen: noop, className: "" })));
   assert.match(rook, /^Brain Signing in on Rook's computer .* Claude Code's sign-in is open on its screen\. Show$/);
-  // Its tasks on this Mac run on Bops agent, on AI credit, whatever its brain: it says so.
+  // Its tasks on this Mac run on SmileDesk agent, on AI credit, whatever its brain: it says so.
   const onMac = text(renderToStaticMarkup(h(BotBrain, { state: { ...withBrain(view(BRAINS), "boppy", "b_key"), host: "mac" }, bot: { ...bot("boppy"), brain: "b_key" }, onShowScreen: noop, className: "" })));
-  assert.equal(onMac, "Brain Your bots work on this Mac, so they run on Bops agent, on your credit Bops agent Claude Code 2");
+  assert.equal(onMac, "Brain Your bots work on this Mac, so they run on SmileDesk agent, on your credit SmileDesk agent Claude Code 2");
   const macBot = text(renderToStaticMarkup(h(BotBrain, { state: withBrain(view(BRAINS), "rook", "b_max"), bot: { ...bot("rook"), brain: "b_max", runsOn: "mac" }, onShowScreen: noop, className: "" })));
-  assert.match(macBot, /^Brain Rook works on your Mac, so its tasks run on Bops agent, on your credit Bops agent Claude Code Claude Code 3$/, macBot);
+  assert.match(macBot, /^Brain Rook works on your Mac, so its tasks run on SmileDesk agent, on your credit SmileDesk agent Claude Code Claude Code 3$/, macBot);
   const some = text(renderToStaticMarkup(h(BotBrain, { state: { ...withBrain(view(BRAINS), "boppy", "b_key"), mac: { ready: true } }, bot: { ...bot("boppy"), brain: "b_key", runsOn: "auto" }, onShowScreen: noop, className: "" })));
-  assert.equal(some, "Brain Claude Code on your Anthropic key · tasks on your Mac run on Bops agent Bops agent Claude Code 2");
+  assert.equal(some, "Brain Claude Code on your Anthropic key · tasks on your Mac run on SmileDesk agent SmileDesk agent Claude Code 2");
   noDashes(onMac + macBot + some, "a bot's Brain on the Mac");
 });
 
@@ -862,16 +862,16 @@ await test("a thread says which brain ran it; one Claude Code ran opens in a ter
   assert.equal(A.needsYou(thread("ses_a", { status: "failed", error: "Paused while it's open in the terminal" })), false, "paused, not waiting on the user");
   // A terminal for another thread isn't this one's.
   assert.match(sheet(thread("ses_a"), { takeover: { ...open, sessionId: "ses_b" } }), /Open in terminal/);
-  // Bops agent finished it, Codex ran it, Bops agent ran it, or the bots work on this Mac: no terminal.
-  // Bops agent finishes it while Otto is on Claude Code: it says so, as it's on AI credit.
+  // SmileDesk agent finished it, Codex ran it, SmileDesk agent ran it, or the bots work on this Mac: no terminal.
+  // SmileDesk agent finishes it while Otto is on Claude Code: it says so, as it's on AI credit.
   const finished = sheet(thread("ses_a", { onBopsAgent: true }));
-  assert.match(finished, /^Cart total Bops agent Credit Otto/, finished);
+  assert.match(finished, /^Cart total SmileDesk agent Credit Otto/, finished);
   assert.doesNotMatch(finished, /Open in terminal|Claude Code/);
-  // So does one Bops agent took over (its response chain) or began, and Otto off Claude Code has no terminal.
-  assert.match(sheet(thread("ses_a", { responseId: "resp_1" })), /^Cart total Bops agent Credit Otto/);
-  assert.match(sheet(thread("ses_e", { brainRun: undefined, agentSessionId: "sesn_1" })), /^Cart total Bops agent Credit Otto/);
+  // So does one SmileDesk agent took over (its response chain) or began, and Otto off Claude Code has no terminal.
+  assert.match(sheet(thread("ses_a", { responseId: "resp_1" })), /^Cart total SmileDesk agent Credit Otto/);
+  assert.match(sheet(thread("ses_e", { brainRun: undefined, agentSessionId: "sesn_1" })), /^Cart total SmileDesk agent Credit Otto/);
   assert.match(sheet(thread("ses_e", { brainRun: undefined, agentSessionId: "sesn_1" }), { bots: view(BRAINS).bots }), /^Cart total Otto · finished/, "no badge when Otto isn't on a brain");
-  // Otto's Default back to Bops agent: a thread keeps the agent it began on, so it still opens in the terminal.
+  // Otto's Default back to SmileDesk agent: a thread keeps the agent it began on, so it still opens in the terminal.
   assert.match(sheet(thread("ses_a"), { bots: view(BRAINS).bots }), /Open in terminal/, "a new Default doesn't move a thread");
   // Claude Code off Otto altogether: no terminal.
   assert.doesNotMatch(sheet(thread("ses_a"), { bots: view(BRAINS).bots, brains: BRAINS.map((x) => (x.id === "b_max" ? { ...x, bots: ["rook"] } : x)) }), /Open in terminal/, "Otto doesn't run Claude Code now");
@@ -880,7 +880,7 @@ await test("a thread says which brain ran it; one Claude Code ran opens in a ter
   assert.match(codex, /^Cart total Codex · GPT 6\.1 Sol Otto · working · /, codex);
   assert.doesNotMatch(codex, /Claude Code/);
   assert.match(codexHtml, /Reply in thread · it takes this next/, "a reply waits for its next turn");
-  assert.match(sheet(thread("ses_d", { brainRun: undefined })), /^Cart total Otto · finished/, "Bops agent's has no badge");
+  assert.match(sheet(thread("ses_d", { brainRun: undefined })), /^Cart total Otto · finished/, "SmileDesk agent's has no badge");
   assert.doesNotMatch(sheet(thread("ses_a"), { host: "mac" }), /Open in terminal/);
   // Its chip in the chat says so too.
   const s = thread("ses_a");
@@ -900,15 +900,15 @@ await test("a bot's profile says which brain its tasks run on, by its role", asy
     );
   const st = withBrain(view(BRAINS), "otto", "b_max");
   const otto = st.bots.find((b) => b.id === "otto");
-  assert.match(panel(st, otto), /Otto Outbound · Bops team Claude Code /);
-  assert.match(panel(st, otto, "skills"), /Otto Outbound · Bops team Claude Code /, "on its other tabs too");
+  assert.match(panel(st, otto), /Otto Outbound · SmileDesk team Claude Code /);
+  assert.match(panel(st, otto, "skills"), /Otto Outbound · SmileDesk team Claude Code /, "on its other tabs too");
   const codexSt = { ...view([...BRAINS, { id: "b_codex", kind: "codex", name: "Codex", auth: "key", keyName: "OPENAI_API_KEY", keyScope: "all", bots: ["rook"], workspaceId: "ws_main", createdAt: 6 }]) };
   const rook = { ...codexSt.bots.find((b) => b.id === "rook"), brain: "b_codex" };
-  assert.match(panel({ ...codexSt, bots: codexSt.bots.map((b) => (b.id === "rook" ? rook : b)) }, rook), /Rook Recruiting · Bops team Codex /);
+  assert.match(panel({ ...codexSt, bots: codexSt.bots.map((b) => (b.id === "rook" ? rook : b)) }, rook), /Rook Recruiting · SmileDesk team Codex /);
   const agent = view(BRAINS);
-  assert.doesNotMatch(panel(agent, agent.bots.find((b) => b.id === "otto")), /Bops team (Claude Code|Codex)/, "Bops agent: none");
-  assert.doesNotMatch(panel({ ...st, host: "mac" }, otto), /Bops team Claude Code/, "on this Mac its tasks run on Bops agent");
-  assert.doesNotMatch(panel(st, { ...otto, runsOn: "mac" }), /Bops team Claude Code/, "nor for a bot that works on the user's Mac");
+  assert.doesNotMatch(panel(agent, agent.bots.find((b) => b.id === "otto")), /SmileDesk team (Claude Code|Codex)/, "SmileDesk agent: none");
+  assert.doesNotMatch(panel({ ...st, host: "mac" }, otto), /SmileDesk team Claude Code/, "on this Mac its tasks run on SmileDesk agent");
+  assert.doesNotMatch(panel(st, { ...otto, runsOn: "mac" }), /SmileDesk team Claude Code/, "nor for a bot that works on the user's Mac");
 });
 
 await test("the brain files have no long dashes in what they say", () => {

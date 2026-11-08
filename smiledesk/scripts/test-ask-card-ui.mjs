@@ -1,7 +1,7 @@
 // Tests for a bot's ask to call a service with one of the user's keys, as its card and the sidebar show it
 // (components/app/chat-view.tsx AppApprovalCard, components/app/keys.tsx ApiAsk, components/app/sidebar-sections.tsx
 // AskCard, lib/permission.ts askHeadline and apiFacts): with the bot's reason in plain words (AppApproval.reason) the
-// headline is "<Bot> wants to: <reason>", who asked for it is kept, and under it one line Bops itself says from the
+// headline is "<Bot> wants to: <reason>", who asked for it is kept, and under it one line SmileDesk itself says from the
 // service and the method, never from the bot ("GitHub · adds or changes something", "deletes something"), so a reason
 // can't hide a delete or another service. The method, path and body fold under Details, closed until it's opened. A
 // change to files says its size beside Details, closed, and opens above it to every line it changes, file by file.
@@ -174,7 +174,7 @@ await test("the buttons are as before: Deny, Always allow, Allow once the primar
 await test("the sidebar's card has the same headline, and the old one without a reason, over the same facts line", () => {
   const card = sidebar([ask({ reason: REASON })]);
   assert.ok(card.length > 0, "the card under Max");
-  assert.match(text(card), new RegExp(`^Max wants to: ${REASON} GitHub · adds or changes something Waiting`), "Bops' own line under the bot's words");
+  assert.match(text(card), new RegExp(`^Max wants to: ${REASON} GitHub · adds or changes something Waiting`), "SmileDesk's own line under the bot's words");
   assert.match(text(sidebar([ask()])), /^Max wants to call GitHub GitHub · adds or changes something/);
   // A reason that says it only reads can't hide a delete there either.
   const del = sidebar([ask({ reason: "Look at the open issues", api: { key: "GITHUB_TOKEN", label: "GitHub", method: "DELETE", path: "/repos/acme/site" }, resources: ["DELETE /repos/acme/site"] })]);
@@ -187,9 +187,9 @@ await test("a change to files in one go: the facts line counts the files and nam
   const html = chat([ask({ reason: "Make the buttons the logo's orange", api: { key: "GITHUB_TOKEN", label: "GitHub", method: "POST", path: "/repos/acme/site/git/commits", change }, preview, resources: change.files.map((f) => f.path) })]);
   assert.match(text(html), /Boppy wants to: Make the buttons the logo's orange/);
   const facts = html.match(/<span[^>]*data-ask-facts[^>]*>[\s\S]*?<\/span>/)[0];
-  assert.equal(text(facts), "GitHub · changes 2 files and deletes 1 in acme/site, on site/orange-buttons", "the repository too: Bops', never the reason's");
+  assert.equal(text(facts), "GitHub · changes 2 files and deletes 1 in acme/site, on site/orange-buttons", "the repository too: SmileDesk's, never the reason's");
   assert.match(facts, /text-\[#B42318\]/, "a delete in the colour for it");
-  assert.equal(text(marked(html, "data-change-size") ?? ""), "3 files · 3 lines changed", "its size, closed, from Bops' own words");
+  assert.equal(text(marked(html, "data-change-size") ?? ""), "3 files · 3 lines changed", "its size, closed, from SmileDesk's own words");
   const rows = [...html.matchAll(/<div[^>]*data-change-file[^>]*><div[^>]*>([\s\S]*?)<\/div>/g)].map((m) => text(m[1]));
   assert.deepEqual(rows, ["src/look.ts changed · 59 B", "src/notes.md added · 17 B", "old.css deleted"]);
   // What it opens comes before Details and is shut: a card docked at the bottom grows upward, so Details stays put.
@@ -210,7 +210,7 @@ await test("a change to files in one go: the facts line counts the files and nam
   assert.match(region, /bg-\[#ECFDF3\][^>]*>[\s\S]*?accent: &quot;#F15B3B&quot;/, "a line put in, likewise");
 });
 
-await test("an older Bops's words: its lines as they came, the size in files alone when they can't be counted, and words in another shape shown whole", () => {
+await test("an older SmileDesk's words: its lines as they came, the size in files alone when they can't be counted, and words in another shape shown whole", () => {
   const change = { repo: "acme/site", branch: "main", at: "4de5457", files: [{ path: "src/a.txt", op: "change", bytes: 90 }] };
   const cut = K.changeOf(change, "src/a.txt: changed, 90 B\nat line 3\n- x\n+ y\n  and 4 more lines");
   assert.deepEqual(cut.files[0].map((r) => r.note ?? `${r.t} ${r.s}`), ["at line 3", "- x", "+ y", "  and 4 more lines"]);

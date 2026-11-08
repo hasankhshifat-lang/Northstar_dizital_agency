@@ -1,18 +1,18 @@
 /*
  * The changes someone other than the owner may make in a shared workspace from their own window, as the owner's own
  * window makes them: which of the owner's routes, which power each needs (member-access.ts Power), and how it's kept to this
- * workspace. A "change" act (protocol.ts MemberAct) names one; Bops Cloud checks it (cloud/members.ts), and the owner's
+ * workspace. A "change" act (protocol.ts MemberAct) names one; SmileDesk Cloud checks it (cloud/members.ts), and the owner's
  * Mac checks it again and calls that very route as its own window would (lib/server/change-acts.ts), so every rule a
  * route has holds. Anything not listed here is never done for anyone but the owner, and nothing here deletes the
- * workspace or hands it over. Imported by Bops Cloud and the app, so it imports only a type from member-access.ts.
+ * workspace or hands it over. Imported by SmileDesk Cloud and the app, so it imports only a type from member-access.ts.
  */
 import type { Power } from "./member-access.ts";
 
-/** The owner's Bops that takes a "change" act (older ones would drop it): SharedWsSlice.changes says so to the viewer. */
+/** The owner's SmileDesk that takes a "change" act (older ones would drop it): SharedWsSlice.changes says so to the viewer. */
 export const CHANGES_MIN_VERSION = "0.0.44";
 /** The most a change's body may be, as JSON (an org chart of many bots fits). */
 export const CHANGE_BODY_MAX = 48_000;
-/** This workspace, in a change's body or query: the owner's Mac puts its own id there (the viewer's Bops calls it something else). */
+/** This workspace, in a change's body or query: the owner's Mac puts its own id there (the viewer's SmileDesk calls it something else). */
 export const THIS_WS = "@ws";
 
 export type ChangeMethod = "POST" | "PATCH" | "PUT" | "DELETE";
@@ -30,7 +30,7 @@ export type ChangeRoute = {
   /**
    * The fields a change sends, each with the power it needs (all of them, for every field sent). Only these, and `keys`,
    * go: anything else in the body is refused, so a field a route gets later stays the owner's. A call with none of these
-   * isn't a change (the viewer's Bops does it as its own, as before: its favorites, which workspace is open).
+   * isn't a change (the viewer's SmileDesk does it as its own, as before: its favorites, which workspace is open).
    */
   fields: Readonly<Record<string, Power | readonly Power[]>>;
   /** Fields that say what's changed (the workspace, the bot), never changes themselves. */
@@ -43,7 +43,7 @@ export type ChangeRoute = {
   wsQuery?: readonly string[];
   /**
    * A call to this route that isn't a change of the shared workspace (the user's own favorites, which workspace is open)
-   * is the user's own, done by their Bops as before. Unset: refused while a shared workspace is open, so it never acts
+   * is the user's own, done by their SmileDesk as before. Unset: refused while a shared workspace is open, so it never acts
    * on the user's own bot of that id.
    */
   ownCalls?: true;
@@ -139,8 +139,8 @@ export function changeRouteOf(method: unknown, path: unknown): { route: ChangeRo
 
 /**
  * A change checked against a workspace (`scope`): the route, the powers it needs, and the bot and app it names; or why
- * it isn't done. Its workspace fields must say THIS_WS (the viewer's Bops puts it there), a bot it names must be one of
- * the workspace's, and an app its path names one of its apps. Bops Cloud and the owner's Mac both check with this.
+ * it isn't done. Its workspace fields must say THIS_WS (the viewer's SmileDesk puts it there), a bot it names must be one of
+ * the workspace's, and an app its path names one of its apps. SmileDesk Cloud and the owner's Mac both check with this.
  */
 export function checkChange(call: ChangeCall, scope: ChangeScope): { route: ChangeRoute; powers: Power[]; bot?: string; app?: string } | { why: string } {
   const r = changeRouteOf(call.method, call.path);

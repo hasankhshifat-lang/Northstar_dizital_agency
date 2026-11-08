@@ -27,7 +27,7 @@ import { NoticeRail } from "./notice-popup";
  * marked as its row would be: how many things from that bot wait on you (counted as Needs your attention
  * counts them), else a dot while something is unread, else a spinner while one of its threads works. Its
  * name shows on hover, its menu on right-click, and the open one is kept in view.
- * At the bottom a newer Bops (update-notice.tsx), the footer's pages as round buttons, and you. Tooltips here
+ * At the bottom a newer SmileDesk (update-notice.tsx), the footer's pages as round buttons, and you. Tooltips here
  * open to the right (tooltip.tsx, data-tip-side).
  */
 export function SidebarRail({

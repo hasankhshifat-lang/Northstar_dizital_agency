@@ -1,10 +1,10 @@
 /**
- * New versions, got by Bops itself (desktop/main.cjs, "New versions"). main.cjs asks bops.bot for the
+ * New versions, got by SmileDesk itself (desktop/main.cjs, "New versions"). main.cjs asks bops.bot for the
  * newest release and, when it's newer than this app, hands it here (found). With "Download updates
  * automatically" on (Settings → This Mac, the default) it's downloaded at once, quietly; with it off it
  * waits for the user's Download. Electron's autoUpdater (Squirrel.Mac) does the download: it reads the
  * same latest.json, fetches the release's signed zip, checks it's signed by the same team as this app,
- * and stages it; macOS swaps it in when Bops quits or restarts ("Restart" in the notice).
+ * and stages it; macOS swaps it in when SmileDesk quits or restarts ("Restart" in the notice).
  *
  * The autoUpdater only fetches what the file names, newer or not, and every call fetches it again: so
  * it's asked only here, after main.cjs found the version newer and checked the zip the file names
@@ -14,7 +14,7 @@
  * notice sends the user to bops.bot, as before.
  *
  * A download that failed leaves Squirrel unable to fetch that zip again in the same updater: its
- * downloads keep their own cache (in memory, gone when Bops quits), so the next try asks bops.bot "only
+ * downloads keep their own cache (in memory, gone when SmileDesk quits), so the next try asks bops.bot "only
  * if it changed" (If-None-Match), bops.bot answers 304 Not Modified, and Squirrel takes that as nothing
  * to download (update-not-available, within a second, nothing fetched). So the try after a failure
  * gets a new updater first (setFeedURL makes one), which asks for the whole zip again.
@@ -91,7 +91,7 @@ function createUpdates({ autoUpdater, app, fs, path, note, send, execPath = proc
     return { auto: auto(), canSelfUpdate: canSelfUpdate() };
   }
 
-  /** Whether this copy of Bops can replace itself: in an Applications folder, not run from a DMG or a translocated copy, and writable. Asked once. */
+  /** Whether this copy of SmileDesk can replace itself: in an Applications folder, not run from a DMG or a translocated copy, and writable. Asked once. */
   function canSelfUpdate() {
     if (selfOk !== undefined) return selfOk;
     const bundle = path.resolve(execPath, "../../..");
@@ -260,7 +260,7 @@ function createUpdates({ autoUpdater, app, fs, path, note, send, execPath = proc
     next(version);
   }
 
-  // Squirrel reads latest.json again itself, so what it staged is the version its release names ("Bops
+  // Squirrel reads latest.json again itself, so what it staged is the version its release names ("SmileDesk
   // 0.0.91"), which is newer than the one asked for when a release came out in between.
   autoUpdater.on("update-downloaded", (_e, _notes, name) => {
     const named = /\d+\.\d+\.\d+/.exec(String(name ?? ""))?.[0];

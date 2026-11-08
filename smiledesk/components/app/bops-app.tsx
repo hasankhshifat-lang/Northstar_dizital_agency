@@ -69,7 +69,7 @@ import { EmailAddresses } from "./mail-address";
 import { bannerNumber, ReachBanner } from "./reach-banner";
 
 /*
- * Bops. Layout and values follow the Paper designs: a Messages list, a chat per bot (and group
+ * SmileDesk. Layout and values follow the Paper designs: a Messages list, a chat per bot (and group
  * chats) where long tasks are threads, and a right side of tabs in the title bar: the chat's bot's
  * computer first, then whatever you open (another computer, a bot's profile, a web page). The
  * right side collapses, and a computer can be opened full width.
@@ -102,7 +102,7 @@ function chime() {
 }
 
 /**
- * Bops asks who you are first: nobody signed in with Orgo means the sign-in screen (sign-in.tsx),
+ * SmileDesk asks who you are first: nobody signed in with Orgo means the sign-in screen (sign-in.tsx),
  * unless this is a self-hosted install running on its own Orgo key. Signing out anywhere clears the
  * state's account, which checks again and brings the sign-in screen back. Once signed in it's the app
  * right away: what this Mac still needs (setup.tsx) waits behind a badge on the account menu. Billed by
@@ -115,11 +115,11 @@ export function BopsApp() {
   useAnalytics(state);
   const pick = useSizePick(auth && !auth.needsSignIn && !auth.cloudProblem ? state : null);
   if (auth?.needsSignIn) return <SignIn onSignedIn={recheck} />;
-  // Signed in, but their Bops (it lives in Bops Cloud) couldn't be loaded: nothing to show until it can.
+  // Signed in, but their SmileDesk (it lives in SmileDesk Cloud) couldn't be loaded: nothing to show until it can.
   if (auth?.cloudProblem) return <CloudUnreachable onRetry={retry} />;
   return (
     <>
-      <Bops state={auth ? state : null} />
+      <SmileDesk state={auth ? state : null} />
       {pick.view && <PickComputer view={pick.view} onDone={pick.done} />}
     </>
   );
@@ -128,7 +128,7 @@ export function BopsApp() {
 /** A new tab's id, made when a tab opens (in a handler, never while rendering). */
 const tabId = () => `tab_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
-function Bops({ state }: { state: AppState | null }) {
+function SmileDesk({ state }: { state: AppState | null }) {
   // Empty until a chat is picked: the workspace's main bot's chat shows (see `chat` below).
   const [chatId, setChatId] = useState("");
   // What to put in a chat's message box once, to change and send (askBot; ChatView prefill): until it's in.
@@ -204,7 +204,7 @@ function Bops({ state }: { state: AppState | null }) {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
   // A file dropped where nothing takes it (only the chat and the CRM do) is refused: left to the
-  // window, it would open the file in place of Bops. Only files: text dragged into a field drops as before.
+  // window, it would open the file in place of SmileDesk. Only files: text dragged into a field drops as before.
   useEffect(() => {
     const files = (e: DragEvent) => !!e.dataTransfer && Array.from(e.dataTransfer.types).includes("Files");
     const over = (e: DragEvent) => {
@@ -282,8 +282,8 @@ function Bops({ state }: { state: AppState | null }) {
     return () => clearTimeout(t);
   }, [held]);
   const bringForward = useRef<() => void>(() => {});
-  // A soft chime (and a notification when Bops is behind) for what's worth interrupting for: news
-  // judged "now", and finished tasks the user is waiting on (lib/pings.ts). Not for what was already there when Bops opened.
+  // A soft chime (and a notification when SmileDesk is behind) for what's worth interrupting for: news
+  // judged "now", and finished tasks the user is waiting on (lib/pings.ts). Not for what was already there when SmileDesk opened.
   const pinged = useRef<Set<string> | null>(null);
   useEffect(() => {
     if (!state) return;
@@ -601,7 +601,7 @@ function Bops({ state }: { state: AppState | null }) {
       (t) => ({ ...t, file }) as PanelTab,
     );
   /**
-   * Knowledge, what Bops knows (memory-categories.tsx): the workspace's one Knowledge tab, on the kind
+   * Knowledge, what SmileDesk knows (memory-categories.tsx): the workspace's one Knowledge tab, on the kind
    * asked for (all of them when none is), at the item asked for or with the search asked for, or opened.
    */
   const openMemory = ({ category, focus: item, query }: MemoryOpen = {}) => {
@@ -837,8 +837,8 @@ function Bops({ state }: { state: AppState | null }) {
     if (w.alert) void post("/api/watches", { id: w.id, action: "seen" }, "PATCH");
   };
   // News on a watched screen brings it forward (once per heads-up), unless you're reading a page or
-  // the Vault, typing, or Bops isn't in front: then it waits (checked again on every update) until
-  // you're free. Alerts already there when Bops opens stay in the sidebar instead.
+  // the Vault, typing, or SmileDesk isn't in front: then it waits (checked again on every update) until
+  // you're free. Alerts already there when SmileDesk opens stay in the sidebar instead.
   // eslint-disable-next-line react-hooks/refs -- kept current for the effect that runs it
   bringForward.current = () => {
     // A shared workspace's news is its owner's to be shown (as its chime is: never the viewer's to be interrupted by).
@@ -1640,7 +1640,7 @@ type PhoneInfo = {
 
 /**
  * A row of How your bots reach you that has nothing to set yet: still loading, not on this server, or
- * Bops didn't answer (`retry` reads it again).
+ * SmileDesk didn't answer (`retry` reads it again).
  */
 function ReachNote({ label, line, retry }: { label: string; line: string; retry?: () => void }) {
   return (
@@ -1710,7 +1710,7 @@ function ReachSettings() {
       : texting
         ? "Text or call your bots, and they reach you back. They know it's you from the numbers listed here."
         : "Email your bots, and they reach you back. They know it's you from the emails listed here.";
-  const unreachable = "Couldn't reach Bops.";
+  const unreachable = "Couldn't reach SmileDesk.";
   return (
     <div className="flex flex-col gap-2 px-[22px] pt-4">
       <div className="flex flex-col gap-0.5">
@@ -1753,7 +1753,7 @@ function PhoneService() {
           {info.texting === "none" ? " (carriers approve business texting first (A2P 10DLC), about 7 to 10 business days)" : ""}
         </span>
         <span>
-          <span className="text-[#9A9A98]">Calls to the bots&apos; numbers:</span> {info.calls === "agent" ? "on (each number's agent passes every turn to Bops)" : (info.calls ?? "unknown")}
+          <span className="text-[#9A9A98]">Calls to the bots&apos; numbers:</span> {info.calls === "agent" ? "on (each number's agent passes every turn to SmileDesk)" : (info.calls ?? "unknown")}
         </span>
         {info.workspaces?.map((w) => (
           <span key={w.id}>
@@ -1812,7 +1812,7 @@ function OwnerSettings({ owner }: { owner: AppState["owner"] }) {
 }
 
 /**
- * For self-hosting (BOPS_SELF_HOSTED=1): the providers behind Bops, from .env.local. How screens are
+ * For self-hosting (BOPS_SELF_HOSTED=1): the providers behind SmileDesk, from .env.local. How screens are
  * reached (Tailscale), the email domain, the phone service, and each computer's id.
  */
 function SelfHosting({ state }: { state: AppState }) {
@@ -1822,7 +1822,7 @@ function SelfHosting({ state }: { state: AppState }) {
     <div className="mt-5 flex flex-col border-t border-[#F0F0EE] pb-5">
       <div className="flex flex-col gap-0.5 px-[22px] pt-4">
         <span className="text-[15px] font-semibold">Self-hosting</span>
-        <span className="text-[12.5px] leading-[17px] text-[#6B6B6B]">Your own provider accounts, set in .env.local. The hosted Bops runs these for its users.</span>
+        <span className="text-[12.5px] leading-[17px] text-[#6B6B6B]">Your own provider accounts, set in .env.local. The hosted SmileDesk runs these for its users.</span>
       </div>
 
       <div className="flex flex-col gap-2 px-[22px] pt-4">
@@ -1936,7 +1936,7 @@ function WorkspaceGeneral({ state }: { state: AppState }) {
   const [naming, setNaming] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const name = state.shared ? state.shared.name : (w?.name ?? "This workspace");
-  // An Admin renames a shared workspace on Orgo, whose name every Bops follows (lib/server/shared-people.ts).
+  // An Admin renames a shared workspace on Orgo, whose name every SmileDesk follows (lib/server/shared-people.ts).
   const adminRenames = state.shared?.role === "admin" && (!!state.shared.adminActs || !!state.shared.ownerOld);
   const save = async () => {
     const next = naming?.trim();
@@ -1948,7 +1948,7 @@ function WorkspaceGeneral({ state }: { state: AppState }) {
     if (res?.ok) {
       setNaming(null);
       setError(null);
-    } else setError(j.error ?? "Couldn't reach Bops. Try again.");
+    } else setError(j.error ?? "Couldn't reach SmileDesk. Try again.");
   };
   return (
     <div className="flex flex-col gap-2 px-[22px] pt-[18px]">
@@ -2231,7 +2231,7 @@ export function Settings({
         <PaneHead title="This Mac" />
         <ThisMacSettings state={state} />
         <WhereBotsWork state={state} />
-        {/* Bots in browsers on this Mac have no computer to run routines on; a self-hosted Bops has no Bops Cloud for a runner to share the state through. */}
+        {/* Bots in browsers on this Mac have no computer to run routines on; a self-hosted SmileDesk has no SmileDesk Cloud for a runner to share the state through. */}
         {!selfHosted && state.host !== "mac" && <RunsOnSettings state={state} />}
         {/* (A shared workspace's computers are its owner's: nothing asks this Mac's Orgo about their keys.) */}
         <BotComputers state={state} padded={!selfHosted} askKeys={!selfHosted && !state.shared} />
@@ -2243,7 +2243,7 @@ export function Settings({
       <>
         <PaneHead title="General" sub={shared ? `${wsName}, shared with you.` : `${wsName}, shared with the people you add.`} />
         <WorkspaceGeneral state={state} />
-        {/* Whether its bots answer with every Mac closed: the owner's, where Bops Cloud says it applies (a self-hosted Bops has none). */}
+        {/* Whether its bots answer with every Mac closed: the owner's, where SmileDesk Cloud says it applies (a self-hosted SmileDesk has none). */}
         {!selfHosted && <ChatSwitch state={state} />}
       </>
     );
@@ -2310,7 +2310,7 @@ export function Settings({
 
 /**
  * The app's first load. One that takes far longer than usual (a server that won't answer this window,
- * the Keychain or Bops Cloud stuck) says so and offers a restart, rather than bopping on forever.
+ * the Keychain or SmileDesk Cloud stuck) says so and offers a restart, rather than bopping on forever.
  */
 function FirstLoad() {
   const [slow, setSlow] = useState(false);
@@ -2320,7 +2320,7 @@ function FirstLoad() {
     return () => clearTimeout(t);
   }, []);
   return (
-    <BoppyLoading label="Loading Bops…">
+    <BoppyLoading label="Loading SmileDesk…">
       {slow && (
         <div className="flex flex-col items-center gap-3">
           <span>This is taking longer than usual.</span>
@@ -2328,7 +2328,7 @@ function FirstLoad() {
             <div className="flex w-[300px] justify-center">
               <RestartButton className="flex items-center gap-1.5 rounded-full bg-[#F2F2F0] px-3.5 py-1.5 text-[13px] font-medium leading-4 text-ink hover:bg-[#EAEAE7]">
                 <RestartIcon />
-                Restart Bops
+                Restart SmileDesk
               </RestartButton>
             </div>
           )}

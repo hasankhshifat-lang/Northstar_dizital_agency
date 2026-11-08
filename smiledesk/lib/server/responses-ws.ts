@@ -9,11 +9,11 @@ import { usageTags } from "./usage";
  * A task turn's Responses calls over one WebSocket (OpenAI's WebSocket mode): each step a
  * `response.create` with only its new input and `previous_response_id`, which OpenAI says makes long
  * tool loops up to about 40% faster, and recommends for Ultrafast (computer-task.ts uses it for its
- * fast steps). Signed in, it goes through Bops Cloud (cloud/proxy.ts responsesSocket), which checks
+ * fast steps). Signed in, it goes through SmileDesk Cloud (cloud/proxy.ts responsesSocket), which checks
  * and counts each step as it does a POST; self-hosting, straight to OpenAI on OPENAI_API_KEY.
  *
  * One step at a time. A step OpenAI (or the cloud) refuses throws as the SDK would: its status, so a
- * busy tier falls back (routing.ts withSpeed), and Bops Cloud's credit codes (cloud.ts outOfCredits).
+ * busy tier falls back (routing.ts withSpeed), and SmileDesk Cloud's credit codes (cloud.ts outOfCredits).
  * A socket that won't open, or drops, throws a TransportError: the caller makes that step over HTTP.
  * BOPS_RESPONSES_WS=0 turns it off.
  */
@@ -62,7 +62,7 @@ export class ResponsesSocket {
     if (!key) return Promise.reject(new TransportError("No OpenAI key."));
     // Self-hosting: where the SDK would send it (OPENAI_BASE_URL, else OpenAI's).
     const url = `${(via ? `${via.url}/v1` : process.env.OPENAI_BASE_URL?.trim() || "https://api.openai.com/v1").replace(/\/+$/, "").replace(/^http/, "ws")}/responses`;
-    // Through Bops Cloud, which app is calling (its version and state level: an older one is refused once a newer one wrote the user's state).
+    // Through SmileDesk Cloud, which app is calling (its version and state level: an older one is refused once a newer one wrote the user's state).
     const headers: Record<string, string> = {
       authorization: `Bearer ${key}`,
       ...(usageTags("session", botId).headers ?? {}),
@@ -117,7 +117,7 @@ export class ResponsesSocket {
   }
 }
 
-/** A refused step as the SDK's errors look: Bops Cloud's credit refusals as CloudError (with its code), the rest with their status. */
+/** A refused step as the SDK's errors look: SmileDesk Cloud's credit refusals as CloudError (with its code), the rest with their status. */
 function stepError(status: number | undefined, message = "OpenAI refused the step.", code?: string): Error {
   const s = Number(status) || (code && /rate_limit/.test(code) ? 429 : 400);
   if (s === 402 || s === 403) return new CloudError(message, s, code);

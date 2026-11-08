@@ -6,10 +6,10 @@ import { notReady } from "@/lib/server/ready";
 export const dynamic = "force-dynamic";
 
 /**
- * Pay for Bops Pro or Max ({tier: "pro_bops" | "max_bops"}): a Stripe Checkout page from Orgo, for the
+ * Pay for SmileDesk Pro or Max ({tier: "pro_bops" | "max_bops"}): a Stripe Checkout page from Orgo, for the
  * app to open in the browser (an upgrade from Pro is Orgo's page to confirm the change). Asked with the
  * user's Orgo key, so it stays on the server. Answers {url}, or {error} saying why not ({soon: true}
- * when Orgo can't take payment for Bops plans yet).
+ * when Orgo can't take payment for SmileDesk plans yet).
  */
 export async function POST(request: Request) {
   const unready = notReady();

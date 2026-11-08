@@ -64,7 +64,7 @@ export function notifyMac(userId: string, frame: CloudToMac): boolean {
 }
 
 /**
- * A Mac of the user's on a newer Bops wrote their state at `level` (state.ts): their Mac on the tunnel,
+ * A Mac of the user's on a newer SmileDesk wrote their state at `level` (state.ts): their Mac on the tunnel,
  * if it's older, is told it was replaced and closed, as when another Mac connects. 0.0.28 then stays off
  * until it starts again, and is refused then (the upgrade below). Left on, it would answer the user's
  * texts, calls and mail from a state it can't be given any more.
@@ -267,6 +267,6 @@ export const upgrades: Upgrade[] = [
     handle: (req, socket, head, { user }) =>
       void stateTooNew(req, user.id)
         .catch(() => false)
-        .then((old) => (old ? refuseUpgrade(socket, 426, "Update Bops on this Mac") : wss.handleUpgrade(req, socket, head, (ws) => attach(user.id, ws, stateLevelOf(req))))),
+        .then((old) => (old ? refuseUpgrade(socket, 426, "Update SmileDesk on this Mac") : wss.handleUpgrade(req, socket, head, (ws) => attach(user.id, ws, stateLevelOf(req))))),
   },
 ];

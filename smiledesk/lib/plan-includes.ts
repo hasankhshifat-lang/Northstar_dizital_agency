@@ -1,22 +1,22 @@
 /**
- * What Bops costs, in the words the app and bops.bot show, and why there's no room for one more phone
+ * What SmileDesk costs, in the words the app and bops.bot show, and why there's no room for one more phone
  * number, email or computer. Two ways (cloud/protocol.ts BopsBilling):
  *
  * Billing by use (USAGE_CARD; bops.bot's pricing changes to the same words at the switch date, not
  * before, so the site never advertises it while Pro and Max are still sold): no plan. The user pays for what they use from their Orgo credit, the
- * Bops computer (Medium or Large, from Medium's price) by the hour while it works and nothing while it
+ * SmileDesk computer (Medium or Large, from Medium's price) by the hour while it works and nothing while it
  * sleeps, AI at Orgo's rate; a new Orgo account starts with Orgo's $5 of credit.
- * The numbers are BOPS_USAGE's, which Bops Cloud holds them to (orgo-web's own answer wins in the
+ * The numbers are BOPS_USAGE's, which SmileDesk Cloud holds them to (orgo-web's own answer wins in the
  * app: lib/bops-billing.ts).
  *
- * Bops' own plans (PLAN_CARDS), which the app shows only while orgo-web still bills by them (its
- * BOPS_USAGE_BILLING off). The numbers are BOPS_TIERS, which orgo-web and Bops Cloud hold each plan to:
+ * SmileDesk's own plans (PLAN_CARDS), which the app shows only while orgo-web still bills by them (its
+ * BOPS_USAGE_BILLING off). The numbers are BOPS_TIERS, which orgo-web and SmileDesk Cloud hold each plan to:
  *
- * - Free: $5 of AI credit once, the one free Bops computer (10 hours a month, 4 cores, 16 GB,
+ * - Free: $5 of AI credit once, the one free SmileDesk computer (10 hours a month, 4 cores, 16 GB,
  *   multi-screen), any number of bots sharing it; no phone number, no email.
  * - Pro, $20 a month: $20 of AI credit every month, the same one computer and as many bots on it,
  *   1 phone number and 1 email (the main bot's, set up with the plan); no more computers.
- * - Max, $200 a month: $200 of AI credit every month, up to 3 Bops computers, and up to 5 phone
+ * - Max, $200 a month: $200 of AI credit every month, up to 3 SmileDesk computers, and up to 5 phone
  *   numbers and 5 emails (the main bot's with the plan, the others when the user asks).
  * - People who can see the bots' computers on Orgo (the People sheet): none on Free, 2 on Pro, up to
  *   5 on Max.
@@ -26,7 +26,7 @@
 import { BOPS_TIERS, BOPS_USAGE, type BopsTier } from "@/cloud/protocol";
 import { rateText } from "@/lib/bops-billing";
 
-/** Where the plan's limits stand: one of Bops' plans, or billing by use ("usage"). */
+/** Where the plan's limits stand: one of SmileDesk's plans, or billing by use ("usage"). */
 export type RoomTier = BopsTier | "usage";
 
 /** Cents as money: "$0.11", "$3", "$5". */
@@ -36,7 +36,7 @@ const cents = (c: number) => (c % 100 === 0 ? `$${c / 100}` : `$${(c / 100).toFi
 export type PlanLine = { text: string; no?: true };
 
 /**
- * The Bops computers a plan includes, first on its card and set apart from its lines so nobody misses
+ * The SmileDesk computers a plan includes, first on its card and set apart from its lines so nobody misses
  * how many: `title` the count ("1 computer included"), `detail` what each one is.
  */
 export type PlanComputers = { title: string; detail: string };
@@ -53,7 +53,7 @@ const included = (tier: BopsTier) => {
  * Billing by use, as the account sheet and bops.bot say it: one card, no plan to pick. The computer is
  * Medium or Large, so it costs from the smaller one's price: `fromHourlyCents`, orgo-web's when it listed
  * the sizes (the app's), else BOPS_USAGE's (bops.bot's). `hourlyCents` instead: an orgo-web that makes
- * every Bops computer Large (before sizes), whose one price that is. `numberCents` is orgo-web's when it
+ * every SmileDesk computer Large (before sizes), whose one price that is. `numberCents` is orgo-web's when it
  * said it, else BOPS_USAGE's.
  */
 export function usageCard(p: { fromHourlyCents?: number; hourlyCents?: number; numberCents?: number } = {}) {
@@ -65,7 +65,7 @@ export function usageCard(p: { fromHourlyCents?: number; hourlyCents?: number; n
     price: "$0",
     per: "/month",
     computers: {
-      title: "Your own Bops computer",
+      title: "Your own SmileDesk computer",
       detail: one ? "4 cores, 16 GB RAM, 80 GB, multi-screen. It sleeps when nothing's using it." : "Medium or Large, 80 GB, multi-screen. It sleeps when nothing's using it.",
     },
     lines: [
@@ -152,7 +152,7 @@ const backOn = (resetsAt: number) => new Date(resetsAt).toLocaleDateString("en-U
 
 /** Free's computer has used its hours (this month's, when Orgo counts by the month), and when they're back. */
 export const freeHoursOutLine = (t: FreeHours) =>
-  `Your Bops computer has used its ${hoursOf(t.limitSeconds)} hours${byTheMonth(t.resetsAt) ? " this month" : ""}. It's back ${backOn(t.resetsAt)}, or upgrade to Pro to keep it on.`;
+  `Your SmileDesk computer has used its ${hoursOf(t.limitSeconds)} hours${byTheMonth(t.resetsAt) ? " this month" : ""}. It's back ${backOn(t.resetsAt)}, or upgrade to Pro to keep it on.`;
 
 /**
  * Free's computer time in the account sheet's words: `amount` the figure ("2 of 10 hours used", rounded
@@ -168,7 +168,7 @@ export function freeHoursWords(t: FreeHours): { note: string; amount: string; la
     note:
       t.usedSeconds >= t.limitSeconds
         ? freeHoursOutLine(t)
-        : `${monthly ? `Free includes ${limit} hours a month on your Bops computer. It ${sleeps}` : `Your Bops computer ${sleeps}`} Your hours start over ${backOn(t.resetsAt)}.`,
+        : `${monthly ? `Free includes ${limit} hours a month on your SmileDesk computer. It ${sleeps}` : `Your SmileDesk computer ${sleeps}`} Your hours start over ${backOn(t.resetsAt)}.`,
     amount: `${hoursOf(Math.floor(Math.min(t.usedSeconds, t.limitSeconds) / 360) * 360)} of ${limit} hours used`,
     label: monthly ? "Computer time this month" : "Computer time",
   };
@@ -187,13 +187,13 @@ export const upgradeLabel = (upgrade: "plan" | "max") => (upgrade === "plan" ? "
 
 /** Billing by use's limits on numbers and emails: nothing to upgrade to, so no button. */
 const USAGE_NUMBERS_FULL = `You have ${BOPS_USAGE.phoneNumbers} phone numbers, the most one account can have for now.`;
-const USAGE_EMAIL = "Bops includes 1 email, for your main bot.";
+const USAGE_EMAIL = "SmileDesk includes 1 email, for your main bot.";
 
 /**
  * Whether `bot` may have one more phone number, with `held` numbers on the account now (the main
  * bot's from the plan included): null when it may. On Pro the one number is the main bot's, which the
  * plan sets up itself. Billed by use, any bot may, up to BOPS_USAGE's, each paid from Orgo credit. The
- * words are Bops Cloud's refusal's (cloud/plans.ts numberRefusal), exactly.
+ * words are SmileDesk Cloud's refusal's (cloud/plans.ts numberRefusal), exactly.
  */
 export function numberShort(tier: RoomTier, held: number, bot: { isPlanBot: boolean }): PlanRoomShort | null {
   if (tier === "usage") return held < BOPS_USAGE.phoneNumbers ? null : { text: USAGE_NUMBERS_FULL, upgrade: null };
@@ -207,7 +207,7 @@ export function numberShort(tier: RoomTier, held: number, bot: { isPlanBot: bool
 
 /**
  * The same for an email, in the same words: `held` is how many of the user's bots have an inbox. Billed
- * by use, the main bot's is free (Bops Cloud sets it up) and is the one; a bot that has one keeps it.
+ * by use, the main bot's is free (SmileDesk Cloud sets it up) and is the one; a bot that has one keeps it.
  */
 export function emailShort(tier: RoomTier, held: number, bot: { isPlanBot: boolean }): PlanRoomShort | null {
   if (tier === "usage") return bot.isPlanBot ? null : { text: USAGE_EMAIL, upgrade: null };
@@ -220,15 +220,15 @@ export function emailShort(tier: RoomTier, held: number, bot: { isPlanBot: boole
 }
 
 /**
- * The same for a Bops computer: `held` is how many the user has (the free one included) and `more`
+ * The same for a SmileDesk computer: `held` is how many the user has (the free one included) and `more`
  * how many a bot's own computer takes (2 when the free one isn't made yet: the main bot's comes first).
  * The words are orgo-web's create gate's refusal (BOPS_COMPUTER_LIMIT, lib/bops-max-computers.ts), exactly.
  */
 export function computerShort(tier: BopsTier, held: number, more = 1): PlanRoomShort | null {
   const limit = BOPS_TIERS[tier].computers;
   if (held + more <= limit) return null;
-  if (tier === "max_bops") return { text: `Max includes up to ${MAX.computers} Bops computers, and you have ${MAX.computers}.`, upgrade: null };
-  return { text: `${BOPS_TIERS[tier].name} includes ${limit} Bops computer. Max includes up to ${MAX.computers}.`, upgrade: "max" };
+  if (tier === "max_bops") return { text: `Max includes up to ${MAX.computers} SmileDesk computers, and you have ${MAX.computers}.`, upgrade: null };
+  return { text: `${BOPS_TIERS[tier].name} includes ${limit} SmileDesk computer. Max includes up to ${MAX.computers}.`, upgrade: "max" };
 }
 
 /* ---------------- People ---------------- */
@@ -277,7 +277,7 @@ export function peopleShort(s: PeopleRoom, { withAccess, invited }: { withAccess
       ? { text: `Pro includes ${peopleCount(s.limit)}, and you have ${s.used} from before. They keep access, but to add someone, upgrade to Max or remove people.`, upgrade: "max" }
       : { text: `Pro includes ${peopleCount(s.limit)}, and you have ${s.used}. Max includes up to ${max}.`, upgrade: "max", ...(invited ? { note: "Or cancel an invite below to make room." } : {}) };
   // Max, or Free or Pro with no plan to buy: make room instead.
-  const includes = s.plan === "max_bops" ? `Max includes up to ${peopleCount(s.limit)}` : `Bops includes ${peopleCount(s.limit)}`;
+  const includes = s.plan === "max_bops" ? `Max includes up to ${peopleCount(s.limit)}` : `SmileDesk includes ${peopleCount(s.limit)}`;
   return over
     ? { text: `${includes}, and you have ${s.used} from before. They keep access, but to add someone, remove people first.`, upgrade: null }
     : { text: `${includes}, and you have ${s.used}. ${invited ? "Remove someone or cancel an invite" : "Remove someone"} to add someone else.`, upgrade: null };

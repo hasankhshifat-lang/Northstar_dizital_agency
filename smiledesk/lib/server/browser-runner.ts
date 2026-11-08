@@ -12,10 +12,10 @@ import { addMessage, getState, stateDevice } from "./store";
 /**
  * The bot's browser on a computer's runner (the "browser" loop: persist.ts RUNNER_LOOPS): the relay (lib/browser-relay.ts)
  * on this computer's Chrome, one per screen (DevTools on 127.0.0.1, 9200 + display, as vm/bin/bops-chrome starts it),
- * signed in to Bops Cloud as this computer, the same credential its other calls go on (cloudKey).
+ * signed in to SmileDesk Cloud as this computer, the same credential its other calls go on (cloudKey).
  *
  * Someone taking over a screen from the tab is the owner's takeover here (sessions.ts takeOver): the thread on that
- * screen pauses, nothing new starts there, the other Bops hear it's driven (AppState.driving), and handing it back
+ * screen pauses, nothing new starts there, the other SmileDesk hear it's driven (AppState.driving), and handing it back
  * (returnControl) carries the paused thread on, or the one that ended there waiting on someone to sign in, and the
  * bot's chat says who handed back. What a bot is doing with a screen's browser (a live thread on it: browsing) is said
  * as it changes (relay.activity), so a Watch chip shows before anyone watches. The Mac never runs this: a Mac's bots'

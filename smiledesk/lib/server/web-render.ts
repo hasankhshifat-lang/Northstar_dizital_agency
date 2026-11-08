@@ -13,7 +13,7 @@ import { dataRoot } from "./user-paths";
  * behind a "checking your browser" wall (Cloudflare, "verify you are human", a 403, 429 or 503 with a
  * page). Never for an address safeFetch refused: that check comes first, always.
  *
- * The browser is the one Bops ships: the Mac app (desktop/render.cjs) opens the page in a hidden window
+ * The browser is the one SmileDesk ships: the Mac app (desktop/render.cjs) opens the page in a hidden window
  * with a session of its own, in memory only, and hands back its visible text, title and links. This
  * server reaches it over a socket only this user can open (BOPS_RENDER_SOCKET, which the app sets),
  * with the window's token (BOPS_UI_TOKEN). Every request the page makes goes through a guard this server
@@ -202,8 +202,8 @@ function ask(payload: Record<string, unknown>, ms: number): Promise<Record<strin
         finish(new Error("The browser's answer couldn't be read."));
       }
     });
-    sock.on("error", () => finish(new Error("Bops' browser isn't available.")));
-    sock.on("close", () => finish(new Error("Bops' browser closed the connection.")));
+    sock.on("error", () => finish(new Error("SmileDesk's browser isn't available.")));
+    sock.on("close", () => finish(new Error("SmileDesk's browser closed the connection.")));
   });
 }
 
@@ -227,7 +227,7 @@ export const lastGuardRefusals = () => [...lastRefused];
  * time, or it never got past a "checking your browser" page.
  */
 export async function renderPage(url: string, opts: { limitMs?: number } = {}): Promise<Rendered> {
-  if (!browserAvailable()) throw new Error("Bops' browser isn't available.");
+  if (!browserAvailable()) throw new Error("SmileDesk's browser isn't available.");
   if (queued >= MAX_QUEUED) throw new Error("Too many pages are waiting for the browser.");
   const limit = Math.min(Math.max(1_000, opts.limitMs ?? RENDER_LIMIT_MS), RENDER_LIMIT_MS);
   queued++;

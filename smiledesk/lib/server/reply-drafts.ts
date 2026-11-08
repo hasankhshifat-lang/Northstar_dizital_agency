@@ -251,7 +251,7 @@ export function offerDraft(b: Bot, a: DraftArgs, read: ReadLog, earlier: readonl
   const mine = accountsOf(b).filter((x) => x.account.app === TOOLKIT[app]).map((x) => x.account);
   if (!mine.length) {
     if (app === "discord" && accountsOf(b).some((x) => x.account.app === "discord"))
-      return no(`the Discord app ${owner} connected can't post messages, so a Discord reply can't be sent from Bops. Write it in your answer instead, for ${owner} to copy.`);
+      return no(`the Discord app ${owner} connected can't post messages, so a Discord reply can't be sent from SmileDesk. Write it in your answer instead, for ${owner} to copy.`);
     return no(`you have no ${name} account it could go from. Write it in your answer instead.`);
   }
   // The place it goes, as given.
@@ -344,13 +344,13 @@ function patch(messageId: string, draftId: string, f: (d: ReplyDraft) => void) {
 const tidy = (e: unknown) => (String((e as Error)?.message ?? e) || "it didn't go").replace(/\s+/g, " ").trim().slice(0, 300);
 
 /**
- * The user's Send (POST /api/drafts/send, from the Bops window; never in a workspace shared with them, and never
+ * The user's Send (POST /api/drafts/send, from the SmileDesk window; never in a workspace shared with them, and never
  * on a computer's runner): `text` is the draft as they left it. Sent once: a draft already sent, or one going now
  * (a double click, two windows), isn't sent again. It goes from the account it was read with, while that account
  * is still connected and signed in; on a failure the draft stays unsent, with why, to send again.
  */
 export async function sendDraft(messageId: string, draftId: string, text: string): Promise<SendResult> {
-  if (onRunner()) return { ok: false, status: 409, error: "Send it from Bops on your Mac." };
+  if (onRunner()) return { ok: false, status: 409, error: "Send it from SmileDesk on your Mac." };
   const f = find(messageId, draftId);
   if (!f) return { ok: false, status: 404, error: "That reply isn't here anymore." };
   const { m, d } = f;

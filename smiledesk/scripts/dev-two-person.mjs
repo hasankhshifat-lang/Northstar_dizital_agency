@@ -1,25 +1,25 @@
-// A local two-person Bops: everything the Browser tab (components/app/bot-browser.tsx) needs to be seen working by an
+// A local two-person SmileDesk: everything the Browser tab (components/app/bot-browser.tsx) needs to be seen working by an
 // owner and a teammate at once, on this Mac, with nothing real in it. `start` brings up, in a temp folder:
 //
-// - a throwaway Postgres cluster on a free port (55432 when free), with the databases Bops Cloud and its tests use
+// - a throwaway Postgres cluster on a free port (55432 when free), with the databases SmileDesk Cloud and its tests use
 //   (orgo_stack for the stack, orgo_core and orgo_edge for `node --test cloud/test/`), set up as db/provision.sql does;
-// - Bops Cloud itself (cloud/server.ts) on it;
+// - SmileDesk Cloud itself (cloud/server.ts) on it;
 // - a fake orgo-web: sign-in (who each made-up key is) and bops-role for two made-up users, "owner" and "sam"
 //   (sam: member, Write on the bot, Use its computer; or Orgo's Admin with TWO_PERSON_MEMBER_ROLE=admin), from
 //   scripts/fixtures/two-person.mjs; a vault in memory for Keys (/api/secrets for the owner, the shared workspace's
 //   bops-keys routes for whoever has Keys there), whose values are never logged;
-// - a scripted model behind Bops Cloud's OpenAI proxy (BOPS_UPSTREAM_OPENAI): a message about a key gets the bot's
+// - a scripted model behind SmileDesk Cloud's OpenAI proxy (BOPS_UPSTREAM_OPENAI): a message about a key gets the bot's
 //   ask_for_key card (lib/server/keys.ts), anything else "Ok.", so a chat turn runs with nothing real in it;
 // - a stand-in bot computer: a headless Chrome with its own temp profile and DevTools port, and the browser relay
 //   (lib/browser-relay.ts) exactly as a computer's runner runs it, signed in as that computer;
 // - a test site that Chrome opens (a page with a unique word, a button, a field and a ticker; a sign-in page for the
 //   fixture's test account);
-// - two Bops apps (next dev), the owner's and sam's, each with a scratch HOME and a folder for a Keychain, signed in
+// - two SmileDesk apps (next dev), the owner's and sam's, each with a scratch HOME and a folder for a Keychain, signed in
 //   with their made-up keys and pointed at the local cloud and the fake orgo-web.
 //
 // It also answers on a control port for the end-to-end test (scripts/test-browser-tab-e2e.mjs): a bot step on the
 // stand-in's Chrome (page_script-style CDP), which waits while a person has control there, as the runner's do; and
-// the owner's Bops shut and started again (POST /owner/stop, /owner/start: the owner's Mac closed, then opened), the
+// the owner's SmileDesk shut and started again (POST /owner/stop, /owner/start: the owner's Mac closed, then opened), the
 // rest of the stack staying up.
 //
 // `stop` stops all of it and removes the temp folder. Nothing reaches a real service: every key is made up, the apps'
@@ -155,10 +155,10 @@ async function start() {
 function print(s) {
   console.log(
     [
-      `Two-person Bops is up (pid ${s.pid}):`,
-      `  owner's Bops   ${s.urls.owner}`,
-      `  sam's Bops    ${s.urls.sam}`,
-      `  Bops Cloud     ${s.urls.cloud}`,
+      `Two-person SmileDesk is up (pid ${s.pid}):`,
+      `  owner's SmileDesk   ${s.urls.owner}`,
+      `  sam's SmileDesk    ${s.urls.sam}`,
+      `  SmileDesk Cloud     ${s.urls.cloud}`,
       `  test site      ${s.urls.site}  (word ${s.word})`,
       `  control        ${s.urls.control}`,
       `  Postgres       127.0.0.1:${s.ports.pg}`,
@@ -243,7 +243,7 @@ function vaultRoute(vault, method, url, key, body) {
 }
 
 /**
- * The stack's model (POST /v1/responses through Bops Cloud's proxy): a chat turn whose latest words ask about a key, or
+ * The stack's model (POST /v1/responses through SmileDesk Cloud's proxy): a chat turn whose latest words ask about a key, or
  * the open issues, calls ask_for_key for GitHub (Notion when they say Notion; "again" or "card": to change it); its
  * answer after the card is said plainly; anything else is "Ok.", and a structured answer is the schema's emptiest one.
  */
@@ -270,8 +270,8 @@ function scriptedModel(b) {
     return say(/may use it now/.test(o) ? "Thanks, I can use it now." : /anymore/.test(o) ? "Done, that key is gone." : /^Declined/.test(o) ? "Ok, I'll leave it for now." : "I couldn't get the key just now.");
   }
   const words = (m) => (typeof m.content === "string" ? m.content : Array.isArray(m.content) ? m.content.map((c) => c.text ?? "").join(" ") : "");
-  const said = words([...input].reverse().find((m) => m.role === "user" && !/^\[Bops/.test(words(m))) ?? {});
-  // A Bops without the card (before ask_for_key): all a bot can do is say so.
+  const said = words([...input].reverse().find((m) => m.role === "user" && !/^\[SmileDesk/.test(words(m))) ?? {});
+  // A SmileDesk without the card (before ask_for_key): all a bot can do is say so.
   const notion = /notion/i.test(said);
   if (!asks && (b.tools ?? []).some((t) => t.name === "start_task") && /\bkey\b|issues/i.test(said)) return say(`I need a ${notion ? "Notion" : "GitHub"} key for that. Add one in Logins, Keys, then tell me.`);
   if (asks && /\bkey\b|issues/i.test(said)) {
@@ -382,7 +382,7 @@ async function serve() {
     await shutdown(1);
   };
 
-  /** Children stopped on purpose (the owner's Bops shut through the control port): their exit doesn't stop the stack. */
+  /** Children stopped on purpose (the owner's SmileDesk shut through the control port): their exit doesn't stop the stack. */
   const letGo = new Set();
   /** A child in its own process group (so stop ends what it starts too), its output in the stack's log with a prefix. */
   const run = (name, cmd, args, opts = {}) => {
@@ -409,7 +409,7 @@ async function serve() {
   };
 
   try {
-    /* Postgres: a cluster of its own, trust on loopback only, the databases Bops Cloud and its tests use. */
+    /* Postgres: a cluster of its own, trust on loopback only, the databases SmileDesk Cloud and its tests use. */
     const pgDir = join(dir, "pg");
     say(`Postgres on ${ports.pg}`);
     const init = spawnSync(pgBin("initdb"), ["-D", pgDir, "-U", "postgres", "--auth=trust", "-E", "UTF8", "--no-instructions"], { encoding: "utf8" });
@@ -460,7 +460,7 @@ async function serve() {
         const w = workspacesFor(key);
         return w ? send(200, { workspaces: w }) : send(401, { error: "Invalid API key" });
       }
-      // The bot's computer, as the owner's Bops looks it up (lib/server/orgo.ts computer): up, in the shared workspace. Never a VNC password.
+      // The bot's computer, as the owner's SmileDesk looks it up (lib/server/orgo.ts computer): up, in the shared workspace. Never a VNC password.
       if (req.method === "GET" && url.pathname === `/api/computers/${COMPUTER.id}` && key === OWNER.key)
         return send(200, { id: COMPUTER.id, name: `${BOT.name}'s computer`, status: "running", cpu: 4, ram: 8, os: "linux", workspace_id: PROJECT.id, project_id: PROJECT.id });
       // Who's in the shared workspace, as the owner's People sheet reads it: the owner, and sam with Use its computer.
@@ -512,14 +512,14 @@ async function serve() {
     servers.push(site);
     await new Promise((r) => site.listen(ports.site, "127.0.0.1", r));
 
-    /* Bops Cloud. */
-    say(`Bops Cloud on ${ports.cloud}`);
+    /* SmileDesk Cloud. */
+    say(`SmileDesk Cloud on ${ports.cloud}`);
     const cloud = run("cloud", process.execPath, [join(root, "cloud", "server.ts")], {
       cwd: root,
       // Its OpenAI is the scripted model on the fake orgo-web (a made-up key that only it takes).
       env: { ...cleanEnv(), BOPS_DATABASE_URL: DB, BOPS_CLOUD_PORT: String(ports.cloud), BOPS_CLOUD_SECRET: randomBytes(32).toString("base64"), BOPS_ORGO_ORIGIN: ORGO, BOPS_CLOUD_PUBLIC_URL: urls.cloud, BOPS_UPSTREAM_OPENAI: ORGO, OPENAI_API_KEY: "sk-two-person-scripted-model" },
     });
-    await waitFor("Bops Cloud", () => cloud.output().includes(`listening on 127.0.0.1:${ports.cloud}`), 60_000);
+    await waitFor("SmileDesk Cloud", () => cloud.output().includes(`listening on 127.0.0.1:${ports.cloud}`), 60_000);
 
     /* The owner's state, before either app starts: the bot on the stand-in computer, and sam's access. */
     const pg = require("pg");
@@ -568,14 +568,14 @@ async function serve() {
       onControl: (bot, display, who, was) => {
         say(`control of screen ${display} (${bot}): ${who ? who.name : "handed back"}`);
         // Handed back: the bot's chat says so, as a runner's does (lib/server/browser-runner.ts), posted the way a
-        // runner posts its notes: to Bops Cloud, signed in as the computer.
+        // runner posts its notes: to SmileDesk Cloud, signed in as the computer.
         if (!who && was) void postNote(handedBack(was.name, BOT.name));
       },
       log: (m) => console.log(`[relay] ${m}`),
     };
     relay = startRelay(relayOptions);
 
-    /** A note from Bops in the bot's chat, as the computer's runner posts one (POST /v1/messages, its own key). */
+    /** A note from SmileDesk in the bot's chat, as the computer's runner posts one (POST /v1/messages, its own key). */
     async function postNote(text, extra = {}) {
       const res = await fetch(`${urls.cloud}/v1/messages`, {
         method: "POST",
@@ -594,7 +594,7 @@ async function serve() {
     const app = (who, person, port, dist) => {
       const home = join(dir, `${who}-home`);
       const keychain = join(dir, `${who}-keychain`);
-      // (Again for the owner's Bops started after a shut: the same folders, so it's the same Mac.)
+      // (Again for the owner's SmileDesk started after a shut: the same folders, so it's the same Mac.)
       mkdirSync(home, { recursive: true });
       mkdirSync(keychain, { recursive: true });
       writeFileSync(join(keychain, encodeURIComponent("orgo-api-key")), person.key);
@@ -611,7 +611,7 @@ async function serve() {
         },
       });
     };
-    say(`owner's Bops on ${ports.owner}, sam's on ${ports.sam}`);
+    say(`owner's SmileDesk on ${ports.owner}, sam's on ${ports.sam}`);
     let ownerApp = app("owner", OWNER, ports.owner);
     const samApp = app("sam", SAM, ports.sam, ".scratch/next-sam");
     await waitFor("both apps", () => /Ready in/.test(ownerApp.output()) && /Ready in/.test(samApp.output()), 120_000);
@@ -628,18 +628,18 @@ async function serve() {
       try {
         if (url.pathname === "/info") return send(200, { word, urls, ports, bot: BOT, project: PROJECT, sam: SAM_ROLE, account: { user: ACCOUNT.user } });
         if (url.pathname === "/relay") return send(200, relay ? relay.status() : { none: true });
-        // The stand-in computer cut off from Bops Cloud, and back (its runner gone a while: the tab's "can't be reached").
+        // The stand-in computer cut off from SmileDesk Cloud, and back (its runner gone a while: the tab's "can't be reached").
         if (url.pathname === "/relay/cut" && req.method === "POST") {
           await relay?.stop();
           relay = null;
           return send(200, { cut: true });
         }
-        // The owner's Bops shut (the owner's Mac closed: its tunnel goes), and started again on the same folders; the rest stays up.
+        // The owner's SmileDesk shut (the owner's Mac closed: its tunnel goes), and started again on the same folders; the rest stays up.
         if (url.pathname === "/owner/stop" && req.method === "POST") {
           const pid = ownerApp.child.pid;
           letGo.add(pid);
           process.kill(-pid, "SIGTERM");
-          // A moment to save what it holds to Bops Cloud, as a quit does; then nothing of it is left.
+          // A moment to save what it holds to SmileDesk Cloud, as a quit does; then nothing of it is left.
           for (const end = Date.now() + 5000; groupAlive(pid) && Date.now() < end; ) await sleep(200);
           await endGroup(pid);
           children.splice(children.indexOf(pid), 1);
@@ -647,9 +647,9 @@ async function serve() {
           return send(200, { stopped: true });
         }
         if (url.pathname === "/owner/start" && req.method === "POST") {
-          if (groupAlive(ownerApp.child.pid)) return send(409, { error: "the owner's Bops is running" });
+          if (groupAlive(ownerApp.child.pid)) return send(409, { error: "the owner's SmileDesk is running" });
           ownerApp = app("owner", OWNER, ports.owner);
-          await waitFor("the owner's Bops", () => fetch(urls.owner).then((r) => r.ok, () => false), 240_000);
+          await waitFor("the owner's SmileDesk", () => fetch(urls.owner).then((r) => r.ok, () => false), 240_000);
           return send(200, { started: true });
         }
         if (url.pathname === "/relay/back" && req.method === "POST") {

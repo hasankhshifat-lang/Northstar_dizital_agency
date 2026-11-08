@@ -8,7 +8,7 @@ import { createContext, useContext, useLayoutEffect, useMemo, useRef } from "rea
  * bot's chat, for the owner to add their words and send. Select's line comes with where that is in the page's code
  * (lib/app-preview.ts pickCode), which never shows in the box: it goes with the message for the bot (Message.picks). bops-app.tsx holds the bridge (useComposerBridgeHost) and
  * brings that chat up; chat-view.tsx's composer takes what's for it (listen) as soon as it shows. A message sent with
- * any of it is tagged appNote, as Bops' other words about an app are (a shared workspace's members without its apps
+ * any of it is tagged appNote, as SmileDesk's other words about an app are (a shared workspace's members without its apps
  * never see it).
  */
 

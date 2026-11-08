@@ -1,7 +1,7 @@
 // Tests for reading a page in a browser when a plain fetch can't: lib/server/web-render.ts (when a page
 // needs the browser, the sites remembered for 7 days, the one-at-a-time queue), lib/server/render-guard.ts
 // (the gate every request of a rendered page goes through: the same address checks as safe-fetch) and,
-// with the real Electron Bops ships, desktop/render.cjs (the hidden window, through
+// with the real Electron SmileDesk ships, desktop/render.cjs (the hidden window, through
 // scripts/render-harness.cjs) and how lib/server/web-page.ts uses it all (readPage, pageLines).
 //
 // The pages come from a fixture server on 127.0.0.1 let through with BOPS_FETCH_ALLOW; a second server,
@@ -95,7 +95,7 @@ Promise.all(Object.entries(tries).map(([name, go]) => Promise.race([go(), new Pr
 // A shell whose script never arrives: the page never finishes loading.
 const SLOW = `<!doctype html><html><head><title>Slow</title><script src="/never.js"></script></head><body><div id="root"></div></body></html>`;
 
-const isBrowser = (ua = "") => /Chrome\//.test(ua) && !/^Bops\//.test(ua);
+const isBrowser = (ua = "") => /Chrome\//.test(ua) && !/^SmileDesk\//.test(ua);
 const hits = { plain: new Map(), browser: new Map(), canary: [] };
 const count = (req, path) => {
   const m = isBrowser(req.headers["user-agent"]) ? hits.browser : hits.plain;
@@ -359,7 +359,7 @@ await part("The guard: every request a rendered page makes is checked like safe-
       });
       assert.match(body, /About us/);
     });
-    await check("Bops' own ports never, even when BOPS_FETCH_ALLOW names them", async () => {
+    await check("SmileDesk's own ports never, even when BOPS_FETCH_ALLOW names them", async () => {
       process.env.BOPS_FETCH_ALLOW = `127.0.0.1:${port},127.0.0.1:3210,127.0.0.1:9222,127.0.0.1:8897`;
       for (const t of ["127.0.0.1:3210", "127.0.0.1:9222", "127.0.0.1:8897"]) {
         const { status, socket } = await connectVia(guard.port, t);
@@ -509,9 +509,9 @@ if (process.platform !== "darwin" || !existsSync(ELECTRON)) {
         assert.match(p.text, /How sites check for bots/);
         assert.ok(Date.now() - t < 8000, `${Date.now() - t} ms`);
       });
-      await check("the browser says it's Chrome, not Electron or Bops", () => {
+      await check("the browser says it's Chrome, not Electron or SmileDesk", () => {
         assert.ok(userAgents.size > 0);
-        for (const ua of userAgents) assert.doesNotMatch(ua, /Electron|Bops/, ua);
+        for (const ua of userAgents) assert.doesNotMatch(ua, /Electron|SmileDesk/, ua);
       });
       fresh();
       await check("a plain page on a site not remembered never goes to the browser", async () => {

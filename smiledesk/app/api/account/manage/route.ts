@@ -6,8 +6,8 @@ import { notReady } from "@/lib/server/ready";
 export const dynamic = "force-dynamic";
 
 /**
- * Change or cancel the paid Bops plan, update the card, see invoices: Orgo's page for it (Stripe's
- * billing portal, Bops plans only), for the app to open in the browser. Answers {url}, or {error}.
+ * Change or cancel the paid SmileDesk plan, update the card, see invoices: Orgo's page for it (Stripe's
+ * billing portal, SmileDesk plans only), for the app to open in the browser. Answers {url}, or {error}.
  */
 export async function POST() {
   const unready = notReady();

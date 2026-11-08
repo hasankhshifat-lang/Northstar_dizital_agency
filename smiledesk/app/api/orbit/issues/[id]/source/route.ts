@@ -10,16 +10,16 @@ export const dynamic = "force-dynamic";
 
 /*
  * The email or thread an issue came from (lib/server/issue-source.ts), read live from the user's own account for
- * the issue's page, and a reply to it from there. Only for the Bops window (a page a bot's Chrome reached this
+ * the issue's page, and a reply to it from there. Only for the SmileDesk window (a page a bot's Chrome reached this
  * server with mustn't read the user's mail or send as them), never while a workspace shared with the user is open
  * (its threads are its owner's, read from their own accounts), and nothing of it is kept but a minute in memory.
  */
 
 const no = (status: number, code: string, error: string) => Response.json({ error, code }, { status, headers: { "Cache-Control": "no-store" } });
 
-/** Who may: the Bops window, with no shared workspace open. */
+/** Who may: the SmileDesk window, with no shared workspace open. */
 function refused(request: Request) {
-  if (!fromBopsWindow(request)) return no(403, "window", "Only the Bops app can show the original.");
+  if (!fromBopsWindow(request)) return no(403, "window", "Only the SmileDesk app can show the original.");
   if (sharedOpen()) return no(403, "shared", "Only the workspace's owner can see the original.");
   return null;
 }

@@ -1,11 +1,11 @@
 import type { MemberAppAct, SharedApps, SharedGroup } from "@/cloud/protocol";
 /**
  * Workspaces shared with the user (cloud/members.ts, lib/server/shared.ts): someone added them to one of
- * their Bops workspaces' Orgo projects, and they watch it here. With Write on a bot (the owner's choice,
+ * their SmileDesk workspaces' Orgo projects, and they watch it here. With Write on a bot (the owner's choice,
  * per bot) they act there too: chat with it, reply in its threads, answer what it asks and stop it, sent
- * to the owner's Bops through Bops Cloud (canAct). Shared by the window and the server; no server imports.
+ * to the owner's SmileDesk through SmileDesk Cloud (canAct). Shared by the window and the server; no server imports.
  *
- * A shared workspace is never the user's own: what's shown of it comes from Bops Cloud and is kept in
+ * A shared workspace is never the user's own: what's shown of it comes from SmileDesk Cloud and is kept in
  * the server's memory alone (never in the user's state, never synced, never on disk), and it's shown in
  * place of the user's own workspace while it's open.
  */
@@ -25,7 +25,7 @@ export type SharedWorkspace = { projectId: string; name: string; owner: string; 
  * `ownBots`: how many bots each of the user's own workspaces has, for the switcher (the window's bots are the shared one's).
  */
 /**
- * The shared workspace open now. `more`: its chats with older messages in Bops Cloud than the window has,
+ * The shared workspace open now. `more`: its chats with older messages in SmileDesk Cloud than the window has,
  * read a page at a time ("Show earlier messages": POST /api/workspaces/shared { older: <chat id> }).
  * `levels`: the viewer's level for each of its bots, as the owner set it (Write lets them act: canAct).
  * `you`: the viewer's Orgo user id, which tells their own words there from other members' (saidBy).
@@ -48,35 +48,35 @@ export type SharedOpen = SharedWorkspace & {
    */
   screens?: string[];
   /**
-   * The owner's Bops takes an Admin's acts (cloud/ws-slice.ts sharedSlice, SharedWsSlice.adminActs): an Admin answers the
+   * The owner's SmileDesk takes an Admin's acts (cloud/ws-slice.ts sharedSlice, SharedWsSlice.adminActs): an Admin answers the
    * owner's own asks and picks where a thread runs; a Member's cards say an Admin can. `ownerOld`: for an Admin, it can't
-   * yet (the owner's Bops needs an update). Neither: a Bops Cloud from before Admin powers.
+   * yet (the owner's SmileDesk needs an update). Neither: a SmileDesk Cloud from before Admin powers.
    */
   adminActs?: true;
   ownerOld?: true;
-  /** For an Admin: the owner's Bops publishes for them (SharedWsSlice.adminPublish), so Your Apps shows Publish. */
+  /** For an Admin: the owner's SmileDesk publishes for them (SharedWsSlice.adminPublish), so Your Apps shows Publish. */
   adminPublish?: true;
-  /** What the user did to them that the owner's Bops hasn't kept yet: on its way, waiting, or not gone and why. */
+  /** What the user did to them that the owner's SmileDesk hasn't kept yet: on its way, waiting, or not gone and why. */
   appActs?: { key: string; act: MemberAppAct; at: number; state: "sending" | "waiting" | "failed"; error?: string }[];
   /** The same for a bot's How I work (bot-panel.tsx HowIWork). */
   personaActs?: { key: string; botId: string; state: "sending" | "waiting" | "failed"; error?: string }[];
   /** What they may change here (cloud/member-access.ts Power: an Admin every one, a Member the ones turned on for them in Team). */
   can?: string[];
-  /** The owner's Bops takes their changes (SharedWsSlice.changes). */
+  /** The owner's SmileDesk takes their changes (SharedWsSlice.changes). */
   changes?: true;
   /** Their changes on their way to the owner's Mac, or that didn't go (with why): lib/server/change-relay.ts. */
   changeActs?: { key: string; path: string; state: "sending" | "waiting" | "failed"; error?: string }[];
   /**
    * Keys (cloud/ws-slice.ts keysOf): the user manages this workspace's own keys and picks which bots use any key it sees
-   * (keys.tsx). `keyActs`: the owner's Bops takes those switches; without it they wait for its update.
+   * (keys.tsx). `keyActs`: the owner's SmileDesk takes those switches; without it they wait for its update.
    */
   keys?: true;
   keyActs?: true;
-  /** A bot's key switched here that the owner's Bops hasn't kept yet: on its way, waiting, or not gone and why. */
+  /** A bot's key switched here that the owner's SmileDesk hasn't kept yet: on its way, waiting, or not gone and why. */
   keySends?: { key: string; botId: string; name: string; on: boolean; state: "sending" | "waiting" | "failed"; error?: string }[];
 };
 
-/** The id a shared workspace has in the window's state: its own Bops id could be the same as one of the user's ("ws_main"). */
+/** The id a shared workspace has in the window's state: its own SmileDesk id could be the same as one of the user's ("ws_main"). */
 export const sharedWsId = (projectId: string) => `shared_${projectId}`;
 
 /**
@@ -103,7 +103,7 @@ export function computerLine(state: Viewing, bots: readonly { name: string }[]):
 
 /**
  * Whether a Member sees a shared workspace's bot's browser (components/app/bot-browser.tsx) in place of its computer:
- * the owner gave them Write on it and Use its computer, as Bops Cloud checks again before it shows a frame
+ * the owner gave them Write on it and Use its computer, as SmileDesk Cloud checks again before it shows a frame
  * (cloud/browser.ts mayUseBrowser). An Admin keeps the computer's live view there and has the browser in a tab beside it
  * (panel-tabs.tsx browserBeside), as the owner does. Never a bot on the owner's Mac. False outside a shared workspace.
  */
@@ -111,7 +111,7 @@ export const seesBrowser = (state: Viewing, bot: { id: string; runsOn?: string }
   !!state.shared && state.shared.role !== "admin" && bot.runsOn !== "mac" && state.shared.levels?.[bot.id] === "write" && state.shared.computer === true;
 
 /**
- * In a shared workspace, why a Member's Bops doesn't show the bot's browser in place of its computer (said after where
+ * In a shared workspace, why a Member's SmileDesk doesn't show the bot's browser in place of its computer (said after where
  * its work shows, computer.tsx NoComputer), or null: an Admin, a bot on the owner's Mac, or one it shows.
  */
 export function browserLine(state: Viewing, bot: { id: string; name: string; runsOn?: string }): string | null {
@@ -173,11 +173,11 @@ export const yourMac = (state: Viewing) => `${your(state)} Mac`;
 /**
  * Whether the user may change something that needs `power` (cloud/member-access.ts Power) in the workspace open: always in their own;
  * in one shared with them, when it's theirs there (an Admin has every one, a Member the ones turned on for them in Team)
- * and the owner's Bops takes changes. `soon`: theirs, with the owner's Bops not yet new enough (the window says so).
+ * and the owner's SmileDesk takes changes. `soon`: theirs, with the owner's SmileDesk not yet new enough (the window says so).
  */
 /**
- * Who the viewer is for an Admin power (cloud/member-access.ts adminMay): an Admin the owner's Bops takes acts from, with
- * their switches too once the owner's Bops takes those (a Member with The owner's Mac on answers its asks).
+ * Who the viewer is for an Admin power (cloud/member-access.ts adminMay): an Admin the owner's SmileDesk takes acts from, with
+ * their switches too once the owner's SmileDesk takes those (a Member with The owner's Mac on answers its asks).
  */
 export const powerWho = (state: Viewing): PowerWho => ({
   admin: adminActs(state),
@@ -189,7 +189,7 @@ export const mayChange = (state: Viewing, power: Power, { soon = false } = {}) =
 
 /**
  * Whether the viewer may act in a shared workspace for these bots: every one at Write (a group with one at Read
- * stays watch only). Never in the user's own, where everything's theirs and nothing goes through Bops Cloud.
+ * stays watch only). Never in the user's own, where everything's theirs and nothing goes through SmileDesk Cloud.
  */
 export const canAct = (state: Viewing, botIds: readonly string[]) => !!state.shared && botIds.length > 0 && botIds.every((id) => state.shared!.levels?.[id] === "write");
 /**
@@ -216,12 +216,12 @@ export function saidName(m: { role: string; member?: { userId: string; name: str
   return who === null ? null : who === "you" ? "You" : who === "owner" ? "Owner" : who.name;
 }
 
-/** Whether the viewer is an Admin of the shared workspace open whose acts the owner's Bops takes (SharedOpen.adminActs). */
+/** Whether the viewer is an Admin of the shared workspace open whose acts the owner's SmileDesk takes (SharedOpen.adminActs). */
 export const adminActs = (state: Viewing) => state.shared?.role === "admin" && state.shared.adminActs === true;
 
 /**
  * Whether the viewer may tell a thread something here (reply, Nothing to add): theirs in their own workspace; in a
- * shared one, with Write on its bot, and never one on the owner's Mac (Bops Cloud refuses it: a member's words, an
+ * shared one, with Write on its bot, and never one on the owner's Mac (SmileDesk Cloud refuses it: a member's words, an
  * Admin's too, never reach work there: cloud/member-access.ts threadOwnersOnly).
  */
 export const writesThread = (state: Viewing, s: { botId: string; runsOn?: string; app?: unknown }) => !readOnly(state, [s.botId]) && !(state.shared && threadOwnersOnly(s, adminActs(state))) && !appWorkBlocked(state, s);
@@ -231,7 +231,7 @@ const reachesComputer = (state: Viewing, s: { runsOn?: string }) => !state.share
 
 /**
  * Whether the viewer may say they're done with a thread (Dismiss, Never mind, Stop on a card): as telling it more takes
- * (writesThread), and its computer theirs to use (Bops Cloud refuses it otherwise).
+ * (writesThread), and its computer theirs to use (SmileDesk Cloud refuses it otherwise).
  */
 export const tellsThread = (state: Viewing, s: { botId: string; runsOn?: string }) => writesThread(state, s) && reachesComputer(state, s);
 
@@ -239,8 +239,8 @@ export const tellsThread = (state: Viewing, s: { botId: string; runsOn?: string 
 export const OWNER_ONLY_LINE = "Only the owner can answer this.";
 /** The same, once an Admin can answer it too (SharedOpen.adminActs). */
 export const OWNER_OR_ADMIN_LINE = "Only the owner or an Admin can answer this.";
-/** For an Admin, while the owner's Bops is too old to take their answer (SharedOpen.ownerOld). */
-export const OWNER_UPDATE_LINE = "The owner's Bops needs an update before you can answer this.";
+/** For an Admin, while the owner's SmileDesk is too old to take their answer (SharedOpen.ownerOld). */
+export const OWNER_UPDATE_LINE = "The owner's SmileDesk needs an update before you can answer this.";
 /** An OK to give on the owner's own phone. */
 export const OWNER_PHONE_LINE = "Only the owner can approve this on their phone.";
 /** A payment at the screen: it spends the owner's money. */
@@ -256,7 +256,7 @@ export { OWNERS_KEY_LINE } from "@/cloud/protocol";
 /** In a shared workspace, for someone without Keys (cloud/protocol.ts MEMBER_NO_KEYS): who gives it. */
 export const KEYS_GIVEN_LINE = "The owner or an Admin can give you Keys.";
 /**
- * Under an answer on its way while the owner's Bops is shut: it goes when it opens (as long as the ask waits). Said of the
+ * Under an answer on its way while the owner's SmileDesk is shut: it goes when it opens (as long as the ask waits). Said of the
  * workspace's Mac, never "the owner": the person reading can't act on them (nor on the lines below).
  */
 export const ANSWER_WAITS_LINE = "The workspace's Mac is closed. Your answer goes when it opens.";
@@ -267,14 +267,14 @@ export const APP_WORK_LINE = "This is app work. Ask the owner for Write on Your 
 
 /**
  * Whether a thread is the owner's app work the viewer may not tell or answer: one on an app (Session.app, only ever in the
- * view of someone shown it), without Your Apps at Write here (an Admin always has it). Bops Cloud and the owner's Mac say no.
+ * view of someone shown it), without Your Apps at Write here (an Admin always has it). SmileDesk Cloud and the owner's Mac say no.
  */
 export const appWorkBlocked = (state: Viewing, t: { app?: unknown } | undefined) => !!state.shared && !!t?.app && state.shared.apps?.level !== "write";
 
 /** "you" when the viewer answers a card, else the one line shown in place of its buttons (never buttons that do nothing). */
 export type Answerer = "you" | (string & {});
 
-/** Who answers what only the owner, or an Admin the owner's Bops takes acts from, may: the line for this viewer. */
+/** Who answers what only the owner, or an Admin the owner's SmileDesk takes acts from, may: the line for this viewer. */
 function ownersLine(state: Viewing): string {
   const sh = state.shared!;
   if (sh.role === "admin") return sh.ownerOld ? OWNER_UPDATE_LINE : OWNER_ONLY_LINE;
@@ -284,8 +284,8 @@ function ownersLine(state: Viewing): string {
 /**
  * Who answers an ask (lib/types.ts AppApproval: Deny, Always allow, Allow once) here: "you", or the line to show in
  * place of its buttons. Theirs in their own workspace; in a shared one, with Write on its bot, and one to use the
- * owner's Connected apps or keys, or of a thread on the owner's Mac, only for an Admin the owner's Bops takes acts from
- * (cloud/member-access.ts askOwnersOnly); work on a bot's computer only with Use its computer. Bops Cloud, the owner's
+ * owner's Connected apps or keys, or of a thread on the owner's Mac, only for an Admin the owner's SmileDesk takes acts from
+ * (cloud/member-access.ts askOwnersOnly); work on a bot's computer only with Use its computer. SmileDesk Cloud, the owner's
  * Mac and the viewer's Mac (lib/server/shared-core.ts refusal) go by the same rules.
  */
 export function askAnswerer(state: Viewing & { sessions?: readonly { id: string; botId: string; runsOn?: string; app?: unknown }[] }, a: { botId: string; kind?: string; threadId?: string }): Answerer {
@@ -335,7 +335,7 @@ export function threadAnswerer(state: Viewing & { bots: readonly { id: string; r
 
 /**
  * Who picks where an undecided thread runs (Session.askWhere): "you" in their own workspace, and an Admin the owner's
- * Bops takes acts from (the bot's computer only: never the owner's Mac); else the line.
+ * SmileDesk takes acts from (the bot's computer only: never the owner's Mac); else the line.
  */
 export function whereAnswerer(state: Viewing, s: { botId: string }): Answerer {
   if (!state.shared) return "you";
@@ -362,18 +362,18 @@ export const SHARED_SCREEN_WORDS = {
 };
 
 /**
- * A line Bops wrote in the user's own voice ("Stopped by you", "You took over from Boppy · paused Book
+ * A line SmileDesk wrote in the user's own voice ("Stopped by you", "You took over from Boppy · paused Book
  * flight", "Texted you: …", "Max didn't send it: you said no", "Running “X” in the cloud (you texted it)"),
  * as a viewer of a shared workspace reads it: of its owner, never of them (lib/server/shared-core.ts
- * viewState puts it on Bops' notes and a thread's notes and why it stopped, never on what a bot or
+ * viewState puts it on SmileDesk's notes and a thread's notes and why it stopped, never on what a bot or
  * someone wrote). What it asks the user to do is theirs to do, so it goes, and so does a phone number of
  * theirs. What it quotes (“…” or "…") is someone's words as they were said, and stays as it is.
  */
 export function ownerVoice(text: string, keep: readonly string[] = []): string {
-  // Quoted spans at odd places, as said, and what `keep` names (a thread's title), as written: only what's around them is Bops' line.
+  // Quoted spans at odd places, as said, and what `keep` names (a thread's title), as written: only what's around them is SmileDesk's line.
   const kept = keep.filter((k) => k.trim()).map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
   // (What `keep` names first: one that starts with a quote of its own is kept whole, not cut at its first inner quote.)
-  // A web address is never Bops' words either ("Read https://example.com/what-you-need-to-know", "Stopped watching your-bank.com").
+  // A web address is never SmileDesk's words either ("Read https://example.com/what-you-need-to-know", "Stopped watching your-bank.com").
   const spans = new RegExp(`(${kept.length ? `${kept.join("|")}|` : ""}“[^”]*”|"[^"\n]*"|https?:\\/\\/[^\\s"“”]+|\\b[\\w-]+(?:\\.[\\w-]+)*\\.[A-Za-z]{2,}\\b(?:\\/[^\\s"“”]*)?)`);
   return text
     .replace(/\s*·\s*say “[^”]*” to change that\.?$/, "")
@@ -382,7 +382,7 @@ export function ownerVoice(text: string, keep: readonly string[] = []): string {
     .join("");
 }
 
-/** The owner's side of one of Bops' lines (not what it quotes): ownerVoice. */
+/** The owner's side of one of SmileDesk's lines (not what it quotes): ownerVoice. */
 function bopsVoice(text: string): string {
   return (
     text
@@ -405,7 +405,7 @@ function bopsVoice(text: string): string {
 /**
  * The card of a call the owner made to a bot (its transcript, "You: …", or "While your Mac was away, you
  * called: …"), as a viewer of a shared workspace reads it: the owner's, never theirs. What was said on the
- * call stays as it was said (someone's words, not Bops').
+ * call stays as it was said (someone's words, not SmileDesk's).
  */
 export function ownerCall(text: string): string {
   return text
@@ -418,7 +418,7 @@ export function ownerCall(text: string): string {
 export const OWNER_CREDIT_LINE = "It's the owner's credit: only they can add more.";
 
 /**
- * A bot's line Bops wrote for it (out of AI credit), as a viewer reads it: what to do about the owner's credit is the
+ * A bot's line SmileDesk wrote for it (out of AI credit), as a viewer reads it: what to do about the owner's credit is the
  * owner's (ownerVoice), so it says whose credit it is and who can add more (OWNER_CREDIT_LINE).
  */
 export const ownerCredit = (text: string) =>

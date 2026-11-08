@@ -22,7 +22,7 @@
 // "<project>/<name>", as orgo-web takes it; an app's domains are the ones its computer serves on its deploy project's
 // port, a bought domain's zone is read once with Orgo's records locked (and why), one bought elsewhere has the records to
 // set, and DNS changes go only to the zone of a domain that points at the app, with Orgo's refusals in plain words; the
-// routes, writes from the Bops window only. Add app (the main bot's task through the normal path, put live once built
+// routes, writes from the SmileDesk window only. Add app (the main bot's task through the normal path, put live once built
 // when asked; a name that can't be a repo's, one taken by an app or by a repo in Ingot, Ingot not answering); an app's
 // settings (only what changed sent; a new port moves its own domains with it), its variables (the values to orgo-web
 // alone: never in the state, on disk, in a log or an answer), a rollback (only one of its own Orgo says can be put
@@ -35,7 +35,7 @@
 // orgo-web is a fake (a computer's status and bash, the deploy routes and their settings, variables and rollbacks, its
 // custom domains, a bought domain's zone, domain search and buying, answered from a stubbed fetch: nothing is bought), the central
 // Ingot is a fake (its workspace paths, signing in with Orgo keys and workspace roles, agent tokens), each computer is a
-// fake that runs only the commands Bops sends (one runs the token's commands in a real shell, with openssl), OpenAI is a fake, sessions.ts is a stand-in that records the tasks started, the
+// fake that runs only the commands SmileDesk sends (one runs the token's commands in a real shell, with openssl), OpenAI is a fake, sessions.ts is a stand-in that records the tasks started, the
 // Keychain is never there, and the state lives in a throwaway folder: nothing reaches a real service. The keys in it
 // are made up.
 //
@@ -95,11 +95,11 @@ globalThis.bopsOrgoKey = ORGO_KEY;
 const work = join(scratch, "work");
 mkdirSync(work);
 process.chdir(work);
-// The ingot binaries this Bops carries: a made-up amd64 one (random bytes, so it goes in several pieces), no arm64 one.
+// The ingot binaries this SmileDesk carries: a made-up amd64 one (random bytes, so it goes in several pieces), no arm64 one.
 const vendor = join(scratch, "vendor-ingot");
 mkdirSync(vendor);
 process.env.BOPS_INGOT_DIR = vendor;
-// This Bops' bops-local, put on a computer as Local starts (vm/bin/bops-local).
+// This SmileDesk's bops-local, put on a computer as Local starts (vm/bin/bops-local).
 process.env.BOPS_LOCAL_SCRIPT = join(root, "vm/bin/bops-local");
 // ssh and ssh-keygen are stand-ins, never the real ones: ssh-keygen makes a made-up key pair and says so in
 // keygen.log; ssh says its argv in ssh.log, refuses as a real one would (no answer, a host key that isn't the one
@@ -227,7 +227,7 @@ const central = {
 const PROJECT = "3f6c2a1e-8b4d-4c7a-9e21-5d0b7a9c4f13";
 const repoOf = (name, ws = PROJECT) => central.repos.get(`${ws}/${name}`);
 
-/** Ingot's API (hosted-api.md), as far as Bops calls it. */
+/** Ingot's API (hosted-api.md), as far as SmileDesk calls it. */
 function ingotCentral(req, body) {
   const u = new URL(req.url);
   const raw = req.headers.get("x-ingot-author");
@@ -300,7 +300,7 @@ function commit(name, message, who, changes = { added: ["index.html"], modified:
   return cs;
 }
 
-/* ---------------- Fake computers: what they have of Ingot, and the commands Bops runs there ---------------- */
+/* ---------------- Fake computers: what they have of Ingot, and the commands SmileDesk runs there ---------------- */
 
 const WORD = String.raw`'(?:[^']|'\\'')*'`;
 const unquote = (w) => w.slice(1, -1).replace(/'\\''/g, "'");
@@ -330,7 +330,7 @@ const badSyntax = [];
 const kinds = (id, from = 0) => ran.slice(from).filter((r) => r.computerId === id).map((r) => /^# bops-ingot (\S+(?: \S+)?)/.exec(r.command)?.[1] ?? r.command.slice(0, 40));
 
 /**
- * bops-local on a fake computer (vm/bin/bops-local, as far as Bops sends it): installed with its own command, only
+ * bops-local on a fake computer (vm/bin/bops-local, as far as SmileDesk sends it): installed with its own command, only
  * over an older one (c.localVersion: the one there, 1 for one from before versions), then each line one call of
  * it, run in turn as bash would (one failing doesn't stop the next). Each computer keeps its Locals (c.locals, by
  * <app>--<site>, a bot's copy's <app>.<copy>--<site>: port, command, its own variables, stopped, good, fixes) and
@@ -347,7 +347,7 @@ function localFake(c, command) {
   if (lines[0] === "# bops-local install") {
     assert.match(command, /\| base64 -d > \/usr\/local\/bin\/bops-local\.new && chmod 755 /);
     const v = Number(/-lt (\d+) \]; then/.exec(command)?.[1]);
-    assert.ok(v >= 2, "this Bops' bops-local says its version");
+    assert.ok(v >= 2, "this SmileDesk's bops-local says its version");
     if (!c.localBin || (c.localVersion ?? 1) < v) {
       c.localInstalls = (c.localInstalls ?? 0) + 1;
       c.localBin = true;
@@ -487,7 +487,7 @@ function bash(id, command) {
   const check = spawnSync("bash", ["-n"], { input: command, encoding: "utf8" });
   if (check.status !== 0) badSyntax.push(`${command.split("\n")[0]}: ${check.stderr.trim()}`);
   const c = fleet.get(id);
-  // Bops' SSH key put on the computer and its host key read: in a real shell, on the computer's files in a folder of its own.
+  // SmileDesk's SSH key put on the computer and its host key read: in a real shell, on the computer's files in a folder of its own.
   if (c && command.startsWith("# bops-ssh key\n")) {
     const home = sshFiles(c);
     c.sshKeyRuns = (c.sshKeyRuns ?? 0) + 1;
@@ -600,7 +600,7 @@ function bash(id, command) {
 const web = { projects: [], calls: [], closed: false, liveAtOnce: false, failAtOnce: null, members: null, membersDown: false, urls: [], urlLimit: 10, accountLimit: 10, urlRefuse: null };
 
 /*
- * orgo-web's public URLs (lib/public-urls), as Bops' Previews use them: a label taken once across every computer
+ * orgo-web's public URLs (lib/public-urls), as SmileDesk's Previews use them: a label taken once across every computer
  * (LABEL_TAKEN), checkLabel's rules (INVALID_LABEL), one URL per port on a computer (PORT_TAKEN), the per computer
  * and per account caps. `web.urlRefuse(label, port)` answers a create instead, once, when it returns something.
  */
@@ -677,7 +677,7 @@ const projectView = (p) => ({
   install_cmd: p.install_cmd ?? null,
   build_cmd: p.build_cmd ?? null,
   start_cmd: p.start_cmd ?? null,
-  // (Said once it was changed: before, the fake is an orgo-web that doesn't say it, as Bops' first one didn't.)
+  // (Said once it was changed: before, the fake is an orgo-web that doesn't say it, as SmileDesk's first one didn't.)
   ...(p.health_path !== undefined ? { health_path: p.health_path } : {}),
   env_keys: [...(web.envs?.get(p.id)?.keys() ?? [])],
   current: newestFirst(p).find((d) => d.state === "succeeded") ?? null,
@@ -764,7 +764,7 @@ async function orgoWeb(req) {
       if (web.removeRefuse) return json(web.removeRefuse, 409);
       web.projects = web.projects.filter((x) => x !== p);
       web.envs.delete(p.id);
-      // Its own URL goes with it; one it adopted (Bops made it) stays.
+      // Its own URL goes with it; one it adopted (SmileDesk made it) stays.
       web.urls = web.urls.filter((u) => u.owned !== p.id);
       return json({ deleted: true, cleaned: false });
     }
@@ -950,7 +950,7 @@ function settingsAndAdding(req, url, body) {
     const project = m[1];
     const sell = web.sell;
     sell.buys.push({ project, body });
-    // One whose answer never comes (Orgo hung): it ends only as Bops gives up on it.
+    // One whose answer never comes (Orgo hung): it ends only as SmileDesk gives up on it.
     if (sell.hang) return new Promise((_, no) => req.signal.addEventListener("abort", () => no(req.signal.reason ?? new Error("aborted"))));
     // An answer that isn't orgo-web's own: a page from a proxy or a restart in front of it ({ status, text }).
     if (sell.raw) return new Response(sell.raw.text, { status: sell.raw.status, headers: { "content-type": "text/html" } });
@@ -1126,7 +1126,7 @@ const customDomainView = (d) => ({
 
 /* ---------------- orgo-web's vault and its broker, and the user's Cloudflare behind it ---------------- */
 
-/** The Cloudflare key's value: only ever inside the fake broker, as Orgo keeps it (Bops never sees it). */
+/** The Cloudflare key's value: only ever inside the fake broker, as Orgo keeps it (SmileDesk never sees it). */
 const CF_TOKEN = "cf-test-token-do-not-leak";
 /** The vault's names ({ name, workspace_id }: null for all workspaces), and whether orgo-web's broker knows Cloudflare yet. */
 web.secrets = [];
@@ -1159,7 +1159,7 @@ function vaultAndBroker(req, url, body) {
   return json({ status, contentType: "application/json", body: answer, truncated: false, headers: {} });
 }
 
-/** Cloudflare's API as far as Bops calls it: zones, a zone's records by name or comment, and a batch (deletes, patches, posts: all or nothing). */
+/** Cloudflare's API as far as SmileDesk calls it: zones, a zone's records by name or comment, and a batch (deletes, patches, posts: all or nothing). */
 function cloudflareApi(method, path, q, b) {
   const ok = (result, info) => ({ status: 200, answer: { success: true, errors: [], messages: [], result, ...(info ? { result_info: info } : {}) } });
   const no = (status, code, message) => ({ status, answer: { success: false, errors: [{ code, message }], messages: [], result: null } });
@@ -1251,7 +1251,7 @@ globalThis.fetch = async (input, init) => {
     return json(next ? await next(b) : response(`resp_${asked.length}`, [said("Done.")]));
   }
   // Cloudflare is called only through Orgo's broker, which adds the key there.
-  if (url.host === "api.cloudflare.com") throw new Error("Bops must never call Cloudflare itself");
+  if (url.host === "api.cloudflare.com") throw new Error("SmileDesk must never call Cloudflare itself");
   throw new TypeError(`fetch failed (the test is offline: ${url.host})`);
 };
 
@@ -1329,7 +1329,7 @@ const hostedApps = () => S.getState().workspaces.find((w) => w.id === WS).hosted
 const tokens = () => S.getState().workspaces.find((w) => w.id === WS).ingotTokens ?? {};
 const ingotSince = (n, method, re) => central.calls.slice(n).filter((c) => c.method === method && re.test(c.path));
 const TOKENS = `/api/v1/w/${PROJECT}/tokens`;
-/** Wait for what Bops does in the background (a token revoked once its computer is let go). */
+/** Wait for what SmileDesk does in the background (a token revoked once its computer is let go). */
 const until = async (fn, ms = 3000) => {
   for (const end = Date.now() + ms; !fn(); await new Promise((r) => setTimeout(r, 20))) if (Date.now() > end) throw new Error("timed out waiting");
 };
@@ -1345,7 +1345,7 @@ const post = async (name, body, window = true) => {
   const res = await AppRoute.POST(new Request(`http://localhost:3210/api/hosted-apps/${name}`, { method: "POST", headers: { "content-type": "application/json", ...(window ? { "x-bops-window": UI } : {}) }, body: JSON.stringify(body) }), { params: Promise.resolve({ name }) });
   return { status: res.status, body: hear(await res.json()) };
 };
-/** A change to an app's DNS through its routes: POST a record, or PATCH or DELETE the one `id` names (from the Bops window unless `window` is false). */
+/** A change to an app's DNS through its routes: POST a record, or PATCH or DELETE the one `id` names (from the SmileDesk window unless `window` is false). */
 const dnsChange = async (method, name, body, { id, window = true } = {}) => {
   const path = `/api/hosted-apps/${name}/dns/records${id ? `/${encodeURIComponent(id)}` : ""}`;
   const req = new Request(`http://localhost:3210${path}`, { method, headers: { "content-type": "application/json", ...(window ? { "x-bops-window": UI } : {}) }, body: JSON.stringify(body) });
@@ -1374,7 +1374,7 @@ const noKeySent = () => {
 };
 /**
  * No computer's token is in a command (each runs as an argument of bash -c there, and orgo-web logs it): not as
- * it is, not in any base64 a command carries. Nor in what Bops logged, kept in its state or said, nor in a call
+ * it is, not in any base64 a command carries. Nor in what SmileDesk logged, kept in its state or said, nor in a call
  * to Ingot from this Mac.
  */
 const noTokenSent = () => {
@@ -1403,7 +1403,7 @@ await check("The central Ingot: BOPS_INGOT_URL without its trailing slash, else 
 
 /** Root's config on a computer: the central server alone (no token, no default workspace: it may work for more than one). */
 const CONFIG = { url: INGOT };
-/** A second workspace, whose main bot shares Boppy's computer (the user's free Bops computer). */
+/** A second workspace, whose main bot shares Boppy's computer (the user's free SmileDesk computer). */
 const P2 = "9a1b2c3d-4e5f-4a6b-8c7d-0e1f2a3b4c5d";
 /** A computer's token at Ingot, the one its config should have. */
 const tokenFor = (computerId) => central.tokens.get(tokens()[computerId]?.id);
@@ -1468,7 +1468,7 @@ await check("Idempotent: again at once runs nothing; again later only the quick 
   noTokenSent();
 });
 
-await check("A new binary in this Bops goes onto the computer, setup-git runs again for it, and the config and token that are right stay as they are", async () => {
+await check("A new binary in this SmileDesk goes onto the computer, setup-git runs again for it, and the config and token that are right stay as they are", async () => {
   BINARY = randomBytes(300 * 1024);
   writeFileSync(join(vendor, "ingot-linux-amd64"), BINARY);
   forgetReady();
@@ -1483,7 +1483,7 @@ await check("A new binary in this Bops goes onto the computer, setup-git runs ag
   assert.equal(ingotSince(0, "POST", /\/tokens$/).length, 1, "no new token");
 });
 
-await check("Root's config missing there, or another (an older Bops's, with a token or the computer's own Orgo key in it): written again with the central server alone, setup-git again, and the token as it was; the workspace's token file missing or another: a new token in it, and the old one revoked; then reused", async () => {
+await check("Root's config missing there, or another (an older SmileDesk's, with a token or the computer's own Orgo key in it): written again with the central server alone, setup-git again, and the token as it was; the workspace's token file missing or another: a new token in it, and the old one revoked; then reused", async () => {
   for (const other of [null, `${JSON.stringify({ url: INGOT, workspace: PROJECT, orgo_key_files: ["/root/.orgo-secrets.env", "/root/.env"] })}\n`, `${JSON.stringify({ url: INGOT, workspace: PROJECT, token: "ingot_from_before" })}\n`]) {
     const old = tokens().c_boppy;
     boppy.configText = other;
@@ -1519,7 +1519,7 @@ await check("Root's config missing there, or another (an older Bops's, with a to
   noTokenSent();
 });
 
-await check("A token Ingot no longer takes (revoked there, or past its time): Ingot lists it as such, so a new one goes in its place, and the old one is revoked as well as Bops can", async () => {
+await check("A token Ingot no longer takes (revoked there, or past its time): Ingot lists it as such, so a new one goes in its place, and the old one is revoked as well as SmileDesk can", async () => {
   const old = tokens().c_boppy;
   central.tokens.get(old.id).revoked_at = iso();
   forgetReady();
@@ -1539,7 +1539,7 @@ await check("No vendored binary for the computer: a clear error, nothing put the
   const c = central.calls.length;
   await assert.rejects(I.ensureIngotCli("c_arm", WS), (e) => {
     assert.ok(e instanceof I.IngotError);
-    assert.match(hear(e.message), /^This Bops has no Ingot for the computer to run \(.*vendor-ingot\/ingot-linux-arm64 is missing\), so its apps can't be set up there\.$/);
+    assert.match(hear(e.message), /^This SmileDesk has no Ingot for the computer to run \(.*vendor-ingot\/ingot-linux-arm64 is missing\), so its apps can't be set up there\.$/);
     return true;
   });
   assert.deepEqual(kinds("c_arm", n), ["probe"]);
@@ -1654,7 +1654,7 @@ await check("As the task starts on its computer: the CLI ready there, the repo m
   assert.deepEqual([ran.length, central.calls.length], [m, k]);
 });
 
-await check("Ingot turns the computer's token away as the task starts (revoked there a moment ago, while Bops still took the computer for ready): a new one in its place, the old one revoked, and the folder made all the same", async () => {
+await check("Ingot turns the computer's token away as the task starts (revoked there a moment ago, while SmileDesk still took the computer for ready): a new one in its place, the old one revoked, and the folder made all the same", async () => {
   forgetReady();
   await I.ensureIngotCli("c_boppy", WS);
   const old = tokens().c_boppy;
@@ -1691,7 +1691,7 @@ await check("A brain's thread on the app gets Ingot's MCP, with the app's worksp
   const runAt = src.indexOf("async function run(sessionId");
   const ready = src.indexOf("await readyAppForTask(sessionId, computerId)", runAt);
   assert.ok(ready > runAt && ready < src.indexOf("await brainTurns(sessionId, {", runAt), "the folder is ready before the brain starts");
-  assert.ok(ready < src.indexOf("await computerToolTurns(sessionId, {", runAt), "and before Bops agent starts");
+  assert.ok(ready < src.indexOf("await computerToolTurns(sessionId, {", runAt), "and before SmileDesk agent starts");
 });
 
 await check("An app's last use of a computer goes (it moves to another): that computer's token is revoked, best effort; a computer that still holds an app keeps its own", async () => {
@@ -1746,7 +1746,7 @@ await check("A computer that's gone (deleted, or reset to a new one): its token 
   noTokenSent();
 });
 
-await check("A computer two workspaces share (the user's free Bops computer, which another workspace's main bot works on): each workspace has its own token there in its own file, and setting one up never touches the other's; each signs in to its own repos; the token is named for that workspace's bot; its goal and its thread name its repos in full; a folder of the other workspace's by the same name is left as it is and refused; revoking one leaves the other", async () => {
+await check("A computer two workspaces share (the user's free SmileDesk computer, which another workspace's main bot works on): each workspace has its own token there in its own file, and setting one up never touches the other's; each signs in to its own repos; the token is named for that workspace's bot; its goal and its thread name its repos in full; a folder of the other workspace's by the same name is left as it is and refused; revoking one leaves the other", async () => {
   S.update((s) => {
     s.workspaces.push({ id: "ws_two", name: "Studio", createdAt: Date.now(), orgoProjectId: P2 });
     s.bots.find((b) => b.id === "boppy").freeComputer = true;
@@ -1910,8 +1910,8 @@ await check("No work_on_app or deploy_app on a routine's run or a turn someone e
   assert.equal(web.projects.length, projects, "nothing deployed");
   // A turn that read a page: not done unless Alex's own words ask for it.
   const before = messages().length;
-  const NOT_DEPLOYED = "Not deployed: this turn read something from outside Bops, so apps go on the web only when Alex asks for it themselves. Alex can deploy it with Deploy on the Apps page.";
-  const DIDNT = "Didn't work on the app recipe-box: this turn read something from outside Bops, so apps are made or changed only when Alex asks for it";
+  const NOT_DEPLOYED = "Not deployed: this turn read something from outside SmileDesk, so apps go on the web only when Alex asks for it themselves. Alex can deploy it with Deploy on the Apps page.";
+  const DIDNT = "Didn't work on the app recipe-box: this turn read something from outside SmileDesk, so apps are made or changed only when Alex asks for it";
   const t = await turnWith("What's on that page?", [toolCall("web_fetch", { url: "https://example.com/menu" }), toolCall("deploy_app", { app: "recipe-box", at: null }), toolCall("work_on_app", { app: "recipe-box", name: null, change: "Add the menu.", deploy: false, say: "On it." })]);
   assert.equal(t.out(1), NOT_DEPLOYED);
   assert.equal(started.length, k, "no task");
@@ -1988,7 +1988,7 @@ await check("A redeploy of an older changeset goes to the same Preview at the sa
   assert.deepEqual([bad.status, bad.body.error], [400, "That isn't a changeset of it."]);
   const m = web.calls.length;
   const outside = await post("recipe-box", { ws: WS, action: "deploy" }, false);
-  assert.deepEqual([outside.status, outside.body.error], [403, "Apps can only be deployed in the Bops app."]);
+  assert.deepEqual([outside.status, outside.body.error], [403, "Apps can only be deployed in the SmileDesk app."]);
   assert.equal(web.calls.length, m, "nothing asked of Orgo");
   const what = await post("recipe-box", { ws: WS, action: "delete" });
   assert.equal(what.status, 400);
@@ -2055,7 +2055,7 @@ await check("deploy_app in the chat: to its Preview at its fixed link unless Ale
   web.domains = web.domains.filter((d) => d.id !== "cd_pub");
 });
 
-await check("deploy_app where prod on a turn from someone's own Bops: an Admin's own words publish it as Alex's do; a Member's never do, nor an Admin's words that don't ask for it after reading a page", async () => {
+await check("deploy_app where prod on a turn from someone's own SmileDesk: an Admin's own words publish it as Alex's do; a Member's never do, nor an Admin's words that don't ask for it after reading a page", async () => {
   web.liveAtOnce = true;
   const ivy = { userId: "user_ivy", email: "ivy@example.com", name: "Ivy" };
   const sam = { userId: "user_sam", email: "sam@example.com", name: "Sam" };
@@ -2168,7 +2168,7 @@ await check("Projects Orgo no longer has are made again on the same computer: th
   assert.equal(hostedApps()["recipe-box"].projectId, prodProject("recipe-box").id);
 });
 
-await check("Projects there for the repo that this Bops lost track of are the ones, found by their marks (Published by its label's seal, the Preview by its link's): none made again, the link the same, the record found again", async () => {
+await check("Projects there for the repo that this SmileDesk lost track of are the ones, found by their marks (Published by its label's seal, the Preview by its link's): none made again, the link the same, the record found again", async () => {
   const kept = hostedApps()["recipe-box"].projectId;
   const link = previewUrl("recipe-box").label;
   S.update((s) => {
@@ -2245,12 +2245,12 @@ const stagingDeploys = () => newestFirst(previewProject("recipe-box") ?? { deplo
 const sessionOf = (id) => S.getState().sessions.find((x) => x.id === id);
 const deploysSince = (n) => callsSince(n, "POST", /\/deploy-projects\/[^/]+\/deployments$/);
 const RECIPE = { wsId: WS, name: "recipe-box" };
-/** A task on recipe-box asked to put it live after, as sessions.ts keeps one this Bops runs. */
+/** A task on recipe-box asked to put it live after, as sessions.ts keeps one this SmileDesk runs. */
 const appSession = (id, o = {}) =>
   S.update((s) => s.sessions.push({ id, botId: "boppy", chatId, sentVia: "you", title: "Work on recipe-box", goal: "Work on Alex's app recipe-box.", host: "orgo", status: "running", steps: [], replies: [], createdAt: Date.now(), app: { ...RECIPE, deployAfter: true }, ...o }));
 const DIDNT_FINISH = "Preview of recipe-box not changed: the task didn't finish. If it picks up again and commits its change, I'll deploy it then. Nothing went live.";
 const NOTHING_NEW = "Preview of recipe-box not changed: the task committed nothing new to it. If it commits its change when it picks up again, I'll deploy it then. Nothing went live.";
-/** The saved copy of a thread (the state's file on disk), as Bops would read it after a restart. */
+/** The saved copy of a thread (the state's file on disk), as SmileDesk would read it after a restart. */
 function savedSession(id) {
   for (const f of readdirSync(scratch, { recursive: true }).map(String).filter((x) => x.endsWith("state.json"))) {
     const x = JSON.parse(readFileSync(join(scratch, f), "utf8")).sessions?.find((y) => y.id === id);
@@ -2259,7 +2259,7 @@ function savedSession(id) {
   return undefined;
 }
 
-await check("work_on_app with deploy, on Alex's own turn: the task carries the ask, and its goal says Bops puts it live once it has committed; without it, the goal says the Apps page as before; deploy_app points at it", async () => {
+await check("work_on_app with deploy, on Alex's own turn: the task carries the ask, and its goal says SmileDesk puts it live once it has committed; without it, the goal says the Apps page as before; deploy_app points at it", async () => {
   answers.push(calling(toolCall("work_on_app", { app: "recipe-box", name: null, change: "Make the title green.", deploy: true, say: "Making it green, then putting it live." })));
   const n = asked.length;
   await Chat.handleMessage(chatId, "Make the recipe app's title green and deploy it");
@@ -2268,13 +2268,13 @@ await check("work_on_app with deploy, on Alex's own turn: the task carries the a
   assert.equal(tool.parameters.properties.deploy.type, "boolean");
   hear(tool.parameters.properties.deploy.description);
   assert.match(tool.description, /whenever Alex asks for any change to one: call it at once, with no question first\./);
-  assert.match(tool.description, /Then Bops deploys that commit to its Preview \(its own fixed link on orgo\.dev\) and says here which link and what changed, so Alex can test it there\./);
+  assert.match(tool.description, /Then SmileDesk deploys that commit to its Preview \(its own fixed link on orgo\.dev\) and says here which link and what changed, so Alex can test it there\./);
   assert.match(tool.description, /Nothing is ever published this way/);
   assert.match(hear(asked[n].tools.find((x) => x.name === "deploy_app").description), /work_on_app deploys a change to its Preview by itself\./);
   const t = started.at(-1);
   assert.deepEqual(t.app, { ...RECIPE, site: "recipe-box", deployAfter: true });
   hear(t.goal);
-  assert.match(t.goal, /\n4\. Say what you changed\. Once you've committed and this task ends, Bops deploys its newest commit to its Preview itself and tells Alex the link, so don't deploy it or tell them to\. If you couldn't commit it, say why\.\nNever change it on GitHub \(its repo, a branch, a pull request\), even when its production is there: Ingot is its source, and Publish carries it there\.$/);
+  assert.match(t.goal, /\n4\. Say what you changed\. Once you've committed and this task ends, SmileDesk deploys its newest commit to its Preview itself and tells Alex the link, so don't deploy it or tell them to\. If you couldn't commit it, say why\.\nNever change it on GitHub \(its repo, a branch, a pull request\), even when its production is there: Ingot is its source, and Publish carries it there\.$/);
   assert.doesNotMatch(t.goal, /Apps page/);
   assert.equal(messages().at(-1).text, "Making it green, then putting it live.");
   answers.push(calling(toolCall("work_on_app", { app: "recipe-box", name: null, change: "Make the title blue.", deploy: false, say: "Making it blue." })));
@@ -2284,7 +2284,7 @@ await check("work_on_app with deploy, on Alex's own turn: the task carries the a
   assert.match(u.goal, /\n4\. Say what you changed\. Alex sees it in its Local now; it goes to its Preview when they ask\.\n/);
 });
 
-await check("On a turn that read something from outside Bops, the deploy goes with the task only when Alex's own words asked to deploy it (deploy_app's rule); else the task starts without it, and a note says so", async () => {
+await check("On a turn that read something from outside SmileDesk, the deploy goes with the task only when Alex's own words asked to deploy it (deploy_app's rule); else the task starts without it, and a note says so", async () => {
   const before = messages().length;
   const k = started.length;
   await turnWith("Put the menu from that page in the recipe app", [toolCall("web_fetch", { url: "https://example.com/menu" }), toolCall("work_on_app", { app: "recipe-box", name: null, change: "Add the menu.", deploy: true, say: "Adding the menu." })]);
@@ -2292,13 +2292,13 @@ await check("On a turn that read something from outside Bops, the deploy goes wi
   assert.deepEqual(started.at(-1).app, { ...RECIPE, site: "recipe-box" }, "without the deploy");
   assert.match(started.at(-1).goal, /it goes to its Preview when they ask/);
   const note = messages().slice(before).find((m) => m.text.startsWith("Won't put"));
-  assert.equal(hear(note?.text), "Won't put recipe-box on its Preview after: this turn read something from outside Bops, so apps go on the web only when Alex asks for it themselves");
+  assert.equal(hear(note?.text), "Won't put recipe-box on its Preview after: this turn read something from outside SmileDesk, so apps go on the web only when Alex asks for it themselves");
   assert.deepEqual([note.role, note.appNote], ["system", true]);
   const m = messages().length;
   await turnWith("Put the menu from that page in the recipe app and deploy it", [toolCall("web_fetch", { url: "https://example.com/menu" }), toolCall("work_on_app", { app: "recipe-box", name: null, change: "Add the menu.", deploy: true, say: "Adding the menu." })]);
   assert.equal(started.length, k + 2);
   assert.deepEqual(started.at(-1).app, { ...RECIPE, site: "recipe-box", deployAfter: true }, "Alex's own words asked");
-  assert.match(started.at(-1).goal, /Bops deploys its newest commit to its Preview itself/);
+  assert.match(started.at(-1).goal, /SmileDesk deploys its newest commit to its Preview itself/);
   assert.ok(!messages().slice(m).some((x) => x.text.startsWith("Won't put")));
 });
 
@@ -2332,7 +2332,7 @@ await check("As a task first starts, the app's newest commit is noted, once (pic
   assert.deepEqual(ingotSince(d, "GET", /\/repos\/recipe-box$/), []);
 });
 
-await check("Done with a new commit: Bops deploys the newest itself, once, and says how it went as the bot under the task's chip; the ask is off the task and saved before Orgo is asked; done again, restarted, or twice at once, never a second deploy", async () => {
+await check("Done with a new commit: SmileDesk deploys the newest itself, once, and says how it went as the bot under the task's chip; the ask is off the task and saved before Orgo is asked; done again, restarted, or twice at once, never a second deploy", async () => {
   const c1 = commit("recipe-box", "A green title", { id: "boppy", name: "Boppy" });
   S.patchSession("ses_dep", { status: "done", answer: "Made the title green and committed it." });
   let saved;
@@ -2681,7 +2681,7 @@ await check("Its domains when Orgo's list doesn't name the workspace's bought do
   assert.ok(web.calls.slice(m).every((c) => c.method === "GET" && /\/deploy-projects$/.test(c.path)), "only its computer's projects read, for Published's");
   S.update((s) => delete s.workspaces.find((w) => w.id === WS).hostedApps["never-live"]);
 
-  // The computer is in another of the user's Orgo workspaces (one two Bops workspaces share): its bought domains are that one's.
+  // The computer is in another of the user's Orgo workspaces (one two SmileDesk workspaces share): its bought domains are that one's.
   const OTHER = "9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d";
   boppy.project = OTHER;
   web.bought[0].project = OTHER;
@@ -2708,7 +2708,7 @@ await check("Its domains when Orgo's list doesn't name the workspace's bought do
   assert.deepEqual([gone.status, gone.body.error], [404, "There's no app by that name in this workspace."]);
 });
 
-await check("Changing its DNS: add, change and remove go to the zone of a domain that points at the app, as orgo-web takes them, each answering the zone as written (a change gives a record a new id); only from the Bops window; a zone of a domain that points elsewhere, or one never connected, is refused and nothing is written", async () => {
+await check("Changing its DNS: add, change and remove go to the zone of a domain that points at the app, as orgo-web takes them, each answering the zone as written (a change gives a record a new id); only from the SmileDesk window; a zone of a domain that points elsewhere, or one never connected, is refused and nothing is written", async () => {
   domainsAgain();
   let n = web.calls.length;
   const added = await dnsChange("POST", "recipe-box", { ws: WS, zone: ZONE, type: "txt", name: "_dmarc", value: "v=DMARC1; p=none", priority: "5" });
@@ -2738,7 +2738,7 @@ await check("Changing its DNS: add, change and remove go to the zone of a domain
   n = web.calls.length;
   for (const [method, id] of [["POST"], ["PATCH", now.id], ["DELETE", now.id]]) {
     const r = await dnsChange(method, "recipe-box", { ws: WS, zone: ZONE, type: "TXT", name: "x", value: "y" }, { id, window: false });
-    assert.deepEqual([r.status, r.body.error], [403, "DNS can only be changed in the Bops app."], method);
+    assert.deepEqual([r.status, r.body.error], [403, "DNS can only be changed in the SmileDesk app."], method);
   }
   assert.equal(web.calls.length, n, "nothing asked of Orgo");
 
@@ -2887,7 +2887,7 @@ await check("Add app: from the window, the workspace's main bot builds it on its
   assert.deepEqual([t.botId, t.title, t.chatId, t.where, t.sentVia], ["boppy", "Work on guest-book", chatId, "cloud", "you"]);
   assert.deepEqual(t.app, { wsId: WS, name: "guest-book", site: "guest-book", deployAfter: true }, "put live once it's built");
   assert.match(t.goal, /What to do: A page where visitors leave a note\./);
-  assert.match(t.goal, /Bops deploys its newest commit to its Preview itself/);
+  assert.match(t.goal, /SmileDesk deploys its newest commit to its Preview itself/);
   assert.equal(S.getState().sessions.find((s) => s.id === r.body.sessionId)?.app?.deployAfter, true);
   assert.deepEqual(hostedApps()["guest-book"], { botId: "boppy", computerId: "c_boppy" }, "kept on the workspace with its bot and computer");
   const line = messages().at(-1);
@@ -2902,7 +2902,7 @@ await check("Add app: from the window, the workspace's main bot builds it on its
   assert.equal(hear(messages().at(-1).text), "Making quiet-notes on my computer. Watch it with Preview at the top of this chat once it runs.");
 });
 
-await check("Add app's name: an Ingot repo's (refused otherwise, with the field), never one another app or a repo in the workspace's Ingot has (409), and not while Ingot can't tell; nothing started for any of them, nor from a page that isn't the Bops window", async () => {
+await check("Add app's name: an Ingot repo's (refused otherwise, with the field), never one another app or a repo in the workspace's Ingot has (409), and not while Ingot can't tell; nothing started for any of them, nor from a page that isn't the SmileDesk window", async () => {
   central.repos.set(`${PROJECT}/old-site`, { created_by: { id: "u_alex", name: "Alex" }, created_at: iso(), changesets: [] });
   const n = started.length;
   const m = messages().length;
@@ -2925,7 +2925,7 @@ await check("Add app's name: an Ingot repo's (refused otherwise, with the field)
     central.down = false;
   }
   const away = await addAsk({ ws: WS, name: "new-one", what: "x" }, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "Apps can only be added in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "Apps can only be added in the SmileDesk app."]);
   const gone = await addAsk({ ws: "ws_gone", name: "new-one", what: "x" });
   assert.deepEqual([gone.status, gone.body.error], [404, "That workspace is gone."], "only the user's own workspaces (a shared one isn't)");
   assert.equal(started.length, n, "no task started");
@@ -2999,7 +2999,7 @@ await check("Changing its settings: only what changed goes to orgo-web, from the
     assert.deepEqual([r.status, r.body.error, r.body.field], [400, error, field]);
   }
   const away = await ask(SettingsRoute, "PATCH", "/api/hosted-apps/recipe-box/settings", RB, { ws: WS, port: 4300 }, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "An app's settings can only be changed in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "An app's settings can only be changed in the SmileDesk app."]);
   // (One never deployed gets its project made with them: Settings before the first deploy, below.)
   assert.equal(web.calls.length, n, "none of them asked of Orgo");
   // Back where it was, its domains too.
@@ -3007,7 +3007,7 @@ await check("Changing its settings: only what changed goes to orgo-web, from the
   assert.equal(recipeProject().port, old);
 });
 
-await check("Its variables: set and removed on its deploy project, the values going to orgo-web as they came and nowhere else (never in Bops' state, on disk, in a log or an answer), the names answered; a name that can't be one, or one Orgo sets, refused before Orgo is asked; only from the window", async () => {
+await check("Its variables: set and removed on its deploy project, the values going to orgo-web as they came and nowhere else (never in SmileDesk's state, on disk, in a log or an answer), the names answered; a name that can't be one, or one Orgo sets, refused before Orgo is asked; only from the window", async () => {
   const SECRET = "made-up-secret-value-7d3f";
   const p = recipeProject();
   let n = web.calls.length;
@@ -3039,7 +3039,7 @@ await check("Its variables: set and removed on its deploy project, the values go
     assert.deepEqual([r.status, r.body.error], [400, error]);
   }
   const away = await ask(EnvRoute, "PATCH", "/api/hosted-apps/recipe-box/env", RB, { ws: WS, env: { API_TOKEN: SECRET } }, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "An app's variables can only be changed in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "An app's variables can only be changed in the SmileDesk app."]);
   assert.equal(web.calls.length, n, "none of them asked of Orgo");
 
   await S.flushState(5000);
@@ -3126,7 +3126,7 @@ await check("What a domain can be added from (the window only): buying open, the
   web.sell = freshSell();
   const n = web.calls.length;
   const away = await ask(DomainsRoute, "GET", `/api/hosted-apps/recipe-box/domains?ws=${WS}`, RB, undefined, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be added in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be added in the SmileDesk app."]);
   assert.equal(web.calls.length, n);
   // Never deployed: offered all the same (connecting one makes its Published project), none of its own yet.
   const never = await H.domainOptions(WS, "guest-book");
@@ -3159,7 +3159,7 @@ await check("Searching for a domain (the window only): orgo-web's names, each pr
     assert.equal(x.status, 400, q);
   }
   const away = await ask(SearchRoute, "GET", `/api/hosted-apps/recipe-box/domains/search?ws=${WS}&q=guest`, RB, undefined, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be searched in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be searched in the SmileDesk app."]);
   assert.equal(web.calls.length, n, "none asked of Orgo");
   for (const [status, body, error] of [
     [429, { error: "Too many searches. Wait a moment, then search again.", code: "rate_limited", retry_after: 20 }, "Too many searches. Wait a moment, then search again."],
@@ -3251,7 +3251,7 @@ await check("A buy Orgo refuses, by its code, in plain words with what the windo
   assert.equal((await buy({}, {})).status, 200, "and with the price the user saw, it goes");
   web.domains = web.domains.filter((d) => d.domain !== "guest.example");
   const away = await ask(DomainsRoute, "POST", "/api/hosted-apps/recipe-box/domains", RB, { ws: WS, action: "buy", domain: "guest.test", registrant: AVA, price: 14000 }, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be added in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be added in the SmileDesk app."]);
   assert.equal(web.sell.buys.length, m + 1, "only the one with a price, from the window");
 });
 
@@ -3320,7 +3320,7 @@ await check("A domain the user owns: pointed at the app's port, the records to s
   const sub = await ask(DomainsRoute, "POST", "/api/hosted-apps/recipe-box/domains", RB, { ws: WS, action: "connect", domain: "api.acme.example" });
   assert.deepEqual([sub.body.domain.managed, sub.body.domain.zone, sub.body.domain.publish], [true, ZONE, []]);
   const away = await ask(DomainRoute, "POST", `/api/hosted-apps/recipe-box/domains/${d.id}`, { name: "recipe-box", domainId: d.id }, { ws: WS }, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be changed in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be changed in the SmileDesk app."]);
 });
 
 await check("Removing a domain from the app: only one of its own (another app's, or a made-up id, refused before Orgo is asked), its records Orgo wrote go with it, and its domains answered as they are now; one Orgo turned off stays", async () => {
@@ -3341,7 +3341,7 @@ await check("Removing a domain from the app: only one of its own (another app's,
   const off = await ask(DomainRoute, "DELETE", "/api/hosted-apps/recipe-box/domains/cd_apex", { name: "recipe-box", domainId: "cd_apex" }, { ws: WS });
   assert.equal(off.status, 200, "Orgo's word decides");
   const away = await ask(DomainRoute, "DELETE", "/api/hosted-apps/recipe-box/domains/cd_mine", { name: "recipe-box", domainId: "cd_mine" }, { ws: WS }, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be changed in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "Domains can only be changed in the SmileDesk app."]);
 });
 
 await check("Auto-renew: a bought domain that points at the app turned off and on (its renewal answered, and with its zone); one that doesn't point here refused before Orgo is asked; a key for one workspace can't, said", async () => {
@@ -3562,7 +3562,7 @@ await check("Add a domain from Cloudflare lists the key's active zones (every pa
   }
 });
 
-await check("Which Cloudflare key: the Bops workspace's own project's, else the one for the Orgo workspace the app's computer is in, else the account's, each sent to the broker as its workspace; one for an Orgo workspace that's neither is none", async () => {
+await check("Which Cloudflare key: the SmileDesk workspace's own project's, else the one for the Orgo workspace the app's computer is in, else the account's, each sent to the broker as its workspace; one for an Orgo workspace that's neither is none", async () => {
   const sent = async () => {
     globalThis.bopsVaultNames = undefined;
     globalThis.bopsCfZones?.clear();
@@ -3572,7 +3572,7 @@ await check("Which Cloudflare key: the Bops workspace's own project's, else the 
   };
   cloudflareAgain();
   web.secrets = [{ ...CF_KEY_ROW }, { ...CF_KEY_ROW, workspace_id: PROJECT }, { ...CF_KEY_ROW, workspace_id: CF_OTHER }];
-  assert.deepEqual((await sent()).ws, [PROJECT], "the Bops workspace's own first");
+  assert.deepEqual((await sent()).ws, [PROJECT], "the SmileDesk workspace's own first");
   const was = boppy.project;
   boppy.project = CF_OTHER;
   try {
@@ -3588,7 +3588,7 @@ await check("Which Cloudflare key: the Bops workspace's own project's, else the 
   assert.deepEqual([none.ws, "cloudflare" in none.o], [[], false], "one for an unrelated Orgo workspace: no Cloudflare");
 });
 
-await check("Use on a Cloudflare domain: the zone read again from the key's (a made up one refused before Orgo is asked), a name on this computer refused first, Orgo's 409 in words; else pointed at the app's port as a domain the user owns, answered with what Bops would set in Cloudflare (nothing written yet)", async () => {
+await check("Use on a Cloudflare domain: the zone read again from the key's (a made up one refused before Orgo is asked), a name on this computer refused first, Orgo's 409 in words; else pointed at the app's port as a domain the user owns, answered with what SmileDesk would set in Cloudflare (nothing written yet)", async () => {
   cloudflareAgain();
   const n = web.calls.length;
   for (const [zone, sub, status, error, field] of [
@@ -3625,7 +3625,7 @@ await check("Use on a Cloudflare domain: the zone read again from the key's (a m
   );
 });
 
-await check("Its plan written: only the plan the user saw (a stale one refused with the plan as it is now), in one Cloudflare batch, every record DNS only, automatic TTL and Bops' comment; then Orgo checks it, a miss said as Cloudflare taking a minute; sent again, nothing written twice", async () => {
+await check("Its plan written: only the plan the user saw (a stale one refused with the plan as it is now), in one Cloudflare batch, every record DNS only, automatic TTL and SmileDesk's comment; then Orgo checks it, a miss said as Cloudflare taking a minute; sent again, nothing written twice", async () => {
   cloudflareAgain();
   const r = await cfUse(Z_TEST, "shop");
   const d = r.body.domain;
@@ -3642,7 +3642,7 @@ await check("Its plan written: only the plan the user saw (a stale one refused w
   const sent = cloudflare.batches.at(-1);
   assert.deepEqual(Object.keys(sent), ["posts"]);
   const token = web.domains.find((x) => x.id === d.id).token;
-  const comment = `Set by Bops for recipe-box [bops:${d.id}]`;
+  const comment = `Set by SmileDesk for recipe-box [bops:${d.id}]`;
   assert.deepEqual(sent.posts, [
     { type: "TXT", name: "_orgo-verify.shop.acme.test", content: `"${token}"`, ttl: 1, comment },
     { type: "CNAME", name: "shop.acme.test", content: "edge.orgo.dev", ttl: 1, proxied: false, comment },
@@ -3663,7 +3663,7 @@ await check("Its plan written: only the plan the user saw (a stale one refused w
   assert.equal(CF.ourId(long), "5d0c3a9e-4a2b-4c3d-8e5f-6a7b8c9d0e1f");
 });
 
-await check("Records Bops didn't set: shown first (Replace, Remove, Not set by Bops), refused without the user's OK, and only Replace and add writes them, the user's A deleted and written fresh; the zone's MX left alone", async () => {
+await check("Records SmileDesk didn't set: shown first (Replace, Remove, Not set by SmileDesk), refused without the user's OK, and only Replace and add writes them, the user's A deleted and written fresh; the zone's MX left alone", async () => {
   cloudflareAgain();
   const mine = [cfRecord(Z_TEST, "A", "acme.test", "192.0.2.4", { comment: "the old host" }), cfRecord(Z_TEST, "AAAA", "acme.test", "2001:db8::1"), cfRecord(Z_TEST, "MX", "acme.test", "mx.acme.test", { priority: 10 })];
   cloudflare.records.push(...mine);
@@ -3678,7 +3678,7 @@ await check("Records Bops didn't set: shown first (Replace, Remove, Not set by B
   assert.deepEqual([plan.ask, plan.blocked], [true, null]);
   const b = cloudflare.batches.length;
   const no = await cfApply(r.body.domain.id, plan.fingerprint);
-  assert.deepEqual([no.status, no.body.code, no.body.error], [409, "NEEDS_OK", "Bops won't replace records it didn't set without your OK."]);
+  assert.deepEqual([no.status, no.body.code, no.body.error], [409, "NEEDS_OK", "SmileDesk won't replace records it didn't set without your OK."]);
   assert.equal(cloudflare.batches.length, b);
   const yes = await cfApply(r.body.domain.id, plan.fingerprint, { replace: true });
   assert.equal(yes.status, 200);
@@ -3689,13 +3689,13 @@ await check("Records Bops didn't set: shown first (Replace, Remove, Not set by B
   assert.deepEqual(cfAt("acme.test").map((x) => x[0]), ["A", "MX"], "their MX stays");
 });
 
-await check("The plan, case by case (planRecords): Bops' own records changed without asking (proxied turned DNS only, an old value, a gone domain's), another app's or a record beside a CNAME blocked, a TXT of theirs left beside Orgo's, and once live only what routes it; any change in Cloudflare a new fingerprint", () => {
+await check("The plan, case by case (planRecords): SmileDesk's own records changed without asking (proxied turned DNS only, an old value, a gone domain's), another app's or a record beside a CNAME blocked, a TXT of theirs left beside Orgo's, and once live only what routes it; any change in Cloudflare a new fingerprint", () => {
   const zone = { id: Z_TEST, name: "acme.test" };
   const domain = { id: "cd_new", name: "shop.acme.test" };
   const want = [{ type: "TXT", name: "_orgo-verify.shop.acme.test", value: "tok-new" }, { type: "CNAME", name: "shop.acme.test", value: "edge.orgo.dev" }];
   const here = new Map([["cd_www", "recipe-box"], ["cd_blog", null]]);
   const at = (type, name, content, extra = {}) => ({ id: cfId(), type, name, content, ...(type === "TXT" ? {} : { proxied: false }), comment: null, ...extra });
-  const ours = (id = "cd_new") => ({ comment: `Set by Bops for recipe-box [bops:${id}]` });
+  const ours = (id = "cd_new") => ({ comment: `Set by SmileDesk for recipe-box [bops:${id}]` });
   const plan = (found, w = want) => CF.planRecords({ zone, domain, app: "recipe-box", want: w, found, here });
   assert.deepEqual(lines(plan([]).plan), [["add", "TXT", "_orgo-verify.shop", "tok-new"], ["add", "CNAME", "shop", "edge.orgo.dev"]], "an empty zone: two adds");
   const byHand = [at("TXT", "_orgo-verify.shop.acme.test", '"tok-new"'), at("CNAME", "shop.acme.test", "EDGE.orgo.dev.")];
@@ -3703,18 +3703,18 @@ await check("The plan, case by case (planRecords): Bops' own records changed wit
   assert.equal(CF.batchSize(plan(byHand).batch), 0);
   const proxied = plan([at("CNAME", "shop.acme.test", "edge.orgo.dev", { proxied: true, ...ours() })]);
   assert.deepEqual(proxied.plan.changes[1], { op: "change", type: "CNAME", name: "shop.acme.test", host: "shop", value: "edge.orgo.dev", was: "proxied", note: "Turns off Cloudflare's proxy. Orgo needs DNS only." });
-  assert.equal(proxied.plan.ask, false, "Bops' own: no OK needed");
+  assert.equal(proxied.plan.ask, false, "SmileDesk's own: no OK needed");
   assert.equal(proxied.batch.patches[0].proxied, false);
   const theirsProxied = plan([at("CNAME", "shop.acme.test", "edge.orgo.dev", { proxied: true })]);
   assert.deepEqual([theirsProxied.plan.changes[1].theirs, theirsProxied.plan.ask, theirsProxied.batch.deletes.length, theirsProxied.batch.posts.length], [true, true, 1, 2], "theirs, proxied: their OK, then written fresh");
   const old = plan([at("CNAME", "shop.acme.test", "old.edge.example", ours())]);
-  assert.deepEqual([lines(old.plan)[1], old.batch.patches.length, old.plan.ask], [["change", "CNAME", "shop", "edge.orgo.dev", "old.edge.example"], 1, false], "Bops' own with an old value: patched");
+  assert.deepEqual([lines(old.plan)[1], old.batch.patches.length, old.plan.ask], [["change", "CNAME", "shop", "edge.orgo.dev", "old.edge.example"], 1, false], "SmileDesk's own with an old value: patched");
   const gone = plan([at("A", "shop.acme.test", "198.51.100.7", ours("cd_gone")), at("TXT", "_orgo-verify.shop.acme.test", '"tok-old"', ours("cd_gone"))]);
   assert.deepEqual(lines(gone.plan), [["add", "TXT", "_orgo-verify.shop", "tok-new"], ["remove", "TXT", "_orgo-verify.shop", "tok-old", "stale"], ["change", "CNAME", "shop", "edge.orgo.dev", "A 198.51.100.7", "stale"]]);
-  assert.deepEqual([gone.plan.ask, gone.batch.deletes.length], [false, 2], "a gone domain's: Bops' own, no OK; another type deleted and written");
+  assert.deepEqual([gone.plan.ask, gone.batch.deletes.length], [false, 2], "a gone domain's: SmileDesk's own, no OK; another type deleted and written");
   const other = plan([at("CNAME", "shop.acme.test", "edge.orgo.dev", ours("cd_www"))]);
-  assert.deepEqual([other.plan.blocked, other.plan.ask, CF.batchSize(other.batch)], ["Bops set the CNAME at shop for recipe-box. Remove that domain from recipe-box first.", false, 0], "another domain of this computer's: blocked, nothing written");
-  assert.equal(plan([at("A", "shop.acme.test", EDGE, ours("cd_blog"))]).plan.blocked, "Bops set the A at shop for another domain on this computer. Remove that one first.");
+  assert.deepEqual([other.plan.blocked, other.plan.ask, CF.batchSize(other.batch)], ["SmileDesk set the CNAME at shop for recipe-box. Remove that domain from recipe-box first.", false, 0], "another domain of this computer's: blocked, nothing written");
+  assert.equal(plan([at("A", "shop.acme.test", EDGE, ours("cd_blog"))]).plan.blocked, "SmileDesk set the A at shop for another domain on this computer. Remove that one first.");
   const mx = plan([at("MX", "shop.acme.test", "mx.acme.test")]);
   assert.deepEqual([mx.plan.blocked, mx.plan.changes.map((c) => c.op)], ["shop.acme.test has a MX record in Cloudflare, so it can't also have the CNAME Orgo needs. Pick another name.", ["blocked"]]);
   const apexMx = CF.planRecords({ zone, domain: { id: "cd_new", name: "acme.test" }, app: "recipe-box", want: [{ type: "CNAME", name: "acme.test", value: "edge.orgo.dev" }], found: [at("MX", "acme.test", "mx.acme.test")], here });
@@ -3749,7 +3749,7 @@ await check("Writing when Cloudflare can't: a key that can't edit DNS changes no
   cloudflare.canEdit = true;
   cloudflare.downOnBatch = true;
   const down = await cfApply(id, r.body.cloudflare.fingerprint);
-  assert.deepEqual([down.status, down.body.code, down.body.error], [504, "UNKNOWN", "Cloudflare didn't answer, so it isn't known whether the records went in. Try again in a minute. Bops looks first, so nothing is set twice."]);
+  assert.deepEqual([down.status, down.body.code, down.body.error], [504, "UNKNOWN", "Cloudflare didn't answer, so it isn't known whether the records went in. Try again in a minute. SmileDesk looks first, so nothing is set twice."]);
   cloudflare.downOnBatch = false;
   const look = await cfPlan(id);
   assert.deepEqual([look.status, look.body.fingerprint], [200, r.body.cloudflare.fingerprint], "the next look works");
@@ -3760,7 +3760,7 @@ await check("Writing when Cloudflare can't: a key that can't edit DNS changes no
   assert.deepEqual(lines(moved.body.cloudflare).slice(1), [["add", "CNAME", "shop", "edge.orgo.dev"], ["remove", "A", "shop", "192.0.2.9", "theirs"]], "the plan as it is now, the new record in it");
   assert.equal(moved.body.cloudflare.ask, true);
   cloudflare.records = [];
-  // Between Bops' last read and its write: Cloudflare's clash, nothing in, and the plan as it is then.
+  // Between SmileDesk's last read and its write: Cloudflare's clash, nothing in, and the plan as it is then.
   const fresh = await cfPlan(id);
   cloudflare.beforeBatch = () => {
     cloudflare.beforeBatch = null;
@@ -3769,13 +3769,13 @@ await check("Writing when Cloudflare can't: a key that can't edit DNS changes no
   const raced = await cfApply(id, fresh.body.fingerprint);
   assert.deepEqual([raced.status, raced.body.code], [409, "STALE"]);
   assert.ok(raced.body.cloudflare?.changes.some((c) => c.theirs), "the plan as it is now");
-  assert.deepEqual(cfAt("shop.acme.test"), [["CNAME", "elsewhere.example", false, null]], "nothing of Bops' went in");
+  assert.deepEqual(cfAt("shop.acme.test"), [["CNAME", "elsewhere.example", false, null]], "nothing of SmileDesk's went in");
   cloudflare.canRead = false;
   cloudflare.records = [];
   const blind = await cfPlan(id);
   assert.deepEqual([blind.status, blind.body.code, blind.body.error], [403, "NO_READ", "Your Cloudflare key can't read the DNS of acme.test. In Cloudflare, let it edit DNS for acme.test."]);
   cloudflare.canRead = true;
-  // It went in, but its answer was lost: pressed again, Bops looks first, finds them set, and sets nothing twice.
+  // It went in, but its answer was lost: pressed again, SmileDesk looks first, finds them set, and sets nothing twice.
   const seen = await cfPlan(id);
   cloudflare.lostOnBatch = true;
   const lost = await cfApply(id, seen.body.fingerprint);
@@ -3786,13 +3786,13 @@ await check("Writing when Cloudflare can't: a key that can't edit DNS changes no
   assert.deepEqual(cfAt("shop.acme.test").map((x) => x[0]), ["CNAME"], "no second copy");
 });
 
-await check("Removing a domain set in Cloudflare: once Orgo took it off, only the records Bops tagged with its id go (the user's and another domain's stay); Cloudflare not answering says what to remove there; Orgo refusing, Cloudflare is never asked", async () => {
+await check("Removing a domain set in Cloudflare: once Orgo took it off, only the records SmileDesk tagged with its id go (the user's and another domain's stay); Cloudflare not answering says what to remove there; Orgo refusing, Cloudflare is never asked", async () => {
   cloudflareAgain();
   const r = await cfUse(Z_TEST, "shop");
   const id = r.body.domain.id;
   await cfApply(id, r.body.cloudflare.fingerprint);
   const theirs = cfRecord(Z_TEST, "TXT", "shop.acme.test", '"v=spf1 -all"');
-  const another = cfRecord(Z_TEST, "A", "old.acme.test", EDGE, { comment: "Set by Bops for recipe-box [bops:cd_other]" });
+  const another = cfRecord(Z_TEST, "A", "old.acme.test", EDGE, { comment: "Set by SmileDesk for recipe-box [bops:cd_other]" });
   const lookalike = cfRecord(Z_TEST, "A", "kin.acme.test", EDGE, { comment: `note [bops:${id}x]` });
   cloudflare.records.push(theirs, another, lookalike);
   const gone = await ask(DomainRoute, "DELETE", `/api/hosted-apps/recipe-box/domains/${id}`, { name: "recipe-box", domainId: id }, { ws: WS });
@@ -3801,28 +3801,28 @@ await check("Removing a domain set in Cloudflare: once Orgo took it off, only th
   assert.deepEqual(cloudflare.batches.at(-1).deletes.length, 2, "its TXT and CNAME, in one batch");
   assert.deepEqual(cloudflare.records.map((x) => x.id).sort(), [theirs.id, another.id, lookalike.id].sort(), "only those");
   // Cloudflare not answering: removed from the app all the same, and what may be left there said (its records
-  // not read, so only if Bops set them).
+  // not read, so only if SmileDesk set them).
   const r2 = await cfUse(Z_TEST, "deli");
   const id2 = r2.body.domain.id;
   await cfApply(id2, r2.body.cloudflare.fingerprint);
   cloudflare.down = true;
   const left = await ask(DomainRoute, "DELETE", `/api/hosted-apps/recipe-box/domains/${id2}`, { name: "recipe-box", domainId: id2 }, { ws: WS });
-  assert.deepEqual([left.status, left.body.said], [200, "Removed from this app. Bops couldn't reach Cloudflare. If it set TXT _orgo-verify.deli and CNAME deli there, remove them."]);
+  assert.deepEqual([left.status, left.body.said], [200, "Removed from this app. SmileDesk couldn't reach Cloudflare. If it set TXT _orgo-verify.deli and CNAME deli there, remove them."]);
   assert.ok(!web.domains.some((d) => d.id === id2), "gone from Orgo");
   cloudflare.down = false;
-  // Read, but the batch not answered: they're Bops' own, so named as such.
+  // Read, but the batch not answered: they're SmileDesk's own, so named as such.
   const r4 = await cfUse(Z_TEST, "cafe");
   await cfApply(r4.body.domain.id, r4.body.cloudflare.fingerprint);
   cloudflare.downOnBatch = true;
   const half = await ask(DomainRoute, "DELETE", `/api/hosted-apps/recipe-box/domains/${r4.body.domain.id}`, { name: "recipe-box", domainId: r4.body.domain.id }, { ws: WS });
-  assert.deepEqual([half.status, half.body.said], [200, "Removed from this app. Bops couldn't reach Cloudflare, so remove TXT _orgo-verify.cafe and CNAME cafe there."]);
+  assert.deepEqual([half.status, half.body.said], [200, "Removed from this app. SmileDesk couldn't reach Cloudflare, so remove TXT _orgo-verify.cafe and CNAME cafe there."]);
   cloudflare.downOnBatch = false;
   // Its zones not read now nor kept from before (just started, Cloudflare down): still said, in full.
   const r5 = await cfUse(Z_TEST, "bar");
   globalThis.bopsCfZones?.clear();
   cloudflare.down = true;
   const blind = await ask(DomainRoute, "DELETE", `/api/hosted-apps/recipe-box/domains/${r5.body.domain.id}`, { name: "recipe-box", domainId: r5.body.domain.id }, { ws: WS });
-  assert.deepEqual([blind.status, blind.body.said], [200, "Removed from this app. Bops couldn't reach Cloudflare. If it set TXT _orgo-verify.bar.acme.test and CNAME bar.acme.test there, remove them."]);
+  assert.deepEqual([blind.status, blind.body.said], [200, "Removed from this app. SmileDesk couldn't reach Cloudflare. If it set TXT _orgo-verify.bar.acme.test and CNAME bar.acme.test there, remove them."]);
   cloudflare.down = false;
   // One in no zone of the key's: nothing said of Cloudflare.
   const port = recipeProject().port;
@@ -3842,7 +3842,7 @@ await check("Removing a domain set in Cloudflare: once Orgo took it off, only th
   }
 });
 
-/** The app's domains, as the Bops window reads them (or, `window` false, a page that reached this server another way). */
+/** The app's domains, as the SmileDesk window reads them (or, `window` false, a page that reached this server another way). */
 const cfList = (opts) => ask(DnsRoute, "GET", `/api/hosted-apps/recipe-box/dns?ws=${WS}`, RB, undefined, opts);
 
 await check("A domain bought elsewhere whose zone is in the key's account says so (its zone and id there), and its plan reads from the box; one in no zone of the key's, one bought through Orgo, or the zones not read: as it was", async () => {
@@ -3927,9 +3927,9 @@ await check("Cloudflare's routes are the window's only (403 with words, nothing 
   const c = cloudflare.calls.length;
   const away = [await cfPlan("cd_mine", { window: false }), await cfApply("cd_mine", "0123456789abcdef", {}, { window: false }), await cfUse(Z_TEST, "shop", { window: false })];
   assert.deepEqual(away.map((x) => [x.status, x.body.error]), [
-    [403, "Domains can only be changed in the Bops app."],
-    [403, "Domains can only be changed in the Bops app."],
-    [403, "Domains can only be added in the Bops app."],
+    [403, "Domains can only be changed in the SmileDesk app."],
+    [403, "Domains can only be changed in the SmileDesk app."],
+    [403, "Domains can only be added in the SmileDesk app."],
   ]);
   for (const id of ["cd_blog", "cd_ivy", "../../zones"]) assert.deepEqual([(await cfPlan(id)).status, (await cfApply(id, "0123456789abcdef")).status], [404, 404], id);
   assert.equal(cloudflare.calls.length, c, "Cloudflare never asked");
@@ -4236,7 +4236,7 @@ await check("Settings, Domains: a buy Orgo refuses says why, with what the windo
     assert.equal(tab.body.error, "The registry hasn't confirmed acme-shop.example yet. It shows up under your domains once it does, and you can point it here then.", "the app's tab can point it there once it's in");
     web.sell.unknown = false;
     web.bought = web.bought.filter((b) => b.domain !== "acme-shop.example");
-    // Orgo hangs: Bops gives up after its timeout, says it isn't known, and never sends it again.
+    // Orgo hangs: SmileDesk gives up after its timeout, says it isn't known, and never sends it again.
     process.env.BOPS_DOMAIN_BUY_MS = "80";
     web.sell.hang = true;
     const m = web.sell.buys.length;
@@ -4374,29 +4374,29 @@ await check("Settings, Domains: Orgo not answering (a connection dropped, an ans
   }
 });
 
-await check("Settings, Domains: every new route only from the Bops window (403 with its words, nothing asked of Orgo); on a bot's computer, nothing asked of Orgo either: the list closed with why, a buy refused", async () => {
+await check("Settings, Domains: every new route only from the SmileDesk window (403 with its words, nothing asked of Orgo); on a bot's computer, nothing asked of Orgo either: the list closed with why, a buy refused", async () => {
   workspaceAgain();
   try {
     const n = web.calls.length;
     const away = { window: false };
     for (const [r, error] of [
-      [await wsList(away), "Domains can only be seen in the Bops app."],
-      [await wsBuy({}, away), "Domains can only be bought in the Bops app."],
-      [await ask(WsSearchRoute, "GET", `/api/domains/search?ws=${WS}&q=acme`, null, undefined, away), "Domains can only be searched in the Bops app."],
-      [await ask(WsZoneRoute, "GET", `/api/domains/${ZONE}?ws=${WS}`, { zone: ZONE }, undefined, away), "Domains can only be seen in the Bops app."],
-      [await ask(WsZoneRoute, "PATCH", `/api/domains/${ZONE}`, { zone: ZONE }, { ws: WS, autoRenew: false }, away), "Domains can only be changed in the Bops app."],
-      [await ask(WsRecordsRoute, "POST", `/api/domains/${ZONE}/records`, { zone: ZONE }, { ws: WS, type: "TXT", name: "x", value: "y" }, away), "DNS can only be changed in the Bops app."],
-      [await ask(WsRecordRoute, "PATCH", `/api/domains/${ZONE}/records/AAAAAAAAAAAAAAAA`, { zone: ZONE, recordId: "AAAAAAAAAAAAAAAA" }, { ws: WS, type: "TXT", name: "x", value: "y" }, away), "DNS can only be changed in the Bops app."],
-      [await ask(WsRecordRoute, "DELETE", `/api/domains/${ZONE}/records/AAAAAAAAAAAAAAAA`, { zone: ZONE, recordId: "AAAAAAAAAAAAAAAA" }, { ws: WS }, away), "DNS can only be changed in the Bops app."],
+      [await wsList(away), "Domains can only be seen in the SmileDesk app."],
+      [await wsBuy({}, away), "Domains can only be bought in the SmileDesk app."],
+      [await ask(WsSearchRoute, "GET", `/api/domains/search?ws=${WS}&q=acme`, null, undefined, away), "Domains can only be searched in the SmileDesk app."],
+      [await ask(WsZoneRoute, "GET", `/api/domains/${ZONE}?ws=${WS}`, { zone: ZONE }, undefined, away), "Domains can only be seen in the SmileDesk app."],
+      [await ask(WsZoneRoute, "PATCH", `/api/domains/${ZONE}`, { zone: ZONE }, { ws: WS, autoRenew: false }, away), "Domains can only be changed in the SmileDesk app."],
+      [await ask(WsRecordsRoute, "POST", `/api/domains/${ZONE}/records`, { zone: ZONE }, { ws: WS, type: "TXT", name: "x", value: "y" }, away), "DNS can only be changed in the SmileDesk app."],
+      [await ask(WsRecordRoute, "PATCH", `/api/domains/${ZONE}/records/AAAAAAAAAAAAAAAA`, { zone: ZONE, recordId: "AAAAAAAAAAAAAAAA" }, { ws: WS, type: "TXT", name: "x", value: "y" }, away), "DNS can only be changed in the SmileDesk app."],
+      [await ask(WsRecordRoute, "DELETE", `/api/domains/${ZONE}/records/AAAAAAAAAAAAAAAA`, { zone: ZONE, recordId: "AAAAAAAAAAAAAAAA" }, { ws: WS }, away), "DNS can only be changed in the SmileDesk app."],
     ])
       assert.deepEqual([r.status, r.body.error], [403, error]);
     assert.equal(web.calls.length, n, "nothing asked of Orgo");
     process.env.BOPS_RUNNER = "1";
     try {
       const list = await wsList();
-      assert.deepEqual(pick(list.body, ["open", "why", "domains"]), { open: false, why: "Domains are changed from the Bops app on your Mac.", domains: [] });
+      assert.deepEqual(pick(list.body, ["open", "why", "domains"]), { open: false, why: "Domains are changed from the SmileDesk app on your Mac.", domains: [] });
       const buy = await wsBuy();
-      assert.deepEqual([buy.status, buy.body.error], [403, "Domains are changed from the Bops app on your Mac."]);
+      assert.deepEqual([buy.status, buy.body.error], [403, "Domains are changed from the SmileDesk app on your Mac."]);
       const renew = await ask(WsZoneRoute, "PATCH", `/api/domains/${SPARE}`, { zone: SPARE }, { ws: WS, autoRenew: false });
       assert.equal(renew.status, 403);
     } finally {
@@ -4691,7 +4691,7 @@ await check("The list says every site's domains at once (the ones its computer s
   }
 });
 
-await check("Variables before the first deploy: saved, the site's deploy project is made with them (nothing deployed), so its first build has them, and its first deploy uses that project; a removal alone sends nothing; never the values in Bops' state, a log or an answer", async () => {
+await check("Variables before the first deploy: saved, the site's deploy project is made with them (nothing deployed), so its first build has them, and its first deploy uses that project; a removal alone sends nothing; never the values in SmileDesk's state, a log or an answer", async () => {
   const SECRET = "made-up-early-secret-9b2a";
   assert.equal((await post("shop-suite", { ws: WS, action: "addSite", site: "shop-suite-new" })).status, 200);
   assert.equal((await post("shop-suite", { ws: WS, action: "addSite", site: "shop-suite-more" })).status, 409, "five now");
@@ -4793,7 +4793,7 @@ await check("Removing an app (the window only): each site's domains and deploy p
   const [ownLink, adminLink] = [linkOf(ownPv), linkOf(adminPv)];
   web.domains.push({ id: "cd_suite", computerId: "c_boppy", domain: "suite.shop.example", status: "active", target_port: own.port, zone: null, token: "tok-suite" });
   const away = await ask(AppRoute, "DELETE", "/api/hosted-apps/shop-suite", SUITE, { ws: WS }, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "Apps can only be removed in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "Apps can only be removed in the SmileDesk app."]);
   S.update((s) => s.sessions.push({ id: "ses_suite", botId: "boppy", chatId, title: "Work on shop-suite", goal: "x", status: "running", app: { wsId: WS, name: "shop-suite" }, steps: [], createdAt: Date.now() }));
   const busy = await ask(AppRoute, "DELETE", "/api/hosted-apps/shop-suite", SUITE, { ws: WS });
   assert.deepEqual([busy.status, busy.body.error], [409, "Boppy is working on it now. Stop that task first, then remove it."]);
@@ -4944,7 +4944,7 @@ await check("Settings before a site's first deploy: saved, its deploy project is
   assert.deepEqual(writesSince(n), []);
 });
 
-await check("One thing at a time on an app: Remove app and Remove site refused while a deploy of it is being sent (nothing left on the web that Bops doesn't keep); variables saved before a first deploy wait for the deploy and go to the project it made (one a site); a deploy or a new site refused while it's being removed", async () => {
+await check("One thing at a time on an app: Remove app and Remove site refused while a deploy of it is being sent (nothing left on the web that SmileDesk doesn't keep); variables saved before a first deploy wait for the deploy and go to the project it made (one a site); a deploy or a new site refused while it's being removed", async () => {
   suiteAgain();
   for (const site of ["shop-suite-admin", "shop-suite-api"]) assert.equal((await post("shop-suite", { ws: WS, action: "addSite", site })).status, 200);
   web.domains = web.domains.filter((d) => d.computerId !== "c_boppy" || d.target_port === recipeProject().port);
@@ -5059,7 +5059,7 @@ await check("An app moved off a computer that's still up (its bot on another one
   S.update((s) => delete s.workspaces.find((w) => w.id === WS).hostedApps["moved-site"]);
 });
 
-await check("Remove site and Remove app take what Bops set in the user's Cloudflare off too: only the records tagged for each domain Orgo took off (the user's and another domain's stay), each domain's in one batch; what Cloudflare didn't take is said with the rest", async () => {
+await check("Remove site and Remove app take what SmileDesk set in the user's Cloudflare off too: only the records tagged for each domain Orgo took off (the user's and another domain's stay), each domain's in one batch; what Cloudflare didn't take is said with the rest", async () => {
   suiteAgain();
   web.domains = web.domains.filter((d) => d.computerId !== "c_boppy" || d.target_port === recipeProject().port);
   await post("shop-suite", { ws: WS, action: "addSite", site: "shop-suite-admin" });
@@ -5101,7 +5101,7 @@ await check("Remove site and Remove app take what Bops set in the user's Cloudfl
     cloudflare.downOnBatch = true;
     n = web.calls.length;
     const app = await ask(AppRoute, "DELETE", "/api/hosted-apps/shop-suite", SUITE, { ws: WS });
-    assert.deepEqual([app.status, app.body], [200, { removed: "shop-suite", repo: false, said: "Bops couldn't reach Cloudflare, so remove CNAME suite there." }]);
+    assert.deepEqual([app.status, app.body], [200, { removed: "shop-suite", repo: false, said: "SmileDesk couldn't reach Cloudflare, so remove CNAME suite there." }]);
     // (Then its Locals forgotten, through its computer's bash.)
     assert.deepEqual(writesSince(n).filter((c) => c.path !== "/api/secrets/call" && !c.path.endsWith("/bash")).map((c) => [c.method, c.path]), [
       ["DELETE", `/api/computers/c_boppy/deploy-projects/${ownPv.id}`],
@@ -5122,7 +5122,7 @@ const NOTES = { name: "field-notes" };
 const notesProjects = () => web.projects.filter((p) => p.ingot_repo === `${PROJECT}/field-notes`);
 const notesProject = (name) => notesProjects().find((p) => p.name === name);
 const notes = () => hostedApps()["field-notes"];
-/** AppHosting's fields as Bops 0.0.32 knows them, and the one this build adds (its Preview label's copy). */
+/** AppHosting's fields as SmileDesk 0.0.32 knows them, and the one this build adds (its Preview label's copy). */
 const KNOWN = ["botId", "computerId", "projectId", "url", "queuedAt", "sites", "lost", "behind", "preview"];
 const NOTES_REPO = `${PROJECT}/field-notes`;
 const notesLink = (c = "c_boppy") => previewUrl("field-notes", "field-notes", c);
@@ -5184,7 +5184,7 @@ await check("Preview links: a label taken moves to another, one Orgo can't take 
   assert.deepEqual([closed.status, closed.body.error], [403, "Hosting apps on the web isn't open to your Orgo account yet."]);
 });
 
-await check("Its link stays: deployed again, the same; its link deleted on Orgo, made again with the same label on its project's port; a project deleted keeps the link (Bops made it, so Orgo's project never owned it)", async () => {
+await check("Its link stays: deployed again, the same; its link deleted on Orgo, made again with the same label on its project's port; a project deleted keeps the link (SmileDesk made it, so Orgo's project never owned it)", async () => {
   assert.equal((await post("field-notes", { ws: WS, action: "deploy" })).status, 200);
   const link = notesLink();
   const pv = previewProject("field-notes");
@@ -5295,7 +5295,7 @@ await check("A legacy Published (the live sites': a project named as the site on
   assert.equal(app.domain, null);
   assert.equal(app.hosting.url, undefined, "the old address isn't sent");
   assert.ok(!JSON.stringify(app).includes("field-notes.orgo.dev"), "no orgo.dev name for Published");
-  assert.equal(notes().url, "https://field-notes.orgo.dev", "kept as it was for Bops 0.0.32");
+  assert.equal(notes().url, "https://field-notes.orgo.dev", "kept as it was for SmileDesk 0.0.32");
   // Live with no domain: it publishes all the same (it served before).
   for (const d of pv.deployments) Object.assign(d, { state: "succeeded", finished_at: iso() });
   const pub = await post("field-notes", { ws: WS, action: "promote" });
@@ -5385,7 +5385,7 @@ await check("Local: Start puts bops-local on the app's computer (once, never ove
   const vite = await localAsk({ action: "start", port: 5173 });
   assert.deepEqual([vite.body.sites["field-notes"].port, vite.body.sites["field-notes"].devPort], [5173, 5173]);
   assert.equal(boppy.localAsked.findLast((x) => x[0] === "start")[7], "5173");
-  for (const [port, words] of [[80, "Use a port from 1024 to 65535."], [3210, "Bops uses 3210 on this Mac. Pick another."], ["x", "Use a port from 1024 to 65535."]]) {
+  for (const [port, words] of [[80, "Use a port from 1024 to 65535."], [3210, "SmileDesk uses 3210 on this Mac. Pick another."], ["x", "Use a port from 1024 to 65535."]]) {
     const bad = await localAsk({ action: "start", port });
     assert.deepEqual([bad.status, bad.body.error, bad.body.field], [400, words, "port"]);
   }
@@ -5435,7 +5435,7 @@ await check("Local: Start puts bops-local on the app's computer (once, never ove
   assert.deepEqual((await localAsk({ action: "jump" })).status, 400);
   assert.deepEqual((await localAsk({ action: "start", site: "nope" })).body.error, "There's no site by that name in this app.");
   const away = await localAsk({ action: "start" }, { window: false });
-  assert.deepEqual([away.status, away.body.error], [403, "An app's Local can only be started in the Bops app."]);
+  assert.deepEqual([away.status, away.body.error], [403, "An app's Local can only be started in the SmileDesk app."]);
   // A stopped one that stopped by itself says its last words.
   boppy.localFails = "Error: Cannot find module 'next'";
   assert.deepEqual((await localAsk({ action: "start" })).body.sites["field-notes"].error, "Error: Cannot find module 'next'");
@@ -5465,7 +5465,7 @@ await check("Local, one port a site: a second site gets the next one; one given 
   assert.deepEqual([b.status, b.body.sites["notes-admin"].port, b.body.sites["notes-admin"].devPort], [200, 3001, 3001], "the next port, never the first site's");
   const taken = await localAsk({ action: "start", site: "notes-admin", port: 3000 });
   assert.deepEqual([taken.status, taken.body.error], [409, "Port 3000 is field-notes's Local's on its computer. Pick another, or clear its port to get a free one."]);
-  // Its port kept on its record as Bops reads it, for the bots' prompt (no computer asked there).
+  // Its port kept on its record as SmileDesk reads it, for the bots' prompt (no computer asked there).
   assert.deepEqual([notes().localPort, notes().sites[0].localPort], [3000, 3001]);
   assert.match(hear(H.hostedAppsLine("boppy")), /field-notes \(Local at http:\/\/localhost:3000; [^)]*its other sites from the same repo: notes-admin \(Local at http:\/\/localhost:3001; /);
   assert.doesNotMatch(H.hostedAppsLine("boppy"), /localhost:3000 with hot reload/, "no address said as everyone's");
@@ -5600,11 +5600,11 @@ await check("Local after a task: the site it worked on (Session.app.site) starte
     h.computerId = "c_boppy";
     delete h.sites;
   });
-  assert.equal(H.localVersion(readFileSync(`${root}/vm/bin/bops-local`, "utf8")) >= 2, true, "this Bops' bops-local says its version");
+  assert.equal(H.localVersion(readFileSync(`${root}/vm/bin/bops-local`, "utf8")) >= 2, true, "this SmileDesk's bops-local says its version");
   assert.equal(H.localVersion("#!/bin/bash\necho old"), 0, "one from before versions: 0");
 });
 
-await check("Local after an older Mac put its bops-local back on the computer (v0.0.32 to v0.0.34 do, whenever the file there isn't theirs): an answer only an older one gives (auto refused, mark refused, a Local without its second line, open on 99) puts this Bops' back and asks again, once; and what's there is looked at again every few minutes", async () => {
+await check("Local after an older Mac put its bops-local back on the computer (v0.0.32 to v0.0.34 do, whenever the file there isn't theirs): an answer only an older one gives (auto refused, mark refused, a Local without its second line, open on 99) puts this SmileDesk's back and asks again, once; and what's there is looked at again every few minutes", async () => {
   notesAgain();
   boppy.locals?.clear();
   assert.equal((await localAsk({ action: "start" })).status, 200);
@@ -5614,7 +5614,7 @@ await check("Local after an older Mac put its bops-local back on the computer (v
   boppy.localVersion = 1;
   let k = boppy.localAsked.length;
   const auto = await localAsk({ action: "start", port: "auto" });
-  assert.deepEqual([auto.status, auto.body.sites["field-notes"]?.port, auto.body.sites["field-notes"]?.auth], [200, 3000, false], "this Bops' own answered");
+  assert.deepEqual([auto.status, auto.body.sites["field-notes"]?.port, auto.body.sites["field-notes"]?.auth], [200, 3000, false], "this SmileDesk's own answered");
   assert.deepEqual([boppy.localInstalls, tries(k, "start")], [installs + 1, 2], "put back, and asked again");
   // Fix it (mark fix): usage.
   boppy.localVersion = 1;
@@ -5635,7 +5635,7 @@ await check("Local after an older Mac put its bops-local back on the computer (v
   const o = await localAsk({ action: "open" });
   assert.deepEqual([o.status, boppy.openedOn.slice(-2)], [200, ["99", String(o.body.display)]]);
   assert.equal(boppy.localInstalls, installs + 4);
-  // A status with no second line: read again from this Bops' own.
+  // A status with no second line: read again from this SmileDesk's own.
   boppy.localVersion = 1;
   const read = await localRead();
   assert.deepEqual([read.body.sites["field-notes"].auth, boppy.localInstalls], [false, installs + 5]);
@@ -5724,7 +5724,7 @@ await check("A preview open on this Mac follows its Local's port to the same por
   await localAsk({ action: "start", port: "auto" });
 });
 
-await check("Preview on this Mac without the tailnet goes through its computer's SSH: Bops' own key made once (0600, never sent) and reused; Orgo asked to turn SSH on only while it's off, so keys the user set there stay; the key added to its authorized_keys once, every other line kept; its host key pinned in Bops' own known_hosts; ssh with that one forward and nothing else; a page through it; the same tunnel for a preview open; the tailnet first when it's up", async () => {
+await check("Preview on this Mac without the tailnet goes through its computer's SSH: SmileDesk's own key made once (0600, never sent) and reused; Orgo asked to turn SSH on only while it's off, so keys the user set there stay; the key added to its authorized_keys once, every other line kept; its host key pinned in SmileDesk's own known_hosts; ssh with that one forward and nothing else; a page through it; the same tunnel for a preview open; the tailnet first when it's up", async () => {
   const P = await import(`${root}/lib/server/local-preview.ts`);
   const http = await import("node:http");
   const net = await import("node:net");
@@ -5766,10 +5766,10 @@ await check("Preview on this Mac without the tailnet goes through its computer's
   const pub = readFileSync(`${keyFile}.pub`, "utf8").split(" ").slice(0, 2).join(" ");
   const secret = readFileSync(keyFile, "utf8");
   assert.ok(![...web.calls.map((c) => JSON.stringify(c.body ?? null)), ...ran.map((x) => x.command)].some((x) => x.includes("PRIVATE KEY") || x.includes(secret.split("\n")[1])), "never sent");
-  // Orgo: where it is, then (SSH was off) turned on with Bops' public key, then where again.
+  // Orgo: where it is, then (SSH was off) turned on with SmileDesk's public key, then where again.
   const asked = web.calls.slice(n).filter((c) => c.path === "/api/computers/c_boppy/ssh");
   assert.deepEqual(asked.map((c) => [c.method, c.body]), [["GET", undefined], ["POST", { public_key: `${pub} bops` }], ["GET", undefined]]);
-  assert.equal(readFileSync(authorized, "utf8"), `${pub} bops\n`, "on its computer once (Orgo wrote it, and Bops found it there)");
+  assert.equal(readFileSync(authorized, "utf8"), `${pub} bops\n`, "on its computer once (Orgo wrote it, and SmileDesk found it there)");
   const known = join(dirname(keyFile), "known_hosts");
   assert.equal(readFileSync(known, "utf8"), `[${SSH_HOST}]:40022 ${boppy.hostKey}\n`, "its host key pinned for its address");
   assert.equal(statSync(known).mode & 0o777, 0o600);
@@ -5831,7 +5831,7 @@ await check("Preview on this Mac without the tailnet goes through its computer's
     assert.equal((await localAsk({ action: "unpreview" })).status, 200);
   }
   assert.deepEqual(callsSince(n, "POST", /\/ssh$/), [], "never turned on again over their keys");
-  assert.equal(readFileSync(authorized, "utf8"), `${MINE}\n# a note of the user's\n${pub} bops\n`, "every line of theirs kept, Bops' once");
+  assert.equal(readFileSync(authorized, "utf8"), `${MINE}\n# a note of the user's\n${pub} bops\n`, "every line of theirs kept, SmileDesk's once");
   assert.equal(logLines("keygen.log").length, 1, "the same key all along");
 
   // The tailnet first, when it's up: an SSH forward open moves to it, its ssh stopped.
@@ -6018,7 +6018,7 @@ await check("A coding task's goal says where things are, in fixed words: Screen,
   assert.equal(H.appWork("boppy", { app: "recipe-box", name: null, change: "A new page." }).site, "recipe-box");
 });
 
-await check("Prod's domain, Cloudflare first: a domain typed into Use a domain I own whose zone is in the user's Cloudflare goes in from there, with what Bops would set (its plan, DNS only, written only on the user's word); one whose zone isn't gets the records to copy, as before", async () => {
+await check("Prod's domain, Cloudflare first: a domain typed into Use a domain I own whose zone is in the user's Cloudflare goes in from there, with what SmileDesk would set (its plan, DNS only, written only on the user's word); one whose zone isn't gets the records to copy, as before", async () => {
   cloudflareAgain();
   const b = cloudflare.batches.length;
   const r = await ask(DomainsRoute, "POST", "/api/hosted-apps/recipe-box/domains", RB, { ws: WS, action: "connect", domain: "Blog.Acme.Test" });
@@ -6268,7 +6268,7 @@ await check("what members see: kept only while someone has Your Apps at Read, wr
   });
 });
 
-await check("what members see of a site's Preview: its link, its state and whether it asks for a password; its password only while someone has Your Apps at Write, read from Orgo again only once Bops set another, never in what bots read", async () => {
+await check("what members see of a site's Preview: its link, its state and whether it asks for a password; its password only while someone has Your Apps at Write, read from Orgo again only once SmileDesk set another, never in what bots read", async () => {
   const F = await import(`${root}/lib/server/apps-for-members.ts`);
   const LINK = "https://m3q8zt5kw2pd.orgo.dev";
   const server = { on: true, password: "Mx4tR8q", at: 100 };
@@ -6308,7 +6308,7 @@ await check("what members see of a site's Preview: its link, its state and wheth
   assert.deepEqual(site(), { name: "pv-seen", url: null, preview: LINK, previewLive: { id: "dep-p3", state: "succeeded", when: 12 }, previewServing: "cs-3", previewProtected: true, serving: null, live: null });
   assert.deepEqual(ws().appsForMembers.apps["pv-seen"].deploys.map((d) => [d.id, d.env]), [["dep-p3", "preview"]]);
   assert.equal(asked.length, 0, "nobody at Write: never read");
-  // Someone at Write: the password kept for members (Bops Cloud sends it to Write alone).
+  // Someone at Write: the password kept for members (SmileDesk Cloud sends it to Write alone).
   level("write");
   t += 10;
   await F.seeApps(WS, undefined, readers(), () => t);
@@ -6416,7 +6416,7 @@ await check("Two bots on one app: each task readies its own bot's folder (the ap
 await check("A copy's task brief: its own folder and Local, the pull and commit loop through main (a commit refused as stale: pull, fix any conflict in its own copy, commit again), never another bot's copy; the app's own bot's says where it always did; what bots read of the apps says the same", () => {
   const sam = H.appWork("sam", { app: "team-notes", name: null, change: "A search box." });
   const g = hear(sam.goal);
-  assert.match(g, /^Work on Alex's app team-notes\. It's the Ingot repo [^ ]+\/team-notes \([^)]*\), and your working folder on this computer is \/workspace\/apps\/team-notes\.sam, a copy of your own: Bops cloned it there, or pulled the newest main into it \(merged with what you hadn't committed\), as this task started\./);
+  assert.match(g, /^Work on Alex's app team-notes\. It's the Ingot repo [^ ]+\/team-notes \([^)]*\), and your working folder on this computer is \/workspace\/apps\/team-notes\.sam, a copy of your own: SmileDesk cloned it there, or pulled the newest main into it \(merged with what you hadn't committed\), as this task started\./);
   assert.match(g, /bops-local start team-notes\.sam team-notes \(/);
   assert.match(g, /bops-local status team-notes\.sam and \/root\/\.bops\/local\/team-notes\.sam--team-notes\.log say why/);
   assert.match(g, /3\. Commit it from the folder: ingot commit -m "<what changed, in one clear line>" \(or the Ingot tools' repo_commit\)\. If Ingot says the commit is stale, someone committed first: run ingot pull, fix any file it lists between its <<<<<<< yours and >>>>>>> theirs markers, check it again, and commit again\. Stale is when Ingot says main has moved on: nothing of yours was written, and the pull merges the new main into your folder\. A commit is refused while a conflict is still there\./, "a stale commit: pull, then commit again");
@@ -6424,7 +6424,7 @@ await check("A copy's task brief: its own folder and Local, the pull and commit 
   assert.match(g, /never inside \/workspace\/apps\/team-notes\.sam\): git clone "\$\(ingot git-url [^)]+\/team-notes\)" \/workspace\/apps\/team-notes\.sam-git/);
   assert.equal(team().botId, "boppy", "asking never moves the app");
   const own = hear(H.appWork("boppy", { app: "team-notes", name: null, change: "A search box." }).goal);
-  assert.match(own, /and its working folder on this computer is \/workspace\/apps\/team-notes: Bops cloned it there/);
+  assert.match(own, /and its working folder on this computer is \/workspace\/apps\/team-notes: SmileDesk cloned it there/);
   assert.match(own, /bops-local start team-notes team-notes \(/);
   assert.match(own, /\nOther bots work on team-notes at the same time/, "others work on it: said to its own bot too");
   assert.doesNotMatch(own, /team-notes\.sam/);

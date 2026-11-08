@@ -13,13 +13,13 @@ const answer = (e: unknown) =>
   e instanceof HostedAppError ? Response.json({ error: e.message, ...e.extra }, { status: e.status }) : Response.json({ error: (e as Error).message }, { status: 500 });
 
 /**
- * A site's Preview password is the owner's: read and changed only from the Bops window (ui-token.ts), never from a
+ * A site's Preview password is the owner's: read and changed only from the SmileDesk window (ui-token.ts), never from a
  * page a bot's browser reached this server with, and never while a workspace someone shared with the user is open
- * (people it's shared with get it only from Bops Cloud, with Your Apps at Write: lib/server/apps-for-members.ts).
+ * (people it's shared with get it only from SmileDesk Cloud, with Your Apps at Write: lib/server/apps-for-members.ts).
  */
 const refusedHere = (request: Request) =>
   notReady() ??
-  (fromBopsWindow(request) ? null : Response.json({ error: "A preview's password can only be seen in the Bops app." }, { status: 403 })) ??
+  (fromBopsWindow(request) ? null : Response.json({ error: "A preview's password can only be seen in the SmileDesk app." }, { status: 403 })) ??
   (sharedOpen() ? Response.json({ error: "Only the owner can do this." }, { status: 403 }) : null);
 
 /** A site's Preview password and the cookie that opens its link (PreviewPassword in lib/hosted-apps.ts): ?ws=&site= */

@@ -11,7 +11,7 @@ import { fromBopsWindow } from "@/lib/server/ui-token";
 export const dynamic = "force-dynamic";
 
 /**
- * Settings → Your data (lib/server/privacy.ts, deleted.ts): only for the Bops window on the user's Mac (a page a
+ * Settings → Your data (lib/server/privacy.ts, deleted.ts): only for the SmileDesk window on the user's Mac (a page a
  * bot's Chrome reached this server with never reads what's in Recently deleted, nor changes how long chats are
  * kept), never on a computer's runner, and never while a workspace shared with the user is open: it's the
  * owner's own data, and a viewer is shown and changes none of it. Nor on a hosted server (Postgres): no sweep
@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
  */
 function refused(request: Request): Response | null {
   const no = (error: string) => Response.json({ error }, { status: 403, headers: { "Cache-Control": "no-store" } });
-  if (onRunner() || onPostgres() || !fromBopsWindow(request)) return no("Your data can only be seen in the Bops app.");
+  if (onRunner() || onPostgres() || !fromBopsWindow(request)) return no("Your data can only be seen in the SmileDesk app.");
   if (sharedOpen()) return no("In a shared workspace, only its owner sees this.");
   return notReady();
 }

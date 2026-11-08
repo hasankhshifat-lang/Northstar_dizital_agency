@@ -8,7 +8,7 @@ import { legacyStateFile, moveLegacyState, userDataDir } from "./user-paths";
 /**
  * Where the state lives between starts, and whose it is.
  *
- * - The Mac app, signed in with Orgo (the usual case): in Bops Cloud, under the user's Orgo id
+ * - The Mac app, signed in with Orgo (the usual case): in SmileDesk Cloud, under the user's Orgo id
  *   (persist-cloud.ts). Nothing is kept on the Mac (but changes the cloud couldn't take yet, in the
  *   user's folder until they're up): signing in loads that user's state, signing out lets it go, and
  *   until someone is signed in there is no state to work on (ready() is false).
@@ -40,7 +40,7 @@ export type Persistence = {
   user(): string | null;
   /**
    * Save what's changed now and wait for it to land, up to `ms`: true when nothing is left unsaved (a
-   * sign-out asks before going on without; Restart Bops, lib/server/restart.ts, saves first).
+   * sign-out asks before going on without; Restart SmileDesk, lib/server/restart.ts, saves first).
    */
   flush(ms: number): Promise<boolean>;
   /** Changes not saved yet. */
@@ -51,12 +51,12 @@ export type Persistence = {
   pulledAt(): number;
   /** This server as the user's state knows it (state.macs, Session.by), or null for a store that's only ever this one's. */
   device(): string | null;
-  /** A newer Bops of the user's wrote their state, which this one can't be given (426 STATE_TOO_NEW): its routines and beats stop until it's updated. */
+  /** A newer SmileDesk of the user's wrote their state, which this one can't be given (426 STATE_TOO_NEW): its routines and beats stop until it's updated. */
   tooNew(): boolean;
-  /** The state as Bops Cloud has it, as this server last wrote or read it (the Mac app's and a runner's store); none for a store that's only ever this one's. */
+  /** The state as SmileDesk Cloud has it, as this server last wrote or read it (the Mac app's and a runner's store); none for a store that's only ever this one's. */
   cloudCopy?(): Record<string, unknown> | null;
   /**
-   * Whether Bops Cloud, as this server last saved to it, holds none of these messages (gone from the state
+   * Whether SmileDesk Cloud, as this server last saved to it, holds none of these messages (gone from the state
    * here): their removal is up, or they never were. None for a store that's only ever this one's, whose flush
    * says it.
    */
@@ -77,25 +77,25 @@ export type StateAccess = {
   went?(gone: Went): void;
 };
 
-/** A sign-in's state couldn't be loaded (Bops Cloud down, or this Mac offline): the sign-in is refused, and the app says so. */
+/** A sign-in's state couldn't be loaded (SmileDesk Cloud down, or this Mac offline): the sign-in is refused, and the app says so. */
 export class StateLoadError extends Error {}
 
 export const onPostgres = () => !!process.env.BOPS_DATABASE_URL;
-/** Self-hosting: keys in .env.local, no Bops Cloud, the state in files on this Mac. */
+/** Self-hosting: keys in .env.local, no SmileDesk Cloud, the state in files on this Mac. */
 export const selfHosted = () => process.env.BOPS_SELF_HOSTED === "1";
-/** A computer's Bops runner (BOPS_RUNNER=1, lib/server/runner.ts): the server on one of the bots' computers that runs its routines while the user's Mac is closed. */
+/** A computer's SmileDesk runner (BOPS_RUNNER=1, lib/server/runner.ts): the server on one of the bots' computers that runs its routines while the user's Mac is closed. */
 export const onRunner = () => process.env.BOPS_RUNNER === "1";
 
 /**
- * What runs by itself in Bops (a timer, a listener, a look that starts on import or from the state
+ * What runs by itself in SmileDesk (a timer, a listener, a look that starts on import or from the state
  * route). On a computer's runner only RUNNER_LOOPS do: the routines timer, the mirror of its own
  * routines to Orgo, the threads it started, saying its computer is in use while one runs, and the chat
- * turns Bops Cloud owes its computer (runner-chat.ts), and its bots' browsers relayed to whoever may watch them
+ * turns SmileDesk Cloud owes its computer (runner-chat.ts), and its bots' browsers relayed to whoever may watch them
  * (browser-runner.ts). The rest
  * is the Mac's (MAC_LOOPS): the bots' watches, the digest, the access set and the map sent to Orgo
  * (access-sync.ts, bops-sync.ts), email, texts and calls, Telegram, Discord and Slack, the look at the
  * bots' computers, routing through home internet, the Mac's zone, Codex on the Mac, the free computer
- * found again, the cloud tunnel (one per user: a runner's would take the Mac's), the live stream (Bops
+ * found again, the cloud tunnel (one per user: a runner's would take the Mac's), the live stream (SmileDesk
  * Cloud's /v1/live is for devices, not computers: live.ts), the Mac's own check, memory sorting and
  * Orbit, setting up runners, and the Keep chats and calls sweep (privacy.ts: it deletes for every Mac, and
  * prunes this Mac's own files).
@@ -130,7 +130,7 @@ const gx = globalThis as unknown as { __bopsExitWork?: Map<string, () => Promise
 const exitWork = (gx.__bopsExitWork ??= new Map());
 
 /**
- * Work that has to finish on the way out (the last state save to Bops Cloud, closing its tunnel), by
+ * Work that has to finish on the way out (the last state save to SmileDesk Cloud, closing its tunnel), by
  * name so a code reload replaces it. On SIGINT or SIGTERM the desktop server gives it up to 5
  * seconds, then exits. Next exits on those signals by itself unless NEXT_MANUAL_SIG_HANDLE is set, as
  * the Mac app sets it (desktop/main.cjs); without it this is best effort.
@@ -144,7 +144,7 @@ export function hookExit(first: () => void = () => {}, last: () => Promise<unkno
   if (gx.__bopsExitHooked) return;
   gx.__bopsExitHooked = true;
   for (const sig of ["SIGINT", "SIGTERM"] as const)
-    // Kept on, so a second signal while the exit work runs (the app quitting, then a new Bops
+    // Kept on, so a second signal while the exit work runs (the app quitting, then a new SmileDesk
     // stopping what it finds) doesn't fall to Node's default and cut the last save short.
     process.on(sig, () => {
       if (gx.__bopsStopping) return;

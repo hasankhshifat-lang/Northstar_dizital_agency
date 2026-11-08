@@ -1,8 +1,8 @@
 // Tests for the switch in Settings, General that says whether a workspace's bots answer with every Mac closed
-// (components/app/chat-switch.tsx): shown only to the owner, where Bops Cloud says it applies (Workspace.chatOn or
+// (components/app/chat-switch.tsx): shown only to the owner, where SmileDesk Cloud says it applies (Workspace.chatOn or
 // chatAuto on the workspace), never with the bots in browsers on the Mac or for a workspace whose bots have no computer
-// of their own; on while the chat goes through Bops Cloud or will once the computers are ready, off once the owner chose
-// the Mac, each with its own line; a click sends "auto" or "mac" to the Bops server and shows its words when it refuses.
+// of their own; on while the chat goes through SmileDesk Cloud or will once the computers are ready, off once the owner chose
+// the Mac, each with its own line; a click sends "auto" or "mac" to the SmileDesk server and shows its words when it refuses.
 // Last, the words: no dashes, and never "Orbit".
 //
 // Nothing reaches a server (fetch is a fake). The .tsx files are compiled with the TypeScript in node_modules as they load.
@@ -45,7 +45,7 @@ globalThis.removeEventListener = () => {};
 globalThis.document = { hidden: false, addEventListener() {}, removeEventListener() {} };
 globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
 globalThis.matchMedia = () => ({ matches: false });
-/** What the window asked the Bops server, and how the next answer goes. */
+/** What the window asked the SmileDesk server, and how the next answer goes. */
 const asked = [];
 let answer = { ok: true, status: 200, body: { ok: true } };
 globalThis.fetch = async (url, init = {}) => {
@@ -77,17 +77,17 @@ const stateWith = (acme, more = {}) => ({
   ...more,
 });
 
-await test("on while the chat goes through Bops Cloud or will, off once the owner chose the Mac, each with its line", () => {
+await test("on while the chat goes through SmileDesk Cloud or will, off once the owner chose the Mac, each with its line", () => {
   assert.deepEqual(S.chatSwitchOf(stateWith({ chatOn: "cloud" })), { wsId: "ws_acme", on: true, line: S.CHAT_LINES.cloud, closed: false });
   assert.deepEqual(S.chatSwitchOf(stateWith({ chatOn: "cloud", chatAuto: true })), { wsId: "ws_acme", on: true, line: S.CHAT_LINES.cloud, closed: false });
   assert.deepEqual(S.chatSwitchOf(stateWith({ chatAuto: true })), { wsId: "ws_acme", on: true, line: S.CHAT_LINES.soon, closed: false });
   assert.deepEqual(S.chatSwitchOf(stateWith({ chatOn: "mac" })), { wsId: "ws_acme", on: false, line: S.CHAT_LINES.mac, closed: false });
 });
 
-await test("where Bops Cloud won't take it back on (Workspace.chatAutoOff): off says so and stays off; on is still on, and says it's closed", () => {
+await test("where SmileDesk Cloud won't take it back on (Workspace.chatAutoOff): off says so and stays off; on is still on, and says it's closed", () => {
   assert.deepEqual(S.chatSwitchOf(stateWith({ chatOn: "mac", chatAutoOff: true })), { wsId: "ws_acme", on: false, line: S.CHAT_LINES.closed, closed: true });
   assert.deepEqual(S.chatSwitchOf(stateWith({ chatOn: "cloud", chatAutoOff: true })), { wsId: "ws_acme", on: true, line: S.CHAT_LINES.cloud, closed: true });
-  // Without the flag (a Bops Cloud from before, or one that takes it back on): as before.
+  // Without the flag (a SmileDesk Cloud from before, or one that takes it back on): as before.
   assert.equal(S.chatSwitchOf(stateWith({ chatOn: "mac" })).closed, false);
   assert.equal(S.chatSwitchOf(stateWith({ chatOn: "cloud" })).closed, false);
   // An Admin's, in the shared words.
@@ -96,8 +96,8 @@ await test("where Bops Cloud won't take it back on (Workspace.chatAutoOff): off 
   assert.deepEqual(S.chatSwitchOf(admin({ chatOn: "cloud", chatAutoOff: true })), { wsId: "ws_acme", on: true, line: S.CHAT_LINES_SHARED.cloud, closed: true });
 });
 
-await test("not shown: Bops Cloud says nothing of it, a shared workspace open, bots in browsers on the Mac, or no bot with a computer", () => {
-  assert.equal(S.chatSwitchOf(stateWith({})), null, "Bops Cloud doesn't move this account's workspaces");
+await test("not shown: SmileDesk Cloud says nothing of it, a shared workspace open, bots in browsers on the Mac, or no bot with a computer", () => {
+  assert.equal(S.chatSwitchOf(stateWith({})), null, "SmileDesk Cloud doesn't move this account's workspaces");
   assert.equal(S.chatSwitchOf(stateWith({ chatAuto: true }, { shared: { name: "Acme", owner: "Tara" } })), null, "someone else's");
   assert.equal(S.chatSwitchOf(stateWith({ chatAuto: true }, { host: "mac" })), null, "bots in browsers on the Mac");
   const noComputer = stateWith({ chatAuto: true });
@@ -108,17 +108,17 @@ await test("not shown: Bops Cloud says nothing of it, a shared workspace open, b
   assert.equal(S.chatSwitchOf(onMac), null, "Max set to work on the Mac");
 });
 
-await test("a click sends the owner's choice: off is the Mac, on gives Bops Cloud the say; refused, Bops' words", async () => {
+await test("a click sends the owner's choice: off is the Mac, on gives SmileDesk Cloud the say; refused, SmileDesk's words", async () => {
   asked.length = 0;
   assert.equal(await S.setChat("ws_acme", false), null);
   const patch = asked.find((a) => a.url === "/api/workspaces");
   assert.deepEqual([patch.method, patch.body], ["PATCH", { id: "ws_acme", chat: "mac" }]);
   asked.length = 0;
-  answer = { ok: false, status: 409, body: { error: "Update Bops to 0.0.36 or newer on every Mac first." } };
-  assert.equal(await S.setChat("ws_acme", true), "Update Bops to 0.0.36 or newer on every Mac first.");
+  answer = { ok: false, status: 409, body: { error: "Update SmileDesk to 0.0.36 or newer on every Mac first." } };
+  assert.equal(await S.setChat("ws_acme", true), "Update SmileDesk to 0.0.36 or newer on every Mac first.");
   assert.deepEqual(asked.find((a) => a.url === "/api/workspaces").body, { id: "ws_acme", chat: "auto" });
   answer = { ok: false, status: 502, body: {} };
-  assert.equal(await S.setChat("ws_acme", true), "Couldn't reach Bops. Try again.");
+  assert.equal(await S.setChat("ws_acme", true), "Couldn't reach SmileDesk. Try again.");
   answer = { ok: true, status: 200, body: { ok: true } };
 });
 
@@ -146,7 +146,7 @@ await test("an Admin of a shared workspace has the switch, in words of the owner
   const shared = (role, more = {}) => stateWith({ chatOn: "mac" }, { shared: { name: "Acme", owner: "Tara", role, screens: ["max"], ...more } });
   assert.deepEqual(S.chatSwitchOf(shared("admin", { adminActs: true })), { wsId: "ws_acme", on: false, line: S.CHAT_LINES_SHARED.mac, closed: false });
   assert.deepEqual(S.chatSwitchOf(shared("admin", { ownerOld: true }))?.on, false, "it doesn't wait on the owner's Mac");
-  assert.equal(S.chatSwitchOf(shared("admin")), null, "a Bops Cloud before Admin powers");
+  assert.equal(S.chatSwitchOf(shared("admin")), null, "a SmileDesk Cloud before Admin powers");
   assert.equal(S.chatSwitchOf(shared("member", { adminActs: true })), null);
   assert.equal(S.chatSwitchOf(shared("admin", { adminActs: true, screens: [] })), null, "no bot with a computer");
   const sent = [];

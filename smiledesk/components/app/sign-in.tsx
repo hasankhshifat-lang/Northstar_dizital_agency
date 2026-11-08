@@ -2,28 +2,29 @@
 
 import { useEffect, useRef, useState } from "react";
 import { PRIVACY, TERMS } from "@/lib/links";
-import { Mascot, Spinner } from "./mascot";
+import { Spinner } from "./mascot";
+import { BrandMark } from "./brand-mark";
 import { useTelemetryHere } from "./usage-data";
 
 /*
- * Signing in, the app's first screen until someone is signed in. A Bops user is an Orgo user, but
+ * Signing in, the app's first screen until someone is signed in. A SmileDesk user is an Orgo user, but
  * they needn't know it: Continue with Google and Continue with email open Orgo's page straight on
- * that way in, shown as Bops (a new account if they haven't got one), and Sign in with Orgo is there
+ * that way in, shown as SmileDesk (a new account if they haven't got one), and Sign in with Orgo is there
  * for people who already have an Orgo login. Every way ends the same: the code shown here is approved
  * in the system browser, the server picks up the key (app/api/auth), and the app opens. Same flow
  * and pacing as Orgo for Mac's sign-in window.
  */
 
 /**
- * `cloudProblem`: signed in, but the user's Bops couldn't be loaded from Bops Cloud (offline): the
+ * `cloudProblem`: signed in, but the user's SmileDesk couldn't be loaded from SmileDesk Cloud (offline): the
  * app says so (CloudUnreachable) and keeps asking, the server trying again a little later each time.
  */
 export type AuthStatus = { signedIn: boolean; user: { id: string; email?: string; name?: string } | null; needsSignIn: boolean; cloudProblem?: boolean };
 
 /**
  * Who's signed in, fetched again whenever `key` changes (the state's account, so signing out anywhere
- * shows this screen), and every few seconds while Bops Cloud can't be reached. The third value asks
- * the server to try loading the user's Bops again now (Try again).
+ * shows this screen), and every few seconds while SmileDesk Cloud can't be reached. The third value asks
+ * the server to try loading the user's SmileDesk again now (Try again).
  */
 export function useAuthStatus(key: unknown) {
   const [status, setStatus] = useState<AuthStatus | null>(null);
@@ -58,12 +59,12 @@ export function useAuthStatus(key: unknown) {
   return [status, recheck, retryNow] as const;
 }
 
-/** What a sign-out asks first when some of the user's changes haven't reached Bops Cloud yet. */
-export const UNSENT = { title: "Sign out anyway?", line: "Some changes haven't reached Bops Cloud yet." };
+/** What a sign-out asks first when some of the user's changes haven't reached SmileDesk Cloud yet. */
+export const UNSENT = { title: "Sign out anyway?", line: "Some changes haven't reached SmileDesk Cloud yet." };
 
 /**
  * Sign out of Orgo on this Mac (for the menu, and Team). The app goes back to the sign-in screen. When some changes
- * couldn't reach Bops Cloud the user is asked first, by `askFirst`, in place where they asked (account.tsx useSignOut).
+ * couldn't reach SmileDesk Cloud the user is asked first, by `askFirst`, in place where they asked (account.tsx useSignOut).
  */
 export async function signOutOfOrgo(askFirst: () => Promise<boolean>) {
   const send = (force: boolean) => fetch("/api/auth/signout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force }) });
@@ -74,7 +75,7 @@ export async function signOutOfOrgo(askFirst: () => Promise<boolean>) {
   return send(true);
 }
 
-/** Signed in, but the user's Bops couldn't be loaded from Bops Cloud: no state without it, so this says so until it can. */
+/** Signed in, but the user's SmileDesk couldn't be loaded from SmileDesk Cloud: no state without it, so this says so until it can. */
 export function CloudUnreachable({ onRetry }: { onRetry: () => void }) {
   const [busy, setBusy] = useState(false);
   useEffect(() => {
@@ -87,8 +88,8 @@ export function CloudUnreachable({ onRetry }: { onRetry: () => void }) {
       <div className="h-11 shrink-0 [-webkit-app-region:drag]" />
       <div className="flex flex-1 flex-col items-center justify-center px-6 pb-16">
         <div className="flex w-[400px] animate-[call-in_220ms_ease-out] flex-col items-center rounded-[22px] bg-white px-8 pb-7 pt-9 shadow-[0_0_0_1px_#0000000F,0_30px_70px_-28px_#00000038]">
-          <Mascot botId="boppy" color="#0A0A0A" size={56} />
-          <Heading title="Can't reach Bops Cloud" line="Bops can't reach Bops Cloud to load your chats. Check your internet connection." />
+          <BrandMark size={56} />
+          <Heading title="Can't reach SmileDesk Cloud" line="SmileDesk can't reach SmileDesk Cloud to load your chats. Check your internet connection." />
           <button
             disabled={busy}
             onClick={() => {
@@ -111,7 +112,7 @@ type Code = { userCode: string; verificationUrl: string; expiresAt: number; inte
 type Way = "google" | "email" | "orgo";
 /**
  * What went wrong (the server's word for it, lib/server/orgo-sign-in.ts): no connection, an error on
- * Orgo, the Keychain refused the key, or the user's Bops couldn't be loaded from Bops Cloud. The last
+ * Orgo, the Keychain refused the key, or the user's SmileDesk couldn't be loaded from SmileDesk Cloud. The last
  * two keep the key Orgo gave: trying again saves it again, with no new code.
  */
 type Problem = "offline" | "orgo" | "keychain" | "cloud";
@@ -226,7 +227,7 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
       <div className="flex flex-1 flex-col items-center justify-center px-6 pb-16">
         <div className="flex w-[400px] animate-[call-in_220ms_ease-out] flex-col items-center rounded-[22px] bg-white px-8 pb-7 pt-9 shadow-[0_0_0_1px_#0000000F,0_30px_70px_-28px_#00000038]">
           <span className={step.kind === "waiting" || step.kind === "starting" || step.kind === "saving" ? "animate-[bob_2.4s_ease-in-out_infinite] motion-reduce:animate-none" : ""}>
-            <Mascot botId="boppy" color="#0A0A0A" size={56} />
+            <BrandMark size={56} />
           </span>
           {step.kind === "waiting" ? (
             <Waiting step={step} way={way} onReopen={() => openInBrowser(step.code.verificationUrl)} onCancel={cancel} />
@@ -256,7 +257,7 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
           </a>
           .
         </span>
-        {telemetryHere && <span className="pt-1.5 text-[12px] leading-4 text-pencil">Bops shares usage counts and error reports with Orgo, never your content. You can turn this off in Settings.</span>}
+        {telemetryHere && <span className="pt-1.5 text-[12px] leading-4 text-pencil">SmileDesk shares usage counts and error reports with Orgo, never your content. You can turn this off in Settings.</span>}
       </div>
     </div>
   );
@@ -276,7 +277,7 @@ function Welcome({ starting, onStart }: { starting: Way | null; onStart: (way: W
   const busy = starting !== null;
   return (
     <>
-      <Heading title="Welcome to Bops" line="Sign in or make an account to get started. It's free." />
+      <Heading title="Welcome to SmileDesk" line="Sign in or make an account to get started. It's free." />
       <div className="flex w-full flex-col gap-2">
         <button disabled={busy} onClick={() => onStart("google")} className={primary}>
           {starting === "google" ? <Spinner size={13} color="#FFFFFF" /> : <GoogleMark />}
@@ -301,8 +302,8 @@ function Welcome({ starting, onStart }: { starting: Way | null; onStart: (way: W
 const PROBLEMS: Record<Problem, { title: string; line: string; action: string }> = {
   offline: { title: "Couldn't connect", line: "Check your internet connection, then try again.", action: "Try again" },
   orgo: { title: "Something went wrong", line: "Signing in isn't working right now. Try again in a moment.", action: "Try again" },
-  keychain: { title: "Couldn't save your sign-in", line: "Your Mac didn't let Bops keep it in the keychain. Unlock your Mac, then try again.", action: "Try again" },
-  cloud: { title: "Couldn't load your Bops", line: "Couldn't load your Bops from Bops Cloud. Try again.", action: "Try again" },
+  keychain: { title: "Couldn't save your sign-in", line: "Your Mac didn't let SmileDesk keep it in the keychain. Unlock your Mac, then try again.", action: "Try again" },
+  cloud: { title: "Couldn't load your SmileDesk", line: "Couldn't load your SmileDesk from SmileDesk Cloud. Try again.", action: "Try again" },
 };
 
 /** Where expired, declined and failed attempts come back to: again the same way, or back to pick another. */
@@ -340,11 +341,11 @@ function Retry({
   );
 }
 
-/** What to do in the browser, by the way picked. Every way lands on Orgo's page shown as Bops; Google and email go straight to that sign-in. */
+/** What to do in the browser, by the way picked. Every way lands on Orgo's page shown as SmileDesk; Google and email go straight to that sign-in. */
 const FINISH: Record<Way, string> = {
-  google: "Sign in with Google, check that the page shows this code, then allow Bops.",
-  email: "Sign in with your email, check that the page shows this code, then allow Bops.",
-  orgo: "Your browser is open at orgo.ai. Check that it shows this code, then allow Bops.",
+  google: "Sign in with Google, check that the page shows this code, then allow SmileDesk.",
+  email: "Sign in with your email, check that the page shows this code, then allow SmileDesk.",
+  orgo: "Your browser is open at orgo.ai. Check that it shows this code, then allow SmileDesk.",
 };
 
 function Waiting({ step, way, onReopen, onCancel }: { step: Extract<Step, { kind: "waiting" }>; way: Way; onReopen: () => void; onCancel: () => void }) {
@@ -409,7 +410,7 @@ function Approved({ who }: { who: string }) {
         </svg>
         You&apos;re in
       </span>
-      <span className="text-[13.5px] leading-[19px] text-pencil">{who ? `Signed in as ${who}. Opening Bops.` : "Opening Bops."}</span>
+      <span className="text-[13.5px] leading-[19px] text-pencil">{who ? `Signed in as ${who}. Opening SmileDesk.` : "Opening SmileDesk."}</span>
     </div>
   );
 }

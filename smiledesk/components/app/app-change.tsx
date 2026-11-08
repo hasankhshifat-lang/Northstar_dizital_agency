@@ -9,14 +9,14 @@ import { undash } from "./side-group";
 import { AskInPlace } from "./ui";
 
 /*
- * The card Bops posts in a bot's chat once a task on an app on the web changed it (lib/server/hosted-apps.ts
- * changeCardAfterTask, Message.appChange), in place of the line an older Bops shows: the app, the first line of the
+ * The card SmileDesk posts in a bot's chat once a task on an app on the web changed it (lib/server/hosted-apps.ts
+ * changeCardAfterTask, Message.appChange), in place of the line an older SmileDesk shows: the app, the first line of the
  * bot's newest changeset and its short id, how many changesets that is in all and whose; View changes (the app's tab,
  * at its History); and Restore to before this change, which asks first, in place, with every change after it that
  * restoring also undoes and who made it (GET /api/hosted-apps/[name]?restore=), then puts the whole app back as it
  * was as a new change (POST restore: nothing is lost from its history), and the card says Restored. The owner's
  * alone: the chat shows it only where their own apps are (appsOwnShown), never in a workspace someone shared with
- * them, where Bops Cloud never sends it anyway.
+ * them, where SmileDesk Cloud never sends it anyway.
  */
 
 /** What restoring app `app` to changeset `to` undoes, for its question (AppRestoreConfirm), or why it couldn't be read. */

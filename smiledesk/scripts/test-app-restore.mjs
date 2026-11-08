@@ -3,15 +3,15 @@
 // app/api/hosted-apps/[name] POST restore and GET ?restore=, where sessions.ts calls the card, and what a shared
 // workspace gets of it): the commit Restore asks Ingot for, as a pure function of two changesets' files (each file
 // added, changed, deleted, an executable bit alone, nothing to do); Restore through Ingot's own API (the files at the
-// changeset to go back to and at main's newest, one commit on top of main's newest naming blobs Ingot has, by Bops,
+// changeset to go back to and at main's newest, one commit on top of main's newest naming blobs Ingot has, by SmileDesk,
 // "Restore <app> to <short id>"), the working folder's status read on its computer before anything is committed and
 // the folder pulled after, its Local started again when what it installs from changed; Ingot's stale (made once more
 // from main's newest, then refused, saying so) and empty (said, nothing committed); its refusals (a task works on
-// it, a folder with changes nobody committed, a workspace shared with the user, a page that isn't the Bops window, a
+// it, a folder with changes nobody committed, a workspace shared with the user, a page that isn't the SmileDesk window, a
 // changeset that isn't one of it); the question's data (every change after it, newest first, who and when, and why
 // it can't be restored now); the card once a task's run ended (only the bot's changesets count, once a run, none when
-// it committed nothing, a later run's from where the last card ended, said in words an older Bops shows); and that
-// neither Bops Cloud nor a shared workspace's view ever carries the card. Every script sent to a computer passes bash -n,
+// it committed nothing, a later run's from where the last card ended, said in words an older SmileDesk shows); and that
+// neither SmileDesk Cloud nor a shared workspace's view ever carries the card. Every script sent to a computer passes bash -n,
 // and nothing a person reads has a dash.
 //
 // orgo-web, the central Ingot and the computer are a fake fetch on made-up origins (Ingot as its Rust server answers:
@@ -349,7 +349,7 @@ await check("byBots: Ingot's names for a bot's changesets (this Mac's, its compu
   assert.equal(by("whatever", "boppy"), true, "Ingot's local mode keeps the bot's id");
   assert.equal(by("Alex"), false, "Alex's own");
   assert.equal(by("Boppy Two via Alex"), false, "another bot whose name starts the same");
-  assert.equal(by("Bops via Alex"), false, "Bops' own (a restore)");
+  assert.equal(by("SmileDesk via Alex"), false, "SmileDesk's own (a restore)");
   assert.equal(I.byBots({ author: null }, ["boppy"]), false);
   // A long name: the token's cut to 30 characters.
   S.update((s) => (s.bots.find((x) => x.id === "boppy2").name = "Boppy The Very Long Named Coder Of Recipes"));
@@ -407,13 +407,13 @@ await check("GET ?restore=: the owner's alone (403 while a shared workspace is o
 
 /* ---------------- Restore ---------------- */
 
-await check("Restore: the folder's status read first, one commit on main's newest naming blobs Ingot has (adds, changes, deletes, executable bits) by Bops, then the folder pulled; the files are the old ones again, history a line", async () => {
+await check("Restore: the folder's status read first, one commit on main's newest naming blobs Ingot has (adds, changes, deletes, executable bits) by SmileDesk, then the folder pulled; the files are the old ones again, history a line", async () => {
   const { v1, v2, v3 } = history();
   const r = await post({ action: "restore", to: v1.id });
   assert.equal(r.status, 200, JSON.stringify(r.body));
   assert.equal(ingotFake.commits.length, 1);
   const { body, author } = ingotFake.commits[0];
-  assert.equal(author, "bops; Bops", "Bops' own write (authorOf)");
+  assert.equal(author, "bops; SmileDesk", "SmileDesk's own write (authorOf)");
   assert.deepEqual({ ref: body.ref, base: body.base, message: body.message }, { ref: "main", base: v3.id, message: `Restore recipe-box to ${short(v1.id)}` });
   assert.deepEqual(body.changes, [
     { path: "index.html", blob: sha("<h1>Recipes</h1>"), executable: false },
@@ -427,7 +427,7 @@ await check("Restore: the folder's status read first, one commit on main's newes
   assert.ok(same(made.files, v1.files), "its files are v1's again");
   assert.deepEqual(made.parents, [v3.id], "on top of main: nothing is lost");
   assert.deepEqual(ingotFake.changesets.map((c) => c.id), [made.id, v3.id, v2.id, v1.id]);
-  assert.equal(made.author.name, "Bops via Alex");
+  assert.equal(made.author.name, "SmileDesk via Alex");
   assert.equal(r.body.restored, made.id);
   assert.equal(r.body.app.name, "recipe-box");
   // In order: the folder's status before the commit, the pull after it.
@@ -501,13 +501,13 @@ await check("Restore refused while its working folder has changes nobody committ
   assert.equal(ingotFake.commits.length, 0);
 });
 
-await check("Restore: the owner's alone (403 with a shared workspace open), from the Bops window only, a changeset of it only", async () => {
+await check("Restore: the owner's alone (403 with a shared workspace open), from the SmileDesk window only, a changeset of it only", async () => {
   const { v1 } = history();
   sharedOpenNow();
   const shared = await post({ action: "restore", to: v1.id });
   assert.deepEqual([shared.status, shared.body.error], [403, "Only the owner can restore an app."]);
   globalThis.bopsShared = null;
-  assert.equal((await post({ action: "restore", to: v1.id }, false)).status, 403, "not from the Bops window");
+  assert.equal((await post({ action: "restore", to: v1.id }, false)).status, 403, "not from the SmileDesk window");
   assert.equal((await post({ action: "restore", to: "zz" })).status, 400);
   assert.equal((await post({ action: "restore" })).status, 400);
   assert.equal((await post({ action: "restore", to: "e".repeat(64) })).status, 404);
@@ -588,7 +588,7 @@ await check("Restore marks the cards whose change it put back Restored (theirs a
 
 /* ---------------- The card once a task's run ended ---------------- */
 
-await check("The card: the bot's newest changeset since the task first ran, its first line and short id, how many in all and whose; an appNote in its chat as the bot, in words an older Bops shows", async () => {
+await check("The card: the bot's newest changeset since the task first ran, its first line and short id, how many in all and whose; an appNote in its chat as the bot, in words an older SmileDesk shows", async () => {
   const BOT = { id: "u_alex", name: "Boppy on bops-alex via Alex" };
   const start = put("A recipe list", { id: "u_alex", name: "Alex" }, { "index.html": "1" });
   withTask(task("ses_a", { app: { startHead: start.id } }));
@@ -677,7 +677,7 @@ await check("sessions.ts: the card asked for after a run that ended done (with d
 
 /* ---------------- Never a member's ---------------- */
 
-await check("Bops Cloud never carries the card (cloud/ws-slice.ts keeps only the fields it names): a member with Your Apps reads its words, one without none of it", async () => {
+await check("SmileDesk Cloud never carries the card (cloud/ws-slice.ts keeps only the fields it names): a member with Your Apps reads its words, one without none of it", async () => {
   const msg = { id: "m1", chatId: CHAT, role: "bot", botId: "boppy", text: "Changed recipe-box: Favorites (abc1234)", at: 1, sessionIds: ["ses_a"], appNote: true, bops: true, appChange: { ws: "ws_main", app: "recipe-box", from: "a".repeat(64), to: "b".repeat(64), title: "Favorites", count: 1, authors: ["Alex"] } };
   // The owner's own view of the slice, and a member given the bot and Your Apps at Write (appBots): its words alone.
   for (const got of [sharedMessage(msg), sharedMessage(msg, new Set(["boppy"]), new Set(), new Set(), new Set(["boppy"]))]) {

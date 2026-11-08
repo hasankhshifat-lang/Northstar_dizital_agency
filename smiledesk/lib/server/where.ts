@@ -24,7 +24,7 @@ const NO_AFTER = /^\s*[?!]\s*(?:no|nope|never|no way|not)\b/i;
  * The user's own words ask for their Mac ("do it on my Mac", "move it to my MacBook", "on this Mac"):
  * with the bot's say (tell_task on_mac, a task for the Mac) what moves a thread already under way there
  * (moving stops it and starts it again on the Mac); on its own, what offers the move. Stricter than where
- * a new task runs: a bare "locally" ("find a plumber locally") and "computer" (in Bops that's also the
+ * a new task runs: a bare "locally" ("find a plumber locally") and "computer" (in SmileDesk that's also the
  * bot's own, in the cloud) don't count, nor does a no in front ("don't do this on my Mac", "anywhere but
  * on my Mac") or straight after ("on my Mac? no way").
  */
@@ -56,7 +56,7 @@ const BUT_ANYWHERE = /\b(?:anywhere|anything|everywhere|everything|nowhere|all|n
  * files (lib/server/executor-sandbox.ts); a task that needs them and lands there says so. In order: what the request says outright, the bot's own setting, the user's app
  * rules, then Jev; when Jev isn't sure, the user picks.
  *
- * `outside`: asked for on a turn someone else started (an email, a text or a call from outside Bops).
+ * `outside`: asked for on a turn someone else started (an email, a text or a call from outside SmileDesk).
  * Nothing said on that turn puts work on the Mac (its words, "mac" asked for, Jev's read of them): it
  * runs in the cloud. When the user set the bot itself to work on their Mac, they pick ("ask"): a task
  * there may have their files, apps and a shell, and its goal was written from someone else's words.
@@ -66,7 +66,7 @@ export async function chooseWhere(botId: string, goal: string, asked: "mac" | "c
 }
 
 /**
- * Where the Mac would send a run of a routine left to Bops (where auto), worked out ahead of its runs
+ * Where the Mac would send a run of a routine left to SmileDesk (where auto), worked out ahead of its runs
  * (routines.ts pickWhere): chooseWhere's way, and "ask" is the cloud, as a routine's run never stops to
  * ask (sessions.ts route). Null when it can't say for good now: this Mac can't take bots yet (picked once
  * it can), or Jev didn't answer.
@@ -77,7 +77,7 @@ export async function routinePick(botId: string, goal: string): Promise<"mac" | 
   return to === null ? null : to === "mac" ? "mac" : "cloud";
 }
 
-/** chooseWhere, and null where it would take the cloud for want of an answer: no Mac Bops can use, or none from Jev. */
+/** chooseWhere, and null where it would take the cloud for want of an answer: no Mac SmileDesk can use, or none from Jev. */
 async function whereFor(botId: string, goal: string, asked: "mac" | "cloud" | "auto", opts: { outside?: boolean }): Promise<Where | null> {
   // A computer's runner is on the bot's computer, with no Mac and nobody to ask: it runs only what needs no Mac (runner.ts pinnedToMac).
   if (onRunner()) return "cloud";
@@ -91,7 +91,7 @@ async function whereFor(botId: string, goal: string, asked: "mac" | "cloud" | "a
   if (CLOUD_WORDS.test(goal)) return "cloud";
   const b = bot(botId);
   if (b?.runsOn === "mac" || b?.runsOn === "cloud") return b.runsOn;
-  // Without a Mac Bops can use, there's only the cloud.
+  // Without a Mac SmileDesk can use, there's only the cloud.
   if (!mac?.ready) return null;
   const rule = mac.rules.find((r) => new RegExp(`\\b${r.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(goal));
   if (rule) return "mac";

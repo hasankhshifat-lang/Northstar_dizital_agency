@@ -7,8 +7,8 @@ import { addMessage, bot, changeLanded, getState, id, ownerName, pullState, sess
 
 /**
  * Asking the user's OK, as OpenCode (packages/core/src/permission.ts) and Codex (approval policy, ReviewDecision)
- * do it, in Bops' state: a request is a plain record every Bops of the user's shares (AppApproval), and the pause
- * is held by OpenAI, not by a Bops process.
+ * do it, in SmileDesk's state: a request is a plain record every SmileDesk of the user's shares (AppApproval), and the pause
+ * is held by OpenAI, not by a SmileDesk process.
  *
  * Before asking, the bot's rules decide (lib/permission.ts: allows, a rule for the bot and the action, whatever its
  * recipients or details, as Claude Code's "don't ask again"): allowed, the tool just runs. Otherwise the tool
@@ -18,23 +18,23 @@ import { addMessage, bot, changeLanded, getState, id, ownerName, pullState, sess
  * and nothing keeps its computer up. The thread's "Waiting for your OK" is the unanswered request (lib/types.ts
  * waitsForOk); nothing else marks it.
  *
- * Only two things resolve a request: the user's reply from one of their own Bops (replyToAsk: once, always, or
+ * Only two things resolve a request: the user's reply from one of their own SmileDesk (replyToAsk: once, always, or
  * reject with a message the bot is told, like OpenCode's CorrectedError), or Stop on its thread (stopAsks: reject,
  * reason "stopped"). A bot's computer creates and takes out its own requests and never writes a reply (replyToAsk
- * refuses there, and Bops Cloud refuses its write: cloud/computer-scope.ts); someone the user shared a workspace
+ * refuses there, and SmileDesk Cloud refuses its write: cloud/computer-scope.ts); someone the user shared a workspace
  * with sees the request, read only, and has none of the user's to answer. Otherwise a bot's computer is trusted for
- * its bots, as Claude Code is on the computer it runs on: its runner asks, and Bops Cloud doesn't check its calls
+ * its bots, as Claude Code is on the computer it runs on: its runner asks, and SmileDesk Cloud doesn't check its calls
  * against the answers. When the reply lands on the device that asked (settleAsks), that device carries the same
  * run on from where it paused: it takes the record out as it reads
  * the reply (takeAnswer), does the action on Allow and sends its result as that call's output, or sends "Declined:
  * <the user's message>" on Deny. A restart of that device meanwhile loses nothing: the request and OpenAI's stored
  * state are enough, and a reply that came while it was down carries the run on once it has the state again
  * (settleLoaded). An answer to a request a bot's computer made gets that computer woken until its runner reads it
- * (wakeForAnswers: its run goes on there); Stop never does. A run ended for good on another Bops's behalf (its
+ * (wakeForAnswers: its run goes on there); Stop never does. A run ended for good on another SmileDesk's behalf (its
  * computer deleted, the workspace shared, its runner failed or its program gone from the computer: runner-install.ts
- * stop and stillRuns, sessions.ts stopSession) has its requests stopped too (sessions.ts endSessionOf), and any Bops
+ * stop and stillRuns, sessions.ts stopSession) has its requests stopped too (sessions.ts endSessionOf), and any SmileDesk
  * takes out a resolved request of a runner that's gone (takeOutOrphans), so none is left that nobody can clear. A Stop
- * the Bops that asked hears only with the state it loads ends the run before it goes on from an answer (sessions.ts
+ * the SmileDesk that asked hears only with the state it loads ends the run before it goes on from an answer (sessions.ts
  * pump, stopAskedHere).
  */
 
@@ -70,7 +70,7 @@ export function allows(b: Pick<Bot, "autoApprove" | "permissions">, ask: Pick<As
 export type AskPlace = { botId: string; threadId?: string; chatId?: string; routineId?: string };
 
 /**
- * Open a request (an engine pausing its run, or a held call): this Bops's (askedBy), with the thread, chat and
+ * Open a request (an engine pausing its run, or a held call): this SmileDesk's (askedBy), with the thread, chat and
  * routine it's for and what resumes the run. Returns it.
  */
 export function askFor(spec: AskSpec, place: AskPlace, resume: AskResume): AppApproval {
@@ -121,7 +121,7 @@ function routinesFollow(asks: AppApproval[]) {
 
 /**
  * What the bot is told when someone says no: their words (what to do instead), else that they said no, named as
- * whoever answered (an Admin or a member in their own Bops: AskAnswer.member), the owner otherwise.
+ * whoever answered (an Admin or a member in their own SmileDesk: AskAnswer.member), the owner otherwise.
  */
 export function declined(a: Pick<AppApproval, "reply">): string {
   const said = a.reply?.message?.trim();
@@ -141,12 +141,12 @@ export const declinedStep = (a: Pick<AppApproval, "reply">) => {
 const mine = (a: AppApproval, me = stateDevice()) => (a.askedBy ?? null) === (me ?? null);
 
 /**
- * The user's reply to request `askId`, from one of their own Bops (the card's Allow once, Always allow or Deny):
- * written into the shared state, where the Bops that asked reads it and carries its run on. Always allow saves a
+ * The user's reply to request `askId`, from one of their own SmileDesk (the card's Allow once, Always allow or Deny):
+ * written into the shared state, where the SmileDesk that asked reads it and carries its run on. Always allow saves a
  * rule for the bot and the action, whatever its recipients or details (Claude Code's "don't ask again"), and answers
  * the bot's other requests for that action (as OpenCode does). Never from a bot's computer, never twice. Says why
  * when it isn't taken; undefined when it is. A request a bot's computer made wakes that computer, its run going on
- * there. `member`: answered by a member with Write on its bot, from their own Bops (member-acts.ts): the same
+ * there. `member`: answered by a member with Write on its bot, from their own SmileDesk (member-acts.ts): the same
  * answer, named as theirs (AskAnswer.member), their Always allow saving the rule on the owner's bot as the owner's would.
  */
 export function replyToAsk(askId: string, reply: AskReply, message?: string, member?: MemberWho): string | undefined {
@@ -192,9 +192,9 @@ export function replyToAsk(askId: string, reply: AskReply, message?: string, mem
 }
 
 /**
- * Stop on thread `threadId`: its unanswered requests are rejected, reason "stopped", from whichever Bops pressed
- * it. Nothing is woken: the run ends where it paused (sessions.ts stopSession), and the Bops that asked takes the
- * record out once it hears, or any Bops does when that one never will (takeOutOrphans: a runner that's failed,
+ * Stop on thread `threadId`: its unanswered requests are rejected, reason "stopped", from whichever SmileDesk pressed
+ * it. Nothing is woken: the run ends where it paused (sessions.ts stopSession), and the SmileDesk that asked takes the
+ * record out once it hears, or any SmileDesk does when that one never will (takeOutOrphans: a runner that's failed,
  * stopping or gone), one the user had answered too. Returns them.
  */
 export function stopAsks(threadId: string): AppApproval[] {
@@ -214,19 +214,19 @@ export function stopAsks(threadId: string): AppApproval[] {
   return stopped;
 }
 
-/** Take request `askId` out of the state: only the Bops that asked does, once it has read the reply (or its run is gone). */
+/** Take request `askId` out of the state: only the SmileDesk that asked does, once it has read the reply (or its run is gone). */
 function takeOut(askId: string) {
   if (getState().appApprovals?.some((a) => a.id === askId)) update((s) => void (s.appApprovals = (s.appApprovals ?? []).filter((a) => a.id !== askId)));
 }
 
 /** Why an answered request's action wasn't done: that it was read couldn't be saved (readOut). */
-const NOT_READ = "Not done: Bops couldn't save that it read your answer, so it didn't act on it.";
+const NOT_READ = "Not done: SmileDesk couldn't save that it read your answer, so it didn't act on it.";
 
 /**
- * Take request `askId` out as its reply is read, and wait until that's saved for every Bops of the user's (in Bops
+ * Take request `askId` out as its reply is read, and wait until that's saved for every SmileDesk of the user's (in SmileDesk
  * Cloud: store.ts changeLanded) before its action is done. A crash or restart before then loads the state with the
  * request still there, unread, and the run goes on from it then, once; a crash after, without it, so the action is
- * never done twice. Throws NOT_READ when it can't be saved (another account's state came in, a newer Bops wrote it):
+ * never done twice. Throws NOT_READ when it can't be saved (another account's state came in, a newer SmileDesk wrote it):
  * nothing is done.
  */
 async function readOut(askId: string) {
@@ -235,12 +235,12 @@ async function readOut(askId: string) {
 }
 
 /**
- * The answered request this Bops made for thread `threadId` (not a stop): its run resumes from it. That's the newest
+ * The answered request this SmileDesk made for thread `threadId` (not a stop): its run resumes from it. That's the newest
  * of the thread's own: a run pauses at one request at a time, so it's the one the run waits at now, and an older one
  * still there is from a pause the run is past (read and taken out with it, never resumed from). Taken out as it's
  * read, and returned once that's saved (readOut), before the action is done, so a crash in between never does it
  * twice: before the save the run goes on from the same request after the restart, after it the thread ends as any
- * run does when Bops restarts, its call answered as not known to have run.
+ * run does when SmileDesk restarts, its call answered as not known to have run.
  */
 export async function takeAnswer(threadId: string): Promise<AppApproval | undefined> {
   const own = (getState().appApprovals ?? []).filter((x) => x.threadId === threadId && x.resume?.engine !== "held" && mine(x));
@@ -255,7 +255,7 @@ export async function takeAnswer(threadId: string): Promise<AppApproval | undefi
 const resuming = new Set<string>();
 
 /**
- * This Bops's own requests that were answered (here or on another of the user's Bops): a thread's run is picked up
+ * This SmileDesk's own requests that were answered (here or on another of the user's SmileDesk): a thread's run is picked up
  * again where it paused (sessions.ts pickUpAnswered: it takes the reply as it starts); a chat turn goes on (chat.ts
  * resumeChat). One stopped, or whose thread is over anyway, is taken out: nothing waits on it. Runs after every
  * change from elsewhere (store.ts watchArrivals), each time the user's state loads here (settleLoaded), and after a
@@ -270,12 +270,12 @@ export function settleAsks() {
       const t = session(a.threadId);
       if (!t || !live(t) || a.reply.reason === "stopped") {
         takeOut(a.id);
-        // What the paused run kept on this Bops to go on with (a Mac task's folder) goes too.
+        // What the paused run kept on this SmileDesk to go on with (a Mac task's folder) goes too.
         const threadId = a.threadId;
         void import("./sessions")
           .then((m) => m.letGoOfPause(threadId))
           .catch((e: Error) => console.warn(`[asks] ${threadId}: ${e.message}`));
-        // Stopped elsewhere while it waited here: over here too, if it isn't yet (the Bops that stopped it ended it).
+        // Stopped elsewhere while it waited here: over here too, if it isn't yet (the SmileDesk that stopped it ended it).
         const at = a.reply.at;
         if (t && live(t) && a.reply.reason === "stopped") void import("./sessions").then((m) => m.endStopped(t.id, at), () => {});
       } else threads = true;
@@ -297,8 +297,8 @@ watchArrivals("asks", settleAsks);
 
 /**
  * Requests of a computer's runner that's gone or being stopped, answered or stopped, whose run isn't that runner's any
- * more (its thread over, or another Bops's now: sessions.ts endSessionOf, which stops them): that runner will never
- * read them, so any Bops of the user's takes them out. Never a Mac's (state.macs: that Mac does, when it next hears),
+ * more (its thread over, or another SmileDesk's now: sessions.ts endSessionOf, which stops them): that runner will never
+ * read them, so any SmileDesk of the user's takes them out. Never a Mac's (state.macs: that Mac does, when it next hears),
  * nor on a runner (it takes out only its own).
  */
 async function takeOutOrphans() {
@@ -317,7 +317,7 @@ async function takeOutOrphans() {
 }
 
 /**
- * The user's state loaded here (a sign-in, Bops or a computer's runner starting): a reply that came while this Bops
+ * The user's state loaded here (a sign-in, SmileDesk or a computer's runner starting): a reply that came while this SmileDesk
  * was down or signed out came in with it, and no change from elsewhere said so. Its own answered requests carry their
  * runs on now, on their own (settleAsks), and on a computer's runner one still unanswered is listened for again
  * (listenForAnswers), as when it asked.
@@ -440,7 +440,7 @@ const g = globalThis as unknown as { bopsAskListen?: ReturnType<typeof setInterv
 /**
  * On a computer's runner, which has no Live stream and reads the state every 30 seconds: while one of its requests
  * is unanswered, and it's up anyway, it reads it every few seconds, so a reply reaches the run within moments. A
- * read of Bops Cloud is no command on the computer, so it never keeps it up; asleep, nothing runs at all.
+ * read of SmileDesk Cloud is no command on the computer, so it never keeps it up; asleep, nothing runs at all.
  */
 function listenForAnswers() {
   if (!onRunner() || g.bopsAskListen) return;

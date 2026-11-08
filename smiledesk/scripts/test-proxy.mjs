@@ -1,4 +1,4 @@
-// Who may call Bops' API (proxy.ts): the app on this Mac only, and on the Mac app, only its window (the
+// Who may call SmileDesk's API (proxy.ts): the app on this Mac only, and on the Mac app, only its window (the
 // httpOnly cookie desktop/main.cjs sets, or its own header), so a bot's Chrome that reached the server
 // can neither act nor read. The tailnet's and the cloud tunnel's paths prove themselves; the app's health
 // and bots' pages are open reads. main.cjs's own calls (desktop/own-call.cjs: a restart, the Mac going to
@@ -44,7 +44,7 @@ process.env.BOPS_UI_TOKEN = TOKEN;
 for (const [method, path] of [["POST", "/api/apps/approvals"], ["POST", "/api/chats/c1/messages"], ["POST", "/api/sessions/s1/where"], ["POST", "/api/apps"], ["PATCH", "/api/mac"], ["DELETE", "/api/bots"], ["POST", "/api/restart"]]) {
   const res = call(method, path);
   assert.equal(res.status, 403, `${method} ${path} without the window's token`);
-  assert.deepEqual(await res.json(), { error: "Only the Bops app can do that." });
+  assert.deepEqual(await res.json(), { error: "Only the SmileDesk app can do that." });
 }
 assert.equal(call("POST", "/api/apps/approvals", { cookie: `bops_window=${"x".repeat(64)}` }).status, 403, "another token");
 assert.equal(call("POST", "/api/apps/approvals", { cookie: "bops_window=short" }).status, 403, "a short one");

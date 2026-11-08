@@ -10,10 +10,10 @@ export const dynamic = "force-dynamic";
 /**
  * Add a DNS record to the zone of a domain bought through Orgo that points at the app ({ ws, zone, type,
  * name, value, priority?, weight?, port? }). Answers the zone's records as written. A record changes where
- * a domain's visitors and mail go, so it's done only from the Bops window (ui-token.ts), as a deploy is.
+ * a domain's visitors and mail go, so it's done only from the SmileDesk window (ui-token.ts), as a deploy is.
  */
 export async function POST(request: Request, ctx: { params: Promise<{ name: string }> }) {
-  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "DNS can only be changed in the Bops app." }, { status: 403 }));
+  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "DNS can only be changed in the SmileDesk app." }, { status: 403 }));
   if (unready) return unready;
   // Only an @orgo.ai account has apps on the web for now (lib/apps-access.ts).
   if (!appsOpen(getState())) return Response.json({ error: "Not found" }, { status: 404 });

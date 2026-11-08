@@ -8,7 +8,7 @@
 // sessions Orgo knows of (only bops-chat- and bops-task- ones); issues are Orgo's rows (status, priority,
 // tags, one per thread or ticket), their history the session, and a delete keeps a session something else
 // still uses, one Orgo never takes ends there, one it can't take now waits without holding up the rest, and
-// one for an issue older than the newest 200 waits until Orgo can say; what Orgo hadn't taken when Bops quit
+// one for an issue older than the newest 200 waits until Orgo can say; what Orgo hadn't taken when SmileDesk quit
 // goes at the next start; an Orgo without the routes (404 or 405) is asked again in 6 hours; Orgo down never
 // stops Orbit.
 //
@@ -774,7 +774,7 @@ await check("a plain sha256 hash an index kept from before still matches here (a
   assert.ok(indexOf(MAIN).keys?.[0] === secretOf(MAIN), "the index knows the secret in use");
 });
 
-await check("Delete everywhere lists the Bops chats Orgo knows an item from (another Mac's too), never another agent's session", async () => {
+await check("Delete everywhere lists the SmileDesk chats Orgo knows an item from (another Mac's too), never another agent's session", async () => {
   const H = seed(MAIN, [["h1", "Hana Kim is Tiger's accountant.", [item("people", "Hana Kim", { key: "hana kim", detail: "Your accountant" })], { session: CHAT }]]);
   for (const id of [CHAT, OTHER_CHAT, "hermes-9"]) hbank("bops").sessions.set(id, { id, metadata: { app: "bops" }, configuration: {}, peers: {}, messages: [] });
   const hana = one((await refresh(MAIN)).items, "people", "Hana Kim");
@@ -1114,7 +1114,7 @@ await check("a forget Orgo can't take now (401, 403, 409 full, 429) stays to sen
   assert.equal(indexOf(MAIN).out, undefined, "nothing left to send");
 });
 
-await check("a forget Orgo hadn't taken when Bops quit goes at the next start (workspaces.ts startProjectBinding), not only when Orbit is opened", async () => {
+await check("a forget Orgo hadn't taken when SmileDesk quit goes at the next start (workspaces.ts startProjectBinding), not only when Orbit is opened", async () => {
   const Wk = await import(`${root}/lib/server/workspaces.ts`);
   seed(MAIN, [["p1", "Pat walks the dog.", [item("people", "Pat", { key: "pat", detail: "Walks the dog" })]]]);
   const pat = one((await refresh(MAIN)).items, "people", "Pat");
@@ -1124,7 +1124,7 @@ await check("a forget Orgo hadn't taken when Bops quit goes at the next start (w
   assert.equal((await post({ action: "forget", ws: MAIN, id: pat.id })).status, 200);
   await settle();
   assert.ok(indexOf(MAIN).out?.del.includes(pat.id), "kept to send");
-  // Bops quits: its backoff and its timers were in memory only. Orgo is back by the next start.
+  // SmileDesk quits: its backoff and its timers were in memory only. Orgo is back by the next start.
   T.reset();
   orgo.answer = null;
   Wk.projectBindingForTests.reset();

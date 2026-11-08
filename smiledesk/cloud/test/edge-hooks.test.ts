@@ -203,7 +203,7 @@ test("a call's turn with the Mac away is answered in the cloud: the owner gets t
   assert.deepEqual(await turn(mobile), { text: "Hi Alex, it's Sam. What's up?" }, "spoken words only: no markdown");
   const [owner] = openai.responses;
   assert.equal(owner.authorization, "Bearer sk-test-not-a-real-key");
-  assert.match(String(owner.body.instructions), /You are Sam, Alex's chief of staff in Bops, on a phone call with Alex, who you work for\. The computer you work on is offline/);
+  assert.match(String(owner.body.instructions), /You are Sam, Alex's chief of staff in SmileDesk, on a phone call with Alex, who you work for\. The computer you work on is offline/);
   assert.deepEqual(owner.body.input, [{ role: "user", content: "Hello?" }]);
   assert.deepEqual((owner.body.reasoning as { effort: string }).effort, "low");
 
@@ -427,7 +427,7 @@ test("anyone else's call while the Mac is away is turned away before it connects
   assert.equal(ap.sent.length, 0, "and nobody is texted about it");
 });
 
-test("a call to a number no user has is left alone, even when the caller is a Bops number", async () => {
+test("a call to a number no user has is left alone, even when the caller is a SmileDesk number", async () => {
   const { userId, line } = await setUp();
   const mac = await connectMac(cloud.url, userId);
   const sessionId = `live_${randomUUID()}`;

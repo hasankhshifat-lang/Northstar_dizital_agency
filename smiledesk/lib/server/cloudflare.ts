@@ -8,15 +8,15 @@ import { apiKey } from "./orgo";
  * An app's domains in the user's own Cloudflare account (lib/hosted-apps.ts CloudflarePlan): the Cloudflare
  * key the user keeps in their Orgo vault (CLOUDFLARE_API_TOKEN, for one Orgo workspace or for all) is used
  * only through Orgo's broker (/api/secrets/call, with the user's own Orgo key), which adds it on the way to
- * Cloudflare and takes it out of every answer. Bops never reveals it, never calls Cloudflare itself, and
+ * Cloudflare and takes it out of every answer. SmileDesk never reveals it, never calls Cloudflare itself, and
  * hands the window only what a zone says: its names, record types and values.
  *
- * It's not one of the Keys (keys.ts KEY_PROVIDERS): no bot ever sees it, calls it, or is offered it. Bops
+ * It's not one of the Keys (keys.ts KEY_PROVIDERS): no bot ever sees it, calls it, or is offered it. SmileDesk
  * reads its domains (zones) and their records at the names a domain needs, says what it would change, and
  * writes only after the user pressed the button that says so: every change for a domain in one Cloudflare
- * batch, all of it or none. A record Bops writes says so in its comment ("Set by Bops for <app>
+ * batch, all of it or none. A record SmileDesk writes says so in its comment ("Set by SmileDesk for <app>
  * [bops:<Orgo's domain id>]"), which is how it knows its own again (on two Macs too): nothing about any of
- * it is kept in Bops' state. One Bops didn't write is changed only after the user said Replace.
+ * it is kept in SmileDesk's state. One SmileDesk didn't write is changed only after the user said Replace.
  */
 
 /** The name the key has in the vault. Its zone's and account's ids there are never read: Cloudflare says them itself. */
@@ -46,11 +46,11 @@ export const CF_WORDS = {
   orgoLimit: "Orgo is limiting calls to Cloudflare right now. Wait a minute, then try again.",
   cfLimit: "Cloudflare is limiting calls right now. Wait a minute, then try again.",
   signIn: "Sign in to Orgo again to use your Cloudflare key.",
-  orgoDown: "Bops couldn't reach Orgo. Check the internet and try again.",
+  orgoDown: "SmileDesk couldn't reach Orgo. Check the internet and try again.",
   notZone: "That isn't one of your Cloudflare domains.",
   stale: "Something changed in Cloudflare since you looked. Check the changes again.",
-  needsOk: "Bops won't replace records it didn't set without your OK.",
-  unknown: "Cloudflare didn't answer, so it isn't known whether the records went in. Try again in a minute. Bops looks first, so nothing is set twice.",
+  needsOk: "SmileDesk won't replace records it didn't set without your OK.",
+  unknown: "Cloudflare didn't answer, so it isn't known whether the records went in. Try again in a minute. SmileDesk looks first, so nothing is set twice.",
   justSet: "Set in Cloudflare. It can take a minute or two to answer.",
   tooLong: "Cloudflare's answer was too long.",
   notIn: (domain: string) => `${domain} isn't in your Cloudflare account.`,
@@ -58,7 +58,7 @@ export const CF_WORDS = {
   noRead: (zone: string) => `Your Cloudflare key can't read the DNS of ${zone}. In Cloudflare, let it edit DNS for ${zone}.`,
   noTarget: (fqdn: string) => `Orgo didn't say where ${fqdn} should point. Try again in a minute.`,
   otherApp: (type: string, host: string, app: string | null) =>
-    app ? `Bops set the ${type} at ${host} for ${app}. Remove that domain from ${app} first.` : `Bops set the ${type} at ${host} for another domain on this computer. Remove that one first.`,
+    app ? `SmileDesk set the ${type} at ${host} for ${app}. Remove that domain from ${app} first.` : `SmileDesk set the ${type} at ${host} for another domain on this computer. Remove that one first.`,
   besideCname: (fqdn: string, type: string) => `${fqdn} has a ${type} record in Cloudflare, so it can't also have the CNAME Orgo needs. Pick another name.`,
   proxy: "Turns off Cloudflare's proxy. Orgo needs DNS only.",
 };
@@ -132,7 +132,7 @@ async function cf<T>(scope: CloudflareScope, method: KeyMethod, path: string, qu
 /* ---------------- Which key, and its zones ---------------- */
 
 /**
- * The Cloudflare key a Bops workspace's app uses, by the vault's names alone (never a value): the one for the
+ * The Cloudflare key a SmileDesk workspace's app uses, by the vault's names alone (never a value): the one for the
  * workspace's own Orgo project, else the one for the Orgo workspace the app's computer is in (asked only when
  * there's a key for another workspace than this one's), else the account's. Null: no Cloudflare here, so
  * nothing about domains changes. The vault not answering is no Cloudflare too.
@@ -224,14 +224,14 @@ export async function recordsAt(scope: CloudflareScope, zoneId: string, names: s
     .filter((r): r is CfRecord => !!r && !seen.has(r.id) && !!seen.add(r.id));
 }
 
-/** The records Bops set for one of the app's domains (by its comment's tag), and only those. */
+/** The records SmileDesk set for one of the app's domains (by its comment's tag), and only those. */
 export async function ourRecords(scope: CloudflareScope, zoneId: string, domainId: string): Promise<CfRecord[]> {
   if (!ZONE_ID.test(zoneId)) throw new CloudflareError(CF_WORDS.notZone, "other", 404);
   const { result } = await cf<unknown[]>(scope, "GET", `/zones/${zoneId}/dns_records`, { "comment.contains": `[bops:${domainId}]`, per_page: 100 });
   return (Array.isArray(result) ? result : []).map(recordOf).filter((r): r is CfRecord => !!r && ourId(r.comment) === domainId);
 }
 
-/** A record as Bops writes it: automatic TTL, DNS only (Orgo checks it points at its own edge), and its comment. */
+/** A record as SmileDesk writes it: automatic TTL, DNS only (Orgo checks it points at its own edge), and its comment. */
 export type CfWrite = { type: string; name: string; content: string; ttl: 1; proxied?: false; comment: string };
 /** One Cloudflare batch: deletes, then patches, then posts, in one transaction (all of it, or none). */
 export type CfBatch = { deletes: { id: string }[]; patches: (CfWrite & { id: string })[]; posts: CfWrite[] };
@@ -247,21 +247,21 @@ export async function applyBatch(scope: CloudflareScope, zoneId: string, b: CfBa
   return batchSize(b);
 }
 
-/* ---------------- Bops' own records ---------------- */
+/* ---------------- SmileDesk's own records ---------------- */
 
 /** Cloudflare keeps 100 characters of a record's comment on its Free plan. */
 const COMMENT_MAX = 100;
 
-/** The comment on every record Bops writes for a domain: what it's for, then its tag (never cut), within Cloudflare's 100. */
+/** The comment on every record SmileDesk writes for a domain: what it's for, then its tag (never cut), within Cloudflare's 100. */
 export function marker(app: string, domainId: string): string {
   const tag = `[bops:${domainId}]`;
   if (domainId.length > 50) return tag;
-  const head = "Set by Bops for ";
+  const head = "Set by SmileDesk for ";
   const room = COMMENT_MAX - head.length - 1 - tag.length;
   return `${head}${app.slice(0, Math.max(0, room))} ${tag}`;
 }
 
-/** The domain a record's comment says Bops set it for (Orgo's id for it), or null: not Bops'. */
+/** The domain a record's comment says SmileDesk set it for (Orgo's id for it), or null: not SmileDesk's. */
 export const ourId = (comment: string | null | undefined): string | null => /\[bops:([\w-]{1,80})\]/.exec(comment ?? "")?.[1] ?? null;
 
 /* ---------------- The plan ---------------- */
@@ -286,17 +286,17 @@ export type Wanted = { type: string; name: string; value: string };
 const ROUTING = new Set(["A", "AAAA", "CNAME"]);
 
 /**
- * What Bops would change in a zone so a domain has the records Orgo asked for (`want`), from what's there
+ * What SmileDesk would change in a zone so a domain has the records Orgo asked for (`want`), from what's there
  * at those names now (`found`), never touching another record there:
- * - the TXT that proves it: set already (whoever set it) is left; one of Bops' for this domain with another
+ * - the TXT that proves it: set already (whoever set it) is left; one of SmileDesk's for this domain with another
  *   value is changed; else one is added, the user's own TXTs there left as they are (Orgo looks for its
- *   value among them); Bops' for a domain that's gone is removed;
+ *   value among them); SmileDesk's for a domain that's gone is removed;
  * - what routes it (an A or a CNAME): one there already, the same and DNS only, is left; proxied, it's turned
- *   DNS only; one of Bops' (this domain's, or a gone one's) is changed into it; the user's own is replaced,
+ *   DNS only; one of SmileDesk's (this domain's, or a gone one's) is changed into it; the user's own is replaced,
  *   and any other A, AAAA or CNAME of theirs there removed, each only with their OK (`theirs`); a CNAME
- *   can't sit beside another record at a name under the zone, so that's blocked (Bops never removes those);
- *   one Bops set for another app on this computer (`here`: its domains by id, with its app) is blocked.
- * Every record Bops writes carries this domain's marker. Pure: answers the plan as the window shows it,
+ *   can't sit beside another record at a name under the zone, so that's blocked (SmileDesk never removes those);
+ *   one SmileDesk set for another app on this computer (`here`: its domains by id, with its app) is blocked.
+ * Every record SmileDesk writes carries this domain's marker. Pure: answers the plan as the window shows it,
  * and the one batch that writes it.
  */
 export function planRecords(o: { zone: { id: string; name: string }; domain: { id: string; name: string }; app: string; want: Wanted[]; found: CfRecord[]; here: Map<string, string | null> }): {
@@ -312,7 +312,7 @@ export function planRecords(o: { zone: { id: string; name: string }; domain: { i
   const batch: CfBatch = { deletes: [], patches: [], posts: [] };
   const write = (w: Wanted): CfWrite => ({ type: w.type, name: w.name, content: w.type === "TXT" ? `"${valueOf("TXT", w.value)}"` : w.value, ttl: 1, ...(w.type === "TXT" ? {} : { proxied: false as const }), comment: note });
   const shown = (r: { type: string; name: string; content?: string; value?: string }) => ({ type: r.type, name: r.name, host: hostIn(r.name, zone), value: r.type === "TXT" ? valueOf("TXT", r.content ?? r.value ?? "") : (r.content ?? r.value ?? "") });
-  // Whose a record is: this domain's (Bops'), a gone domain's (Bops', stale), another app's here, or the user's.
+  // Whose a record is: this domain's (SmileDesk's), a gone domain's (SmileDesk's, stale), another app's here, or the user's.
   const whose = (r: CfRecord): { kind: "mine" | "stale" | "other" | "theirs"; app?: string } => {
     const id = ourId(r.comment);
     if (!id) return { kind: "theirs" };
@@ -382,7 +382,7 @@ export function planRecords(o: { zone: { id: string; name: string }; domain: { i
         changes.push({ op: "change", ...shown(w), was: "proxied", ...(whose(match).kind === "stale" ? { stale: true as const } : {}), note: CF_WORDS.proxy, ids: [match.id], proxied: true });
       }
     } else {
-      // Bops' own first (the same type, else another), else the user's of the same type: changed into it.
+      // SmileDesk's own first (the same type, else another), else the user's of the same type: changed into it.
       const ours = rest.filter((r) => whose(r).kind !== "theirs");
       const into = ours.find((r) => r.type === w.type) ?? ours[0] ?? rest.find((r) => r.type === w.type);
       if (!into) {
@@ -390,7 +390,7 @@ export function planRecords(o: { zone: { id: string; name: string }; domain: { i
         changes.push({ op: "add", ...shown(w), ids: [] });
       } else {
         const k = whose(into).kind;
-        // The user's is deleted and written fresh (never patched: their comment would look like Bops'), as is another type.
+        // The user's is deleted and written fresh (never patched: their comment would look like SmileDesk's), as is another type.
         if (k === "theirs" || into.type !== w.type) {
           batch.deletes.push({ id: into.id });
           batch.posts.push(write(w));

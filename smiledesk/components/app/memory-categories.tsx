@@ -14,12 +14,12 @@ import { Chevron, since, small, undash } from "./side-group";
 import { clockTime, CloseButton, useNow } from "./ui";
 
 /*
- * Knowledge: what Bops knows, sorted into kinds that fill themselves from the workspace's memory
+ * Knowledge: what SmileDesk knows, sorted into kinds that fill themselves from the workspace's memory
  * (lib/memory-categories.ts, sorted on this Mac by lib/server/memory-categories.ts), as a page on the
  * right opened from the sidebar like the Vault (MemoryView). It asks memory questions, lists every kind
  * or one, and each item opens to say where it was learned, and can be marked done, renamed, hidden or
  * forgotten. Its copy of a workspace's categories is read from /api/memory/categories: when it opens,
- * when Bops comes back in sight, every minute while it's in sight (every 5 seconds while new things are
+ * when SmileDesk comes back in sight, every minute while it's in sight (every 5 seconds while new things are
  * being sorted), and with the answer to every change asked from it. Everything here lives in the
  * workspace's memory (Honcho) and is the current workspace's only.
  *
@@ -74,7 +74,7 @@ type Shared = {
   reading: number;
   readAt: number;
   timer?: ReturnType<typeof setTimeout>;
-  /** Reads when Bops comes back in sight or to the front. */
+  /** Reads when SmileDesk comes back in sight or to the front. */
   back?: () => void;
   /** Items in the copies shown so far (none: nothing shown yet), and when each one not in the first copy came. */
   known?: Set<string>;
@@ -176,7 +176,7 @@ function read(s: Shared) {
         fail(s, asked, typeof said === "string" && said ? said : "Couldn't load Knowledge.");
       }
     })
-    .catch(() => fail(s, asked, "Couldn't reach Bops."))
+    .catch(() => fail(s, asked, "Couldn't reach SmileDesk."))
     .finally(() => {
       s.reading--;
     });
@@ -198,7 +198,7 @@ function retry(user: string, ws: string) {
   read(s);
 }
 
-/** The next read: in a minute, or in 5 seconds while new things are being sorted. None while Bops is out of sight, or once no one shows them. */
+/** The next read: in a minute, or in 5 seconds while new things are being sorted. None while SmileDesk is out of sight, or once no one shows them. */
 function plan(s: Shared) {
   clearTimeout(s.timer);
   s.timer = undefined;
@@ -272,7 +272,7 @@ async function change(user: string, ws: string, body: MemoryAction): Promise<str
     const note = (j as { note?: unknown }).note;
     return typeof note === "string" ? { note } : null;
   } catch {
-    return "Couldn't reach Bops. Try again.";
+    return "Couldn't reach SmileDesk. Try again.";
   }
 }
 
@@ -287,7 +287,7 @@ const setForgetting = (s: Shared, f: Partial<Forgetting>) => {
   tell(s);
 };
 
-/** Sends a Forget: memory deletes what it learned about these items. `keepalive`: Bops is closing, the answer won't be read. */
+/** Sends a Forget: memory deletes what it learned about these items. `keepalive`: SmileDesk is closing, the answer won't be read. */
 async function sendForget(s: Shared, ids: string[], keepalive = false) {
   const now = Date.now();
   try {
@@ -306,7 +306,7 @@ async function sendForget(s: Shared, ids: string[], keepalive = false) {
     const said = (j as { error?: unknown } | null)?.error;
     failForget(s, ids, typeof said === "string" && said ? said : "Couldn't forget that. Try again.");
   } catch {
-    failForget(s, ids, "Couldn't reach Bops, so nothing was forgotten. Try again.");
+    failForget(s, ids, "Couldn't reach SmileDesk, so nothing was forgotten. Try again.");
   }
 }
 
@@ -318,7 +318,7 @@ function failForget(s: Shared, ids: string[], error: string) {
   read(s);
 }
 
-/** Sends the Forget still waiting now (another one came, or Bops is closing). */
+/** Sends the Forget still waiting now (another one came, or SmileDesk is closing). */
 function flushForget(s: Shared, keepalive = false) {
   const w = waiting.get(s);
   if (!w) return;
@@ -359,7 +359,7 @@ function undoForget(user: string, ws: string) {
   setForgetting(s, { undo: null });
 }
 
-// Bops closing (or reloading) with a Forget still waiting: it's sent as it closes, as the user asked.
+// SmileDesk closing (or reloading) with a Forget still waiting: it's sent as it closes, as the user asked.
 if (typeof window !== "undefined") window.addEventListener("pagehide", () => [...waiting.keys()].forEach((s) => flushForget(s, true)));
 
 /** Which chats in memory Delete everywhere would delete for an item (the server looks, nothing is deleted), or what went wrong. */
@@ -379,7 +379,7 @@ async function previewDelete(ws: string, id: string): Promise<DeleteSession[] | 
         alsoFor: names(x.alsoFor ?? x.sharedWith),
       }));
   } catch {
-    return "Couldn't reach Bops. Try again.";
+    return "Couldn't reach SmileDesk. Try again.";
   }
 }
 
@@ -388,7 +388,7 @@ async function previewDelete(ws: string, id: string): Promise<DeleteSession[] | 
  * until they're in: the same copy wherever they show (what's forgotten here left out). `act` asks for
  * a change, and every list shows the categories as they are after it. `failed`: why they couldn't be
  * read, while there's nothing to show, and `retry` reads them again. `on` false: none are read (a
- * workspace shared with the user: its Knowledge is on the owner's Bops).
+ * workspace shared with the user: its Knowledge is on the owner's SmileDesk).
  */
 export function useMemoryCategories(ws: string, user = "", on = true) {
   const subscribe = useCallback((changed: () => void) => (on ? watch(user, ws, changed) : () => {}), [user, ws, on]);
@@ -702,7 +702,7 @@ type Answer = { answer: string; based: { id: string; text: string; source: strin
 
 /**
  * Knowledge as a page on the right (one tab per workspace, of the signed-in account `user`): every
- * kind of thing Bops knows, or one kind (`category`). `focus` opens an item and brings it into view;
+ * kind of thing SmileDesk knows, or one kind (`category`). `focus` opens an item and brings it into view;
  * `query` fills in the search once (from the sidebar's search: `onQueryUsed` then takes it off the
  * tab, so it doesn't come back); `focusAt` is when they were asked for, so asking again for the same
  * item (it was closed since, or scrolled away) does it again.
@@ -745,8 +745,8 @@ function KnowledgeView({
   onCategory: (category: OrbitSection) => void;
   onClose: () => void;
 }) {
-  // A workspace shared with the user: its Knowledge is kept on the owner's Bops, so none is read here (view-only.ts would refuse it).
-  const owners = state?.shared ? `Knowledge in ${state.shared.name} is kept on the owner's Bops, so it doesn't show here. To find something out, ask a bot in its chat.` : undefined;
+  // A workspace shared with the user: its Knowledge is kept on the owner's SmileDesk, so none is read here (view-only.ts would refuse it).
+  const owners = state?.shared ? `Knowledge in ${state.shared.name} is kept on the owner's SmileDesk, so it doesn't show here. To find something out, ask a bot in its chat.` : undefined;
   const { snap, act, failed, retry } = useMemoryCategories(ws, user, !owners);
   const { list } = useIssues(ws, user, !owners);
   const forgetting = useForget(ws, user, !owners);
@@ -774,7 +774,7 @@ function KnowledgeView({
   const ask = useCallback(async (question: string): Promise<Answer | string> => {
     const r = await fetch("/api/memory", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "ask", ws, question }) })
       .then((x) => x.json() as Promise<Answer & { error?: string }>)
-      .catch(() => ({ error: "Couldn't reach Bops." }) as Answer & { error?: string });
+      .catch(() => ({ error: "Couldn't reach SmileDesk." }) as Answer & { error?: string });
     return r.error ?? r;
   }, [ws]);
   if (owners) return <MemoryPage snap={null} owners={owners} act={act} forgetting={forgetting} category="all" onCategory={onCategory} onClose={onClose} />;
@@ -1794,8 +1794,8 @@ function DeleteEverywhere({ sessions, busy, onConfirm, onCancel }: { sessions: D
     >
       <span className="text-[12.5px] font-medium leading-[17px] text-[#3A3A38]">
         {sessions.length
-          ? `Delete everywhere? Bops forgets this and deletes ${sessions.length === 1 ? "this chat" : `these ${sessions.length} chats`} from memory:`
-          : "Delete everywhere? No Bops chat in memory taught Knowledge this, so Bops only forgets it."}
+          ? `Delete everywhere? SmileDesk forgets this and deletes ${sessions.length === 1 ? "this chat" : `these ${sessions.length} chats`} from memory:`
+          : "Delete everywhere? No SmileDesk chat in memory taught Knowledge this, so SmileDesk only forgets it."}
       </span>
       {sessions.length > 0 && (
         <ul className="flex flex-col gap-1">
@@ -1812,7 +1812,7 @@ function DeleteEverywhere({ sessions, busy, onConfirm, onCancel }: { sessions: D
           ))}
         </ul>
       )}
-      {sessions.length > 0 && <span className="text-[11.5px] leading-4 text-[#6B6B6B]">These chats stay in your Bops chat history; their memory copy is deleted</span>}
+      {sessions.length > 0 && <span className="text-[11.5px] leading-4 text-[#6B6B6B]">These chats stay in your SmileDesk chat history; their memory copy is deleted</span>}
       <span className="flex items-center gap-1">
         <button onClick={onConfirm} disabled={busy} className="rounded-full bg-[#B42318] px-3 py-1 text-[12px] font-semibold leading-4 text-white disabled:opacity-60">
           {busy ? "Deleting…" : "Delete everywhere"}

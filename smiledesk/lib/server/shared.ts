@@ -16,7 +16,7 @@ import { changeBy } from "./change-replay";
 /**
  * Workspaces shared with the user (lib/shared.ts; the parts without the server are shared-core.ts), watched,
  * and acted in for the bots the owner gave them Write on (actShared). The switcher lists them (Orgo's list: sharedWorkspaces), and opening one reads it from
- * Bops Cloud (GET /v1/ws/<project>/state) and watches its stream (GET /v1/live?project=): a change reads
+ * SmileDesk Cloud (GET /v1/ws/<project>/state) and watches its stream (GET /v1/live?project=): a change reads
  * it again (at most every 5 seconds, PULL_MIN_MS, with one more at the end), its bots' moods come as they
  * happen, and "revoked", 403 or 404 drops the copy and leaves it. Everything of it stays in this
  * process's memory, for the signed-in user and key alone: a sign-out, another sign-in or the app
@@ -26,14 +26,14 @@ import { changeBy } from "./change-replay";
 type Open = { user: string; key: string; copy: SharedCopy; moods: RemoteMoods; subscriber: LiveSubscriber };
 const g = globalThis as unknown as { bopsShared?: Open | null };
 
-/** The shared workspaces the switcher lists (none while the app isn't on Bops Cloud). */
+/** The shared workspaces the switcher lists (none while the app isn't on SmileDesk Cloud). */
 export async function listShared(): Promise<SharedWorkspace[]> {
   if (!cloudOn()) return [];
   return sharedWorkspaces();
 }
 
 /**
- * A read of the workspace from Bops Cloud with `key`: `have` is the copy's hash and seq, so an unchanged one
+ * A read of the workspace from SmileDesk Cloud with `key`: `have` is the copy's hash and seq, so an unchanged one
  * comes back in a line; `older`, a page of one chat's messages before the oldest the copy has of it.
  */
 function readerFor(key: string, device: string) {
@@ -55,7 +55,7 @@ function readerFor(key: string, device: string) {
 
 /**
  * Open a shared workspace (from the switcher), in place of the one open now. Only one of the list Orgo
- * gives the user; the copy is kept only once Bops Cloud let them read it.
+ * gives the user; the copy is kept only once SmileDesk Cloud let them read it.
  */
 export async function openShared(projectId: string): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
   const user = stateUser();
@@ -99,9 +99,9 @@ export async function olderShared(chatId: string): Promise<boolean> {
 }
 
 /**
- * Something the user does in the shared workspace open now, for a bot the owner gave them Write on: sent to Bops
+ * Something the user does in the shared workspace open now, for a bot the owner gave them Write on: sent to SmileDesk
  * Cloud (POST /v1/ws/<project>/act), which checks it with Orgo and the owner's access and hands it to the owner's
- * Bops. Shown here at once as theirs (SharedCopy.acting), until the copy has the owner's. `key` is theirs for it:
+ * SmileDesk. Shown here at once as theirs (SharedCopy.acting), until the copy has the owner's. `key` is theirs for it:
  * the same key sends it again as the same act (Try again), never twice.
  */
 export async function actShared(act: MemberAct, key: string): Promise<{ ok: true; key: string; macOn: boolean } | { ok: false; status: number; error: string; code?: string }> {
@@ -157,7 +157,7 @@ export const sharedOpen = () => !changeBy() && !!openNow();
 export const sharedProjectId = () => openNow()?.at.projectId ?? null;
 
 /**
- * The Orgo computer a bot of the shared workspace open works on, for an Admin (Bops Cloud names it for an Admin alone:
+ * The Orgo computer a bot of the shared workspace open works on, for an Admin (SmileDesk Cloud names it for an Admin alone:
  * SharedWsSlice.screens); null otherwise. Streamed with the user's own Orgo key (app/api/workspaces/shared/screen).
  */
 export function sharedScreen(botId: string): string | null {
@@ -169,7 +169,7 @@ export function sharedScreen(botId: string): string | null {
 
 /**
  * The shared workspace open now, for what an Admin changes there from this Mac (lib/server/shared-people.ts): its Orgo
- * project (never an id from a request), the user's own key and id there, its bots, and a call to its Bops Cloud routes
+ * project (never an id from a request), the user's own key and id there, its bots, and a call to its SmileDesk Cloud routes
  * with that key. Null unless an Admin's workspace is open for the signed-in user.
  */
 export function sharedAdminOpen({ anyRole = false } = {}): {
@@ -182,7 +182,7 @@ export function sharedAdminOpen({ anyRole = false } = {}): {
   refresh: () => Promise<void>;
 } | null {
   const open = openNow();
-  // (`anyRole`: a Member too, for what Bops Cloud checks of them itself: waking a computer they may use, a file for it.)
+  // (`anyRole`: a Member too, for what SmileDesk Cloud checks of them itself: waking a computer they may use, a file for it.)
   if (!open || (!anyRole && open.at.role !== "admin") || !open.data.you) return null;
   const device = deviceIdFor(open.user);
   return {
@@ -216,11 +216,11 @@ export function sharedRole(): "admin" | "member" | null {
 }
 
 /**
- * Where a file the user adds for a bot of the shared workspace open goes (app/api/bots/files): Bops Cloud's answer to
+ * Where a file the user adds for a bot of the shared workspace open goes (app/api/bots/files): SmileDesk Cloud's answer to
  * POST /v1/ws/<project>/files (cloud/members.ts filesIn), which checks they may (an Admin, the bot at Write, on a
  * computer of this workspace) and names the owner's computer it works on, woken as a message would wake it
- * (lib/server/bot-files.ts sharedTarget reads it). Never a computer of the user's own bot of that id. Bops Cloud saying
- * they may no longer see the workspace drops the copy, as an act's answer does (shared-core.ts actWith). Null when Bops
+ * (lib/server/bot-files.ts sharedTarget reads it). Never a computer of the user's own bot of that id. SmileDesk Cloud saying
+ * they may no longer see the workspace drops the copy, as an act's answer does (shared-core.ts actWith). Null when SmileDesk
  * Cloud couldn't be reached.
  */
 export async function sharedFileTarget(botId: string, { screen = false } = {}): Promise<{ status: number; json: Record<string, unknown> } | null> {
@@ -234,7 +234,7 @@ export async function sharedFileTarget(botId: string, { screen = false } = {}): 
 
 /**
  * The shared workspace open now, for its Keys (lib/server/shared-keys.ts): its Orgo project (never an id from a request),
- * whether the user has Keys there (cloud/ws-slice.ts keysOf) and the owner's Bops takes their bots' key switches, the keys
+ * whether the user has Keys there (cloud/ws-slice.ts keysOf) and the owner's SmileDesk takes their bots' key switches, the keys
  * its bots see as the owner's Mac last said them (names only), and each bot's keys as switched here (switchedKeys). Null
  * when none is open for the signed-in user.
  */
@@ -262,13 +262,13 @@ export function sharedKeysOpen(): {
 
 /**
  * The shared workspace open now, for a change made there from this window (change-relay.ts): the id the window has for it,
- * its bots, what the user may change there (SharedWsSlice.can) and whether the owner's Bops takes it (SharedWsSlice.changes). Null
+ * its bots, what the user may change there (SharedWsSlice.can) and whether the owner's SmileDesk takes it (SharedWsSlice.changes). Null
  * when none is open for the signed-in user.
  */
 export function sharedChangesOpen(): { wsId: string; botIds: string[]; can: string[]; changes: boolean } | null {
   const open = openNow();
   if (!open) return null;
-  // (What Bops Cloud sent, unchecked: an older one's, or one still loading, may lack any of it.)
+  // (What SmileDesk Cloud sent, unchecked: an older one's, or one still loading, may lack any of it.)
   const s = open.data?.state;
   return {
     wsId: open.at.wsId,

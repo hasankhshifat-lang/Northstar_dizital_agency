@@ -15,11 +15,11 @@ import { PERSONA_CHANGED } from "@/cloud/protocol";
 
 /**
  * A bot's settings (what it may do in the user's apps, "Just do it", where it works) and the bot
- * itself change only from the Bops window (ui-token.ts): a page a bot's Chrome reached this server
+ * itself change only from the SmileDesk window (ui-token.ts): a page a bot's Chrome reached this server
  * with mustn't be able to give a bot more say.
  */
 const notFromWindow = (request: Request) =>
-  fromBopsWindow(request) ? null : Response.json({ error: "A bot's settings can only be changed in the Bops app." }, { status: 403 });
+  fromBopsWindow(request) ? null : Response.json({ error: "A bot's settings can only be changed in the SmileDesk app." }, { status: 403 });
 
 /**
  * Create a bot. It works on the main bot's computer, or (`ownComputer`) on a copy of it made on its first
@@ -149,7 +149,7 @@ export async function PATCH(request: Request) {
   return Response.json({ ok: true });
 }
 
-/** Delete a bot, its computer (Bops workspace only), chat, threads and routines. */
+/** Delete a bot, its computer (SmileDesk workspace only), chat, threads and routines. */
 export async function DELETE(request: Request) {
   const unready = notReady() ?? notFromWindow(request);
   if (unready) return unready;

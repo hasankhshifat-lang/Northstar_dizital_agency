@@ -1,10 +1,10 @@
-// Tests for which Bops runs each routine (lib/server/runner.ts): what needs the Mac before a run starts (pinnedToMac;
+// Tests for which SmileDesk runs each routine (lib/server/runner.ts): what needs the Mac before a run starts (pinnedToMac;
 // never a saved login, nor anything a run meets on the way), the split between the Mac and a computer's runner
 // (runsHere: a runner's own routines while it's up, the Mac's the rest, the hand-over after a switch to This Mac),
 // where the bots work as Orgo says (the Mac sets the default, Cloud, once, and goes by it only once Orgo took it; a
 // runner never sets it and runs nothing on an answer a minute old, or from before a nap), the routines timer
-// (routines.ts tick: each Bops its own, a runner only once it's read the state and Orgo again, none once a newer
-// Bops wrote the state), making sure it's on its own computer (checkIdentity: a copy of the computer takes its runner
+// (routines.ts tick: each SmileDesk its own, a runner only once it's read the state and Orgo again, none once a newer
+// SmileDesk wrote the state), making sure it's on its own computer (checkIdentity: a copy of the computer takes its runner
 // off, its program and wrapper only, never the computer's Orgo key, which Orgo replaces; on its computer's identity
 // its VMM is asked instead, never Orgo, and every minute: watchIdentity), a routine that texts its result run and
 // texted from its computer's runner, and the routines mirror (routine-sync.ts: how each runs and whether it needs the
@@ -15,7 +15,7 @@
 // the owner's OK (This Mac, its bot moved) keeps that run waiting, and stays on its computer till the run is over.
 // Reminders and chat runs are always the Mac's (chat is the backend's; a computer is only for work that needs one): never a runner's, even with no Mac up
 // (they run once one is, late), never waking a computer; a chat run that needs a computer starts a task from the Mac.
-// A one-off is turned off as it fires, on the one Bops that runs it start to finish, so it never runs twice; a run of
+// A one-off is turned off as it fires, on the one SmileDesk that runs it start to finish, so it never runs twice; a run of
 // it that dies shows failed, and Run now runs it again. Move to your Mac finishes that time of a routine once.
 //
 // The store, Orgo, the nap detector and the modules a run talks to are fakes (below), so nothing reaches a
@@ -139,7 +139,7 @@ let pulledAt = 0;
 let napped = false;
 /** The Mac (or a runner's computer) asleep until this time (awakeSince: awake since any time after it; sleptSince: a nap after any time before it), when set; and whose state is in (stateEpoch). */
 let napAt;
-/** When this Bops started (awake.ts started: it wasn't running before, quit or restarting), when set; else it ran all along. */
+/** When this SmileDesk started (awake.ts started: it wasn't running before, quit or restarting), when set; else it ran all along. */
 let startedAt;
 let epoch = 1;
 let tooNew = false;
@@ -152,7 +152,7 @@ const orgo = { calls: [], answer: () => null, here: null, bash: [], status: {} }
 const vmId = { here: false, who: null };
 /** What the Mac's pick of where a routine's runs go says (where.ts routinePick), faked; null: no answer. */
 let pickWhere = () => null;
-/** What Bops Cloud does with a run's start a runner saves (startLanded), faked: takes it, unless a test says otherwise. */
+/** What SmileDesk Cloud does with a run's start a runner saves (startLanded), faked: takes it, unless a test says otherwise. */
 let landing = () => true;
 globalThis.__fake = {
   store: {
@@ -167,9 +167,9 @@ globalThis.__fake = {
     id: (p) => `${p}_${++seq}`,
     ownerName: () => "Sam",
     flushState: async () => true,
-    // Whether Bops Cloud took a run's start made on a runner (store.ts startLanded): it did, unless a test says otherwise.
+    // Whether SmileDesk Cloud took a run's start made on a runner (store.ts startLanded): it did, unless a test says otherwise.
     startLanded: async (has) => landing(has),
-    // A runner's own device is its computer's (persist-cloud.ts deviceIdFor), as Bops Cloud knows it.
+    // A runner's own device is its computer's (persist-cloud.ts deviceIdFor), as SmileDesk Cloud knows it.
     stateDevice: () => (process.env.BOPS_RUNNER === "1" && process.env.BOPS_RUNNER_COMPUTER ? deviceIdOf(state.account?.user?.id ?? "u", process.env.BOPS_RUNNER_COMPUTER) : "mac-a"),
     stateInCloud: () => true,
     stateEpoch: () => epoch,
@@ -180,7 +180,7 @@ globalThis.__fake = {
     session: (id) => state.sessions.find((x) => x.id === id),
     stateReady: () => true,
     stateTooNew: () => tooNew,
-    // Whether this Bops runs the thread (store.ts ownSession): one it started, or one from before threads said whose (the Mac's).
+    // Whether this SmileDesk runs the thread (store.ts ownSession): one it started, or one from before threads said whose (the Mac's).
     ownSession: (s) => (s.by ? s.by === globalThis.__fake.store.stateDevice() : process.env.BOPS_RUNNER !== "1"),
     pullState: async () => {
       fake.pulls++;
@@ -226,7 +226,7 @@ globalThis.__fake = {
     },
     startSession: (o) => {
       fake.started.push(o);
-      // Run by this Bops, as the real one's are (Session.by: a runner's own device).
+      // Run by this SmileDesk, as the real one's are (Session.by: a runner's own device).
       const s = { id: `ses_${++seq}`, botId: o.botId, chatId: o.chatId, title: o.title, goal: o.goal, status: "running", routineId: o.routineId, by: globalThis.__fake.store.stateDevice() };
       state.sessions.push(s);
       return s;
@@ -304,7 +304,7 @@ function reset() {
   landing = () => true;
 }
 const byId = (id) => state.routines.find((r) => r.id === id);
-/** Whether this Bops runs it (one that came to the Mac from a runner, with since when it's the Mac's: true). */
+/** Whether this SmileDesk runs it (one that came to the Mac from a runner, with since when it's the Mac's: true). */
 const here = (id) => {
   const x = R.runsHere(byId(id));
   return typeof x === "object" ? true : x;
@@ -323,10 +323,10 @@ const once = (id, at, o = {}, botId = "otto") => routine(id, botId, { schedule: 
 
 /* ---------------- What needs the Mac ---------------- */
 
-await check("pinnedToMac: set to the Mac, or left to Bops with a bot on the Mac or Mac words; a result to Slack, Telegram or Discord, or a skill it follows; a reminder or a chat run always, set to the cloud or not", () => {
+await check("pinnedToMac: set to the Mac, or left to SmileDesk with a bot on the Mac or Mac words; a result to Slack, Telegram or Discord, or a skill it follows; a reminder or a chat run always, set to the cloud or not", () => {
   const pin = (r, b = {}) => R.pinnedToMac({ goal: "Check the news", ...r }, b);
   assert.equal(pin({ where: "mac" }), true, "set to the Mac");
-  assert.equal(pin({}), false, "left to Bops, nothing about the Mac");
+  assert.equal(pin({}), false, "left to SmileDesk, nothing about the Mac");
   assert.equal(pin({ where: "auto" }, { runsOn: "mac" }), true, "its bot works on the Mac");
   assert.equal(pin({}, { runsOn: "cloud" }), false);
   assert.equal(pin({ goal: "Tidy the Downloads folder on my Mac" }), true, "Mac words");
@@ -390,7 +390,7 @@ await check("pinnedToMac: a task whose bot has published skills of its workspace
   delete state.workspaces[0].apps;
 });
 
-await check("in Cloud the Mac works out ahead of its runs where a task left to Bops would run: one it'd send to the Mac stays the Mac's and no runner takes it; worked out again for a new goal", async () => {
+await check("in Cloud the Mac works out ahead of its runs where a task left to SmileDesk would run: one it'd send to the Mac stays the Mac's and no runner takes it; worked out again for a new goal", async () => {
   reset();
   R.runnerForTests.hear("u1", "cloud");
   const msgs = "Every morning read my unread iMessages in Messages and summarize them";
@@ -440,7 +440,7 @@ await check("in Cloud the Mac works out ahead of its runs where a task left to B
   tick();
   await until(() => byId("r_msgs").macPick.goal === "Every morning check the weather");
   assert.equal(byId("r_msgs").macPick.where, "cloud");
-  // No answer (no Mac Bops can use yet, Jev didn't answer): nothing kept, and not asked again for a while.
+  // No answer (no Mac SmileDesk can use yet, Jev didn't answer): nothing kept, and not asked again for a while.
   pickWhere = (botId, goal) => (asked.push(goal), null);
   byId("r_msgs").goal = "Every morning read my Notes";
   asked.length = 0;
@@ -461,13 +461,13 @@ await check("in Cloud the Mac works out ahead of its runs where a task left to B
   pickWhere = () => null;
 });
 
-await check("a pick the Mac made while a bot was left to Bops stops counting once that bot is set to work in the cloud: its computer's runner runs it, and Orgo wakes the computer for it", () => {
+await check("a pick the Mac made while a bot was left to SmileDesk stops counting once that bot is set to work in the cloud: its computer's runner runs it, and Orgo wakes the computer for it", () => {
   reset();
   R.runnerForTests.hear("u1", "cloud");
   const msgs = "Every morning read my unread iMessages in Messages and summarize them";
   state.routines = [routine("r_msgs", "boppy", { goal: msgs, macPick: { goal: msgs, where: "mac" } })];
   const boppy = state.bots.find((b) => b.id === "boppy");
-  assert.equal(R.runnerRuns(byId("r_msgs")), false, "left to Bops: the Mac's pick keeps it the Mac's");
+  assert.equal(R.runnerRuns(byId("r_msgs")), false, "left to SmileDesk: the Mac's pick keeps it the Mac's");
   boppy.runsOn = "cloud";
   assert.equal(R.pinnedToMac(byId("r_msgs"), boppy), false, "set to work in the cloud: its tasks go there whatever the Mac picked (where.ts chooseWhere)");
   assert.equal(R.runnerRuns(byId("r_msgs")), true, "C1's runner runs it");
@@ -479,7 +479,7 @@ await check("a pick the Mac made while a bot was left to Bops stops counting onc
   boppy.runsOn = "mac";
   assert.equal(R.runnerRuns(byId("r_msgs")), false, "set to work on the Mac: the Mac's");
   boppy.runsOn = "auto";
-  assert.equal(R.runnerRuns(byId("r_msgs")), false, "left to Bops again: the pick for its goal stands");
+  assert.equal(R.runnerRuns(byId("r_msgs")), false, "left to SmileDesk again: the pick for its goal stands");
   delete boppy.runsOn;
 });
 
@@ -701,7 +701,7 @@ await check("a chat run is the Mac's with a saved login or without; one whose tu
   assert.equal(here("r_orders"), true, "the Mac runs it, waiting on nothing");
   assert.equal(Sync.routinePayload(byId("r_orders")).onMac, true);
   const was = globalThis.__fake.chat.backgroundTurn;
-  // Its turn needs a screen: it starts the routine's own task (chat.ts start_task in a routine's run: where the routine runs, else left to Bops).
+  // Its turn needs a screen: it starts the routine's own task (chat.ts start_task in a routine's run: where the routine runs, else left to SmileDesk).
   globalThis.__fake.chat.backgroundTurn = async (botId, o) => {
     const s = globalThis.__fake.sessions.startSession({ botId, goal: "Open the Shopify admin and list yesterday's orders.", title: "Shopify orders", chatId: `bot:${botId}`, sentVia: "routine", where: byId(o.routineId).where ?? "auto", fresh: true, routineId: o.routineId });
     return { text: "Checking Shopify.", sessionId: s.id };
@@ -709,7 +709,7 @@ await check("a chat run is the Mac's with a saved login or without; one whose tu
   try {
     tick();
     for (let i = 0; i < 50 && byId("r_orders").last?.sessionId === undefined; i++) await sleep(10);
-    assert.deepEqual(fake.started.map((o) => [o.routineId, o.where]), [["r_orders", "auto"]], "started from the Mac, left to Bops: in Cloud a task of a bot with a computer goes to it");
+    assert.deepEqual(fake.started.map((o) => [o.routineId, o.where]), [["r_orders", "auto"]], "started from the Mac, left to SmileDesk: in Cloud a task of a bot with a computer goes to it");
     const t = state.sessions.find((x) => x.id === byId("r_orders").last.sessionId);
     assert.equal(t?.by, "mac-a", "the Mac runs the thread, as v0.0.29 did");
     assert.deepEqual([byId("r_orders").last.status, byId("r_orders").last.by], ["running", undefined], "the thread is the run");
@@ -732,7 +732,7 @@ await check("on a computer's runner, a routine's thread that hits a sign in wait
   asRunner(C1);
   try {
     const said = await V.vaultSignIn("boppy", DISPLAYS[0], "ses_shop");
-    assert.equal(said, "Sam's saved logins sign in only from Bops on their Mac, not here. Say in one short line that you need Sam to sign in on your screen, and stop there: once they have, you carry on.");
+    assert.equal(said, "Sam's saved logins sign in only from SmileDesk on their Mac, not here. Say in one short line that you need Sam to sign in on your screen, and stop there: once they have, you carry on.");
     assert.ok(!DASHES.test(said), "no dashes");
     assert.equal(t.blocker, "sign_in", "Needs you to sign in");
     assert.deepEqual(state.messages.filter((m) => /Mac/.test(m.text ?? "")), [], "nothing said of the Mac");
@@ -752,7 +752,7 @@ await check("on a computer's runner, a routine's thread that hits a sign in wait
   T.reset();
 });
 
-/* ---------------- One-offs: done as they fire, on the one Bops that runs them ---------------- */
+/* ---------------- One-offs: done as they fire, on the one SmileDesk that runs them ---------------- */
 
 /** Thread `sessionId` ends with `answer` (a failure when `failure`), as sessions.ts tells its routine. */
 async function threadEnds(sessionId, answer, failure) {
@@ -762,7 +762,7 @@ async function threadEnds(sessionId, answer, failure) {
   await Rt.onRoutineTaskEnd(t, answer, failure);
 }
 
-await check("a one-off is done as it fires, on the one Bops that runs it start to finish: its runner runs its task once, even while that run waits on the owner's OK, and nothing runs it again (the runner, the Mac, Orgo's waker); a chat run's and a reminder's on the Mac alike", async () => {
+await check("a one-off is done as it fires, on the one SmileDesk that runs it start to finish: its runner runs its task once, even while that run waits on the owner's OK, and nothing runs it again (the runner, the Mac, Orgo's waker); a chat run's and a reminder's on the Mac alike", async () => {
   reset();
   R.runnerForTests.hear("u1", "cloud");
   const runner = deviceIdOf("u1", C1);
@@ -829,7 +829,7 @@ await check("a one-off is done as it fires, on the one Bops that runs it start t
   }
 });
 
-await check("a one-off's run that dies (its computer stopped, Bops restarted mid-run) shows failed, and stays done: nothing runs it again by itself, and Run now runs it again when Sam asks", async () => {
+await check("a one-off's run that dies (its computer stopped, SmileDesk restarted mid-run) shows failed, and stays done: nothing runs it again by itself, and Run now runs it again when Sam asks", async () => {
   reset();
   R.runnerForTests.hear("u1", "cloud");
   const at = Date.now() - 1000;
@@ -1038,11 +1038,11 @@ await check("a routine handed back by a runner that stopped, after a nap of the 
   tick();
   await sleep(10);
   assert.equal(r.last?.status, "skipped", r.last?.error);
-  assert.match(r.last.error, /^Missed while Bops was off or this Mac was asleep/);
+  assert.match(r.last.error, /^Missed while SmileDesk was off or this Mac was asleep/);
   T.reset();
 });
 
-await check("the first time this Bops has an account's state (signed in late, or Bops Cloud reached after a while): its routines that came due before are missed runs, not run as if it was awake for them", async () => {
+await check("the first time this SmileDesk has an account's state (signed in late, or SmileDesk Cloud reached after a while): its routines that came due before are missed runs, not run as if it was awake for them", async () => {
   reset();
   seedRoutines();
   // The timer never ran with a state in this process: it waited while there was none.
@@ -1053,8 +1053,8 @@ await check("the first time this Bops has an account's state (signed in late, or
   tick();
   await sleep(10);
   assert.equal(r.last?.status, "skipped", r.last?.error);
-  assert.match(r.last.error, /^Missed while Bops was off or this Mac was asleep/);
-  // From then on it's been running them: one late since (another Bops had it) runs.
+  assert.match(r.last.error, /^Missed while SmileDesk was off or this Mac was asleep/);
+  // From then on it's been running them: one late since (another SmileDesk had it) runs.
   const later = Date.now() - 1000;
   Object.assign(r, { nextRunAt: later, last: { at: later - 60_000, status: "ok" } });
   globalThis.__bopsTickingFrom = later - 1000;
@@ -1110,13 +1110,13 @@ await check("a run another computer's runner left going of a routine it no longe
 });
 
 await check("a run the Mac left going (a Run now), quiet since the Mac closed or quit, never holds the routine on its computer's runner; one still at work does, and on the Mac its own always does", async () => {
-  /** A thread of the routine's that Bops `by` has going, its last sign of work `quietFor` minutes ago. */
+  /** A thread of the routine's that SmileDesk `by` has going, its last sign of work `quietFor` minutes ago. */
   const going = (b, by, quietFor, id = "ses_left") => {
     const at = Date.now() - quietFor * 60_000;
     state.sessions.push({ id, botId: b.botId, chatId: `bot:${b.botId}`, title: b.id, goal: "Check the news", status: "running", routineId: b.id, by, createdAt: at - 60_000, startedAt: at - 60_000, steps: [{ at, tool: "computer", detail: "clicked (1, 1)" }], replies: [] });
     Object.assign(b, { schedule: { kind: "every", minutes: 15 }, nextRunAt: Date.now() - 1000, last: { at: at - 60_000, status: "running", sessionId: id } });
   };
-  // A Run now in the Mac app (its thread the Mac's), then the lid closes or Bops quits: C1's runner has the routine, Boppy's task and Otto's (sharing C1).
+  // A Run now in the Mac app (its thread the Mac's), then the lid closes or SmileDesk quits: C1's runner has the routine, Boppy's task and Otto's (sharing C1).
   for (const id of ["r_boppy", "r_otto_task"])
     for (const quietFor of [180, 2]) {
       reset();
@@ -1383,7 +1383,7 @@ await check("Orgo's map or the members check not answering: nothing is set up or
 });
 
 
-await check("a quick switch to another account: its routines that came due while it was signed out are missed runs, not run as if this Bops was awake for them", async () => {
+await check("a quick switch to another account: its routines that came due while it was signed out are missed runs, not run as if this SmileDesk was awake for them", async () => {
   reset();
   seedRoutines();
   // Ticking all along (another account's state in).
@@ -1395,7 +1395,7 @@ await check("a quick switch to another account: its routines that came due while
   tick();
   await sleep(10);
   assert.equal(r.last?.status, "skipped", r.last?.error);
-  assert.match(r.last.error, /^Missed while Bops was off or this Mac was asleep/);
+  assert.match(r.last.error, /^Missed while SmileDesk was off or this Mac was asleep/);
   T.reset();
 });
 
@@ -1611,7 +1611,7 @@ await check("a runner never sets it, and runs nothing on what it didn't hear", a
   orgo.answer = () => null;
   await R.askRunsOn();
   assert.equal(here("r_boppy"), false, "no answer: still nothing");
-  assert.deepEqual(await R.setRunsOn("cloud"), { error: "Sign in to Bops first." }, "a runner never writes it");
+  assert.deepEqual(await R.setRunsOn("cloud"), { error: "Sign in to SmileDesk first." }, "a runner never writes it");
 });
 
 await check("Settings: where the bots work from now on", async () => {
@@ -1678,7 +1678,7 @@ await check("the Mac's timer runs its own routines and leaves the runner's", asy
   T.reset();
 });
 
-await check("a next time that's a skipped one (a skip and a run on two Bops put together) is moved past it before it's due", async () => {
+await check("a next time that's a skipped one (a skip and a run on two SmileDesk put together) is moved past it before it's due", async () => {
   reset();
   const at = Date.now() + 3_600_000;
   state.routines = [routine("r_rook", "rook", { schedule: { kind: "every", minutes: 60 }, nextRunAt: at, lastRunAt: at - 3_600_000, skips: [at] }), routine("r_boppy", "boppy", { schedule: { kind: "every", minutes: 60 }, nextRunAt: at, lastRunAt: at - 3_600_000, skips: [at] })];
@@ -1690,7 +1690,7 @@ await check("a next time that's a skipped one (a skip and a run on two Bops put 
   T.reset();
 });
 
-await check("a newer Bops wrote the state: no routine runs", () => {
+await check("a newer SmileDesk wrote the state: no routine runs", () => {
   reset();
   seedRoutines();
   for (const r of state.routines) r.nextRunAt = Date.now() - 1000;
@@ -1729,7 +1729,7 @@ await check("a runner's timer waits until it's sure, then runs its own in the cl
   T.reset();
 });
 
-await check("a routine that texts its result runs on its computer's runner and texts from there (Bops Cloud takes that text: cloud/test/core-computer-scope.test.ts), never left to the Mac", async () => {
+await check("a routine that texts its result runs on its computer's runner and texts from there (SmileDesk Cloud takes that text: cloud/test/core-computer-scope.test.ts), never left to the Mac", async () => {
   reset();
   const texts = [];
   const was = { ...globalThis.__fake.phone, ...{ backgroundTurn: globalThis.__fake.chat.backgroundTurn } };
@@ -1770,7 +1770,7 @@ await check("a routine that texts its result runs on its computer's runner and t
   }
 });
 
-await check("a run on a computer's runner reaches nothing past it until Bops Cloud took its start: one whose bot the Mac moved off that computer first texts nothing, posts nothing, and stays due for the Bops that has the bot now; a reminder or a chat run there isn't even begun", async () => {
+await check("a run on a computer's runner reaches nothing past it until SmileDesk Cloud took its start: one whose bot the Mac moved off that computer first texts nothing, posts nothing, and stays due for the SmileDesk that has the bot now; a reminder or a chat run there isn't even begun", async () => {
   reset();
   const texts = [];
   let turns = 0;
@@ -1787,7 +1787,7 @@ await check("a run on a computer's runner reaches nothing past it until Bops Clo
   };
   try {
     const due = Date.now() - 1000;
-    // Each ran here yesterday (RoutineRun.by this runner), so Bops Cloud would take a word of theirs posted since (computer-scope.ts runsBy).
+    // Each ran here yesterday (RoutineRun.by this runner), so SmileDesk Cloud would take a word of theirs posted since (computer-scope.ts runsBy).
     const yesterday = { at: due - 86_400_000, status: "ok", by: deviceIdOf("u1", C1) };
     // A Gmail check (as a task) whose account is gone: its run fails, said in the chat and texted, once its start lands.
     const check = { source: { template: "check", app: "gmail", account: "acc_gone" }, deliverTo: { kind: "text" }, nextRunAt: due, last: yesterday };
@@ -1800,8 +1800,8 @@ await check("a run on a computer's runner reaches nothing past it until Bops Clo
     asRunner(C1);
     onIdentity(C1);
     orgo.answer = (c) => (c.path === "/api/bops/settings" ? { status: 200, json: { runsOn: "cloud" } } : null);
-    // The Mac gave Otto a computer of his own before this start reached Bops Cloud: it refuses it, and the
-    // merge puts Otto and his routines back here as Bops Cloud has them (persist-cloud.ts mergeIn).
+    // The Mac gave Otto a computer of his own before this start reached SmileDesk Cloud: it refuses it, and the
+    // merge puts Otto and his routines back here as SmileDesk Cloud has them (persist-cloud.ts mergeIn).
     const asked = [];
     landing = async (has) => {
       asked.push(has(state));
@@ -1824,9 +1824,9 @@ await check("a run on a computer's runner reaches nothing past it until Bops Clo
         ["r_remind", due, undefined],
         ["r_chat", due, undefined],
       ],
-      "still due in Bops Cloud: the Mac runs them, once",
+      "still due in SmileDesk Cloud: the Mac runs them, once",
     );
-    // A task's thread waits for Bops Cloud the same way before it does anything (sessions.ts route).
+    // A task's thread waits for SmileDesk Cloud the same way before it does anything (sessions.ts route).
     assert.match(readFileSync(`${root}/lib/server/sessions.ts`, "utf8"), /if \(onRunner\(\) && !\(await startLanded\(\(st\) => Array\.isArray\(st\.sessions\) && st\.sessions\.some\(/);
     // Its start taken: the check's failure is said and texted from the runner, as before.
     reset();
@@ -1849,7 +1849,7 @@ await check("a run on a computer's runner reaches nothing past it until Bops Clo
   }
 });
 
-await check("a task run on a computer's runner is recorded as that runner's from its start to its end (Bops Cloud takes its end from there if its bot moves off the computer meanwhile); on the Mac a run is its own, no runner said", async () => {
+await check("a task run on a computer's runner is recorded as that runner's from its start to its end (SmileDesk Cloud takes its end from there if its bot moves off the computer meanwhile); on the Mac a run is its own, no runner said", async () => {
   reset();
   try {
     // Due 10 minutes ago, and this runner was up all along: it runs late, said first in the chat.

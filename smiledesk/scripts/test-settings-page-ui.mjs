@@ -5,10 +5,10 @@
 // - the app: the page covers only the columns past the sidebar, which stays to go anywhere, Esc goes back once nothing
 //   in it wanted the key, and the old sheets (Account, Setup, People, the Org chart) are gone;
 // - your initials' menu: Team first with its count (the count People's button had is on the initials now), Restart
-//   Bops asked in place in the menu; a bot's menu asks Delete in place; Team asks Remove under the person's row;
+//   SmileDesk asked in place in the menu; a bot's menu asks Delete in place; Team asks Remove under the person's row;
 // - every word plain: no dashes, never Orbit.
 //
-// Rendered into a DOM (linkedom) and clicked, against a fake Bops: nothing reaches a server. The .tsx files are
+// Rendered into a DOM (linkedom) and clicked, against a fake SmileDesk: nothing reaches a server. The .tsx files are
 // compiled with the TypeScript in node_modules as they load. The people and places are made up.
 // Usage: node scripts/test-settings-page-ui.mjs   (not with --conditions=react-server: these are client components)
 import assert from "node:assert/strict";
@@ -61,11 +61,11 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 globalThis.EventSource = class {
   close() {}
 };
-// The Mac app's bridge, as far as Restart Bops asks: it can restart.
+// The Mac app's bridge, as far as Restart SmileDesk asks: it can restart.
 let relaunched = 0;
 globalThis.bopsMac = { relaunch: async () => void relaunched++ };
 
-/** Bops, faked: what each change sent, and who has access. */
+/** SmileDesk, faked: what each change sent, and who has access. */
 const bops = { sent: [] };
 const json = (j, status = 200) => ({ ok: status < 400, status, json: async () => j });
 const MEMBERS = {
@@ -210,7 +210,7 @@ await test("every place in the nav draws in the page's own content area, the nav
     }
     assert.deepEqual(picked, all, "the app hears each place");
     // A title stands alone: no line under it saying what the page is for.
-    const restated = /Who your bots work for|What you pay for Bops|What your bots used, in every|Your numbers and emails: how|Your own AI plans and agent|What Bops keeps, for how long|Permissions here, where your bots|Each has a settings page|How people reach/;
+    const restated = /Who your bots work for|What you pay for SmileDesk|What your bots used, in every|Your numbers and emails: how|Your own AI plans and agent|What SmileDesk keeps, for how long|Permissions here, where your bots|Each has a settings page|How people reach/;
     for (const id of all) {
       await click(m.box.querySelector(`[data-settings-nav="${id}"]`));
       assert.ok(!restated.test(m.box.querySelector("main[data-settings-pane]").textContent), `${id}: no line restating its title`);
@@ -318,7 +318,7 @@ await test("the app: the page beside the sidebar, which stays to go anywhere; Es
 
 /* ---------------- Your initials: Team, and Restart asked in place ---------------- */
 
-await test("your initials' menu: Team first with its count, which is on the initials too; Restart Bops asked in the menu", async () => {
+await test("your initials' menu: Team first with its count, which is on the initials too; Restart SmileDesk asked in the menu", async () => {
   const opened = [];
   const m = await mount(h(YouMenu, { state: stateOf(), onAccount: () => opened.push("plan"), onSettings: () => opened.push("settings"), onSetup: () => opened.push("mac"), onTeam: () => opened.push("team") }));
   try {
@@ -328,25 +328,25 @@ await test("your initials' menu: Team first with its count, which is on the init
     await click(avatar);
     const items = [...m.box.querySelectorAll('[role="menuitem"]')].map((b) => b.textContent.trim());
     assert.deepEqual(items.slice(0, 4), ["Team1", "Settings", "Plan and usage", "Permissions on this Mac"]);
-    assert.ok(items.includes("Restart Bops") && items.includes("Sign out"));
+    assert.ok(items.includes("Restart SmileDesk") && items.includes("Sign out"));
     assert.equal(m.box.querySelector('[role="menu"]').getAttribute("class").includes("absolute"), true, "anchored to the initials, a menu, not a sheet");
     await click(m.box.querySelector("[data-menu-team]"));
     assert.deepEqual(opened, ["team"], "Team opens Settings at Team");
     assert.equal(!!m.box.querySelector('[role="menu"]'), false, "and the menu closes");
-    // Restart Bops: the row turns into its question, in the menu; Cancel puts it back, Restart restarts.
+    // Restart SmileDesk: the row turns into its question, in the menu; Cancel puts it back, Restart restarts.
     await click(avatar);
-    await click(buttonOf(m.box, "Restart Bops"));
+    await click(buttonOf(m.box, "Restart SmileDesk"));
     const ask = m.box.querySelector("[data-ask-in-place]");
     assert.ok(ask && m.box.querySelector('[role="menu"]').contains(ask), "asked in place, in the menu");
-    assert.match(ask.textContent, /Restart Bops\?Your bots pause for a few seconds\./);
+    assert.match(ask.textContent, /Restart SmileDesk\?Your bots pause for a few seconds\./);
     assert.deepEqual(overlays(), [], "no dialog over the app");
     await click(buttonOf(ask, "Cancel"));
     assert.equal(!!m.box.querySelector("[data-ask-in-place]"), false);
-    assert.ok(!!buttonOf(m.box, "Restart Bops"), "the button back, the menu still open");
-    await click(buttonOf(m.box, "Restart Bops"));
+    assert.ok(!!buttonOf(m.box, "Restart SmileDesk"), "the button back, the menu still open");
+    await click(buttonOf(m.box, "Restart SmileDesk"));
     await key(doc, "Escape");
     assert.equal(!!m.box.querySelector("[data-ask-in-place]"), false, "Esc is Cancel");
-    await click(buttonOf(m.box, "Restart Bops"));
+    await click(buttonOf(m.box, "Restart SmileDesk"));
     await click(buttonOf(m.box.querySelector("[data-ask-in-place]"), "Restart"));
     assert.equal(relaunched, 1, "Restart hands over to the Mac app");
   } finally {

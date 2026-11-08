@@ -1,6 +1,6 @@
 /**
  * The bots' mascots, as SVG markup in a 0 0 40 40 box: plush blobs in the bot's color, each wearing
- * headphones (the Bops look). Idle, a bot vibes with its eyes closed; at work, it opens them, each
+ * headphones (the SmileDesk look). Idle, a bot vibes with its eyes closed; at work, it opens them, each
  * bot with its own expression. One source for the app, the bots' desktops, and their pictures in
  * Slack, Telegram and Discord (scripts/render-mascots.mjs). Plain TypeScript: no React, no imports.
  */
@@ -272,14 +272,14 @@ function moodMarkup(botId: string, color: string, mood: Mood, accent: boolean, b
 
 /**
  * The bots' pictures, rendered ahead of time (scripts/render-mascots.mjs) into edge/public/mascot,
- * which Bops Cloud and the self-hosted front door (edge/) serve at /mascot/<name>.png and .jpg for
+ * which SmileDesk Cloud and the self-hosted front door (edge/) serve at /mascot/<name>.png and .jpg for
  * Slack, Telegram and Discord: the main bot, a blob in each of these colors (new bots' colors and the
  * seed bots'), and the seed bots with shapes of their own.
  */
 export const PICTURE_COLORS = ["#FF9F43", "#2EC4B6", "#A78BFA", "#F87171", "#60A5FA", "#34D399", "#E9FF3B", "#FF6FB5", "#47C46B", "#5B8CFF"];
 export const PICTURE_SHAPES: Record<string, string> = { penny: "#FF6FB5", otto: "#E9FF3B", rook: "#47C46B" };
 
-/** A bot's rendered picture ("blob-2EC4B6"), or null when its color has none (it shows the Bops logo instead). */
+/** A bot's rendered picture ("blob-2EC4B6"), or null when its color has none (it shows the SmileDesk logo instead). */
 export function pictureName(b: { id: string; color: string; isMain: boolean }): string | null {
   if (b.isMain) return "main-0A0A0A";
   const hex = b.color.replace("#", "").toUpperCase();

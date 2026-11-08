@@ -134,7 +134,7 @@ export function ComputerView({
   /** The thread waiting on a screen of it whose card the user came here from (its Sign in): taking control of that screen is for it. */
   forThread?: { display: number; sessionId: string };
 }) {
-  // The real screen or the Home screen, when you picked one (the button over an idle screen); else Bops picks.
+  // The real screen or the Home screen, when you picked one (the button over an idle screen); else SmileDesk picks.
   const [picked, setPicked] = useState<"real" | "home" | null>(null);
   // Browsers on this Mac: the viewer's own app's, never a shared workspace's (state.host is the viewer's).
   const mac = !state.shared && state.host === "mac";
@@ -264,7 +264,7 @@ export function ComputerView({
   const grid = tiles.length > 1;
   const following = auto && !grid;
   const acting = (d: number) => working.includes(d) && now - lastAct(d) < FRESH_MS;
-  // A task on the screen, or the user driving it: its stream stays up with Bops behind another app.
+  // A task on the screen, or the user driving it: its stream stays up with SmileDesk behind another app.
   const busyOn = (d: number) => working.includes(d) || (!!state.takeover && here(state.takeover.botId) && state.takeover.display === d);
   const cutLabel = (d: number) => {
     const w = watchOn(d);
@@ -310,7 +310,7 @@ export function ComputerView({
   const [mountedAt] = useState(() => Date.now());
   if (takeover && (held?.since !== takeover.since || held.display !== display || held.leaving)) {
     setHeld({ since: takeover.since, display });
-    // Not when Bops opens on a screen you already had.
+    // Not when SmileDesk opens on a screen you already had.
     if (held?.since !== takeover.since && takeover.since > mountedAt - 3000) setHandoff({ to: "you", key: `in-${takeover.since}` });
   } else if (!takeover && held && !held.leaving) {
     if (held.display !== display) setHeld(null);
@@ -331,7 +331,7 @@ export function ComputerView({
   }, [handoff]);
   const leaving = !takeover && !!held?.leaving;
   // Esc hands control back. It's caught before the live screen gets it (so it doesn't also reach the
-  // bot's computer), except while typing in Bops itself (the chat, the address bar), where Esc is Esc.
+  // bot's computer), except while typing in SmileDesk itself (the chat, the address bar), where Esc is Esc.
   // In a thread's terminal (Takeover.terminal) Esc is Claude Code's, which stops what it's doing with it:
   // it goes to the screen, and Hand back (or a reply in the thread) closes the terminal.
   useEffect(() => {
@@ -700,7 +700,7 @@ export function ComputerView({
                     asleep && creditOut
                       ? "Your Orgo credit ran out, so your computer stays asleep"
                       : asleep && hoursOut
-                        ? "Your Bops computer has used its free hours"
+                        ? "Your SmileDesk computer has used its free hours"
                         : asleep
                           ? "Wake the computer and drive this screen yourself"
                           : "Pause the bot here and drive the screen yourself"
@@ -844,7 +844,7 @@ export function ComputerView({
           </span>
           <span className="flex-1" />
           {follow?.on ? (
-            <span className="flex shrink-0 items-center gap-1.5" title={`Bops shows the screen being worked on, and cuts to one that needs ${you}. Pick one to stay on it.`}>
+            <span className="flex shrink-0 items-center gap-1.5" title={`SmileDesk shows the screen being worked on, and cuts to one that needs ${you}. Pick one to stay on it.`}>
               {/* It pulses while there's action to follow; a still dot otherwise (a pulse redraws the window all the time). */}
               <span className={`size-1.5 rounded-full ${working.length ? "animate-pulse" : ""}`} style={{ background: botBezel(b) }} />
               {grid ? `Watching ${working.length} things at once` : "Following the action"}
@@ -1236,7 +1236,7 @@ function NoComputer({ state, bot: b, host }: { state: AppState; bot: Bot; /** Th
   const plan = usePlan(state);
   // Whether the user's Orgo plan has room to make it: the main bot's, or a copy of it for a bot of its own.
   // One made already whose setup didn't finish takes no more room: Set up finishes it (POST /api/computer).
-  // The main bot's takes none when it's the user's free Bops computer (or shares it): no note then.
+  // The main bot's takes none when it's the user's free SmileDesk computer (or shares it): no note then.
   const noRoom = plan ? setupShort(plan.plan, state.bots, host) : null;
   const free = host.isMain && freeComputerOpen(plan?.plan);
   // Being made: the same ghost a connecting screen shows, since it's the same kind of wait.
@@ -1248,7 +1248,7 @@ function NoComputer({ state, bot: b, host }: { state: AppState; bot: Bot; /** Th
     );
   // A workspace shared with the user: the computer (or the Mac) is the owner's, with nothing here to set up. An Admin
   // sees its screen live and can take control (SharedScreen); anyone else reads where its work shows, and someone who
-  // may use the computer is pointed at it on orgo.ai. A Member whose Bops could show the bot's browser in place of the
+  // may use the computer is pointed at it on orgo.ai. A Member whose SmileDesk could show the bot's browser in place of the
   // computer (seesBrowser) is told why it doesn't yet (browserLine). Never an empty card the size of a screen.
   if (state.shared) {
     if (b.runsOn !== "mac" && state.shared.role === "admin" && state.shared.screens?.includes(b.id)) return <SharedScreen state={state} bot={b} />;
@@ -1258,7 +1258,7 @@ function NoComputer({ state, bot: b, host }: { state: AppState; bot: Bot; /** Th
         <span>{`${b.name} works on ${b.runsOn === "mac" ? yourMac(state) : "the owner's computer"}. Its work shows in the chat.`}</span>
         {browserLine(state, b) && <span data-browser-why>{browserLine(state, b)}</span>}
         {orgoUrl && <OrgoLink href={orgoUrl} label={state.shared.role === "admin" ? SHARED_SCREEN_WORDS.open : SHARED_SCREEN_WORDS.watch} />}
-        {/* Someone who may use it wakes it here too, as a message to the bot would (Bops Cloud, with the owner's say on an hourly bill). */}
+        {/* Someone who may use it wakes it here too, as a message to the bot would (SmileDesk Cloud, with the owner's say on an hourly bill). */}
         {b.runsOn !== "mac" && state.shared.computer && !readOnly(state, [b.id]) && cloudWakes(state) && <WakeButton botId={b.id} />}
       </p>
     );
@@ -1268,11 +1268,11 @@ function NoComputer({ state, bot: b, host }: { state: AppState; bot: Bot; /** Th
       <Mascot botId={b.id} color={b.color} size={44} />
       <span className="max-w-[300px] text-[14px] leading-5">
         {b.isMain
-          ? `${b.name} doesn't have a computer yet. ${free ? `Your free Bops computer starts the first time ${b.name} needs it` : `It starts the first time ${b.name} needs one`}, or set it up now. The bots you add work on it too, unless you give one its own.`
+          ? `${b.name} doesn't have a computer yet. ${free ? `Your free SmileDesk computer starts the first time ${b.name} needs it` : `It starts the first time ${b.name} needs one`}, or set it up now. The bots you add work on it too, unless you give one its own.`
           : host.id !== b.id
             ? `${b.name} works on ${host.name}'s computer, which isn't set up yet. It starts the first time either of them needs it.`
             : plan?.plan?.bops
-              ? `${b.name} doesn't have a computer yet. It gets ${ownIsBops(plan.plan, b) ? "a Bops computer of its own" : "a computer of its own on your Orgo plan"}, fresh from the Bops template.`
+              ? `${b.name} doesn't have a computer yet. It gets ${ownIsBops(plan.plan, b) ? "a SmileDesk computer of its own" : "a computer of its own on your Orgo plan"}, fresh from the SmileDesk template.`
               : `${b.name} doesn't have a computer yet. It gets a copy of the main bot's computer: apps, logins and open screens.`}
       </span>
       {plan && noRoom ? (
@@ -1311,11 +1311,11 @@ function OrgoLink({ href, label }: { href: string; label: string }) {
  * watched, and theirs to click and type on once they take control. Streamed with their own Orgo key
  * (/api/workspaces/shared/screen). When it can't open (asleep, or Orgo said no), it says so and points at orgo.ai.
  */
-/** Whether the shared workspace's Bops Cloud wakes a computer when asked (one with Admin powers says adminActs or ownerOld). */
+/** Whether the shared workspace's SmileDesk Cloud wakes a computer when asked (one with Admin powers says adminActs or ownerOld). */
 const cloudWakes = (state: AppState) => !!state.shared?.adminActs || !!state.shared?.ownerOld;
 
 /**
- * Wake a shared workspace's bot's computer (POST /api/workspaces/shared/wake: Bops Cloud wakes it as a message to the bot
+ * Wake a shared workspace's bot's computer (POST /api/workspaces/shared/wake: SmileDesk Cloud wakes it as a message to the bot
  * would, so a computer billed by the hour wakes only where the owner lets messages wake it). Says why when it won't.
  */
 function WakeButton({ botId, onAwake }: { botId: string; onAwake?: () => void }) {
@@ -1347,7 +1347,7 @@ function SharedScreen({ state, bot: b }: { state: AppState; bot: Bot }) {
   const [failed, setFailed] = useState(false);
   const [control, setControl] = useState(false);
   const orgoUrl = state.shared?.orgoUrl;
-  // Files dropped on it go on that computer's Desktop, for whoever is shown it and may take control (an Admin: Bops Cloud
+  // Files dropped on it go on that computer's Desktop, for whoever is shown it and may take control (an Admin: SmileDesk Cloud
   // checks it again, cloud/members.ts filesIn), with their own Orgo key (lib/server/bot-files.ts).
   const screenDrop = useScreenDrop(b.id);
   if (failed)
@@ -1490,7 +1490,7 @@ const TEAM_LIVE = 9;
 /**
  * The team row, in the main bot's view only: every screen another bot is working on (or needs you on,
  * or that you drive) on its own computer, and what was left on one in the last half hour (lib/screens.ts
- * teamScreens). A tile is a snapshot every few seconds, only while Bops is in front, and never of a
+ * teamScreens). A tile is a snapshot every few seconds, only while SmileDesk is in front, and never of a
  * screen nobody's using (a read can wake an asleep computer). Clicking one shows it up close, in that
  * bot's computer tab: the chat stays where it is. Grid shows them bigger, all at once.
  */
@@ -1532,7 +1532,7 @@ function TeamRow({ state, mainId, hidden, onShow }: { state: AppState; mainId: s
                 {snap ? (
                   <LiveScreen key={`team-${t.computerBotId}-${t.display}`} bot={host} botId={host!.id} display={t.display} intervalMs={5000} scale={0.3} className="absolute inset-x-2 bottom-0 top-2 rounded-t-sm" />
                 ) : leftBy?.lastFrameAt ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- a frame Bops serves, sized by the tile
+                  // eslint-disable-next-line @next/next/no-img-element -- a frame SmileDesk serves, sized by the tile
                   <img src={`/api/frames?session=${leftBy.id}&t=${leftBy.lastFrameAt}`} alt={`The screen as ${plainTitle(leftBy.title)} left it`} className="absolute inset-x-2 bottom-0 top-2 w-[calc(100%-1rem)] rounded-t-sm object-cover object-top opacity-80" />
                 ) : (
                   <div className="absolute inset-x-2.5 bottom-0 top-2 flex items-center justify-center rounded-t-sm bg-white/90">

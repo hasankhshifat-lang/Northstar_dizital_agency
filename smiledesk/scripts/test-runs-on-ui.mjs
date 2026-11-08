@@ -1,5 +1,5 @@
 // Tests for Settings, Where routines run (components/app/runs-on.tsx): Cloud and This Mac, a line each,
-// nothing picked until Bops says which (nor when Orgo didn't answer, which it says), the one Orgo keeps picked; an Orgo that can't keep it yet shows
+// nothing picked until SmileDesk says which (nor when Orgo didn't answer, which it says), the one Orgo keeps picked; an Orgo that can't keep it yet shows
 // This Mac with "Cloud isn't available yet." and Cloud can't be picked; in the Cloud, each computer of the
 // workspace's bots once (a bot that shares is on its main bot's), with how its runner is: Running, Asleep,
 // Setting up, Stopping, Couldn't start and why, or not set up yet; a pick calls back; no dashes anywhere.
@@ -7,7 +7,7 @@
 // has its own computer, whether that computer holds its own Orgo key (from /api/runs-on/keys: its prefix
 // and when it was used, with Manage in Orgo; none says No Orgo key only when its runner counts on one;
 // nothing when Orgo couldn't say, as for a 405 or a timeout, or hasn't yet), nothing extra for a bot that
-// works on another bot's computer, and none of it under Where routines run; asked of Bops only, never of
+// works on another bot's computer, and none of it under Where routines run; asked of SmileDesk only, never of
 // Orgo from the window.
 //
 // Nothing reaches a server. The .tsx files are compiled with the TypeScript in node_modules as they load.
@@ -90,10 +90,10 @@ const render = (props) => renderToStaticMarkup(h(R.RunsOnChoice, { busy: false, 
 const cards = (html) =>
   [...html.matchAll(/<button([^>]*)>(.*?)<\/button>/g)].map(([, attrs, inner]) => ({ name: text(inner).split(" ")[0] === "This" ? "This Mac" : text(inner).split(" ")[0], picked: inner.includes("bg-highlighter"), disabled: /\sdisabled=""/.test(attrs) }));
 
-await test("Cloud and This Mac, a line each; nothing picked until Bops says which", () => {
+await test("Cloud and This Mac, a line each; nothing picked until SmileDesk says which", () => {
   const html = render({ state: state(), info: null });
   const t = text(html);
-  assert.match(t, /^Where routines run Cloud Tasks keep running when your Mac is closed\. This Mac Only while Bops is open on this Mac\.$/, t);
+  assert.match(t, /^Where routines run Cloud Tasks keep running when your Mac is closed\. This Mac Only while SmileDesk is open on this Mac\.$/, t);
   assert.deepEqual(cards(html), [
     { name: "Cloud", picked: false, disabled: true },
     { name: "This Mac", picked: false, disabled: true },
@@ -152,7 +152,7 @@ await test("on This Mac: This Mac picked; no computers, but a runner still being
   );
   assert.ok(!text(html).includes("computer"), text(html));
   const stopping = text(render({ state: state({ runners: { [C2]: { status: "stopping", version: "1", buildId: "b", by: "d", at: Date.now() } } }), info: { runsOn: "mac", missing: false, asleep: [] } }));
-  assert.match(stopping, /This Mac Only while Bops is open on this Mac\. Iris's computer Stopping$/, stopping);
+  assert.match(stopping, /This Mac Only while SmileDesk is open on this Mac\. Iris's computer Stopping$/, stopping);
 });
 
 await test("an Orgo that can't keep it yet: This Mac, Cloud can't be picked, and it says so", () => {
@@ -268,7 +268,7 @@ await test("Orgo couldn't say (a 405, a timeout, unreachable: left out) or hasn'
   assert.equal(B.keyLine(undefined, running), null);
 });
 
-await test("one place only: Where routines run says nothing of keys, and the window asks Bops only, never Orgo", () => {
+await test("one place only: Where routines run says nothing of keys, and the window asks SmileDesk only, never Orgo", () => {
   assert.ok(!/Orgo key/.test(text(render({ state: state({ runners: { [C1]: running } }), info: CLOUD }))));
   assert.ok(!readFileSync(`${root}/components/app/runs-on.tsx`, "utf8").includes("runs-on/keys"));
   const src = readFileSync(`${root}/components/app/bot-computers.tsx`, "utf8");

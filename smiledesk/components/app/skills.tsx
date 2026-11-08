@@ -11,12 +11,12 @@ import { Chevron, readSectionOpen, writeSectionOpen } from "./side-group";
 import { CloseButton, currentWorkspace, post, teamOf } from "./ui";
 
 /*
- * Skills: a workspace's ways of doing a kind of job (skills) and the tools Bops built that bots run (apps),
+ * Skills: a workspace's ways of doing a kind of job (skills) and the tools SmileDesk built that bots run (apps),
  * each a folder in the Agent Skill shape on this Mac (lib/server/workspace-skills.ts). A kind in Knowledge
  * (memory-categories.tsx): its chip opens a page (SkillsPage) in the Knowledge tab with the skills under
- * their labels (lib/skill-labels.ts), Bops' own labels first, each a heading that folds; one opens in place:
- * its SKILL.md and files, its label (a chip to move it; Bops' suggestion says auto, with Confirm and Change), which bots have it, its versions (Publish, Roll
- * back), its scripts to approve, Open in Finder, Update from folder and Delete. Bops' own skills open read only.
+ * their labels (lib/skill-labels.ts), SmileDesk's own labels first, each a heading that folds; one opens in place:
+ * its SKILL.md and files, its label (a chip to move it; SmileDesk's suggestion says auto, with Confirm and Change), which bots have it, its versions (Publish, Roll
+ * back), its scripts to approve, Open in Finder, Update from folder and Delete. SmileDesk's own skills open read only.
  * Import folder takes a folder picked in Finder through the Mac app. Who has what (the owner's, in the window)
  * is a grid of the workspace's labels by its bots: a tick gives a bot every skill in that label
  * (Bot.skillLabels, lib/skill-labels.ts botHasSkill), a label opens to its skills, where a skill naming its own
@@ -80,23 +80,23 @@ const RISK: Record<string, string> = { read: "Reads only", write: "Changes thing
 
 /* ---------------- Labels ---------------- */
 
-/** One label on the page: its skills of the workspace's, and Bops' own in it (lib/builtin-skills.ts: every bot has them, nobody edits them). */
+/** One label on the page: its skills of the workspace's, and SmileDesk's own in it (lib/builtin-skills.ts: every bot has them, nobody edits them). */
 export type LabelGroup = SkillGroup & { refs: SkillRef[]; builtins: BuiltinSkill[] };
 
 /**
  * Skills under their labels, as the page lists them and in the order a bot sees them (skillGroups in
- * lib/server/workspace-skills.ts): Bops' own labels first, in their order (with any of the workspace's
+ * lib/server/workspace-skills.ts): SmileDesk's own labels first, in their order (with any of the workspace's
  * skills given one of their names), then the workspace's, the most skills first, then by name, Unsorted
  * last. Each list keeps the order it came in (newest first). `withBuiltins` false: only the workspace's
  * labels (apps have no built-in ones). `apps`: whether apps are open to the account (lib/apps-access.ts),
- * without which Bops' own Apps and source control skills aren't listed.
+ * without which SmileDesk's own Apps and source control skills aren't listed.
  */
 export function labelGroups(refs: SkillRef[], withBuiltins = true, apps = true): LabelGroup[] {
   const make = (label: string, about: string, builtin: boolean): LabelGroup => ({ label: cleanLabel(label), about, builtin, count: 0, slugs: [], refs: [], builtins: [] });
   const ours = withBuiltins ? builtinLabels(apps).map((b) => make(b.label, b.about, true)) : [];
   for (const s of withBuiltins ? builtinSkills(apps) : []) {
     let g = ours.find((x) => sameLabel(x.label, s.label));
-    // One under a label BUILTIN_LABELS doesn't name is still Bops' own, listed with them.
+    // One under a label BUILTIN_LABELS doesn't name is still SmileDesk's own, listed with them.
     if (!g) ours.push((g = make(s.label, "", true)));
     g.builtins.push(s);
   }
@@ -109,7 +109,7 @@ export function labelGroups(refs: SkillRef[], withBuiltins = true, apps = true):
   }
   const other = (g: LabelGroup) => (isUnsorted(g.label) ? 1 : 0);
   theirs.sort((a, b) => other(a) - other(b) || b.refs.length - a.refs.length || a.label.localeCompare(b.label));
-  // A label of Bops' with nothing in it isn't listed.
+  // A label of SmileDesk's with nothing in it isn't listed.
   return [...ours.filter((g) => g.builtins.length || g.refs.length), ...theirs].map((g) => {
     const all = [...g.builtins, ...g.refs];
     return { ...g, count: all.length, slugs: all.map((x) => x.slug), about: g.about || all.map((x) => x.name).join(", ") };
@@ -154,14 +154,14 @@ async function call<T>(body: Record<string, unknown>): Promise<{ ok: true; json:
     const json = (await res.json().catch(() => ({}))) as T & { error?: string; problems?: Problem[] };
     return res.ok ? { ok: true, json } : { ok: false, error: json.error ?? "That didn't work. Try again.", problems: json.problems };
   } catch {
-    return { ok: false, error: "Couldn't reach Bops. Try again." };
+    return { ok: false, error: "Couldn't reach SmileDesk. Try again." };
   }
 }
 
 /**
  * Skills or Apps, in the Knowledge tab (one per workspace; `only` picks which, its own chip): one line each
  * under its label, Import folder, and one opened in place (`focus`: "skill:<slug>", "app:<slug>", or
- * "builtin:<slug>" for one of Bops' own; `focusAt` is when it was asked for). `nav` is Knowledge's row of
+ * "builtin:<slug>" for one of SmileDesk's own; `focusAt` is when it was asked for). `nav` is Knowledge's row of
  * chips, under the title as on Issues.
  */
 export function SkillsPage({ state, only, focus, focusAt, nav, onClose }: { state: AppState; only?: SkillKind; focus?: string; focusAt?: number; nav?: ReactNode; onClose: () => void }) {
@@ -205,7 +205,7 @@ export function SkillsPage({ state, only, focus, focusAt, nav, onClose }: { stat
 
   const ref = open ? [...skills, ...apps].find((r) => `${r.kind}:${r.slug}` === open) : undefined;
   const info = state.workspaces?.find((w) => w.id === ws)?.skillLabelInfo ?? [];
-  // Bops' own Apps and source control skills only where apps are shown (lib/apps-access.ts): never in a shared workspace.
+  // SmileDesk's own Apps and source control skills only where apps are shown (lib/apps-access.ts): never in a shared workspace.
   const appsHere = appsOwnShown(state);
   const ours = open?.startsWith("builtin:") ? builtinSkills(appsHere).find((s) => `builtin:${s.slug}` === open) : undefined;
   const kinds: SkillKind[] = only ? [only] : ["skill", "app"];
@@ -215,7 +215,7 @@ export function SkillsPage({ state, only, focus, focusAt, nav, onClose }: { stat
     { kind: "skill" as const, label: "Skills", list: skills },
     { kind: "app" as const, label: "Apps", list: apps },
   ].filter((g) => kinds.includes(g.kind));
-  // Each kind's labels (Bops' own for skills), and where its first one is on the page, so only the page's first two start open.
+  // Each kind's labels (SmileDesk's own for skills), and where its first one is on the page, so only the page's first two start open.
   const sections = groups.map((g) => ({ ...g, labels: labelGroups(g.list, g.kind === "skill", appsHere) }));
   const starts = sections.map((_, i) => sections.slice(0, i).reduce((n, s) => n + s.labels.length, 0));
   const user = state.account?.user.id ?? "";
@@ -294,7 +294,7 @@ export function SkillsPage({ state, only, focus, focusAt, nav, onClose }: { stat
 }
 
 /**
- * A label: a heading with how many skills it has (Built in for Bops' own, what they're for in its tooltip)
+ * A label: a heading with how many skills it has (Built in for SmileDesk's own, what they're for in its tooltip)
  * that folds its rows. Open as the user left it on this Mac; until then, open when it's one of the first two.
  */
 function LabelSection({ user, ws, group: g, first, children }: { user: string; ws: string; group: LabelGroup; first: boolean; children: ReactNode }) {
@@ -323,10 +323,10 @@ function LabelSection({ user, ws, group: g, first, children }: { user: string; w
   );
 }
 
-/** Its label is Bops' suggestion, not confirmed yet (SkillRef.labelBy "auto"). */
+/** Its label is SmileDesk's suggestion, not confirmed yet (SkillRef.labelBy "auto"). */
 export const suggestedLabel = (r: SkillRef) => r.labelBy === "auto" && !!r.label;
 
-/** A skill on one line: its name, what it does (all of it in the tooltip), auto while its label is Bops' suggestion, and Draft until it's published. */
+/** A skill on one line: its name, what it does (all of it in the tooltip), auto while its label is SmileDesk's suggestion, and Draft until it's published. */
 function SkillRow({ name, description, draft, auto, onOpen }: { name: string; description: string; draft?: boolean; auto?: boolean; onOpen: () => void }) {
   return (
     <button
@@ -337,13 +337,13 @@ function SkillRow({ name, description, draft, auto, onOpen }: { name: string; de
     >
       <span className="max-w-[45%] shrink-0 truncate text-[13px] font-medium leading-[18px]">{name}</span>
       <span className="min-w-0 flex-1 truncate text-[12.5px] leading-[18px] text-[#6B6B6B]">{description}</span>
-      {auto && <span className={`${CHIP} shrink-0`} data-tip="Label picked by Bops. Open it to confirm or change it">auto</span>}
+      {auto && <span className={`${CHIP} shrink-0`} data-tip="Label picked by SmileDesk. Open it to confirm or change it">auto</span>}
       {draft && <span className={DRAFT}>Draft</span>}
     </button>
   );
 }
 
-/** One of Bops' own skills opened: what it is, its files and its SKILL.md, to read. Every bot has it and it can't be changed. */
+/** One of SmileDesk's own skills opened: what it is, its files and its SKILL.md, to read. Every bot has it and it can't be changed. */
 function BuiltinView({ skill: s, onBack }: { skill: BuiltinSkill; onBack: () => void }) {
   const [shown, setShown] = useState<string | null>(null);
   const files = s.files ?? [];
@@ -359,7 +359,7 @@ function BuiltinView({ skill: s, onBack }: { skill: BuiltinSkill; onBack: () => 
           <span className={CHIP}>{cleanLabel(s.label)}</span>
         </span>
         <span className="text-[13px] leading-[19px] text-[#3A3A38]">{s.description}</span>
-        <span className="text-[12px] leading-4 text-[#9A9A98]">Every bot has it. It comes with Bops, so it can&apos;t be changed here.</span>
+        <span className="text-[12px] leading-4 text-[#9A9A98]">Every bot has it. It comes with SmileDesk, so it can&apos;t be changed here.</span>
       </div>
       {files.length > 0 && (
         <Group title="Files">
@@ -390,7 +390,7 @@ function BuiltinView({ skill: s, onBack }: { skill: BuiltinSkill; onBack: () => 
 const MENU_ITEM = "flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-[13px] leading-4 text-ink outline-none hover:bg-[#F2F2F0] focus-visible:bg-[#F2F2F0]";
 
 /**
- * A skill's label as a chip, which opens the labels there are to move it to one, or to a new one. `auto`: Bops
+ * A skill's label as a chip, which opens the labels there are to move it to one, or to a new one. `auto`: SmileDesk
  * picked it, so it says so, with Confirm (keeps it as the owner's) and Change (the same menu).
  */
 function LabelChip({ label, labels, busy, auto, onPick }: { label: string; labels: string[]; busy: boolean; auto?: boolean; onPick: (label: string) => void }) {
@@ -414,7 +414,7 @@ function LabelChip({ label, labels, busy, auto, onPick }: { label: string; label
       </button>
       {auto && (
         <>
-          <span className={CHIP} data-tip="Bops picked this label. It stays on this Mac until you confirm it">
+          <span className={CHIP} data-tip="SmileDesk picked this label. It stays on this Mac until you confirm it">
             auto
           </span>
           <button type="button" disabled={busy} data-label-confirm onClick={() => onPick(label)} className="text-[12px] font-medium leading-4 text-ink disabled:opacity-50">
@@ -1074,7 +1074,7 @@ function WhoHasWhat({ ws, team, refs, info, onOpen }: { ws: string; team: Bot[];
                           onSave={async (name, about) => {
                             const renamed = name !== label;
                             if (renamed && !(await run("rename", { action: "label-rename", from: label, to: name }))) return;
-                            // Unsorted has no line of its own (Bops and Orgo keep none for it).
+                            // Unsorted has no line of its own (SmileDesk and Orgo keep none for it).
                             const now = renamed ? name : label;
                             if (!isUnsorted(now) && about !== (labelInfoOf(info, label)?.about ?? "") && !(await run("about", { action: "label-about", label: now, about }))) return;
                             setEditing(null);

@@ -2,7 +2,7 @@ import { transform } from "sucrase";
 
 /**
  * The page an app a bot made runs in (lib/server/made-apps.ts builds and keeps the apps): its TSX
- * compiled, React and Tailwind from Bops (public/made-apps), and `window.bops`, which talks to the
+ * compiled, React and Tailwind from SmileDesk (public/made-apps), and `window.bops`, which talks to the
  * window around the page by message. No server-only imports, so scripts/test-made-apps.mjs can run it.
  */
 
@@ -18,7 +18,7 @@ export function compile(code: string) {
  * `window.bops` inside the app: each call goes to the window, which answers it. In the Mac app the page
  * is in a webview of its own and reaches the window only through `window.bopsHost` (desktop/app-frame-preload.cjs);
  * elsewhere it's a sandboxed frame and talks to its parent by message.
- * A web link it shows goes to the window, which asks the user before it opens a tab of Bops (the sandbox allows no windows of its own).
+ * A web link it shows goes to the window, which asks the user before it opens a tab of SmileDesk (the sandbox allows no windows of its own).
  * localStorage and sessionStorage throw in a sandboxed page, so code that reaches for them gets a
  * stand-in that forgets on reload instead of crashing (bops.data is where an app keeps things).
  */

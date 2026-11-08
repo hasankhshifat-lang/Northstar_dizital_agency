@@ -388,7 +388,7 @@ async function mount(el) {
 }
 const click = (el) => act(async () => void el.dispatchEvent(new win.Event("click", { bubbles: true })));
 const button = (el, words) => [...el.querySelectorAll("button")].find((b) => b.textContent === words);
-/** Bops, faked: what it was sent, and what it answers. */
+/** SmileDesk, faked: what it was sent, and what it answers. */
 function server(status = 200, body = { ok: true }) {
   const calls = [];
   globalThis.fetch = async (url, init = {}) => {
@@ -484,7 +484,7 @@ await test("its trash asks on the row, still shut; Cancel puts focus back on it;
     assert.ok(doc.activeElement === row(m.box, "w1").querySelector("[data-row-head]"), "the monitor after it");
     const w = row(m.box, "w1");
     await click(trashOf(w));
-    assert.match(w.textContent, /Stop watching this\? Bops stops checking it\./);
+    assert.match(w.textContent, /Stop watching this\? SmileDesk stops checking it\./);
     await click(button(w, "Stop"));
     assert.deepEqual([calls.at(-1).method, calls.at(-1).url], ["DELETE", "/api/watches?id=w1"]);
     assert.ok(doc.activeElement === row(m.box, "c").querySelector("[data-row-head]"), "the last: the one before it");
@@ -513,14 +513,14 @@ await test("the only one deleted: focus goes to the page's heading, there with t
 });
 
 await test("refused: why shows under the question on the row, and the row stays", async () => {
-  server(403, { error: "Routines can only be changed in the Bops app." });
+  server(403, { error: "Routines can only be changed in the SmileDesk app." });
   const m = await mount(pageEl(listed()));
   try {
     const a = row(m.box, "a");
     await click(trashOf(a));
     await click(button(a, "Delete"));
     await sleep(0);
-    assert.equal(a.querySelector('[role="alert"]')?.textContent, "Routines can only be changed in the Bops app.");
+    assert.equal(a.querySelector('[role="alert"]')?.textContent, "Routines can only be changed in the SmileDesk app.");
     assert.match(a.textContent, /Delete this schedule\?/, "still asking");
     assert.equal(doc.activeElement.textContent, "Cancel");
     assert.ok(row(m.box, "a"));
@@ -672,7 +672,7 @@ await test("one question at a time on the page: asking on another row, or in the
 });
 
 await test("one deleting while another row asks: the first is still deleted, and focus stays on the question asked meanwhile", async () => {
-  // Bops answers only when told to.
+  // SmileDesk answers only when told to.
   const calls = [];
   let answer = noop;
   globalThis.fetch = (url, init = {}) => {
@@ -793,7 +793,7 @@ await test("reports: Orgo's runs and the last run, newest first; quiet from its 
   assert.equal(out[1].summary, undefined, "the chat goes back past it, so its words were deleted there: Orgo's copy isn't shown");
   assert.equal(out[3].error, "Gmail signed out");
   assert.equal(out[1].ms, 30_000);
-  // A run Bops has that Orgo has too: one line, how it went Bops' to say.
+  // A run SmileDesk has that Orgo has too: one line, how it went SmileDesk's to say.
   const both = routineReports({ routine: { ...r, last: { at: t4, status: "quiet" } }, runs, messages: [], sessions: [] });
   assert.deepEqual(both.slice(0, 2).map((x) => [x.at, x.status, x.ms]), [[t4, "quiet", 30_000], [t3, "quiet", 30_000]]);
   assert.equal(tookWords(42_000), "42s");
@@ -1138,7 +1138,7 @@ await test("a workspace shared with the viewer: only what its view shows, the la
     for (const b of ["Run now", "Pause", "Edit"]) assert.ok(!button(a, b), `no ${b}`);
     await click(button(a, "Reports"));
     await sleep(10);
-    assert.deepEqual(api.calls, [], "the viewer's own Bops has none of the owner's runs: not asked");
+    assert.deepEqual(api.calls, [], "the viewer's own SmileDesk has none of the owner's runs: not asked");
     const sheet = sheetOf(m.box);
     assert.equal(sheet.querySelector("[data-reports-note]").textContent, "In a shared workspace, only the last run and what's in the chat show here.");
     assert.ok(!sheet.querySelector("[data-reports-loading]"));
@@ -1274,7 +1274,7 @@ const draftsState = (drafts, extra = {}) => {
   s.messages = [{ ...s.messages[0], text: "Replies to send.", drafts }];
   return { ...s, ...extra };
 };
-/** Bops, faked for a report with replies to send: Orgo's runs (none), and each Send, held until `answer` is called. */
+/** SmileDesk, faked for a report with replies to send: Orgo's runs (none), and each Send, held until `answer` is called. */
 function sendApi() {
   const sent = [];
   let answer;
@@ -1353,11 +1353,11 @@ await test("a reply that didn't go says why, with Send again; one the server ref
     await api.answer(410, { ok: false, error: "That Gmail account isn't connected anymore. Connect it again in Logins, or copy the reply." });
     assert.equal(k.querySelector('[role="alert"]').textContent, "That Gmail account isn't connected anymore. Connect it again in Logins, or copy the reply.");
     assert.equal(k.getAttribute("data-draft-status"), "draft");
-    // A Send gone unanswered (Bops quit as it went): it may have gone, so it says to check.
+    // A Send gone unanswered (SmileDesk quit as it went): it may have gone, so it says to check.
     await m.again(pageEl(draftsState([{ ...KEVIN, sending: now - 3 * 60_000 }])));
     const lost = cardsOf(m.box)[0];
     assert.equal(lost.getAttribute("data-draft-status"), "failed");
-    assert.equal(lost.querySelector('[role="alert"]').textContent, "Bops didn't hear back. Check whether it went before you send it again.");
+    assert.equal(lost.querySelector('[role="alert"]').textContent, "SmileDesk didn't hear back. Check whether it went before you send it again.");
     await m.again(pageEl(draftsState([{ ...KEVIN, sending: now - 1000 }])));
     assert.equal(cardsOf(m.box)[0].getAttribute("data-draft-status"), "sending", "one going now, from another window");
     assert.ok(!/[‒–—―]/.test(sheetOf(m.box).textContent), "no dashes");
@@ -1380,7 +1380,7 @@ await test("in a workspace shared with the user, a run's replies are shown and c
     assert.ok(!button(card, "Send") && !button(card, "Send again"), "nothing to send");
     await click(button(card, "Copy"));
     assert.ok(button(card, "Copied"));
-    assert.ok(!calls.some((c) => c.url.includes("/api/drafts")), "nothing asked of Bops");
+    assert.ok(!calls.some((c) => c.url.includes("/api/drafts")), "nothing asked of SmileDesk");
   } finally {
     await m.done();
     unlisten();
@@ -1400,7 +1400,7 @@ await test("lib/reply-drafts.ts: where a draft stands, and drafts as words where
   assert.equal(draftWhere({ app: "gmail" }), "its thread");
   assert.equal(
     draftsText([KEVIN, { id: "drf_s", app: "slack", channel: "C0SUPPORT1", threadTs: "1.2", where: "#support", toName: "Kevin", text: "On it.", sent: { at: t, text: "On it, today." } }]),
-    "Reply to Kevin Example <kevin@example.com> (Gmail, Invoice for October):\nYes, it's right.\n\nReply to Kevin (Slack, #support, in its thread), sent:\nOn it, today.\n\nSend them from Bops.",
+    "Reply to Kevin Example <kevin@example.com> (Gmail, Invoice for October):\nYes, it's right.\n\nReply to Kevin (Slack, #support, in its thread), sent:\nOn it, today.\n\nSend them from SmileDesk.",
   );
   assert.equal(draftsText([]), "");
 });

@@ -1,4 +1,4 @@
-// The download buttons. Bops is a Mac app for Apple silicon: on a Mac they open a short card first
+// The download buttons. SmileDesk is a Mac app for Apple silicon: on a Mac they open a short card first
 // (Get First Access: leave your email, or skip, and the download starts; /download/Bops.dmg is always the
 // newest release), with what's new in that release at its foot. Anywhere else (an iPhone, an iPad,
 // Android, Windows, Linux, ChromeOS) they open a short note instead: open bops.bot on your Mac. An Intel
@@ -31,8 +31,8 @@
   }
 
   const NOTES = {
-    other: ["Bops is a Mac app", "Open bops.bot on your MacBook to download it. It needs a Mac with Apple silicon (M1 or newer)."],
-    intel: ["Bops needs Apple silicon", "This Mac has an Intel chip, and Bops runs on Macs with Apple silicon (M1 or newer). Open bops.bot on one of those to get it."],
+    other: ["SmileDesk is a Mac app", "Open bops.bot on your MacBook to download it. It needs a Mac with Apple silicon (M1 or newer)."],
+    intel: ["SmileDesk needs Apple silicon", "This Mac has an Intel chip, and SmileDesk runs on Macs with Apple silicon (M1 or newer). Open bops.bot on one of those to get it."],
   };
   const CLOSE =
     '<button class="mac-note-close" type="button" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></button>';
@@ -117,7 +117,7 @@
 
     share.addEventListener("click", () => {
       // AirDrop, Messages, Mail: whatever gets the link to their Mac.
-      navigator.share({ title: "Bops", url: SITE }).catch(() => {});
+      navigator.share({ title: "SmileDesk", url: SITE }).catch(() => {});
     });
     copy.addEventListener("click", async () => {
       const ok = await copyText(SITE);
@@ -216,7 +216,7 @@
         email.focus();
         return;
       }
-      // On the visitor as they are, never a person keyed by their email (orgo-web's rule): the Bops
+      // On the visitor as they are, never a person keyed by their email (orgo-web's rule): the SmileDesk
       // app identifies them by their Orgo user id once they sign in.
       ph("setPersonProperties", { email: value, source: "bops.bot" });
       ph("capture", "bops_download_email", { email: value, button: from });

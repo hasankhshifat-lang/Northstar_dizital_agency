@@ -1,14 +1,14 @@
-// Tests for whose threads are whose (Session.by, lib/server/store.ts ownSession): a Bops that starts
-// (or signs in) marks only its own threads failed, "Bops restarted while this was running", and leaves
+// Tests for whose threads are whose (Session.by, lib/server/store.ts ownSession): a SmileDesk that starts
+// (or signs in) marks only its own threads failed, "SmileDesk restarted while this was running", and leaves
 // another Mac's and a computer's runner's going, but for one another Mac left behind (no sign of work from
 // that Mac on any of its threads for ten minutes: it ends here, as this Mac's), never one paused for the owner's OK at
 // that Mac's own request; a run of this Mac's paused for the OK stays paused, its request kept, answered or not (the
 // request and OpenAI are enough to go on); a thread from before Session.by is the Mac's, never a
 // runner's. Also what the store tells the routines timer (lib/server/persist-cloud.ts): which device this
-// is, when the state was last read, and that a newer Bops wrote the state (426 state_too_new), which
+// is, when the state was last read, and that a newer SmileDesk wrote the state (426 state_too_new), which
 // stops the timer until a read or a write lands again.
 //
-// Bops Cloud is a fake on localhost (below), and the working folder a throwaway one, so nothing reaches
+// SmileDesk Cloud is a fake on localhost (below), and the working folder a throwaway one, so nothing reaches
 // the real cloud or the user's files.
 // Usage: node --conditions=react-server scripts/test-session-by.mjs
 import assert from "node:assert/strict";
@@ -54,7 +54,7 @@ async function check(name, fn) {
   }
 }
 
-// Bops Cloud, faked: one user's blob, no messages. `refuse` answers 426 state_too_new to every call.
+// SmileDesk Cloud, faked: one user's blob, no messages. `refuse` answers 426 state_too_new to every call.
 const cloud = { version: 1, state: {}, refuse: false, puts: 0 };
 const server = createServer((req, res) => {
   let body = "";
@@ -64,7 +64,7 @@ const server = createServer((req, res) => {
       res.writeHead(status, { "content-type": "application/json" });
       res.end(JSON.stringify(json));
     };
-    if (cloud.refuse) return send(426, { error: "Another of your Macs is on a newer Bops. Update Bops on this Mac to keep your chats in sync.", code: "state_too_new" });
+    if (cloud.refuse) return send(426, { error: "Another of your Macs is on a newer SmileDesk. Update SmileDesk on this Mac to keep your chats in sync.", code: "state_too_new" });
     const path = req.url.split("?")[0];
     if (req.method === "GET" && path === "/v1/state") return send(200, { version: cloud.version, seq: 0, protocol: 4, writer: "mac-b", state: cloud.state });
     if (req.method === "GET" && path === "/v1/state/head") return send(200, { version: cloud.version, seq: 0, writer: "mac-b" });
@@ -115,7 +115,7 @@ const seed = () => {
 const statusOf = (id) => S.getState().sessions.find((s) => s.id === id);
 
 try {
-  await check("a device id per Bops: this Mac's, and a runner's from its computer's id", () => {
+  await check("a device id per SmileDesk: this Mac's, and a runner's from its computer's id", () => {
     assert.match(ME, /^[0-9a-f]{16}$/);
     assert.notEqual(ME, RUNNER);
     assert.equal(P.deviceIdFor(USER, "mac-a"), ME, "BOPS_DEVICE_SEED stands in for the hardware id");
@@ -126,7 +126,7 @@ try {
     seed();
     await S.bindSignIn(USER, "sk_test");
     assert.equal(S.stateDevice(), ME);
-    assert.deepEqual([statusOf("mine").status, statusOf("mine").error], ["failed", "Bops restarted while this was running"]);
+    assert.deepEqual([statusOf("mine").status, statusOf("mine").error], ["failed", "SmileDesk restarted while this was running"]);
     assert.equal(statusOf("before").status, "failed", "from before Session.by: the Mac's");
     assert.equal(statusOf("runner").status, "running", "a runner's thread runs on there");
     assert.equal(statusOf("other_mac").status, "queued", "another Mac's waits for it there, however long, while that Mac is at work");
@@ -186,12 +186,12 @@ try {
     assert.deepEqual(askOf("apr_older"), ask("apr_older", { threadId: "left_with_ask", askedBy: D_MAC }), "a request is never touched by a sweep: it waits on nothing now its thread is over");
     assert.deepEqual([statusOf("mine_waits").status, askOf("apr_mine")?.reply], ["queued", undefined], "this Mac's own pause: kept, still waiting");
     assert.deepEqual([statusOf("mine_answered").status, askOf("apr_answered")?.reply?.reply], ["queued", "once"], "answered while this Mac was down: kept, to go on from");
-    assert.deepEqual([statusOf("mine_working").status, statusOf("mine_working").error], ["failed", "Bops restarted while this was running"], "working when it stopped: restarted");
+    assert.deepEqual([statusOf("mine_working").status, statusOf("mine_working").error], ["failed", "SmileDesk restarted while this was running"], "working when it stopped: restarted");
     assert.equal(askOf("apr_held"), undefined, "a call its run held is gone with that run");
     assert.equal(askOf("apr_old"), undefined, "from before requests: gone");
     assert.deepEqual(S.getState().messages.filter((m) => m.chatId === "bot:boppy" && m.role === "system"), [], "nothing to say: nothing was lost");
     assert.equal(await S.flushState(3000), true);
-    assert.deepEqual(cloud.state.appApprovals.map((a) => a.id), ["apr_waits", "apr_older", "apr_mine", "apr_answered"], "and so for every Bops of the owner's");
+    assert.deepEqual(cloud.state.appApprovals.map((a) => a.id), ["apr_waits", "apr_older", "apr_mine", "apr_answered"], "and so for every SmileDesk of the owner's");
   });
 
   await check("a runner starting fails only its own threads, never one from before (the Mac's)", async () => {
@@ -207,7 +207,7 @@ try {
     delete process.env.BOPS_RUNNER;
   });
 
-  await check("a newer Bops wrote the state: the store says so until a read lands again", async () => {
+  await check("a newer SmileDesk wrote the state: the store says so until a read lands again", async () => {
     cloud.refuse = true;
     await S.pullState();
     assert.equal(S.stateTooNew(), true, "a read refused");

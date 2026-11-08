@@ -27,7 +27,7 @@
  *   SIP leg (61.7 a second, from an internal estimate, not yet checked against an invoice).
  * - AgentPhone: agentphone.ai/pricing. $3 a number a month; an iMessage line by kind ($150 receive
  *   only, $250 sends too); 2 cents a text segment and 3 cents a picture message, in or out; 13 cents a
- *   minute of a call through the webhook voice agent (what Bops uses), billed by the second. The words
+ *   minute of a call through the webhook voice agent (what SmileDesk uses), billed by the second. The words
  *   the bot says on a call are its own model answers, counted as tokens.
  * - Typesafe Jev (jev-latest is jev-1.13.0): $0.042 per 1M input tokens, output free (Typesafe's
  *   models page, as orgo-web's lib/credits-shared.ts has it).

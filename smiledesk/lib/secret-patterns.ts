@@ -1,5 +1,5 @@
 /**
- * Keys and tokens as they look, for taking out of what Bops reads back from a bot's computer (a CLI agent's
+ * Keys and tokens as they look, for taking out of what SmileDesk reads back from a bot's computer (a CLI agent's
  * words, its errors, a thread's steps): the providers' key shapes (as lib/server/skill-bundle.ts finds them in
  * a skill's files) and a key gate's run token (vm/bin/bops-ai-gate: "bopsrun_" and 64 hex). A run token is
  * worth nothing once its run is over, and only on that computer, but it is never kept or shown either way.

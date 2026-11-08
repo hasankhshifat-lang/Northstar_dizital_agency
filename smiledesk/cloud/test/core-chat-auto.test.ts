@@ -4,9 +4,9 @@ import { closeDb } from "../db.ts";
 import { AUTO_HOLD_MS, autoMoves, chatAutoFor, keepChatOn, mirrorOf, type AutoSeen, type RoutingRow } from "../turns.ts";
 
 /**
- * Chat through Bops Cloud by itself (turns.ts autoMoves, keepChatOn, chatAutoFor), with no database: a workspace nobody
- * chose for moves to Bops Cloud once every computer its bots work on has a runner the Mac saw running at a Bops new
- * enough, which connected since Bops Cloud started and since its computer last couldn't answer; back to the Mac when
+ * Chat through SmileDesk Cloud by itself (turns.ts autoMoves, keepChatOn, chatAutoFor), with no database: a workspace nobody
+ * chose for moves to SmileDesk Cloud once every computer its bots work on has a runner the Mac saw running at a SmileDesk new
+ * enough, which connected since SmileDesk Cloud started and since its computer last couldn't answer; back to the Mac when
  * one can't answer, has no runner, or its runner failed; never one the owner or staff chose, either way.
  */
 
@@ -42,7 +42,7 @@ const row = (mode: "mac" | "cloud", setBy: string | null, setAt = NOW - 1000): R
 const rows = (r: Record<string, RoutingRow> = {}) => new Map(Object.entries(r));
 const moves = (b: Record<string, unknown>, r: Map<string, RoutingRow>, s: AutoSeen) => autoMoves(b, r, s).map((m) => `${m.wsId}:${m.mode}${m.hold ? ":held" : ""}`);
 
-test("a workspace nobody chose for moves to Bops Cloud once every computer of its bots has a runner that answers", () => {
+test("a workspace nobody chose for moves to SmileDesk Cloud once every computer of its bots has a runner that answers", () => {
   assert.deepEqual(moves(blob(), rows(), seen()), ["ws_acme:cloud", "ws_beta:cloud"]);
   // Its row says nobody chose (moved by itself before, or the owner gave the choice back): the same.
   assert.deepEqual(moves(blob(), rows({ ws_acme: row("mac", "auto"), ws_beta: row("mac", null) }), seen()), ["ws_acme:cloud", "ws_beta:cloud"]);
@@ -50,14 +50,14 @@ test("a workspace nobody chose for moves to Bops Cloud once every computer of it
   assert.deepEqual(moves(blob({ [D1]: running() }), rows(), seen({ live: [D1] })), ["ws_acme:cloud"]);
 });
 
-test("not until every computer is ready: a runner missing, not running, found down, too old, never connected, or connected at an older Bops", () => {
+test("not until every computer is ready: a runner missing, not running, found down, too old, never connected, or connected at an older SmileDesk", () => {
   const acme = (runner: unknown, s = seen()) => moves(blob({ [D1]: runner }), rows(), s).filter((m) => m.startsWith("ws_acme"));
   assert.deepEqual(moves(blob({}), rows(), seen()), [], "no runner set up");
   for (const status of ["installing", "failed", "stopping"]) assert.deepEqual(acme(running("0.0.37", { status })), [], status);
   assert.deepEqual(acme(running("0.0.37", { down: { status: "stopped", at: 1 } })), [], "found down");
-  assert.deepEqual(acme(running("0.0.35")), [], "a runner before chat through Bops Cloud");
+  assert.deepEqual(acme(running("0.0.35")), [], "a runner before chat through SmileDesk Cloud");
   assert.deepEqual(acme(running("dev")), [], "not a version");
-  assert.deepEqual(acme(running(), seen({ live: [] })), [], "never connected since Bops Cloud started");
+  assert.deepEqual(acme(running(), seen({ live: [] })), [], "never connected since SmileDesk Cloud started");
   assert.deepEqual(acme(running("0.0.38"), seen({ version: "0.0.37" })), [], "connected before the Mac set up its newer one");
   assert.deepEqual(acme(running(), seen({ version: "0.0.35" })), [], "connected as a runner too old");
   // Asleep now is fine: a turn wakes it.
@@ -88,7 +88,7 @@ test("a choice the owner or staff made is never moved, either way", () => {
   }
 });
 
-test("one Bops Cloud moved goes back to the Mac when a computer can't answer, and never because a runner went quiet", () => {
+test("one SmileDesk Cloud moved goes back to the Mac when a computer can't answer, and never because a runner went quiet", () => {
   const moved = rows({ ws_acme: row("cloud", "auto"), ws_beta: row("cloud", null) });
   const back = (runners: Record<string, unknown>, s = seen()) => autoMoves(blob(runners), moved, s).filter((m) => m.wsId === "ws_acme");
   // Asleep, its runner not listening, moves off for everyone: it stays.
@@ -106,7 +106,7 @@ test("one Bops Cloud moved goes back to the Mac when a computer can't answer, an
   assert.deepEqual(autoMoves(none, moved, seen()).filter((m) => m.wsId === "ws_acme").map((m) => m.why), ["no computer"]);
 });
 
-test("the mirror on the owner's state: chatOn cloud or a chosen mac, chatAuto while Bops Cloud may move it", () => {
+test("the mirror on the owner's state: chatOn cloud or a chosen mac, chatAuto while SmileDesk Cloud may move it", () => {
   assert.deepEqual(mirrorOf(undefined, false), {});
   assert.deepEqual(mirrorOf(undefined, true), { chatAuto: true });
   assert.deepEqual(mirrorOf(row("cloud", "auto"), true), { chatOn: "cloud", chatAuto: true });
@@ -120,7 +120,7 @@ test("the mirror on the owner's state: chatOn cloud or a chosen mac, chatAuto wh
   assert.equal(keepChatOn(kept, rows({ ws_acme: row("mac", "owner"), ws_beta: row("cloud", "staff") }), false), kept);
 });
 
-test("the mirror says where Bops Cloud won't take the switch back on (chatAutoOff): a workspace with the switch, outside BOPS_CHAT_AUTO", () => {
+test("the mirror says where SmileDesk Cloud won't take the switch back on (chatAutoOff): a workspace with the switch, outside BOPS_CHAT_AUTO", () => {
   // Outside it, "auto" is refused (setRouting, 409 chat_auto_off): turned off, the switch can't come back on there.
   assert.deepEqual(mirrorOf(row("mac", "owner"), false), { chatOn: "mac", chatAutoOff: true });
   assert.deepEqual(mirrorOf(row("mac", "admin"), false), { chatOn: "mac", chatAutoOff: true });
@@ -132,7 +132,7 @@ test("the mirror says where Bops Cloud won't take the switch back on (chatAutoOf
   // Inside it, "auto" is taken: never the flag.
   assert.deepEqual(mirrorOf(row("mac", "owner"), true), { chatOn: "mac" });
   assert.deepEqual(mirrorOf(row("cloud", "staff"), true), { chatOn: "cloud" });
-  // An older Bops's save, without the flag: put back. Moves turned on for the account since: taken off.
+  // An older SmileDesk's save, without the flag: put back. Moves turned on for the account since: taken off.
   const r = rows({ ws_acme: row("mac", "owner") });
   assert.deepEqual(keepChatOn({ workspaces: [{ id: "ws_acme", name: "Acme", chatOn: "mac" }] }, r, false).workspaces, [{ id: "ws_acme", name: "Acme", chatOn: "mac", chatAutoOff: true }]);
   assert.deepEqual(keepChatOn({ workspaces: [{ id: "ws_acme", chatOn: "mac", chatAutoOff: true }] }, r, true).workspaces, [{ id: "ws_acme", chatOn: "mac" }]);

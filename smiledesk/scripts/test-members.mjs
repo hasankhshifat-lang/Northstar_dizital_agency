@@ -1,9 +1,9 @@
 // Tests for the People sheet's server: the route the window calls (app/api/members/route.ts, lib/server/members.ts)
 // against a fake orgo-web (its /api/workspaces and member routes, and /api/bops/plan), and the words the sheet shows
 // (lib/members.ts, lib/plan-includes.ts peopleShort). The workspace is only ever the user's own "bops" one, found and
-// never made, whatever the request names; every call runs on the signed-in key alone; changes come only from the Bops
+// never made, whatever the request names; every call runs on the signed-in key alone; changes come only from the SmileDesk
 // window; orgo-web's refusals come back in the app's words (plan refusals as 402 with the plan that has room); Full
-// access stays off until it's offered, and off while Bops puts its keys on the computers (which the sheet says
+// access stays off until it's offered, and off while SmileDesk puts its keys on the computers (which the sheet says
 // whenever someone has Full access); nobody is added without orgo-web's seats (an orgo-web from before its plan
 // rule sends none). Orgo is a fake fetch on a made-up origin, the Keychain a stand-in `security` that has nothing,
 // and the state a throwaway file store in a temporary folder: nothing reaches Orgo.
@@ -15,7 +15,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
-// A file store, loaded at once and always ready (lib/server/persist.ts); the Mac app's ways (state in Bops Cloud)
+// A file store, loaded at once and always ready (lib/server/persist.ts); the Mac app's ways (state in SmileDesk Cloud)
 // once it's loaded, below.
 process.env.BOPS_SELF_HOSTED = "1";
 for (const k of [
@@ -93,7 +93,7 @@ const M = await import(`${root}/lib/members.ts`);
 const P = await import(`${root}/lib/plan-includes.ts`);
 const A = await import(`${root}/cloud/analytics-rules.ts`);
 const T = await import(`${root}/cloud/protocol.ts`);
-// Loaded: now it's the Mac app, whose state lives in Bops Cloud. Its Bops Cloud gives people their role (cloud-caps.ts).
+// Loaded: now it's the Mac app, whose state lives in SmileDesk Cloud. Its SmileDesk Cloud gives people their role (cloud-caps.ts).
 delete process.env.BOPS_SELF_HOSTED;
 const Caps = await import(`${root}/lib/server/cloud-caps.ts`);
 const withRoles = async () => ({ ok: true, macs: 0, caps: ["roles"] });
@@ -123,7 +123,7 @@ const OTHERS = [
   { id: "ws-shared-bops", name: "bops", role: "member", member_count: 4 },
   { id: "ws-work", name: "Work", role: "owner", member_count: 9 },
 ];
-const WORKSPACES = { workspaces: [...OTHERS, { id: WS, name: " Bops ", role: "owner", member_count: 4 }] };
+const WORKSPACES = { workspaces: [...OTHERS, { id: WS, name: " SmileDesk ", role: "owner", member_count: 4 }] };
 const now = Date.now();
 const MEMBERS = [
   { id: "u-owner", alt: "Alex Rivera", role: "owner", email: "alex@example.com" },
@@ -215,7 +215,7 @@ assert.equal(ready.seatsError, undefined);
 assert.equal(ready.orgoUrl, `https://orgo.test/workspaces?project_id=${WS}`);
 assert.equal(ready.host, "orgo");
 assert.equal(ready.fullAccess, "on", "Admin is offered");
-// Admin waits for a Bops Cloud that gives people their role ("roles" on its /health): one before it would give an Admin,
+// Admin waits for a SmileDesk Cloud that gives people their role ("roles" on its /health): one before it would give an Admin,
 // who has no entry, no bot at all. Nothing goes to orgo-web, and making someone a Member is never held back.
 for (const health of [async () => ({ ok: true, macs: 0 }), async () => ({ ok: true, macs: 0, caps: [] }), async () => offline()]) {
   Caps.resetCloudCaps({ health });
@@ -237,7 +237,7 @@ assert.equal(await Caps.cloudDoes("roles"), true);
 assert.equal(healthAsked, 1, "a yes is kept");
 Caps.resetCloudCaps({ health: withRoles });
 assert.equal((await get()).body.fullAccess, "on");
-assert.equal(ready.keysOnComputers, false, "nothing of Bops' on the computers");
+assert.equal(ready.keysOnComputers, false, "nothing of SmileDesk's on the computers");
 assert.ok(!JSON.stringify(ready).includes(KEY), "the key never goes to the window");
 // The upgrade orgo-web offers, in the app's words; seats it couldn't read; an orgo-web without times.
 list = { ...list, seats: seatsOf({ plan: "pro_bops", limit: 2, used: 4, can_add: false, upgrade_tier: "max_bops" }) };
@@ -418,7 +418,7 @@ console.log("ok - orgo-web's refusals in the app's words");
 /* ---------------- 6. Nobody is added without orgo-web's seats ---------------- */
 
 // An orgo-web from before its plan rule sends the list with no seats: nothing there holds the workspace to a plan,
-// and its timeline shows View only the commands the bots run. Nobody is added from Bops then, not even by sending a
+// and its timeline shows View only the commands the bots run. Nobody is added from SmileDesk then, not even by sending a
 // waiting invite again, and the app never reads the plan to guess for it. Taking access away still works.
 const noSeats = (people, invites) => ({ members: [MEMBERS[0], ...people], invites });
 const pending = (email, ms = now + 3 * DAY) => ({ email, role: "member", status: "pending", token: `t-${email}`, expires_at: iso(ms), expired: ms <= now });
@@ -470,7 +470,7 @@ console.log("ok - nobody is added without orgo-web's seats");
 
 list = { members: MEMBERS, invites: INVITES, seats: seatsOf() };
 replies = usual();
-// Admin is offered whatever Bops keeps on the computers (Bops Cloud and orgo-web give it from the role alone), and
+// Admin is offered whatever SmileDesk keeps on the computers (SmileDesk Cloud and orgo-web give it from the role alone), and
 // the sheet still says when its keys are there.
 for (const [k, v] of [
   ["HOSTNAME", "0.0.0.0"],
@@ -591,7 +591,7 @@ assert.deepEqual(M.ROLE_NAMES, { viewer: "Member", admin: "Admin" }, "the roles,
 }
 console.log("ok - Owner, Admin and Member: Admin offered, no bridge entry, a Member again gets what they had, an invite's role without a resend");
 
-/* ---------------- 8. Only the Bops window, only the signed-in key, only Bops Cloud ---------------- */
+/* ---------------- 8. Only the SmileDesk window, only the signed-in key, only SmileDesk Cloud ---------------- */
 
 replies = usual();
 process.env.BOPS_UI_TOKEN = "window-token-0123456789abcdef";
@@ -643,7 +643,7 @@ for (const [method, body] of [
 }
 assert.equal(calls.length, n, "self-hosted: nothing asked of Orgo");
 delete process.env.BOPS_SELF_HOSTED;
-console.log("ok - only the Bops window, the signed-in key and Bops Cloud");
+console.log("ok - only the SmileDesk window, the signed-in key and SmileDesk Cloud");
 
 /* ---------------- 9. The count on the button ---------------- */
 
@@ -716,7 +716,7 @@ console.log("ok - a kept workspace id that's gone is looked up again");
 
 /* ---------------- 10b. Access to the workspace's bots ---------------- */
 
-// Kept on the Bops workspace whose sheet it is (the one findBopsWorkspace is asked for: here the default), by email or
+// Kept on the SmileDesk workspace whose sheet it is (the one findBopsWorkspace is asked for: here the default), by email or
 // a guest's "user:<id>", once Orgo has the invite or the change; never a key the window sent; gone with the person.
 const S = await import(`${root}/lib/server/store.ts`);
 const W = await import(`${root}/lib/server/workspaces.ts`);
@@ -821,7 +821,7 @@ console.log("ok - bot access: invite, send again, cleaned");
   assert.equal("apps" in raw("bo@example.com"), false);
   W.setMemberAccess(sheetWs(), "bo@example.com", { others: "write", bots: {} });
   assert.equal("apps" in raw("bo@example.com"), false, "a later save of the bots doesn't make it None");
-  // Your Apps comes with a bot: with no bot, no entry (a Bops from before would delete it, and nothing of the workspace opens for them).
+  // Your Apps comes with a bot: with no bot, no entry (a SmileDesk from before would delete it, and nothing of the workspace opens for them).
   W.setMemberAccess(sheetWs(), "cy@example.com", { others: "none", bots: {}, apps: "read" });
   assert.equal(raw("cy@example.com"), undefined, "only Your Apps: no entry");
   W.setMemberAccess(sheetWs(), "cy@example.com", { others: "none", bots: { boppy: "read" }, apps: "read" });
@@ -836,7 +836,7 @@ console.log("ok - bot access: invite, send again, cleaned");
   assert.equal(raw("lee@example.com").apps, "write", "not a level: the one kept stays");
   r = await get();
   assert.equal(appsLevels(r.body)["lee@example.com"], "write", "the sheet reads it back");
-  // Everyone already shared with: Read once, marked; a second run, or an entry a Bops from before rewrote later, gets nothing.
+  // Everyone already shared with: Read once, marked; a second run, or an entry a SmileDesk from before rewrote later, gets nothing.
   S.update((st) => {
     const w = st.workspaces.find((x) => x.id === sheetWs());
     delete w.appsScopeAt;
@@ -943,7 +943,7 @@ console.log("ok - Use its computer: the copy kept when not sent, off kept as off
   }
   for (const e of [M.WORDS.computerUnchanged, M.WORDS.computerUnreachable, M.WORDS.computerNotReady]) noDashes(e);
   // orgo-web that can't keep it yet (a database without its column, an orgo-web from before it that wants a role, an
-  // answer without the value): Bops Cloud goes by the copy here then, so off is kept here all the same, and on waits.
+  // answer without the value): SmileDesk Cloud goes by the copy here then, so off is kept here all the same, and on waits.
   const { at: beforeAt, ...beforeLevels } = before;
   const putBack = () => W.setMemberAccess(sheetWs(), "jamie@example.com", beforeLevels, { at: beforeAt });
   for (const reply of [
@@ -1367,7 +1367,7 @@ console.log("ok - the digest of news held for later shows a member only the line
 
 // What a bot waits on the owner's OK for (lib/server/permission.ts), shared in the owner's state: someone given that bot
 // sees it read only (never which device asked, the reply, nor what resumes its run), one of a bot not given them
-// nothing, and one answered already nothing; and they never reply: their own Bops has none of the owner's requests to
+// nothing, and one answered already nothing; and they never reply: their own SmileDesk has none of the owner's requests to
 // answer (replyToAsk says so, the approvals route 409), and the window shows the card inert (chat-view.tsx).
 {
   const { sharedSlice } = await import(`${root}/cloud/ws-slice.ts`);
@@ -1386,7 +1386,7 @@ console.log("ok - the digest of news held for later shows a member only the line
   );
   assert.equal(sharedSlice({ ...owner, appApprovals: [] }, "ws_main", { role: "member", id: "u-ava", email: "ava@example.com" }).approvals, undefined, "none waiting: nothing added");
   const before = JSON.stringify(S.getState().appApprovals ?? []);
-  assert.equal(P.replyToAsk("apr_boppy", "once"), "That isn't waiting on you anymore.", "her own Bops has no such request to answer");
+  assert.equal(P.replyToAsk("apr_boppy", "once"), "That isn't waiting on you anymore.", "her own SmileDesk has no such request to answer");
   const res = await Ap.POST(new Request("http://localhost:3210/api/apps/approvals", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: "apr_boppy", reply: "always" }) }));
   assert.equal(res.status, 409, "the route turns it down");
   assert.equal(JSON.stringify(S.getState().appApprovals ?? []), before, "nothing written");
@@ -1450,7 +1450,7 @@ console.log("ok - a message kept between us deleted: the answers to it stay kept
   const moved = X.moveToMac(handed.id);
   assert.notEqual(moved.id, handed.id);
   assert.deepEqual([moved.sentVia, moved.sentViaBot], ["you", true]);
-  // Bops Cloud shows a member the bot that handed it on, as it does for any bot's (cloud/ws-slice.ts).
+  // SmileDesk Cloud shows a member the bot that handed it on, as it does for any bot's (cloud/ws-slice.ts).
   const { sliceOf } = await import(`${root}/cloud/ws-slice.ts`);
   assert.equal(sliceOf(S.getState(), "ws_main").sessions.find((x) => x.id === handed.id)?.sentViaBot, true);
   // A routine's run that a computer's runner began, paused there for the user's OK, moved to the Mac by the user: the
@@ -1478,7 +1478,7 @@ console.log("ok - a message kept between us deleted: the answers to it stay kept
 
 // A thread a bot started for a message kept between us (marked once Jev's check is back, after the answer
 // started it) is kept between us too, and so is what's said about it later, its result after the owner's
-// next message included. That keeps them out of the shared memory and a procedure's draft only: Bops Cloud
+// next message included. That keeps them out of the shared memory and a procedure's draft only: SmileDesk Cloud
 // shows all of it to someone the owner gave the bot (cloud/ws-slice.ts), and nothing of it to anyone else.
 {
   const Mem = await import(`${root}/lib/server/memory.ts`);
@@ -1529,7 +1529,7 @@ S.update((st) => void (st.workspaces = st.workspaces.filter((w) => w.id !== "ws_
 console.log("ok - bot access: two Macs' changes go together");
 
 // The open workspace has no Orgo workspace of its own (an Orgo without them, or the move to them undone): the sheet
-// lists the default's "bops" people, so their access is kept on the default, where Bops Cloud reads it.
+// lists the default's "bops" people, so their access is kept on the default, where SmileDesk Cloud reads it.
 S.update((st) => {
   st.workspaces.push({ id: "ws_two", name: "Two", createdAt: 1 });
   st.workspace = "ws_two";
@@ -1579,14 +1579,14 @@ assert.equal(words("max_bops", null, 40, 40, 0), null, "no limit");
 assert.equal(words("free_bops", 5, 0, 0, 0), null, "Free with room: the form");
 assert.equal(words("free_bops", 5, 2, 1, 1), null);
 assert.equal(words("free_bops", 5, 4, 4, 0), null);
-assert.deepEqual(words("free_bops", 5, 5, 5, 0), { text: "Bops includes 5 people, and you have 5. Remove someone to add someone else.", upgrade: null });
-assert.deepEqual(words("free_bops", 5, 5, 3, 2), { text: "Bops includes 5 people, and you have 5. Remove someone or cancel an invite to add someone else.", upgrade: null });
-assert.deepEqual(words("free_bops", 5, 7, 7, 0), { text: "Bops includes 5 people, and you have 7 from before. They keep access, but to add someone, remove people first.", upgrade: null });
-assert.deepEqual(words("free_bops", 1, 1, 1, 0), { text: "Bops includes 1 person, and you have 1. Remove someone to add someone else.", upgrade: null });
+assert.deepEqual(words("free_bops", 5, 5, 5, 0), { text: "SmileDesk includes 5 people, and you have 5. Remove someone to add someone else.", upgrade: null });
+assert.deepEqual(words("free_bops", 5, 5, 3, 2), { text: "SmileDesk includes 5 people, and you have 5. Remove someone or cancel an invite to add someone else.", upgrade: null });
+assert.deepEqual(words("free_bops", 5, 7, 7, 0), { text: "SmileDesk includes 5 people, and you have 7 from before. They keep access, but to add someone, remove people first.", upgrade: null });
+assert.deepEqual(words("free_bops", 1, 1, 1, 0), { text: "SmileDesk includes 1 person, and you have 1. Remove someone to add someone else.", upgrade: null });
 assert.equal(words("free_bops", null, 40, 40, 0), null, "no limit (staff)");
 // Pro with no plan to buy (orgo-web offers no upgrade): make room, never upgrade to Max.
-assert.deepEqual(P.peopleShort({ plan: "pro_bops", limit: 5, used: 5, caps, upgrade: null }, { withAccess: 4, invited: 1 }), { text: "Bops includes 5 people, and you have 5. Remove someone or cancel an invite to add someone else.", upgrade: null });
-assert.deepEqual(P.peopleShort({ plan: "pro_bops", limit: 5, used: 6, caps, upgrade: null }, { withAccess: 6, invited: 0 }), { text: "Bops includes 5 people, and you have 6 from before. They keep access, but to add someone, remove people first.", upgrade: null });
+assert.deepEqual(P.peopleShort({ plan: "pro_bops", limit: 5, used: 5, caps, upgrade: null }, { withAccess: 4, invited: 1 }), { text: "SmileDesk includes 5 people, and you have 5. Remove someone or cancel an invite to add someone else.", upgrade: null });
+assert.deepEqual(P.peopleShort({ plan: "pro_bops", limit: 5, used: 6, caps, upgrade: null }, { withAccess: 6, invited: 0 }), { text: "SmileDesk includes 5 people, and you have 6 from before. They keep access, but to add someone, remove people first.", upgrade: null });
 assert.deepEqual(P.peopleShort({ plan: "pro_bops", limit: 2, used: 2, caps, upgrade: "max" }, { withAccess: 2, invited: 0 }), { text: "Pro includes 2 people, and you have 2. Max includes up to 5.", upgrade: "max" }, "an upgrade offered: still Max");
 assert.equal(P.peopleAside({ plan: "free_bops", limit: 5, used: 2, caps }), "2 of 5 people", "Free's counter too");
 assert.equal(P.peopleAside({ plan: "free_bops", limit: 5, used: 5, caps }), "5 of 5 people");
@@ -1649,7 +1649,7 @@ for (const t of tracked) assert.ok(!/email|name|memberId|people\b/i.test(t), `no
 assert.ok(!/console\.(log|info|warn|error)\([^)]*email/i.test(server), "no email logged");
 console.log("ok - no emails in usage events");
 
-/* ---------------- Someone else can use the workspace (no Bops runner there: runner-install.ts) ---------------- */
+/* ---------------- Someone else can use the workspace (no SmileDesk runner there: runner-install.ts) ---------------- */
 
 {
   const S = await import(`${root}/lib/server/members.ts`);
@@ -1737,7 +1737,7 @@ console.log("ok - bot access: forgotten at the Mac's look too, whether or not th
   r = await get();
   assert.deepEqual(accessOf(r.body)["u-dana"], read, "hers; the sheet never shows when it was set");
   assert.deepEqual(raw()["dana@example.com"], { ...read, at: joined }, "tied to the membership her invite began (Your Apps left unset: none was picked)");
-  // Removed on orgo.ai, invited back there days later and in again, with no Mac on this Bops looking in between:
+  // Removed on orgo.ai, invited back there days later and in again, with no Mac on this SmileDesk looking in between:
   // Orgo lists her as joined after it was set, so it's forgotten, at the sheet's read and at the Mac's look alike.
   list = { members: [...MEMBERS, dana(joined + 3 * DAY)], invites: INVITES, seats: seatsOf() };
   r = await get();
@@ -1782,7 +1782,7 @@ console.log("ok - bot access: only for the membership it was set in, so someone 
   r = await get();
   const keysOf = (id) => r.body.people.find((p) => p.id === id).keys;
   assert.deepEqual([keysOf("u-jamie"), keysOf("u-sam"), keysOf("u-guest")], [true, true, undefined], "orgo-web's word; an Admin's always on; none said, none");
-  assert.equal(r.body.keysScope, "not_yet", "Bops Cloud without Keys yet: the sheet says so");
+  assert.equal(r.body.keysScope, "not_yet", "SmileDesk Cloud without Keys yet: the sheet says so");
   list = { members: MEMBERS, invites: INVITES, seats: seatsOf() };
   // Given, then taken away: orgo-web is asked, with the owner's key, {memberId, bopsKeys} alone.
   replies[PATCH_MEMBERS] = (c) => json(200, { success: true, bopsKeys: c.body.bopsKeys });
@@ -1818,7 +1818,7 @@ console.log("ok - bot access: only for the membership it was set in, so someone 
     [() => json(503, { error: "Database unavailable", code: "KEYS_UNAVAILABLE" }), 503, "KEYS_NOT_READY", M.KEYS_WORDS.notReady],
     [() => json(400, { error: "role is required" }), 503, "KEYS_NOT_READY", M.KEYS_WORDS.notReady],
     [() => json(200, { success: true }), 503, "KEYS_NOT_READY", M.KEYS_WORDS.notReady],
-    [() => json(409, { error: "Not a Bops workspace", code: "KEYS_BOPS_ONLY" }), 409, "KEYS_BOPS_ONLY", M.KEYS_WORDS.bopsOnly],
+    [() => json(409, { error: "Not a SmileDesk workspace", code: "KEYS_BOPS_ONLY" }), 409, "KEYS_BOPS_ONLY", M.KEYS_WORDS.bopsOnly],
     [() => json(409, { error: "Guests can't", code: "KEYS_GUEST" }), 409, "KEYS_GUEST", M.KEYS_WORDS.guest],
     [() => json(409, { error: "Admins always", code: "admin_always" }), 409, "ADMIN_HAS_ALL", M.KEYS_WORDS.admin],
     [() => json(400, { error: "Owner always", code: "owner_always" }), 400, "SELF", M.KEYS_WORDS.owner],

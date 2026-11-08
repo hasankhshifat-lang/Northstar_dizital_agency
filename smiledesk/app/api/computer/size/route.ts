@@ -5,7 +5,7 @@ import { notReady } from "@/lib/server/ready";
 export const dynamic = "force-dynamic";
 
 /**
- * The size of the user's free Bops computer, billed by use (lib/server/computer-size.ts): GET what Pick
+ * The size of the user's free SmileDesk computer, billed by use (lib/server/computer-size.ts): GET what Pick
  * your computer and Settings show (?phase=1: only how far a switch has got, without asking Orgo), POST
  * `{ size }` to switch it, or with no computer yet to keep it as the size one is made at. Either answers
  * Pick your computer for the account; `{ size, keep: true }` answers it with the size the computer already

@@ -13,9 +13,9 @@ const CODE_LENGTH = 6;
 /** A verify route's answer: ok, or why not, when to try again, and whether only a new code can help now. */
 export type CodeAnswer = { ok: boolean; error?: string; retryInSec?: number; resendInSec?: number; attemptsLeft?: number; restart?: boolean; expiresAt?: number };
 
-const UNREACHABLE = "Couldn't reach Bops. Try again.";
+const UNREACHABLE = "Couldn't reach SmileDesk. Try again.";
 
-/** POST to a verify route. Not reaching Bops is an answer too, so there's always something to show. */
+/** POST to a verify route. Not reaching SmileDesk is an answer too, so there's always something to show. */
 export async function postJson<A extends CodeAnswer>(url: string, body: Record<string, unknown>): Promise<A> {
   try {
     const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -26,7 +26,7 @@ export async function postJson<A extends CodeAnswer>(url: string, body: Record<s
 }
 
 /**
- * GET a settings route once (/api/phone, /api/owner-email). `failed` when Bops couldn't be reached or
+ * GET a settings route once (/api/phone, /api/owner-email). `failed` when SmileDesk couldn't be reached or
  * didn't answer with JSON (a restart, say), and `retry` reads it again: a row never sits at
  * "Checking" for good.
  */

@@ -1,12 +1,12 @@
 /*
  * What each person the owner added to a workspace may do with its bots, kept on the workspace
- * (Workspace.memberAccess) in the synced state, so Bops Cloud has it when it builds a member's view
+ * (Workspace.memberAccess) in the synced state, so SmileDesk Cloud has it when it builds a member's view
  * (cloud/ws-slice.ts sharedSlice) and their live stream. The owner always has every bot.
  *
  * Per bot: none (they don't see it at all), read (everything of it: its chats with the owner's own
  * messages there, a message kept "between us" too, its threads with their notes and results, routines,
  * watches, moods and screen), or write (everything read has, and they can chat with it, have it work,
- * answer what it asks and stop it, from their own Bops: cloud/members.ts act). The same levels as
+ * answer what it asks and stop it, from their own SmileDesk: cloud/members.ts act). The same levels as
  * orgo-web's API key permissions (lib/api-keys/permission-groups.ts KeyLevel): write takes in read.
  *
  * A person's `bots` says their level for each bot named; `others` covers every bot not named, the ones
@@ -14,13 +14,13 @@
  * Someone with no entry at all sees nothing.
  *
  * Kept by the person's email, lowercased: an invite has only the email, and they sign in with it. A
- * guest (joined with a link, no email) is kept as "user:<their Orgo user id>". Imported by Bops Cloud
+ * guest (joined with a link, no email) is kept as "user:<their Orgo user id>". Imported by SmileDesk Cloud
  * and, through lib/member-access.ts, the window and the Mac server, so it imports nothing.
  *
  * Use its computer (`computer`): whether what they say can wake the bot's computer and run there, where the bot is its
  * administrator (root), so they can too. Off unless the owner turns it on for them; the owner always has it. Without it
- * they still chat at Write, but Bops Cloud never runs or wakes a computer for their words (usesComputer). orgo-web holds
- * it (lib/server/orgo.ts MEMBER_COMPUTER_ROUTE) and Bops Cloud goes by what orgo-web says (ws-slice.ts computerUseOf); `computer` here is
+ * they still chat at Write, but SmileDesk Cloud never runs or wakes a computer for their words (usesComputer). orgo-web holds
+ * it (lib/server/orgo.ts MEMBER_COMPUTER_ROUTE) and SmileDesk Cloud goes by what orgo-web says (ws-slice.ts computerUseOf); `computer` here is
  * the copy the People sheet shows, set right after orgo-web took it. Not for an invite: there's no member to give it to yet.
  *
  * Each entry says when the owner's Mac set it (`at`), and whether it was set with an invite not yet taken
@@ -37,7 +37,7 @@ export const ACCESS_LABELS: Record<AccessLevel, string> = { none: "None", read: 
  * One person's access to a workspace's bots, and when it was set (`at`, `invite`: currentFor). `apps`: their level for
  * the workspace's Your Apps (lib/apps-access.ts): Read sees its apps on the web, Write also deploys them. Missing reads
  * as none (appsLevelOf): not set yet (an entry from before the scope, until the owner's Mac gives it Read once:
- * workspaces.ts giveAppsRead), or dropped by an older Bops's save (lib/server/state-merge.ts keepAppsLevels puts it
+ * workspaces.ts giveAppsRead), or dropped by an older SmileDesk's save (lib/server/state-merge.ts keepAppsLevels puts it
  * back). Only with a bot: an entry is kept only while it shows one (workspaces.ts showsAny).
  */
 export type MemberAccess = { others: AccessLevel; bots: Record<string, AccessLevel>; at?: number; invite?: true; apps?: AccessLevel; computer?: ComputerUse; can?: Partial<Record<Power, true>> };
@@ -67,7 +67,7 @@ export const fitComputer = (access: MemberAccess, botIds: readonly string[]): Me
 export const NO_ACCESS: MemberAccess = { others: "none", bots: {} };
 /**
  * What an Admin has (Orgo's role "admin", whatever is kept for them): Write on every bot, the ones made later too, Your
- * Apps at Write, Use its computer. Bops Cloud (ws-slice.ts viewerAccess) and the owner's Mac (lib/server/member-acts.ts)
+ * Apps at Write, Use its computer. SmileDesk Cloud (ws-slice.ts viewerAccess) and the owner's Mac (lib/server/member-acts.ts)
  * give it. A fresh object each time, so nothing that changes one changes another's.
  */
 export const adminAccess = (): MemberAccess => ({ others: "write", bots: Object.create(null) as Record<string, AccessLevel>, apps: "write", computer: "use" });
@@ -175,7 +175,7 @@ export const seesChat = (access: MemberAccess, botIds: string[]) => botIds.lengt
  */
 export const writesChat = (access: MemberAccess, botIds: string[]) => botIds.length > 0 && botIds.every((id) => permits(levelOf(access, id), "write"));
 
-/** Who a member is on what they said or did in the owner's workspace, as Bops Cloud vouched for them (cloud/members.ts act). */
+/** Who a member is on what they said or did in the owner's workspace, as SmileDesk Cloud vouched for them (cloud/members.ts act). */
 export type MemberWho = { userId: string; email?: string; name: string };
 
 /**
@@ -193,7 +193,7 @@ export const MEMBER_NAME_MAX = 80;
  * A member's name as their words carry it (MemberWho.name): their Orgo name is theirs to set, and it goes into the
  * bot's instructions and the chat as it reads them, so nothing in it can pass for something else there: no control
  * characters or line breaks, no brackets or quotes (what marks who's talking: "[Sam, someone ... gave this bot to]"),
- * spaces made one, at most MEMBER_NAME_MAX characters. Empty when nothing's left. Bops Cloud and the owner's Mac
+ * spaces made one, at most MEMBER_NAME_MAX characters. Empty when nothing's left. SmileDesk Cloud and the owner's Mac
  * (lib/server/member-acts.ts) both make it so.
  */
 export function cleanName(v: unknown): string {
@@ -222,7 +222,7 @@ export function accessSummary(access: MemberAccess, botIds: string[]): string {
 /** A short line for whether a person uses the bots' computers, as accessSummary words bots: "Uses its computer", or nothing. */
 /**
  * The note in the chat when someone without Use its computer says something there: the bot won't answer it (cloud/turns.ts,
- * and the owner's Mac in a workspace whose chat isn't through Bops Cloud: lib/server/member-acts.ts). Every viewer reads it.
+ * and the owner's Mac in a workspace whose chat isn't through SmileDesk Cloud: lib/server/member-acts.ts). Every viewer reads it.
  */
 export const noUseNote = (owner: string, member: string, bot?: string) =>
   bot ? `${owner} hasn't let ${member} use ${bot}'s computer, so ${bot} won't answer this.` : `${owner} hasn't let ${member} use the bots' computers, so they won't answer this.`;
@@ -233,21 +233,21 @@ export const computerSummary = (access: { computer?: unknown }) => (usesComputer
 export const appsSummary = (access: { apps?: unknown }) => (!isAccessLevel(access.apps) ? "Your Apps not set" : access.apps === "none" ? "" : `Your Apps, ${access.apps}`);
 
 /**
- * What an Admin may do of what a Member with Write can't, each one check, wherever it's checked (Bops Cloud, the owner's
- * Mac, the viewer's Mac and window). An Admin also needs the owner's Bops new enough (protocol.ts ADMIN_POWERS_MIN_VERSION,
+ * What an Admin may do of what a Member with Write can't, each one check, wherever it's checked (SmileDesk Cloud, the owner's
+ * Mac, the viewer's Mac and window). An Admin also needs the owner's SmileDesk new enough (protocol.ts ADMIN_POWERS_MIN_VERSION,
  * SharedWsSlice.adminActs): an older one would drop what it doesn't know. Off (false): still the owner's alone.
  * - ownerAsk: answer an ask to use the owner's Connected apps or API keys (ownerOnlyAsk).
  * - macAsk: answer an ask of a thread on the owner's Mac (a previewed action, yes or no).
  * - macThread: tell a thread on the owner's Mac more (reply, Nothing to add): it has the owner's own browsers and logins.
  * - where: pick where an undecided thread runs ("{bot}'s computer" only: never the owner's Mac).
- * - people: invite, remove and change people (orgo-web, and the bots a Member has: Bops Cloud).
+ * - people: invite, remove and change people (orgo-web, and the bots a Member has: SmileDesk Cloud).
  * - workspace: rename the workspace, and say where its chat is answered.
  * - wake: wake a bot's computer.
- * - publish: Publish an app, or roll back what's Published, from Your Apps (MemberAppAct env "prod"), with the owner's Bops
+ * - publish: Publish an app, or roll back what's Published, from Your Apps (MemberAppAct env "prod"), with the owner's SmileDesk
  *   at ADMIN_PUBLISH_MIN_VERSION. (An Admin's own words publish it in chat too: lib/server/chat.ts askedForProd.)
- * - instructions: change a bot's "How I work" (the "persona" act), with the owner's Bops at ADMIN_PUBLISH_MIN_VERSION too.
+ * - instructions: change a bot's "How I work" (the "persona" act), with the owner's SmileDesk at ADMIN_PUBLISH_MIN_VERSION too.
  * An Admin has every one (the owner's 11-03 rule: an Admin may do everything but delete the workspace). A Member has one
- * when its switch in Team is on (POWER_OF, MemberAccess.can), with the owner's Bops new enough to take switches (the
+ * when its switch in Team is on (POWER_OF, MemberAccess.can), with the owner's SmileDesk new enough to take switches (the
  * caller passes `can` only then): people and waking a computer stay an Admin's (orgo-web says who manages people, Use
  * its computer who may wake one).
  */
@@ -256,14 +256,14 @@ export const ADMIN_POWERS: Readonly<Record<AdminPower, boolean>> = { ownerAsk: t
 /** Each Admin power's switch in Team (Power), which gives it to a Member too. None: an Admin's alone. */
 export const POWER_OF: Readonly<Partial<Record<AdminPower, Power>>> = { ownerAsk: "mac", macAsk: "mac", macThread: "mac", where: "bots", workspace: "workspace", publish: "appSecrets", instructions: "bots" };
 /**
- * Never an Admin's, whatever: the side that does each refuses it (orgo-web, Bops Cloud, the owner's Mac). Deleting the
+ * Never an Admin's, whatever: the side that does each refuses it (orgo-web, SmileDesk Cloud, the owner's Mac). Deleting the
  * workspace, and handing it over; paying (the owner's card) stays theirs, as orgo-web keeps it.
  */
 export const OWNER_ALWAYS = ["deleteWorkspace", "transfer", "makeOwner", "billing", "payment"] as const;
 /**
  * Keys (protocol.ts SharedWsSlice.keys): add, replace, remove, see and copy the workspace's own keys, and pick which bots
  * use any key it sees. The owner's always; anyone else's as orgo-web says it (`keys`: WsAccess.keys), which is yes for an
- * Admin of a Bops workspace and for a Member the owner or an Admin gave it, and no for a share link's guest whatever their
+ * Admin of a SmileDesk workspace and for a Member the owner or an Admin gave it, and no for a share link's guest whatever their
  * role. From an orgo-web that doesn't say (none), an Admin has it (an Admin has everything but deleting the workspace) and
  * a Member doesn't. Fails closed. The owner's keys for all their workspaces stay theirs: a Keys holder sees their names and
  * switches bots on and off for them, never more.
@@ -271,12 +271,12 @@ export const OWNER_ALWAYS = ["deleteWorkspace", "transfer", "makeOwner", "billin
 export const holdsKeys = (role: unknown, keys?: unknown) => role === "owner" || keys === true || (role === "admin" && keys === undefined);
 
 /**
- * Who's asking, for an Admin power: `true` an Admin whose acts the owner's Bops takes, `false` anyone else; or, with
- * `can`, also a Member with that power's switch on (MemberAccess.can), passed only when the owner's Bops takes switches.
+ * Who's asking, for an Admin power: `true` an Admin whose acts the owner's SmileDesk takes, `false` anyone else; or, with
+ * `can`, also a Member with that power's switch on (MemberAccess.can), passed only when the owner's SmileDesk takes switches.
  */
 export type PowerWho = boolean | { admin: boolean; can?: Partial<Record<Power, true>> };
 
-/** Whether `who` may do `power`: an Admin whose acts the owner's Bops takes, or a Member with its switch on (POWER_OF). */
+/** Whether `who` may do `power`: an Admin whose acts the owner's SmileDesk takes, or a Member with its switch on (POWER_OF). */
 export const adminMay = (power: AdminPower, who: PowerWho) => {
   const admin = typeof who === "boolean" ? who : who.admin;
   if (admin && ADMIN_POWERS[power]) return true;
@@ -287,7 +287,7 @@ export const adminMay = (power: AdminPower, who: PowerWho) => {
 /**
  * Why an ask is the owner's alone for this viewer (`who`: adminMay), or null when they may answer it (with Write on its
  * bot): "logins" for the owner's Connected apps or keys (ownerOnlyAsk), "mac" for one of a thread on the owner's Mac.
- * The same rule Bops Cloud, the owner's Mac and the viewer's window go by.
+ * The same rule SmileDesk Cloud, the owner's Mac and the viewer's window go by.
  */
 export function askOwnersOnly(a: { kind?: unknown }, thread: { runsOn?: unknown } | undefined, who: PowerWho): "logins" | "mac" | null {
   if (ownerOnlyAsk(a.kind) && !adminMay("ownerAsk", who)) return "logins";
@@ -305,18 +305,18 @@ export const sameAccess = (a: MemberAccess, b: MemberAccess) =>
   samePowers(a.can, b.can) &&
   Object.keys(a.bots).length === Object.keys(b.bots).length &&
   Object.entries(a.bots).every(([id, level]) => b.bots[id] === level);
-/** Whether two entries let them change the same things (MemberAccess.can): missing and `{}` differ (one an older Bops dropped). */
+/** Whether two entries let them change the same things (MemberAccess.can): missing and `{}` differ (one an older SmileDesk dropped). */
 const samePowers = (a: MemberAccess["can"], b: MemberAccess["can"]) => (!a || !b ? !a === !b : POWERS.every((p) => !!a[p] === !!b[p]));
 /**
  * Access that shows a bot, now or later: anything else is kept as no entry, which reads the same (accessOf). Your Apps
- * comes with a bot: with none, the person's window has nothing of the workspace to open, and a Bops from before deletes
+ * comes with a bot: with none, the person's window has nothing of the workspace to open, and a SmileDesk from before deletes
  * such an entry whenever it saves one (its showsAny knows only bots), so the People sheet asks for a bot first.
  */
 export const showsAny = (a: MemberAccess) => a.others !== "none" || Object.keys(a.bots).length > 0;
 
 /**
  * A workspace's entries (Workspace.memberAccess) with one person's set to `access` (or forgotten, null), as both writers
- * keep it: the owner's Mac (lib/server/workspaces.ts setMemberAccess) and Bops Cloud for an Admin (cloud/people.ts), so
+ * keep it: the owner's Mac (lib/server/workspaces.ts setMemberAccess) and SmileDesk Cloud for an Admin (cloud/people.ts), so
  * they agree. Your Apps and Use its computer: what was sent, else what was kept. Access that shows no bot is no entry.
  * `at` when it's set (now, unless `how.at`), `invite` when set with an invite. The same map back when nothing changes.
  */
@@ -343,8 +343,8 @@ export function withEntry(map: MemberAccessMap | undefined, key: string, access:
  * handing it to someone else stay the owner's, and no switch gives them.
  *
  * A change is done by the owner's Mac as the owner's own window would do it (the "change" act: cloud/protocol.ts
- * MemberAct, Bops Cloud's check in cloud/members.ts, the owner's Mac in lib/server/member-acts.ts), through the
- * same route the owner's window calls (CHANGE_ROUTES), for this workspace alone. Imported by Bops Cloud and, through
+ * MemberAct, SmileDesk Cloud's check in cloud/members.ts, the owner's Mac in lib/server/member-acts.ts), through the
+ * same route the owner's window calls (CHANGE_ROUTES), for this workspace alone. Imported by SmileDesk Cloud and, through
  * lib/member-access.ts, the window and the Mac server, so it imports nothing.
  */
 

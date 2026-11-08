@@ -9,7 +9,7 @@ import { ago, post, teamOf } from "./ui";
 
 /*
  * Pieces of the Logins page (logins.tsx): a service's mark, and saved site logins (a row each, and the form that adds or
- * changes one). Bops shows a login's site, username and who may use it; the password and 2FA setup key live in the
+ * changes one). SmileDesk shows a login's site, username and who may use it; the password and 2FA setup key live in the
  * Mac's Keychain and are filled straight into the sign in page, so no AI ever sees them.
  */
 

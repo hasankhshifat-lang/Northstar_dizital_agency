@@ -12,7 +12,7 @@
 // chats in memory listed with what else they taught, then deleted); Orbit per workspace (two sharing a
 // bank see only their own chats, the card is the bank's own workspace's, an index kept per bank moved); an item worked out again from the facts left when one goes (and
 // its lock); what's left to sort (behind, more, failures let go, kept rows); a new card line and a fact
-// saved by hand sorted at once, Bops's own notes batched; tidying up; what goes wrong (the model down or
+// saved by hand sorted at once, SmileDesk's own notes batched; tidying up; what goes wrong (the model down or
 // answering unusably, memory, a damaged file, another account signing in mid-look); the window's polls
 // (rev); and the route taking only an item's id. Every user-facing line is checked for dashes. Honcho is a fake answering the REST calls its SDK makes, OpenAI a fake
 // /v1/responses that answers each fact from a table below, Jev isn't set up (privacy falls back to the
@@ -21,7 +21,7 @@
 //
 // The named checks inside parts (check()) each hold to one rule, most of them a bug found while this was
 // built. One that fails is reported by name and fails its part, and the rest of the part still runs.
-// Not reached here: running out of AI credit, which only Bops Cloud can say (self-hosted, the app pays
+// Not reached here: running out of AI credit, which only SmileDesk Cloud can say (self-hosted, the app pays
 // OpenAI on its own key, and OpenAI itself never answers 402).
 // Usage: node --conditions=react-server scripts/test-memory-categories.mjs
 import assert from "node:assert/strict";
@@ -577,7 +577,7 @@ await section("A first look at memory: the card first, then the newest facts, so
         [item("todos", "Send the invoice to Acme", { key: "send invoice acme", when: "2026-10-16", who: "Acme" }), item("companies", "Acme Inc", { key: "Acme Inc", detail: "Gets your invoice" })],
       ],
       ["f6", 60, "Dana promised to send Tiger the signed contract by Monday.", [item("promises", "Dana sends the signed contract", { key: "dana signed contract", who: "Dana Reyes", when: "next Monday" })]],
-      ["f7", 70, "Tiger is building Bops, an app for teams of AI assistants.", [item("projects", "Bops", { key: "Project Bops", detail: "An app for teams of AI assistants." })]],
+      ["f7", 70, "Tiger is building SmileDesk, an app for teams of AI assistants.", [item("projects", "SmileDesk", { key: "Project SmileDesk", detail: "An app for teams of AI assistants." })]],
       ["f8", 80, "Tiger decided to price the Pro plan at 40 dollars a month to cover costs.", [item("decisions", "Pro plan at 40 dollars a month", { key: "pro plan price", detail: "To cover costs \u2014 servers and support" })]],
       ["f9", 90, "Tiger prefers aisle seats on flights.", [item("preferences", "Aisle seats", { key: "aisle seats", detail: "On flights" })], { level: "deductive", session: "bops-chat-gone" }],
       ["f10", 100, "Tiger said good morning.", []],
@@ -652,7 +652,7 @@ await section("A first look at memory: the card first, then the newest facts, so
       "people: Leo",
       "people: Priya Shah",
       "preferences: Aisle seats",
-      "projects: Bops",
+      "projects: SmileDesk",
       "promises: Dana sends the signed contract",
       "todos: Send the invoice to Acme",
     ],
@@ -684,7 +684,7 @@ await section("A first look at memory: the card first, then the newest facts, so
   assert.equal(ana.detail, "Your sister, lives in Lisbon", "the newest fact's line fills in what the card didn't say; an older one doesn't change it");
   // A card line on its own, and the source of what memory worked out rather than was told.
   assert.deepEqual(one(items, "people", "Priya Shah").sources.map((s) => pick(s, ["fact", "from", "how"])), [{ fact: "card:Tiger's accountant is Priya Shah.", from: "Your card", how: "card" }]);
-  assert.deepEqual(pick(one(items, "preferences", "Aisle seats").sources[0], ["how", "from"]), { how: "figured", from: "Bops" });
+  assert.deepEqual(pick(one(items, "preferences", "Aisle seats").sources[0], ["how", "from"]), { how: "figured", from: "SmileDesk" });
   // A phone number is private: the line it came from, and an item learned only from it.
   const leo = one(items, "people", "Leo");
   assert.deepEqual([leo.private, leo.sources[0].private, leo.sources[0].from, leo.sources[0].how], [true, true, "Your other agents", "saved"]);
@@ -692,7 +692,7 @@ await section("A first look at memory: the card first, then the newest facts, so
   // To-dos and promises: when they're due (a date the app can read, or none), who for.
   assert.deepEqual(pick(one(items, "todos", "Send the invoice to Acme"), ["when", "who", "done"]), { when: "2026-10-16", who: "Acme", done: undefined });
   assert.deepEqual(pick(one(items, "promises", "Dana sends the signed contract"), ["when", "who"]), { when: undefined, who: "Dana Reyes" }, "\"next Monday\" isn't a date");
-  assert.deepEqual(pick(one(items, "projects", "Bops"), ["key", "detail"]), { key: "projects:bops", detail: "An app for teams of AI assistants" }, "\"Project Bops\" is Bops; no full stop");
+  assert.deepEqual(pick(one(items, "projects", "SmileDesk"), ["key", "detail"]), { key: "projects:bops", detail: "An app for teams of AI assistants" }, "\"Project SmileDesk\" is SmileDesk; no full stop");
   noDashes(one(items, "decisions", "Pro plan at 40 dollars a month").detail);
   // What each fact said about each item is kept with the fact (its name, line, date, who, done, how it was
   // learned, private), so an item can be worked out again when a fact goes.
@@ -849,7 +849,7 @@ await section("A fact saved now (by hand or a bot) is sorted within seconds", as
   MC.nudge(MAIN, "chat");
   assert.equal(liveBank("bops").timers.get("chat"), set, "the same look, kept");
   clearTimers("bops");
-  // Bops noted a fact on its own: one quick look in 3, which leaves it waiting for the next few (below).
+  // SmileDesk noted a fact on its own: one quick look in 3, which leaves it waiting for the next few (below).
   MC.nudge(MAIN, "saved");
   assert.deepEqual([timersOf("bops"), delayOf("bops", "saved")], [["saved"], 180_000]);
   clearTimers("bops");
@@ -1218,7 +1218,7 @@ await section("Forgetting an item: memory deletes every fact and card line it wa
     await MC.purge(wf);
     assert.equal(indexOf(ff).purge.tries, 3);
     const said = (await get(wf)).body.error;
-    assert.equal(said, "Some of what you forgot is still in memory. Bops keeps trying to delete it.");
+    assert.equal(said, "Some of what you forgot is still in memory. SmileDesk keeps trying to delete it.");
     // Memory answering the delete but not applying it: memory is asked by id after, and it's tried again.
     honcho.fail = (c) => (c.method === "DELETE" ? new Response(null, { status: 204 }) : null);
     await MC.purge(wf);
@@ -1241,7 +1241,7 @@ await section("Delete everywhere: the chats in memory an item came from are list
   const bank = Mem.bankOf(ws);
   const CHAT_A = "bops-chat-everywhere-a";
   const CALL = "bops-chat-everywhere-call";
-  // The chats Bops has (the ones a Delete everywhere may delete the memory copy of).
+  // The chats SmileDesk has (the ones a Delete everywhere may delete the memory copy of).
   S.update((s) => {
     for (const id of ["everywhere-a", "everywhere-call", "elsewhere", "notary-1", "notary-2", "florist"]) s.chats.push({ id, kind: "bot", botIds: ["max"], createdAt: 0, typing: [] });
   });
@@ -1251,7 +1251,7 @@ await section("Delete everywhere: the chats in memory an item came from are list
     ["e2", 20, "Hana Kim and Leo Park did Tiger's taxes.", [P("Hana Kim", "Your accountant"), P("Leo Park", "Helps with your taxes")], { session: CALL }],
     ["e3", 10, "Hana Kim prefers email.", [P("Hana Kim", "Your accountant")]],
     ["e4", 5, "Leo Park moved to Austin.", [P("Leo Park", "Helps with your taxes")], { session: "bops-chat-elsewhere" }],
-    // From the user's other agent, and from a chat deleted from Bops: memory has the only copy, never deleted here.
+    // From the user's other agent, and from a chat deleted from SmileDesk: memory has the only copy, never deleted here.
     ["e5", 4, "Hana Kim works from Busan.", [P("Hana Kim", "Your accountant")], { session: "hermes-7" }],
     ["e6", 3, "Hana Kim bills quarterly.", [P("Hana Kim", "Your accountant")], { session: "bops-chat-gone-1" }],
   ]);
@@ -1274,7 +1274,7 @@ await section("Delete everywhere: the chats in memory an item came from are list
     "each chat she came from, newest first, with the other items it taught (Leo, from the call)",
   );
   assert.ok(pv.body.sessions.every((x) => typeof x.name === "string" && x.name), "each with a name");
-  assert.equal(pv.body.note, "These chats stay in your Bops chat history; their memory copy is deleted.");
+  assert.equal(pv.body.note, "These chats stay in your SmileDesk chat history; their memory copy is deleted.");
   assert.ok(hbank(bank).sessions.has(CHAT_A) && factIds(bank).includes(E.e1.id), "a preview deletes nothing");
   assert.ok(Object.values(indexOf(bank).facts).every((f) => f.s !== undefined), "where each fact came from is kept now");
   // Deleted: only what the user was shown (here both), and Forget with it.
@@ -1285,7 +1285,7 @@ await section("Delete everywhere: the chats in memory an item came from are list
   await MC.purge(ws);
   assert.ok(!hbank(bank).sessions.has(CHAT_A) && !hbank(bank).sessions.has(CALL), "both sessions deleted in memory, with their messages");
   assert.ok(hbank(bank).sessions.has("bops-chat-elsewhere"), "a chat she wasn't learned from stays");
-  assert.ok(hbank(bank).sessions.has("hermes-7") && hbank(bank).sessions.has("bops-chat-gone-1"), "another agent's session and a chat no longer in Bops stay");
+  assert.ok(hbank(bank).sessions.has("hermes-7") && hbank(bank).sessions.has("bops-chat-gone-1"), "another agent's session and a chat no longer in SmileDesk stay");
   const forged = await post({ action: "deleteEverywhere", ws, id: "0123456789", sessions: ["hermes-7"] });
   assert.equal(forged.status, 400);
   assert.ok(hbank(bank).sessions.has("hermes-7"), "a session asked for by name that the preview leaves out stays");
@@ -1384,7 +1384,7 @@ await section("An index kept per bank before moves to the workspace whose bank i
   const at = Date.now() - 60_000;
   const old = join(work, ".data", "memory-categories", `${bank}.json`);
   mkdirSync(join(work, ".data", "memory-categories"), { recursive: true });
-  const src = (f) => ({ fact: f.id, text: f.text, at: f.at, from: "Bops", how: "saved" });
+  const src = (f) => ({ fact: f.id, text: f.text, at: f.at, from: "SmileDesk", how: "saved" });
   writeFileSync(
     old,
     JSON.stringify({
@@ -1935,7 +1935,7 @@ await section("New facts wait to be sorted together: 10 at a time, after 30 minu
   assert.ok(!sorted(x));
   await fire(ws, "waiting");
   assert.ok(sorted(x), "sorted when its look comes");
-  // One more, sorted by the first look after it has waited 30 minutes (the look set for it may not have run: Bops was closed, say).
+  // One more, sorted by the first look after it has waited 30 minutes (the look set for it may not have run: SmileDesk was closed, say).
   const y = fresh("Tiger's cousin Bo visits in June.", person("Bo", "Your cousin"));
   await MC.sync(ws, { mode: "quick" });
   assert.ok(!sorted(y));
@@ -1963,7 +1963,7 @@ await section("New facts wait to be sorted together: 10 at a time, after 30 minu
 
 await section("A model that's down or answers unusably: an outage counts nothing, a bad answer is narrowed to its fact", async () => {
   const UNSORTED = "Some new things couldn't be sorted yet. They're tried again later.";
-  const DOWN = "Couldn't sort new things just now. Bops tries again on its own.";
+  const DOWN = "Couldn't sort new things just now. SmileDesk tries again on its own.";
   // A server error: the SDK tries once more (not twice), every call not kept at OpenAI and 90 seconds at most.
   {
     const ws = "ws_retry";
@@ -2386,7 +2386,7 @@ await section("What's left to sort: behind counts only what isn't sorted, more m
     many(bank, "Tiger's support ticket", 200);
     await refresh(ws);
     assert.deepEqual([sortedIn(bank), indexOf(bank).more], [150, true]);
-    clearTimers(bank); // the look set for a minute later doesn't come (Bops was closed, say)
+    clearTimers(bank); // the look set for a minute later doesn't come (SmileDesk was closed, say)
     const h = honcho.calls.length;
     await MC.sync(ws, { mode: "look" });
     assert.deepEqual(pagesOf(bank, h), ["1", "2"], "the sorted depth, though the newest page is all seen");
@@ -2421,7 +2421,7 @@ await section("What's left to sort: behind counts only what isn't sorted, more m
     const r = await refresh(ws);
     assert.deepEqual([indexOf(bank).failures, r.error], [{}, undefined], "all three let go, and the line with them");
   }
-  // Kept rows let go when a fact is deleted through Bops: the next look reads again, and doesn't sort a fact that's gone.
+  // Kept rows let go when a fact is deleted through SmileDesk: the next look reads again, and doesn't sort a fact that's gone.
   {
     const ws = "ws_rows";
     const bank = Mem.bankOf(ws);
@@ -2441,7 +2441,7 @@ await section("What's left to sort: behind counts only what isn't sorted, more m
 
 /* ---------------- At once, or with the next few ---------------- */
 
-await section("A new card line is sorted at once; Bops's own notes wait for the next few, a bot's remember doesn't; a quick look keeps the wait", async () => {
+await section("A new card line is sorted at once; SmileDesk's own notes wait for the next few, a bot's remember doesn't; a quick look keeps the wait", async () => {
   // A card line pinned: a look in a few seconds that reads the card and sorts the line.
   {
     const ws = "ws_cardnow";
@@ -2488,7 +2488,7 @@ await section("A new card line is sorted at once; Bops's own notes wait for the 
     assert.equal(indexOf(bank).waiting, 5, "still waiting");
     assert.equal(liveBank(bank).timers.get("waiting"), timer, "and their look still set");
   }
-  // A fact Bops noted on its own from what the user said (auto remember) waits to be sorted with the next
+  // A fact SmileDesk noted on its own from what the user said (auto remember) waits to be sorted with the next
   // few; one a bot was asked to remember is sorted in seconds (with whatever waits).
   {
     const ws = "ws_learn";
@@ -2542,7 +2542,7 @@ await section("Categories changed in an update: items in one that's gone go, and
   const WORK = "ATTRIBUTE: Works at Orgo";
   hbank(bank).cards.set("user", [WORK]);
   SORTS.set(WORK, [item("companies", "Orgo", { key: "orgo", detail: "Where you work" })]);
-  // Sorted by a Bops with other categories: the name went into one this one doesn't have ("you"), the
+  // Sorted by a SmileDesk with other categories: the name went into one this one doesn't have ("you"), the
   // card line made nothing, the sister made Ana. Its last look was a minute ago.
   const ana = "a1b2c3d4e5";
   const gone = "f0e1d2c3b4";
@@ -2569,7 +2569,7 @@ await section("Categories changed in an update: items in one that's gone go, and
       sweptAt: at,
     }),
   );
-  // The window's next poll looks at once, though the last look was a minute ago (Bops was just updated).
+  // The window's next poll looks at once, though the last look was a minute ago (SmileDesk was just updated).
   const n = openai.calls.length;
   await get(ws);
   const r = await settled(ws);

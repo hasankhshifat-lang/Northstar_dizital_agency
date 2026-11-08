@@ -15,10 +15,10 @@ import { getState, update } from "./store";
  * - A key of one workspace (This workspace in Keys): on is an entry too (key:<project>:<NAME>), and the bots there may
  *   then be given it. Off takes the entry out, and the key's name from the bots there that can't use one by that name
  *   any more. A key for all workspaces is in every one already.
- * - A saved site login has no workspace of its own (VaultLogin.bots, which a Bops from before reads and writes as it
+ * - A saved site login has no workspace of its own (VaultLogin.bots, which a SmileDesk from before reads and writes as it
  *   always has): on gives it to every bot there, off takes it from them (every bot, "all", becomes every bot but those).
  *
- * Only the owner's own Bops, from the Bops window (app/api/logins). Each change goes to Orgo's copy of who may use what
+ * Only the owner's own SmileDesk, from the SmileDesk window (app/api/logins). Each change goes to Orgo's copy of who may use what
  * (access-sync.ts).
  */
 

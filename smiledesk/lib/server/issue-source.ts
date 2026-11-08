@@ -17,7 +17,7 @@ import { bot, getState, stateUser } from "./store";
  * (DISCORDBOT_LIST_MESSAGES, DISCORDBOT_GET_CHANNEL). Every action and its inputs were checked against Composio's
  * own schemas, read only. Nothing of what's read is kept: not in the state, not on disk, not in Orgo; only in this
  * process's memory for a minute (CACHE_MS), for the signed-in user alone, so the page opening again doesn't read it
- * again. The routes ask that the call comes from the Bops window and that no shared workspace is open
+ * again. The routes ask that the call comes from the SmileDesk window and that no shared workspace is open
  * (app/api/orbit/issues/[id]/source, app/api/drafts/source).
  *
  * An issue keeps the account its thread was read in when the turn that opened it knew (Issue.accountId); else each
@@ -38,7 +38,7 @@ export type SourceRead = { source: IssueSource } | SourceFailure;
 const STATUS: Record<SourceCode, number> = { signed_out: 409, no_account: 409, gone: 404, down: 502, unparsed: 422, unsupported: 422, shared: 403, window: 403, runner: 409 };
 const failure = (code: SourceCode, app: SourceApp, account?: string): SourceFailure => ({ code, error: sourceError(code, app, account), status: STATUS[code] });
 
-/** Where an issue's thread is, from where it came from, its id there and its link: none for an app Bops can't show, or an id it can't read. */
+/** Where an issue's thread is, from where it came from, its id there and its link: none for an app SmileDesk can't show, or an id it can't read. */
 export function refOfIssue(i: Pick<Issue, "sourceApp" | "externalId" | "url">): SourceRef | { code: "unsupported" | "unparsed"; app?: SourceApp } {
   const app = sourceAppOf(i.sourceApp);
   if (!app) return { code: "unsupported" };
@@ -281,7 +281,7 @@ export async function readIssueSource(ws: string, issue: Issue, opts: { fresh?: 
   const app = sourceAppOf(issue.sourceApp);
   if (onRunner()) return failure("runner", app ?? "gmail");
   const ref = refOfIssue(issue);
-  if ("code" in ref) return ref.code === "unsupported" || !ref.app ? { code: "unsupported", error: "Bops can't show where this came from.", status: 422 } : failure(ref.code, ref.app);
+  if ("code" in ref) return ref.code === "unsupported" || !ref.app ? { code: "unsupported", error: "SmileDesk can't show where this came from.", status: 422 } : failure(ref.code, ref.app);
   const key = `issue\n${ws}\n${issue.id}\n${refKey(ref)}`;
   const hit = opts.fresh ? undefined : cached(key);
   if (hit) return { source: hit };
@@ -315,7 +315,7 @@ const tidy = (e: unknown) => (String((e as Error)?.message ?? e) || "it didn't g
 /** The action that sends a reply in this thread, and its inputs: as a drafted reply's (reply-drafts.ts sendCall), with Reply all's others for an email. */
 export function replyCall(s: IssueSource, text: string, all = false): { action: string; args: Record<string, unknown>; to: string } | { error: string } {
   if (s.app === "gmail") {
-    if (!s.reply?.to.email) return { error: "Bops can't tell who to reply to here. Reply in Gmail." };
+    if (!s.reply?.to.email) return { error: "SmileDesk can't tell who to reply to here. Reply in Gmail." };
     const c = sendCall({ app: "gmail", threadId: s.threadId, to: s.reply.to.email }, text);
     const to = all ? s.reply.all.to.map((p) => p.email!).filter(Boolean) : [];
     const cc = all ? s.reply.all.cc.map((p) => p.email!).filter(Boolean) : [];
@@ -327,14 +327,14 @@ export function replyCall(s: IssueSource, text: string, all = false): { action: 
 }
 
 /**
- * The user's reply from an issue's page (POST /api/orbit/issues/{id}/source: the Bops window only, never in a
+ * The user's reply from an issue's page (POST /api/orbit/issues/{id}/source: the SmileDesk window only, never in a
  * shared workspace or on a computer's runner), their own words only: in the thread as it was read for the page
  * (the last minute's read, else read now), from that account, to the newest message's sender that isn't them
  * (with `all`, everyone else on it too). Sent once: `nonce` is the click's, so the same click never sends twice,
  * and one reply at a time per issue. Then its history says "Replied: …" (`logged` false when memory didn't take it).
  */
 export async function replyToIssue(ws: string, issue: Issue, text: string, opts: { all?: boolean; nonce: string }): Promise<ReplyResult> {
-  if (onRunner()) return { ok: false, status: 409, error: "Reply from Bops on your Mac." };
+  if (onRunner()) return { ok: false, status: 409, error: "Reply from SmileDesk on your Mac." };
   if (!/^[A-Za-z0-9_-]{8,80}$/.test(opts.nonce)) return { ok: false, status: 400, error: "Which click was that? Try again." };
   const words = text.trim();
   if (!words) return { ok: false, status: 400, error: "There's nothing to send." };

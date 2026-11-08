@@ -10,8 +10,8 @@ import { Segmented } from "./segmented";
 import { AskInPlace, refreshState } from "./ui";
 
 /*
- * The size of the user's free Bops computer, billed by use (lib/computer-size.ts): Pick your computer, asked
- * once per account as Bops opens (Medium first for someone new, the computer's own size for someone who has
+ * The size of the user's free SmileDesk computer, billed by use (lib/computer-size.ts): Pick your computer, asked
+ * once per account as SmileDesk opens (Medium first for someone new, the computer's own size for someone who has
  * one), and Your computer in Settings, Your plan, to switch it any time. Prices and hours are Orgo's, from
  * its plan read; the local server does the switching (app/api/computer/size).
  */
@@ -88,12 +88,12 @@ function AddCredit({ url, surface }: { url: string; surface: "account" | "comput
 }
 
 /**
- * Pick your computer, asked once per account when Bops opens (`view.needed`), for a user billed by use:
+ * Pick your computer, asked once per account when SmileDesk opens (`view.needed`), for a user billed by use:
  * each size with its price, about how long $5 runs it and what it's for (on the Orgo plan, that it's part
  * of the plan instead), the computer's own size (or Medium for someone new) picked first. Continue keeps
  * that size, answered without asking Orgo, or switches to the one picked, said first to maybe restart the
  * computer; with no computer yet, it's the size one is made at. After a try that didn't work, the computer
- * can be kept as it is, or the card closed for now (it's asked again next time Bops opens).
+ * can be kept as it is, or the card closed for now (it's asked again next time SmileDesk opens).
  */
 export function PickComputer({ view, onDone }: { view: SizeView; onDone: () => void }) {
   const [pick, setPick] = useState<ComputerSize>(view.preselect ?? view.sizes[0].key);
@@ -211,7 +211,7 @@ export function YourComputer({ usage }: { usage: UsageTerms }) {
   const sizes = usage.sizes ?? [];
   const key = usage.computer.key;
   const [asking, setAsking] = useState<SizeOffer | null>(null);
-  // Switched here: shown at once, before Orgo's plan is read again (the sheet does when Bops comes back to the front).
+  // Switched here: shown at once, before Orgo's plan is read again (the sheet does when SmileDesk comes back to the front).
   const [switched, setSwitched] = useState<{ from: ComputerSize; to: ComputerSize } | null>(null);
   const { busy, phase, said, run, clear } = useSizeSwitch();
   if (sizes.length < 2 || !key || !usage.computer.id) return null;

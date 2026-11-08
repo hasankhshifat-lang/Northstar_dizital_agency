@@ -1,7 +1,7 @@
-// What a Bops from before this one (v0.0.32, the release out now, on the user's other Macs and on the bots' computers'
+// What a SmileDesk from before this one (v0.0.32, the release out now, on the user's other Macs and on the bots' computers'
 // runners) does to the fields this build adds, run with v0.0.32's own code: its merge3 (lib/server/state-merge.ts) and
 // its cleanAccess (cloud/member-access.ts), taken from the v0.0.32 tag with git. Each case is one the user meets: an
-// older Bops that saves something else, that changes the same bot before it has the newer state (an email noted, its
+// older SmileDesk that saves something else, that changes the same bot before it has the newer state (an email noted, its
 // call voice kept), that rewrites a person's access on its People sheet.
 //
 // - A bot's settings page settings (Workspace.botSettings, lib/types.ts BotSettings) live on its workspace, which
@@ -22,7 +22,7 @@
 // - An app's Local, Preview and Published (Your Apps, all on the app's bot computer): of Local, only hints (each site's
 //   port, AppHosting.localPort and AppSiteHosting.localPort, and the addresses told for Google sign in, toldGoogle);
 //   of the Preview, only a copy of its link's label (AppHosting.preview, AppSiteHosting.preview), and of its password
-//   only the owner's choice to turn it off and when Bops last set one (passwordOff, passwordSet: Orgo keeps the
+//   only the owner's choice to turn it off and when SmileDesk last set one (passwordOff, passwordSet: Orgo keeps the
 //   password; a v0.0.32 that rebuilds the record without them only means a Preview turned off gets one again); all
 //   optional, additive. A task's app (Session.app) gains optional site and startHead. The Preview's link and project are found on Orgo by the label's seal (lib/server/app-labels.ts), so a
 //   v0.0.32 Mac that rebuilds the app's record (its whole copy standing in a merge) never changes the link: this
@@ -36,7 +36,7 @@
 //
 // Pure functions, and v0.0.32's own modules loaded from the tag (lib/types.ts, lib/server/composio.ts's syncApps,
 // lib/server/keys.ts, lib/server/vault.ts, cloud/computer-scope.ts) with the services they reach faked: nothing reaches
-// Bops Cloud, Composio or Orgo. Without the v0.0.32 tag here (a shallow clone), it says so and stops.
+// SmileDesk Cloud, Composio or Orgo. Without the v0.0.32 tag here (a shallow clone), it says so and stops.
 // Usage: node scripts/test-compat-0032.mjs
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
@@ -72,7 +72,7 @@ const NOW = await import(`${root}/lib/server/state-merge.ts`);
 /*
  * v0.0.32's own modules, as they are at the tag: a file one of them imports is written from the tag into `tree` (the
  * repo's layout) as it's first asked for, so each runs with v0.0.32's lib/types.ts and the rest of its own code. What
- * a server module reaches (its store, Bops Cloud, Composio, Orgo) is faked: OLD_FAKES by module, the rest of each one's
+ * a server module reaches (its store, SmileDesk Cloud, Composio, Orgo) is faked: OLD_FAKES by module, the rest of each one's
  * exports stand ins that throw (fake-exports.mjs). This build's lib/server/logins.ts runs with a fake store the same way.
  */
 const tree = join(dir, "tree");
@@ -223,7 +223,7 @@ const checkAsync = async (name, fn) => {
   console.log(`ok - ${name}`);
 };
 const clone = (x) => JSON.parse(JSON.stringify(x));
-/** An older Bops's kept copy (persist-cloud.ts buildKept), as v0.0.32's merge3 takes it. */
+/** An older SmileDesk's kept copy (persist-cloud.ts buildKept), as v0.0.32's merge3 takes it. */
 const KEPT = { device: "dev_old_mac", older: true };
 
 /* ---------------- A bot's settings page settings ---------------- */
@@ -240,7 +240,7 @@ const base0 = {
   ],
   chats: [],
 };
-/** The newer Bops's state: Juno's settings set, and the ask rule Never keeps for older Bops. */
+/** The newer SmileDesk's state: Juno's settings set, and the ask rule Never keeps for older SmileDesk. */
 const withSet = (s) => {
   const x = clone(s);
   x.workspaces[0].botSettings = { juno: SET };
@@ -256,7 +256,7 @@ check("v0.0.32 saving something else keeps a bot's settings", () => {
   mine.owner.name = "Ava B";
   assert.deepEqual(junoSet(V32.merge3(clone(base), mine, clone(base))), SET);
 });
-check("v0.0.32 saving while the newer Bops set them keeps them", () => {
+check("v0.0.32 saving while the newer SmileDesk set them keeps them", () => {
   const mine = clone(base0);
   mine.owner.name = "Ava B";
   assert.deepEqual(junoSet(V32.merge3(clone(base0), mine, withSet(base0))), SET);
@@ -309,7 +309,7 @@ check("this build's merge: two Macs setting different bots' settings keep both",
 /* ---------------- A phone line's voice ---------------- */
 
 // What each line's agent speaks in (Workspace.lineVoices, lib/server/phone.ts voiceToAgent): a workspace field, which
-// v0.0.32 merges field by field and never writes. Its own Bops sets no voice on AgentPhone (its lineUpkeep routes calls,
+// v0.0.32 merges field by field and never writes. Its own SmileDesk sets no voice on AgentPhone (its lineUpkeep routes calls,
 // its renameAgents sets a name), so the voice set stays on AgentPhone whichever Mac answers; a number v0.0.32 makes
 // speaks in the line's own voice until this build's next start sets it (and the page says the line's own meanwhile).
 const LV = { agt_ws: { for: "sage", id: "11labs-Laura", name: "Laura" } };
@@ -358,7 +358,7 @@ check("v0.0.32 saving something else keeps Your Apps", () => {
   mine.owner.name = "Ava B";
   assert.equal(appsOf(V32.merge3(clone(base), mine, clone(base))), "write");
 });
-check("v0.0.32 saving while the newer Bops set Your Apps keeps it", () => {
+check("v0.0.32 saving while the newer SmileDesk set Your Apps keeps it", () => {
   const base = blob({ [AVA]: access(undefined) });
   const mine = clone(base);
   mine.owner.name = "Ava B";
@@ -442,7 +442,7 @@ check("v0.0.32 saving something else keeps a login switched on", () => {
   mine.owner.name = "Ava B";
   assert.deepEqual(larkOn(V32.merge3(clone(base), mine, clone(base))), GMAIL_ON);
 });
-check("v0.0.32 saving while the newer Bops switched one on keeps it", () => {
+check("v0.0.32 saving while the newer SmileDesk switched one on keeps it", () => {
   const mine = clone(base1);
   mine.owner.name = "Ava B";
   assert.deepEqual(larkOn(V32.merge3(clone(base1), mine, withOn(base1, GMAIL_ON))), GMAIL_ON);
@@ -492,7 +492,7 @@ check("anything else under loginsOn gives nothing", () => {
     assert.deepEqual(now(st), was(st), JSON.stringify(junk));
   }
 });
-check("v0.0.32's grantsOn (Bops Cloud's hold on a computer's runner) never gives more than this build's, and the same without Used in", () => {
+check("v0.0.32's grantsOn (SmileDesk Cloud's hold on a computer's runner) never gives more than this build's, and the same without Used in", () => {
   const st = withOn(base1, GMAIL_ON);
   st.bots[2].computerId = "desk-lark";
   st.bots[3].computerId = "desk-lark";
@@ -677,7 +677,7 @@ check("v0.0.32 rebuilding the app's record while this build listed Staging behin
 /** A computer's deploy projects as orgo-web lists them, for v0.0.32's own hosted-apps code: Prod's and Staging's of one app. */
 const PROJ = "3f6c2a1e-8b4d-4c7a-9e21-5d0b7a9c4f13";
 const projectOf = (id, name, port) => ({ id, name, source: "ingot", ingot_repo: `${PROJ}/field-notes`, url: `https://${name}.orgo.dev`, port, deployments: [], current: null });
-await checkAsync("v0.0.32's own Deploy on an app with a Staging project beside Prod's deploys Prod's: with its record, and with its record forgetting Prod's project (found by name, never Staging's); with Prod's deleted outside Bops, its one site fallback would take Staging's, which this build's Prod first keeps from happening otherwise", async () => {
+await checkAsync("v0.0.32's own Deploy on an app with a Staging project beside Prod's deploys Prod's: with its record, and with its record forgetting Prod's project (found by name, never Staging's); with Prod's deleted outside SmileDesk, its one site fallback would take Staging's, which this build's Prod first keeps from happening otherwise", async () => {
   const H32 = await import(fromTag("lib/server/hosted-apps.ts"));
   const st = clone(W1);
   st.workspaces[0].orgoProjectId = PROJ;
@@ -703,7 +703,7 @@ await checkAsync("v0.0.32's own Deploy on an app with a Staging project beside P
   await H32.deployApp("ws_main", "field-notes", { ours: () => true });
   assert.deepEqual(queued, ["p_prod", "p_prod"], "its record forgetting it: Prod's again, by name");
   assert.equal(notesOf(st).projectId, "p_prod");
-  // Prod's deleted on Orgo, outside Bops: v0.0.32 doesn't know Staging, so its fallback takes the repo's one project.
+  // Prod's deleted on Orgo, outside SmileDesk: v0.0.32 doesn't know Staging, so its fallback takes the repo's one project.
   projects = projects.filter((p) => p.id !== "p_prod");
   delete notesOf(st).projectId;
   await H32.deployApp("ws_main", "field-notes", { ours: () => true });
@@ -891,7 +891,7 @@ const shop0 = (() => {
   x.workspaces[0].hostedApps = { shop: clone(SHOP) };
   return x;
 })();
-/** The newer Bops's state: the computer named, and Juno on the blog. */
+/** The newer SmileDesk's state: the computer named, and Juno on the blog. */
 const named = (s) => {
   const x = clone(s);
   x.workspaces[0].computerNames = clone(NAMES);
@@ -907,7 +907,7 @@ check("v0.0.32 saving something else keeps a computer's name and a bot's site", 
   mine.owner.name = "Ava B";
   assert.deepEqual(kept(V32.merge3(clone(base), mine, clone(base))), BOTH);
 });
-check("v0.0.32 saving while the newer Bops set them keeps them", () => {
+check("v0.0.32 saving while the newer SmileDesk set them keeps them", () => {
   const mine = clone(shop0);
   mine.owner.name = "Ava B";
   assert.deepEqual(kept(V32.merge3(clone(shop0), mine, named(shop0))), BOTH);

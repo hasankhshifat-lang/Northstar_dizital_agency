@@ -1,10 +1,10 @@
 /**
- * The apps the bots make (lib/server/made-apps.ts) run in Bops' window in a <webview> on a session of
+ * The apps the bots make (lib/server/made-apps.ts) run in SmileDesk's window in a <webview> on a session of
  * their own (components/app/made-apps.tsx, AppFrame), not in a frame of the window's: a model wrote
  * their code, and the page's CSP can't hold it alone. A frame may load another page in itself (data
  * in its address), and WebRTC isn't covered by connect-src. So, in that session and in each app's page:
  *
- * - Only the app's own page loads: every request but a `/api/made-apps/<id>/view` on Bops' server
+ * - Only the app's own page loads: every request but a `/api/made-apps/<id>/view` on SmileDesk's server
  *   (and data: and blob:) is cancelled, and the page can't go to another address, not even another
  *   app's. No windows, no downloads, no permissions, no devices.
  * - WebRTC reaches nothing: UDP only through a proxy, and the session's proxy goes nowhere (Chromium
@@ -21,7 +21,7 @@ const PARTITION = "bops-apps";
 /** A proxy nothing listens on: WebRTC's TCP must go through it, so it goes nowhere. */
 const NOWHERE = "http://127.0.0.1:9";
 
-/** The app a `/api/made-apps/<id>/view` address on Bops' server is for, or null for any other address. */
+/** The app a `/api/made-apps/<id>/view` address on SmileDesk's server is for, or null for any other address. */
 function appOfView(url, server) {
   let u;
   try {

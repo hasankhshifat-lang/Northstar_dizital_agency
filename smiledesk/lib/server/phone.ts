@@ -24,38 +24,38 @@ import { recordCallMinutes, recordUsage } from "./usage";
 import { checkVerification, forgetVerification, pendingConsentAt, pendingVerifications, startVerification, toE164, verifyOn } from "./verify";
 
 /**
- * Phone numbers for Bops (AgentPhone), for texting and calling from any phone.
+ * Phone numbers for SmileDesk (AgentPhone), for texting and calling from any phone.
  *
  * - **One number per workspace** (the product model): it belongs to the workspace's main bot (its
  *   coordinator, e.g. Sam). People always text that number; the main bot keeps the conversation,
  *   does what it can, hands specialist work to the right bot, and the replies, results and failures
  *   go back from that same number. Specialists have no numbers of their own.
  *   `Workspace.line` holds it (number, the AgentPhone agent it's attached to, which account, and the
- *   agent it came from, for rollback). `assignWorkspaceLine` moves an existing number onto a Bops
- *   agent whose webhook is Bops; `releaseWorkspaceLine` puts it back.
- * - A bot can also have a number of its own (`Bot.phoneLine`, SMS, in the Bops sub-account): the
+ *   agent it came from, for rollback). `assignWorkspaceLine` moves an existing number onto a SmileDesk
+ *   agent whose webhook is SmileDesk; `releaseWorkspaceLine` puts it back.
+ * - A bot can also have a number of its own (`Bot.phoneLine`, SMS, in the SmileDesk sub-account): the
  *   earlier per-bot model, kept as a fallback.
  *
- * - **Numbers** live in the "Bops" AgentPhone sub-account (AGENTPHONE_SUB_ACCOUNT), apart from the user's
+ * - **Numbers** live in the "SmileDesk" AgentPhone sub-account (AGENTPHONE_SUB_ACCOUNT), apart from the user's
  *   other agents. Each bot has an AgentPhone agent with its number attached; the number carries
  *   `externalId` bops-<install>-<bot>, so it's found again.
  * - **Texts** come in on AgentPhone's webhook (api.bops.bot/hooks/agentphone, through the Fly relay,
  *   signed). One from the user's own number is the user talking: it goes into the bot's chat as their
  *   message and the bot's answer goes back by text. Anyone else's is dropped (STOP, START and HELP
  *   still get the reply carriers require).
- * - **Calls** go to the number's AgentPhone agent (voice mode "webhook"; every number Bops makes or
+ * - **Calls** go to the number's AgentPhone agent (voice mode "webhook"; every number SmileDesk makes or
  *   assigns has its calls routed there, and lineUpkeep puts back one that isn't). AgentPhone hears the
  *   caller and sends each turn to the same webhook; phone-voice.ts answers it as the bot: the owner
  *   gets the whole bot (work goes through `delegate()`, as on a call in the app), anyone else a bot
- *   that only takes a message. AgentPhone speaks the answers in the agent's voice, which Bops sets to
+ *   that only takes a message. AgentPhone speaks the answers in the agent's voice, which SmileDesk sets to
  *   the closest of AgentPhone's voices to the bot's own (voiceToAgent: when a number is made, when its
  *   voice is picked, and at each start). The GPT-Live path over a SIP trunk (incomingCall, below) is
  *   kept for a number someone routes to a trunk by hand.
- * - **Who the user is:** the numbers they verified with a texted code in Settings, and, on Bops
+ * - **Who the user is:** the numbers they verified with a texted code in Settings, and, on SmileDesk
  *   Cloud, whoever the cloud says owns the line (bops.phone_lines: the first phone to call or text a
- *   new number in its 15 minutes; phone-lines.ts). On Bops Cloud the cloud decides it for every call
+ *   new number in its 15 minutes; phone-lines.ts). On SmileDesk Cloud the cloud decides it for every call
  *   and text and this Mac follows (CallerVerdict).
- * - **On Bops Cloud** (signed in with Orgo; lib/server/cloud.ts) AgentPhone is reached through the
+ * - **On SmileDesk Cloud** (signed in with Orgo; lib/server/cloud.ts) AgentPhone is reached through the
  *   cloud, always in the user's own sub-account. Both webhooks arrive at the cloud, which checks them
  *   and passes them to this Mac over its tunnel (lib/server/cloud-tunnel.ts), and the cloud answers
  *   calls while the Mac is away (cloudCall, below).
@@ -67,8 +67,8 @@ const openai = openaiClient({ maxRetries: 0 });
 export const phoneOn = () => (cloudOn() ? !!cloudSessionNow()?.agentphone : !!process.env.AGENTPHONE_API_KEY);
 
 /**
- * The webhook secrets that may sign a delivery: the Bops sub-account's webhook, and each agent
- * webhook Bops made for a workspace number (kept server-side in .data, never in app state).
+ * The webhook secrets that may sign a delivery: the SmileDesk sub-account's webhook, and each agent
+ * webhook SmileDesk made for a workspace number (kept server-side in .data, never in app state).
  */
 const secretsFile = () => {
   const dir = userDir();
@@ -79,9 +79,9 @@ const agentSecrets = (): Record<string, string> => {
   return file && existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : {};
 };
 export const hookSecrets = () => [process.env.AGENTPHONE_WEBHOOK_SECRET, ...Object.values(agentSecrets())].filter((x): x is string => !!x);
-/** Where AgentPhone delivers: Bops Cloud's address for the user (their session), or BOPS_AGENTPHONE_HOOK_URL (api.bops.bot, the Fly relay in edge/). */
+/** Where AgentPhone delivers: SmileDesk Cloud's address for the user (their session), or BOPS_AGENTPHONE_HOOK_URL (api.bops.bot, the Fly relay in edge/). */
 const hookUrl = async () => (cloudOn() ? ((await cloudSession()).agentphone?.hookUrl ?? "") : (process.env.BOPS_AGENTPHONE_HOOK_URL ?? ""));
-/** What Bops Cloud sends back in place of a webhook's secret, which it keeps: never a secret to check deliveries with. */
+/** What SmileDesk Cloud sends back in place of a webhook's secret, which it keeps: never a secret to check deliveries with. */
 const KEPT_BY_CLOUD = "kept-by-cloud";
 /** Replies are written to the chat instead of sent (for checking routing without texting anyone). */
 const dryRun = () => process.env.BOPS_PHONE_DRY_RUN === "1";
@@ -103,8 +103,8 @@ function inLine(botId: string, work: () => Promise<void>) {
 }
 
 /**
- * An AgentPhone call, in the Bops sub-account unless `scope` is "parent" (the main account). Through
- * Bops Cloud it's always in the user's own sub-account, whichever scope is asked for.
+ * An AgentPhone call, in the SmileDesk sub-account unless `scope` is "parent" (the main account). Through
+ * SmileDesk Cloud it's always in the user's own sub-account, whichever scope is asked for.
  */
 async function ap<T>(method: string, path: string, body?: unknown, scope: "sub" | "parent" = "sub"): Promise<T> {
   const via = cloudProxy("agentphone");
@@ -121,7 +121,7 @@ async function ap<T>(method: string, path: string, body?: unknown, scope: "sub" 
   });
   const json = (await res.json().catch(() => ({}))) as T & { detail?: string; error?: string | { message?: string }; code?: unknown };
   if (!res.ok) {
-    // AgentPhone's own words, or Bops Cloud's (a string, with its code: out of AI credit is 402).
+    // AgentPhone's own words, or SmileDesk Cloud's (a string, with its code: out of AI credit is 402).
     const said = typeof json.error === "string" ? json.error : (json.error?.message ?? json.detail ?? `AgentPhone ${res.status}`);
     if (!via) throw new Error(said);
     const e = new CloudError(said, res.status, typeof json.code === "string" ? json.code : undefined);
@@ -159,7 +159,7 @@ export const ownerPhones = () => [...new Set([...savedPhones().filter((p) => p.v
 /** Whether a number is one of the user's verified ones (see ownerPhones). */
 export const isOwner = (n: string) => !!n && ownerPhones().some((o) => digits(o) === digits(n));
 
-/** Who sent a delivery, as Bops Cloud said (CLOUD_CALLER_HEADER, or `bopsCaller` in a kept one); undefined when it didn't say. */
+/** Who sent a delivery, as SmileDesk Cloud said (CLOUD_CALLER_HEADER, or `bopsCaller` in a kept one); undefined when it didn't say. */
 export function verdictOf(x: unknown): CallerVerdict | undefined {
   let v = x;
   if (typeof v === "string")
@@ -173,12 +173,12 @@ export function verdictOf(x: unknown): CallerVerdict | undefined {
   return { owner: o.owner, ...(o.claimed === "call" || o.claimed === "text" ? { claimed: o.claimed } : {}) };
 }
 
-/** Whether a delivery is from the user: what Bops Cloud said when it said, else (self-hosting) one of their verified numbers. */
+/** Whether a delivery is from the user: what SmileDesk Cloud said when it said, else (self-hosting) one of their verified numbers. */
 export const fromOwner = (n: string, verdict?: CallerVerdict) => (verdict ? verdict.owner : isOwner(n));
 
 /**
  * A number just claimed one of the bots' lines (the first to call or text it in its 15 minutes, as
- * Bops Cloud decided): it's one of the user's own numbers now, and the bot's chat says so.
+ * SmileDesk Cloud decided): it's one of the user's own numbers now, and the bot's chat says so.
  */
 export function linkClaimed(number: string, via: "call" | "text", b: Bot) {
   const e164 = toE164(number);
@@ -218,7 +218,7 @@ export async function startOwnerPhone(number: string, consent: boolean) {
     if (!user || !table) return { ok: false as const, error: "Sign in first." };
     const taken = await table.takenByOther(user, e164).catch((e: Error) => (console.warn(`[phone] owner_phones: ${e.message}`), null));
     if (taken === null) return { ok: false as const, error: "Couldn't check that number right now. Try again in a minute." };
-    if (taken) return { ok: false as const, error: "That number is already verified on another Bops account." };
+    if (taken) return { ok: false as const, error: "That number is already verified on another SmileDesk account." };
   }
   return startVerification("sms", e164, verifier(), consent ? Date.now() : prior!);
 }
@@ -239,7 +239,7 @@ export async function checkOwnerPhone(number: string, code: string) {
     if (!user || !table) return { ok: false as const, error: "Sign in first.", restart: true };
     const claimed = await table.claim(user, e164, r.consentAt, r.ref).catch((e: Error) => (console.warn(`[phone] owner_phones: ${e.message}`), null));
     if (!claimed) return { ok: false as const, error: "Couldn't save the number right now. Send a new code and try again.", restart: true };
-    if (!claimed.ok) return { ok: false as const, error: "That number is already verified on another Bops account.", restart: true };
+    if (!claimed.ok) return { ok: false as const, error: "That number is already verified on another SmileDesk account.", restart: true };
   }
   const verifiedAt = Date.now();
   const userId = getState().account?.user.id;
@@ -261,8 +261,8 @@ export async function removeOwnerPhone(number: string) {
   const table = ownerPhoneTable();
   if (onPostgres() && user && table)
     for (const p of saved) await table.release(user, p.number).catch((e: Error) => console.warn(`[phone] owner_phones: couldn't release a number: ${e.message}`));
-  // On Bops Cloud it stops counting as the user there too: off every line it owns, and out of the cloud's own list.
-  if (cloudOn()) await forgetOwnerNumber(e164 || number).catch((e: Error) => console.warn(`[phone] couldn't remove the number in Bops Cloud: ${e.message}`));
+  // On SmileDesk Cloud it stops counting as the user there too: off every line it owns, and out of the cloud's own list.
+  if (cloudOn()) await forgetOwnerNumber(e164 || number).catch((e: Error) => console.warn(`[phone] couldn't remove the number in SmileDesk Cloud: ${e.message}`));
 }
 
 type ApNumber = { id: string; phoneNumber: string; agentId?: string | null; externalId?: string | null; outboundSms?: string; voiceRouting?: { method: string } };
@@ -318,7 +318,7 @@ export async function searchNumbers(areaCode?: string): Promise<{ areaCode: stri
 /**
  * A bot's own number: found again by its tag, or bought (about $3 a month) in the area code picked
  * (searchNumbers), else BOPS_PHONE_AREA (415 unless set), with an AgentPhone agent for it. Through
- * Bops Cloud an area code with none left moves on to one nearby. Only when asked: numbers cost money.
+ * SmileDesk Cloud an area code with none left moves on to one nearby. Only when asked: numbers cost money.
  */
 export async function ensurePhone(botId: string, areaCode?: string) {
   const b = bot(botId);
@@ -331,7 +331,7 @@ export async function ensurePhone(botId: string, areaCode?: string) {
   let number = numbers.data.find((n) => n.externalId === tag);
   let agentId = number?.agentId ?? undefined;
   const madeAgent = !agentId;
-  if (!agentId) agentId = (await ap<{ id: string }>("POST", "/agents", { name: `${b.name} (Bops)`, description: tag, voiceMode: "webhook", enableMessaging: true })).id;
+  if (!agentId) agentId = (await ap<{ id: string }>("POST", "/agents", { name: `${b.name} (SmileDesk)`, description: tag, voiceMode: "webhook", enableMessaging: true })).id;
   if (!number) {
     number = await ap<ApNumber>("POST", "/numbers", { country: "US", areaCode: area, type: "sms", externalId: tag, agentId }).catch((e: Error) => {
       if (/no numbers available/i.test(e.message)) e.message = `No ${area} numbers are left. Search again and pick another area code.`;
@@ -339,7 +339,7 @@ export async function ensurePhone(botId: string, areaCode?: string) {
     });
     recordUsage("phone.number", { botId }, epoch);
   } else if (!number.agentId) await ap("POST", `/agents/${agentId}/numbers`, { numberId: number.id });
-  // On Bops Cloud a number's texts and calls come through its agent's own webhook, whose secret the
+  // On SmileDesk Cloud a number's texts and calls come through its agent's own webhook, whose secret the
   // cloud keeps (it checks each delivery with it and knows whose it is); self-hosting has the sub-account's.
   if (cloudOn()) await ap("POST", `/agents/${agentId}/webhook`, { url: await hookUrl(), contextLimit: 10, timeout: 30 });
   await callsToAgent(number.id, agentId, "sub", !madeAgent);
@@ -353,15 +353,15 @@ export async function ensurePhone(botId: string, areaCode?: string) {
       x.phoneLine = line;
     }
   });
-  // The user is told to call or text it now: the first phone that does is theirs (Bops Cloud keeps who).
-  await tellCloudLine({ numberId: number.id, botId: b.id, open: true }).catch((e: Error) => console.warn(`[phone] couldn't tell Bops Cloud about ${b.name}'s number: ${e.message}`));
+  // The user is told to call or text it now: the first phone that does is theirs (SmileDesk Cloud keeps who).
+  await tellCloudLine({ numberId: number.id, botId: b.id, open: true }).catch((e: Error) => console.warn(`[phone] couldn't tell SmileDesk Cloud about ${b.name}'s number: ${e.message}`));
   return number.phoneNumber;
 }
 
 /**
- * A Bops number's calls go to its agent, which hands each turn to Bops (voice mode "webhook"): never
+ * A SmileDesk number's calls go to its agent, which hands each turn to SmileDesk (voice mode "webhook"): never
  * to a SIP trunk, never ignored. Set outright after a number is made or assigned (`agentToo`: also
- * set the agent's voice mode, for an agent Bops didn't just make that way). A failure is logged, not
+ * set the agent's voice mode, for an agent SmileDesk didn't just make that way). A failure is logged, not
  * thrown: the number works for texts, and lineUpkeep tries again at the next start.
  */
 async function callsToAgent(numberId: string, agentId: string, scope: "sub" | "parent", agentToo = true) {
@@ -379,7 +379,7 @@ type ApAgentVoice = { id: string; voiceMode?: string | null; voice?: string | nu
  * Once a start: each of the bots' numbers takes calls through its agent (one from before, or one
  * whose calls someone pointed at a SIP trunk or at nothing, is put back), speaks in its bot's voice
  * (voiceToAgent: a number from before this, or one whose voice was changed elsewhere, is put right),
- * and Bops Cloud knows which bot each line is for. Answers what it changed.
+ * and SmileDesk Cloud knows which bot each line is for. Answers what it changed.
  */
 export async function lineUpkeep() {
   const fixed: string[] = [];
@@ -441,7 +441,7 @@ const sameLineVoice = (x: LineVoice | undefined, y: LineVoice) => !!x && x.for =
  * agent has it already (`current`, as AgentPhone listed it; else as last set), and noted on its workspace once
  * AgentPhone took it (Workspace.lineVoices), for the settings page. The words are still the bot's own, answered turn
  * by turn (phone-voice.ts, cloud/voice.ts); AgentPhone only speaks them. Without AgentPhone's voices (it can't say,
- * or a Bops Cloud from before doesn't pass them on) nothing changes: the line keeps its own voice. Never throws.
+ * or a SmileDesk Cloud from before doesn't pass them on) nothing changes: the line keeps its own voice. Never throws.
  * Answers what it set, or null.
  */
 async function voiceToAgent(b: Bot, agentId: string, scope: "sub" | "parent", current?: string | null): Promise<string | null> {
@@ -488,7 +488,7 @@ export async function syncLineVoices(botId?: string) {
 /** A bot's text, plain: links written out (a web source as one line at the end), no markdown (a text shows it raw). */
 const plain = (t: string) =>
   plainLinks(t.replace(/\n*Open: \[[^\]]*\]\(\/api\/pages\/[^)]*\)/g, ""))
-    .replace(/\[([^\]]+)\]\((?:\/|~\/|file:)[^)]*\)/g, "$1 (in Bops)")
+    .replace(/\[([^\]]+)\]\((?:\/|~\/|file:)[^)]*\)/g, "$1 (in SmileDesk)")
     .replace(/\*\*([^*]+)\*\*/g, "$1")
     .trim();
 
@@ -532,7 +532,7 @@ export async function sendText(botId: string, to: string, body: string, opts: { 
   const b = bot(botId);
   const line = b && lineOf(b);
   if (!b || !line) throw new Error("no phone number");
-  // A plan's number that's paused (the plan ended), or one whose month wasn't paid: Bops Cloud refuses its texts too (cloud/proxy.ts).
+  // A plan's number that's paused (the plan ended), or one whose month wasn't paid: SmileDesk Cloud refuses its texts too (cloud/proxy.ts).
   if (b.phoneLine?.paused && b.phoneLine.numberId === line.numberId)
     throw new Error(b.phoneLine.unpaid ? "the number is paused because the Orgo credit ran out, so no texts go out from it" : "the number is paused while the account is on Free, so no texts go out from it");
   if (optedOut(to) && !opts.evenIfStopped) throw new Error("they texted STOP, so no more texts to them");
@@ -541,10 +541,10 @@ export async function sendText(botId: string, to: string, body: string, opts: { 
     addMessage({ chatId: botChatId(b.id), role: "system", text: `[dry run] would text ${prettyPhone(to)} from ${prettyPhone(line.phone)} (${line.type})${opts.replyToAp ? " as a threaded reply" : ""}: ${text}` });
     return;
   }
-  // iMessage threads a reply under the message it answers (an inline reply in Bops).
+  // iMessage threads a reply under the message it answers (an inline reply in SmileDesk).
   const replyTo = opts.replyToAp && line.type === "imessage" ? { reply_to_message_id: opts.replyToAp } : {};
   const sent = await ap<{ id?: string; status?: string; conversation_id?: string }>("POST", "/messages", { agent_id: line.agentId, number_id: line.numberId, to_number: to, body: text, ...replyTo }, line.scope);
-  // The Bops message it came from remembers its phone-side id (for tapbacks on it, and replies to it).
+  // The SmileDesk message it came from remembers its phone-side id (for tapbacks on it, and replies to it).
   if (opts.tag && sent.id) tagPhone(opts.tag, { apId: sent.id, conversationId: sent.conversation_id });
   // AgentPhone accepts a text first and delivers it after: a failure only shows up a moment later,
   // so look again and say so in the chat when it didn't go through.
@@ -666,7 +666,7 @@ export type ApEvent = {
 /**
  * One AgentPhone webhook delivery that isn't a call's turn (the webhook route answers those through
  * phone-voice.ts): texts are handled after the webhook has been answered. `verdict` is who sent it,
- * as Bops Cloud decided (bops.phone_lines); without one (self-hosting), the verified numbers here.
+ * as SmileDesk Cloud decided (bops.phone_lines); without one (self-hosting), the verified numbers here.
  */
 export function agentPhoneEvent(e: ApEvent, deliveryId: string, verdict?: CallerVerdict): Record<string, unknown> {
   const to = routeFor(e.agentId);
@@ -681,7 +681,7 @@ const apIdOf = (d: NonNullable<ApEvent["data"]>) => d.id ?? d.messageId ?? d.mes
 const replyToOf = (d: NonNullable<ApEvent["data"]>) =>
   typeof d.replyTo === "string" ? d.replyTo : (d.replyTo?.messageId ?? d.replyTo?.id ?? d.reply_to_message_id ?? undefined);
 
-/** Someone tapbacked one of the bot's texts: the same tapback on that message in Bops. */
+/** Someone tapbacked one of the bot's texts: the same tapback on that message in SmileDesk. */
 function tapbackIn(e: ApEvent, verdict?: CallerVerdict) {
   const d = e.data ?? {};
   const target = getState().messages.find((m) => m.phone?.apId && m.phone.apId === (d.messageId ?? d.message_id));
@@ -704,7 +704,7 @@ async function textIn(b: Bot, line: Line, e: ApEvent, deliveryId: string, verdic
   const keyword = body.toLowerCase().replace(/[^a-z]/g, "");
   if (STOP_WORDS.has(keyword) || START_WORDS.has(keyword) || HELP_WORDS.has(keyword)) return keywordIn(b, from, keyword);
   // Bots only talk to their owner by phone: a text from anyone else is dropped (it never reaches
-  // the bot or the chat). In a group, it's who sent it that counts. On Bops Cloud the cloud says who
+  // the bot or the chat). In a group, it's who sent it that counts. On SmileDesk Cloud the cloud says who
   // it is; a first text to a new line in its 15 minutes makes the sender the owner.
   const sender = d.group?.groupId ? (d.senderIdentifier ?? from) : from;
   if (!fromOwner(sender, verdict)) {
@@ -726,7 +726,7 @@ async function textIn(b: Bot, line: Line, e: ApEvent, deliveryId: string, verdic
   }
   // The user texting: their message in the chat, and the answer back to their phone.
   const { handleMessage } = await import("./chat");
-  // An inline reply in iMessage stays one in Bops: the message it answers, found by its phone id.
+  // An inline reply in iMessage stays one in SmileDesk: the message it answers, found by its phone id.
   const parentAp = replyToOf(d);
   const parent = parentAp ? getState().messages.find((m) => m.chatId === chatId && m.phone?.apId === parentAp) : undefined;
   const stopTyping = typing(line, conversationId);
@@ -748,7 +748,7 @@ async function textIn(b: Bot, line: Line, e: ApEvent, deliveryId: string, verdic
   };
   const started = getState().sessions.filter((x) => x.chatId === chatId && x.createdAt >= mine.at && (!x.routineId || askedFor(x.id)));
   for (const t of started.filter((x) => !x.textBack)) patchSession(t.id, { textBack: { botId: b.id, to: from } });
-  // The bot's answer, as it gave it in Bops: each message its own bubble, threaded where it was an
+  // The bot's answer, as it gave it in SmileDesk: each message its own bubble, threaded where it was an
   // inline reply, and a tapback as a tapback (never a filler text in its place).
   const replies = getState().messages.filter((m) => m.chatId === chatId && m.role === "bot" && m.botId === b.id && m.at >= mine.at && turnsOwn(m, started));
   const failed = (err: Error) =>
@@ -768,7 +768,7 @@ const START_WORDS = new Set(["start", "unstop"]);
 const HELP_WORDS = new Set(["help", "info"]);
 /** The HELP reply carriers require; the contact is BOPS_SUPPORT_EMAIL. */
 const helpText = () =>
-  `Bops by Orgo: texts from your Bops assistants. Msg & data rates may apply. Reply STOP to opt out.${process.env.BOPS_SUPPORT_EMAIL ? ` Help: ${process.env.BOPS_SUPPORT_EMAIL}` : ""}`;
+  `SmileDesk by Orgo: texts from your SmileDesk assistants. Msg & data rates may apply. Reply STOP to opt out.${process.env.BOPS_SUPPORT_EMAIL ? ` Help: ${process.env.BOPS_SUPPORT_EMAIL}` : ""}`;
 
 /** STOP: no more texts to that number (one confirmation); START: texts again; HELP: what this is and how to stop. */
 async function keywordIn(b: Bot, from: string, keyword: string) {
@@ -777,11 +777,11 @@ async function keywordIn(b: Bot, from: string, keyword: string) {
   let reply: string;
   if (STOP_WORDS.has(keyword)) {
     update((s) => void (s.smsOptOut = [...new Set([...(s.smsOptOut ?? []), n])]));
-    reply = "Bops by Orgo: you're unsubscribed and won't get more texts. Reply START to resubscribe.";
+    reply = "SmileDesk by Orgo: you're unsubscribed and won't get more texts. Reply START to resubscribe.";
     addMessage({ chatId, role: "system", text: `${prettyPhone(from)} texted STOP: no more texts to that number until they text START` });
   } else if (START_WORDS.has(keyword)) {
     update((s) => void (s.smsOptOut = (s.smsOptOut ?? []).filter((x) => x !== n)));
-    reply = "Bops by Orgo: you're subscribed again. Reply STOP to opt out, HELP for help.";
+    reply = "SmileDesk by Orgo: you're subscribed again. Reply STOP to opt out, HELP for help.";
     addMessage({ chatId, role: "system", text: `${prettyPhone(from)} texted START: texts to that number are back on` });
   } else reply = helpText();
   await sendText(b.id, from, reply, { evenIfStopped: true }).catch(() => {});
@@ -804,8 +804,8 @@ async function picsOf(urls: string[]) {
 /* ---------------- Catching up ---------------- */
 
 /**
- * Texts that came in while Bops couldn't be reached (asleep, offline, a network change): AgentPhone
- * retries only after 5 and 30 minutes, so Bops also looks itself, every 2 minutes and at start, at each workspace number's latest messages. Only ones newer than the
+ * Texts that came in while SmileDesk couldn't be reached (asleep, offline, a network change): AgentPhone
+ * retries only after 5 and 30 minutes, so SmileDesk also looks itself, every 2 minutes and at start, at each workspace number's latest messages. Only ones newer than the
  * number's assignment and not already handled; a late retry of the same text is then skipped.
  */
 export async function phoneCatchUp() {
@@ -837,7 +837,7 @@ export async function phoneCatchUp() {
 }
 
 const gp = globalThis as unknown as { bopsPhoneCatchUp?: ReturnType<typeof setInterval>; bopsPhoneTick?: () => Promise<unknown>; bopsPhoneUpkeepFor?: string };
-// The missed texts, and on Bops Cloud each bot's voice, which the cloud answers its calls in while the Mac is away.
+// The missed texts, and on SmileDesk Cloud each bot's voice, which the cloud answers its calls in while the Mac is away.
 gp.bopsPhoneTick = () => (stateReady() ? Promise.all([phoneCatchUp(), cloudOn() ? rememberVoices() : null]) : Promise.resolve());
 /**
  * Started by the state route (like mail): one timer, and for each user whose state comes in (a start,
@@ -877,13 +877,13 @@ export async function incomingCall(e: LiveTransportIncomingWebhookEvent, verdict
       await openai.live.sessions.reject(sessionId, { status_code: 404 }).catch(() => {});
       return;
     }
-    // Bots only take calls from their owner (on Bops Cloud, whoever the cloud says): anyone else is turned away before it connects.
+    // Bots only take calls from their owner (on SmileDesk Cloud, whoever the cloud says): anyone else is turned away before it connects.
     if (!fromOwner(from, verdict)) {
       callLog({ sessionId, event: "rejected", bot: b.id, from, why: "not the owner" });
       await openai.live.sessions.reject(sessionId, { status_code: 403 }).catch(() => {});
       return;
     }
-    // Its settings page turned calls off (BotSettings.answersCalls): busy, before it connects (Bops Cloud's answerInCloud the same).
+    // Its settings page turned calls off (BotSettings.answersCalls): busy, before it connects (SmileDesk Cloud's answerInCloud the same).
     if (settingsOf(getState(), b).answersCalls === false) {
       callLog({ sessionId, event: "rejected", bot: b.id, from, why: "calls off" });
       await openai.live.sessions.reject(sessionId, { status_code: 486 }).catch(() => {});
@@ -934,7 +934,7 @@ function calledBot(e: LiveTransportIncomingWebhookEvent): Bot | undefined {
 /** An OpenAI webhook event arrived (any type), for the call log. */
 export const logWebhook = (type: string, id?: string) => callLog({ event: "webhook", type, id });
 
-/** Each incoming call (its SIP headers or turns) and what Bops did, kept on this Mac in the user's folder (.data/users/<id>/phone-calls.jsonl) to debug calls. */
+/** Each incoming call (its SIP headers or turns) and what SmileDesk did, kept on this Mac in the user's folder (.data/users/<id>/phone-calls.jsonl) to debug calls. */
 export function callLog(entry: Record<string, unknown>) {
   const dir = userDir();
   if (!dir) return;
@@ -944,7 +944,7 @@ export function callLog(entry: Record<string, unknown>) {
   } catch {}
 }
 
-/** The call, from Bops' side: the greeting, the transcript, what the user asks for done, and the note after. */
+/** The call, from SmileDesk's side: the greeting, the transcript, what the user asks for done, and the note after. */
 function runCall(b: Bot, sessionId: string, from: string) {
   // The account whose call this is: after a sign-out or another account's sign-in, nothing of it lands in the new one.
   const ours = sameState();
@@ -1026,7 +1026,7 @@ function runCall(b: Bot, sessionId: string, from: string) {
 }
 
 /**
- * A call Bops Cloud answered while this Mac was away (asleep, off or offline), handed over by the
+ * A call SmileDesk Cloud answered while this Mac was away (asleep, off or offline), handed over by the
  * tunnel once it's back, as a message in the bot's chat with the call as text. The owner's (the cloud
  * decided who that is): their note, and the call into memory, as a call this Mac answers goes
  * (phone-voice.ts finish). Anyone else's (the bot only took a message, cloud/voice.ts): the message
@@ -1082,9 +1082,9 @@ function callTurns(transcript: string | undefined) {
 export async function renameAgents(botId: string) {
   const b = bot(botId);
   if (!b || !phoneOn()) return;
-  if (b.phoneLine?.agentId) await ap("PATCH", `/agents/${b.phoneLine.agentId}`, { name: `${b.name} (Bops)` });
+  if (b.phoneLine?.agentId) await ap("PATCH", `/agents/${b.phoneLine.agentId}`, { name: `${b.name} (SmileDesk)` });
   const ws = getState().workspaces?.find((w) => w.id === workspaceOf(b));
-  if (b.isMain && ws?.line?.agentId) await ap("PATCH", `/agents/${ws.line.agentId}`, { name: `Bops · ${ws.name} (${b.name})` }, ws.line.scope);
+  if (b.isMain && ws?.line?.agentId) await ap("PATCH", `/agents/${ws.line.agentId}`, { name: `SmileDesk · ${ws.name} (${b.name})` }, ws.line.scope);
   await syncLineVoices(botId);
 }
 
@@ -1093,8 +1093,8 @@ export async function renameAgents(botId: string) {
 type ApAgent = { id: string; name: string; description?: string | null; numbers?: { id: string; phoneNumber: string }[] };
 
 /**
- * Make an existing AgentPhone number the workspace's number: a Bops agent (made once per workspace,
- * tagged bops-<install>-ws-<workspace>) gets the number, and the agent's webhook is Bops. The agent
+ * Make an existing AgentPhone number the workspace's number: a SmileDesk agent (made once per workspace,
+ * tagged bops-<install>-ws-<workspace>) gets the number, and the agent's webhook is SmileDesk. The agent
  * it came from (with its webhook) is left exactly as it was, minus the number, and remembered for
  * rollback. Only the one number named is touched; it must be found exactly once.
  */
@@ -1103,7 +1103,7 @@ export async function assignWorkspaceLine(workspaceId: string, phoneNumber: stri
   const main = getState().bots.find((b) => b.isMain && workspaceOf(b) === workspaceId);
   if (!ws || !main) throw new Error("no such workspace, or it has no main bot");
   const url = await hookUrl();
-  if (!url) throw new Error(cloudOn() ? "Bops Cloud didn't say where texts go" : "BOPS_AGENTPHONE_HOOK_URL isn't set");
+  if (!url) throw new Error(cloudOn() ? "SmileDesk Cloud didn't say where texts go" : "BOPS_AGENTPHONE_HOOK_URL isn't set");
   const numbers = (await ap<{ data: (ApNumber & { type?: string })[] }>("GET", "/numbers?limit=100", undefined, scope)).data.filter((n) => digits(n.phoneNumber) === digits(phoneNumber));
   if (numbers.length !== 1) throw new Error(`expected exactly one ${phoneNumber} in that account, found ${numbers.length}`);
   const number = numbers[0];
@@ -1114,12 +1114,12 @@ export async function assignWorkspaceLine(workspaceId: string, phoneNumber: stri
   const previousHook = previousId ? await ap<{ url?: string } | null>("GET", `/agents/${previousId}/webhook`, undefined, scope).catch(() => null) : null;
   let agent = agents.find((a) => a.description === tag);
   const madeAgent = !agent;
-  if (!agent) agent = await ap<ApAgent>("POST", "/agents", { name: `Bops · ${ws.name} (${main.name})`, description: tag, voiceMode: "webhook", enableMessaging: true }, scope);
+  if (!agent) agent = await ap<ApAgent>("POST", "/agents", { name: `SmileDesk · ${ws.name} (${main.name})`, description: tag, voiceMode: "webhook", enableMessaging: true }, scope);
   if (previousId && previousId !== agent.id) await ap("DELETE", `/agents/${previousId}/numbers/${number.id}`, undefined, scope);
   if (previousId !== agent.id) await ap("POST", `/agents/${agent.id}/numbers`, { numberId: number.id }, scope);
   const hook = await ap<{ secret?: string; url?: string }>("POST", `/agents/${agent.id}/webhook`, { url, contextLimit: 10, timeout: 30 }, scope);
   await callsToAgent(number.id, agent.id, scope, !madeAgent);
-  // Through Bops Cloud the secret stays there (its deliveries come over the tunnel): only a real one is kept here.
+  // Through SmileDesk Cloud the secret stays there (its deliveries come over the tunnel): only a real one is kept here.
   const secrets = secretsFile();
   if (hook.secret && hook.secret !== KEPT_BY_CLOUD && !cloudOn() && secrets) {
     mkdirSync(dirname(secrets), { recursive: true });
@@ -1131,7 +1131,7 @@ export async function assignWorkspaceLine(workspaceId: string, phoneNumber: stri
     agentId: agent.id,
     type: number.type === "imessage" ? "imessage" : "sms",
     scope,
-    // Keep what was there before the first assignment (re-running this mustn't overwrite it with the Bops agent).
+    // Keep what was there before the first assignment (re-running this mustn't overwrite it with the SmileDesk agent).
     previous: ws.line?.numberId === number.id && ws.line.previous ? ws.line.previous : { agentId: previousId, webhookUrl: previousHook?.url ?? null },
     at: Date.now(),
   };
@@ -1141,7 +1141,7 @@ export async function assignWorkspaceLine(workspaceId: string, phoneNumber: stri
   });
   // Its calls speak in the main bot's voice.
   await voiceToAgent(main, agent.id, scope);
-  await tellCloudLine({ numberId: number.id, botId: main.id, workspaceId, open: true }).catch((e: Error) => console.warn(`[phone] couldn't tell Bops Cloud about ${ws.name}'s number: ${e.message}`));
+  await tellCloudLine({ numberId: number.id, botId: main.id, workspaceId, open: true }).catch((e: Error) => console.warn(`[phone] couldn't tell SmileDesk Cloud about ${ws.name}'s number: ${e.message}`));
   return { line, agent: { id: agent.id, name: agent.name }, previous: previous ? { id: previous.id, name: previous.name, webhook: previousHook?.url ?? null } : null };
 }
 
@@ -1205,7 +1205,7 @@ function ownerList() {
 }
 
 export async function phoneStatus() {
-  // What the Bops plan holds now, so the app says why a number or an email isn't on offer (lib/plan-includes.ts).
+  // What the SmileDesk plan holds now, so the app says why a number or an email isn't on offer (lib/plan-includes.ts).
   const room = planRoom();
   if (!phoneOn()) return { on: false as const, room };
   const reg = await ap<{ campaign_status?: string; message?: string }>("GET", "/register/status").catch(() => null);
@@ -1230,7 +1230,7 @@ export async function phoneStatus() {
     lines: getState()
       .bots.filter((b) => b.phone)
       .map((b) => ({ bot: b.name, phone: prettyPhone(b.phone!) })),
-    // With Bops Cloud's plan limits on, Free gets no number (the cloud refuses the purchase): the app shows why instead of "Get a number".
+    // With SmileDesk Cloud's plan limits on, Free gets no number (the cloud refuses the purchase): the app shows why instead of "Get a number".
     planNeeded: planNeededForNumber(),
     // Each plan's numbers and emails (Free none, Pro 1, Max 5) and how many the user has: the app says why when there's no room.
     room,
@@ -1238,7 +1238,7 @@ export async function phoneStatus() {
 }
 
 /**
- * Whether a number needs Pro or Max here: Bops Cloud holds Free to its plan (CloudSession.plan) and the
+ * Whether a number needs Pro or Max here: SmileDesk Cloud holds Free to its plan (CloudSession.plan) and the
  * user is on Free. Never for a user billed by use: they buy one, paid from their Orgo credit.
  */
 export const planNeededForNumber = () => {

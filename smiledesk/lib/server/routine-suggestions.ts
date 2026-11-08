@@ -6,7 +6,7 @@ import { addMessage, bot, getState, update } from "./store";
 import { findSkill } from "./workspace-skills";
 
 /**
- * Starter routines for a Connected App (or a vault key): when one finishes connecting for a bot, Bops
+ * Starter routines for a Connected App (or a vault key): when one finishes connecting for a bot, SmileDesk
  * offers that bot the app's starters (lib/routine-catalog.ts), and the ones the user picks become the
  * bot's routines. Each runs as a chat run (the bot's tools, no computer), quiet when it's an alert or a
  * monitor, and keeps where it came from (Routine.source), so the same starter is never made twice for a
@@ -54,7 +54,7 @@ export function clearSuggest(match?: { app: string }) {
   update((x) => void delete x.suggest);
 }
 
-/** What Bops offers `botId` for `app`. */
+/** What SmileDesk offers `botId` for `app`. */
 export function offersFor(app: string, botId: string): { botId: string; app: string; templates: Offer[] } | { error: string } {
   if (!bot(botId)) return { error: "No such bot." };
   const s = getState();
@@ -72,7 +72,7 @@ export function acceptStarters(app: string, botId: string, picks: { id: string; 
   const b = bot(botId);
   if (!b) return { created: [], error: "No such bot." };
   const offered = templatesFor(app);
-  if (!offered.length) return { created: [], error: "Bops has no routines for that app yet." };
+  if (!offered.length) return { created: [], error: "SmileDesk has no routines for that app yet." };
   const created: string[] = [];
   const errors: string[] = [];
   const seen = new Set<string>();

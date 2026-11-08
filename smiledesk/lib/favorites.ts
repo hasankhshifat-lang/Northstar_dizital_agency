@@ -29,7 +29,7 @@ export const MAX_FAVORITES = 24;
 const PIN = /^[a-z][a-z0-9_-]{0,39}$/;
 
 /**
- * A workspace's pins as stored (one a newer Bops added stays, so saving here never drops it): the
+ * A workspace's pins as stored (one a newer SmileDesk added stays, so saving here never drops it): the
  * defaults while it never changed them (unset), else its list as it is, an empty one included.
  */
 export const storedFavorites = (w: Pick<Workspace, "favorites"> | undefined): string[] => (w?.favorites === undefined ? [...DEFAULT_FAVORITES] : w.favorites);

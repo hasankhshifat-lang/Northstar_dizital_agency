@@ -5,7 +5,7 @@ import type { BopsPlan } from "@/lib/account";
 import { planFix, type OrgoPlan, type PlanShort } from "@/lib/orgo-plans";
 import type { AppState } from "@/lib/types";
 
-/** What GET /api/plan answers: the user's Orgo plan (null when Orgo couldn't be asked), Orgo's pages to change it, and the Bops plan when it was read. */
+/** What GET /api/plan answers: the user's Orgo plan (null when Orgo couldn't be asked), Orgo's pages to change it, and the SmileDesk plan when it was read. */
 export type PlanInfo = { plan: OrgoPlan | null; links: { plan: string; usage: string }; bops?: BopsPlan | null };
 
 /**
@@ -38,7 +38,7 @@ export function usePlan(state: AppState) {
 
 /**
  * Why the plan has no room for a computer, in plain words, and where to change that: on Orgo, or, when
- * the Bops plan decides (`short` "bops"), Upgrade to Max in the app (`onUpgrade` opens the plans; none
+ * the SmileDesk plan decides (`short` "bops"), Upgrade to Max in the app (`onUpgrade` opens the plans; none
  * on Max, which has nothing more).
  */
 export function PlanNote({ info, short, text, className = "", onUpgrade }: { info: PlanInfo; short: PlanShort; text: string; className?: string; onUpgrade?: () => void }) {

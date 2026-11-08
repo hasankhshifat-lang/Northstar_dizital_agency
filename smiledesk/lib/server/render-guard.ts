@@ -7,7 +7,7 @@ import { guardAddresses } from "./safe-fetch";
 
 /**
  * The gate every request of a page rendered in a browser goes through (lib/server/web-render.ts). The
- * browser (a hidden window in the Bops app, desktop/render.cjs) is told to use this as its proxy for
+ * browser (a hidden window in the SmileDesk app, desktop/render.cjs) is told to use this as its proxy for
  * everything, this Mac's own addresses included, so it never looks a name up or connects anywhere by
  * itself: this does, with the same checks as safeFetch (lib/server/safe-fetch.ts guardAddresses). The
  * page itself, its scripts, styles, images, frames, fetches and redirects, and its websockets (which a

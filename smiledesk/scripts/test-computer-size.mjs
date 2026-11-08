@@ -1,7 +1,7 @@
-// Tests for the size of the free Bops computer, billed by use: Medium or Large. Reading the sizes from orgo-web's
+// Tests for the size of the free SmileDesk computer, billed by use: Medium or Large. Reading the sizes from orgo-web's
 // GET /api/bops/plan (lib/bops-billing.ts, flat or nested, only sizes this app knows), the words and prices
 // (lib/computer-size.ts, every number Orgo's), the size a new computer is made at (lib/server/plan.ts makeFree:
-// bops_size only when Orgo lists it, none on Bops' plans or from an orgo-web before sizes, which makes it Large
+// bops_size only when Orgo lists it, none on SmileDesk's plans or from an orgo-web before sizes, which makes it Large
 // as before), the size kept from Orgo's read, whether Pick your computer is asked (fail open), and switching
 // (lib/server/computer-size.ts): asleep it's woken first, memory too full it's restarted once (never under a
 // bot that's working), want of credit in the app's words, the Orgo plan's own resize, and a refusal of every
@@ -58,7 +58,7 @@ const SIZES = [
 ];
 /**
  * `o.sizes`: orgo-web lists sizes (false: an orgo-web from before, which makes every one Large and has no
- * switch); `o.computer`: the free Bops computer (null: none yet), its size, status and how it's switched;
+ * switch); `o.computer`: the free SmileDesk computer (null: none yet), its size, status and how it's switched;
  * `o.sizeAnswers`: what the switch answers next, in turn, before the rules.
  */
 let o;
@@ -103,7 +103,7 @@ globalThis.fetch = async (input, init = {}) => {
   if (key === "POST /api/bops/computer/size") {
     const next = o.sizeAnswers.shift();
     if (next) return next(call);
-    if (!c) return json(404, { error: "You don't have a Bops computer yet.", code: "bops_no_computer" });
+    if (!c) return json(404, { error: "You don't have a SmileDesk computer yet.", code: "bops_no_computer" });
     if (c.status !== "running") return json(409, { error: "Wake your computer, then switch.", code: "COMPUTER_NOT_RUNNING", next: { method: "POST", path: `/api/computers/${c.id}/resume` } });
     if (call.body.size === "medium" && o.ramInUse) return json(409, { error: "Too much memory in use.", code: "RAM_IN_USE", in_use_gb: 11, min_ram_gb: 16 });
     if (call.body.size === "large" && o.credit < 11) return json(402, { error: "Add Orgo credit to switch to Large. It costs $0.11 an hour while it runs.", code: "bops_out_of_credit", credit_usd_needed: 0.11 });
@@ -239,7 +239,7 @@ await test("a computer that changed size is said with its id, so only its live v
 
 const lastCreate = () => asked("POST", "/api/computers").at(-1)?.body;
 
-await test("billed by use, someone new: made at Orgo's default (Medium); one they picked first, at that; Bops' plans and an orgo-web before sizes: no size sent, so Large", async () => {
+await test("billed by use, someone new: made at Orgo's default (Medium); one they picked first, at that; SmileDesk's plans and an orgo-web before sizes: no size sent, so Large", async () => {
   billedBy("usage");
   fresh();
   noComputer();
@@ -264,7 +264,7 @@ await test("billed by use, someone new: made at Orgo's default (Medium); one the
   assert.equal("bops_size" in lastCreate(), false);
   assert.equal(o.computer.size, "large");
 
-  // Bops' plans (until a user moves): today's create, word for word.
+  // SmileDesk's plans (until a user moves): today's create, word for word.
   billedBy("plan");
   fresh({ billing: "plan" });
   noComputer();
@@ -315,14 +315,14 @@ await test("Pick your computer is asked of a user billed by use until they answe
   S.update((s) => (s.computerSizeChosenAt = Date.now()));
   assert.equal((await view()).needed, false);
   S.update((s) => (s.computerSizeChosenAt = undefined));
-  // An orgo-web before sizes, Bops' plans, or a plan read that didn't come: nothing to pick, nothing in the way.
+  // An orgo-web before sizes, SmileDesk's plans, or a plan read that didn't come: nothing to pick, nothing in the way.
   fresh({ sizes: false, computer: { id: "c-old", size: "large", status: "running" } });
   assert.equal((await view()).needed, false);
   billedBy("plan");
   fresh({ billing: "plan" });
   n = calls.length;
   assert.equal((await view()).needed, false);
-  assert.equal(calls.length, n, "Bops' plans: Orgo isn't even asked");
+  assert.equal(calls.length, n, "SmileDesk's plans: Orgo isn't even asked");
   billedBy("usage");
   const real = globalThis.fetch;
   globalThis.fetch = async () => {
@@ -369,7 +369,7 @@ await test("no computer yet: the size is kept as the one it's made at, and the a
   assert.equal((await post("tiny")).status, 400, "only a size this app knows");
 });
 
-await test("Continue on the computer's own size changes nothing; the other size switches it through Orgo's Bops switch, and the stream is asked afresh", async () => {
+await test("Continue on the computer's own size changes nothing; the other size switches it through Orgo's SmileDesk switch, and the stream is asked afresh", async () => {
   fresh({ computer: { id: "c-big", size: "large", status: "running" }, webrtcRefuse: true });
   noComputer();
   n = asked("POST", "/api/bops/computer/size").length;
@@ -446,7 +446,7 @@ await test("want of credit for Large, in the app's words with Orgo's top up; ref
   assert.equal(asked("POST", "/api/bops/computer/size").length, n);
 });
 
-await test("part of the Orgo plan: Orgo's own resize, with the plan's own words when it says no; a Bops switch that finds it on the plan goes there too", async () => {
+await test("part of the Orgo plan: Orgo's own resize, with the plan's own words when it says no; a SmileDesk switch that finds it on the plan goes there too", async () => {
   fresh({ computer: { id: "c-p", size: "large", status: "running", change: "plan" } });
   noComputer();
   n = asked("POST", "/api/bops/computer/size").length;
@@ -465,7 +465,7 @@ await test("part of the Orgo plan: Orgo's own resize, with the plan's own words 
   assert.equal(asked("PATCH", "/api/computers/c-p2/resize").length, 1);
 });
 
-await test("Bops' plans never switch; one switch at a time", async () => {
+await test("SmileDesk's plans never switch; one switch at a time", async () => {
   billedBy("plan");
   fresh({ billing: "plan", computer: { id: "c-x", size: "large", status: "running" } });
   const r = await post("medium");

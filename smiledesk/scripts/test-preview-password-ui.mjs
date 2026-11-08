@@ -1,9 +1,9 @@
 // Tests for a site's Preview password in the window (components/app/preview-password.tsx, and where preview-tab.tsx,
 // app-envs.tsx and hosted-apps.tsx put it): beside its Preview link, "Password" with its value and Copy, read once from
-// the window's route however many places show it, and again only when the apps list says Bops set a newer one; nothing
+// the window's route however many places show it, and again only when the apps list says SmileDesk set a newer one; nothing
 // where it asks for none, or Orgo can't tell; Copy writes the clipboard only when pressed; its tab's section with Ask for
 // a password (on, with "A new one with each deploy"), New password asked once more in place (no dialog) and the switch,
-// each place showing what changed at once; Bops' own preview view gets its cookie put in its session through the Mac
+// each place showing what changed at once; SmileDesk's own preview view gets its cookie put in its session through the Mac
 // app (once a value, again with a reload when it changes, waited for before the Preview shows); the tab bar's lock and
 // Open in browser, which says the browser asks for it and opens only when pressed. On the Preview line in Your Apps
 // (app-envs.tsx), Password, its value and Copy are one piece, never cut short and never drawn over what the line serves;
@@ -178,7 +178,7 @@ await test("beside a Preview link: Password, its value and Copy, read once from 
   assert.equal(reads().length, 0, "nothing read for them");
 });
 
-await test("read again only when the list says Bops set a newer one (a deploy went live, say): every place then shows the new one", async () => {
+await test("read again only when the list says SmileDesk set a newer one (a deploy went live, say): every place then shows the new one", async () => {
   fresh("/api/hosted-apps/menu/password");
   routes[ROUTE.replace("shop", "menu")] = routes["/api/hosted-apps/menu/password"];
   const first = server.at;
@@ -235,7 +235,7 @@ await test("its tab's Password section: the value with Copy, Ask for a password 
   await old.done();
 });
 
-await test("no password to show (Orgo keeps only its cookie's check): \"Can't be shown. Make a new one.\" with New password at hand, and Bops' own view still signs in; a key that can't read it says why", async () => {
+await test("no password to show (Orgo keeps only its cookie's check): \"Can't be shown. Make a new one.\" with New password at hand, and SmileDesk's own view still signs in; a key that can't read it says why", async () => {
   fresh();
   routes[ROUTE] = () => ({ body: { ...answer(), password: null } });
   const ready = { current: null };
@@ -268,7 +268,7 @@ await test("a refusal is said under the section; a site's own route is named by 
 });
 
 
-await test("Bops' own preview view: the cookie put in its session through the Mac app once a value (no reload the first time), again with a reload when it changes; ready waits for it", async () => {
+await test("SmileDesk's own preview view: the cookie put in its session through the Mac app once a value (no reload the first time), again with a reload when it changes; ready waits for it", async () => {
   fresh();
   let reloads = 0;
   const ready = { current: null };

@@ -1,10 +1,10 @@
 // Tests for an Admin's People sheet and settings of a workspace shared with them (app/api/workspaces/shared/people,
-// settings and wake; lib/server/shared-people.ts): against a fake orgo-web and a fake Bops Cloud (its /v1/ws/<id>/people,
+// settings and wake; lib/server/shared-people.ts): against a fake orgo-web and a fake SmileDesk Cloud (its /v1/ws/<id>/people,
 // routing and wake), with the open shared workspace a stand-in (lib/server/shared.ts sharedAdminOpen). The project is
 // always the open shared workspace's, never one the request names; every call runs on the viewer's own key; orgo-web's
-// "only the owner" reads as "Only the owner can add or change people for now."; each change goes to orgo-web and Bops
+// "only the owner" reads as "Only the owner can add or change people for now."; each change goes to orgo-web and SmileDesk
 // Cloud in the owner's sheet's order (an Admin made a Member gets back their Member entry); removing someone takes their
-// bots first; the owner is never invited, changed or removed; changes come only from the Bops window. Made up people.
+// bots first; the owner is never invited, changed or removed; changes come only from the SmileDesk window. Made up people.
 // Usage: node --conditions=react-server scripts/test-shared-people.mjs
 import assert from "node:assert/strict";
 import { chmodSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
@@ -28,7 +28,7 @@ process.env.PATH = `${join(scratch, "bin")}:${process.env.PATH}`;
 const PROJECT = "7c7c7c7c-1111-4000-8000-000000000001";
 const ADMIN_KEY = "sk_test_admin_viewer_key_000000";
 const STAND_INS = new Set(["mac", "relay", "desktop", "mirror"]);
-// The open shared workspace, as lib/server/shared.ts gives it: its project and the viewer's own key, and Bops Cloud's routes.
+// The open shared workspace, as lib/server/shared.ts gives it: its project and the viewer's own key, and SmileDesk Cloud's routes.
 const SHARED = `
 export function sharedAdminOpen(o = {}) {
   const g = globalThis.__shared;
@@ -61,9 +61,9 @@ registerHooks({
 process.chdir(scratch);
 globalThis.bopsOrgoKey = "sk_test_the_users_own_key_not_used";
 
-/* ---------------- Fakes: orgo-web, Bops Cloud ---------------- */
+/* ---------------- Fakes: orgo-web, SmileDesk Cloud ---------------- */
 
-/** Every call to orgo-web and to Bops Cloud, in order: what the order of each change is checked by. */
+/** Every call to orgo-web and to SmileDesk Cloud, in order: what the order of each change is checked by. */
 const calls = [];
 let replies = {};
 globalThis.fetch = async (input, init = {}) => {
@@ -150,7 +150,7 @@ async function check(name, fn) {
   }
 }
 
-await check("reading: the open shared workspace's people, with the viewer's own key, the bots each Member has from Bops Cloud, and the owner as the owner", async () => {
+await check("reading: the open shared workspace's people, with the viewer's own key, the bots each Member has from SmileDesk Cloud, and the owner as the owner", async () => {
   fresh();
   const r = await people("GET");
   assert.equal(r.status, 200);
@@ -162,14 +162,14 @@ await check("reading: the open shared workspace's people, with the viewer's own 
   assert.deepEqual([cy.role, cy.access.bots], ["viewer", { max: "write" }]);
   assert.equal(r.body.people.find((p) => p.id === "u-ada").role, "admin");
   assert.equal(r.body.seats.limit, 5, "the owner's seats");
-  // An orgo-web from before (no `can`), or a Bops Cloud without admin powers: read only, saying why.
+  // An orgo-web from before (no `can`), or a SmileDesk Cloud without admin powers: read only, saying why.
   fresh({ can: false });
   assert.deepEqual((await people("GET")).body.shared, { me: "u-ada", can: false, line: M.ADMIN_SHEET_WORDS.notOwnerOnly });
   caps(["roles"]);
   fresh();
   const old = await people("GET");
   assert.deepEqual(old.body.shared, { me: "u-ada", can: false, line: M.ADMIN_SHEET_WORDS.notYet });
-  assert.ok(!calls.some((c) => c.to === "cloud"), "never asks an older Bops Cloud");
+  assert.ok(!calls.some((c) => c.to === "cloud"), "never asks an older SmileDesk Cloud");
   caps(["roles", "admin_powers"]);
   // Not an Admin, or nothing open: no sheet.
   fresh({ role: "member" });
@@ -204,7 +204,7 @@ await check("inviting a Member: orgo-web first, on the owner's seats, then the b
 });
 
 await check("an Admin made a Member gets back their Member entry (else Read on every bot), Use its computer off in orgo-web first; making someone an Admin keeps nothing", async () => {
-  // Bops Cloud keeps Bo's entry from before they were an Admin (one bot at Read): that's what goes back, unchanged.
+  // SmileDesk Cloud keeps Bo's entry from before they were an Admin (one bot at Read): that's what goes back, unchanged.
   fresh();
   cloudReplies["GET people"] = () => ({ status: 200, json: { entries: { "bo@example.com": { others: "none", bots: { ivy: "read" }, at: 1_700_000_000_000 } } } });
   const back = await people("PATCH", { memberId: "u-bo", role: "viewer" });
@@ -253,7 +253,7 @@ await check("an Admin made a Member gets back their Member entry (else Read on e
   assert.deepEqual(calls.at(-1).body.access.bots, { max: "read", ivy: "read" });
 });
 
-await check("a Member's bots and Use its computer: orgo-web first for Use its computer, then the bots on Bops Cloud; an Admin's bots aren't picked", async () => {
+await check("a Member's bots and Use its computer: orgo-web first for Use its computer, then the bots on SmileDesk Cloud; an Admin's bots aren't picked", async () => {
   fresh();
   const r = await people("PATCH", { memberId: "u-cy", access: { others: "none", bots: { max: "write", ivy: "read" }, computer: "use" } });
   assert.equal(r.status, 200, JSON.stringify(r.body));
@@ -266,7 +266,7 @@ await check("a Member's bots and Use its computer: orgo-web first for Use its co
   assert.deepEqual(calls.at(-1).body, { who: { memberId: "u-cy" }, access: { others: "none", bots: { max: "read" }, computer: "none" } });
   fresh();
   assert.equal((await people("PATCH", { memberId: "u-bo", access: { others: "read", bots: {} } })).status, 409);
-  // A waiting invite's bots: Bops Cloud only.
+  // A waiting invite's bots: SmileDesk Cloud only.
   fresh();
   await people("PATCH", { invite: "dee@example.com", access: { others: "read", bots: {} } });
   assert.deepEqual(shape().slice(2), ["cloud POST people"]);
@@ -291,7 +291,7 @@ await check("removing someone takes their bots first, then their access; cancell
   assert.ok(shape().includes(`orgo DELETE ${membersPath}`));
 });
 
-await check("the workspace's name (orgo-web, which every Bops follows) and where its chat is answered (Bops Cloud); waking a computer (Bops Cloud)", async () => {
+await check("the workspace's name (orgo-web, which every SmileDesk follows) and where its chat is answered (SmileDesk Cloud); waking a computer (SmileDesk Cloud)", async () => {
   fresh();
   const n = await call(S, "PATCH", { name: "  Brand Team  " });
   assert.equal(n.status, 200);
@@ -304,7 +304,7 @@ await check("the workspace's name (orgo-web, which every Bops follows) and where
   const w = await call(W, "POST", { botId: "max" });
   assert.deepEqual([w.status, w.body], [200, { ok: true, state: "woke" }]);
   assert.equal((await call(W, "POST", { botId: "someone-elses" })).status, 404);
-  // A Member may ask too (Bops Cloud decides by Use its computer).
+  // A Member may ask too (SmileDesk Cloud decides by Use its computer).
   fresh({ role: "member" });
   assert.equal((await call(W, "POST", { botId: "max" })).status, 200);
 });
@@ -322,7 +322,7 @@ await check("an Admin gives a Member Keys, or takes it away, in orgo-web with th
   const before = globalThis.__shared.refreshed;
   const r = await people("PATCH", { memberId: "u-cy", keys: true });
   assert.deepEqual([r.status, r.body], [200, { ok: true }]);
-  assert.deepEqual(shape(), [`orgo GET ${membersPath}`, "cloud GET people", `orgo PATCH ${membersPath}`], "orgo-web alone: nothing for Bops Cloud to keep");
+  assert.deepEqual(shape(), [`orgo GET ${membersPath}`, "cloud GET people", `orgo PATCH ${membersPath}`], "orgo-web alone: nothing for SmileDesk Cloud to keep");
   assert.deepEqual([calls[2].body, calls[2].auth], [{ memberId: "u-cy", bopsKeys: true }, `Bearer ${ADMIN_KEY}`]);
   assert.ok(globalThis.__shared.refreshed > before, "the copy is read again");
   for (const [body, status, code] of [
@@ -353,7 +353,7 @@ await check("an Admin gives a Member Keys, or takes it away, in orgo-web with th
   assert.ok(!calls.some((c) => c.method === "PATCH"));
 });
 
-await check("changes come only from the Bops window", async () => {
+await check("changes come only from the SmileDesk window", async () => {
   process.env.BOPS_UI_TOKEN = "window-token-0123456789";
   for (const [mod, method] of [[R, "POST"], [R, "PATCH"], [R, "DELETE"], [S, "PATCH"], [W, "POST"]]) {
     fresh();

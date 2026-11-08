@@ -1,5 +1,5 @@
 // The comparison runs for model routing (.context/model-routing-research.md): each task case, run once on
-// each configuration (a model, an effort, a speed), on the Bops running on this Mac, one at a time, for
+// each configuration (a model, an effort, a speed), on the SmileDesk running on this Mac, one at a time, for
 // the main bot. Each answer is graded against its case's rubric (POST /api/judge). For each case it finds
 // the cheapest configuration that passed (the "oracle"), and how each policy would have done: the old rule
 // (a hard task on Astra), the router (POST /api/route, what Jev picks), and always-Sol. That's what sets
@@ -52,7 +52,7 @@ const CASES = [
   { id: "usb-hub", kind: "search", goal: "Find a USB-C hub under $40 with at least 4.3 stars on Amazon. Give its name, price and rating. Only look: don't buy or sign in.", rubric: "Names one USB-C hub with a price under $40 and a rating of at least 4.3 stars, from Amazon." },
   { id: "github-repo", kind: "read", goal: "On GitHub, how many stars does the openai/openai-node repository have, and what's its latest release tag?", rubric: "Gives a star count and a release tag (like v7.x.y) for openai/openai-node." },
   // Forms
-  { id: "form", kind: "form", goal: "Go to https://httpbin.org/forms/post (a test form that goes nowhere). Fill in the pizza order: customer name Bops Bench, telephone 555-0100, email bench@example.com, size small, topping bacon, delivery time 19:00, comments 'benchmark'. Submit it, then tell me what the page that comes back shows for custname and size.", rubric: 'Says it submitted, and that the returned page shows custname "Bops Bench" and size "small".' },
+  { id: "form", kind: "form", goal: "Go to https://httpbin.org/forms/post (a test form that goes nowhere). Fill in the pizza order: customer name SmileDesk Bench, telephone 555-0100, email bench@example.com, size small, topping bacon, delivery time 19:00, comments 'benchmark'. Submit it, then tell me what the page that comes back shows for custname and size.", rubric: 'Says it submitted, and that the returned page shows custname "SmileDesk Bench" and size "small".' },
   { id: "form-large", kind: "form", goal: "Go to https://httpbin.org/forms/post (a test form that goes nowhere). Order a large pizza with cheese and onion for Ada Lovelace, telephone 555-0199, email ada@example.com, delivery 20:30. Submit it and tell me which toppings the returned page lists.", rubric: "Says it submitted, and that the returned page lists the toppings cheese and onion (and size large)." },
   // Apps on the computer (the screen)
   { id: "calc", kind: "app", goal: "On your own computer, open LibreOffice Calc, put the numbers 1 to 5 in cells A1 to A5 and a sum of them in A6, and save it as /workspace/bench.ods. Tell me what A6 shows.", rubric: "Says A6 shows 15 and that the file was saved as /workspace/bench.ods." },
@@ -74,7 +74,7 @@ if (flag("list")) {
   process.exit(0);
 }
 
-const token = readFileSync(join(homedir(), "Library/Application Support/Bops/window-token"), "utf8").trim();
+const token = readFileSync(join(homedir(), "Library/Application Support/SmileDesk/window-token"), "utf8").trim();
 const api = async (path, init = {}) => {
   const r = await fetch(`${BASE}${path}`, { ...init, headers: { "content-type": "application/json", "x-bops-window": token, ...(init.headers ?? {}) } });
   const body = await r.json().catch(() => ({}));
@@ -119,7 +119,7 @@ const botId = value("bot") ?? st.bots.find((b) => b.isMain && (b.workspaceId ?? 
 if (!botId) throw new Error("No main bot found.");
 const busy = st.sessions.filter(live);
 if (busy.length && !flag("force")) {
-  console.error(`Not now: ${busy.length} task(s) running (${busy.map((s) => s.title).join(", ")}). Run it when Bops is idle, or pass --force.`);
+  console.error(`Not now: ${busy.length} task(s) running (${busy.map((s) => s.title).join(", ")}). Run it when SmileDesk is idle, or pass --force.`);
   process.exit(1);
 }
 console.log(`Grid on ${BASE}, bot ${botId}: ${CASES.length} cases x ${CONFIGS.length} configurations, one at a time, up to ${LIMIT_MS / 60_000} min each.`);

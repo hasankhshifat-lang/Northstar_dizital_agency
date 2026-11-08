@@ -7,7 +7,7 @@ import { cleanText, fit } from "./routine-sync";
 import { getState, stateReady, stateTooNew, watchChanges } from "./store";
 
 /**
- * A map of each workspace's Bops in its Orgo project (orgo-web public.bops_bots, bops_resources and
+ * A map of each workspace's SmileDesk in its Orgo project (orgo-web public.bops_bots, bops_resources and
  * bops_watches), so Orgo knows who the bots are and what's whose: each bot and the computer it works on
  * (workBot: its own, or its main bot's), what it owns (its phone line, its inbox, the channels it's in)
  * and what the workspace has (its Connected App accounts, the logins its bots may use, its phone line),
@@ -23,13 +23,13 @@ import { getState, stateReady, stateTooNew, watchChanges } from "./store";
  * orgo-web says it takes that field (the GET's and the map's answer list `bot_fields`): an older orgo-web
  * refuses a map with a field it doesn't know, the whole of it. That GET goes once a run, before the first map.
  *
- * The same rules as routine-sync.ts: Bops stays the source and nothing waits on Orgo. A workspace whose
+ * The same rules as routine-sync.ts: SmileDesk stays the source and nothing waits on Orgo. A workspace whose
  * map changed sends the whole of it SYNC_DEBOUNCE_MS after the last change in a burst (PUT
  * /api/projects/{id}/bops), and the first look after start sends every one. A map Orgo didn't take for
  * now (no answer, 401, 403, 408, 429, 5xx) is sent again after a backoff; one it refused (a 400) waits for
  * the next change. One flush per workspace at a time. An Orgo without the route (404 or 405) is asked
  * again at most once every 6 hours. Runs on the signed-in Orgo key; signed out, nothing is sent. The map
- * is the Mac's: a computer's Bops runner never sends it. orgo-web takes at most CAPS of each list in one
+ * is the Mac's: a computer's SmileDesk runner never sends it. orgo-web takes at most CAPS of each list in one
  * PUT and replaces the whole map with it: past a cap the rest is cut (said in the log; orgo-web's follow-up
  * is a paged PUT), so the same ones are cut each time.
  */
@@ -79,7 +79,7 @@ const botFieldsTaken = () => g.__bopsMapBotFields ?? null;
 /** A brain's kind as orgo-web names it (bops_resources.app). */
 const BRAIN_APP: Record<BrainKind, string> = { claude: "claude_code", codex: "codex" };
 
-/** An id Orgo keeps as it is: one cut or cleaned would no longer be the one Bops has, so it isn't sent. */
+/** An id Orgo keeps as it is: one cut or cleaned would no longer be the one SmileDesk has, so it isn't sent. */
 const keeps = (s: string | undefined, max: number): s is string => !!s && s.length <= max && cleanText(s, max) === s;
 
 /**
@@ -164,7 +164,7 @@ export function bopsMapPayload(wsId: string, s: AppState = getState()): BopsMap 
   return { bots, resources: resources.slice(0, CAPS.resources), watches: watches.slice(0, CAPS.watches) };
 }
 
-/** Said once per workspace and run of Bops (the map is built on every look). */
+/** Said once per workspace and run of SmileDesk (the map is built on every look). */
 function warnCut(wsId: string, what: string) {
   const said = (g.__bopsMapCutSaid ??= new Set());
   if (said.has(`${wsId}:${what}`)) return;

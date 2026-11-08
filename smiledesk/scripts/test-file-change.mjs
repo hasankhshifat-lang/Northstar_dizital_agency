@@ -3,7 +3,7 @@
 // branch, its folders, each file there now, for the card's diff: every changed line, whole, after the repository and
 // the branch); the ask carries the bot's reason, which files and how, and the facts line says "GitHub · changes 2 files
 // on <branch>". A change too big to show whole, a file too big to read, a link or a repository inside is refused, never
-// asked for. On Allow, Bops makes the blobs (the text as UTF-8, never base64 from the model), the tree (an executable
+// asked for. On Allow, SmileDesk makes the blobs (the text as UTF-8, never base64 from the model), the tree (an executable
 // kept one) and the commit, and moves the branch last (making it from its base when it's new); on Deny nothing is
 // written; a failure part way leaves the branch where it was. A task never has it. Bad input is said plainly, and
 // nothing goes out for it.
@@ -378,7 +378,7 @@ await check("a task pauses at its change on one card; Allow once resumes it and 
   await new Promise((r) => setTimeout(r, 100));
   assert.deepEqual(writes(), [], "a stopped task writes nothing");
   answers.length = 0;
-  // An Always allow (an older Bops's, or spread from another card) is no yes for a task's change: declined, nothing written.
+  // An Always allow (an older SmileDesk's, or spread from another card) is no yes for a task's change: declined, nothing written.
   freshRepo();
   const t3 = task();
   const a3 = await pause(t3);
@@ -389,7 +389,7 @@ await check("a task pauses at its change on one card; Allow once resumes it and 
   answers.length = 0;
 });
 
-await check("a task's write card: Bops' facts lead and the bot's words are labelled below; Always allow is refused on it, and one given on another card answers neither it nor another person's card", async () => {
+await check("a task's write card: SmileDesk's facts lead and the bot's words are labelled below; Always allow is refused on it, and one given on another card answers neither it nor another person's card", async () => {
   const { changeFiles } = await import(`${root}/lib/server/repo-change.ts`);
   freshRepo();
   const asked = async (where, opts) => changeFiles("boppy", change(), where, opts).then(() => null, (x) => x);

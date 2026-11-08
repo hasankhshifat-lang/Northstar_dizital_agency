@@ -5,7 +5,7 @@
 // showing the ghost card, a card as tall as what it shows, a second row's bracket, the keyboard (lines, Esc, focus), a
 // shared workspace showing nothing, the profile's line, and every word plain: no dashes, Knowledge never its old name.
 //
-// Rendered into a DOM (linkedom) and clicked, against a fake Bops: nothing reaches a server. The .tsx files are compiled
+// Rendered into a DOM (linkedom) and clicked, against a fake SmileDesk: nothing reaches a server. The .tsx files are compiled
 // with the TypeScript in node_modules as they load.
 // Usage: node scripts/test-team-chart-ui.mjs   (not with --conditions=react-server: these are client components)
 import assert from "node:assert/strict";
@@ -55,8 +55,8 @@ globalThis.matchMedia = () => ({ matches: false });
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 /**
- * Bops, faked: what each PATCH sent, whether the chart's save is refused (or only Bring it in), whether a Mac on the
- * account runs an older Bops, and the state it keeps (the window shows it again).
+ * SmileDesk, faked: what each PATCH sent, whether the chart's save is refused (or only Bring it in), whether a Mac on the
+ * account runs an older SmileDesk, and the state it keeps (the window shows it again).
  */
 const bops = { sent: [], refuse: false, refuseMemory: false, older: false, setState: null };
 globalThis.fetch = async (url, init = {}) => {
@@ -164,7 +164,7 @@ const stateWith = (chain = CHAIN, more = {}) => ({
   host: "orgo",
   ...more,
 });
-/** The chart as the window shows it: with the state Bops keeps, shown again after each save. */
+/** The chart as the window shows it: with the state SmileDesk keeps, shown again after each save. */
 function Live({ state, ...rest }) {
   const [s, setS] = useState(state);
   bops.setState = setS;
@@ -323,7 +323,7 @@ await test("memory: keeping it to itself, reading the team's, and turning it off
   assert.match(sheet().textContent, /What Max kept to itself is kept apart\. Its Memory tab can bring it in or delete it\./);
   await click(switchOf(sheet(), "Keeps its memory to itself"));
   await click(switchOf(sheet(), "Keeps its memory to itself"));
-  // Bring it in: the chart first, its bank kept apart until it's brought in (Bops lets that go then), then the memory.
+  // Bring it in: the chart first, its bank kept apart until it's brought in (SmileDesk lets that go then), then the memory.
   await click(buttonOf(sheet(), "Bring it in"));
   assert.deepEqual(lastChain().bots?.max, { kept: true }, "the team's memory again, what it kept still apart");
   assert.deepEqual(bops.sent.at(-1), { url: "/api/memory", method: "POST", body: { action: "bring-in", bot: "max" } });
@@ -443,7 +443,7 @@ await test("Works for someone who sees no bot yet: no save, the Give Write offer
   const { box, done } = await mount(h(Live, { state: stateWith(), people, focus: "max", onClose: noop }));
   const sheet = () => box.querySelector('[data-bot-sheet="max"]');
   await choose(sheet().querySelector('select[aria-label="Works for"]'), "cy@example.com");
-  assert.equal(bops.sent.length, 0, "nothing Bops would keep yet");
+  assert.equal(bops.sent.length, 0, "nothing SmileDesk would keep yet");
   assert.ok(!box.querySelector('[role="status"]'), "no Saved");
   assert.match(sheet().querySelector("[data-give-write]").textContent, /Cy can't use Max yet\. Give Cy Write\?/);
   await click(buttonOf(sheet(), "Give Write"));
@@ -486,16 +486,16 @@ await test("bots that can't ask each other on one computer: a note under the cha
   await done();
 });
 
-await test("an older Bops on the account (Bops says so: GET /api/workspaces?olderBops=1): said once, under the chart", async () => {
+await test("an older SmileDesk on the account (SmileDesk says so: GET /api/workspaces?olderBops=1): said once, under the chart", async () => {
   bops.older = true;
   const { box, done } = await mount(chartOf());
-  assert.match(box.querySelector("[data-older-bops]").textContent, /One of your Macs runs an older Bops\. These rules hold there once it updates\./);
+  assert.match(box.querySelector("[data-older-bops]").textContent, /One of your Macs runs an older SmileDesk\. These rules hold there once it updates\./);
   await done();
   bops.older = false;
   const now = await mount(chartOf());
   assert.equal(now.box.querySelector("[data-older-bops]"), null);
   await now.done();
-  assert.ok(!renderToStaticMarkup(chartOf({ more: { orgoMigration: { defaultRename: { to: "Acme", reason: "old_app", checkedAt: "2026-10-01" } } } })).includes("older Bops"), "not from the rename's flag");
+  assert.ok(!renderToStaticMarkup(chartOf({ more: { orgoMigration: { defaultRename: { to: "Acme", reason: "old_app", checkedAt: "2026-10-01" } } } })).includes("older SmileDesk"), "not from the rename's flag");
 });
 
 await test("a card is as tall as what it shows: its name never gives way, and more than three people is two and +n", async () => {
@@ -604,7 +604,7 @@ await test("with more than six bots: the badge says how most asking goes, never 
   assert.equal(badge({ sideways: "closed", pairs: { "max>kit": true } }), "Asking is mostly up and down");
 });
 
-await test("a save Bops refuses goes back, and says so", async () => {
+await test("a save SmileDesk refuses goes back, and says so", async () => {
   bops.sent = [];
   bops.refuse = true;
   try {

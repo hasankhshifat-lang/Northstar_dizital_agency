@@ -9,8 +9,8 @@ import { getState, ownSession, stateTooNew } from "./store";
 import { turnsRunning } from "./turn-context";
 
 /**
- * Free's Bops computer runs 10 hours a month, and Orgo suspends it after 15 minutes nobody uses it
- * (orgo-web lib/bops-free-hours.ts), so the hours are the ones it's used. Bops says when it's in use
+ * Free's SmileDesk computer runs 10 hours a month, and Orgo suspends it after 15 minutes nobody uses it
+ * (orgo-web lib/bops-free-hours.ts), so the hours are the ones it's used. SmileDesk says when it's in use
  * (POST /api/bops/computer/active): once as it opens for each sign-in (which also tells Orgo this app
  * says so at all: an app that never has isn't suspended when idle, so its computer runs its 10 hours
  * straight), the moment a task starts on a computer in the cloud or the user takes over one of its
@@ -18,8 +18,8 @@ import { turnsRunning } from "./turn-context";
  * hours last. Asleep for want of use, Orgo may leave it asleep for a read of its screens (the app's
  * views, a task's first look) until it's said to be in use again; an action always wakes it.
  *
- * A computer's Bops runner (runner.ts) says it only while a routine's task of its own runs, as the
- * runner's (via 'runner'): Orgo then suspends it 5 minutes after, not 15. Each Bops says it for its
+ * A computer's SmileDesk runner (runner.ts) says it only while a routine's task of its own runs, as the
+ * runner's (via 'runner'): Orgo then suspends it 5 minutes after, not 15. Each SmileDesk says it for its
  * own tasks only (Session.by).
  */
 const EVERY_MS = 4 * 60_000;
@@ -28,7 +28,7 @@ export const START_SAY_MS = 5000;
 const g = globalThis as unknown as { bopsActivityBeat?: NodeJS.Timeout; bopsActivitySaid?: string };
 
 /**
- * Something of this Bops's is using the bots' computer in the cloud right now: a task of its own working there,
+ * Something of this SmileDesk's is using the bots' computer in the cloud right now: a task of its own working there,
  * or the user driving one of its screens (the two reasons a computer is up: its run's next step needs it, or the
  * user wants to use it). Not a run paused for the user's OK (lib/server/permission.ts): it waits queued, doing
  * nothing on the computer however long the user takes, so the computer sleeps on its normal rules meanwhile
@@ -44,7 +44,7 @@ function inUse(): boolean {
 /**
  * One beat: say it's in use if it is (or this sign-in hasn't said so yet). The timer's step, and what a
  * task or a takeover calls as it starts (`timeoutMs`: how long it waits for Orgo then); the tests call it
- * too. None while a newer Bops of the user's wrote their state (store.ts stateTooNew): this one runs nothing then.
+ * too. None while a newer SmileDesk of the user's wrote their state (store.ts stateTooNew): this one runs nothing then.
  */
 export async function sayInUse(timeoutMs?: number) {
   const key = orgoKey();

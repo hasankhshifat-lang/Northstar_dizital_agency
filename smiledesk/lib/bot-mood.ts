@@ -11,7 +11,7 @@ import { live, waitsForOk, type AppState, type Session } from "@/lib/types";
  * coding is a thread at work on one of the workspace's apps (Session.app, codingThread), never a guess;
  * speaking is the bot's voice coming through on a call (CallBar's meter); shy is the user thanking or
  * praising it, for a few seconds after. A bot at work on another of the user's devices shows what it's
- * doing there (AppState.liveMoods, from Bops Cloud's live stream) while nothing here says otherwise.
+ * doing there (AppState.liveMoods, from SmileDesk Cloud's live stream) while nothing here says otherwise.
  * And which bots are coders at all (codersOf), for the mark every mascot of theirs wears.
  */
 export type MoodSignals = {
@@ -55,8 +55,8 @@ export function codersOf(state: Pick<AppState, "account" | "shared" | "workspace
 /**
  * Whether thread `s` is coding: running (not queued or starting, not stopped at something only the user can get
  * past, not waiting to be told where to run or for the user's OK) on one of the workspace's apps (Session.app,
- * work_on_app's), the user's own ask (never a routine's run or one someone outside Bops started), where the window
- * shows apps (appsShown). Bops Cloud has no such mood: lib/server/live-core.ts localMoods says it's working there.
+ * work_on_app's), the user's own ask (never a routine's run or one someone outside SmileDesk started), where the window
+ * shows apps (appsShown). SmileDesk Cloud has no such mood: lib/server/live-core.ts localMoods says it's working there.
  */
 export function codingThread(s: Session, state: Pick<AppState, "account" | "shared"> & { appApprovals?: AppState["appApprovals"] }): boolean {
   return s.status === "running" && !s.blocker && !s.askWhere && !waitsForOk(s, { appApprovals: state.appApprovals }) && !!s.app && !s.routineId && !s.fromOutside && appsShown(state);

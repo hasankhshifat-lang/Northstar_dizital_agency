@@ -1,11 +1,11 @@
 // Tests for Knowledge's Skills page grouped by label (components/app/skills.tsx, lib/skill-labels.ts):
-// the skills under their labels, Bops' own labels first (lib/builtin-skills.ts) and marked Built in, then
-// the workspace's, the most skills first, Unsorted last; a workspace skill given one of Bops' labels sits in
+// the skills under their labels, SmileDesk's own labels first (lib/builtin-skills.ts) and marked Built in, then
+// the workspace's, the most skills first, Unsorted last; a workspace skill given one of SmileDesk's labels sits in
 // that label; each heading counts its skills; only the first two labels start open, then as this Mac
 // remembers them (and with no storage at all, still the first two); a row is one line with Draft until
-// it's published; one of Bops' own opens read only, its SKILL.md to read; a workspace skill opened has a
+// it's published; one of SmileDesk's own opens read only, its SKILL.md to read; a workspace skill opened has a
 // label chip that opens the labels there are and New label, and moving it sends the update route a label;
-// Bops' suggestion says auto on its row and by its chip, with Confirm and Change, and Suggest labels with AI
+// SmileDesk's suggestion says auto on its row and by its chip, with Confirm and Change, and Suggest labels with AI
 // is a switch for the owner (on unless turned off), never in a workspace shared with them.
 //
 // The .tsx files are compiled with the TypeScript in node_modules as they load, and rendered to HTML.
@@ -110,7 +110,7 @@ const skill = (slug, label, extra = {}) => ({
 });
 
 // Newest first, as skillsIn sorts them: Email has three (one spelled in lower case), Sales calls one,
-// Billing one, two with no label (Unsorted), and one given Bops' own apps label.
+// Billing one, two with no label (Unsorted), and one given SmileDesk's own apps label.
 const SKILLS = [
   skill("reply", "Email"),
   skill("triage", "email"),
@@ -122,7 +122,7 @@ const SKILLS = [
   skill("blank", ""),
 ];
 
-// Signed in with an @orgo.ai email, so Bops' own skills for apps are listed (lib/apps-access.ts); a test
+// Signed in with an @orgo.ai email, so SmileDesk's own skills for apps are listed (lib/apps-access.ts); a test
 // at the end signs in as someone else, who sees none of them.
 function world(skills = SKILLS) {
   return {
@@ -153,14 +153,14 @@ const rowsIn = (part) => [...part.matchAll(/title="([^"\n]+)\n/g)].map((m) => m[
 
 /* ---------------- Groups and their order ---------------- */
 
-await test("Bops' own labels exist, the apps label first, each with skills to read", () => {
+await test("SmileDesk's own labels exist, the apps label first, each with skills to read", () => {
   assert.ok(BUILT_LABELS.length > 0, "at least one built-in label");
   assert.equal(BUILT_LABELS[0], L.APPS_LABEL, "Apps and source control first");
   for (const label of BUILT_LABELS) assert.ok(builtIn(label).length > 0, `${label} has skills`);
   for (const s of BUILT) assert.ok(s.slug && s.name && s.description && typeof s.body === "string" && s.body.trim(), `${s.slug} has a name, a description and a SKILL.md`);
 });
 
-await test("Groups: Bops' labels first, then the workspace's, the most skills first, then by name, Unsorted last; one label whatever its case or spacing", () => {
+await test("Groups: SmileDesk's labels first, then the workspace's, the most skills first, then by name, Unsorted last; one label whatever its case or spacing", () => {
   const groups = Sk.labelGroups(SKILLS);
   assert.deepEqual(groups.map((g) => g.label), [...BUILT_LABELS, "Email", "Billing", "Sales calls", "Unsorted"]);
   assert.deepEqual(groups.map((g) => g.builtin), [...BUILT_LABELS.map(() => true), false, false, false, false]);
@@ -170,15 +170,15 @@ await test("Groups: Bops' labels first, then the workspace's, the most skills fi
   assert.equal(email.about, "Skill reply, Skill triage, Skill digest", "a workspace label's about is its skills' names");
   assert.deepEqual(groups.at(-1).slugs, ["plain", "blank"], "no label and an empty one are Unsorted");
   const apps = groups[0];
-  assert.deepEqual(apps.slugs, [...builtIn(L.APPS_LABEL).map((s) => s.slug), "deploy-notes"], "a workspace skill with Bops' apps label sits in it, after Bops' own");
+  assert.deepEqual(apps.slugs, [...builtIn(L.APPS_LABEL).map((s) => s.slug), "deploy-notes"], "a workspace skill with SmileDesk's apps label sits in it, after SmileDesk's own");
   assert.equal(apps.count, builtIn(L.APPS_LABEL).length + 1);
   assert.equal(apps.about, B.BUILTIN_LABELS[0].about, "a built-in label keeps its own about");
   // Apps have no built-in labels.
   assert.deepEqual(Sk.labelGroups([skill("a", "Tools", { kind: "app" })], false).map((g) => g.label), ["Tools"]);
-  assert.deepEqual(Sk.labelGroups([]).map((g) => g.label), BUILT_LABELS, "no skills of the workspace's: Bops' own still there");
+  assert.deepEqual(Sk.labelGroups([]).map((g) => g.label), BUILT_LABELS, "no skills of the workspace's: SmileDesk's own still there");
 });
 
-await test("The page: a heading per label in that order, with its count, Built in on Bops' own only", () => {
+await test("The page: a heading per label in that order, with its count, Built in on SmileDesk's own only", () => {
   stored.clear();
   const html = render();
   assert.deepEqual(labelsIn(html), [...BUILT_LABELS, "Email", "Billing", "Sales calls", "Unsorted"]);
@@ -237,23 +237,23 @@ await test("Rows: one line each, its name and what it does, all of it in the too
   stored.clear();
 });
 
-await test("No skills of the workspace's: Bops' own labels still there, and a line on making one", () => {
+await test("No skills of the workspace's: SmileDesk's own labels still there, and a line on making one", () => {
   stored.clear();
   const html = render(world([]));
   assert.deepEqual(labelsIn(html), BUILT_LABELS);
   assert.match(html, /No skills of your own yet\. Save one from a chat’s menu\./);
 });
 
-/* ---------------- Bops' own, read only ---------------- */
+/* ---------------- SmileDesk's own, read only ---------------- */
 
-await test("One of Bops' own opens read only: Built in, its label, its SKILL.md to read, nothing to change", () => {
+await test("One of SmileDesk's own opens read only: Built in, its label, its SKILL.md to read, nothing to change", () => {
   const s = builtIn(L.APPS_LABEL)[0];
   const html = render(world(), { focus: `builtin:${s.slug}` });
   assert.ok(html.includes(`>${esc(s.name)}<`), "its name");
   assert.ok(html.includes(esc(s.description)), "what it does");
   assert.match(html, />Built in</);
   assert.match(html, new RegExp(`>${L.APPS_LABEL}<`), "its label, as plain text");
-  assert.match(html, /Every bot has it\. It comes with Bops, so it can&#x27;t be changed here\./);
+  assert.match(html, /Every bot has it\. It comes with SmileDesk, so it can&#x27;t be changed here\./);
   assert.ok(html.includes(renderToStaticMarkup(h(Sk.SkillMarkdown, { text: s.body }))), "its SKILL.md, all of it");
   for (const word of [">Delete<", ">Publish", ">Open in Finder<", "aria-haspopup", ">Bots<", ">Versions<"]) assert.ok(!html.includes(word), `no ${word}`);
   assert.ok(!html.includes("data-label="), "the list is gone while it's open");
@@ -293,7 +293,7 @@ await test("The picker: every label there is, the skill's own checked, Unsorted,
   assert.equal(sent.length, 0, "rendering sends nothing");
 });
 
-/* ---------------- Bops' suggestions ---------------- */
+/* ---------------- SmileDesk's suggestions ---------------- */
 
 await test("A suggested label says auto on its row and by its chip, with Confirm and Change; a chosen one doesn't; Suggest labels with AI is the owner's switch", () => {
   stored.clear();
@@ -322,7 +322,7 @@ await test("A suggested label says auto on its row and by its chip, with Confirm
 
 /* ---------------- Someone apps aren't open to ---------------- */
 
-await test("Someone apps aren't open to (lib/apps-access.ts): none of Bops' own skills for apps, nor their label to pick; a skill they gave that label keeps it", () => {
+await test("Someone apps aren't open to (lib/apps-access.ts): none of SmileDesk's own skills for apps, nor their label to pick; a skill they gave that label keeps it", () => {
   stored.clear();
   const other = { ...world(), account: { user: { id: "u3", name: "Sam", email: "sam@example.com" } } };
   const html = render(other);
@@ -336,13 +336,13 @@ await test("Someone apps aren't open to (lib/apps-access.ts): none of Bops' own 
     ["Sales calls", false, 0],
     ["Unsorted", false, 0],
   ]);
-  assert.deepEqual(Sk.labelChoices([skill("x", "Email")], false), ["Email", "Unsorted"], "nothing of Bops' own to move one to");
-  // One of Bops' own asked for by name doesn't open.
+  assert.deepEqual(Sk.labelChoices([skill("x", "Email")], false), ["Email", "Unsorted"], "nothing of SmileDesk's own to move one to");
+  // One of SmileDesk's own asked for by name doesn't open.
   assert.ok(!render(other, { focus: `builtin:${BUILT[0].slug}` }).includes(esc(BUILT[0].name)));
   stored.clear();
 });
 
-await test("In a workspace someone else shared, even an @orgo.ai account sees none of Bops' own skills for apps (they're its owner's); in its own, still all of them", () => {
+await test("In a workspace someone else shared, even an @orgo.ai account sees none of SmileDesk's own skills for apps (they're its owner's); in its own, still all of them", () => {
   stored.clear();
   // As lib/server/shared-core.ts viewState makes it: the viewer's own account, the shared workspace in place of theirs.
   const shared = { ...world(), workspace: "shared:p1", workspaces: [{ id: "shared:p1", name: "Acme", createdAt: 1 }], shared: { projectId: "p1", name: "Acme", owner: "Dana", role: "member", wsId: "ws_acme" } };
@@ -351,7 +351,7 @@ await test("In a workspace someone else shared, even an @orgo.ai account sees no
   for (const s of BUILT) assert.ok(!html.includes(esc(s.name)), `no ${s.slug}`);
   assert.ok(!/Ingot|deploy/i.test(html), "nothing of Ingot or deploying");
   for (const s of BUILT) assert.ok(!render(shared, { focus: `builtin:${s.slug}` }).includes(esc(s.name)), `${s.slug} doesn't open by name`);
-  // Their own workspace: Bops' own skills for apps, as before.
+  // Their own workspace: SmileDesk's own skills for apps, as before.
   const own = render(world());
   assert.ok(labelsIn(own).includes(L.APPS_LABEL));
   for (const s of builtIn(L.APPS_LABEL)) assert.ok(own.includes(esc(s.name)), `${s.slug} listed`);

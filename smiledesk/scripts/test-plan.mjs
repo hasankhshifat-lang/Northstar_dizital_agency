@@ -1,12 +1,12 @@
-// Tests for Bops on Orgo's plans: reading the user's plan from Orgo (lib/server/plan.ts) for every plan
+// Tests for SmileDesk on Orgo's plans: reading the user's plan from Orgo (lib/server/plan.ts) for every plan
 // key, today's and older ones, room or none for another computer and the words for it (lib/orgo-plans.ts),
-// the size Bops makes computers at so a plan runs out of computers before memory, Orgo's refusals (a
+// the size SmileDesk makes computers at so a plan runs out of computers before memory, Orgo's refusals (a
 // custom deal's too), the first task's copy of the main bot's computer falling back to the main bot's
-// when the plan has no room, computers made one at a time, the plan read again after Bops makes or
+// when the plan has no room, computers made one at a time, the plan read again after SmileDesk makes or
 // deletes a computer, and setting a computer up (lib/server/sessions.ts): a broken one replaced, and
 // nothing done in another user's state. A computer deleted on Orgo's site: whatever finds out (a screen's
 // stream or screenshot, the computer view, its set-up button, the check every 10 minutes), the bot moves
-// once onto the free Bops computer or a new one, and deleting one that's gone just forgets it. Orgo is a fake fetch on a made-up origin and the state a
+// once onto the free SmileDesk computer or a new one, and deleting one that's gone just forgets it. Orgo is a fake fetch on a made-up origin and the state a
 // throwaway file store in a temporary folder: nothing reaches Orgo, and no key is read from the Keychain.
 // Usage: node --conditions=react-server scripts/test-plan.mjs
 import assert from "node:assert/strict";
@@ -15,7 +15,7 @@ import { registerHooks } from "node:module";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-// The state in a throwaway file store, as a self-hosted install keeps it (the Mac app keeps it in Bops Cloud, per user: test-profiles.mjs).
+// The state in a throwaway file store, as a self-hosted install keeps it (the Mac app keeps it in SmileDesk Cloud, per user: test-profiles.mjs).
 process.env.BOPS_SELF_HOSTED = "1";
 // Orgo is the fake below, on its own origin; the state goes to a throwaway file store, with mail, OpenAI and the tailnet off.
 // WebRTC is on by default (lib/server/orgo.ts webrtcWanted), so a new computer's is turned on.
@@ -70,7 +70,7 @@ globalThis.fetch = async (input, init = {}) => {
 };
 const json = (status, obj) => new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
 const asked = (method, path) => calls.filter((c) => c.method === method && c.path === path).length;
-const WORKSPACES = { "GET /api/workspaces": () => json(200, { workspaces: [{ id: "ws_other", name: "bops", role: "member" }, { id: "ws_bops", name: "Bops", role: "owner" }] }) };
+const WORKSPACES = { "GET /api/workspaces": () => json(200, { workspaces: [{ id: "ws_other", name: "bops", role: "member" }, { id: "ws_bops", name: "SmileDesk", role: "owner" }] }) };
 /** Each plan's memory in GB (orgo-web lib/subscription-tiers.ts maxRamPerUser), with 8 GB for each computer in use. */
 const POOL = { free: 4, hacker_v2: 8, startup_v2: 32, scale_v2: 128, hacker: 20, developer: 20, team: 80, startup: 200, scale: 200, max: 200, enterprise: 2000 };
 const memoryOf = (tier, inUse) => {
@@ -88,7 +88,7 @@ const answers = (tier, max, used, over = {}) => {
     ...over.replies,
   };
 };
-/** The account is on that plan now: what Bops read about the last one is forgotten. */
+/** The account is on that plan now: what SmileDesk read about the last one is forgotten. */
 const onPlan = (...plan) => {
   replies = answers(...plan);
   L.forgetPlan();
@@ -194,20 +194,20 @@ assert.equal(P.planShort(startupGb(4, 32), 1, 8), "count", "the count first");
 const texts = [
   // The example: the bots' one computer is the Hacker plan's one.
   [P.planShortText("count", hacker(1), { bops: 1 }), "Your Orgo Hacker plan includes 1 computer, and it's in use. Orgo Startup includes 4."],
-  [P.planShortText("count", hacker(1), { bops: 0 }), "Your Orgo Hacker plan includes 1 computer, and it's in use outside Bops. Orgo Startup includes 4."],
-  [P.planShortText("count", hacker(2), { bops: 1 }), "Your Orgo Hacker plan includes 1 computer, and 2 are in use, 1 of them outside Bops. Orgo Startup includes 4."],
-  [P.planShortText("count", startup(4), { bops: 1 }), "Your Orgo Startup plan includes 4 computers, and all 4 are in use, 3 of them outside Bops. Orgo Scale includes 16."],
+  [P.planShortText("count", hacker(1), { bops: 0 }), "Your Orgo Hacker plan includes 1 computer, and it's in use outside SmileDesk. Orgo Startup includes 4."],
+  [P.planShortText("count", hacker(2), { bops: 1 }), "Your Orgo Hacker plan includes 1 computer, and 2 are in use, 1 of them outside SmileDesk. Orgo Startup includes 4."],
+  [P.planShortText("count", startup(4), { bops: 1 }), "Your Orgo Startup plan includes 4 computers, and all 4 are in use, 3 of them outside SmileDesk. Orgo Scale includes 16."],
   [P.planShortText("count", startup(4), { bops: 4 }), "Your Orgo Startup plan includes 4 computers, and all 4 are in use. Orgo Scale includes 16."],
   [P.planShortText("count", { tier: "scale_v2", name: "Scale", computers: 16, inUse: 16 }, { bops: 16 }), "Your Orgo Scale plan includes 16 computers, and all 16 are in use. Delete one, or add computers on Orgo."],
   // Older plans: the next plan up is the one with more computers than they have, not the next name.
   [P.planShortText("count", { tier: "hacker", name: "Hacker", computers: 5, inUse: 5 }, { bops: 5 }), "Your Orgo Hacker plan includes 5 computers, and all 5 are in use. Orgo Scale includes 16."],
-  [P.planShortText("count", { tier: "team", name: "Team", computers: 10, inUse: 10 }, { bops: 2 }), "Your Orgo Team plan includes 10 computers, and all 10 are in use, 8 of them outside Bops. Orgo Scale includes 16."],
+  [P.planShortText("count", { tier: "team", name: "Team", computers: 10, inUse: 10 }, { bops: 2 }), "Your Orgo Team plan includes 10 computers, and all 10 are in use, 8 of them outside SmileDesk. Orgo Scale includes 16."],
   // Enterprise is a deal of its own: no plan Orgo sells is the next one up.
   [P.planShortText("count", { tier: "enterprise", name: "Enterprise", computers: 2, inUse: 2 }), "Your Orgo Enterprise plan includes 2 computers, and both are in use. Delete one, or add computers on Orgo."],
   // Computers bought on top of Hacker: Startup has more.
-  [P.planShortText("count", { tier: "hacker_v2", name: "Hacker", computers: 2, inUse: 2 }, { bops: 1 }), "Your Orgo Hacker plan includes 2 computers, and both are in use, 1 of them outside Bops. Orgo Startup includes 4."],
+  [P.planShortText("count", { tier: "hacker_v2", name: "Hacker", computers: 2, inUse: 2 }, { bops: 1 }), "Your Orgo Hacker plan includes 2 computers, and both are in use, 1 of them outside SmileDesk. Orgo Startup includes 4."],
   // A custom deal on Hacker: moving up doesn't change it, so Orgo is asked.
-  [P.planShortText("count", { tier: "hacker_v2", name: "Hacker", computers: 2, inUse: 2, deal: true }, { bops: 1 }), "Your Orgo Hacker plan includes 2 computers, and both are in use, 1 of them outside Bops. Delete one, or ask Orgo to change your plan."],
+  [P.planShortText("count", { tier: "hacker_v2", name: "Hacker", computers: 2, inUse: 2, deal: true }, { bops: 1 }), "Your Orgo Hacker plan includes 2 computers, and both are in use, 1 of them outside SmileDesk. Delete one, or ask Orgo to change your plan."],
   [P.planShortText("memory", { tier: "hacker_v2", name: "Hacker", computers: 2, inUse: 1, deal: true }), "Your Orgo Hacker plan doesn't have the memory left for another computer. Delete a computer, or ask Orgo to change your plan."],
   [P.planShortText("count", null), "Every computer your Orgo plan includes is in use. Delete one, or add computers on Orgo."],
   [P.planShortText("none", { tier: "free", name: "Free", computers: 0, inUse: 0 }), "Your Orgo Free plan doesn't include cloud computers. Orgo Hacker includes 1."],
@@ -238,9 +238,9 @@ const team = (mainComputer, main = {}) => [
 assert.equal(P.ownComputerShort(hacker(0), team(false), "ws_main").text, "Your Orgo Hacker plan includes 1 computer, and Boppy's computer needs it. Orgo Startup includes 4.");
 assert.equal(P.ownComputerShort(hacker(1), team(true), "ws_main").text, "Your Orgo Hacker plan includes 1 computer, and it's in use. Orgo Startup includes 4.");
 assert.equal(P.ownComputerShort(startup(1), team(true), "ws_main"), null, "room for a copy");
-assert.equal(P.ownComputerShort(startup(3), team(false), "ws_main").text, "Your Orgo Startup plan includes 4 computers, and 3 are in use outside Bops, so Boppy's computer needs the last one. Orgo Scale includes 16.");
+assert.equal(P.ownComputerShort(startup(3), team(false), "ws_main").text, "Your Orgo Startup plan includes 4 computers, and 3 are in use outside SmileDesk, so Boppy's computer needs the last one. Orgo Scale includes 16.");
 assert.equal(P.ownComputerShort({ computers: 1 }, team(false), "ws_main"), null, "in use unknown: Orgo decides");
-// A copy is as big as the main bot's computer: a 16 GB one (made before Bops sized them) needs 16 GB left.
+// A copy is as big as the main bot's computer: a 16 GB one (made before SmileDesk sized them) needs 16 GB left.
 assert.equal(P.ownComputerShort(startupGb(2, 24), team(true, { computerRam: 16 }), "ws_main").text, "Your Orgo Startup plan doesn't have the memory left for another computer. Orgo Scale has more.");
 assert.equal(P.ownComputerShort(startupGb(2, 16), team(true, { computerRam: 16 }), "ws_main"), null, "16 GB left: it fits");
 assert.equal(P.ownComputerShort(startupGb(2, 24), team(true, { computerRam: 8 }), "ws_main"), null, "an 8 GB one fits");
@@ -257,7 +257,7 @@ const novaHalfSetUp = { ...team(true)[1], computer: "own", computerId: "c-nova",
 assert.equal(P.setupShort(startup(4), [team(true)[0], novaHalfSetUp], novaHalfSetUp), null);
 assert.equal(P.setupShort(startup(4), team(true), { ...team(true)[1], computer: "own" }).short, "count");
 
-/* ---------------- The size Bops makes computers at ---------------- */
+/* ---------------- The size SmileDesk makes computers at ---------------- */
 
 // The plan's memory split across its computers, in Orgo's sizes: 8 GB on every plan Orgo sells, so the
 // count runs out first (Startup's 32 GB holds its 4 computers; at the template's 16 GB it would hold 2).
@@ -340,7 +340,7 @@ for (const [tier, max] of [["startup_v2", 4], ["scale_v2", 16]]) {
 // The one computer is in use elsewhere in the account: said with the numbers, no POST.
 onPlan("hacker_v2", 1, 1);
 n = asked("POST", "/api/computers");
-await assert.rejects(L.makeMainComputer(main(), "boppy-c"), { message: "Your Orgo Hacker plan includes 1 computer, and it's in use outside Bops. Orgo Startup includes 4." });
+await assert.rejects(L.makeMainComputer(main(), "boppy-c"), { message: "Your Orgo Hacker plan includes 1 computer, and it's in use outside SmileDesk. Orgo Startup includes 4." });
 assert.equal(asked("POST", "/api/computers"), n);
 // A "no room" read within the minute is checked with Orgo before it's said: the computer that filled the
 // plan was deleted on Orgo's site since.
@@ -356,7 +356,7 @@ onPlan("hacker_v2", 1, 0, {
     "POST /api/computers": () => json(403, { error: "Computer limit reached. Add a slot or delete a computer.", code: "VM_SLOT_ADDON", canManageCapacity: true }),
   },
 });
-await assert.rejects(L.makeMainComputer(main(), "boppy-d"), (e) => e instanceof L.PlanLimit && e.message === "Your Orgo Hacker plan includes 1 computer, and it's in use outside Bops. Orgo Startup includes 4.");
+await assert.rejects(L.makeMainComputer(main(), "boppy-d"), (e) => e instanceof L.PlanLimit && e.message === "Your Orgo Hacker plan includes 1 computer, and it's in use outside SmileDesk. Orgo Startup includes 4.");
 assert.equal(limitsRead, 2, "read again after the refusal");
 // Anything else goes up as it was.
 onPlan("hacker_v2", 1, 0, { replies: { "POST /api/computers": () => json(500, { error: "boom" }) } });
@@ -408,7 +408,7 @@ assert.equal(await L.makeOwnComputer(nova(), main(), "nova-b"), null);
 assert.equal(copies() - n, 1, "one fork, no clone");
 assert.equal(limitsRead, 2);
 assert.equal(nova().computer, "shared");
-assert.equal(lastNote().text, sharing("Your Orgo Startup plan includes 4 computers, and all 4 are in use, 3 of them outside Bops. Orgo Scale includes 16.", `[Upgrade to Orgo Scale](${URL_PLAN})`));
+assert.equal(lastNote().text, sharing("Your Orgo Startup plan includes 4 computers, and all 4 are in use, 3 of them outside SmileDesk. Orgo Scale includes 16.", `[Upgrade to Orgo Scale](${URL_PLAN})`));
 assert.equal(S.session("ses_1").status, "queued");
 
 // The plan's memory is used up (Orgo's RAM_ADDON for the pool): the same, in those words.
@@ -417,7 +417,7 @@ onPlan("startup_v2", 4, 2, { replies: { ...FORK, "POST /api/computers/inst-main/
 assert.equal(await L.makeOwnComputer(nova(), main(), "nova-c"), null);
 assert.equal(lastNote().text, sharing("Your Orgo Startup plan doesn't have the memory left for another computer. Orgo Scale has more.", `[Upgrade to Orgo Scale](${URL_PLAN})`));
 
-// The main bot's computer is 16 GB (made before Bops sized them) and the plan has 8 GB left: Bops says so
+// The main bot's computer is 16 GB (made before SmileDesk sized them) and the plan has 8 GB left: SmileDesk says so
 // without asking Orgo for a copy it would turn down, and keeps the size for the app to check by.
 ownAgain();
 onPlan("startup_v2", 4, 2, {
@@ -508,7 +508,7 @@ made = await B.createBot("Penny", "Finance");
 assert.equal(S.bot(made.botId).computer, "shared");
 assert.equal(calls.length, n);
 
-/* ---------------- Kept a minute, read again after Bops makes or deletes a computer ---------------- */
+/* ---------------- Kept a minute, read again after SmileDesk makes or deletes a computer ---------------- */
 
 const limitsAsked = () => asked("GET", "/api/billing/compute-limits");
 onPlan("startup_v2", 4, 1, {
@@ -627,7 +627,7 @@ replies = template.replies;
 for (const name of ["t1", "t2", "t3"]) await fetch("https://orgo.test/api/computers", { method: "POST", body: JSON.stringify({ name }) });
 assert.deepEqual(template.rows.map((r) => r.ram), [16, 16], "the template's size: 2 of Startup's 4");
 
-// Two bots get their own computers in one turn, with room for one more: Bops asks for one copy at a time,
+// Two bots get their own computers in one turn, with room for one more: SmileDesk asks for one copy at a time,
 // so the second sees the plan full rather than slip past Orgo's count with the first.
 acct = account("startup_v2", 4, 32, [{ id: "c-m", ram: 8 }, { id: "c-o1", ram: 8 }, { id: "c-o2", ram: 8 }], 50);
 replies = acct.replies;
@@ -651,7 +651,7 @@ assert.equal(acct.rows.length, 1, "the plan's 1, not 2");
 /* ---------------- Setting a computer up ---------------- */
 
 const X = await import(`${root}/lib/server/sessions.ts`);
-/** Orgo for these: Hacker with room; Bops' computers by id, with a status, and screens that come up or don't. */
+/** Orgo for these: Hacker with room; SmileDesk's computers by id, with a status, and screens that come up or don't. */
 const upComputers = new Map();
 let upMade = 0;
 let status = "running";
@@ -695,7 +695,7 @@ assert.equal(calls.filter((c) => c.method === "POST" && c.path === "/api/compute
 assert.equal(asked("DELETE", "/api/computers/c-up-1"), 0);
 assert.equal(S.session("ses_up1").status, "failed");
 assert.equal(said("ses_up1"), "I couldn't start Task ses_up1: Boppy's computer couldn't be set up (Orgo GET /computers/c-up-1/screens → 404: No screens yet). The next task tries again.");
-assert.equal(main().computerNeverReady, "c-up-1", "made by Bops and never ready: nothing has run on it");
+assert.equal(main().computerNeverReady, "c-up-1", "made by SmileDesk and never ready: nothing has run on it");
 // Its one more try fails too: deleted, so it stops using up the plan, and the next task makes a new one.
 task("ses_up2");
 n = asked("POST", "/api/computers");
@@ -703,7 +703,7 @@ await X.ensureComputer("boppy");
 assert.equal(asked("POST", "/api/computers"), n, "the same computer tried again, none made");
 assert.equal(asked("DELETE", "/api/computers/c-up-1"), 1);
 assert.deepEqual({ id: main().computerId, status: main().computerStatus }, { id: undefined, status: "error" });
-assert.match(said("ses_up2"), /\(Orgo GET \/computers\/c-up-1\/screens → 404: No screens yet\)\. Bops deleted it, and the next task makes a new one\.$/);
+assert.match(said("ses_up2"), /\(Orgo GET \/computers\/c-up-1\/screens → 404: No screens yet\)\. SmileDesk deleted it, and the next task makes a new one\.$/);
 // The next one comes up.
 screensUp = true;
 await X.ensureComputer("boppy");
@@ -712,7 +712,7 @@ assert.equal(main().computerNeverReady, undefined, "ready: from now on it may ho
 assert.deepEqual(
   calls.filter((c) => c.method === "PATCH" && c.path === "/api/computers/c-up-2/resize").map((c) => c.body),
   [{ disk_size_gb: 50 }],
-  "its disk grows to the plan's most (under Bops' 120 GB)",
+  "its disk grows to the plan's most (under SmileDesk's 120 GB)",
 );
 assert.deepEqual(
   calls.filter((c) => c.method === "POST" && c.path === "/api/computers/c-up-2/webrtc").map((c) => c.body),
@@ -728,7 +728,7 @@ await X.ensureComputer("boppy");
 assert.ok(Date.now() - t0 < 2500, "no wait");
 assert.equal(asked("DELETE", "/api/computers/c-up-3"), 1);
 assert.equal(main().computerId, undefined);
-assert.equal(said("ses_up3"), "I couldn't start Task ses_up3: Boppy's computer couldn't be set up (Orgo says it's stopped). Bops deleted it, and the next task makes a new one.");
+assert.equal(said("ses_up3"), "I couldn't start Task ses_up3: Boppy's computer couldn't be set up (Orgo says it's stopped). SmileDesk deleted it, and the next task makes a new one.");
 status = "running";
 // Deleted on Orgo's site after its setup failed, with the plan read while it was there: Orgo is asked
 // again and a new one made, rather than the user told their plan is full.
@@ -740,7 +740,7 @@ replies["GET /api/billing/compute-limits"] = answers("hacker_v2", 1, 0)["GET /ap
 await X.ensureComputer("boppy");
 assert.deepEqual({ id: main().computerId, status: main().computerStatus }, { id: "c-up-4", status: "ready" });
 
-// A computer the bot already had, or one Bops didn't make here (the user's free one taken up again, one
+// A computer the bot already had, or one SmileDesk didn't make here (the user's free one taken up again, one
 // from another Mac), is never deleted for a failed setup, whatever Orgo says: it may hold the user's work.
 // Orgo says it's stopped, twice: kept both times, and the task says so.
 upComputers.set("c-had-1", 8);
@@ -750,11 +750,11 @@ task("ses_had1");
 await X.ensureComputer("boppy");
 assert.equal(asked("DELETE", "/api/computers/c-had-1"), 0, "kept");
 assert.deepEqual({ id: main().computerId, status: main().computerStatus }, { id: "c-had-1", status: "error" });
-assert.equal(said("ses_had1"), "I couldn't start Task ses_had1: Boppy's computer couldn't be set up (Orgo says it's stopped). Bops kept it, so nothing on it is lost. The next task tries again.");
+assert.equal(said("ses_had1"), "I couldn't start Task ses_had1: Boppy's computer couldn't be set up (Orgo says it's stopped). SmileDesk kept it, so nothing on it is lost. The next task tries again.");
 task("ses_had2");
 await X.ensureComputer("boppy");
 assert.equal(asked("DELETE", "/api/computers/c-had-1"), 0, "its one more try fails too: still kept");
-assert.match(said("ses_had2"), /Bops kept it, so nothing on it is lost\. The next task tries again\.$/);
+assert.match(said("ses_had2"), /SmileDesk kept it, so nothing on it is lost\. The next task tries again\.$/);
 // Its screens don't come up, twice (a wake from storage can be slow): kept as well.
 status = "running";
 screensUp = false;
@@ -809,7 +809,7 @@ Object.assign(X.setupWait, { upMs: 3 * 60_000, wakeAskMs: 60_000, pollMs: 3000 }
 delete process.env.BOPS_WAKE_WAIT_MS;
 status = "running";
 
-// Another user's state is swapped in (a hosted server) while Bops waits on Orgo for this one's computer:
+// Another user's state is swapped in (a hosted server) while SmileDesk waits on Orgo for this one's computer:
 // nothing about it lands in theirs, though their main bot and its task have the same ids.
 const box = globalThis.__bops2;
 const ours = box.state;
@@ -846,10 +846,10 @@ assert.equal(await L.makeOwnComputer(nova(), main(), "nova-x"), null);
 assert.equal(S.getState().messages.length, ours.messages.length, "no note in their chats");
 swap(ours);
 
-/* ---------------- The free Bops computer ---------------- */
+/* ---------------- The free SmileDesk computer ---------------- */
 
 /**
- * Orgo with free Bops computers (orgo-web's bops_free): compute-limits names the user's free one (null
+ * Orgo with free SmileDesk computers (orgo-web's bops_free): compute-limits names the user's free one (null
  * while there's none, and it isn't counted in use), and a create with bops_free makes it when there's
  * none, at the template's size whatever the plan. Otherwise a create is on the plan as before: none on
  * Free, and up to the plan's count.
@@ -881,7 +881,7 @@ function freeOrgo(tier, computers, { free = null, inUse = 0 } = {}) {
       if (c.method === "DELETE" && !what) return o.alive.delete(id), json(200, { ok: true });
       if (c.method === "GET" && what === "screens") return json(200, { screens: [99, 100, 101, 102].map((d) => ({ id: `s${d}`, display: `:${d}`, width: 1280, height: 960, default: d === 99 })) });
       if (c.method === "POST" && what === "bash") return json(200, { output: "", exit_code: 0 });
-      // The free one stays at its size: Orgo says its most is what it has, so Bops never grows it.
+      // The free one stays at its size: Orgo says its most is what it has, so SmileDesk never grows it.
       if (c.method === "GET" && what === "resize") return json(200, id.startsWith("c-free") ? { current_disk_gb: 20, max_disk_gb: 20 } : { current_disk_gb: 20, max_disk_gb: 50 });
       if (c.method === "PATCH" && what === "resize") return json(200, { ok: true });
       return undefined;
@@ -911,18 +911,18 @@ assert.equal((await L.orgoPlan({ fresh: true })).freeComputerId, "c-free-0");
 freeOrgo("free", 0);
 assert.deepEqual(plain(await L.orgoPlan({ fresh: true })), { tier: "free", name: "Free", computers: 0, inUse: 0, memory: { total: 4, used: 0, newMax: 4 }, freeComputerId: null });
 
-// The words: on Free with a free Bops computer, "none" is about any more than that one. Nothing stands in
+// The words: on Free with a free SmileDesk computer, "none" is about any more than that one. Nothing stands in
 // the main bot's way, and a bot's own copy of it takes one computer, not two.
-assert.equal(P.planShortText("none", freePlan()), "Your Orgo Free plan doesn't include computers besides your free Bops one. Orgo Hacker includes 1.");
+assert.equal(P.planShortText("none", freePlan()), "Your Orgo Free plan doesn't include computers besides your free SmileDesk one. Orgo Hacker includes 1.");
 noDashes(P.planShortText("none", freePlan()));
 assert.equal(P.mainComputerShort(freePlan(), team(false), "ws_main"), null, "Free: the main bot gets the free one");
 assert.equal(P.setupShort(freePlan(), team(false), team(false)[0]), null);
-assert.equal(P.ownComputerShort(freePlan(), team(false), "ws_main").text, "Your Orgo Free plan doesn't include computers besides your free Bops one. Orgo Hacker includes 1.");
+assert.equal(P.ownComputerShort(freePlan(), team(false), "ws_main").text, "Your Orgo Free plan doesn't include computers besides your free SmileDesk one. Orgo Hacker includes 1.");
 assert.equal(P.ownComputerShort({ ...hacker(0), freeComputerId: null }, team(false), "ws_main"), null, "Hacker: the main bot's is free, so a copy fits its one computer");
 assert.equal(P.ownComputerShort({ ...hacker(0), freeComputerId: "c-f", memory: { total: 8, used: 0, newMax: 8 } }, team(true, { freeComputer: true }), "ws_main").text, "Your Orgo Hacker plan doesn't have the memory left for another computer. Orgo Startup has more.", "a copy of the free one is 16 GB");
 assert.equal(P.bopsComputers([{ computerId: "c-f", freeComputer: true }, { computerId: "c-own" }]), 1, "the free one isn't on the plan");
 
-// Free: the main bot's computer is the free Bops computer, from Orgo's template, at the template's size.
+// Free: the main bot's computer is the free SmileDesk computer, from Orgo's template, at the template's size.
 let fo = freeOrgo("free", 0);
 const madeFree = await L.makeMainComputer(main(), "boppy-free");
 assert.deepEqual(plain(madeFree), { id: "c-free-1", free: true });
@@ -937,11 +937,11 @@ assert.deepEqual({ computer: kai().computer, status: kai().computerStatus, share
 assert.equal(workBotOf(kai()).id, "boppy");
 assert.equal(workBotOf(S.bot("lu")).id, "boppy", "its team with it");
 const kaiNote = S.getState().messages.filter((m) => m.chatId === "bot:kai").at(-1).text;
-assert.equal(kaiNote, `I'll work on your free Bops computer, which Boppy has, instead of one of my own. Your Orgo Free plan doesn't include computers besides your free Bops one. Orgo Hacker includes 1. [Upgrade to Orgo Hacker](${URL_PLAN}) Once your Orgo plan has room, you can switch me to Its own under Computer in my Details.`);
+assert.equal(kaiNote, `I'll work on your free SmileDesk computer, which Boppy has, instead of one of my own. Your Orgo Free plan doesn't include computers besides your free SmileDesk one. Orgo Hacker includes 1. [Upgrade to Orgo Hacker](${URL_PLAN}) Once your Orgo plan has room, you can switch me to Its own under Computer in my Details.`);
 noDashes(kaiNote);
 assert.equal(P.bopsComputers(S.getState().bots), 0);
 // Its own, offered once the plan has room: refused on Free, and on Hacker it goes (its team with it).
-assert.deepEqual(await B.setComputer("kai", "own"), { error: "Your Orgo Free plan doesn't include computers besides your free Bops one. Orgo Hacker includes 1." });
+assert.deepEqual(await B.setComputer("kai", "own"), { error: "Your Orgo Free plan doesn't include computers besides your free SmileDesk one. Orgo Hacker includes 1." });
 assert.deepEqual(await B.setComputer("boppy", "shared"), { error: "Boppy runs the team, so the computer is its own" });
 fo = freeOrgo("hacker_v2", 1, { free: "c-free-1" });
 assert.deepEqual(await B.setComputer("kai", "own"), { ok: true });
@@ -968,7 +968,7 @@ assert.deepEqual(plain(atOnce), [{ id: "c-free-1", free: true }, null]);
 assert.equal(asked("POST", "/api/computers") - n, 1);
 assert.equal(kai().computer, "shared");
 
-// Set up end to end: made free, never grown past its size; deleted on Orgo's site, Bops makes it again.
+// Set up end to end: made free, never grown past its size; deleted on Orgo's site, SmileDesk makes it again.
 S.update(() => {
   Object.assign(main(), { computerId: undefined, freeComputer: undefined, computerStatus: "none" });
   Object.assign(kai(), { computer: undefined, computerStatus: "none" });
@@ -989,7 +989,7 @@ assert.equal(workBotOf(kai()).id, "boppy");
 
 // One read of the plan that Orgo didn't answer (compute-limits failed, or the 8 s wait ran out) when the
 // main bot's computer is made: Orgo is asked again, and the free one is made, never one on the plan in
-// its place. Before, Hacker with its one computer in use outside Bops had that one refused, and the setup
+// its place. Before, Hacker with its one computer in use outside SmileDesk had that one refused, and the setup
 // said the plan was full; with room, it took the plan's computer, and the free one was never made.
 for (const inUse of [1, 0]) {
   S.update(() => {
@@ -1001,7 +1001,7 @@ for (const inUse of [1, 0]) {
   let read = 0;
   fo.replies["GET /api/billing/compute-limits"] = (c) => (read++ ? limits(c) : json(503, { error: "Failed to load compute limits" }));
   n = calls.length;
-  assert.deepEqual(plain(await L.makeMainComputer(main(), "boppy-unread")), { id: "c-free-1", free: true }, `${inUse} in use outside Bops`);
+  assert.deepEqual(plain(await L.makeMainComputer(main(), "boppy-unread")), { id: "c-free-1", free: true }, `${inUse} in use outside SmileDesk`);
   assert.deepEqual(
     calls.slice(n).filter((c) => c.method === "POST" && c.path === "/api/computers").map((c) => c.body.bops_free === true),
     [true],
@@ -1014,7 +1014,7 @@ S.update(() => Object.assign(main(), { computerId: undefined, freeComputer: unde
 fo = freeOrgo("hacker_v2", 1);
 fo.replies["GET /api/billing/compute-limits"] = () => json(503, { error: "Failed to load compute limits" });
 n = asked("POST", "/api/computers");
-await assert.rejects(L.makeMainComputer(main(), "boppy-unread"), { message: "Orgo didn't say whether your free Bops computer is made yet" });
+await assert.rejects(L.makeMainComputer(main(), "boppy-unread"), { message: "Orgo didn't say whether your free SmileDesk computer is made yet" });
 assert.equal(asked("POST", "/api/computers"), n, "nothing made");
 assert.equal(fo.inUse, 0);
 // Another user's state swapped in (a hosted server) while that read is out, for a user who owns no
@@ -1058,7 +1058,7 @@ const onComputer = (id, extra = {}) =>
   });
 
 // The owner's case: Boppy is on a computer deleted on Orgo's site (Orgo answers 404), and the user's free
-// Bops computer is another one, live, that no bot has. The first look at a screen fails, and Boppy moves
+// SmileDesk computer is another one, live, that no bot has. The first look at a screen fails, and Boppy moves
 // onto the free one: nothing made, its old tailnet address and what its screens showed forgotten.
 fo = freeOrgo("free", 0, { free: "c-free-9" });
 onComputer("c-gone-1", { tailnet: { ip: "100.64.0.9", name: "bops-boppy" } });
@@ -1072,7 +1072,7 @@ assert.deepEqual(
   { id: "c-free-9", status: "ready", free: true, tailnet: undefined, ram: 16 },
 );
 assert.equal(asked("POST", "/api/computers"), n, "nothing made: the free one taken up");
-assert.deepEqual(healedSays("boppy"), ["My computer was deleted, so I've moved to your Bops computer."]);
+assert.deepEqual(healedSays("boppy"), ["My computer was deleted, so I've moved to your SmileDesk computer."]);
 noDashes(healedSays("boppy")[0]);
 assert.deepEqual(S.getState().screens, {}, "what its old screens showed is forgotten");
 // The next look streams the free one.
@@ -1080,7 +1080,7 @@ res = await view("boppy");
 assert.equal(res.status, 200);
 assert.match((await res.json()).vnc, /^wss:\/\/orgo\.test\/desktops\/c-free-9\/ws\/websockify\?/);
 
-// No free Bops computer (the one deleted was it, and Orgo frees its place): Orgo makes it again, a new one.
+// No free SmileDesk computer (the one deleted was it, and Orgo frees its place): Orgo makes it again, a new one.
 // A screenshot is what finds out this time.
 fo = freeOrgo("free", 0);
 onComputer("c-gone-2", { freeComputer: true });
@@ -1146,7 +1146,7 @@ assert.deepEqual({ id: main().computerId, status: main().computerStatus }, { id:
 assert.equal(asked("GET", "/api/computers/c-gone-5"), 1, "one read");
 assert.equal(asked("GET", "/api/computers/c-kai") - kaiReads, 1, "one read");
 assert.deepEqual({ id: kai().computerId, status: kai().computerStatus }, { id: "c-kai", status: "ready" });
-assert.equal(healedSays("boppy").at(-1), "My computer was deleted, so I've moved to your Bops computer.");
+assert.equal(healedSays("boppy").at(-1), "My computer was deleted, so I've moved to your SmileDesk computer.");
 assert.deepEqual(healedSays("kai"), []);
 
 // Deleting a computer Orgo no longer has (404), or that's out of this account's reach (403): nothing to
@@ -1171,10 +1171,10 @@ await assert.rejects(X.resetComputer("boppy"), /409: Computer is busy/);
 assert.deepEqual({ id: main().computerId, status: main().computerStatus }, { id: "c-busy", status: "ready" });
 fo.replies.route = away;
 
-/* ---------------- The free Bops computer, found again after a sign-in ---------------- */
+/* ---------------- The free SmileDesk computer, found again after a sign-in ---------------- */
 
 // The owner's case: signed in as A, then B, then A again. Their bots' computers were let go at the switch
-// (adoptComputers), so Boppy has none, while A's free Bops computer is still running on Orgo. After the
+// (adoptComputers), so Boppy has none, while A's free SmileDesk computer is still running on Orgo. After the
 // sign-in (and when a signed-in user's state loads) Boppy takes it up again: nothing is made.
 const signedInAs = (id) => S.update((s) => (s.account = { user: { id }, signedInAt: 1 }));
 const unlinked = () =>
@@ -1221,7 +1221,7 @@ assert.equal(JSON.stringify(S.getState().bots), bots, "nothing changed");
 assert.equal(posts(n), 0);
 assert.equal(setUpCalls("c-free-r", n), 0, "nothing set up");
 
-// 3. No free Bops computer: nothing made, though the plan has room for one (or Orgo says nothing about free ones).
+// 3. No free SmileDesk computer: nothing made, though the plan has room for one (or Orgo says nothing about free ones).
 for (const orgoNow of [() => freeOrgo("free", 0), () => freeOrgo("hacker_v2", 1), () => onPlan("hacker_v2", 1, 0)]) {
   orgoNow();
   unlinked();
@@ -1265,17 +1265,17 @@ await X.reattachFreeComputer("user_a");
 assert.equal(calls.length, n);
 S.update((s) => (s.account = undefined));
 
-/* ---------------- Max's Bops computers ---------------- */
+/* ---------------- Max's SmileDesk computers ---------------- */
 
 /**
- * Where Bops Cloud holds plans to what they include (CloudSession.plan.limits) and Orgo counts Bops
+ * Where SmileDesk Cloud holds plans to what they include (CloudSession.plan.limits) and Orgo counts SmileDesk
  * computers (compute-limits' bops_computers_limit and bops_max_computer_ids), a bot's own computer is a
- * Bops computer made fresh from the Bops template (bops_free), never a copy: Max has up to 5, the free
+ * SmileDesk computer made fresh from the SmileDesk template (bops_free), never a copy: Max has up to 5, the free
  * one included; Free and Pro the free one only, and say so in the plan's words. On Max with them all
  * taken, one on the Orgo plan instead (an ordinary create, fresh from the template), when it has room.
  */
 const PI = await import(`${root}/lib/plan-includes.ts`);
-// The plan Bops Cloud says counts only where the app works through it (cloud.ts cloudOn): the Mac app,
+// The plan SmileDesk Cloud says counts only where the app works through it (cloud.ts cloudOn): the Mac app,
 // not a self-hosted install. So it's the Mac app's here, with the state still in the test's file store.
 delete process.env.BOPS_SELF_HOSTED;
 const cloudBox = globalThis.bopsCloud;
@@ -1300,7 +1300,7 @@ function bopsOrgo(limit, { extras = [], refuse = false, room = false, planRefuse
         return json(201, { id: `c-plan-${++o.onPlan}`, name: c.body.name, status: "creating" });
       }
       if (refuse || 1 + o.extras.length >= limit)
-        return json(403, { error: limit > 1 ? "Max includes up to 3 Bops computers, and you have 3." : "Pro includes 1 Bops computer. Max includes up to 3.", code: "BOPS_COMPUTER_LIMIT" });
+        return json(403, { error: limit > 1 ? "Max includes up to 3 SmileDesk computers, and you have 3." : "Pro includes 1 SmileDesk computer. Max includes up to 3.", code: "BOPS_COMPUTER_LIMIT" });
       const id = `c-max-${++o.made}`;
       o.extras.push(id);
       return json(201, { id, name: c.body.name, status: "creating" });
@@ -1321,7 +1321,7 @@ S.update((st) => {
 });
 const novaWs = T.workspaceOf(nova());
 
-// Max with room: Nova gets a Bops computer of its own, made from the template, not a copy.
+// Max with room: Nova gets a SmileDesk computer of its own, made from the template, not a copy.
 onBopsPlan("max_bops");
 bopsOrgo(5, { extras: ["c-max-a"] });
 let p = await L.orgoPlan({ fresh: true });
@@ -1331,23 +1331,23 @@ n = calls.length;
 const madeMax = await L.makeOwnComputer(nova(), main(), "nova-max");
 assert.equal(madeMax?.id, "c-max-1");
 const create = calls.slice(n).find((c) => c.method === "POST" && c.path === "/api/computers");
-assert.equal(create.body.bops_free, true, "made as a Bops computer");
+assert.equal(create.body.bops_free, true, "made as a SmileDesk computer");
 assert.equal(create.body.ram, undefined, "at the template's size");
 assert.equal(calls.slice(n).filter((c) => /\/(fork|clone)$/.test(c.path)).length, 0, "not a copy");
 
 // Max with all 5: it shares Boppy's, in Max's words, with nothing to buy and no Orgo link.
 bopsOrgo(5, { extras: ["a", "b", "c", "d"] });
 p = await L.orgoPlan({ fresh: true });
-assert.equal(P.ownComputerShort(p, S.getState().bots, novaWs)?.text, "Max includes up to 3 Bops computers, and you have 3.");
+assert.equal(P.ownComputerShort(p, S.getState().bots, novaWs)?.text, "Max includes up to 3 SmileDesk computers, and you have 3.");
 ownAgain();
 n = calls.length;
 assert.equal(await L.makeOwnComputer(nova(), main(), "nova-max-6"), null);
 assert.equal(asked("POST", "/api/computers") - calls.slice(0, n).filter((c) => c.method === "POST" && c.path === "/api/computers").length, 0, "nothing made");
 assert.equal(nova().computer, "shared");
-assert.equal(novaNote(), "I'll work on Boppy's computer instead of one of my own. Max includes up to 3 Bops computers, and you have 3. Once your plan has room, you can switch me to Its own under Computer in my Details.");
+assert.equal(novaNote(), "I'll work on Boppy's computer instead of one of my own. Max includes up to 3 SmileDesk computers, and you have 3. Once your plan has room, you can switch me to Its own under Computer in my Details.");
 
 // Max with all of them taken, and room on the Orgo plan: Nova gets one of its own there, fresh from the
-// Bops template (a copy of a Bops computer can't be made), and the words say where it is.
+// SmileDesk template (a copy of a SmileDesk computer can't be made), and the words say where it is.
 bopsOrgo(5, { extras: ["a", "b", "c", "d"], room: true });
 p = await L.orgoPlan({ fresh: true });
 assert.equal(P.ownOnOrgoPlan(p), true);
@@ -1359,8 +1359,8 @@ n = calls.length;
 const madeOnPlan = await L.makeOwnComputer(nova(), main(), "nova-plan");
 assert.equal(madeOnPlan?.id, "c-plan-1");
 const planCreates = calls.slice(n).filter((c) => c.method === "POST" && c.path === "/api/computers");
-assert.deepEqual(planCreates.map((c) => c.body.bops_free), [undefined], "one ordinary create, on the Orgo plan, and no Bops one tried");
-assert.equal(planCreates[0].body.template_ref, O.BOPS_TEMPLATE, "fresh from the Bops template");
+assert.deepEqual(planCreates.map((c) => c.body.bops_free), [undefined], "one ordinary create, on the Orgo plan, and no SmileDesk one tried");
+assert.equal(planCreates[0].body.template_ref, O.BOPS_TEMPLATE, "fresh from the SmileDesk template");
 assert.equal(planCreates[0].body.ram, 16, "at the plan's size for one computer");
 assert.equal(calls.slice(n).filter((c) => /\/(fork|clone)$/.test(c.path)).length, 0, "not a copy");
 assert.equal(nova().computer, "own");
@@ -1380,7 +1380,7 @@ for (const [tier, name] of [["pro_bops", "Pro"], ["free_bops", "Free"]]) {
   onBopsPlan(tier);
   bopsOrgo(1);
   p = await L.orgoPlan({ fresh: true });
-  const why = `${name} includes 1 Bops computer. Max includes up to 3.`;
+  const why = `${name} includes 1 SmileDesk computer. Max includes up to 3.`;
   assert.deepEqual(plain(P.ownComputerShort(p, S.getState().bots, novaWs)), { short: "bops", text: why, upgrade: "max" });
   assert.equal(await L.noOwnComputer(novaWs), why);
   ownAgain();
@@ -1402,7 +1402,7 @@ bopsOrgo(5, { refuse: true });
 ownAgain();
 assert.equal(await L.makeOwnComputer(nova(), main(), "nova-raced"), null);
 assert.equal(nova().computer, "shared");
-assert.ok(novaNote().includes("Max includes up to 3 Bops computers, and you have 3."), novaNote());
+assert.ok(novaNote().includes("Max includes up to 3 SmileDesk computers, and you have 3."), novaNote());
 
 // Without the cloud's limits (self-hosted, or before plans), the Orgo plan decides as before.
 cloudBox.session = { key: "sk_test_one", value: { userId: "u1", plan: { tier: "max_bops", limits: false } } };
@@ -1480,7 +1480,7 @@ process.env.BOPS_SELF_HOSTED = "1";
 
 /* ---------------- A self-hosted install's file: saved now, in order ---------------- */
 
-// Saving now (Restart Bops, a sign-out) waits for a background save under way, and lands last: the
+// Saving now (Restart SmileDesk, a sign-out) waits for a background save under way, and lands last: the
 // older state that save holds never lands after it (lib/server/persist.ts fileStore).
 const onDisk = () => JSON.parse(readFileSync(join(scratch, ".data/state.json"), "utf8"));
 const save = globalThis.__bopsSave;

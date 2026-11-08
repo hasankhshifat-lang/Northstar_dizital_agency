@@ -13,12 +13,12 @@ const str = (v: unknown) => (typeof v === "string" ? v : undefined);
 /**
  * Change a bot's AI profile (lib/server/bot-ai.ts setBotAi): `op` add (`kind`, `pays`, `model`, `newAccount`),
  * update (`agentId` and its `model`, `pays` or `account`), remove (`agentId`) or default (`agentId`). Only from
- * the Bops window (ui-token.ts): a page a bot's Chrome reached this server with mustn't move a bot onto another
- * account. A build without brains changes only Bops agent's model. Returns the profile as it runs now, and an
+ * the SmileDesk window (ui-token.ts): a page a bot's Chrome reached this server with mustn't move a bot onto another
+ * account. A build without brains changes only SmileDesk agent's model. Returns the profile as it runs now, and an
  * agent it added (`added`: the window opens its editor).
  */
 export async function POST(request: Request) {
-  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "A bot's AI can only be changed in the Bops app." }, { status: 403 }));
+  const unready = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "A bot's AI can only be changed in the SmileDesk app." }, { status: 403 }));
   if (unready) return unready;
   const b = (await request.json().catch(() => ({}))) as Record<string, unknown>;
   const botId = str(b.botId);
@@ -42,8 +42,8 @@ export async function POST(request: Request) {
     default:
       return Response.json({ error: "op: add, update, remove or default" }, { status: 400 });
   }
-  // Without brains (a release build), only Bops agent's model: nothing else is there to change.
-  if (!BRAINS_ON && !(op.op === "update" && op.agentId === "bops" && op.pays === undefined && op.account === undefined)) return Response.json({ error: "This version of Bops runs Bops agent only." }, { status: 404 });
+  // Without brains (a release build), only SmileDesk agent's model: nothing else is there to change.
+  if (!BRAINS_ON && !(op.op === "update" && op.agentId === "bops" && op.pays === undefined && op.account === undefined)) return Response.json({ error: "This version of SmileDesk runs SmileDesk agent only." }, { status: 404 });
   try {
     const out: { added?: string } = {};
     const ai = setBotAi(botId, op, out);

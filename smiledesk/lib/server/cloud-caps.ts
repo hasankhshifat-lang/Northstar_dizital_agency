@@ -3,8 +3,8 @@ import type { CloudCap, CloudHealth } from "@/cloud/protocol";
 import { cloudUrl } from "./cloud-url";
 
 /**
- * Whether this Mac's Bops Cloud does `cap` (cloud/protocol.ts CLOUD_CAPS), as its GET /health says. Once it says so
- * it's kept (a Bops Cloud is never rolled back past a cap an app went by without a release saying so); a no, or no
+ * Whether this Mac's SmileDesk Cloud does `cap` (cloud/protocol.ts CLOUD_CAPS), as its GET /health says. Once it says so
+ * it's kept (a SmileDesk Cloud is never rolled back past a cap an app went by without a release saying so); a no, or no
  * answer, is asked again after a minute. Never throws: no answer is a no.
  */
 const NO_MS = 60_000;
@@ -35,7 +35,7 @@ export async function cloudDoes(cap: CloudCap): Promise<boolean> {
   return going;
 }
 
-/** For tests: this way to read Bops Cloud's /health (unset: the real one), and nothing kept. */
+/** For tests: this way to read SmileDesk Cloud's /health (unset: the real one), and nothing kept. */
 export function resetCloudCaps(o: { health?: Health } = {}) {
   health = o.health ?? realHealth;
   known.clear();

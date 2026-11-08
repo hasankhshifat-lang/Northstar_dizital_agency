@@ -11,11 +11,11 @@ import { outbox } from "./sync-outbox";
 /**
  * The apps the bots make (made-apps.ts), recorded in Orgo: orgo-web's bops_made_apps and
  * bops_made_app_versions, each version's code and the app's data in the user-apps bucket
- * (/api/projects/{project}/bops/apps). Orgo is the record, so every Mac signed in to the same Bops lists
+ * (/api/projects/{project}/bops/apps). Orgo is the record, so every Mac signed in to the same SmileDesk lists
  * and opens them, and a lost Mac loses none; this Mac keeps a copy for speed and for when Orgo is away.
  *
  * - The copy: each version's code and the app's data are files (<userDir>/made-apps/<app>/v<n>.tsx and
- *   data.json), and the list is <userDir>/made-apps/apps.json, read into the state at start (never in Bops
+ *   data.json), and the list is <userDir>/made-apps/apps.json, read into the state at start (never in SmileDesk
  *   Cloud's shared state: state-merge.ts NEVER_SYNCED). An app another Mac made is listed from Orgo and its
  *   code is fetched the first time it's opened here (codeHere), its data the first time it reads it
  *   (dataHere), then kept.
@@ -104,7 +104,7 @@ function storable(text: string, max: number) {
 /** An app's own folder on this Mac. */
 export function appFolder(appId: string) {
   const dir = userDir();
-  if (!dir) throw new Error("Sign in to Bops first.");
+  if (!dir) throw new Error("Sign in to SmileDesk first.");
   if (!APP_ID.test(appId)) throw new Error("No such app.");
   return join(/*turbopackIgnore: true*/ dir, "made-apps", appId);
 }
@@ -144,8 +144,8 @@ const isApp = (a: unknown): a is MadeApp => !!a && typeof a === "object" && type
 /**
  * The list kept on this Mac into the state, once per account folder and state loaded (a sign-in, a
  * start): put together with what the state has by id, the later change of each standing. The list from
- * before Orgo kept apps (this Mac's in Bops Cloud, macs[device].madeApps) comes in once too. A build the
- * list says was going on that isn't going on in this process stopped when Bops did.
+ * before Orgo kept apps (this Mac's in SmileDesk Cloud, macs[device].madeApps) comes in once too. A build the
+ * list says was going on that isn't going on in this process stopped when SmileDesk did.
  */
 export function loadLocalApps() {
   // Only for an account apps are open to (lib/apps-access.ts): anyone else's list left on this Mac stays there, unread.
@@ -170,7 +170,7 @@ export function loadLocalApps() {
     const taken: MadeApp = { ...a, ...(now?.building ? { building: now.building } : {}) };
     if (taken.building && !builds?.has(taken.id)) {
       delete taken.building;
-      taken.error = "Bops closed before it was done. Ask again.";
+      taken.error = "SmileDesk closed before it was done. Ask again.";
     }
     byId.set(a.id, taken);
     changed = true;

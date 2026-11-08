@@ -39,10 +39,10 @@ import { signOutOfOrgo as signOutAsking, UNSENT } from "./sign-in";
 import { AskInPlace, refreshState } from "./ui";
 
 /*
- * The account: who you are on Orgo, what you pay for Bops and the credit left when Orgo says, what your
+ * The account: who you are on Orgo, what you pay for SmileDesk and the credit left when Orgo says, what your
  * bots used this month and last, and the inboxes and numbers they have. A sheet over the app, like
  * Settings. Everything comes from GET /api/account, which reads Orgo with your key on the server.
- * Billed by use (lib/bops-billing.ts), it's your Orgo credit, added on Orgo in the browser. On Bops' own
+ * Billed by use (lib/bops-billing.ts), it's your Orgo credit, added on Orgo in the browser. On SmileDesk's own
  * plans (Free, Pro or Max, while orgo-web still bills by them), the AI credit with a way to add some
  * once, and paying for Pro or Max, and managing it, in the browser.
  */
@@ -59,7 +59,7 @@ export function initialsFrom(label: string) {
   return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : (parts[0]?.[1] ?? ""))).toUpperCase() || "?";
 }
 
-/** Sign out of Orgo on this Mac (the route clears the key from the Keychain), asking first (`askFirst`) when changes haven't reached Bops Cloud. */
+/** Sign out of Orgo on this Mac (the route clears the key from the Keychain), asking first (`askFirst`) when changes haven't reached SmileDesk Cloud. */
 export const signOutOfOrgo = async (askFirst: () => Promise<boolean>) => {
   const res = await signOutAsking(askFirst);
   await refreshState();
@@ -68,7 +68,7 @@ export const signOutOfOrgo = async (askFirst: () => Promise<boolean>) => {
 
 /**
  * Signing out from a button: `signOut`, and `ask`, the question to show in place of the button when changes haven't
- * reached Bops Cloud ("Sign out anyway?", ui.tsx AskInPlace), null while there's none. `after`: once it went (or didn't).
+ * reached SmileDesk Cloud ("Sign out anyway?", ui.tsx AskInPlace), null while there's none. `after`: once it went (or didn't).
  */
 export function useSignOut(after?: () => void) {
   const [asking, setAsking] = useState<((yes: boolean) => void) | null>(null);
@@ -96,7 +96,7 @@ const money = (cents: number, currency = "usd") =>
 
 /**
  * GET /api/account, for the Account sheet and Settings' Plan and credit and Usage: what it said, whether the route
- * failed (the sections say so and offer a retry, not a spinner forever), and read again when Bops comes back to the
+ * failed (the sections say so and offer a retry, not a spinner forever), and read again when SmileDesk comes back to the
  * front (after paying or managing the plan in the browser).
  */
 export function useAccountInfo() {
@@ -124,12 +124,12 @@ export function useAccountInfo() {
     setLoading(true);
     fetchInfo();
   };
-  // The Bops plan read again on its own (after adding credit): the balance shows it.
+  // The SmileDesk plan read again on its own (after adding credit): the balance shows it.
   const setBops = useCallback((bops: BopsPlan) => setInfo((i) => (i ? { ...i, bops } : i)), []);
   return { info, loading, failed, load, setBops };
 }
 
-/** Settings, Account, Plan and credit: your Bops plan and credit, and your bots' inboxes and numbers. */
+/** Settings, Account, Plan and credit: your SmileDesk plan and credit, and your bots' inboxes and numbers. */
 export function PlanAndCredit({ state }: { state: AppState }) {
   const { info, loading, failed, setBops } = useAccountInfo();
   const user = info?.user ?? state.account?.user ?? null;
@@ -155,11 +155,11 @@ export function UsageSection() {
   if (info) return <Usage info={info} />;
   if (failed && !loading)
     return (
-      <Section title="Bops usage">
+      <Section title="SmileDesk usage">
         <LoadFailed onRetry={load} />
       </Section>
     );
-  return <Placeholder title="Bops usage" />;
+  return <Placeholder title="SmileDesk usage" />;
 }
 
 export function Section({ title, aside, children }: { title: string; aside?: React.ReactNode; children: React.ReactNode }) {
@@ -189,27 +189,27 @@ export function Placeholder({ title }: { title: string }) {
 /** Micro-dollars as money, rounded down to the cent (none below 0). */
 const credit = (micros: number) => money(Math.max(0, Math.floor(micros / 10_000)));
 
-/** Bops' three plans, as the sheet lists them (lib/plan-includes.ts, the same words as bops.bot). */
+/** SmileDesk's three plans, as the sheet lists them (lib/plan-includes.ts, the same words as bops.bot). */
 const PLANS = PLAN_CARDS;
 const RANK: Record<BopsTier, number> = { free_bops: 0, pro_bops: 1, max_bops: 2 };
 
 type Open = "pro_bops" | "max_bops" | "manage";
 
 /**
- * What the user pays for Bops. `plan` is orgo-web's answer (GET /api/bops/plan), `billing` how they're
- * billed (orgo-web's, else Bops Cloud's word at the session), each missing when nobody said.
+ * What the user pays for SmileDesk. `plan` is orgo-web's answer (GET /api/bops/plan), `billing` how they're
+ * billed (orgo-web's, else SmileDesk Cloud's word at the session), each missing when nobody said.
  *
  * - Billed by use: their Orgo credit left (OrgoBalance, with Add credit on Orgo), their computer's size
  *   with a switch to the other (YourComputer, when Orgo lists sizes) and what things cost (UsageCard). No
  *   plan to pick.
  * - Given a month more of their plan: that plan's credit as before, the day it ends, and what they'll
  *   pay from then (UsageCard). No upgrades.
- * - Otherwise Bops' own plans (orgo-web still bills by them): Free, Pro or Max, with the user's marked
+ * - Otherwise SmileDesk's own plans (orgo-web still bills by them): Free, Pro or Max, with the user's marked
  *   only when orgo-web said it (`known`, and a plan: never taken for Free). Upgrading opens Stripe's
  *   checkout, and Manage plan Stripe's billing page, in the browser; on every plan, AI credit can be
  *   added once under the balance (AddCredit); `onPlan` takes the plan read again after that.
  *
- * The sheet reads it all again when Bops comes back to the front.
+ * The sheet reads it all again when SmileDesk comes back to the front.
  */
 function YourPlan({ plan, billing, known, onPlan, userId }: { plan: BopsPlan | null | undefined; billing?: BopsBilling; known: boolean; onPlan: (plan: BopsPlan) => void; userId: string }) {
   if (billing === "usage")
@@ -293,7 +293,7 @@ function Lines({ lines }: { lines: PlanLine[] }) {
 /**
  * Billed by use: the Orgo credit left (only when Orgo said it), which pays for the computer's hours and
  * the bots' AI alike, and Add credit, which opens Orgo's own top up in the browser (the sheet reads the
- * balance again when Bops comes back to the front). Below what an hour of the computer costs, Orgo
+ * balance again when SmileDesk comes back to the front). Below what an hour of the computer costs, Orgo
  * won't wake it: the sheet says so.
  */
 function OrgoBalance({ usage }: { usage: UsageTerms }) {
@@ -328,7 +328,7 @@ function OrgoBalance({ usage }: { usage: UsageTerms }) {
 }
 
 /**
- * Bops' own plans, while orgo-web still bills by them: Free, Pro or Max, with the user's marked. AI
+ * SmileDesk's own plans, while orgo-web still bills by them: Free, Pro or Max, with the user's marked. AI
  * credit pays for what the bots do (models, calls, texts) at what it costs Orgo.
  */
 function BopsPlans({ plan, known, onPlan, userId }: { plan: BopsPlan | null | undefined; known: boolean; onPlan: (plan: BopsPlan) => void; userId: string }) {
@@ -409,7 +409,7 @@ function BopsPlans({ plan, known, onPlan, userId }: { plan: BopsPlan | null | un
 }
 
 /**
- * On Free, the free Bops computer's month (orgo-web lib/bops-free-hours.ts): how long it ran of its 10 hours,
+ * On Free, the free SmileDesk computer's month (orgo-web lib/bops-free-hours.ts): how long it ran of its 10 hours,
  * and when it starts over, in lib/plan-includes.ts freeHoursWords' words (no period named, from an Orgo that
  * still counts by the week). It sleeps when nothing uses it, so only the time it's used counts. Only when Orgo said.
  */
@@ -486,7 +486,7 @@ function Balance({ plan, onPlan, userId }: { plan: BopsPlan; onPlan: (plan: Bops
 
 /* ---------------- Adding AI credit once ---------------- */
 
-/** The Bops plan, asked of Orgo again now (GET /api/plan?fresh=1): null when it didn't say. */
+/** The SmileDesk plan, asked of Orgo again now (GET /api/plan?fresh=1): null when it didn't say. */
 async function freshPlan(): Promise<BopsPlan | null> {
   try {
     const res = await fetch("/api/plan?fresh=1", { cache: "no-store" });
@@ -558,7 +558,7 @@ type Note =
  * the way Orgo's own Add credit works (lib/credit-topup.ts). With a card on file it asks first
  * (ConfirmCredit) and charges that card; without one, or when the card can't be charged, Stripe Checkout
  * opens in the browser. Then the plan is read again until the new credit shows, for 2 minutes at most
- * (and the sheet reads it again when Bops comes back to the front). Never monthly, never an automatic
+ * (and the sheet reads it again when SmileDesk comes back to the front). Never monthly, never an automatic
  * reload.
  */
 function AddCredit({ plan, topUp, onPlan, userId }: { plan: BopsPlan; topUp: TopUp; onPlan: (plan: BopsPlan) => void; userId: string }) {
@@ -911,7 +911,7 @@ const SPEND: Record<SpendKind, { label: string; amount: (n: number) => string }>
 /** Micro-dollars as money: to the cent, and a little under one cent as "<$0.01". */
 const spent = (micros: number) => (micros <= 0 ? "$0" : micros < 10_000 ? "<$0.01" : money(Math.round(micros / 10_000)));
 
-/** What Bops itself used, this month or last: totals, AI credit spent by kind, model use by day, by kind of work and by bot. */
+/** What SmileDesk itself used, this month or last: totals, AI credit spent by kind, model use by day, by kind of work and by bot. */
 function Usage({ info }: { info: AccountInfo }) {
   const [last, setLast] = useState(false);
   const t = last ? info.usage.lastMonth : info.usage.thisMonth;
@@ -939,7 +939,7 @@ function Usage({ info }: { info: AccountInfo }) {
     ["Inboxes", t.inboxes, "added"],
   ];
   return (
-    <Section title="Bops usage" aside={tabs}>
+    <Section title="SmileDesk usage" aside={tabs}>
       <div className="grid grid-cols-5 gap-2">
         {tiles.map(([label, n, unit]) => (
           <div key={label} className="flex flex-col gap-1 rounded-[14px] px-3.5 py-3 shadow-[0_0_0_1px_#E6E6E3]">
@@ -968,7 +968,7 @@ function Usage({ info }: { info: AccountInfo }) {
 }
 
 /**
- * What the month cost, by kind: the money, and how much of each it was (Bops Cloud's own count, at
+ * What the month cost, by kind: the money, and how much of each it was (SmileDesk Cloud's own count, at
  * cost). It's what AI credit paid for once the cloud takes it; until then the sheet says so.
  */
 function Spend({ spend }: { spend: NonNullable<UsageTotals["spend"]> }) {

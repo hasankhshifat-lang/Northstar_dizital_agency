@@ -12,20 +12,20 @@ import { loopHere } from "./persist";
 
 /**
  * The Codex CLI that runs bots' tools on the user's Mac: `codex exec-server`, the Agents API's executor,
- * on Bops' own key (lib/server/local.ts startExecutor; lib/server/mac.ts). Bops uses the user's own
+ * on SmileDesk's own key (lib/server/local.ts startExecutor; lib/server/mac.ts). SmileDesk uses the user's own
  * when they have one (on PATH, or where Codex's installers put it). Without one it installs it by
  * itself, in the background, the way routing through this Mac just turns on: OpenAI's latest release
  * from GitHub (openai/codex), built for this Mac's chip, checked against the SHA-256 digest GitHub
- * lists for the file, into Bops' own folder (~/Library/Application Support/Bops/bin). Nothing signs
+ * lists for the file, into SmileDesk's own folder (~/Library/Application Support/SmileDesk/bin). Nothing signs
  * in to it: it never runs on the user's ChatGPT account.
  */
 
 const RELEASE = "https://api.github.com/repos/openai/codex/releases/latest";
 
-/** Bops' own folder for the CLI it installs. */
-export const binDir = () => join(homedir(), "Library", "Application Support", "Bops", "bin");
+/** SmileDesk's own folder for the CLI it installs. */
+export const binDir = () => join(homedir(), "Library", "Application Support", "SmileDesk", "bin");
 
-/** The PATH Codex runs with: the server's, where Codex's installers put it, and Bops' own copy last. */
+/** The PATH Codex runs with: the server's, where Codex's installers put it, and SmileDesk's own copy last. */
 export const codexPath = () =>
   [...new Set([...(process.env.PATH ?? "").split(delimiter), join(homedir(), ".local/bin"), "/usr/local/bin", "/opt/homebrew/bin", binDir()].filter(Boolean))].join(delimiter);
 
@@ -38,7 +38,7 @@ const runnable = (path: string) => {
   }
 };
 
-/** The `codex` Bops runs: the first one on that PATH, if there is one. */
+/** The `codex` SmileDesk runs: the first one on that PATH, if there is one. */
 export function findCodex() {
   for (const dir of codexPath().split(delimiter)) if (runnable(join(dir, "codex"))) return join(dir, "codex");
 }
@@ -48,12 +48,12 @@ export type CodexInstall = { state: "installing" | "installed" | "failed"; error
 const g = globalThis as typeof globalThis & { __bopsCodexInstall?: { status?: CodexInstall; running?: Promise<void> } };
 const install = (g.__bopsCodexInstall ??= {});
 
-/** Where Bops' own install stands: nothing until it first tries (once per start of the server, then only when asked again). */
+/** Where SmileDesk's own install stands: nothing until it first tries (once per start of the server, then only when asked again). */
 export const installStatus = () => install.status;
 
 /** Install the CLI into binDir(), unless an install is already running; `then` runs once this one ends, however it ended. */
 export function installCodex(then?: () => void) {
-  // Codex here is for tasks on the Mac: a computer's runner has its own, from the Bops template.
+  // Codex here is for tasks on the Mac: a computer's runner has its own, from the SmileDesk template.
   if (install.running || !loopHere("codex")) return;
   install.status = { state: "installing" };
   install.running = download(binDir())
@@ -76,7 +76,7 @@ const run = (file: string, args: string[]) =>
 export async function download(dir: string) {
   const target = `${process.arch === "arm64" ? "aarch64" : "x86_64"}-apple-darwin`;
   const name = `codex-${target}.tar.gz`;
-  const res = await fetch(RELEASE, { headers: { Accept: "application/vnd.github+json", "User-Agent": "Bops" }, signal: AbortSignal.timeout(30_000) });
+  const res = await fetch(RELEASE, { headers: { Accept: "application/vnd.github+json", "User-Agent": "SmileDesk" }, signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`GitHub answered ${res.status} for the latest Codex release.`);
   const release = (await res.json()) as { tag_name?: string; assets?: { name: string; browser_download_url: string; digest?: string | null }[] };
   const asset = release.assets?.find((a) => a.name === name);
@@ -87,7 +87,7 @@ export async function download(dir: string) {
   const work = await mkdtemp(join(dir, ".install-"));
   try {
     const file = join(work, name);
-    const got = await fetch(asset.browser_download_url, { headers: { "User-Agent": "Bops" }, signal: AbortSignal.timeout(20 * 60_000) });
+    const got = await fetch(asset.browser_download_url, { headers: { "User-Agent": "SmileDesk" }, signal: AbortSignal.timeout(20 * 60_000) });
     if (!got.ok || !got.body) throw new Error(`The Codex download failed (${got.status}).`);
     const hash = createHash("sha256");
     const tap = new Transform({ transform: (chunk: Buffer, _, done) => (hash.update(chunk), done(null, chunk)) });

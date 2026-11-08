@@ -156,7 +156,7 @@ await test("the owner's alone: in a workspace shared with the user the card has 
   const mine = renderToStaticMarkup(withOpen(h(ChatView, props(own))));
   assert.match(mine, /data-app-change="recipe-box"/);
   assert.ok(!mine.includes("the newest of 3 changes"), "the card, not the line");
-  // Shared with him (a copy that kept it somehow): the line an older Bops shows, no card.
+  // Shared with him (a copy that kept it somehow): the line an older SmileDesk shows, no card.
   const theirs = renderToStaticMarkup(withOpen(h(ChatView, props(shared))));
   assert.ok(!/data-app-change/.test(theirs));
   assert.match(theirs, /Changed recipe-box: Favorites \(c3c3c3c\), the newest of 3 changes/);

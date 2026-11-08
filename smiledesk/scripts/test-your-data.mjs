@@ -1,6 +1,6 @@
 // Tests for Settings → Your data (lib/privacy.ts, lib/server/privacy.ts, lib/server/deleted.ts, the deletes in
 // lib/server/remove.ts, app/api/privacy and components/app/your-data.tsx's words): unset, chats are kept until the
-// user deletes them and what they delete is gone at once, one from a newer Bops keeps the most, and each choice
+// user deletes them and what they delete is gone at once, one from a newer SmileDesk keeps the most, and each choice
 // merges on its own between Macs and stays through a reset; Keep chats and calls deletes the messages older than
 // it, and the finished threads that last did anything before it, through the same deletes a user's go through,
 // for good, a batch at a time with each saved before the next (judged by what the batch deleted), but never what
@@ -10,13 +10,13 @@
 // one it does, nor anything else in those folders); choosing a shorter keep says first everything it deletes
 // now, and saving it sweeps at once; with days to keep what the user deletes, a deleted message, thread or group
 // chat still leaves the chat at once, a copy with its images and frame stays on this Mac under Recently deleted
-// (never of what the user kept between us), Restore puts it back under the ids it had (Bops Cloud takes a removed
+// (never of what the user kept between us), Restore puts it back under the ids it had (SmileDesk Cloud takes a removed
 // row written again as new), but only to the chat and bots it was with, Delete now and the sweep delete it for
 // good, by the sooner of its days and the keep, as the list says, but Settings opened, asked or restoring on a
 // Mac not current deletes none by them (fewer days chosen there go by those days alone), and Gone at once
 // deletes them all; a copy that can't be written leaves nothing; with none, a deleted message's images on this
 // Mac go too (but one another message shows), and a thread's frame goes with it, also for a delete made on
-// another Mac; a choice changed on another Mac takes effect as it arrives; the route answers only the Bops
+// another Mac; a choice changed on another Mac takes effect as it arrives; the route answers only the SmileDesk
 // window, never a shared workspace's viewer, a computer's runner or a hosted server, and the window's guard
 // keeps it from a shared workspace too; the sweep runs only on a signed in Mac; and nothing the window says has
 // a dash or says Orbit.
@@ -167,11 +167,11 @@ S.update((s) => {
 
 /* ---------------- The choices ---------------- */
 
-await check("unset: chats are kept until the user deletes them and what they delete is gone at once; one this Bops doesn't know keeps the most, never deletes", () => {
+await check("unset: chats are kept until the user deletes them and what they delete is gone at once; one this SmileDesk doesn't know keeps the most, never deletes", () => {
   assert.deepEqual(P.privacyOf({}), { keepDays: null, deletedDays: 0 });
   assert.deepEqual(P.privacyOf(null), { keepDays: null, deletedDays: 0 });
   assert.deepEqual(P.privacyOf({ privacy: { keepDays: 90, deletedDays: 30 } }), { keepDays: 90, deletedDays: 30 });
-  // From a newer Bops, or written by hand: chats kept until the user deletes them, what's deleted kept the longest.
+  // From a newer SmileDesk, or written by hand: chats kept until the user deletes them, what's deleted kept the longest.
   assert.deepEqual(P.privacyOf({ privacy: { keepDays: 45, deletedDays: 3 } }), { keepDays: null, deletedDays: 30 });
   assert.deepEqual(P.privacyOf({ privacy: { keepDays: 7, deletedDays: 14 } }), { keepDays: null, deletedDays: 30 });
   assert.deepEqual(P.privacyOf({ privacy: { deletedDays: null } }), { keepDays: null, deletedDays: 30 });
@@ -327,15 +327,15 @@ await check("choosing a shorter keep says first what it deletes now, and saving 
   assert.equal((await call("GET", undefined, { query: "?keepDays=365" })).body.goes.messages, 0);
   assert.equal((await call("GET")).body.goes, undefined);
   const none = { keepDays: 30, messages: 0, threads: 0, files: 0, lines: 0, copies: 0 };
-  assert.equal(P.goesLine(30, body.goes), "This deletes 2 messages older than 30 days from Bops Cloud and all your Macs, and 1 file from this Mac. It can't be undone.");
-  assert.equal(P.goesLine(365, { ...none, messages: 1 }), "This deletes 1 message older than a year from Bops Cloud and all your Macs. It can't be undone.");
+  assert.equal(P.goesLine(30, body.goes), "This deletes 2 messages older than 30 days from SmileDesk Cloud and all your Macs, and 1 file from this Mac. It can't be undone.");
+  assert.equal(P.goesLine(365, { ...none, messages: 1 }), "This deletes 1 message older than a year from SmileDesk Cloud and all your Macs. It can't be undone.");
   assert.equal(P.goesLine(90, { ...none, files: 3 }), "This deletes 3 files older than 90 days from this Mac. It can't be undone.");
   assert.equal(
     P.goesLine(30, { ...none, messages: 4, threads: 1, files: 2, lines: 9, copies: 1 }),
-    "This deletes 4 messages and 1 thread older than 30 days from Bops Cloud and all your Macs, and 2 files, 9 lines of notes and 1 copy in Recently deleted from this Mac. It can't be undone.",
+    "This deletes 4 messages and 1 thread older than 30 days from SmileDesk Cloud and all your Macs, and 2 files, 9 lines of notes and 1 copy in Recently deleted from this Mac. It can't be undone.",
   );
-  // Bops couldn't say: it still asks.
-  assert.equal(P.goesLine(30, null), "Bops couldn't check what this deletes now. Everything older than 30 days goes from Bops Cloud and all your Macs. It can't be undone.");
+  // SmileDesk couldn't say: it still asks.
+  assert.equal(P.goesLine(30, null), "SmileDesk couldn't check what this deletes now. Everything older than 30 days goes from SmileDesk Cloud and all your Macs. It can't be undone.");
   assert.equal(P.keepGoesAny(none), false);
   assert.equal(P.keepGoesAny({ ...none, lines: 1 }), true);
   // Nothing changed by asking.
@@ -413,7 +413,7 @@ await check("Keep chats and calls takes the finished threads that last did anyth
   setPrivacy({});
 });
 
-await check("the sweep deletes only by choices it knows are the user's latest: offline, or not read from Bops Cloud lately, it waits", async () => {
+await check("the sweep deletes only by choices it knows are the user's latest: offline, or not read from SmileDesk Cloud lately, it waits", async () => {
   setPrivacy({ keepDays: 30, deletedDays: 7 });
   setMessages([msg("msg_due", 1)]);
   await deleteMessage("msg_due");
@@ -468,7 +468,7 @@ await check("Settings on a Mac that may hold stale choices deletes no copy by th
   let pulls = 0;
   Object.assign(Priv.privacyStore, { inCloud: () => true, pulledAt: () => pulled, pull: async () => void pulls++ });
   try {
-    // Offline, never read from Bops Cloud: opening Settings lists them all as they are, and reads nothing again.
+    // Offline, never read from SmileDesk Cloud: opening Settings lists them all as they are, and reads nothing again.
     const open = await call("GET");
     assert.equal(open.status, 200);
     assert.deepEqual(open.body.deleted.map((i) => i.id).sort(), [pastDays.id, pastKeep.id, fresh.id].sort());
@@ -491,7 +491,7 @@ await check("Settings on a Mac that may hold stale choices deletes no copy by th
     assert.deepEqual((await call("GET", undefined, { query: "?deletedDays=7" })).body.goesDeleted, { deletedDays: 7, copies: 1 });
     assert.deepEqual((await call("POST", { deletedDays: 7 })).body.deleted.map((i) => i.id), [pastKeep.id]);
     assert.equal(existsSync(file(fresh)), false);
-    // Read from Bops Cloud just now, the keep is the user's latest: what it takes goes as Settings opens.
+    // Read from SmileDesk Cloud just now, the keep is the user's latest: what it takes goes as Settings opens.
     pulled = Date.now();
     assert.deepEqual((await call("GET")).body.deleted, []);
     assert.equal(existsSync(file(pastKeep)), false);
@@ -503,7 +503,7 @@ await check("Settings on a Mac that may hold stale choices deletes no copy by th
   setPrivacy({});
 });
 
-await check("a batch counts as in Bops Cloud by what it deleted itself: until then the rest wait", async () => {
+await check("a batch counts as in SmileDesk Cloud by what it deleted itself: until then the rest wait", async () => {
   Priv.privacyTiming.batch = 2;
   setPrivacy({ keepDays: 30 });
   setMessages([msg("msg_o1", 40), msg("msg_o2", 41), msg("msg_o3", 42), msg("msg_o4", 43), msg("msg_n", 1)]);
@@ -535,14 +535,14 @@ await check("with days to keep what's deleted: the message leaves the chat at on
   await deleteMessage("msg_pic");
   assert.deepEqual(ids(), ["msg_1", "msg_other"]);
   await S.flushState();
-  assert.ok(!onDisk().messages.some((m) => m.id === "msg_pic"), "gone from what the store keeps (and Bops Cloud is sent) at once");
+  assert.ok(!onDisk().messages.some((m) => m.id === "msg_pic"), "gone from what the store keeps (and SmileDesk Cloud is sent) at once");
   const [item] = listed();
   assert.deepEqual({ kind: item.kind, what: item.what, messages: item.messages }, { kind: "message", what: "Our trip", messages: 1 });
   assert.ok(Math.abs(item.until - (item.at + 7 * DAY)) < 1000);
   assert.equal(Up.uploadPath(pic.id), null, "its own image left uploads");
   assert.ok(Up.uploadPath(both.id), "one another message shows stays");
   assert.deepEqual(readdirSync(join(deletedDir(), item.id)).sort(), [`${both.id}.png`, `${pic.id}.png`].sort());
-  // In the user's folder on this Mac: never in the state, which every Mac and Bops Cloud read.
+  // In the user's folder on this Mac: never in the state, which every Mac and SmileDesk Cloud read.
   assert.ok(!JSON.stringify(onDisk()).includes(item.id));
   assert.equal((await call("GET")).body.deleted[0].id, item.id);
 });
@@ -558,7 +558,7 @@ await check("Restore puts it back in its chat, in time order, under its id, with
   assert.deepEqual(r.body.deleted, []);
   assert.equal(existsSync(join(deletedDir(), item.id)), false);
   assert.equal((await call("POST", { restore: item.id })).status, 404);
-  // Bops Cloud takes a row it holds as removed (json NULL) written again as new: its upsert updates where json IS DISTINCT.
+  // SmileDesk Cloud takes a row it holds as removed (json NULL) written again as new: its upsert updates where json IS DISTINCT.
   assert.match(readFileSync(`${root}/cloud/state.ts`, "utf8"), /ON CONFLICT \(user_id, id\) DO UPDATE\s+SET chat_id = EXCLUDED\.chat_id, at = EXCLUDED\.at, json = EXCLUDED\.json, seq = EXCLUDED\.seq[^\n]*\n\s+WHERE bops\.chat_messages\.json IS DISTINCT FROM EXCLUDED\.json/);
 });
 
@@ -828,7 +828,7 @@ await check("fewer days for what's deleted say first how many copies go here, an
   assert.equal(P.deletedGoesLine(0, { deletedDays: 0, copies: 3 }), "This deletes 3 copies in Recently deleted on this Mac now. Copies on your other Macs go at their next check. It can't be undone.");
   assert.equal(P.deletedGoesLine(0, { deletedDays: 0, copies: 0 }), "Nothing in Recently deleted on this Mac goes now. Copies on your other Macs go at their next check. It can't be undone.");
   assert.equal(P.deletedGoesLine(7, null), "This deletes the copies older than 7 days in Recently deleted on this Mac now. Copies older than 7 days on your other Macs go at their next check. It can't be undone.");
-  // The window: fewer days always ask (nothing here to delete too, or Bops couldn't say); a failed read never skips the keep's question.
+  // The window: fewer days always ask (nothing here to delete too, or SmileDesk couldn't say); a failed read never skips the keep's question.
   const src = readFileSync(`${root}/components/app/your-data.tsx`, "utf8");
   assert.match(src, /if \(d < info\.deletedDays\) \{[\s\S]*?return setAskingDeleted\(/);
   assert.match(src, /if \(!goes \|\| keepGoesAny\(goes\)\) return setAsking\(/);
@@ -886,9 +886,9 @@ await check("a delete made on another Mac, gone at once there, takes this Mac's 
 
 /* ---------------- Who may ---------------- */
 
-await check("the route answers only the Bops window, never a shared workspace's viewer or a computer's runner; the window's guard keeps it from a shared workspace too", async () => {
+await check("the route answers only the SmileDesk window, never a shared workspace's viewer or a computer's runner; the window's guard keeps it from a shared workspace too", async () => {
   const no = await call("GET", undefined, { window: false });
-  assert.deepEqual(no, { status: 403, body: { error: "Your data can only be seen in the Bops app." } });
+  assert.deepEqual(no, { status: 403, body: { error: "Your data can only be seen in the SmileDesk app." } });
   assert.equal((await call("POST", { keepDays: 30 }, { window: false })).status, 403);
   assert.equal(S.getState().privacy?.keepDays ?? null, null, "nothing changed");
   globalThis.bopsShared = { user: S.stateUser(), key: orgoKey(), copy: { openNow: () => ({ projectId: "p_shared" }), data: () => ({ messages: [] }), close() {} }, subscriber: { stop() {} }, moods: { forApp: () => ({}) } };
@@ -1004,10 +1004,10 @@ await check("nothing the window says about your data has a dash or says Orbit", 
     assert.ok(!/orbit/i.test(P.goesLine(k, g)));
   }
   for (const [d, g] of [[0, null], [7, { deletedDays: 7, copies: 2 }], [0, { deletedDays: 0, copies: 0 }]]) assert.ok(!DASHES.test(P.deletedGoesLine(d, g)));
-  assert.equal(P.goesLine(90, { ...none, keepDays: 90, messages: 1240 }), "This deletes 1,240 messages older than 90 days from Bops Cloud and all your Macs. It can't be undone.");
+  assert.equal(P.goesLine(90, { ...none, keepDays: 90, messages: 1240 }), "This deletes 1,240 messages older than 90 days from SmileDesk Cloud and all your Macs. It can't be undone.");
   // Where things are kept, as they are: the memory service by name, what OpenAI keeps, where logins go, and what Start over keeps.
   const src = readFileSync(`${root}/components/app/your-data.tsx`, "utf8");
-  for (const said of ["Honcho, the memory service Orgo uses", "Answers to chats and tasks", "A bot signing in fills them into that site's page, never into a chat or a model.", "Start over keeps a copy of your chats in Bops Cloud."])
+  for (const said of ["Honcho, the memory service Orgo uses", "Answers to chats and tasks", "A bot signing in fills them into that site's page, never into a chat or a model.", "Start over keeps a copy of your chats in SmileDesk Cloud."])
     assert.ok(src.includes(said), said);
   assert.ok(!src.includes("Never sent anywhere"));
 });

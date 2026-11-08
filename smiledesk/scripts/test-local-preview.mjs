@@ -98,7 +98,7 @@ await check("its dev server down: a 502 in words", async () => {
   await F.openForward({ key: "ws/notes/notes", app: "notes", macPort: port2, host: "127.0.0.1", port: gone });
   const r = await raw(port2, `GET / HTTP/1.1\r\nHost: localhost:${port2}\r\n\r\n`);
   assert.match(r, /^HTTP\/1\.1 502/);
-  assert.ok(r.includes("Bops can't reach notes on its computer right now."));
+  assert.ok(r.includes("SmileDesk can't reach notes on its computer right now."));
   F.closeForward("ws/notes/notes");
 });
 

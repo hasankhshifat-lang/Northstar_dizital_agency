@@ -10,7 +10,7 @@ import zlib from "node:zlib";
 import { appVersion } from "./app-version";
 
 /**
- * Fetching a public web page for a bot (web_fetch in chat, page monitors), safely. Bops runs on the
+ * Fetching a public web page for a bot (web_fetch in chat, page monitors), safely. SmileDesk runs on the
  * user's Mac, next to its own API on 127.0.0.1:3210, the bots' Chrome DevTools, the relay, the
  * user's home network and their tailnet, and an address a model was handed (by a page, an email, a
  * message from someone else) must never reach any of those. So:
@@ -35,15 +35,15 @@ import { appVersion } from "./app-version";
  *
  * It uses node:http and node:https rather than fetch, because Next patches the global fetch and
  * fetch has no way to pin the address. Errors are plain English, ready to show: FetchRefused for an
- * address Bops won't open at all (or a file that isn't a page), a plain Error when the site couldn't
+ * address SmileDesk won't open at all (or a file that isn't a page), a plain Error when the site couldn't
  * be reached or read.
  *
  * Tests only: BOPS_FETCH_ALLOW is a comma list of host:port (e.g. "127.0.0.1:54321") let through
- * despite all of the above, for a local fixture server. It never lets through port 3210 (Bops itself),
+ * despite all of the above, for a local fixture server. It never lets through port 3210 (SmileDesk itself),
  * 8897 (the relay) or 9200 to 9399 (bots' and computers' DevTools).
  */
 
-/** An address Bops won't open: not http(s), an odd port, a password in it, this Mac or a private network, or not a page. */
+/** An address SmileDesk won't open: not http(s), an odd port, a password in it, this Mac or a private network, or not a page. */
 export class FetchRefused extends Error {
   constructor(message: string) {
     super(message);
@@ -185,7 +185,7 @@ function privateName(host: string): boolean {
 const bare = (hostname: string) => hostname.replace(/^\[(.*)\]$/, "$1").replace(/\.+$/, "");
 const portOf = (u: URL) => (u.port ? Number(u.port) : u.protocol === "https:" ? 443 : 80);
 
-/** Ports BOPS_FETCH_ALLOW can never open: Bops itself, the relay, and DevTools for bots and computers. */
+/** Ports BOPS_FETCH_ALLOW can never open: SmileDesk itself, the relay, and DevTools for bots and computers. */
 const neverPort = (port: number) => port === 3210 || port === 8897 || (port >= 9200 && port <= 9399);
 
 /** A test fixture's host:port named in BOPS_FETCH_ALLOW (see the top of this file). */
@@ -198,7 +198,7 @@ function allowedForTests(u: URL): boolean {
   return list.split(",").some((entry) => entry.trim().toLowerCase() === key);
 }
 
-const PRIVATE = "That address is on this Mac or a private network, so Bops won't open it.";
+const PRIVATE = "That address is on this Mac or a private network, so SmileDesk won't open it.";
 
 /**
  * The checks that need no lookup: a valid http(s) address, no password, port 80 or 443, and not a
@@ -212,11 +212,11 @@ export function checkUrl(raw: string | URL): URL {
   } catch {
     throw new FetchRefused("That isn't a web address.");
   }
-  if (u.protocol !== "http:" && u.protocol !== "https:") throw new FetchRefused("Bops only opens http and https web addresses.");
-  if (u.username || u.password) throw new FetchRefused("Bops won't open an address with a user name or password in it.");
+  if (u.protocol !== "http:" && u.protocol !== "https:") throw new FetchRefused("SmileDesk only opens http and https web addresses.");
+  if (u.username || u.password) throw new FetchRefused("SmileDesk won't open an address with a user name or password in it.");
   if (allowedForTests(u)) return u;
   const port = portOf(u);
-  if (port !== 80 && port !== 443) throw new FetchRefused(`Bops only opens web pages on the usual ports (80 and 443), not ${port}.`);
+  if (port !== 80 && port !== 443) throw new FetchRefused(`SmileDesk only opens web pages on the usual ports (80 and 443), not ${port}.`);
   const host = bare(u.hostname);
   if (isIP(host) ? isBlockedAddress(host) || onThisNetwork(host) : privateName(host)) throw new FetchRefused(PRIVATE);
   return u;
@@ -249,7 +249,7 @@ async function addressesOf(u: URL, signal: AbortSignal): Promise<LookupAddress[]
   }
   if (!found.length) throw new Error(`Couldn't find a website called ${host}.`);
   const nets = localNetworks();
-  if (!allowedForTests(u) && found.some((a) => isBlockedAddress(a.address) || onThisNetwork(a.address, nets))) throw new FetchRefused(`${host} points to this Mac or a private network, so Bops won't open it.`);
+  if (!allowedForTests(u) && found.some((a) => isBlockedAddress(a.address) || onThisNetwork(a.address, nets))) throw new FetchRefused(`${host} points to this Mac or a private network, so SmileDesk won't open it.`);
   return found;
 }
 
@@ -263,7 +263,7 @@ async function addressesOf(u: URL, signal: AbortSignal): Promise<LookupAddress[]
 export async function guardAddresses(raw: string | URL, reached: Set<string>, signal: AbortSignal): Promise<{ url: URL; addresses: LookupAddress[] }> {
   const u = checkUrl(raw);
   const host = bare(u.hostname);
-  if (isIP(host) && !reached.has(host) && !allowedForTests(u)) throw new FetchRefused("That page asked for a bare network address, so Bops won't open it.");
+  if (isIP(host) && !reached.has(host) && !allowedForTests(u)) throw new FetchRefused("That page asked for a bare network address, so SmileDesk won't open it.");
   const addresses = await addressesOf(u, signal);
   for (const a of addresses) reached.add(a.address);
   return { url: u, addresses };
@@ -279,7 +279,7 @@ function pinned(addresses: LookupAddress[]): LookupFunction {
   };
 }
 
-const userAgent = () => `Bops/${appVersion() ?? "dev"} (+https://bops.bot)`;
+const userAgent = () => `SmileDesk/${appVersion() ?? "dev"} (+https://bops.bot)`;
 
 /** One GET to one checked address; resolves with the response once its headers are in. */
 function get(u: URL, addresses: LookupAddress[], signal: AbortSignal): Promise<http.IncomingMessage> {
@@ -312,11 +312,11 @@ function get(u: URL, addresses: LookupAddress[], signal: AbortSignal): Promise<h
 const PAGE_TYPE = /^(text\/(html|plain|xml)|application\/(json|xml|xhtml\+xml|[\w.-]+\+(json|xml)))$/;
 
 function notAPage(type: string): FetchRefused {
-  if (!type) return new FetchRefused("That address didn't say what kind of file it is, so Bops won't read it.");
-  if (type === "application/pdf") return new FetchRefused("That address is a PDF, not a page Bops can read.");
+  if (!type) return new FetchRefused("That address didn't say what kind of file it is, so SmileDesk won't read it.");
+  if (type === "application/pdf") return new FetchRefused("That address is a PDF, not a page SmileDesk can read.");
   const kind = type.split("/")[0];
-  if (kind === "image" || kind === "video" || kind === "audio") return new FetchRefused(`That address is ${kind === "image" ? "an image" : kind === "video" ? "a video" : "audio"}, not a page Bops can read.`);
-  return new FetchRefused(`That address is a ${type} file, not a page Bops can read.`);
+  if (kind === "image" || kind === "video" || kind === "audio") return new FetchRefused(`That address is ${kind === "image" ? "an image" : kind === "video" ? "a video" : "audio"}, not a page SmileDesk can read.`);
+  return new FetchRefused(`That address is a ${type} file, not a page SmileDesk can read.`);
 }
 
 /** The body as bytes, unzipped, stopping at `max` bytes (and closing the connection there). */
@@ -328,7 +328,7 @@ async function readBody(res: http.IncomingMessage, max: number): Promise<{ bytes
   else if (encoding === "br") unzip = zlib.createBrotliDecompress({ finishFlush: zlib.constants.BROTLI_OPERATION_FLUSH });
   else if (encoding !== "identity" && encoding !== "") {
     res.destroy();
-    throw new Error("That page came in a compressed format Bops can't read.");
+    throw new Error("That page came in a compressed format SmileDesk can't read.");
   }
   if (unzip) {
     const u = unzip;
@@ -378,7 +378,7 @@ function plain(e: unknown, u: URL, signal: AbortSignal): Error {
   if (code === "ECONNRESET" || /socket hang up/i.test(err?.message ?? "")) return new Error(`${bare(u.hostname)} closed the connection.`);
   if (code === "ETIMEDOUT") return new Error(`${bare(u.hostname)} took too long to answer.`);
   if (code === "EHOSTUNREACH" || code === "ENETUNREACH" || code === "EADDRNOTAVAIL") return new Error(`Couldn't reach ${bare(u.hostname)}.`);
-  if (/CERT|SSL|TLS|UNABLE_TO_VERIFY/i.test(code)) return new Error(`${bare(u.hostname)} has a security certificate Bops can't trust.`);
+  if (/CERT|SSL|TLS|UNABLE_TO_VERIFY/i.test(code)) return new Error(`${bare(u.hostname)} has a security certificate SmileDesk can't trust.`);
   if (err instanceof Error && /^(Couldn't|That )/.test(err.message)) return err;
   return new Error(`Couldn't open that page${code ? ` (${code})` : ""}.`);
 }
@@ -403,7 +403,7 @@ export async function safeFetch(url: string, opts: { maxBytes?: number; timeoutM
       const location = res.headers.location;
       if (REDIRECTS.has(status) && location) {
         res.destroy();
-        if (hop >= MAX_REDIRECTS) throw new Error("That page sent Bops through too many redirects.");
+        if (hop >= MAX_REDIRECTS) throw new Error("That page sent SmileDesk through too many redirects.");
         let next: URL;
         try {
           next = new URL(location, u);
@@ -413,7 +413,7 @@ export async function safeFetch(url: string, opts: { maxBytes?: number; timeoutM
         u = checkUrl(next);
         // A page sent to a bare address (not a name): only one its own name had. Otherwise it could be the
         // home's own public address, which a home router answers from inside as itself.
-        if (isIP(bare(u.hostname)) && !reached.has(bare(u.hostname)) && !allowedForTests(u)) throw new FetchRefused("That page redirected to a bare network address, so Bops won't follow it.");
+        if (isIP(bare(u.hostname)) && !reached.has(bare(u.hostname)) && !allowedForTests(u)) throw new FetchRefused("That page redirected to a bare network address, so SmileDesk won't follow it.");
         continue;
       }
       const [type, ...params] = String(res.headers["content-type"] ?? "").split(";");

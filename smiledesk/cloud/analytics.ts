@@ -9,14 +9,14 @@ import { query } from "./db.ts";
 import { APP_VERSION_HEADER, TELEMETRY_HEADER } from "./protocol.ts";
 
 /**
- * Bops Cloud's usage events (README, Usage events): the facts only the cloud knows (a new Bops user,
+ * SmileDesk Cloud's usage events (README, Usage events): the facts only the cloud knows (a new SmileDesk user,
  * a plan change, AI credit running out, a number or an address set up, an owner contact proved) and
  * its unexpected 500s, through posthog-node to Orgo's PostHog project with the Orgo user id as the
  * person, as orgo-web's lib/analytics-server.ts does. Cleaned by analytics-rules.ts; never content.
  *
  * Off unless BOPS_TELEMETRY=1 (Orgo's cloud). Nothing is sent for a user who turned usage data off
  * (state.analyticsOff in bops.app_state), for what a call marked x-bops-telemetry: off does, or for what
- * a call from Bops for iPhone (x-bops-client: ios) does: the iPhone app collects no usage data, and
+ * a call from SmileDesk for iPhone (x-bops-client: ios) does: the iPhone app collects no usage data, and
  * its App Store privacy answers say so.
  */
 
@@ -48,7 +48,7 @@ const header = (req: IncomingMessage, name: string) => {
   return (Array.isArray(h) ? h[0] : h)?.trim();
 };
 
-/** Run a call's handler with what it said about usage events: off (always, from Bops for iPhone), and which app it came from. */
+/** Run a call's handler with what it said about usage events: off (always, from SmileDesk for iPhone), and which app it came from. */
 export function inTelemetryScope<T>(req: IncomingMessage, fn: () => T): T {
   const v = header(req, APP_VERSION_HEADER);
   return scope.run({ off: header(req, TELEMETRY_HEADER) === "off" || fromIphone(req), appVersion: v && fits("version", v) ? v : null }, fn);
@@ -113,8 +113,8 @@ export function trackCloudEvent<E extends EventsBy<"cloud">>(
 }
 
 /**
- * An unexpected 500 (server.ts), its type and where in Bops' code only, unless the call or the user
- * said off, or the call is from Bops for iPhone. Only on a signed-in user's call: a public route
+ * An unexpected 500 (server.ts), its type and where in SmileDesk's code only, unless the call or the user
+ * said off, or the call is from SmileDesk for iPhone. Only on a signed-in user's call: a public route
  * (webhooks, Slack, pages) has no account whose switch could say no, so its errors stay in the log.
  */
 export function captureCloudException(err: unknown, req: IncomingMessage, userId: string | null, routePath: string): void {

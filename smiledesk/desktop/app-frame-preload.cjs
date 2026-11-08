@@ -1,5 +1,5 @@
 /**
- * The one way an app a bot made talks to Bops' window (desktop/app-frames.cjs): its `window.bops` calls
+ * The one way an app a bot made talks to SmileDesk's window (desktop/app-frames.cjs): its `window.bops` calls
  * and what it reports go up to the webview in the window (sendToHost), and the answers come down. The
  * page sees only `window.bopsHost` (lib/made-app-page.ts uses it); nothing of Electron's or Node's.
  */

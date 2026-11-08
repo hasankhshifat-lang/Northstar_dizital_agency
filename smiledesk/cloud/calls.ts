@@ -12,7 +12,7 @@ import { liveSecondsOf, recordTokens, recordUsageFor } from "./usage.ts";
  * Answering the owner's GPT-Live call (a number routed to a SIP trunk to OpenAI) in the cloud when
  * their Mac is away (asleep, off, offline, or too slow to take it): the bot picks up in its voice,
  * says the computer it works on is offline, takes a note of anything they want done, says goodbye
- * and hangs up. The Mac hears about it when it's back (a "call" event). Dormant: Bops' numbers send
+ * and hangs up. The Mac hears about it when it's back (a "call" event). Dormant: SmileDesk's numbers send
  * calls to their AgentPhone agents now (voice.ts answers those turns), and trunks are made only with
  * BOPS_SIP_TRUNKS=1. Here bots take calls only from their owner, as the app does (lib/server/phone.ts
  * incomingCall): who that is comes from bops.phone_lines (lines.ts), and anyone else, a withheld
@@ -103,7 +103,7 @@ export const callerOf = (headers: SipHeader[]) => numberIn(header(headers, "From
 /**
  * Headers that name the caller or the way the call came, never the number that was called. The app
  * skips only From, because it knows just its own numbers; across every user's numbers, the caller's
- * own number (in P-Asserted-Identity, say) could be another Bops user's and must not route there.
+ * own number (in P-Asserted-Identity, say) could be another SmileDesk user's and must not route there.
  */
 const NOT_CALLED = /^(from|p-asserted-identity|p-preferred-identity|remote-party-id|contact|referred-by|via|call-id)$/i;
 
@@ -215,7 +215,7 @@ export const and = (items: string[]) => (items.length > 1 ? `${items.slice(0, -1
 
 /**
  * What a bot may do in an account, as levelOf in lib/types.ts: what the owner set, else Read & act in an
- * account of its own workspace or one it's switched on in; Bops' Slack app ("slackbot") only when set, and an account from before
+ * account of its own workspace or one it's switched on in; SmileDesk's Slack app ("slackbot") only when set, and an account from before
  * every bot had every app by default (no workspace, as v0.0.28 uploads it, or onlyGiven) only where given.
  * Null: no access.
  */
@@ -258,8 +258,8 @@ export function skillsOf(s: State, b: Bot) {
 
 /**
  * GPT-Live's instructions: who it is, that the computer is offline, what it can do once it's back
- * (its apps and where it's in Slack, Telegram and Discord), that it's answering from Bops Cloud and
- * which messages wait for the computer meanwhile, take a note, then goodbye. Texts wait in Bops Cloud
+ * (its apps and where it's in Slack, Telegram and Discord), that it's answering from SmileDesk Cloud and
+ * which messages wait for the computer meanwhile, take a note, then goodbye. Texts wait in SmileDesk Cloud
  * and Slack messages there for a day; Telegram keeps a bot's messages a day; the Mac's Discord
  * connection starts afresh and never sees what was sent while it was away. So the bot steers them to
  * a note on the call or a text.
@@ -272,7 +272,7 @@ function frontPrompt(c: Call) {
     ...(apps.length ? [`When it's back you can use ${theirs} apps again: ${apps.join(", ")}.`] : []),
     ...(places.length ? [`You're also in ${and(places)}, where ${c.s.owner ?? "they"} can message you.`] : []),
     ...(apps.length || places.length ? ["Until then, anything they want done there is a note for later."] : []),
-    `You're answering from Bops Cloud: texts sent to you meanwhile wait there for the computer${kinds.has("slack") ? ", and Slack messages for up to a day" : ""}.`,
+    `You're answering from SmileDesk Cloud: texts sent to you meanwhile wait there for the computer${kinds.has("slack") ? ", and Slack messages for up to a day" : ""}.`,
     ...(kinds.has("telegram") ? ["Telegram messages wait at Telegram for up to a day."] : []),
     ...(kinds.has("discord") ? ["Discord messages sent before the computer is back are missed."] : []),
     ...(places.length ? ["So if they want to send you something, take it as a note on this call, or ask them to text you."] : []),

@@ -240,7 +240,7 @@ const trunksReady = new Set<string>();
 /**
  * A SIP trunk in the user's sub-account that sends calls to OpenAI (OPENAI_SIP_URI), only when SIP
  * trunks are on (BOPS_SIP_TRUNKS=1). Dormant otherwise: AgentPhone hasn't turned SIP on for new
- * sub-accounts (it answers 403), and Bops' numbers take calls through their agents instead (each
+ * sub-accounts (it answers 403), and SmileDesk's numbers take calls through their agents instead (each
  * turn to /hooks/agentphone). AgentPhone ignores the destination on create, so it's set after
  * (PATCH). Best effort: a failure mustn't stop the rest; the next session tries again.
  */
@@ -286,7 +286,7 @@ async function setUp(user: CloudUser): Promise<CloudSession> {
   await welcome(user.id);
   const failed: string[] = [];
   const { row, mailKey, created } = await tx(async (c) => {
-    // A row made here is a new Bops user (usage events: bops_signup_completed).
+    // A row made here is a new SmileDesk user (usage events: bops_signup_completed).
     const made = await c.query("INSERT INTO bops.cloud_accounts (user_id, email) VALUES ($1, $2) ON CONFLICT (user_id) DO NOTHING RETURNING user_id", [user.id, user.email ?? null]);
     const created = made.rowCount === 1;
     const row = (
@@ -361,7 +361,7 @@ async function sessionPlan(userId: string): Promise<NonNullable<CloudSession["pl
   return { tier: p.tier, limits: config.planLimits(), ...(p.billing === "usage" ? { billing: p.billing } : {}) };
 }
 
-/** Bops' Slack app, when this cloud takes its events: they're checked with its signing secret, and where they go is checked through Composio. */
+/** SmileDesk's Slack app, when this cloud takes its events: they're checked with its signing secret, and where they go is checked through Composio. */
 function slackApp(): CloudSession["slack"] {
   const appId = config.slackAppId();
   return appId && config.slackSigningSecret() && config.composioKey() ? { appId } : null;

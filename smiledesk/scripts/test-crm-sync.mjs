@@ -104,7 +104,7 @@ async function fakeOrgo(req, url) {
   if (req.method === "PUT" && orgo.putDelay) await sleep(orgo.putDelay);
   orgo.calls.push({ method: req.method, path: decodeURIComponent(url.pathname), query: url.search, body, ifMatch: req.headers.get("if-match"), type: req.headers.get("content-type"), auth: req.headers.get("authorization") });
   if (req.headers.get("authorization") !== `Bearer ${ORGO_KEY}`) return json({ error: "Unauthorized" }, 401);
-  if (orgo.down) return json({ error: "Bops is not available right now. Try again.", code: "bops_map_unavailable" }, 503);
+  if (orgo.down) return json({ error: "SmileDesk is not available right now. Try again.", code: "bops_map_unavailable" }, 503);
   const m = url.pathname.match(/^\/api\/projects\/([^/]+)\/crm(?:\/([^/]+))?$/);
   if (!m) return new Response("<!doctype html><title>404</title>", { status: 404, headers: { "content-type": "text/html" } });
   const [, pid, rawName] = m;
@@ -157,7 +157,7 @@ globalThis.fetch = async (input, init) => {
   throw new TypeError(`fetch failed (the test is offline: ${url.host})`);
 };
 
-/* ---------------- Bops ---------------- */
+/* ---------------- SmileDesk ---------------- */
 
 const S = await import(`${root}/lib/server/store.ts`);
 const K = await import(`${root}/lib/server/crm.ts`);
@@ -307,7 +307,7 @@ await check("Changed on both sides since they agreed: the later change stands, t
 });
 
 await check("A file from before Orgo kept them goes at the first read; one Orgo had from here that it no longer lists (its trash emptied) goes here too", async () => {
-  // Written to the folder before this version of Bops: Orgo never had it.
+  // Written to the folder before this version of SmileDesk: Orgo never had it.
   writeFileSync(join(dir(), "Old list.csv"), "Name\nOld\n", { mode: 0o600 });
   const side = join(dir(), ".orgo.json");
   const kept = JSON.parse(readFileSync(side, "utf8"));
@@ -379,7 +379,7 @@ await check("A change made while that file's put is on its way still goes (the p
   await settle();
 });
 
-await check("The sample on a new Mac: none while Orgo is away or slow (Orgo's, as edited there, comes after), none back where it was deleted, and one Bops wrote never goes over Orgo's", async () => {
+await check("The sample on a new Mac: none while Orgo is away or slow (Orgo's, as edited there, comes after), none back where it was deleted, and one SmileDesk wrote never goes over Orgo's", async () => {
   const EDITED = "Name,Company\nReal Customer,Acme\n";
   const newMac = () => {
     rmSync(dir(), { recursive: true, force: true });
@@ -422,7 +422,7 @@ await check("The sample on a new Mac: none while Orgo is away or slow (Orgo's, a
   assert.equal(there(SAMPLE_NAME), undefined, "not made again in Orgo");
   assert.ok(existsSync(join(dir(), ".seeded")));
   assert.ok(orgo.calls.some((c) => c.method === "GET" && /^\?since=/.test(c.query)), "what was deleted, read");
-  // One written here before (a Bops that seeded while Orgo was away) where Orgo's was deleted: it goes to .trash, not to Orgo.
+  // One written here before (a SmileDesk that seeded while Orgo was away) where Orgo's was deleted: it goes to .trash, not to Orgo.
   writeFileSync(join(dir(), `${SAMPLE_NAME}.csv`), "Name\nTemplate row\n", { mode: 0o600 });
   elsewhere.put("Kept", "Name\nK\n");
   rmSync(join(dir(), ".orgo.json"), { force: true });

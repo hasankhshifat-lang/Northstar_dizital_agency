@@ -9,7 +9,7 @@ import { getState, update } from "./store";
 import { isIdentityToken, vmIdentityRejected } from "./vm-identity";
 
 /**
- * Bops Cloud (cloud/README.md): the server Orgo runs so that Orgo's provider keys never sit on a
+ * SmileDesk Cloud (cloud/README.md): the server Orgo runs so that Orgo's provider keys never sit on a
  * user's Mac. Signed in with Orgo, the app calls OpenAI, AgentPhone, Honcho, Composio, Typesafe and
  * texted codes through the cloud on the user's Orgo key (cloudProxy), and AgentMail directly with a
  * key that reaches only the user's own pod (the session). While it runs, it keeps a tunnel open for
@@ -19,18 +19,18 @@ import { isIdentityToken, vmIdentityRejected } from "./vm-identity";
  * which holds its own keys) call every service directly, as before. BOPS_CLOUD_URL points the app
  * at another cloud (staging, or one running on this Mac).
  *
- * Every call here goes on cloudKey(): the signed-in key, or on a computer's runner its credential as Bops
- * Cloud takes it (its key file while Bops Cloud can't take its identity yet: orgo-auth.ts). A runner's
+ * Every call here goes on cloudKey(): the signed-in key, or on a computer's runner its credential as SmileDesk
+ * Cloud takes it (its key file while SmileDesk Cloud can't take its identity yet: orgo-auth.ts). A runner's
  * session holds no mail key: its mail goes through /proxy/agentmail (mail.ts).
  */
 
 export { cloudUrl };
 
-/** Whether services go through Bops Cloud: signed in with Orgo, in the app on a Mac, and not self-hosting. */
+/** Whether services go through SmileDesk Cloud: signed in with Orgo, in the app on a Mac, and not self-hosting. */
 export const cloudOn = () => !!orgoKey() && process.env.BOPS_SELF_HOSTED !== "1" && !onPostgres();
 
 /**
- * A call to Bops Cloud that didn't work, in words the app can show. `status` is the cloud's HTTP status
+ * A call to SmileDesk Cloud that didn't work, in words the app can show. `status` is the cloud's HTTP status
  * (0 when it didn't answer), `code` its code for it when it gave one (AI_CREDIT_EMPTY).
  */
 export class CloudError extends Error {
@@ -43,7 +43,7 @@ export class CloudError extends Error {
   }
 }
 
-/** A request to Bops Cloud as the signed-in user (their Orgo key as Bearer). `fetchImpl` lets a test check the wire shape. */
+/** A request to SmileDesk Cloud as the signed-in user (their Orgo key as Bearer). `fetchImpl` lets a test check the wire shape. */
 export async function cloudFetch(path: string, init: RequestInit = {}, fetchImpl: typeof fetch = fetch): Promise<Response> {
   const key = cloudKey();
   if (!key) throw new CloudError("Sign in with Orgo first.");
@@ -54,7 +54,7 @@ export async function cloudFetch(path: string, init: RequestInit = {}, fetchImpl
   try {
     res = await fetchImpl(`${cloudUrl()}${path}`, { cache: "no-store", signal: AbortSignal.timeout(20_000), ...init, headers });
   } catch {
-    throw new CloudError("Couldn't reach Bops Cloud. Check your internet connection.");
+    throw new CloudError("Couldn't reach SmileDesk Cloud. Check your internet connection.");
   }
   // A runner's identity token turned down (orgo-web said why): it takes its next credential (vm-identity.ts).
   if (res.status === 401 && isIdentityToken(key))
@@ -71,17 +71,17 @@ export async function cloudFetch(path: string, init: RequestInit = {}, fetchImpl
 
 /** What a failed answer means, for the user. Out of AI credit (402), the cloud's own words. */
 function problem(status: number, said?: string) {
-  if (status === 401) return "Bops Cloud didn't accept your Orgo sign-in. Sign out and sign in again.";
-  if (status >= 500) return `Bops Cloud isn't working right now (${status}). Try again in a minute.`;
-  return said || `Bops Cloud turned the request down (${status}).`;
+  if (status === 401) return "SmileDesk Cloud didn't accept your Orgo sign-in. Sign out and sign in again.";
+  if (status >= 500) return `SmileDesk Cloud isn't working right now (${status}). Try again in a minute.`;
+  return said || `SmileDesk Cloud turned the request down (${status}).`;
 }
 
-/** A JSON call to Bops Cloud: its answer, or a CloudError that says what went wrong. */
+/** A JSON call to SmileDesk Cloud: its answer, or a CloudError that says what went wrong. */
 export async function cloudJson<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await cloudFetch(path, init);
   const body = (await res.json().catch(() => null)) as (T & { error?: unknown; code?: unknown }) | null;
   if (!res.ok) throw new CloudError(problem(res.status, typeof body?.error === "string" ? body.error : undefined), res.status, typeof body?.code === "string" ? body.code : undefined);
-  if (body === null || typeof body !== "object") throw new CloudError("Bops Cloud sent back something Bops couldn't read.", res.status);
+  if (body === null || typeof body !== "object") throw new CloudError("SmileDesk Cloud sent back something SmileDesk couldn't read.", res.status);
   return body;
 }
 
@@ -98,7 +98,7 @@ const box: Box = (g.bopsCloud ??= {});
 const RETRY_MS = 10_000;
 
 /**
- * This user's Bops Cloud session (POST /v1/session; CloudSession in cloud/protocol.ts): which
+ * This user's SmileDesk Cloud session (POST /v1/session; CloudSession in cloud/protocol.ts): which
  * services the cloud runs for them, and their own ids and keys in each. Asked once per signed-in
  * key and kept; `fresh` asks again (a sign-in does).
  */
@@ -110,7 +110,7 @@ export function cloudSession(fresh = false): Promise<CloudSession> {
   if (!fresh && box.failed?.key === key && Date.now() - box.failed.at < RETRY_MS) return Promise.reject(box.failed.error);
   const answer: Promise<CloudSession> = cloudJson<CloudSession>("/v1/session", { method: "POST" }).then(
     (value) => {
-      if (typeof value.userId !== "string") throw new CloudError("Bops Cloud sent back something Bops couldn't read.");
+      if (typeof value.userId !== "string") throw new CloudError("SmileDesk Cloud sent back something SmileDesk couldn't read.");
       // A sign-out or another sign-in while it was out has the last word.
       if (box.asking?.answer === answer) box.session = { key, value };
       return value;
@@ -147,7 +147,7 @@ export function forgetCloudSession() {
   box.session = box.asking = box.failed = undefined;
 }
 
-/** Where a provider is reached through Bops Cloud and the key to reach it with (the user's Orgo key), or null when the app calls it directly. */
+/** Where a provider is reached through SmileDesk Cloud and the key to reach it with (the user's Orgo key), or null when the app calls it directly. */
 export function cloudProxy(provider: "openai" | "agentphone" | "honcho" | "composio" | "typesafe" | "treg" | "agentmail") {
   const key = cloudOn() ? cloudKey() : null;
   return key ? { url: `${cloudUrl()}/proxy/${provider}`, key } : null;
@@ -155,19 +155,19 @@ export function cloudProxy(provider: "openai" | "agentphone" | "honcho" | "compo
 
 /**
  * The OpenAI key copied onto bot computers (and given to Codex on this Mac) for `codex exec-server`:
- * Bops Cloud's restricted, spend-capped one, or OPENAI_EXECUTOR_API_KEY.
+ * SmileDesk Cloud's restricted, spend-capped one, or OPENAI_EXECUTOR_API_KEY.
  */
 export async function executorKey(): Promise<string> {
   if (!cloudOn()) return process.env.OPENAI_EXECUTOR_API_KEY ?? "";
   const key = (await cloudSession()).openai?.executorKey;
-  if (!key) throw new CloudError("Bops Cloud can't run tasks on computers right now.");
+  if (!key) throw new CloudError("SmileDesk Cloud can't run tasks on computers right now.");
   return key;
 }
 
 /* ---------------- AI credit ---------------- */
 
 /**
- * Whether an error is Bops Cloud saying the user's AI credit is used up (402, AI_CREDIT_EMPTY): a
+ * Whether an error is SmileDesk Cloud saying the user's AI credit is used up (402, AI_CREDIT_EMPTY): a
  * CloudError (AgentPhone's through /proxy/agentphone too, lib/server/phone.ts), or an OpenAI SDK error
  * from /proxy/openai, which keeps only the cloud's words, not its code: OpenAI itself never answers 402.
  */
@@ -177,7 +177,7 @@ export function outOfCredits(e: unknown): boolean {
 }
 
 /**
- * Bops Cloud's words when a task can't start or go on for want of more AI credit, while some is left
+ * SmileDesk Cloud's words when a task can't start or go on for want of more AI credit, while some is left
  * (AI_CREDIT_LOW: a 403 from /proxy/openai through the OpenAI SDK, or a turn the cloud stopped), or
  * undefined for any other error. Unlike AI_CREDIT_EMPTY, the credit isn't counted as used up.
  */
@@ -188,12 +188,12 @@ export function shortOfCredit(e: unknown): string | undefined {
   return typeof message === "string" && message ? message : e.message;
 }
 
-/** What a bot says, once, in place of the error, when the credit ran out under it (Bops' plans: outOfCreditWords). */
+/** What a bot says, once, in place of the error, when the credit ran out under it (SmileDesk's plans: outOfCreditWords). */
 export const OUT_OF_CREDIT = "I'm out of AI credit, so I've stopped. Upgrade in Settings to keep me going.";
 /** The same for a user billed by use: their Orgo credit, and Add credit, never Upgrade. */
 export const OUT_OF_ORGO_CREDIT = "I'm out of Orgo credit, so I've stopped. Add credit in Settings to keep me going.";
 
-/** Whether Bops Cloud said, at the session, that the user is billed by use (CloudSession.plan.billing). */
+/** Whether SmileDesk Cloud said, at the session, that the user is billed by use (CloudSession.plan.billing). */
 export const billedByUse = () => cloudOn() && cloudSessionNow()?.plan?.billing === "usage";
 
 /** What a bot says when the credit ran out under it, in the words for how the user is billed. */

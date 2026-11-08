@@ -3,7 +3,7 @@ import { cleanWindowEvent, POSTHOG_HOST, POSTHOG_PROJECT, POSTHOG_UI_HOST, type 
 /**
  * The window's usage events (README, Privacy): orgo-web's PostHog setup (providers/posthogProvider.tsx
  * and SupabaseAuthContext's identify/reset), for the few things only the screen sees. Everything the
- * user does in Bops is sent by the Mac's server instead (lib/server/analytics.ts). posthog-js loads
+ * user does in SmileDesk is sent by the Mac's server instead (lib/server/analytics.ts). posthog-js loads
  * only when analytics is on, and never records the screen. No React here, so Node tests import it.
  */
 

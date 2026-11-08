@@ -7,7 +7,7 @@ import { isUnsorted, keptLabel } from "@/lib/skill-labels";
  * a markdown body) and the files it needs. This file is pure: it reads SKILL.md, writes it back, and
  * checks a folder's files the way orgo-web's importer does (lib/skills/bundle.ts in orgo-web, decided
  * in .ops-kit/bops-skills/FORMAT-REVIEW.md): the same paths, junk, caps and secret rules, so a folder
- * Bops takes in is one Orgo takes too. A finding names the path, the line and the kind of problem,
+ * SmileDesk takes in is one Orgo takes too. A finding names the path, the line and the kind of problem,
  * never the text that matched.
  */
 
@@ -385,7 +385,7 @@ export function parseSkillMd(text: string): ParsedSkillMd {
   const yaml = m[1] ?? "";
   if (byteLength(yaml) > BUNDLE_LIMITS.frontmatter) return { ok: false, reason: `frontmatter is over ${BUNDLE_LIMITS.frontmatter / 1024} KB` };
   const fm = yaml.trim() ? parseYaml(yaml) : {};
-  if (!fm) return { ok: false, reason: "frontmatter is not YAML Bops can read" };
+  if (!fm) return { ok: false, reason: "frontmatter is not YAML SmileDesk can read" };
   return { ok: true, frontmatter: fm, body: text.slice(m[0].length) };
 }
 
@@ -418,10 +418,10 @@ export function renderSkillMd(frontmatter: Record<string, unknown>, body: string
 
 /**
  * The Agent Skills spec (agentskills.io/specification) keeps only name, description, license, compatibility,
- * metadata (a map of string to string) and allowed-tools at the top of SKILL.md's frontmatter. Bops' own
+ * metadata (a map of string to string) and allowed-tools at the top of SKILL.md's frontmatter. SmileDesk's own
  * fields live in metadata, as strings: metadata.label (the skill's one label), metadata.version (semver),
  * metadata.risk (read, write or destructive), metadata.runs-on (local, remote-host or container) and
- * metadata.requires-secrets (vault key names, space separated: never a value). Bops writes only that form
+ * metadata.requires-secrets (vault key names, space separated: never a value). SmileDesk writes only that form
  * (toSpecForm). It reads the form from before too (top level version, risk, runs_on, a requires_secrets list,
  * label), so every skill kept or synced before keeps working, and a stored version is never refused for it;
  * a skill takes the new form on its next write. The same in orgo-web (lib/skills/bundle.ts there).
@@ -431,7 +431,7 @@ export type SkillSpec = { label?: string; version?: string; risk?: string; runsO
 /** The spec's name: 1 to 64 of a to z, 0 to 9 and single hyphens, none at either end. */
 export const NAME_MAX = 64;
 export const COMPATIBILITY_MAX = 500;
-/** Bops' keys in metadata, and the top level ones they were before. */
+/** SmileDesk's keys in metadata, and the top level ones they were before. */
 const META = { label: "label", version: "version", risk: "risk", runsOn: "runs-on", requiresSecrets: "requires-secrets" } as const;
 const OLD = { label: "label", version: "version", risk: "risk", runsOn: "runs_on", requiresSecrets: "requires_secrets" } as const;
 
@@ -448,7 +448,7 @@ const words = (v: unknown): string[] | undefined => {
 };
 
 /**
- * Whether a value of one of Bops' fields is one Bops takes: any label, a version such as 1.2.0, a risk and a
+ * Whether a value of one of SmileDesk's fields is one SmileDesk takes: any label, a version such as 1.2.0, a risk and a
  * runs-on from their lists, vault key names (100 at most). The same as orgo-web's (lib/skills/bundle.ts there).
  */
 const FITS: Record<keyof typeof META, (v: unknown) => boolean> = {
@@ -463,8 +463,8 @@ const FITS: Record<keyof typeof META, (v: unknown) => boolean> = {
 };
 
 /**
- * Bops' fields in a frontmatter, in either form: metadata first, else the top level key from before. A value
- * Bops wouldn't take (a version such as "1.0", as the spec's own example writes metadata.version, or a risk
+ * SmileDesk's fields in a frontmatter, in either form: metadata first, else the top level key from before. A value
+ * SmileDesk wouldn't take (a version such as "1.0", as the spec's own example writes metadata.version, or a risk
  * outside the list) reads as none, and the old form is tried: a stored version is read, never refused, as
  * orgo-web's skillMeta reads one. A version that isn't one is numbered when it's published.
  */
@@ -480,9 +480,9 @@ export function specOf(fm: Record<string, unknown> | null | undefined): SkillSpe
 }
 
 /**
- * A frontmatter in the spec's form, as Bops writes every SKILL.md: its own fields from the top level moved into
+ * A frontmatter in the spec's form, as SmileDesk writes every SKILL.md: its own fields from the top level moved into
  * metadata as strings (requires-secrets space separated), every metadata value a string, `set` applied on top
- * (a label or a version; null takes one out). Keys that aren't Bops' (license, compatibility, allowed-tools, or
+ * (a label or a version; null takes one out). Keys that aren't SmileDesk's (license, compatibility, allowed-tools, or
  * anyone's own) stay where they are.
  */
 export function toSpecForm(fm: Record<string, unknown>, set: { label?: string | null; version?: string | null } = {}): Record<string, unknown> {
@@ -572,7 +572,7 @@ export function frontmatterWarnings(fm: Record<string, unknown>): Problem[] {
 /**
  * A frontmatter kept elsewhere (a version on Orgo) made fit to keep here, so it's never refused for its form, as
  * orgo-web's textMetadata carries a stored version: metadata that isn't a map goes, its values become text, and
- * each of Bops' fields a new save would refuse goes, in either form (an earlier build kept metadata as the
+ * each of SmileDesk's fields a new save would refuse goes, in either form (an earlier build kept metadata as the
  * author's free text, so a stored one may say risk: high). A metadata.version that isn't a version goes too:
  * the version is the one Orgo numbered. The rest as it is.
  */

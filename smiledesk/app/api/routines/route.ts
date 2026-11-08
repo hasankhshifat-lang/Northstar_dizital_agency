@@ -5,11 +5,11 @@ import { notReady } from "@/lib/server/ready";
 import { fromBopsWindow } from "@/lib/server/ui-token";
 
 /**
- * Routines from the Bops window: make one, change it, pause or resume it, run it now, delete it. Only from
+ * Routines from the SmileDesk window: make one, change it, pause or resume it, run it now, delete it. Only from
  * the window (ui-token.ts): a page a bot's Chrome reached this server with mustn't be able to set up work,
  * or send a routine's results somewhere new. Errors come back as { error } with a 400.
  */
-const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Routines can only be changed in the Bops app." }, { status: 403 }));
+const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Routines can only be changed in the SmileDesk app." }, { status: 403 }));
 
 const bad = (error: string) => Response.json({ error }, { status: 400 });
 

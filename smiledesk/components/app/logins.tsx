@@ -103,7 +103,7 @@ export function reachersOf(people: ReturnType<typeof usePeople>, bots: Bot[]) {
 
 /**
  * What's signed in on the workspace's computers' screens besides the logins here: the AI plans signed in on a bot's
- * computer (Brain.signIns), which any bot that works there can use. Only what Bops knows: nothing when there's none.
+ * computer (Brain.signIns), which any bot that works there can use. Only what SmileDesk knows: nothing when there's none.
  */
 export function screenSignIns(state: AppState, ws: string): { host: Bot; what: string[]; bots: Bot[] }[] {
   if (!BRAINS_ON) return [];
@@ -716,7 +716,7 @@ function LoginPanel({
       if (!res.ok) setError(((await res.json().catch(() => ({}))) as { error?: string }).error ?? "That didn't work. Try again.");
       return res.ok;
     } catch {
-      setError("Couldn't reach Bops. Try again.");
+      setError("Couldn't reach SmileDesk. Try again.");
       return false;
     } finally {
       setBusy(false);

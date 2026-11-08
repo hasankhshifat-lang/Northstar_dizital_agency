@@ -13,8 +13,8 @@ export const dynamic = "force-dynamic";
 
 /**
  * The account page (components/app/account.tsx), assembled here so the Orgo key stays on the
- * server: who's signed in, their Bops plan and AI credit, their Orgo plan with its computers in use,
- * credits and compute (read from Orgo with their key), Bops' own usage this month and last (Bops
+ * server: who's signed in, their SmileDesk plan and AI credit, their Orgo plan with its computers in use,
+ * credits and compute (read from Orgo with their key), SmileDesk's own usage this month and last (SmileDesk
  * Cloud's count of what AI credit paid for, and this Mac's ledger, lib/server/usage.ts), and the
  * inboxes and numbers their bots have.
  */
@@ -28,7 +28,7 @@ export async function GET() {
   const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
   const events = usageSince(lastMonthStart);
   const pages = orgoPages();
-  // AI credit is Bops Cloud's: only when the app works through it, and so is its count of what it paid for.
+  // AI credit is SmileDesk Cloud's: only when the app works through it, and so is its count of what it paid for.
   const viaCloud = !!key && cloudOn();
   const [orgo, bops, cloudThis, cloudLast] = await Promise.all([
     key ? readOrgo(key) : null,
@@ -140,18 +140,18 @@ async function readOrgo(key: string): Promise<OrgoBilling> {
   return out;
 }
 
-/* ---------------- Bops usage ---------------- */
+/* ---------------- SmileDesk usage ---------------- */
 
-/** Bops Cloud's own count of the user's use in [from, to) (the rows their AI credit paid for), days on this Mac's clock. Null when it didn't answer. */
+/** SmileDesk Cloud's own count of the user's use in [from, to) (the rows their AI credit paid for), days on this Mac's clock. Null when it didn't answer. */
 async function cloudUsage(from: number, to: number): Promise<CloudUsage | null> {
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
   return cloudJson<CloudUsage>(`/v1/usage?${new URLSearchParams({ from: String(from), to: String(to), tz })}`).catch((e: Error) => {
-    console.warn(`[account] Bops Cloud's usage: ${e.message}`);
+    console.warn(`[account] SmileDesk Cloud's usage: ${e.message}`);
     return null;
   });
 }
 
-/** What each cloud row is on the page: tokens by kind of work, and what AI credit paid for. "iphone": the main bot's chat answered in the cloud for Bops for iPhone. */
+/** What each cloud row is on the page: tokens by kind of work, and what AI credit paid for. "iphone": the main bot's chat answered in the cloud for SmileDesk for iPhone. */
 const TOKEN_SOURCE: Record<string, TokenSource> = { chat: "chat", session: "session", agent: "session", memory: "memory", call: "call", phone: "call", iphone: "chat" };
 function spendKind(kind: string, source?: string): SpendKind {
   if (kind === "openai.tokens") return TOKEN_SOURCE[source ?? ""] ?? "other";
@@ -169,7 +169,7 @@ function spendKind(kind: string, source?: string): SpendKind {
 }
 
 /**
- * One month, totalled. Computers, numbers and inboxes made are this Mac's ledger; model use, calls and AI credit spent are Bops Cloud's count when it answered
+ * One month, totalled. Computers, numbers and inboxes made are this Mac's ledger; model use, calls and AI credit spent are SmileDesk Cloud's count when it answered
  * (`cloud`), else this Mac's ledger. Bots that are gone keep their usage, under "Removed bot".
  */
 function totals(events: UsageEvent[], monthStart: number, cloud: CloudUsage | null): UsageTotals {
@@ -205,7 +205,7 @@ function totals(events: UsageEvent[], monthStart: number, cloud: CloudUsage | nu
   };
   for (const e of events) {
     const qty = Number(e.qty) || 0;
-    // Codex's own tokens, which builds before Bops stopped signing in to Codex kept here: never Bops' to count.
+    // Codex's own tokens, which builds before SmileDesk stopped signing in to Codex kept here: never SmileDesk's to count.
     if (e.kind === "model.tokens" && (e as { plan?: string }).plan) continue;
     if (e.kind === "computer.create") {
       t.computersCreated++;

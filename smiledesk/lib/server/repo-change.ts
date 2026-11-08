@@ -24,13 +24,13 @@ const MAX_FILE = 512 * 1024;
 const MAX_ALL = 1024 * 1024;
 /**
  * The most the card's words for a change may be (UTF-8 bytes), every changed line in full: a person reads all of it
- * before Allow, on the Mac and in a Member's or Admin's window (Bops Cloud passes an ask's words whole: cloud/ws-slice.ts
+ * before Allow, on the Mac and in a Member's or Admin's window (SmileDesk Cloud passes an ask's words whole: cloud/ws-slice.ts
  * APPROVAL), and each waiting ask rides in every state upload (20 MB at most: cloud/state.ts) and every member's copy.
  * About 1,500 changed lines. A change past it is refused (TOO_BIG), never cut short: what the card shows is what Allow writes.
  */
 const PREVIEW_CAP = 64 * 1024;
 const TOO_BIG = "This change is too big to show before saving. Split it.";
-/** What's at a path that isn't a file Bops changes, by its mode in git (a folder, a link, a repository of its own inside). */
+/** What's at a path that isn't a file SmileDesk changes, by its mode in git (a folder, a link, a repository of its own inside). */
 const NOT_A_FILE: Record<string, string> = { "040000": "a folder", "120000": "a link to another file or folder", "160000": "a repository of its own inside this one" };
 
 /** change_files, for a bot with a key a change goes with; null when it has none. */
@@ -101,7 +101,7 @@ function jsonOf(a: KeyAnswer): Record<string, unknown> | null {
   return b && typeof b === "object" && !Array.isArray(b) ? (b as Record<string, unknown>) : null;
 }
 
-/** A step that didn't go: what Bops was doing, and what the service said. */
+/** A step that didn't go: what SmileDesk was doing, and what the service said. */
 class StepFailed extends Error {
   readonly step: string;
   constructor(step: string, why: string) {
@@ -110,7 +110,7 @@ class StepFailed extends Error {
   }
 }
 
-/** Check change_files' arguments: the change in Bops' own terms, or why not, in plain words. */
+/** Check change_files' arguments: the change in SmileDesk's own terms, or why not, in plain words. */
 function check(a: ChangeArgs): { ok: true; repo: string; branch: string; base: string | null; message: string; files: FileIn[] } | { ok: false; why: string } {
   const repo = String(a.repo ?? "").trim();
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo) || repo.split("/").some((p) => p === "." || p === "..")) return { ok: false, why: 'The repository must be owner/name, like "acme/site".' };
@@ -226,7 +226,7 @@ export function isDraft(c: { branch: string; base: string | null }, live: string
 
 /**
  * change_files. The key must be one the bot may use (Bot.keys), set in the vault, and one a change goes with; a chat
- * turn's (`chat`) or a task's (`task`, never without a card). Before the ask, Bops only reads (GETs run at once, as call_api's): the branch, or its base, the
+ * turn's (`chat`) or a task's (`task`, never without a card). Before the ask, SmileDesk only reads (GETs run at once, as call_api's): the branch, or its base, the
  * folders on each file's way (git's trees: what each is, and an executable's mode, which the card keeps and the yes
  * writes), and each file there now, for the card's diff. A link, a repository of its own inside, a file too big to read,
  * or a change too big to show whole is refused, never asked for. A draft (isDraft: a branch the repository lists as one,
@@ -414,10 +414,10 @@ export async function changeFiles(botId: string, a: ChangeArgs, where: UseWhere,
     return { text: `Couldn't read what's there now: ${e instanceof StepFailed ? `${e.step}, ${e.message}` : (e as Error).message}. Nothing changed.` };
   }
   if (!shown.length) return { text: `Nothing to change: ${n === 1 ? "the file already says" : "the files already say"} that on ${s.head ? branch : s.base}.` };
-  // The repository and the branch first, so the words alone say where it goes (an older app or Bops Cloud shows no more of the card).
+  // The repository and the branch first, so the words alone say where it goes (an older app or SmileDesk Cloud shows no more of the card).
   const head = [`${repo}, branch ${branch}`, ...(s.head ? [] : [`New branch ${branch}, from ${s.base}.`])].join("\n");
   const reason = plainReason(a.reason);
-  // A task's card leads with Bops' own facts, never the bot's words (a page it read may have written them): those go last, labelled.
+  // A task's card leads with SmileDesk's own facts, never the bot's words (a page it read may have written them): those go last, labelled.
   const preview = [head, ...diffs, ...(opts.task && reason ? [`In the bot's words: ${reason}`] : [])].join("\n\n");
   if (Buffer.byteLength(preview, "utf8") > PREVIEW_CAP) return { text: TOO_BIG };
   // A draft goes at once, on anyone's turn and a task's: the repository lists its branch as one whose push reaches only a

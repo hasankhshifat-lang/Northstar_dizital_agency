@@ -3,10 +3,10 @@
 // - a Connected App switched on in another workspace is every bot's there by default (Read & act), the per bot picker
 //   narrowing it; off, no bot there has it, the grants by name there going too; its own workspace is always on;
 // - a saved site login keeps nothing new: on in a workspace gives it to each bot there by name, off takes it from them;
-// - the route takes a change only from the Bops window, and says plainly what it can't do;
+// - the route takes a change only from the SmileDesk window, and says plainly what it can't do;
 // - on a member's thread (one they started or told something) the bot may sign in with a saved login of its own only
 //   when it's set to sign in by itself; one that asks first waits for the owner's card. A stranger's thread (an email,
-//   a text, a call from outside Bops) gets none of the owner's saved logins, as before.
+//   a text, a call from outside SmileDesk) gets none of the owner's saved logins, as before.
 //
 // The store, the screens, the Keychain and Orgo are fakes: nothing reaches a real service or browser.
 // Usage: node --conditions=react-server scripts/test-logins.mjs
@@ -226,7 +226,7 @@ await check("a login disconnected, or a key removed, is switched off everywhere 
   assert.equal(state.workspaces[1].loginsOn, undefined);
 });
 
-await check("the route: only from the Bops window, plain words for what it can't do, and each kind switched", async () => {
+await check("the route: only from the SmileDesk window, plain words for what it can't do, and each kind switched", async () => {
   state = fresh();
   assert.equal((await patch({ kind: "app", id: "ca_gmail", workspaceId: "ws_fern", on: true }, false)).status, 403, "a page in a bot's Chrome can't");
   assert.equal(state.workspaces[1].loginsOn, undefined);
@@ -265,7 +265,7 @@ await check("a stranger's thread gets none of the owner's saved logins: it waits
   signIns.length = 0;
   for (const id of ["ses_out", "ses_out_part"]) {
     const said = await V.vaultSignIn("juno", T.DISPLAYS[0], id);
-    assert.match(said, /^Ava's saved logins are only for the people Ava works with, and someone outside Bops asked for this task/);
+    assert.match(said, /^Ava's saved logins are only for the people Ava works with, and someone outside SmileDesk asked for this task/);
     assert.ok(!DASHES.test(said), "no dashes");
     assert.equal(find(id).blocker, "sign_in");
   }

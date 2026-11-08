@@ -13,8 +13,8 @@ import { ago } from "./ui";
  * cloud/ws-slice.ts appsFor): its apps on the web as the owner's Mac last read them. Read sees each app's sites and
  * addresses (each site's Preview link, where a member's Deploy goes, with its state), what they serve, deploys and
  * history, and domains; Write also sees a Preview's password, deploys, goes back to an earlier Preview deploy, changes
- * a site's settings and uses one of the workspace's own domains, each sent to the owner's Bops (memberAct), which does
- * it and keeps it on the app under their name. An Admin, once the owner's Bops takes it (SharedOpen.adminPublish), also
+ * a site's settings and uses one of the workspace's own domains, each sent to the owner's SmileDesk (memberAct), which does
+ * it and keeps it on the app under their name. An Admin, once the owner's SmileDesk takes it (SharedOpen.adminPublish), also
  * publishes (what its Preview serves goes on Published) and goes back on Published. Never its variables, logs or a domain
  * to buy: the owner's.
  */
@@ -28,10 +28,10 @@ export const SHARED_APPS_WORDS = {
   none: "No apps on the web here yet.",
   readOnly: "Ask the owner for Write to deploy.",
   noVariables: "Only the owner sees its variables.",
-  noLogs: "Build logs show in the owner's Bops.",
+  noLogs: "Build logs show in the owner's SmileDesk.",
   noBuying: "Only the owner buys domains.",
   useDomain: "Use one of this workspace's domains",
-  sending: "Sending to the owner's Bops…",
+  sending: "Sending to the owner's SmileDesk…",
   waiting: REPLY_WAITS_LINE,
   failed: "That didn't go. Try again.",
   deploy: "Deploy",
@@ -80,7 +80,7 @@ export function SharedAppsPage({ state }: { state: AppState }) {
   const ws = state.shared?.name ?? "";
   if (!apps) return null;
   const write = apps.level === "write";
-  // An Admin whose owner's Bops publishes for them (Bops Cloud says so only then: ADMIN_PUBLISH_MIN_VERSION).
+  // An Admin whose owner's SmileDesk publishes for them (SmileDesk Cloud says so only then: ADMIN_PUBLISH_MIN_VERSION).
   const publish = write && state.shared?.role === "admin" && state.shared.adminPublish === true;
   return (
     <div data-shared-apps className="flex min-h-0 flex-1 flex-col gap-5 overflow-auto px-8 py-8">
@@ -110,8 +110,8 @@ function SharedAppCard({ app: a, apps, acts, publish }: { app: SharedApp; apps: 
   const [open, setOpen] = useState(false);
   const [said, setSaid] = useState<string | null>(null);
   const write = apps.level === "write";
-  // Up top, its own site's Preview, where a member's Deploy goes; Published's from an owner's Bops that sends no Preview.
-  // By its link: Bops Cloud drops a null previewLive (a Preview with no deploy yet).
+  // Up top, its own site's Preview, where a member's Deploy goes; Published's from an owner's SmileDesk that sends no Preview.
+  // By its link: SmileDesk Cloud drops a null previewLive (a Preview with no deploy yet).
   const site = a.sites?.[0];
   const pv = !!site && (!!site.preview || site.previewLive != null);
   const live = (pv ? site.previewLive : site?.live) ?? null;
@@ -242,7 +242,7 @@ function SharedAppCard({ app: a, apps, acts, publish }: { app: SharedApp; apps: 
 
 /**
  * A site's Preview, where a member's Deploy goes: its state and link, and while the link asks for a password, the password
- * at Write (the owner gave them all of Your Apps), as the owner sees it; at Read, or when the owner's Bops couldn't read it, who to ask.
+ * at Write (the owner gave them all of Your Apps), as the owner sees it; at Read, or when the owner's SmileDesk couldn't read it, who to ask.
  */
 function PreviewLine({ site: s, link, write }: { site: NonNullable<SharedApp["sites"]>[number]; link: string; write: boolean }) {
   return (
@@ -268,7 +268,7 @@ function Part({ title, children }: { title: string; children: React.ReactNode })
 
 const FIELD = "h-8 min-w-0 rounded-[10px] bg-[#F7F7F6] px-2.5 text-[12.5px] outline-none shadow-[0_0_0_1px_#E6E6E3] focus:shadow-[0_0_0_1.5px_#0A0A0A]";
 
-/** A site's settings (port and the four commands), saved by the owner's Bops. Never its variables. */
+/** A site's settings (port and the four commands), saved by the owner's SmileDesk. Never its variables. */
 function SettingsPart({ app: a, disabled, onSave }: { app: SharedApp; disabled: boolean; onSave: (act: MemberAppAct) => void }) {
   const site = Object.keys(a.settings ?? {})[0] ?? a.name;
   const was = a.settings?.[site];

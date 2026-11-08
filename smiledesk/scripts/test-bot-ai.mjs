@@ -1,7 +1,7 @@
 // Tests for a bot's AI profile and the agent each of its threads runs on (lib/agents.ts, lib/server/bot-ai.ts,
 // POST /api/bots/ai, cli-agents.ts's flags, stops and OpenCode driver, components/app/bot-ai.tsx and
 // new-thread.tsx): a bot's brains move over on load as its agents (the one it used its Default), a profile keeps
-// only what Bops can run, and changing it stops what ran on an agent that went and clears its folder on the
+// only what SmileDesk can run, and changing it stops what ran on an agent that went and clears its folder on the
 // computer. A thread runs on the agent it was given, read again from its bot's profile at every start, so a
 // thread can't move onto an agent or account its bot doesn't have. A bot with no profile is exactly as before.
 // The window's AI section, New thread sheet and chips render every state in plain words.
@@ -162,19 +162,19 @@ const bot = (id) => S.bot(id);
 /* ---------------- A build without brains (the --off child) ---------------- */
 
 if (OFF) {
-  await test("without brains: Bops agent only, CLI agents kept in the state but never shown or run", async () => {
+  await test("without brains: SmileDesk agent only, CLI agents kept in the state but never shown or run", async () => {
     const b = bot("boppy");
     assert.ok(b.ai.agents.some((x) => x.kind === "claude"), "kept in the state for a build that has them");
     assert.deepEqual(A.aiOf(b, S.getState()), { agents: [{ id: "bops", kind: "bops", pays: "credit" }], default: "bops" });
     const s = { id: "s1", botId: "boppy", agent: { id: b.ai.default, kind: "claude" }, brainRun: { brainId: "brain_plan", kind: "claude", computerId: "pc-main", cli: "x", started: true } };
-    assert.equal(A.threadAgent(s, b, S.getState()).kind, "bops", "a thread a CLI agent ran carries on on Bops agent");
+    assert.equal(A.threadAgent(s, b, S.getState()).kind, "bops", "a thread a CLI agent ran carries on on SmileDesk agent");
     const off = await R.POST(fromWindow({ botId: "boppy", op: "add", kind: "codex", pays: "key" }));
     assert.equal(off.status, 404);
     const model = await R.POST(fromWindow({ botId: "pip", op: "update", agentId: "bops", model: "gpt-6-astra" }));
-    assert.equal(model.status, 200, "Bops agent's model is still the owner's to pick");
+    assert.equal(model.status, 200, "SmileDesk agent's model is still the owner's to pick");
     const section = render(h(BotAiSection, { state: S.getState(), bot: bot("boppy") }));
-    assert.match(section, /^▾ AI Default Bops agent Agents it can run Bops agent Default OpenAI · Credit Thinking/, section);
-    assert.ok(!/New thread/.test(section), "no New thread choice where there's only Bops agent");
+    assert.match(section, /^▾ AI Default SmileDesk agent Agents it can run SmileDesk agent Default OpenAI · Credit Thinking/, section);
+    assert.ok(!/New thread/.test(section), "no New thread choice where there's only SmileDesk agent");
     assert.ok(!/Claude Code|Codex|OpenCode|agy|\+ Add|Open its terminal/.test(section), section);
     assert.match(section, /Chat, threads, memory and calls run on credit\./);
   });
@@ -197,12 +197,12 @@ await test("brains move over on load: the brains a bot may use become its agents
     ],
     default: planAgent,
   });
-  // Rook may use the plan, so it has it, but it used none: Bops agent stays its Default. Its account from the
+  // Rook may use the plan, so it has it, but it used none: SmileDesk agent stays its Default. Its account from the
   // other workspace stays behind.
   assert.deepEqual(bot("rook").ai, { agents: [{ id: "bops", kind: "bops", pays: "credit" }, { id: A.agentIdFor("rook", "brain_plan"), kind: "claude", pays: "plan", account: "brain_plan" }], default: "bops" });
-  assert.equal(bot("pip").ai, undefined, "a bot on no brain: no profile, today's Bops agent");
+  assert.equal(bot("pip").ai, undefined, "a bot on no brain: no profile, today's SmileDesk agent");
   assert.equal(bot("kai").ai.agents[1].account, "brain_two");
-  // For older Bops: the Default's account as Bot.brain, each brain's bots those with an agent on it.
+  // For older SmileDesk: the Default's account as Bot.brain, each brain's bots those with an agent on it.
   assert.equal(bot("boppy").brain, "brain_plan");
   assert.equal(bot("rook").brain, undefined);
   const brains = Object.fromEntries(S.getState().brains.map((x) => [x.id, x.bots]));
@@ -215,7 +215,7 @@ await test("brains move over on load: the brains a bot may use become its agents
   assert.deepEqual(again, bot("boppy").ai);
 });
 
-await test("a profile keeps only what Bops can run: Bops agent first, each agent once, a real account of its kind here, at most six", () => {
+await test("a profile keeps only what SmileDesk can run: SmileDesk agent first, each agent once, a real account of its kind here, at most six", () => {
   const brains = S.getState().brains;
   const ai = A.cleanAi(
     {
@@ -271,7 +271,7 @@ await test("adding agents: an account of the workspace's is reused, another made
   assert.equal(plans.length, 2);
   assert.notEqual(plans[0].account, plans[1].account, "Use another account: a second Claude plan");
   assert.equal(S.getState().brains.find((x) => x.id === plans[1].account).name, "Claude Code 2");
-  assert.deepEqual(S.getState().brains.find((x) => x.id === "brain_plan").bots.sort(), ["boppy", "pip", "rook"], "mirrored for older Bops");
+  assert.deepEqual(S.getState().brains.find((x) => x.id === "brain_plan").bots.sort(), ["boppy", "pip", "rook"], "mirrored for older SmileDesk");
 });
 
 await test("one account is one agent of the bot's: the editor never offers the other one's, and the server turns it down", () => {
@@ -298,7 +298,7 @@ await test("one account is one agent of the bot's: the editor never offers the o
   assert.equal(A.agentLabel(bot("boppy").ai.agents.find((x) => x.id === codexAgent), { bot: bot("boppy"), state: st }), "Codex · GPT 6.1 Sol");
 });
 
-await test("what isn't in Bops yet answers Soon, with why; a bad model, a seventh agent, or Bops agent's removal are turned down", () => {
+await test("what isn't in SmileDesk yet answers Soon, with why; a bad model, a seventh agent, or SmileDesk agent's removal are turned down", () => {
   const err = (op) => {
     try {
       BA.setBotAi("pip", op);
@@ -309,11 +309,11 @@ await test("what isn't in Bops yet answers Soon, with why; a bad model, a sevent
   };
   assert.match(err({ op: "add", kind: "agy", pays: "key" }), /^400 Soon: agy signs in with a Google account/);
   assert.match(err({ op: "add", kind: "codex", pays: "plan" }), /^400 Soon: A ChatGPT plan for Codex needs a check of OpenAI's terms first\./);
-  assert.match(err({ op: "add", kind: "claude", pays: "credit" }), /^400 Soon: Credit for Claude Code needs Bops Cloud to carry it first\./);
+  assert.match(err({ op: "add", kind: "claude", pays: "credit" }), /^400 Soon: Credit for Claude Code needs SmileDesk Cloud to carry it first\./);
   assert.match(err({ op: "add", kind: "opencode", pays: "key", model: "evil.example/x" }), /^400 OpenCode can't use that model\./);
-  assert.match(err({ op: "add", kind: "bops", pays: "credit" }), /^400 Bops agent is always there/);
-  assert.match(err({ op: "remove", agentId: "bops" }), /^400 Bops agent is always there: it is chat's agent/);
-  assert.match(err({ op: "update", agentId: "bops", pays: "key" }), /^400 Soon:|^400 Bops agent/);
+  assert.match(err({ op: "add", kind: "bops", pays: "credit" }), /^400 SmileDesk agent is always there/);
+  assert.match(err({ op: "remove", agentId: "bops" }), /^400 SmileDesk agent is always there: it is chat's agent/);
+  assert.match(err({ op: "update", agentId: "bops", pays: "key" }), /^400 Soon:|^400 SmileDesk agent/);
   BA.setBotAi("pip", { op: "add", kind: "opencode", pays: "key", model: "openai/gpt-6.1-sol" });
   assert.match(err({ op: "add", kind: "opencode", pays: "key" }), /^400 A bot runs at most 6 agents\./);
   assert.match(err({ op: "update", agentId: bot("pip").ai.agents.find((x) => x.kind === "claude").id, account: "brain_two" }), /^400 That account isn't one this agent can use\./, "another workspace's account");
@@ -331,7 +331,7 @@ await test("the Default and a model change new threads only; an agent removed or
   BA.setBotAi("pip", { op: "update", agentId: claude.id, model: "claude-haiku-5-5" });
   await new Promise((r) => setTimeout(r, 50));
   assert.deepEqual(sessionCalls, [], "nothing stopped");
-  assert.equal(pip().brain, "brain_plan", "the Default's account, for older Bops");
+  assert.equal(pip().brain, "brain_plan", "the Default's account, for older SmileDesk");
   // A thread open in a terminal on that agent (so not running, not among those stopped) has its terminal closed.
   S.update((s) => {
     s.sessions.push({ id: "s_term", botId: "pip", chatId: "bot_pip", sentVia: "you", title: "In its terminal", goal: "x", host: "orgo", status: "failed", error: "Paused while it's open in the terminal", steps: [], replies: [], createdAt: Date.now(), agent: { id: claude.id, kind: "claude" }, brainRun: { brainId: "brain_plan", agentId: claude.id, kind: "claude", computerId: "pc-pip", cli: "x", started: true } });
@@ -367,7 +367,7 @@ await test("the Default and a model change new threads only; an agent removed or
   assert.ok(commands.some((c) => c.computer === "pc-pip" && /bops-brain bot-clear pip$/.test(c.command)));
 });
 
-await test("POST /api/bots/ai: from the Bops window only, with words for what's wrong", async () => {
+await test("POST /api/bots/ai: from the SmileDesk window only, with words for what's wrong", async () => {
   assert.equal((await R.POST(fromPage({ botId: "pip", op: "add", kind: "codex", pays: "key" }))).status, 403);
   assert.equal((await R.POST(fromWindow({ botId: "pip", op: "fly" }))).status, 400);
   assert.equal((await R.POST(fromWindow({ botId: "nobody", op: "default", agentId: "bops" }))).status, 404);
@@ -384,7 +384,7 @@ await test("POST /api/bots/ai: from the Bops window only, with words for what's 
 
 /* ---------------- A thread's agent ---------------- */
 
-await test("a thread runs on the agent it was given, as its bot's profile has it now; anything else is Bops agent, and one whose agent went says so", () => {
+await test("a thread runs on the agent it was given, as its bot's profile has it now; anything else is SmileDesk agent, and one whose agent went says so", () => {
   const st = S.getState();
   const b = bot("boppy");
   const cloud = { id: "s", botId: "boppy" };
@@ -403,16 +403,16 @@ await test("a thread runs on the agent it was given, as its bot's profile has it
   // From before profiles: no agent, its brainRun's account finds it; no brainRun, the Default.
   assert.equal(A.threadAgent({ ...cloud, brainRun: { brainId: "brain_codex", kind: "codex", computerId: "pc-main", cli: "x" } }, b, st).kind, "codex");
   assert.equal(A.threadAgent(cloud, b, st).agent.id, planAgent);
-  // A thread naming an agent its bot doesn't have (a computer can write its own threads whole): Bops agent, with why.
+  // A thread naming an agent its bot doesn't have (a computer can write its own threads whole): SmileDesk agent, with why.
   r = A.threadAgent({ ...cloud, agent: { id: "ag_forged0001", kind: "claude" } }, b, st);
   assert.equal(r.kind, "bops");
-  assert.equal(r.gone, "Stopped: Boppy doesn't run Claude Code anymore. Reply and it carries on with Bops agent.");
-  assert.equal(r.goneNote, "Boppy doesn't run Claude Code anymore, so Bops agent does this, on your credit.");
+  assert.equal(r.gone, "Stopped: Boppy doesn't run Claude Code anymore. Reply and it carries on with SmileDesk agent.");
+  assert.equal(r.goneNote, "Boppy doesn't run Claude Code anymore, so SmileDesk agent does this, on your credit.");
   // Begun on one account, and the agent moved to another since.
   r = A.threadAgent({ ...cloud, agent: { id: planAgent, kind: "claude" }, brainRun: { brainId: "brain_old", agentId: planAgent, kind: "claude", computerId: "pc-main", cli: "x", started: true } }, b, st);
   assert.equal(r.kind, "bops");
   assert.match(r.gone, /on that account anymore/);
-  // On the Mac, or once Bops agent ran any of it: Bops agent.
+  // On the Mac, or once SmileDesk agent ran any of it: SmileDesk agent.
   assert.equal(A.threadAgent({ ...cloud, agent: { id: planAgent, kind: "claude" }, runsOn: "mac" }, b, st).kind, "bops");
   assert.equal(A.threadAgent({ ...cloud, agent: { id: planAgent, kind: "claude" }, responseId: "resp_1" }, b, st).kind, "bops");
   assert.equal(A.threadAgent({ ...cloud, agent: { id: planAgent, kind: "claude" } }, { ...b, runsOn: "mac" }, st).kind, "bops");
@@ -426,7 +426,7 @@ await test("a new thread's agent: the owner's pick, then one named, then the Def
   const st = S.getState();
   const b = bot("boppy");
   // Each with the model it starts on (the agent's, else its kind's default), so a later change of the agent's model
-  // never moves a thread already going; Bops agent on Auto keeps none (its route picks one each task).
+  // never moves a thread already going; SmileDesk agent on Auto keeps none (its route picks one each task).
   assert.deepEqual(A.pickAgent(b, st, [codexAgent, planAgent]), { id: codexAgent, kind: "codex", model: "gpt-6.1-sol" });
   assert.deepEqual(A.pickAgent(b, st, ["ag_notmine001", planAgent]), { id: planAgent, kind: "claude", model: "claude-opus-5-5" });
   assert.deepEqual(A.pickAgent(b, st, [undefined, null]), { id: planAgent, kind: "claude", model: "claude-opus-5-5" }, "the Default");
@@ -439,7 +439,7 @@ await test("a new thread's agent: the owner's pick, then one named, then the Def
   assert.equal(A.pickAgent(bot("pip"), st, [planAgent]), undefined);
   // In chat: the agents a task can start on, by the names the model is offered.
   const ready = A.readyAgents(b, st).map((x) => A.agentLabel(x));
-  assert.deepEqual(ready, ["Bops agent", "Claude Code · Opus 5.5", "Codex · GPT 6.1 Sol"]);
+  assert.deepEqual(ready, ["SmileDesk agent", "Claude Code · Opus 5.5", "Codex · GPT 6.1 Sol"]);
   assert.equal(A.agentNamed(b, st, "Codex · GPT 6.1 Sol").id, codexAgent);
   assert.equal(A.agentNamed(b, st, "claude code").id, planAgent);
   assert.equal(A.agentNamed(b, st, "Gemini"), undefined);
@@ -459,7 +459,7 @@ await test("a run's flags for the computer: its bot, agent, model, thinking, gat
   assert.deepEqual(C.agentFlags(plan, b), ["--bot", "boppy", "--agent", planAgent, "--model", "claude-opus-5-5", "--effort", "high", "--also", "codex:key:brain_codex:", "--label", "boppy"]);
   const codex = A.threadAgent({ id: "s", botId: "boppy", agent: { id: codexAgent, kind: "codex" } }, b, st);
   assert.deepEqual(C.agentFlags(codex, b), ["--bot", "boppy", "--agent", codexAgent, "--model", "gpt-6.1-sol", "--effort", "high", "--route", "openai", "--also", "claude:plan:brain_plan:", "--label", "boppy"]);
-  assert.equal(C.alsoSpec(b), "claude:plan:brain_plan:,codex:key:brain_codex:", "the Bops agent's bin: every CLI agent");
+  assert.equal(C.alsoSpec(b), "claude:plan:brain_plan:,codex:key:brain_codex:", "the SmileDesk agent's bin: every CLI agent");
   S.update((s) => void delete s.bots.find((x) => x.id === "boppy").effort);
 });
 
@@ -469,7 +469,7 @@ await test("a CLI's stop is sorted: limit, sign in or key, a model its account c
   assert.equal(C.stopOf("The model claude-opus-5-5 is not available on your plan"), "model");
   assert.equal(C.stopOf("unknown model: gpt-1"), "model");
   assert.equal(C.stopOf("529 Overloaded"), "down");
-  assert.equal(C.stopOf("Bops couldn't reach api.anthropic.com."), "down");
+  assert.equal(C.stopOf("SmileDesk couldn't reach api.anthropic.com."), "down");
   assert.equal(C.stopOf("it stopped (exit 1)"), undefined);
 });
 
@@ -484,7 +484,7 @@ await test("OpenCode's events (captured from opencode 2.0.27) read as a thread's
   assert.deepEqual(D.parse({ type: "bops", subtype: "started", session: "ses_bopsFixture0001" }), [{ type: "started", session: "ses_bopsFixture0001", failed: [] }]);
   assert.deepEqual(D.parse({ type: "bops", subtype: "turn", ok: true }), [{ type: "result", ok: true }]);
   assert.deepEqual(D.parse({ type: "bops", subtype: "turn", ok: false, error: "invalid x-api-key" }), [{ type: "result", ok: false, text: "invalid x-api-key", stop: "auth" }]);
-  assert.deepEqual(D.parse({ type: "tool_use", part: { tool: "screen_click", state: { status: "completed", input: { x: 1, y: 2 } } } }), [{ type: "tool", id: "", tool: "click", args: { x: 1, y: 2 } }], "Bops' own tools, worded by Bops");
+  assert.deepEqual(D.parse({ type: "tool_use", part: { tool: "screen_click", state: { status: "completed", input: { x: 1, y: 2 } } } }), [{ type: "tool", id: "", tool: "click", args: { x: 1, y: 2 } }], "SmileDesk's own tools, worded by SmileDesk");
   assert.equal(D.cliId("ses_bopsFixture0001"), "ses_bopsFixture0001");
   assert.equal(D.cliId("ses_x; rm -rf /"), undefined);
   assert.match(D.newSession(), /^ses_[A-Za-z0-9]{24}$/);
@@ -512,9 +512,9 @@ await test("the AI section: its agents as tiles with the Default marked, agy Soo
   const out = render(h(BotAiSection, { state: S.getState(), bot: bot("boppy"), onShowScreen() {} }));
   // Worst first in the header, and the Default by its name (its model would push the rest out of a narrow row).
   assert.match(out, /^▾ AI Default Claude Code · 1 needs you · 1 running Agents it can run /, out);
-  assert.match(out, /Bops agent OpenAI · Credit Claude Code Default Max plan · signed in here Codex Your OpenAI key/);
+  assert.match(out, /SmileDesk agent OpenAI · Credit Claude Code Default Max plan · signed in here Codex Your OpenAI key/);
   assert.match(out, /agy Soon Google Antigravity \+ Add Thinking/);
-  assert.match(out, /Threads now Bops agent: Weekly report · needs you Claude Code · Opus 5\.5: Fix the header \+ New thread Open its terminal Calls OpenAI live voice/);
+  assert.match(out, /Threads now SmileDesk agent: Weekly report · needs you Claude Code · Opus 5\.5: Fix the header \+ New thread Open its terminal Calls OpenAI live voice/);
   assert.match(out, /Each thread runs on the agent you pick, with Boppy's own accounts\. Chat, memory and calls stay on credit\./);
   // Boppy's computer is its own, but Otto-like bots sharing it would hear the warning: Rook's plan on Pip's? none here.
   assert.ok(!/can reach/.test(out));
@@ -525,7 +525,7 @@ await test("the AI section: its agents as tiles with the Default marked, agy Soo
   assert.match(renderToStaticMarkup(h(BotAiSection, { state: S.getState(), bot: bot("boppy"), editing: codexAgent })), /title="Soon: A ChatGPT plan for Codex needs a check of OpenAI&#x27;s terms first\."/);
   assert.match(ed, /Your OpenAI key Make default Remove/);
   // What's Soon says why, in words on the page, not only on hover.
-  assert.match(ed, /Soon: Credit for Codex needs Bops Cloud to carry it first\. A ChatGPT plan for Codex needs a check of OpenAI's terms first\./);
+  assert.match(ed, /Soon: Credit for Codex needs SmileDesk Cloud to carry it first\. A ChatGPT plan for Codex needs a check of OpenAI's terms first\./);
   plain(ed, "the editor");
   // No key for it in the Vault (when the window has read the Vault's names): not ready, with Add key.
   const noKey = render(h(BotAiSection, { state: S.getState(), bot: bot("boppy"), editing: codexAgent, onAddKey() {} }));
@@ -541,7 +541,7 @@ await test("the AI section: its agents as tiles with the Default marked, agy Soo
   const t0 = { id: "s_w", botId: "boppy", status: "done", steps: [], replies: [], createdAt: now };
   assert.equal(stateWords({ ...t0, waitingOnYou: true }, st), "needs you");
   assert.equal(stateWords({ ...t0, status: "failed", error: "Paused while it's open in the terminal" }, st), "in its terminal");
-  assert.equal(stateWords({ ...t0, status: "failed", error: "Stopped: Boppy doesn't run Codex anymore. Reply and it carries on with Bops agent." }, st), "stopped");
+  assert.equal(stateWords({ ...t0, status: "failed", error: "Stopped: Boppy doesn't run Codex anymore. Reply and it carries on with SmileDesk agent." }, st), "stopped");
   assert.equal(stateWords({ ...t0, status: "failed", error: "It broke" }, st), "didn't finish");
   assert.equal(stateWords(t0, st), "done");
 });
@@ -557,9 +557,9 @@ await test("every state of a tile says what it is, with its one button", () => {
   const failed = { ...st, brains: st.brains.map((x) => (x.id === "brain_plan" ? { ...x, signingIn: { botId: "rook", computerId: "pc-rook", display: 2, at: now, failed: "it took too long" } } : x)) };
   assert.equal(tile(rookPlan, bot("rook"), failed), "Claude Code Sign in didn't finish: it took too long.");
   assert.equal(tile(rookPlan, bot("rook"), { ...st, host: "mac" }), "Claude Code Claude Code runs on a cloud computer. Your bots work on this Mac.");
-  assert.equal(tile(rookPlan, { ...bot("rook"), runsOn: "mac" }), "Claude Code Rook works on your Mac, so its threads use Bops agent.");
+  assert.equal(tile(rookPlan, { ...bot("rook"), runsOn: "mac" }), "Claude Code Rook works on your Mac, so its threads use SmileDesk agent.");
   assert.equal(tile({ id: "ag_oc00000001", kind: "opencode", pays: "key", model: "anthropic/claude-sonnet-5-5" }), "OpenCode Sonnet 5.5 · your Anthropic key");
-  assert.equal(tile({ id: "bops", kind: "bops", pays: "credit", model: "gpt-6-astra" }), "Bops agent GPT 6 Astra · Credit");
+  assert.equal(tile({ id: "bops", kind: "bops", pays: "credit", model: "gpt-6-astra" }), "SmileDesk agent GPT 6 Astra · Credit");
   // A bot that shares a computer and keeps a login there is told its logins aren't walled off.
   const shared = { ...st, bots: [...st.bots, { id: "otto", name: "Otto", role: "Outbound", color: "#E9FF3B", isMain: false, computer: "shared", workspaceId: "ws_main", ai: bot("rook").ai }] };
   assert.equal(A.sharesComputerWithLogins(shared.bots.at(-1), shared), "Otto shares Boppy's computer, so bots there can reach Otto's logins. Give Otto its own computer to keep them apart.");
@@ -568,7 +568,7 @@ await test("every state of a tile says what it is, with its one button", () => {
 await test("New thread, in place (never a dialog over the window), and the agent chip", () => {
   const html = renderToStaticMarkup(h(NewThread, { state: S.getState(), bot: bot("boppy"), agentId: codexAgent, onClose() {}, onStarted() {} }));
   const out = text(html);
-  assert.match(out, /^New thread for Boppy × Bops agent /);
+  assert.match(out, /^New thread for Boppy × SmileDesk agent /);
   assert.match(out, /Codex GPT 6\.1 Sol Model GPT 6\.1 Sol GPT 6 Astra ▾ Pays with: your OpenAI key/);
   assert.match(out, /Cancel Start$/);
   // In place where it was asked for, named by its title (Escape in it closes it, not the profile behind), its box labelled and focused.
@@ -577,15 +577,15 @@ await test("New thread, in place (never a dialog over the window), and the agent
   assert.match(html, /<textarea[^>]*placeholder="What should it do\?"[^>]*aria-label="What should it do\?"/);
   plain(out, "the New thread sheet");
   // Rook's Default is its Claude plan, not signed in: the sheet starts on one that's ready and offers Set up for it,
-  // and the message box's chip says the Default as it is (the server starts a task there), not Bops agent.
+  // and the message box's chip says the Default as it is (the server starts a task there), not SmileDesk agent.
   const st = S.getState();
   const rook = { ...bot("rook"), ai: { ...bot("rook").ai, default: bot("rook").ai.agents.find((x) => x.kind === "claude").id } };
   const rookState = { ...st, bots: st.bots.map((x) => (x.id === "rook" ? rook : x)) };
   const sheet = renderToStaticMarkup(h(NewThread, { state: rookState, bot: rook, onClose() {}, onStarted() {}, onSetUp() {} }));
-  assert.match(sheet, /aria-pressed="true"[^>]*>(?:(?!aria-pressed).)*Bops agent/, "on the one that's ready");
+  assert.match(sheet, /aria-pressed="true"[^>]*>(?:(?!aria-pressed).)*SmileDesk agent/, "on the one that's ready");
   assert.match(text(sheet), /Claude Code Default Not signed in on Rook's computer yet\. Set up/);
   const chip = text(renderToStaticMarkup(h(AgentChipPick, { state: rookState, bot: rook, value: null, defaultOpen: true, onPick() {} })));
-  assert.equal(chip, "Claude Code · not signed in ▾ Claude Code · Opus 5.5 · not signed in Default Bops agent");
+  assert.equal(chip, "Claude Code · not signed in ▾ Claude Code · Opus 5.5 · not signed in Default SmileDesk agent");
   // A pick that isn't ready anymore is never the one a message carries.
   assert.equal(boxAgents(rookState, rook, rook.ai.default).picked, undefined);
   assert.equal(boxAgents(rookState, rook, "bops").picked?.id, "bops");
@@ -603,7 +603,7 @@ await test("a bot that leaves a computer (deleted, or moved to its own) has its 
   assert.match(there[0], /bops-brain bot-clear boppy$/);
 });
 
-await test("a Bops agent model the profile picked stays through the router's bumps", async () => {
+await test("a SmileDesk agent model the profile picked stays through the router's bumps", async () => {
   const Rt = await import(fileUrl("lib/server/routing.ts"));
   const route = { by: "router", model: "gpt-6.1-sol", effort: "medium", tier: "standard", bumps: 2, pinned: true };
   assert.equal(Rt.taskConfig(route).model, "gpt-6.1-sol");
@@ -618,6 +618,6 @@ await test("a build without brains (a release): the --off pass", async () => {
 });
 
 rmSync(scratch, { recursive: true, force: true });
-assert.ok(!logged.some((l) => /bopsrun_[0-9a-f]{16}|sk-ant-|sk-proj-/.test(l)), "nothing secret in what Bops logged");
+assert.ok(!logged.some((l) => /bopsrun_[0-9a-f]{16}|sk-ant-|sk-proj-/.test(l)), "nothing secret in what SmileDesk logged");
 process.stdout.write(`bot ai: ${passed} passed\n`);
 process.exit(0);

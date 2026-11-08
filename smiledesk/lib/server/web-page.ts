@@ -453,7 +453,7 @@ const renderedLines = (r: Rendered) =>
  * its visible text as lines and its links the same way, with `via: "browser"`. One that needs the browser
  * where there's none (a computer's runner) comes with no text and `noBrowser` when `sayNoBrowser` asks
  * (chat.ts web_fetch: the Mac runs the routine), else read plain as it is. Throws FetchRefused for an
- * address Bops won't open, and a plain Error when the page couldn't be read or answered with an error.
+ * address SmileDesk won't open, and a plain Error when the page couldn't be read or answered with an error.
  */
 export async function readPage(url: string, opts: { sayNoBrowser?: boolean } = {}): Promise<{ url: string; title: string; text: string; truncated: boolean; links: PageLink[]; via?: "browser"; noBrowser?: true }> {
   const read = await fetchPage(url);

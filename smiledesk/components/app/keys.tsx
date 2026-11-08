@@ -39,7 +39,7 @@ export type KeyRow = Provider & { updatedAt: string | null; scope: Scope; bots: 
 /** A key's id on the Logins page: its scope and name (one name may be in both). */
 export const keyId = (k: Pick<KeyRow, "scope" | "name">) => `${k.scope}:${k.name}`;
 /**
- * `shared`: in a workspace shared with the user, whether they have Keys there and whether the owner's Bops takes their
+ * `shared`: in a workspace shared with the user, whether they have Keys there and whether the owner's SmileDesk takes their
  * bots' switches (`acts`). `notice`: orgo-web couldn't list This workspace's keys just now (the owner's still show).
  */
 type KeysInfo = { signedIn: boolean; keys: KeyRow[]; providers: Provider[]; workspaceKeys?: boolean; error?: string; shared?: { keys: boolean; acts: boolean }; notice?: string };
@@ -55,13 +55,13 @@ const scopeLabel = (scope: Scope) => SCOPES.find((x) => x.id === scope)!;
 const OWNERS_TIP = "The owner's own key. Only the owner can see, replace or remove it, or let a bot use it. You can stop a bot using it.";
 /** In a shared workspace, without Keys. */
 const NO_KEYS_LINE = `People with Keys manage this workspace's keys. ${KEYS_GIVEN_LINE}`;
-/** In a shared workspace whose owner's Bops can't take the bots' switches yet (SharedWsSlice.keyActs). */
-const SWITCH_UPDATE_LINE = "The owner's Bops needs an update before you can switch bots for it.";
+/** In a shared workspace whose owner's SmileDesk can't take the bots' switches yet (SharedWsSlice.keyActs). */
+const SWITCH_UPDATE_LINE = "The owner's SmileDesk needs an update before you can switch bots for it.";
 
 const STRIPE_NAMES = ["STRIPE_SECRET_KEY", "STRIPE_API_KEY"];
 
 /**
- * The service a pasted key is for, by how it starts, of the ones Bops can call (`names`), or null when it doesn't say. A
+ * The service a pasted key is for, by how it starts, of the ones SmileDesk can call (`names`), or null when it doesn't say. A
  * Stripe key keeps a Stripe name already `picked` (Stripe has two). Only what each service's own keys start with: an
  * OpenAI "sk-" never takes Stripe's "sk_".
  */
@@ -87,7 +87,7 @@ const readers = new Set<() => void>();
 const keysChanged = () => readers.forEach((f) => f());
 
 /**
- * GET /api/keys: the services Bops can call and the keys in the vault (names only). `failed` when it didn't
+ * GET /api/keys: the services SmileDesk can call and the keys in the vault (names only). `failed` when it didn't
  * answer. `ws`: the workspace they're read for (the server answers for the current one): another one and
  * what was shown goes at once and is read again, so Reveal or Remove never acts on a row of the last one.
  */
@@ -108,7 +108,7 @@ function useKeys(ws: string) {
           setFailed(null);
         } else setFailed(undash(j.error ?? "Couldn't read your keys."));
       })
-      .catch(() => setFailed("Couldn't reach Bops."));
+      .catch(() => setFailed("Couldn't reach SmileDesk."));
   }, []);
   useEffect(() => {
     read();
@@ -165,7 +165,7 @@ async function reveal(name: string, scope: Scope): Promise<{ value: string } | {
     const j = (await res.json().catch(() => ({}))) as { value?: unknown; error?: string };
     return res.ok && typeof j.value === "string" ? { value: j.value } : { error: undash(j.error ?? "Couldn't get the key. Try again.") };
   } catch {
-    return { error: "Couldn't reach Bops. Try again." };
+    return { error: "Couldn't reach SmileDesk. Try again." };
   }
 }
 
@@ -280,7 +280,7 @@ async function grant(name: string, botId: string, allowed: boolean): Promise<str
     const j = (await res.json().catch(() => ({}))) as { error?: string };
     return res.ok ? null : undash(j.error ?? "That didn't change. Try again.");
   } catch {
-    return "Couldn't reach Bops. Try again.";
+    return "Couldn't reach SmileDesk. Try again.";
   }
 }
 
@@ -523,7 +523,7 @@ function KeyLine({
   /** What bots run from it on their own (routines.tsx AppRoutines), under its bots. */
   routines?: React.ReactNode;
   anchorRef: (el: HTMLSpanElement | null) => void;
-  /** In a shared workspace whose owner's Bops can't take the bots' switches yet: they're shown, not changed. */
+  /** In a shared workspace whose owner's SmileDesk can't take the bots' switches yet: they're shown, not changed. */
   switchesOff?: boolean;
   /** Told once it's removed (a key card in the chat goes on then). */
   onRemoved?: () => void;
@@ -557,7 +557,7 @@ function KeyLine({
       keysChanged();
       onRemoved?.();
     } catch {
-      setError("Couldn't reach Bops. Try again.");
+      setError("Couldn't reach SmileDesk. Try again.");
       setBusy(false);
     }
   };
@@ -568,7 +568,7 @@ function KeyLine({
   const fromName = owners ? null : k.from ? (state.workspaces?.find((w) => w.id === k.from)?.name ?? "another workspace") : null;
   // Where it applies is the tab it's under, so the line says only what's this key's own.
   const meta = [owners && "The owner's", fromName && `From ${fromName}`, k.readOnly && "Read only", when && `Updated ${when}`].filter(Boolean).join(" · ");
-  // Its bots' switches in a shared workspace that haven't landed: waiting for the owner's Bops, or (the newest) not gone and why.
+  // Its bots' switches in a shared workspace that haven't landed: waiting for the owner's SmileDesk, or (the newest) not gone and why.
   const sends = state.shared?.keySends?.filter((x) => x.name === k.name) ?? [];
   const sendFailed = sends.at(-1)?.state === "failed" ? sends.at(-1) : undefined;
   const sendWaits = sends.some((x) => x.state === "waiting");
@@ -704,7 +704,7 @@ function KeyLine({
 const ORGO_USES: Record<string, string> = { ANTHROPIC_API_KEY: "Anthropic", OPENAI_API_KEY: "OpenAI" };
 
 /**
- * Add a key: a service from the list Bops can call (by its vault name, as in Orgo's Secrets), the key pasted into a password field, and the bots that may use it. `replace`: a new value for a saved key,
+ * Add a key: a service from the list SmileDesk can call (by its vault name, as in Orgo's Secrets), the key pasted into a password field, and the bots that may use it. `replace`: a new value for a saved key,
  * which keeps who may use it. The value is cleared once Orgo has it. A key pasted that says whose it is by how it starts
  * (serviceOfKey) picks that service; picked another by hand after, one line says whose it looks like. `shared`: a workspace
  * shared with the user, whose own keys these are (This workspace's, in the owner's vault). `service`: the one a bot asked for
@@ -775,7 +775,7 @@ function AddKey({
       keysChanged();
       onSaved(name, j.note ? undash(j.note) : undefined);
     } catch {
-      setError("Couldn't reach Bops. Try again.");
+      setError("Couldn't reach SmileDesk. Try again.");
     } finally {
       setBusy(false);
     }
@@ -918,10 +918,10 @@ export function KeyAskCard({
   const [rowBusy, setRowBusy] = useState(false);
   const name = a.resources[0] ?? "";
   const b = state.bots.find((x) => x.id === a.botId);
-  // Saved in a shared workspace: the bot's switch is an act the owner's Bops does (shared-keys.ts sharedSave), so the card
+  // Saved in a shared workspace: the bot's switch is an act the owner's SmileDesk does (shared-keys.ts sharedSave), so the card
   // answers once it landed, never before, as the bot would go on without it: the bot has the key and no switch of it is
   // still on its way (the window shows one on its way as done already: lib/server/shared-core.ts switchedKeys). Meanwhile
-  // it says so, and Go on without it answers anyway (the switch not gone, or the owner's Bops shut).
+  // it says so, and Go on without it answers anyway (the switch not gone, or the owner's SmileDesk shut).
   const [waitTick, setWaitTick] = useState(false);
   const sends = state.shared?.keySends?.filter((x) => x.name === name && x.botId === a.botId) ?? [];
   const ticked = !!b?.keys?.includes(name) && !sends.some((x) => x.state !== "failed");
@@ -961,13 +961,13 @@ export function KeyAskCard({
       <span className={line}>Checking</span>
     );
   else if (!info.signedIn) body = <span className={line}>{undash(info.error ?? "Sign in to Orgo to use Keys.")}</span>;
-  else if (!p) body = <span className={line}>Bops can&apos;t call that service yet.</span>;
+  else if (!p) body = <span className={line}>SmileDesk can&apos;t call that service yet.</span>;
   else if (!mine) body = <span data-who-answers className={line}>{NO_KEYS_LINE}</span>;
   else if (waitTick)
     body = (
       <div className="flex flex-col gap-2">
         <span data-key-waits className={line}>
-          Saved. {botName} can use it once the workspace&apos;s Bops lets it. {sends.some((x) => x.state === "waiting") ? REPLY_WAITS_LINE : ""}
+          Saved. {botName} can use it once the workspace&apos;s SmileDesk lets it. {sends.some((x) => x.state === "waiting") ? REPLY_WAITS_LINE : ""}
         </span>
         {(note ?? sendFailed?.error) && (
           <span role="alert" className="text-[12px] leading-4 text-[#B42318]">
@@ -1018,7 +1018,7 @@ export function KeyAskCard({
         {b && <Mascot botId={b.id} color={b.color} size={26} />}
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="text-[13.5px] font-semibold leading-[18px] [overflow-wrap:anywhere]">{askHeadline(botName, { action: a.action, reason: a.reason && undash(a.reason) })}</span>
-          {/* Bops' own words for what it is, never the bot's: which service, where it's kept, that the bot never sees it. */}
+          {/* SmileDesk's own words for what it is, never the bot's: which service, where it's kept, that the bot never sees it. */}
           {p && (
             <span data-ask-facts className="text-[12px] leading-4 text-[#6B6B6B]">
               {p.label} key · kept in {shared ? "the owner's" : "your"} Orgo vault, {botName} never sees it
@@ -1291,14 +1291,14 @@ export function apiAskOf(a: AppApproval): { name: string; label: string; method:
 const FILE_OP = { add: "added", change: "changed", delete: "deleted" } as const;
 const sizeOf = (n: number) => (n < 1024 ? `${n} B` : n < 1024 * 1024 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`);
 
-/** A line of a change's words under its file: one taken out or put in, or Bops' note between them ("at line 12"). */
+/** A line of a change's words under its file: one taken out or put in, or SmileDesk's note between them ("at line 12"). */
 type ChangeRow = DiffLine | { note: string };
 
 /**
  * A change's words (AppApproval.preview, as lib/server/repo-change.ts writes them), file by file: the lines before the
  * first file but the repository and branch, which the facts line says already (a new branch's base stays), each file's
  * lines under its own "<path>: changed, 59 B" line, in the card's order, and how many lines it changes (null when one
- * isn't a line: an older Bops's "and 4 more lines"). Null when the words aren't in that shape, which the card shows as they are.
+ * isn't a line: an older SmileDesk's "and 4 more lines"). Null when the words aren't in that shape, which the card shows as they are.
  */
 /** How a task's card says the bot's own words, last and labelled (lib/server/repo-change.ts, keys.ts): a page it read may have written them. */
 export const BOT_WORDS = "In the bot's words: ";
@@ -1430,7 +1430,7 @@ export function ApiAsk({ ask, detail, botName }: { ask: NonNullable<ReturnType<t
                   {shown.said}
                 </span>
               )}
-              {/* An older Bops's words, in another shape: as they are. */}
+              {/* An older SmileDesk's words, in another shape: as they are. */}
               {!shown && detail && <pre className="whitespace-pre-wrap px-3 font-mono text-[11.5px] leading-4 text-[#3A3A38] [overflow-wrap:anywhere]">{detail}</pre>}
             </div>
             {keyLine}

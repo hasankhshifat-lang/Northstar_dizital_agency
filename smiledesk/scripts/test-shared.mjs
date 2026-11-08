@@ -1,6 +1,6 @@
 // Tests for workspaces shared with the user, read only, on the Mac (lib/shared.ts, lib/server/shared-core.ts,
 // lib/server/shared.ts, components/app/view-only.ts and the window's pieces that show one): the copy is read
-// from Bops Cloud, kept only once that worked, read again only when it changed, and dropped (leaving the
+// from SmileDesk Cloud, kept only once that worked, read again only when it changed, and dropped (leaving the
 // workspace) on a 403 or 404 or the stream's "revoked"; the window is shown its state in place of the user's
 // own workspace, under an id of its own, while the user's own state stays as it was (nothing of it is ever
 // put there, saved or synced); its stream stops for good when revoked and skips a "state" the copy has; the
@@ -13,7 +13,7 @@
 // the owner's), asks them to chat or call, or counts what waits on the owner as Needs your attention. A thread
 // that waits for a sign in has I signed in on the user's own card, inert on a shared one.
 //
-// Bops Cloud is a fake function, clocks are fakes, and the .tsx files are compiled with the TypeScript in
+// SmileDesk Cloud is a fake function, clocks are fakes, and the .tsx files are compiled with the TypeScript in
 // node_modules as they load and rendered to HTML: nothing reaches a real service.
 // Usage: node scripts/test-shared.mjs   (not with --conditions=react-server: the window's are client components)
 import assert from "node:assert/strict";
@@ -98,7 +98,7 @@ const text = (html) => html.replace(/<wbr\/?>/g, "").replace(/<[^>]+>/g, " ").re
 const PROJECT = "11111111-2222-3333-4444-555555555555";
 const WS = sharedWsId(PROJECT);
 const listed = { projectId: PROJECT, name: "Acme", owner: "dana@acme.test", role: "member" };
-/** What Bops Cloud answers for the shared workspace (SharedWsState), `status` changing what its thread says. */
+/** What SmileDesk Cloud answers for the shared workspace (SharedWsState), `status` changing what its thread says. */
 const cloudState = (status = "done", hash = `h-${status}`) => ({
   projectId: PROJECT,
   wsId: "ws_main",
@@ -132,7 +132,7 @@ const own = () => ({
   account: { user: { id: "u-sam", email: "sam@x.test" }, signedInAt: 1 },
 });
 
-/** A fake Bops Cloud read: answers in order (the last one again), and every call it got. */
+/** A fake SmileDesk Cloud read: answers in order (the last one again), and every call it got. */
 function fakeRead(...answers) {
   const calls = [];
   const read = async (projectId, have, older) => {
@@ -144,14 +144,14 @@ function fakeRead(...answers) {
 
 /* ---------------- The copy ---------------- */
 
-await check("a shared workspace is kept only once Bops Cloud let the user read it", async () => {
+await check("a shared workspace is kept only once SmileDesk Cloud let the user read it", async () => {
   const no = new SharedCopy(fakeRead({ status: 404, body: { error: "No such workspace" } }).read);
   const r = await no.open(listed);
   assert.deepEqual(r, { ok: false, status: 404, error: "No such workspace" });
   assert.equal(no.openNow(), null);
   const off = await new SharedCopy(fakeRead({ status: 0 }).read).open(listed);
   assert.equal(off.ok, false);
-  assert.match(off.error, /Couldn't reach Bops Cloud/);
+  assert.match(off.error, /Couldn't reach SmileDesk Cloud/);
   let changes = 0;
   const yes = new SharedCopy(fakeRead({ status: 200, body: cloudState() }).read, { onChange: () => changes++ });
   assert.deepEqual(await yes.open(listed), { ok: true });
@@ -171,7 +171,7 @@ await check("read again, an unchanged copy stays as it is, a changed one is repl
   await copy.refresh();
   assert.equal(copy.data().state.sessions[0].status, "done");
   assert.equal(copy.rev, rev + 1);
-  // Bops Cloud failing for a moment keeps the copy.
+  // SmileDesk Cloud failing for a moment keeps the copy.
   const flaky = new SharedCopy(fakeRead({ status: 200, body: cloudState() }, { status: 503, body: {} }).read);
   await flaky.open(listed);
   await flaky.refresh();
@@ -216,7 +216,7 @@ await check("a workspace with nothing to show is never opened, and a read with n
     assert.equal(r.ok, false);
     assert.equal(copy.openNow(), null);
   }
-  // The owner set the member's only bot to None (or took them off it): Bops Cloud still answers, with no
+  // The owner set the member's only bot to None (or took them off it): SmileDesk Cloud still answers, with no
   // bots and no chats. The copy goes, and they leave it, as when they lose the workspace.
   const revoked = { ...cloudState(), state: { ...cloudState().state, bots: [], chats: [], sessions: [], routines: [], watches: [] }, messages: [] };
   for (const body of [revoked, none]) {
@@ -228,14 +228,14 @@ await check("a workspace with nothing to show is never opened, and a read with n
     assert.equal(copy.data(), null, "nothing of the bot's chats kept");
     assert.deepEqual(left, [listed.projectId], "and they leave it");
   }
-  // A read that didn't land (Bops Cloud down) keeps the copy as it was.
+  // A read that didn't land (SmileDesk Cloud down) keeps the copy as it was.
   const copy = new SharedCopy(fakeRead({ status: 200, body: cloudState("running") }, { status: 0 }).read);
   await copy.open(listed);
   await copy.refresh();
   assert.equal(copy.data().state.chats.length, 1);
 });
 
-await check("a chat's older messages come from Bops Cloud a page at a time, past the newest the first read brought", async () => {
+await check("a chat's older messages come from SmileDesk Cloud a page at a time, past the newest the first read brought", async () => {
   const msg = (id, at) => ({ id, chatId: "bot:boppy", role: "user", text: `Message ${id}`, at });
   const newest = { ...cloudState(), messages: [msg("m301", 301), msg("m302", 302)], more: ["bot:boppy"] };
   const page1 = { ...cloudState(), messages: [msg("m101", 101), msg("m102", 102)], more: ["bot:boppy"] };
@@ -271,7 +271,7 @@ await check("a chat's older messages come from Bops Cloud a page at a time, past
 });
 
 await check("a chat with an older page loaded keeps every message as new ones arrive, and a read past a gap pages back from the newest again", async () => {
-  // Bops Cloud as members.ts answers: each chat's newest 200, `more` when it has older ones, and ?chat=&before= pages of 200.
+  // SmileDesk Cloud as members.ts answers: each chat's newest 200, `more` when it has older ones, and ?chat=&before= pages of 200.
   const chat = "bot:boppy";
   const all = [];
   const add = (n) => {
@@ -358,7 +358,7 @@ await check("what the owner deletes goes from a member's copy, the older pages i
 });
 
 /**
- * A fake Bops Cloud as members.ts answers a chat, with cloud/state.ts' order: by time, then by when each was
+ * A fake SmileDesk Cloud as members.ts answers a chat, with cloud/state.ts' order: by time, then by when each was
  * written (its place in `all`), so messages sharing a millisecond stay in order. Each chat's newest 200 (`more`
  * when it has older ones), and ?chat=&before=&beforeId= pages of 200 before that message (before that
  * millisecond without one). `hold` makes the next older read wait until it's let go.
@@ -428,7 +428,7 @@ await check("an older page read while a read of the newest lands goes in where i
   c.add(450);
   const copy = new SharedCopy(c.read);
   await copy.open(listed);
-  // Show earlier messages (or the Asked sheet looking for its exchange) is waiting on Bops Cloud as the bot posts 5 more.
+  // Show earlier messages (or the Asked sheet looking for its exchange) is waiting on SmileDesk Cloud as the bot posts 5 more.
   const go = c.hold();
   const older = copy.older(chat);
   await settle();
@@ -468,7 +468,7 @@ await check("two bots' conversation with each other pages back too, so Asked ●
   const pair = "pair:boppy:sam";
   const msg = (id, at) => ({ id, chatId: pair, role: "bot", botId: at % 2 ? "boppy" : "sam", text: `Message ${id}`, at });
   const withSam = (body) => ({ ...body, state: { ...body.state, bots: [...body.state.bots, { id: "sam", name: "Dana's Sam", role: "Research", color: "#654321", isMain: false, workspaceId: "ws_main", computerStatus: "none" }] } });
-  // Bops Cloud reads the pair's chat with the rest (cloud/ws-slice.ts chatIdsOf) and says it has older messages of it.
+  // SmileDesk Cloud reads the pair's chat with the rest (cloud/ws-slice.ts chatIdsOf) and says it has older messages of it.
   const newest = withSam({ ...cloudState(), messages: [...cloudState().messages, msg("p301", 301), msg("p302", 302)], more: [pair] });
   const page = withSam({ ...cloudState(), messages: [msg("p11", 11), msg("p12", 12)], more: [] });
   const f = fakeRead({ status: 200, body: newest }, { status: 200, body: page }, { status: 200, body: newest });
@@ -557,7 +557,7 @@ await check("while a shared workspace is open, what its bots wait on the owner's
   data.state.approvals = [ask, { ...ask, id: "apr-done", reply: { reply: "once", at: 5 } }, { ...ask, id: "apr-hidden", botId: "iris" }];
   const v = viewState(mine, { ...listed, wsId: WS }, data, {});
   assert.deepEqual(v.appApprovals, [ask], "the shared bot's unanswered request alone");
-  // From a Bops Cloud before requests were shared: none.
+  // From a SmileDesk Cloud before requests were shared: none.
   assert.deepEqual(viewState(mine, { ...listed, wsId: WS }, cloudState(), {}).appApprovals, []);
   // The chat and the thread show their cards whole (chat-view.tsx): who answers one is the card's to say (lib/shared.ts
   // askAnswerer), with a line in place of its buttons for anyone else. Nothing is ever switched off and left looking live.
@@ -566,7 +566,7 @@ await check("while a shared workspace is open, what its bots wait on the owner's
   assert.equal(src.split("<AppApprovalCard key={a.id} state={state} approval={a}").length - 1, 2, "in the chat and in the thread");
   assert.match(src, /const answerer = askAnswerer\(state, a\);/);
   assert.match(src, /const answerer = threadAnswerer\(state, s, kind\);/);
-  // A reply from the window never goes while a shared workspace is open (their own Bops has none of the owner's requests to answer either: test-members.mjs).
+  // A reply from the window never goes while a shared workspace is open (their own SmileDesk has none of the owner's requests to answer either: test-members.mjs).
   assert.equal(callAllowed("POST", "/api/apps/approvals"), false, "a member's reply never leaves the window");
   // Keys go: the keys routes act on the shared workspace's own keys while it's open (lib/server/shared-keys.ts), so someone
   // with Keys adds, replaces, removes and switches them from Logins or a key card. Every other write still doesn't.
@@ -594,11 +594,11 @@ await check("while a shared workspace is open, the user's own news still chimes:
   assert.ok(!/if \(!state \|\| state\.shared\) return;\n\s*const due/.test(src), "it no longer stops for a shared workspace");
 });
 
-await check("an Admin's window has the workspace's switch as Bops Cloud mirrors it: chatOn, chatAuto, and chatAutoOff where it won't come back on", () => {
+await check("an Admin's window has the workspace's switch as SmileDesk Cloud mirrors it: chatOn, chatAuto, and chatAutoOff where it won't come back on", () => {
   const withSwitch = (workspace) => ({ ...cloudState(), state: { ...cloudState().state, workspace: { id: "ws_main", name: "Acme", createdAt: 1, ...workspace } } });
   const ws = (workspace) => viewState(own(), { ...listed, wsId: WS }, withSwitch(workspace), {}).workspaces.find((w) => w.id === WS);
   assert.deepEqual([ws({ chatOn: "mac", chatAutoOff: true }).chatOn, ws({ chatOn: "mac", chatAutoOff: true }).chatAutoOff], ["mac", true]);
-  assert.equal(ws({ chatOn: "mac" }).chatAutoOff, undefined, "a Bops Cloud from before says nothing: the switch as it was");
+  assert.equal(ws({ chatOn: "mac" }).chatAutoOff, undefined, "a SmileDesk Cloud from before says nothing: the switch as it was");
   assert.equal(ws({ chatOn: "mac", chatAutoOff: "yes" }).chatAutoOff, undefined, "only true counts");
 });
 
@@ -827,7 +827,7 @@ await check("the sidebar of a shared workspace makes nothing new", () => {
   assert.ok(!shared.includes("Sam&#x27;s Boppy") && !shared.includes("Sam's Boppy"), "none of the user's own bots");
   const mine = renderToStaticMarkup(h(Sidebar, { ...props, state: own() }));
   assert.match(mine, /aria-label="New chat or bot"/);
-  // Favorites: none of Knowledge's kinds (its Knowledge is on the owner's Bops), so nothing to move, take off or save.
+  // Favorites: none of Knowledge's kinds (its Knowledge is on the owner's SmileDesk), so nothing to move, take off or save.
   assert.ok(!/data-favorite="(issues|todos|people)"/.test(shared));
   assert.ok(!shared.includes('aria-keyshortcuts="Alt+ArrowUp'));
   assert.match(mine, /data-favorite="issues" draggable="true" aria-keyshortcuts="Alt\+ArrowUp Alt\+ArrowDown"/, "the user's own: as always");
@@ -897,7 +897,7 @@ const chatProps = (state, chatId) => ({ state, chat: state.chats.find((c) => c.i
 const READ_ONLY_LINES = [
   "You can watch this bot. Ask the owner for Write to chat with it.",
   "You can chat here once the owner gives you Write on every bot in it.",
-  // Why a Member's Bops doesn't show the bot's browser in place of its computer (lib/shared.ts browserLine).
+  // Why a Member's SmileDesk doesn't show the bot's browser in place of its computer (lib/shared.ts browserLine).
   "Its browser shows here once the owner gives you Write on",
   "Its browser shows here once the owner turns on Use its computer for you.",
 ];
@@ -1000,7 +1000,7 @@ await check("nothing in a shared workspace's open chat says the owner's as the v
   assert.match(text(renderToStaticMarkup(h(ChatView, chatProps(mine, "bot:ava")))), /Text Ava directly/);
 });
 
-await check("Bops' own lines in the owner's voice read as the owner's in a shared workspace: why a thread stopped, its notes, the chat's notes; and nothing of the viewer's own (their credit) or that waits on the owner says needs you", async () => {
+await check("SmileDesk's own lines in the owner's voice read as the owner's in a shared workspace: why a thread stopped, its notes, the chat's notes; and nothing of the viewer's own (their credit) or that waits on the owner says needs you", async () => {
   const { ComputerPeek } = await import(pathToFileURL(`${root}/components/app/computer.tsx`).href);
   const { TabBar } = await import(pathToFileURL(`${root}/components/app/panel-tabs.tsx`).href);
   const c = cloudState();
@@ -1066,7 +1066,7 @@ await check("Bops' own lines in the owner's voice read as the owner's in a share
   assert.match(text(renderToStaticMarkup(h(AutopilotPage, { state: mine, onBot: noop, onOpenWatch: noop, onOpenSkills: noop, onAsk: noop, onClose: noop }))), /Needs you/);
 });
 
-await check("the rest of what Bops says in the owner's voice reads as theirs: an owner's call's card, a routine's last run, a thread's steps, a credit stop; a thread the owner stopped asks nothing; the page and tips name the owner's bots", async () => {
+await check("the rest of what SmileDesk says in the owner's voice reads as theirs: an owner's call's card, a routine's last run, a thread's steps, a credit stop; a thread the owner stopped asks nothing; the page and tips name the owner's bots", async () => {
   const { ComputerView } = await import(pathToFileURL(`${root}/components/app/computer.tsx`).href);
   const { KnowledgeButton } = await import(pathToFileURL(`${root}/components/app/sidebar.tsx`).href);
   const { needsYou } = await import(`${root}/lib/asks.ts`);
@@ -1185,7 +1185,7 @@ await check("every shape a shared thread, routine and watch can take, rendered e
   for (const focus of ["w_mac", "w_paused", "r_quiet", "r_failed"]) assert.deepEqual(yous(renderToStaticMarkup(h(AutopilotPage, { state, focus, focusAt: 1, onBot: noop, onOpenWatch: noop, onOpenSkills: noop, onAsk: noop, onClose: noop })), ...allow), [], focus);
 });
 
-await check("a New tab carried over, a watch's Edit and its sheet, clicking into the screen, the Skills, Memory and Phone tabs, a helper's task and Bops' own lines in a bot's voice, as a viewer reads them", async () => {
+await check("a New tab carried over, a watch's Edit and its sheet, clicking into the screen, the Skills, Memory and Phone tabs, a helper's task and SmileDesk's own lines in a bot's voice, as a viewer reads them", async () => {
   const { tabsShown } = await import(`${root}/components/app/tabs-shown.ts`);
   const { ComputerView } = await import(pathToFileURL(`${root}/components/app/computer.tsx`).href);
   const { BotPanel } = await import(pathToFileURL(`${root}/components/app/bot-panel.tsx`).href);
@@ -1209,7 +1209,7 @@ await check("a New tab carried over, a watch's Edit and its sheet, clicking into
   const onMac = viewState({ ...own(), host: "mac" }, { ...listed, role: "member", wsId: WS }, { ...c, state: { ...c.state, bots: [{ ...c.state.bots[0], runsOn: "mac" }] } }, {});
   assert.match(panel("skills", onMac), /Works on the owner's Mac/);
   for (const section of ["skills", "memory"]) assert.deepEqual(yous(renderToStaticMarkup(h(BotPanel, { state: { ...st, vault: [] }, bot: st.bots[0], section, onSection: noop, onOpenChat: noop, onOpenThread: noop, onOpenVault: noop, onOpenComputer: noop, onOpenKeys: noop, onShowScreen: noop, onOpenAutopilot: noop, onOpenSkills: noop, onAsk: noop, onUpgrade: noop, onClose: noop }))), [], section);
-  // A helper's task is the bot's own words, as it wrote them; Bops' own lines in a bot's voice are the owner's.
+  // A helper's task is the bot's own words, as it wrote them; SmileDesk's own lines in a bot's voice are the owner's.
   const c2 = cloudState();
   c2.state.sessions = [{ ...c2.state.sessions[0], title: "Weekly report", steps: [{ at: 1, tool: "helper", detail: "brought in a helper for You are a research helper. Check your calendar access first" }, { at: 2, tool: "find_app_actions", detail: 'looked for "your invoices" in your apps' }] }];
   c2.messages = [
@@ -1226,13 +1226,13 @@ await check("a New tab carried over, a watch's Edit and its sheet, clicking into
   assert.doesNotMatch(text(renderToStaticMarkup(h(ChatView, chatProps(v3, "bot:boppy")))), /answered: “Yes, pay it/);
   assert.deepEqual(v2.sessions[0].steps.map((x) => x.detail), ["brought in a helper for You are a research helper. Check your calendar access first", 'looked for "your invoices" in the owner\'s apps']);
   assert.deepEqual(v2.messages.map((m) => m.text), ["I couldn't finish Weekly report on the owner's Mac: It needs more AI credit than the owner has left, so it's stopped.", "Should I do this on the owner's Mac or in the cloud?", "I'll check your inbox for you."]);
-  // Bops Cloud sends a member that mark (cloud/ws-slice.ts MESSAGE), so their window can read those lines as the owner's.
+  // SmileDesk Cloud sends a member that mark (cloud/ws-slice.ts MESSAGE), so their window can read those lines as the owner's.
   const { sharedMessage } = await import(`${root}/cloud/ws-slice.ts`);
   assert.equal(sharedMessage(c2.messages[0])?.bops, true);
   assert.equal(sharedMessage(c2.messages[2])?.bops, undefined);
 });
 
-await check("a Bops note that names a thread or quotes a bot's words keeps those words as written, in the owner's voice only around them", () => {
+await check("a SmileDesk note that names a thread or quotes a bot's words keeps those words as written, in the owner's voice only around them", () => {
   const c = cloudState();
   c.state.sessions = [{ ...c.state.sessions[0], id: "sd", title: "Draft your reply to Dana", answer: "Do you want me to tell Dana you'll be there?", steps: [{ at: 1, tool: "find_app_actions", detail: 'looked for "reply "your" invoice" in your apps' }] }];
   c.messages = [
@@ -1307,7 +1307,7 @@ await check("a watch's heads-up and the digest name the owner's Mac and what the
   assert.doesNotMatch(text(renderToStaticMarkup(h(ChatView, chatProps(v, "bot:boppy")))), /on your Mac|what you're watching|While you were busy/);
 });
 
-await check("what a thread typed, searched for or ran is shown as it was, never in the owner's voice (only Bops' own status lines are)", () => {
+await check("what a thread typed, searched for or ran is shown as it was, never in the owner's voice (only SmileDesk's own status lines are)", () => {
   const c = cloudState();
   c.state.sessions = [{ ...c.state.sessions[0], steps: [
     { at: 1, tool: "computer", detail: 'typed "Thank you for your order, see you Friday"' },
@@ -1318,7 +1318,7 @@ await check("what a thread typed, searched for or ran is shown as it was, never 
   const state = viewState(own(), { ...listed, role: "member", wsId: WS }, c, {});
   const steps = state.sessions[0].steps.map((x) => x.detail);
   assert.deepEqual(steps, ['typed "Thank you for your order, see you Friday"', 'searched "how do you renew your passport"', "Getting a browser ready on the owner's Mac", "I'll check your inbox"]);
-  // A Bops note quoting someone keeps the quote as it was said.
+  // A SmileDesk note quoting someone keeps the quote as it was said.
   c.messages = [{ id: "q1", chatId: "bot:boppy", role: "system", text: "Sent to Flights: “Book your seat, you said aisle”", at: 9 }];
   assert.equal(viewState(own(), { ...listed, role: "member", wsId: WS }, c, {}).messages[0].text, "Sent to Flights: “Book your seat, you said aisle”");
 });
@@ -1610,7 +1610,7 @@ await check("a thread of the user's own that ended waiting for a sign in on its 
   const html = sheet(st, st.sessions[0]);
   assert.ok(!/I signed in/.test(html) && !/Sign in for/.test(html), "a Member can't answer it there");
   assert.match(text(html), /You can watch this bot\. Ask the owner for Write to chat with it\./, "at Read, said so");
-  // At Write: the owner's, or an Admin's at the shared screen once the owner's Bops takes an Admin's acts.
+  // At Write: the owner's, or an Admin's at the shared screen once the owner's SmileDesk takes an Admin's acts.
   const sw = viewState(own(), { ...listed, role: "member", wsId: WS }, { ...c, state: { ...c.state, levels: { boppy: "write" }, computer: "use" } }, {});
   assert.match(text(sheet(sw, sw.sessions[0])), /Only the owner can answer this\./);
   const swa = viewState(own(), { ...listed, role: "member", wsId: WS }, { ...c, state: { ...c.state, levels: { boppy: "write" }, computer: "use", adminActs: true } }, {});
@@ -1624,7 +1624,7 @@ await check("a thread of the user's own that ended waiting for a sign in on its 
   assert.match(adminHtml, /I signed in/);
   assert.match(adminHtml, /needs you to sign in/);
   assert.ok(!/Only the owner can answer this/.test(adminHtml));
-  // Without the screen (its bot works on the owner's Mac, or Bops Cloud doesn't share it): the owner's again.
+  // Without the screen (its bot works on the owner's Mac, or SmileDesk Cloud doesn't share it): the owner's again.
   const noScreen = { ...admin, shared: { ...admin.shared, screens: [] } };
   assert.match(text(sheet(noScreen, noScreen.sessions[0])), /Only the owner can answer this\./);
 });
@@ -1632,7 +1632,7 @@ await check("a thread of the user's own that ended waiting for a sign in on its 
 await check("an @orgo.ai owner's app work never reaches the window of anyone they share the workspace with, whatever their email; an app line shows only where apps are shown", async () => {
   const { appThreadsOf, botsOf, handedByOthers, sharedMessages, sharedSlice } = await import(`${root}/cloud/ws-slice.ts`);
   const goal = "Work on Dana's app recipe-box. It's the Ingot repo p1/recipe-box (Ingot is Orgo's source control). Dana puts it live from the Apps page.";
-  // The owner's state as Bops Cloud keeps it: Boppy worked on an app (chat.ts work_on_app) and made one (made-apps.ts).
+  // The owner's state as SmileDesk Cloud keeps it: Boppy worked on an app (chat.ts work_on_app) and made one (made-apps.ts).
   const blob = {
     workspaces: [{ id: "ws_main", name: "Acme", createdAt: 1, memberAccess: { "sam@x.test": { others: "read", bots: {} }, "tom@orgo.ai": { others: "read", bots: {} } } }],
     bots: cloudState().state.bots,
@@ -1691,16 +1691,16 @@ await check("an @orgo.ai owner's app work never reaches the window of anyone the
 
 await check("Team says what members see: the bots the owner picks, never the saved logins or keys", () => {
   const src = readFileSync(`${root}/components/app/members.tsx`, "utf8");
-  assert.match(src, /In Bops they see everything of the bots you pick, your chats with them too\./);
+  assert.match(src, /In SmileDesk they see everything of the bots you pick, your chats with them too\./);
   assert.ok(!/They see everything in the workspace/.test(src));
-  assert.match(src, /"Never your saved logins\." : "Never your saved logins or keys\."/, "the keys only while Bops put none of its own on the computers");
+  assert.match(src, /"Never your saved logins\." : "Never your saved logins or keys\."/, "the keys only while SmileDesk put none of its own on the computers");
   assert.ok(!/never this Mac, your chats/.test(src));
   assert.ok(!/never this Mac, the chats or the vault/.test(readFileSync(`${root}/lib/members.ts`, "utf8")));
 });
 
 /* ---------------- Write: acting in a shared workspace ---------------- */
 
-/** The owner's workspace as Bops Cloud shows it to a viewer with Write on Boppy and Read on Ava, an ask of each waiting, and a group of both. */
+/** The owner's workspace as SmileDesk Cloud shows it to a viewer with Write on Boppy and Read on Ava, an ask of each waiting, and a group of both. */
 const writeState = (o = {}) => {
   const d = cloudState("running");
   d.you = "u-sam";
@@ -1726,7 +1726,7 @@ await check("Write: the window has the viewer's level for each bot and who they 
   assert.equal(canAct(v, ["ava"]), false);
   assert.equal(canAct(v, ["boppy", "ava"]), false, "a group with a Read bot");
   assert.equal(canAct(v, []), false, "the whole workspace is never theirs");
-  assert.equal(canAct(own(), ["boppy"]), false, "nothing goes through Bops Cloud in the user's own");
+  assert.equal(canAct(own(), ["boppy"]), false, "nothing goes through SmileDesk Cloud in the user's own");
   assert.deepEqual([readOnly(v, ["boppy"]), readOnly(v, ["ava"]), readOnly(v), readOnly(own(), ["boppy"])], [false, true, true, false]);
   // Whose words: the viewer's own as a member, another member's by name, the owner's.
   assert.equal(saidBy({ role: "user", member: { userId: "u-sam", name: "Sam" } }, v), "you");
@@ -1798,7 +1798,7 @@ await check("Write: what the viewer did shows as theirs at once, says how it sta
   const late = shown().messages.find((m) => m.id === "acting_key_chat_0001");
   assert.deepEqual(late.memberSend, { state: "failed", error: ACT_EXPIRED, key: "key_chat_0001" });
   assert.match(renderToStaticMarkup(h(ChatView, chatProps(shown(), "bot:boppy"))), /Try again/);
-  // The owner's Bops wrote it: their copy goes, the owner's (with their key) stays.
+  // The owner's SmileDesk wrote it: their copy goes, the owner's (with their key) stays.
   t = 1_000_000;
   await actWith(copy, { act: "reply", sessionId: "s1", text: "The second one" }, "key_reply_001", sam, async () => ({ status: 202, body: { ok: true, macOn: true } }));
   assert.deepEqual(shown().sessions.find((x) => x.id === "s1").replies.map((x) => [x.text, x.memberSend?.state]), [["The second one", "sending"]]);
@@ -1859,7 +1859,7 @@ await check("Write: only the owner's, whatever the level: a thread on the owner'
   assert.ok(!sheet.includes('id="thread-reply"'), "no reply to a thread on the owner's Mac");
   assert.match(text(sheet), /This runs on the owner's Mac\. Only the owner can tell it more\./);
   assert.match(text(sheet), /Stop/, "Stop still ends it");
-  // And refused here, without going out (Bops Cloud refuses them the same way).
+  // And refused here, without going out (SmileDesk Cloud refuses them the same way).
   const fake = fakeRead({ status: 200, body: d });
   const copy = new SharedCopy(fake.read);
   await copy.open(listed);
@@ -1902,7 +1902,7 @@ await check("Write: who said it, wherever it's said: an answer under a question,
   assert.equal(repliedSince({ ...asking, replies: [...asking.replies, { role: "user", text: "A", at: 2, member: sam }] }), true);
 });
 
-await check("Write: too long to send says so in plain words, from the copy or from Bops Cloud", async () => {
+await check("Write: too long to send says so in plain words, from the copy or from SmileDesk Cloud", async () => {
   const fake = fakeRead({ status: 200, body: writeState() });
   const copy = new SharedCopy(fake.read);
   await copy.open(listed);
@@ -1915,7 +1915,7 @@ await check("Write: too long to send says so in plain words, from the copy or fr
   }
 });
 
-await check("Write: what Bops Cloud said: a Read bot reads again, no access drops the copy, Orgo away says so", async () => {
+await check("Write: what SmileDesk Cloud said: a Read bot reads again, no access drops the copy, Orgo away says so", async () => {
   const reads = fakeRead({ status: 200, body: writeState() });
   const left = [];
   const copy = new SharedCopy(reads.read, { onGone: (w) => left.push(w.projectId) });
@@ -1930,7 +1930,7 @@ await check("Write: what Bops Cloud said: a Read bot reads again, no access drop
   const net = await actWith(copy, { act: "chat", chatId: "bot:boppy", text: "hi" }, "key_net_0001", sam, async () => {
     throw new Error("offline");
   });
-  assert.equal(net.error, "Couldn't reach Bops Cloud. Try again.");
+  assert.equal(net.error, "Couldn't reach SmileDesk Cloud. Try again.");
   await actWith(copy, { act: "chat", chatId: "bot:boppy", text: "hi" }, "key_gone_001", sam, async () => ({ status: 404, body: { error: "No such workspace" } }));
   assert.deepEqual([copy.openNow(), left], [null, [PROJECT]], "no access: the copy goes and they leave it");
 });
@@ -1951,16 +1951,16 @@ await check("Your Apps in a shared workspace: shown with the apps the owner gave
   assert.equal(A.APPS_NAME, "Your Apps", "the footer's button, its tab and its New Tab tile, as the page's title, in a shared workspace too");
   assert.equal(A.appsLine(v), `Apps on the web in ${v.shared.name}`);
   assert.equal(A.appsLine(team()), "Apps your bots made for you");
-  assert.equal(A.appsOwnShown(v), false, "Settings, Domains, Bops' app skills and the made apps stay the owner's");
+  assert.equal(A.appsOwnShown(v), false, "Settings, Domains, SmileDesk's app skills and the made apps stay the owner's");
   const none = viewState(team(), copy.openNow(), cloudState(), {});
   assert.equal(A.appsShown(none), false, "no apps given: nothing");
   // The workspace's owner decides, not who's looking: any viewer given Your Apps sees an Orgo team owner's apps, and
   // nobody sees apps in a workspace whose owner isn't Orgo's team.
   assert.equal(A.appsShown({ ...v, account: { user: { email: "sam@example.com" } } }), true, "a viewer outside Orgo's team sees an Orgo team owner's apps");
-  // Orgo's own team sees what Bops Cloud sent of a workspace whose owner isn't (read only, the cloud's to cap); anyone else nothing.
+  // Orgo's own team sees what SmileDesk Cloud sent of a workspace whose owner isn't (read only, the cloud's to cap); anyone else nothing.
   assert.equal(A.appsShown({ ...v, shared: { ...v.shared, owner: "dana@acme.test" } }), true, "a viewer of Orgo's team, an owner outside it");
   assert.equal(A.appsShown({ ...v, account: { user: { email: "sam@example.com" } }, shared: { ...v.shared, owner: "dana@acme.test" } }), false, "an owner and a viewer outside Orgo's team: no apps");
-  // An act on an app: sent, pending until the owner's Bops keeps it on the app, then gone (its ok and said show there).
+  // An act on an app: sent, pending until the owner's SmileDesk keeps it on the app, then gone (its ok and said show there).
   const sent = [];
   const r = await actWith(copy, { act: "deploy", app: "shop" }, "key_deploy_01", sam, async (body) => (sent.push(JSON.parse(body)), { status: 202, body: { ok: true, macOn: true } }));
   assert.equal(r.ok, true);
@@ -1991,7 +1991,7 @@ await check("the bot's browser in a shared workspace: a Member with Write and Us
   assert.equal(seesBrowser(at({ max: "read" }, true), max), false);
   assert.equal(seesBrowser(at({ max: "write" }, true), { ...max, runsOn: "mac" }), false, "a bot on the owner's Mac has no browser to show");
   assert.equal(seesBrowser({}, max), false, "the user's own workspace: their computer tab is theirs");
-  // An Admin keeps the computer's live view and has the browser beside it, for a bot whose computer Bops Cloud shows them.
+  // An Admin keeps the computer's live view and has the browser beside it, for a bot whose computer SmileDesk Cloud shows them.
   const admin = at({ max: "write" }, true, "admin", ["max"]);
   assert.equal(seesBrowser(admin, max), false, "never in place of the computer");
   assert.equal(browserBeside(admin, max), true);
@@ -2006,7 +2006,7 @@ await check("the bot's browser in a shared workspace: a Member with Write and Us
   assert.equal(browserLine(admin, max), null);
   assert.equal(browserLine(at({ max: "write" }, true), max), null, "shown: nothing to say");
   for (const line of [browserLine(at({ max: "read" }, true), max), browserLine(at({ max: "write" }, false), max)]) assert.ok(!/[—–]/.test(line), "plain words, no dashes");
-  // Its stream and its acts go out while the shared workspace is open (Bops Cloud checks them); the owner's own routes stay shut.
+  // Its stream and its acts go out while the shared workspace is open (SmileDesk Cloud checks them); the owner's own routes stay shut.
   assert.equal(callAllowed("GET", "/api/browser?bot=max"), true);
   assert.equal(callAllowed("POST", "/api/browser"), true);
   assert.equal(callAllowed("POST", "/api/browsers"), false);
@@ -2056,7 +2056,7 @@ await check("an Admin sees a bot's computer live, with Take control and orgo.ai;
   const { roleHere, SHARED_SCREEN_WORDS } = await import(`${root}/lib/shared.ts`);
   const orgoUrl = `https://orgo.test/workspaces?project_id=${PROJECT}`;
   const c = cloudState();
-  // Bops Cloud names the computer for an Admin alone; the window keeps only which bots, never the computer's id.
+  // SmileDesk Cloud names the computer for an Admin alone; the window keeps only which bots, never the computer's id.
   const admin = viewState(own(), { ...listed, role: "admin", wsId: WS, orgoUrl }, { ...c, role: "admin", state: { ...c.state, screens: { boppy: "comp-owner-1" } } }, {});
   assert.deepEqual(admin.shared.screens, ["boppy"]);
   assert.ok(!JSON.stringify(admin).includes("comp-owner-1"), "the computer's id stays in the server's copy");
@@ -2134,7 +2134,7 @@ await check("every card kind, for every role: live buttons for whoever may answe
     elsewhere: { owner: "you", memberRead: 3, memberWrite: 3, memberAdminsAct: 3, memberNoComputer: 3, admin: 3, adminOld: 3, adminOldCloud: 3 },
     sign_in: { owner: "you", memberRead: 7, memberWrite: 0, memberAdminsAct: 1, memberNoComputer: 0, admin: "you", adminOld: "you", adminOldCloud: "you" },
     payment: { owner: "you", memberRead: 4, memberWrite: 4, memberAdminsAct: 4, memberNoComputer: 4, admin: 4, adminOld: 4, adminOldCloud: 4 },
-    // A thread on the owner's Mac: an Admin's too, once the owner's Bops takes their acts (member-access.ts ADMIN_POWERS.macThread).
+    // A thread on the owner's Mac: an Admin's too, once the owner's SmileDesk takes their acts (member-access.ts ADMIN_POWERS.macThread).
     mac: { owner: "you", memberRead: 7, memberWrite: 5, memberAdminsAct: 5, memberNoComputer: 5, admin: "you", adminOld: 5, adminOldCloud: 5 },
   };
   const card = (html) => {
@@ -2232,7 +2232,7 @@ await check("where a thread runs: an Admin picks the bot's computer (never the o
   assert.equal(a.copy.refusal({ act: "where", sessionId: "s1", to: "cloud" }).code, "not_waiting");
   assert.equal((await copyOf("admin", { ownerOld: true })).copy.refusal({ act: "where", sessionId: "s-where", to: "cloud" }).code, "owner_bops_old");
   assert.equal((await copyOf("member", { adminActs: true })).copy.refusal({ act: "where", sessionId: "s-where", to: "cloud" }).code, "admin_only");
-  // Sent, then picked on the owner's Bops: it lands.
+  // Sent, then picked on the owner's SmileDesk: it lands.
   const sent = [];
   const r = await actWith(a.copy, { act: "where", sessionId: "s-where", to: "cloud" }, "key_where_0001", sam, async (b) => (sent.push(JSON.parse(b)), { status: 202, body: { ok: true, macOn: true } }));
   assert.equal(r.ok, true);
@@ -2243,7 +2243,7 @@ await check("where a thread runs: an Admin picks the bot's computer (never the o
   assert.equal(a.copy.acts().length, 0, "landed");
 });
 
-await check("a bot's How I work: an Admin sees the owner's words and Save sends them (refused here first for a Member or past 1500), and it lands once the owner's Bops kept them", async () => {
+await check("a bot's How I work: an Admin sees the owner's words and Save sends them (refused here first for a Member or past 1500), and it lands once the owner's SmileDesk kept them", async () => {
   const { HowIWork } = await import(pathToFileURL(`${root}/components/app/bot-panel.tsx`).href);
   const copyOf = async (role, persona) => {
     const c = cloudState();
@@ -2271,9 +2271,9 @@ await check("a bot's How I work: an Admin sees the owner's words and Save sends 
   a.copy["read"] = fakeRead({ status: 200, body: { ...a.c, hash: "h-kept", state: { ...a.c.state, bots: a.c.state.bots.map((b) => (b.id === "boppy" ? { ...b, persona: "Be brief." } : b)) } } }).read;
   await a.copy.refresh();
   assert.equal(a.copy.acts().length, 0, "landed");
-  // The owner's Bops too old for it: Bops Cloud says so, and the window shows its words.
-  const old = await actWith(a.copy, { act: "persona", botId: "boppy", text: "Again", was: "Be brief." }, "key_persona_02", sam, async () => ({ status: 409, body: { error: "The owner's Bops needs an update first.", code: "owner_bops_old" } }));
-  assert.deepEqual([old.ok, old.code, old.error], [false, "owner_bops_old", "The owner's Bops needs an update first."]);
+  // The owner's SmileDesk too old for it: SmileDesk Cloud says so, and the window shows its words.
+  const old = await actWith(a.copy, { act: "persona", botId: "boppy", text: "Again", was: "Be brief." }, "key_persona_02", sam, async () => ({ status: 409, body: { error: "The owner's SmileDesk needs an update first.", code: "owner_bops_old" } }));
+  assert.deepEqual([old.ok, old.code, old.error], [false, "owner_bops_old", "The owner's SmileDesk needs an update first."]);
 });
 
 await check("a bot's How I work, as the window sees an Admin's change: waiting, then gone once kept; changed by someone else meanwhile, said so; a Member has no box", async () => {
@@ -2322,7 +2322,7 @@ await check("a bot's How I work, as the window sees an Admin's change: waiting, 
   assert.match(details("admin"), /How I work/);
 });
 
-await check("an answer waits as long as its ask: a Member's or an Admin's is still on its way after ten minutes, and says the owner's Bops is closed", async () => {
+await check("an answer waits as long as its ask: a Member's or an Admin's is still on its way after ten minutes, and says the owner's SmileDesk is closed", async () => {
   const c = cloudState("running");
   c.state = { ...c.state, levels: { boppy: "write" }, computer: "use", approvals: [{ id: "apr-x", botId: "boppy", chatId: "bot:boppy", threadId: "s1", kind: "email", action: "Send an email", resources: [], at: 4 }] };
   const copy = new SharedCopy(fakeRead({ status: 200, body: c }).read);
@@ -2333,7 +2333,7 @@ await check("an answer waits as long as its ask: a Member's or an Admin's is sti
   await actWith(copy, { act: "reply", sessionId: "s1", text: "more" }, "key_reply_00001", sam, async () => ({ status: 202, body: { ok: true, macOn: false } }));
   t += 11 * 60_000;
   const acts = Object.fromEntries(copy.acts().map((p) => [p.act.act, p]));
-  assert.equal(acts.answer.state, "waiting", "the answer still goes when the owner's Bops opens");
+  assert.equal(acts.answer.state, "waiting", "the answer still goes when the owner's SmileDesk opens");
   assert.equal(acts.reply.state, "failed");
   t += 24 * 3_600_000;
   assert.equal(copy.acts().find((p) => p.act.act === "answer").state, "failed", "not past a day");
@@ -2354,7 +2354,7 @@ await check("the owner's app work: an app thread's ask or question is answered o
   assert.equal(L.threadAnswerer(st({ role: "member" }), t, "question"), L.APP_WORK_LINE);
   assert.equal(L.writesThread(st({ role: "member" }), t), false);
   assert.equal(L.askAnswerer(st({ role: "member" }), { ...ask, threadId: "t-other" }), "you", "only an app thread");
-  // The viewer's Mac says no first, as Bops Cloud and the owner's Mac do.
+  // The viewer's Mac says no first, as SmileDesk Cloud and the owner's Mac do.
   const c = cloudState("running");
   c.state = { ...c.state, levels: { boppy: "write" }, computer: "use", sessions: [{ ...c.state.sessions[0], id: "t-app", app: { name: "site" } }], approvals: [{ id: "apr-app", botId: "boppy", chatId: "bot:boppy", threadId: "t-app", kind: "email", action: "Send an email", resources: [], at: 4 }] };
   const copy = new SharedCopy(fakeRead({ status: 200, body: c }).read);
@@ -2372,12 +2372,12 @@ await check("the owner's app work: an app thread's ask or question is answered o
   assert.equal(L.ANSWER_WAITS_LINE, "The workspace's Mac is closed. Your answer goes when it opens.");
   assert.equal(ACT_EXPIRED, "The workspace's Mac didn't open in time, so this didn't go.");
   for (const f of ["chat-view.tsx", "shared-apps.tsx", "sidebar-sections.tsx", "keys.tsx", "bot-panel.tsx"])
-    assert.ok(!/owner[^"`\n]*(Bops|Mac) (to open|didn't open in time|is closed)/.test(readFileSync(`${root}/components/app/${f}`, "utf8")), `${f}: a line waiting for a Mac says "owner"`);
+    assert.ok(!/owner[^"`\n]*(SmileDesk|Mac) (to open|didn't open in time|is closed)/.test(readFileSync(`${root}/components/app/${f}`, "utf8")), `${f}: a line waiting for a Mac says "owner"`);
 });
 
 /* ---------------- Keys: a shared workspace's keys, for someone with Keys there ---------------- */
 
-/** A copy of the owner's workspace as Bops Cloud shows it to `role`, with (`keys`) or without Keys there. */
+/** A copy of the owner's workspace as SmileDesk Cloud shows it to `role`, with (`keys`) or without Keys there. */
 const keysCopy = async ({ role = "member", keys = true, keyActs = true, botKeys = ["STRIPE_SECRET_KEY"] } = {}) => {
   const c = cloudState();
   c.role = role;
@@ -2402,10 +2402,10 @@ await check("Keys in the window: a viewer with Keys has each bot's keys and thei
   assert.equal(r.ok, true);
   assert.deepEqual(sent[0].act, { act: "key", botId: "boppy", name: "GITHUB_TOKEN", on: true });
   v = viewState(own(), copy.openNow(), copy.data(), {}, copy.acts());
-  assert.deepEqual(v.bots[0].keys, ["STRIPE_SECRET_KEY", "GITHUB_TOKEN"], "shown on while it waits for the owner's Bops");
+  assert.deepEqual(v.bots[0].keys, ["STRIPE_SECRET_KEY", "GITHUB_TOKEN"], "shown on while it waits for the owner's SmileDesk");
   assert.deepEqual(v.shared.keySends, [{ key: "key_switch_01", botId: "boppy", name: "GITHUB_TOKEN", on: true, state: "waiting" }]);
   // Turned down: shown as it was, and why.
-  await actWith(copy, { act: "key", botId: "boppy", name: "STRIPE_SECRET_KEY", on: false }, "key_switch_02", sam, async () => ({ status: 409, body: { error: "The owner's Bops needs an update first.", code: "owner_bops_old" } }));
+  await actWith(copy, { act: "key", botId: "boppy", name: "STRIPE_SECRET_KEY", on: false }, "key_switch_02", sam, async () => ({ status: 409, body: { error: "The owner's SmileDesk needs an update first.", code: "owner_bops_old" } }));
   v = viewState(own(), copy.openNow(), copy.data(), {}, copy.acts());
   assert.deepEqual(v.bots[0].keys, ["STRIPE_SECRET_KEY", "GITHUB_TOKEN"]);
   assert.equal(v.shared.keySends.find((x) => x.key === "key_switch_02").state, "failed");
@@ -2417,7 +2417,7 @@ await check("Keys in the window: a viewer with Keys has each bot's keys and thei
   assert.equal(w.shared.keySends, undefined);
 });
 
-await check("Keys acts, checked from the copy: Keys first, a bot they see (Read is enough), the owner's Bops new enough; one lands once the copy has it, and goes when Keys is taken away", async () => {
+await check("Keys acts, checked from the copy: Keys first, a bot they see (Read is enough), the owner's SmileDesk new enough; one lands once the copy has it, and goes when Keys is taken away", async () => {
   const L = await import(`${root}/lib/shared.ts`);
   const no = await keysCopy({ keys: false });
   assert.deepEqual(no.copy.refusal({ act: "key", botId: "boppy", name: "GITHUB_TOKEN", on: true }), { status: 403, error: L.KEYS_GIVEN_LINE, code: "member_no_keys" });

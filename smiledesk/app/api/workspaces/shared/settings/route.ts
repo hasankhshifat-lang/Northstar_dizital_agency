@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * An Admin's change to the shared workspace open now (lib/server/shared-people.ts changeSharedSettings): {name}, its
- * name on Orgo, or {chat: "mac" | "cloud" | "auto"}, where its chat is answered. From the Bops window only.
+ * name on Orgo, or {chat: "mac" | "cloud" | "auto"}, where its chat is answered. From the SmileDesk window only.
  */
 export async function PATCH(request: Request) {
   const stop = notReady() ?? (fromBopsWindow(request) ? null : Response.json({ code: "WINDOW_ONLY", error: WORDS.windowOnly }, { status: 403 }));

@@ -37,7 +37,7 @@ export const CRM_LIMITS = {
   trash: 20,
 } as const;
 
-/** What Bops says when something can't be done, in plain words (the app and the bots read the same). */
+/** What SmileDesk says when something can't be done, in plain words (the app and the bots read the same). */
 export const CRM_SAY = {
   files: "This workspace has 50 CRM files, the most it can have. Delete one to add another.",
   bytes: "That file is over 2 MB. Split it or remove columns, then try again.",
@@ -50,12 +50,12 @@ export const CRM_SAY = {
   nameColumn: "Name the column.",
   cut: "Some cells were over 2,000 characters and were cut.",
   empty: "That file is empty.",
-  notCsv: "Bops opens CSV files. In Numbers, Excel or Google Sheets, export a CSV first.",
+  notCsv: "SmileDesk opens CSV files. In Numbers, Excel or Google Sheets, export a CSV first.",
   cantOpen: "That file can't be opened here.",
   gone: "That file isn't there anymore.",
   changed: "That row changed while you were editing. Showing the latest.",
   badChange: "That change didn't make sense. Showing the latest.",
-  signIn: "Sign in to Bops first.",
+  signIn: "Sign in to SmileDesk first.",
   noWorkspace: "No such workspace.",
 } as const;
 
@@ -116,7 +116,7 @@ const tooLong = (v: string) => v.replace(/\r\n?/g, "\n").replace(CONTROL, "").tr
 /**
  * A cell as it goes into a CSV someone opens in a spreadsheet: one that starts like a formula
  * (= + - @, a tab or a carriage return) gets a ' in front, so Numbers or Excel shows it rather than
- * running it. A plain number ("-5", "+1,200.50") stays as it is. Only for files leaving Bops
+ * running it. A plain number ("-5", "+1,200.50") stays as it is. Only for files leaving SmileDesk
  * (Download CSV); the files themselves keep what was typed.
  */
 export function guardCell(v: string) {
@@ -221,7 +221,7 @@ function records(text: string, d: string) {
  * CSV text as columns and rows. The first row that isn't blank names the columns. Rows come out as
  * wide as the widest one: short ones are filled with "", and cells past the header add columns
  * ("Column 9"). A byte order mark is dropped; the delimiter is sniffed unless given. Rows that are
- * entirely blank are dropped, unless `keepBlankRows` (a file Bops wrote, where an empty row is one the
+ * entirely blank are dropped, unless `keepBlankRows` (a file SmileDesk wrote, where an empty row is one the
  * user added). `cut` counts cells over 2,000 characters, which are cut.
  *
  * Past 40 columns or 5,000 rows nothing is made but `over`, which says which: padding every row to

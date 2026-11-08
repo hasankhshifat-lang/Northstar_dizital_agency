@@ -7,11 +7,11 @@ import { MAIN_WORKSPACE, type BrainAuth, type BrainKind } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 /**
- * Brains (lib/server/brains.ts) change only from the Bops window (ui-token.ts): a page a bot's Chrome reached
+ * Brains (lib/server/brains.ts) change only from the SmileDesk window (ui-token.ts): a page a bot's Chrome reached
  * this server with mustn't add one, move a bot onto one, or sign one in. A build without brains has none of
  * these routes (brainsOff).
  */
-const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Brains can only be changed in the Bops app." }, { status: 403 }));
+const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Brains can only be changed in the SmileDesk app." }, { status: 403 }));
 
 const failed = (e: unknown) => Response.json({ error: (e as Error).message }, { status: e instanceof BrainError ? e.status : 500 });
 
@@ -67,7 +67,7 @@ export async function PATCH(request: Request) {
   }
 }
 
-/** Take a brain away: its bots go back to Bops agent, and it signs out on the computers it was signed in on. */
+/** Take a brain away: its bots go back to SmileDesk agent, and it signs out on the computers it was signed in on. */
 export async function DELETE(request: Request) {
   const unready = brainsOff() ?? notReady() ?? notFromWindow(request);
   if (unready) return unready;

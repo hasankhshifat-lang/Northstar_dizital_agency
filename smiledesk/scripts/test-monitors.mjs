@@ -336,7 +336,7 @@ test("normalizeLine: only what's certainly noise goes; everything else is the ju
     ["3,401 followers", "3,401 followers"],
     ["Alice · 1,234 votes", "Alice · 1,234 votes"],
     ["123 points by pg 2 hours ago | hide | 45 comments", "123 points by pg | hide | 45 comments"],
-    ["3. Bops ships monitors", "3. Bops ships monitors"],
+    ["3. SmileDesk ships monitors", "3. SmileDesk ships monitors"],
     // Kept as they are.
     ["Bitcoin 86,200", "Bitcoin 86,200"],
     ["$49 / month", "$49 / month"],
@@ -380,7 +380,7 @@ test("screenLines: a screen's counts and bare ages are out too, so a feed doesn'
     ["Version 2.10.15 released", "Version 2.10.15 released"],
     ["Sat Oct 18 · 8:10 AM · 4 players · Book", "Sat Oct 18 · 8:10 AM · 4 players · Book"],
     ["Them: are you free at 5?", "Them: are you free at 5?"],
-    ["3. Bops ships monitors", "3. Bops ships monitors"],
+    ["3. SmileDesk ships monitors", "3. SmileDesk ships monitors"],
   ];
   for (const [line, want] of table) await check(JSON.stringify(line), () => assert.deepEqual(PD.screenLines([line]), want ? [want] : []));
   await check("a feed whose counts ticked looks the same; a new post doesn't", () => {
@@ -480,7 +480,7 @@ test("starting a page watch: the first read is the baseline, and refusals say wh
   });
   await check("a page with no text is refused", async () => {
     pages.set("/empty", { body: "<html><head><title>App</title></head><body><div id=root></div><script>render()</script></body></html>" });
-    await refused({ url: at("/empty") }, /no text Bops can read/, "an empty app shell");
+    await refused({ url: at("/empty") }, /no text SmileDesk can read/, "an empty app shell");
   });
   await check("minutes kept between 5 and a day", async () => {
     serve("/fast", "Fast", ["fast page"]);
@@ -995,7 +995,7 @@ test("what comes and goes: counts ticking, a banner rotating, a reorder, a cooki
   const judged = () => jev.calls.filter(isJudge);
   const stories = Array.from({ length: 12 }, (_, i) => `Story ${i + 1} about databases`);
   const hn = (points) => stories.flatMap((t, i) => [`${i + 1}. ${t}`, `${points + i} points by user${i} 2 hours ago | hide | ${10 + i} comments`]);
-  const id = await pageWatch("/hn", [...hn(100), "Banner: spring sale"], { lookFor: "a story about Bops", everyMin: 15 });
+  const id = await pageWatch("/hn", [...hn(100), "Banner: spring sale"], { lookFor: "a story about SmileDesk", everyMin: 15 });
   jev.waiting = () => 0.1;
   await check("points and comment counts moved: one judge call over those lines, no heads-up", async () => {
     serve("/hn", "Prices", [...hn(140), "Banner: spring sale"]);
@@ -1067,7 +1067,7 @@ test("what comes and goes: counts ticking, a banner rotating, a reorder, a cooki
   await check("a busy feed whose items all turn over each read: judged every read, never a failure", async () => {
     const chrome = ["Newest posts", "Sort: new", "Filter"];
     const batch = (n) => Array.from({ length: 20 }, (_, i) => [`Post ${n * 20 + i}: a thing happened`, `by user${n * 20 + i}`]).flat();
-    const feed = await pageWatch("/feed", [...chrome, ...batch(0)], { lookFor: "a post about Bops" });
+    const feed = await pageWatch("/feed", [...chrome, ...batch(0)], { lookFor: "a post about SmileDesk" });
     const results = [];
     for (let n = 1; n <= 4; n++) {
       serve("/feed", "Prices", [...chrome, ...batch(n)]);
@@ -1353,9 +1353,9 @@ test("a screen watch: a clock on the page is not a change", async () => {
   jevOn();
   S.update((s) => {
     s.host = "mac";
-    s.watches.push({ id: "watch_screen", botId: "boppy", display: 100, site: "News", lookFor: "a story about Bops", since: 0 });
+    s.watches.push({ id: "watch_screen", botId: "boppy", display: 100, site: "News", lookFor: "a story about SmileDesk", since: 0 });
   });
-  let screenLines = ["Top stories", "Bops ships monitors", "Updated 3:45 PM", "12 comments"];
+  let screenLines = ["Top stories", "SmileDesk ships monitors", "Updated 3:45 PM", "12 comments"];
   globalThis.__testScreen = async () => ({ url: "https://news.example/", title: "News 3:45", lines: screenLines });
   const reads = () => jev.calls.filter(isScreenRead).length;
   const r0 = reads();
@@ -1364,7 +1364,7 @@ test("a screen watch: a clock on the page is not a change", async () => {
     assert.equal(reads(), r0 + 1);
   });
   await check("only the clock and an age moved: no Jev read", async () => {
-    screenLines = ["Top stories", "Bops ships monitors", "Updated 3:52 PM", "12 comments", "Posted 9m ago"];
+    screenLines = ["Top stories", "SmileDesk ships monitors", "Updated 3:52 PM", "12 comments", "Posted 9m ago"];
     globalThis.__testScreen = async () => ({ url: "https://news.example/", title: "News 3:52", lines: screenLines });
     skew += 31_000;
     assert.equal(await tick("watch_screen"), "same");
@@ -1372,11 +1372,11 @@ test("a screen watch: a clock on the page is not a change", async () => {
   });
   await check("a counter that ticked is not read either (a feed's counts would cost a read every look)", async () => {
     const r1 = reads();
-    screenLines = ["Top stories", "Bops ships monitors", "Updated 4:05 PM", "15 comments", "Posted 22m ago"];
+    screenLines = ["Top stories", "SmileDesk ships monitors", "Updated 4:05 PM", "15 comments", "Posted 22m ago"];
     skew += 31_000;
     assert.equal(await tick("watch_screen"), "same");
     for (const [views, likes] of [["1.2K", 340], ["1.3K", 352], ["2K", 400]]) {
-      screenLines = ["Top stories", "Bops ships monitors", "Updated 4:05 PM", `${views} views · ${likes} likes`, "Posted 22m ago"];
+      screenLines = ["Top stories", "SmileDesk ships monitors", "Updated 4:05 PM", `${views} views · ${likes} likes`, "Posted 22m ago"];
       skew += 31_000;
       await tick("watch_screen");
     }
@@ -1384,14 +1384,14 @@ test("a screen watch: a clock on the page is not a change", async () => {
   });
   await check("a new story is read (told a moved count isn't news unless asked)", async () => {
     const r1 = reads();
-    screenLines = ["Top stories", "Bops raises a round", "Bops ships monitors", "Updated 4:11 PM"];
+    screenLines = ["Top stories", "SmileDesk raises a round", "SmileDesk ships monitors", "Updated 4:11 PM"];
     skew += 31_000;
     await tick("watch_screen");
     assert.equal(reads(), r1 + 1);
     assert.match(jev.calls.filter(isScreenRead).at(-1).questions.waiting.instructions, /a count that ticked/);
   });
   await check("a reply that differs from an earlier one only by its time is read", async () => {
-    screenLines = ["Top stories", "Bops raises a round", "Bops ships monitors", "Updated 3:59 PM", "Them: 9:30", "Me: what time tomorrow?"];
+    screenLines = ["Top stories", "SmileDesk raises a round", "SmileDesk ships monitors", "Updated 3:59 PM", "Them: 9:30", "Me: what time tomorrow?"];
     skew += 31_000;
     await tick("watch_screen");
     const r1 = reads();

@@ -107,7 +107,7 @@ function take(f: Forward, sock: net.Socket) {
       sock.resume();
     });
     up.on("error", () => {
-      if (!open) reply(sock, "502 Bad Gateway", `Bops can't reach ${f.app} on its computer right now.`);
+      if (!open) reply(sock, "502 Bad Gateway", `SmileDesk can't reach ${f.app} on its computer right now.`);
       else sock.destroy();
     });
     sock.once("close", () => up.destroy());
@@ -127,7 +127,7 @@ const listenOn = (server: net.Server, host: string, port: number) =>
  * A forward opened (or its target moved, when this app's is open there already) on `macPort` of this Mac to
  * `host`:`port`, or through `carrier` (closed with the forward, or at once when it can't open, and the one it had
  * closed when it moves to another or to none). Another app's on the same port is closed first (`replaced`: its
- * key, so the window closes its tab). Refused (ForwardError) when something that isn't a forward of Bops' answers
+ * key, so the window closes its tab). Refused (ForwardError) when something that isn't a forward of SmileDesk's answers
  * on that port.
  */
 export async function openForward(o: { key: string; app?: string; macPort: number; host: string; port: number; carrier?: Carrier }): Promise<{ replaced?: string }> {
@@ -171,7 +171,7 @@ function closeOne(f: Forward) {
   f.carrier?.close();
 }
 
-/** Whether something that isn't a forward of Bops' answers on `macPort` of this Mac (openForward would refuse it). */
+/** Whether something that isn't a forward of SmileDesk's answers on `macPort` of this Mac (openForward would refuse it). */
 export const macPortBusy = async (macPort: number) => !forwards.has(macPort) && ((await answers("127.0.0.1", macPort)) || (await answers("::1", macPort)));
 
 /** The forward of `key` ("<ws>/<app>/<site>", or every one of an app's with "<ws>/<app>/") closed; none is no matter. */

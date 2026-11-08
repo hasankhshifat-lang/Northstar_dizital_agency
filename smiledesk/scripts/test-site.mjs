@@ -260,7 +260,7 @@ await test("on an iPhone the buttons still open the Mac note", async () => {
   const p = await page({ ...devices["iPhone 15"] });
   await heroButton(p).tap();
   await card(p).waitFor();
-  assert.equal(await card(p).locator("h2").textContent(), "Bops is a Mac app");
+  assert.equal(await card(p).locator("h2").textContent(), "SmileDesk is a Mac app");
   assert.equal(await p.locator(".access-ask").count(), 0, "no email card");
   assert.deepEqual(await calls(p), [["capture", "bops_download_note", { kind: "other", button: "hero" }]]);
   await noIdentify(p);
@@ -272,7 +272,7 @@ await test("an Intel Mac gets the Apple silicon note", async () => {
   await p.waitForTimeout(100);
   await heroButton(p).click();
   await card(p).waitFor();
-  assert.equal(await card(p).locator("h2").textContent(), "Bops needs Apple silicon");
+  assert.equal(await card(p).locator("h2").textContent(), "SmileDesk needs Apple silicon");
   assert.equal(await p.locator(".access-ask").count(), 0, "no email card");
   assert.deepEqual(await calls(p), [["capture", "bops_download_note", { kind: "intel", button: "hero" }]]);
   await noIdentify(p);

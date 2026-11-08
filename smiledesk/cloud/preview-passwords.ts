@@ -8,17 +8,17 @@ import { PREVIEW_PASSWORD, PREVIEW_PASSWORD_PATH, type PreviewPasswordPost } fro
 import { announce, checkUser, lockedState, lockUser, toJson } from "./state.ts";
 
 /**
- * Each site's Preview password, kept by Bops Cloud for the people with Your Apps at Write (Workspace.previewPasswords).
+ * Each site's Preview password, kept by SmileDesk Cloud for the people with Your Apps at Write (Workspace.previewPasswords).
  *
- * Whoever sets a Preview's password tells Bops Cloud the password it just sent to Orgo (lib/server/preview-password-share.ts):
- * the owner's Bops, on the owner's own key, or the app's own computer's runner, on its identity (its home is that computer:
+ * Whoever sets a Preview's password tells SmileDesk Cloud the password it just sent to Orgo (lib/server/preview-password-share.ts):
+ * the owner's SmileDesk, on the owner's own key, or the app's own computer's runner, on its identity (its home is that computer:
  * computer-scope.ts appHomeHere, the rule its writes of the app's record are held to). A computer can set a Preview's
  * password on Orgo but never read one back (orgo-web lets one computer PATCH a public URL's password, never GET it), so
- * this is how what a runner set reaches anyone: nothing waits on the owner's Mac being on. Bops Cloud keeps the newest
+ * this is how what a runner set reaches anyone: nothing waits on the owner's Mac being on. SmileDesk Cloud keeps the newest
  * on the owner's state, by "<app>/<site>", with the link it's for and when it took it, by its own clock: posts land in
  * the order they reach the owner's row lock, never by a sender's clock. ws-slice.ts appsFor shows it beside that link,
  * only to viewers at Write (an Admin always), and only while the link is the one the owner's Mac read for members.
- * A share can miss (Bops Cloud away for longer than its sender keeps trying, an older Bops that never shares): the
+ * A share can miss (SmileDesk Cloud away for longer than its sender keeps trying, an older SmileDesk that never shares): the
  * owner's Mac, as it reads Orgo for members, tells it what Orgo has (lib/server/apps-for-members.ts), with the entry it
  * saw (`seen`), so that never lands over a share that came after it looked.
  *
@@ -49,7 +49,7 @@ function httpsLink(v: unknown): v is string {
   }
 }
 
-/** The body as Bops sends it, or a 400 with fixed words (nothing of what was sent is said back). */
+/** The body as SmileDesk sends it, or a 400 with fixed words (nothing of what was sent is said back). */
 function postOf(body: unknown): PreviewPasswordPost {
   if (!isObject(body)) throw new HttpError(400, BAD);
   const { ws, app, site, url, password, seen } = body;

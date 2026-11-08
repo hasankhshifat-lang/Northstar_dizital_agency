@@ -1,12 +1,12 @@
-// Tests for Bops workspaces as Orgo workspaces (lib/server/workspaces.ts, lib/server/orgo.ts, the keys'
+// Tests for SmileDesk workspaces as Orgo workspaces (lib/server/workspaces.ts, lib/server/orgo.ts, the keys'
 // scope in lib/server/keys.ts; .ops-kit/bops-workspaces/DECISIONS.md, the owner's rules): against an
 // orgo-web as it is in production today (no `product` on projects) nothing is made, renamed or deleted, and
 // every workspace's computers keep going to the one "bops" project; against an orgo-web with per workspace
 // projects, the move on sign-in ties the default workspace to the "bops" project and makes an EMPTY marked
 // project for every other workspace at once (the free computer's too; a name the user's Orgo already has gets
-// " (Bops)"), and moves nothing; the default's project takes the user's name for it only once every Bops app on
+// " (SmileDesk)"), and moves nothing; the default's project takes the user's name for it only once every SmileDesk app on
 // the account is new (both ways of the gate), and meanwhile that name is held: it stays the default's here (put
-// back over a "bops" another Mac's copy or an older Bops brings back, never dropped for it), survives a restart,
+// back over a "bops" another Mac's copy or an older SmileDesk brings back, never dropped for it), survives a restart,
 // is tried again at each start, sign-in and names sync, and gives way only to a rename on orgo.ai made after it;
 // a default renamed while Orgo doesn't answer is held too; run again it changes nothing; stopped after any call it resumes to
 // the same end; a rollback deletes only the empty projects it made, and a refused delete leaves it whole. New
@@ -108,8 +108,8 @@ function world({ modern, columnOnly = false }) {
   orgo.down = false;
   orgo.projects = [
     { id: "p_bops", name: "bops", product: "bops", created_at: "2026-01-01T00:00:00Z", updated_at: "2026-01-01T00:00:00Z" },
-    // An older Bops one by name (another case): the free computer decides which is the default's.
-    { id: "p_bops_old", name: "Bops", product: "bops", created_at: "2025-06-01T00:00:00Z", updated_at: "2025-06-01T00:00:00Z" },
+    // An older SmileDesk one by name (another case): the free computer decides which is the default's.
+    { id: "p_bops_old", name: "SmileDesk", product: "bops", created_at: "2025-06-01T00:00:00Z", updated_at: "2025-06-01T00:00:00Z" },
     // The user's own Orgo workspace named "orgo".
     { id: "p_orgo", name: "orgo", product: "orgo", created_at: "2026-02-01T00:00:00Z", updated_at: "2026-02-01T00:00:00Z" },
   ];
@@ -186,7 +186,7 @@ const server = createServer(async (req, res) => {
     if (req.method === "PATCH") {
       // Today's route takes name, icon_url, status and private_screens only.
       if (!orgo.modern && body?.bops_ws_id !== undefined) return send(res, 400, { error: "Unsupported field" });
-      if (orgo.modern && body?.bops_ws_id !== undefined && x.bops_ws_id && x.bops_ws_id !== body.bops_ws_id) return send(res, 409, { error: "This workspace or that Bops workspace is already bound", code: "BOPS_WS_ID_TAKEN" });
+      if (orgo.modern && body?.bops_ws_id !== undefined && x.bops_ws_id && x.bops_ws_id !== body.bops_ws_id) return send(res, 409, { error: "This workspace or that SmileDesk workspace is already bound", code: "BOPS_WS_ID_TAKEN" });
       if (body?.name !== undefined) {
         const to = String(body.name).trim().toLowerCase();
         if (orgo.projects.some((y) => y.id !== x.id && y.name.toLowerCase() === to)) return send(res, 400, TAKEN);
@@ -322,7 +322,7 @@ function seed({ mainName = "Main" } = {}) {
     ];
     s.workspace = "ws_main";
     s.bots = [
-      // The free Bops computer: it never moves.
+      // The free SmileDesk computer: it never moves.
       { id: "boppy", name: "Boppy", role: "Chief of Staff", color: "#0A0A0A", isMain: true, computerStatus: "ready", computerId: "c_free", freeComputer: true },
       { id: "max", name: "Max", role: "Sales", color: "#5B8CFF", isMain: false, computerStatus: "ready", computerId: "c_max", computer: "own" },
       { id: "oscar", name: "Oscar", role: "Chief of Staff", color: "#0A0A0A", isMain: true, computerStatus: "ready", computerId: "c_orgo", workspaceId: "ws_orgo" },
@@ -399,29 +399,29 @@ await check("Today's orgo-web: keys are all for all workspaces, and This workspa
   const res = await KeysRoute.GET(new Request("http://localhost:3210/api/keys?fresh=1", { headers: { "x-bops-window": UI } }));
   const j = await res.json();
   assert.equal(j.workspaceKeys, false);
-  assert.deepEqual(j.keys.map((k) => [k.name, k.scope]), [["STRIPE_SECRET_KEY", "all"]], "a secret scoped to a workspace that isn't Bops' isn't one of Bops' keys");
+  assert.deepEqual(j.keys.map((k) => [k.name, k.scope]), [["STRIPE_SECRET_KEY", "all"]], "a secret scoped to a workspace that isn't SmileDesk's isn't one of SmileDesk's keys");
   await assert.rejects(K.saveKey("GITHUB_TOKEN", "fake", [], "workspace"), /no Orgo workspace of its own yet/);
 });
 
 /* ---------------- An orgo-web with per workspace projects ---------------- */
 
 let clean;
-await check("The move: default tied to bops; every other workspace gets an EMPTY project now (the free computer's one too, a taken name gets (Bops)); nothing moves", async () => {
+await check("The move: default tied to bops; every other workspace gets an EMPTY project now (the free computer's one too, a taken name gets (SmileDesk)); nothing moves", async () => {
   world({ modern: true });
   seed();
-  // A skill made before the move, in its workspace's folder by its Bops id.
+  // A skill made before the move, in its workspace's folder by its SmileDesk id.
   Sk.createSkill("ws_orgo", { name: "Orgo report", description: "When asked", body: "# Orgo report\n" });
   assert.ok(existsSync(join(process.cwd(), ".data", "workspaces", "ws_orgo", "skills", "orgo-report", "SKILL.md")));
   const r = await Wk.migrateWorkspacesToOrgo();
   assert.equal(r.status, "done", JSON.stringify(r));
-  // 1. The default: the bops project holding the free computer (not the older "Bops"), tied to it.
+  // 1. The default: the bops project holding the free computer (not the older "SmileDesk"), tied to it.
   assert.equal(ws("ws_main").orgoProjectId, "p_bops");
   assert.equal(byId("p_bops").bops_ws_id, "ws_main");
-  assert.equal(byId("p_bops_old").bops_ws_id ?? null, null, "the other Bops one stays unbound");
+  assert.equal(byId("p_bops_old").bops_ws_id ?? null, null, "the other SmileDesk one stays unbound");
   // 2. Every other workspace: its own project, marked and tied, made now, empty.
-  const o = named("orgo (Bops)");
+  const o = named("orgo (SmileDesk)");
   assert.ok(o, orgo.projects.map((p) => p.name).join(", "));
-  const expect = { ws_orgo: "orgo (Bops)", ws_quiet: "Quiet", ws_busy: "Acme", ws_free: "Free time" };
+  const expect = { ws_orgo: "orgo (SmileDesk)", ws_quiet: "Quiet", ws_busy: "Acme", ws_free: "Free time" };
   for (const [id, name] of Object.entries(expect)) {
     const p = named(name);
     assert.ok(p, `${id}'s project ${name}`);
@@ -429,9 +429,9 @@ await check("The move: default tied to bops; every other workspace gets an EMPTY
     assert.equal([...orgo.computers.values()].filter((c) => c.project === p.id).length, 0, `${name} is empty`);
   }
   assert.equal(r.created, 4);
-  assert.deepEqual(r.renamed, [{ wsId: "ws_orgo", from: "orgo", to: "orgo (Bops)" }]);
+  assert.deepEqual(r.renamed, [{ wsId: "ws_orgo", from: "orgo", to: "orgo (SmileDesk)" }]);
   assert.equal(ws("ws_orgo").name, "orgo", "its name here stays");
-  assert.deepEqual(Wk.migrationNotice(), { renamed: [{ wsId: "ws_orgo", from: "orgo", to: "orgo (Bops)" }], defaultWaits: null });
+  assert.deepEqual(Wk.migrationNotice(), { renamed: [{ wsId: "ws_orgo", from: "orgo", to: "orgo (SmileDesk)" }], defaultWaits: null });
   // 3. Nothing moves: every computer is where it was, and the first build's routes are never called.
   assert.deepEqual([...orgo.computers.values()].map((c) => [c.id, c.project]), ALL_COMPUTERS);
   assert.ok(!orgo.calls.some((c) => /\/move$|\/members\/copy$/.test(c.path)), "no move and no people copy");
@@ -444,10 +444,10 @@ await check("The move: default tied to bops; every other workspace gets an EMPTY
   assert.ok(!existsSync(join(process.cwd(), ".data", "workspaces", "ws_orgo")));
   assert.ok(existsSync(join(process.cwd(), ".data", "workspaces", o.id, "skills", "orgo-report", "SKILL.md")));
   assert.equal(Sk.skillDetail("ws_orgo", "skill", "orgo-report").missing, false, "still found where it's looked for");
-  // Only Bops' own projects were changed: the user's "orgo" wasn't renamed or tied.
+  // Only SmileDesk's own projects were changed: the user's "orgo" wasn't renamed or tied.
   assert.deepEqual(byId("p_orgo"), { id: "p_orgo", name: "orgo", product: "orgo", created_at: "2026-02-01T00:00:00Z", updated_at: "2026-02-01T00:00:00Z" });
   const mine = await O.orgo.bopsComputers();
-  assert.deepEqual(mine.map((c) => c.id).sort(), ["c_busy", "c_free", "c_max", "c_orgo"], "this app merges every Bops project's, the user's own Orgo one's not");
+  assert.deepEqual(mine.map((c) => c.id).sort(), ["c_busy", "c_free", "c_max", "c_orgo"], "this app merges every SmileDesk project's, the user's own Orgo one's not");
   // Each workspace's people are its own project's (empty for a new one, never the default's).
   assert.equal((await O.findBopsWorkspace(ORGO_KEY, { fresh: true, wsId: "ws_quiet" })).id, ws("ws_quiet").orgoProjectId);
   assert.equal((await O.findBopsWorkspace(ORGO_KEY, { fresh: true, wsId: "ws_main" })).id, "p_bops");
@@ -463,25 +463,25 @@ await check("Run again: nothing is changed on Orgo at all (only the list is read
 });
 
 await check("New workspace: its Orgo workspace is made too, marked and tied; a name the user's Orgo has is asked about", async () => {
-  // The user's own Orgo workspace "Clients": a Bops one by that name is asked about, and nothing is made.
+  // The user's own Orgo workspace "Clients": a SmileDesk one by that name is asked about, and nothing is made.
   orgo.projects.push({ id: "p_clients", name: "Clients", product: "orgo", created_at: "2026-03-01T00:00:00Z", updated_at: "2026-03-01T00:00:00Z" });
   const before = S.getState().workspaces.length;
   const n = orgo.projects.length;
   const taken = await Route.POST(post({ name: "Clients" }));
   assert.equal(taken.status, 409);
-  assert.deepEqual(await taken.json(), { error: "You already have an Orgo workspace named Clients. Try Clients (Bops) or another name.", code: "name_taken", suggestion: "Clients (Bops)" });
+  assert.deepEqual(await taken.json(), { error: "You already have an Orgo workspace named Clients. Try Clients (SmileDesk) or another name.", code: "name_taken", suggestion: "Clients (SmileDesk)" });
   assert.equal(S.getState().workspaces.length, before, "nothing made here");
   assert.equal(orgo.projects.length, n, "nor on Orgo");
   // The name it suggests works.
-  const asked = await (await Route.POST(post({ name: "Clients (Bops)" }))).json();
-  assert.deepEqual([named("Clients (Bops)").product, named("Clients (Bops)").bops_ws_id], ["bops", asked.id]);
+  const asked = await (await Route.POST(post({ name: "Clients (SmileDesk)" }))).json();
+  assert.deepEqual([named("Clients (SmileDesk)").product, named("Clients (SmileDesk)").bops_ws_id], ["bops", asked.id]);
   // Two here with one name: the later gets a number (and its own project by that name).
-  const twin = await (await Route.POST(post({ name: "Clients (Bops)" }))).json();
-  assert.equal(ws(twin.id).name, "Clients (Bops) 2");
-  assert.equal(named("Clients (Bops) 2").bops_ws_id, twin.id);
+  const twin = await (await Route.POST(post({ name: "Clients (SmileDesk)" }))).json();
+  assert.equal(ws(twin.id).name, "Clients (SmileDesk) 2");
+  assert.equal(named("Clients (SmileDesk) 2").bops_ws_id, twin.id);
   await Rm.deleteWorkspace(asked.id);
   await Rm.deleteWorkspace(twin.id);
-  assert.equal(named("Clients (Bops)"), undefined, "deleted with its workspace");
+  assert.equal(named("Clients (SmileDesk)"), undefined, "deleted with its workspace");
   const fine = await Route.POST(post({ name: "Ventures" }));
   assert.equal(fine.status, 200);
   const made = await fine.json();
@@ -577,7 +577,7 @@ await check("Stopped after any call it makes, it resumes to the same end", async
     const end = { names: S.getState().workspaces.map((w) => [w.id, w.name, byId(w.orgoProjectId)?.name ?? null]), where: [...orgo.computers.values()].map((c) => [c.id, byId(c.project)?.name]) };
     assert.deepEqual(end, clean, `stopped at change ${at}: ${JSON.stringify(end)}`);
     for (const id of ["ws_orgo", "ws_quiet", "ws_busy", "ws_free"]) assert.equal(orgo.projects.filter((p) => p.bops_ws_id === id).length, 1, "never two projects for one workspace");
-    assert.deepEqual(S.getState().orgoMigration.renamed, [{ wsId: "ws_orgo", from: "orgo", to: "orgo (Bops)" }], `the notice, also after a stop at ${at}`);
+    assert.deepEqual(S.getState().orgoMigration.renamed, [{ wsId: "ws_orgo", from: "orgo", to: "orgo (SmileDesk)" }], `the notice, also after a stop at ${at}`);
   }
   assert.ok(runs >= 7);
 });
@@ -592,11 +592,11 @@ await check("Roll back: only the empty projects it made go, the default's projec
   orgo.computers.set("c_later", { id: "c_later", name: "later", project: acme });
   // Renamed on orgo.ai since: it goes back to "bops", the name older apps find it by.
   byId("p_bops").name = "Renamed";
-  byId("p_bops_old").name = "Bops old";
+  byId("p_bops_old").name = "SmileDesk old";
   const r = await Wk.revertWorkspaceMigration();
   assert.equal(byId("p_bops").name, "bops");
   assert.deepEqual(r, { deleted: 3, kept: 1 });
-  assert.equal(byId(orgoBops), undefined, "orgo (Bops) was empty, and went");
+  assert.equal(byId(orgoBops), undefined, "orgo (SmileDesk) was empty, and went");
   assert.ok(byId(acme), "Acme's has a computer, and stays");
   assert.ok(byId("p_bops") && byId("p_orgo"), "nothing else deleted");
   assert.deepEqual([...orgo.computers.values()].filter((c) => c.id !== "c_later").map((c) => [c.id, c.project]), ALL_COMPUTERS, "no computer moved, either way");
@@ -622,7 +622,7 @@ await check("A roll back Orgo refuses a delete in throws before anything changes
   orgo.refuseDelete.add(quiet);
   await assert.rejects(Wk.revertWorkspaceMigration(), /moving to storage/);
   assert.ok(byId(quiet), "Quiet's is still on Orgo");
-  assert.equal(named("orgo (Bops)"), undefined, "the one before it went");
+  assert.equal(named("orgo (SmileDesk)"), undefined, "the one before it went");
   assert.equal(S.getState().orgoMigrationRevertedAt, undefined, "not marked undone");
   assert.equal(S.getState().orgoMigration.created.length, 3, "the deleted one is off the list");
   assert.ok(S.getState().workspaces.filter((w) => w.id !== "ws_orgo").every((w) => w.orgoProjectId), "every workspace still tied");
@@ -656,7 +656,7 @@ await check("Rename gate, closed: a default the user renamed keeps its project n
   assert.equal(r.status, "done");
   assert.deepEqual(r.defaultName, { local: "Acme Main", project: "bops", renamed: false, reason: "no_signal" });
   assert.equal(byId("p_bops").name, "bops");
-  assert.equal(ws("ws_main").name, "Acme Main", "Bops shows the user's name");
+  assert.equal(ws("ws_main").name, "Acme Main", "SmileDesk shows the user's name");
   assert.equal(S.getState().orgoMigration.defaultRename.reason, "no_signal");
   assert.ok(!changes().some((c) => c.path === "/api/workspaces/p_bops" && c.body?.name !== undefined), "no rename sent");
   // Each sign-in asks again; each closed answer keeps "bops", and says why.
@@ -684,7 +684,7 @@ await check("Rename gate, closed: a default the user renamed keeps its project n
 });
 
 await check("Rename gate, open: once every app on the account is new, the default's project takes the user's name", async () => {
-  // Bops Cloud's own calls (an old version) don't count; every app on a Mac is new.
+  // SmileDesk Cloud's own calls (an old version) don't count; every app on a Mac is new.
   orgo.apps = [NEW("0.0.29"), NEW("0.2.1"), { app_version: "0.0.12", caller: "cloud" }];
   const r = await Wk.migrateWorkspacesToOrgo();
   assert.deepEqual(r.defaultName, { local: "Studio", project: "Studio", renamed: true, reason: "all_new" });
@@ -702,19 +702,19 @@ await check("Rename gate, open: once every app on the account is new, the defaul
   assert.equal(changes().length, n);
 });
 
-await check("Rename gate, open, with a name the user's Orgo already has: the default's project is <name> (Bops), and the switcher says so", async () => {
+await check("Rename gate, open, with a name the user's Orgo already has: the default's project is <name> (SmileDesk), and the switcher says so", async () => {
   world({ modern: true });
   seed({ mainName: "orgo" });
   orgo.apps = [NEW("0.0.29")];
   const r = await Wk.migrateWorkspacesToOrgo();
-  assert.equal(byId("p_bops").name, "orgo (Bops 2)", "orgo (Bops) is the orgo workspace's");
-  assert.deepEqual(r.defaultName, { local: "orgo", project: "orgo (Bops 2)", renamed: true, reason: "all_new" });
-  assert.ok(Wk.migrationNotice().renamed.some((x) => x.wsId === "ws_main" && x.to === "orgo (Bops 2)"));
+  assert.equal(byId("p_bops").name, "orgo (SmileDesk 2)", "orgo (SmileDesk) is the orgo workspace's");
+  assert.deepEqual(r.defaultName, { local: "orgo", project: "orgo (SmileDesk 2)", renamed: true, reason: "all_new" });
+  assert.ok(Wk.migrationNotice().renamed.some((x) => x.wsId === "ws_main" && x.to === "orgo (SmileDesk 2)"));
 });
 
 /* ---------------- Renames on orgo.ai ---------------- */
 
-await check("A rename on orgo.ai reaches Bops: at sign-in and when the sidebar asks; never a stale list, never on first sight", async () => {
+await check("A rename on orgo.ai reaches SmileDesk: at sign-in and when the sidebar asks; never a stale list, never on first sight", async () => {
   world({ modern: true });
   seed();
   assert.equal((await Wk.migrateWorkspacesToOrgo()).status, "done");
@@ -748,7 +748,7 @@ await check("A rename on orgo.ai reaches Bops: at sign-in and when the sidebar a
   // Tied before names were kept (the first build): learnt on first sight, never taken for a rename.
   S.update((s) => delete s.workspaces.find((w) => w.id === "ws_orgo").orgoName);
   assert.deepEqual((await Wk.syncWorkspaceNames()).renamed, []);
-  assert.deepEqual([ws("ws_orgo").name, ws("ws_orgo").orgoName], ["orgo", "orgo (Bops)"]);
+  assert.deepEqual([ws("ws_orgo").name, ws("ws_orgo").orgoName], ["orgo", "orgo (SmileDesk)"]);
   // A name another workspace here has gets a number here (Orgo keeps its own).
   const q = byId(ws("ws_quiet").orgoProjectId);
   q.name = "orgo";
@@ -802,7 +802,7 @@ await check("Held default name: renamed to bops- with an app on 0.0.28 it stays 
   assert.equal(changes().length, n);
 });
 
-await check("Held default name, never reverted: a project changed on Orgo without a rename, another Mac's names sync merged in, and bops brought back by an older Bops's copy all leave it bops- (the 10-20 revert)", async () => {
+await check("Held default name, never reverted: a project changed on Orgo without a rename, another Mac's names sync merged in, and bops brought back by an older SmileDesk's copy all leave it bops- (the 10-20 revert)", async () => {
   await heldWorld();
   const before = structuredClone({ workspaces: S.getState().workspaces, orgoMigration: S.getState().orgoMigration });
   assert.deepEqual(await renameMain("bops-"), { ok: true, waiting: "old_app" });
@@ -810,7 +810,7 @@ await check("Held default name, never reverted: a project changed on Orgo withou
   byId("p_bops").updated_at = stamp();
   await sync();
   assert.deepEqual([ws("ws_main").name, ws("ws_main").orgoUpdatedAt, held()?.to], ["bops-", byId("p_bops").updated_at, "bops-"]);
-  // Another Bops with this state (another Mac, or this Mac's app under its other device id) saw the same
+  // Another SmileDesk with this state (another Mac, or this Mac's app under its other device id) saw the same
   // change in its names sync before it heard of the rename: its copy of the default has the new
   // orgoUpdatedAt and the old name. Its save merges this Mac's over the last synced (state-merge.ts):
   // the default changed on both sides goes field by field, so its orgoUpdatedAt and the rename both stay.
@@ -830,7 +830,7 @@ await check("Held default name, never reverted: a project changed on Orgo withou
   other.workspaces.find((w) => w.id === "ws_main").orgoUpdatedAt = "2026-10-21T00:20:48.660Z";
   const both = Merge.merge3(before, here, other).workspaces.find((w) => w.id === "ws_main");
   assert.deepEqual([both.name, both.orgoUpdatedAt], ["bops-", "2026-10-21T00:20:48.660Z"]);
-  // An older Bops's copy merged whole (0.0.28 and before) brings bops back over the rename here:
+  // An older SmileDesk's copy merged whole (0.0.28 and before) brings bops back over the rename here:
   // before the fix the next sign-in took that bops for "the user didn't name it" and dropped the wish
   // (renameDefault settled), leaving bops with nothing waiting, as the owner's app was. Now the names
   // sync puts the held name back, and so does a sign-in.
@@ -936,7 +936,7 @@ await check("Held default name while Orgo doesn't answer: kept as unreachable, n
 
 /* ---------------- Delete ---------------- */
 
-await check("Delete: a preview lists computers, keys, skills and apps (Bops' and Orgo's), then orgo-web's POST .../delete takes it all", async () => {
+await check("Delete: a preview lists computers, keys, skills and apps (SmileDesk's and Orgo's), then orgo-web's POST .../delete takes it all", async () => {
   world({ modern: true });
   seed();
   assert.equal((await Wk.migrateWorkspacesToOrgo()).status, "done");
@@ -1037,7 +1037,7 @@ await check("Delete: orgo-web refusing the workspace leaves every computer of it
   assert.equal(where("c_free"), "p_bops", "the free computer is not Oscar's");
 });
 
-await check("Delete: the free Bops computer stays when another workspace's main bot has it or works on it, and passes to that one", async () => {
+await check("Delete: the free SmileDesk computer stays when another workspace's main bot has it or works on it, and passes to that one", async () => {
   // Boppy has it on record too (the dry run's 6a8fe9ff): Fay's workspace goes, the free computer stays.
   world({ modern: true });
   seed();
@@ -1063,14 +1063,14 @@ await check("Delete: the free Bops computer stays when another workspace's main 
   assert.deepEqual([b.computerId, b.freeComputer, b.computer, b.computerStatus], ["c_free", true, undefined, "ready"]);
 });
 
-await check("Delete: the free Bops computer nobody else uses goes, and the confirm says so by name", async () => {
+await check("Delete: the free SmileDesk computer nobody else uses goes, and the confirm says so by name", async () => {
   world({ modern: true });
   seed();
   orgo.computers.set("c_boppy", { id: "c_boppy", name: "c_boppy", project: "p_bops" });
   S.update(() => Object.assign(S.bot("boppy"), { computerId: "c_boppy", freeComputer: undefined }));
   assert.equal((await Wk.migrateWorkspacesToOrgo()).status, "done");
   const p = await (await preview("ws_free")).json();
-  assert.deepEqual(p.computers, [{ id: "c_free", name: "Your free Bops computer" }]);
+  assert.deepEqual(p.computers, [{ id: "c_free", name: "Your free SmileDesk computer" }]);
   assert.equal((await Route.DELETE(req("DELETE", { id: "ws_free" }))).status, 200);
   assert.equal(where("c_free"), undefined);
   assert.equal(where("c_boppy"), "p_bops");
@@ -1081,7 +1081,7 @@ await check("Delete: the free Bops computer nobody else uses goes, and the confi
   S.update(() => Object.assign(S.bot("boppy"), { computer: "shared", computerId: undefined, freeComputer: undefined, computerStatus: "none" }));
   assert.equal((await Wk.migrateWorkspacesToOrgo()).status, "done");
   orgo.computers.get("c_free").project = ws("ws_free").orgoProjectId;
-  assert.deepEqual((await (await preview("ws_free")).json()).computers, [{ id: "c_free", name: "Your free Bops computer" }]);
+  assert.deepEqual((await (await preview("ws_free")).json()).computers, [{ id: "c_free", name: "Your free SmileDesk computer" }]);
   assert.equal((await Route.DELETE(req("DELETE", { id: "ws_free" }))).status, 200);
   assert.equal(where("c_free"), undefined);
   assert.deepEqual([S.bot("boppy").computerId, S.bot("boppy").computer], [undefined, "shared"], "nothing gone handed on");
@@ -1089,7 +1089,7 @@ await check("Delete: the free Bops computer nobody else uses goes, and the confi
 
 await check("The name bops stays the default's: once its project took the user's name, no other workspace gets bops", async () => {
   world({ modern: true });
-  // Only the default's project is Bops' by name here (no older "Bops" one), so the name is free on Orgo.
+  // Only the default's project is SmileDesk's by name here (no older "SmileDesk" one), so the name is free on Orgo.
   orgo.projects = orgo.projects.filter((p) => p.id !== "p_bops_old");
   seed({ mainName: "Studio" });
   orgo.apps = [NEW("0.0.29")];
@@ -1099,17 +1099,17 @@ await check("The name bops stays the default's: once its project took the user's
   const n = orgo.projects.length;
   const taken = await Route.POST(post({ name: "bops" }));
   assert.equal(taken.status, 409);
-  assert.deepEqual(await taken.json(), { error: "You already have an Orgo workspace named bops. Try bops (Bops) or another name.", code: "name_taken", suggestion: "bops (Bops)" });
+  assert.deepEqual(await taken.json(), { error: "You already have an Orgo workspace named bops. Try bops (SmileDesk) or another name.", code: "name_taken", suggestion: "bops (SmileDesk)" });
   assert.equal(orgo.projects.length, n);
   // Rename to it: refused, nothing changes.
   const clash = await Route.PATCH(req("PATCH", { id: "ws_busy", name: "Bops" }));
   assert.equal(clash.status, 409);
   assert.equal((await clash.json()).code, "name_taken");
   assert.equal(ws("ws_busy").name, "Acme");
-  // A workspace named bops here gets its project without being asked: "bops (Bops)", never "bops".
+  // A workspace named bops here gets its project without being asked: "bops (SmileDesk)", never "bops".
   S.update((st) => st.workspaces.push({ id: "ws_b", name: "bops", createdAt: 50 }));
   const before = orgo.calls.length;
-  assert.equal((await O.ensureProject("ws_b")).name, "bops (Bops)");
+  assert.equal((await O.ensureProject("ws_b")).name, "bops (SmileDesk)");
   assert.ok(!orgo.calls.slice(before).some((c) => c.method === "POST" && c.body?.name === "bops"), "bops isn't even tried");
   assert.ok(!orgo.projects.some((p) => p.name.toLowerCase() === "bops"));
   // The default may take bops back.
@@ -1121,7 +1121,7 @@ await check("A workspace with no Orgo project gets one at start: the default's b
   const RS = await import(`${root}/lib/server/routine-sync.ts`);
   world({ modern: true });
   seed();
-  // An account whose bots never needed a computer: no Bops project at all yet (and no free computer).
+  // An account whose bots never needed a computer: no SmileDesk project at all yet (and no free computer).
   orgo.projects = orgo.projects.filter((p) => p.product !== "bops");
   for (const c of [...orgo.computers.values()]) if (c.project !== "p_orgo") orgo.computers.delete(c.id);
   S.update((s) => {
@@ -1142,7 +1142,7 @@ await check("A workspace with no Orgo project gets one at start: the default's b
   assert.deepEqual(bound.sort(), ["ws_busy", "ws_free", "ws_main", "ws_orgo"].sort());
   const mainProject = byId(ws("ws_main").orgoProjectId);
   assert.deepEqual([mainProject?.name, mainProject?.product, mainProject?.bops_ws_id], ["bops", "bops", "ws_main"], "the default's bops project, made as its first computer would");
-  assert.equal(byId(ws("ws_orgo").orgoProjectId)?.name, "orgo (Bops)", "a name Orgo has gets (Bops)");
+  assert.equal(byId(ws("ws_orgo").orgoProjectId)?.name, "orgo (SmileDesk)", "a name Orgo has gets (SmileDesk)");
   assert.equal(ws("ws_quiet").orgoProjectId, undefined, "Orgo couldn't make it");
   assert.ok(Wk.projectBindingForTests.retrying(), "tried again after a backoff");
   assert.ok(warned.slice(before).some((w) => /no Orgo project for ws_quiet yet/.test(w)));

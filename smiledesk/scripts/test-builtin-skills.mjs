@@ -1,6 +1,6 @@
-// Tests for Bops' own skills (lib/builtin-skills.ts): their shape (slugs as a skill's folder takes them,
+// Tests for SmileDesk's own skills (lib/builtin-skills.ts): their shape (slugs as a skill's folder takes them,
 // names and descriptions that fit the line a prompt lists, every one under APPS_LABEL, a label of
-// BUILTIN_LABELS), each one as a SKILL.md folder that Bops' own checks take as it is (no secret, no
+// BUILTIN_LABELS), each one as a SKILL.md folder that SmileDesk's own checks take as it is (no secret, no
 // warning, the same name, slug and description back), and their words: every `ingot` subcommand a body
 // names is one the command has, every tool is a real one (the chat tools work_on_app, deploy_app and
 // read_skill, and Ingot's MCP tools) with only its own arguments, every other skill a body points to is
@@ -57,7 +57,7 @@ const BODY_LINES_MAX = 60;
 const INGOT_SUBCOMMANDS = new Set(["clone", "status", "diff", "commit", "pull", "log", "show", "checkout", "export", "mcp", "serve", "credential", "setup-git", "git-url"]);
 /** The ones a bot working on an app uses, which the skills between them all teach. */
 const TAUGHT = ["clone", "status", "diff", "commit", "pull", "log", "show", "checkout", "export", "git-url"];
-/** Each tool a body may name, with its arguments: Bops' chat tools, then Ingot's (ingot/internal/mcp/hosted.go). */
+/** Each tool a body may name, with its arguments: SmileDesk's chat tools, then Ingot's (ingot/internal/mcp/hosted.go). */
 const TOOLS = {
   work_on_app: ["app", "name", "change", "deploy"],
   deploy_app: ["app", "at"],
@@ -152,7 +152,7 @@ check("Their files: text, each path once, none a script (a script waits for appr
   for (const s of BUILTIN_SKILLS) for (const f of s.files ?? []) if (f.path.endsWith(".json")) JSON.parse(f.content);
 });
 
-check("As a SKILL.md folder, each one passes Bops' own checks as it is: no secret, no warning, the same name, slug, description and body back", () => {
+check("As a SKILL.md folder, each one passes SmileDesk's own checks as it is: no secret, no warning, the same name, slug, description and body back", () => {
   for (const s of BUILTIN_SKILLS) {
     // The frontmatter a workspace's skill gets (workspace-skills.ts frontmatterOf), with its label.
     const md = renderSkillMd({ name: s.slug, description: s.description, label: s.label }, s.body);

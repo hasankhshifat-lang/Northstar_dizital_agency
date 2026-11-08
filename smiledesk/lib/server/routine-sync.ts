@@ -9,7 +9,7 @@ import { outbox } from "./sync-outbox";
 
 /**
  * A copy of each workspace's routines in its Orgo project (orgo-web public.routines and
- * public.routine_runs), so Orgo can show them and, later, run them. Bops stays the source: this only
+ * public.routine_runs), so Orgo can show them and, later, run them. SmileDesk stays the source: this only
  * mirrors. A workspace with an Orgo project (Workspace.orgoProjectId) sends, after a routine is made,
  * changed, paused, resumed or deleted, the whole of its routines (PUT /api/projects/{id}/routines,
  * debounced 2 seconds so a burst of changes is one call), and each finished run right after that
@@ -24,7 +24,7 @@ import { outbox } from "./sync-outbox";
  * Finished runs wait in an outbox kept with the user's folder (sync-outbox.ts) until Orgo took them, so a
  * quit while Orgo is away loses none: what's left goes again after the next start. Orgo takes 500
  * routines a call: a workspace with more sends them 500 at a time, and what's gone is deleted one by one
- * (GET the list, DELETE each Orgo has that Bops doesn't), so deletes reach Orgo past 500 too. A workspace
+ * (GET the list, DELETE each Orgo has that SmileDesk doesn't), so deletes reach Orgo past 500 too. A workspace
  * that gets its Orgo project only later (workspaces.ts bindMissingProjects) sends its full copy then
  * (routinesBound). Runs on the signed-in Orgo key (orgo.ts apiKey); signed out, nothing is sent. Each
  * finished run goes with what it said (its summary: the message it posted, cut to 2000), so its report
@@ -72,7 +72,7 @@ const missing = (g.__bopsRoutineSyncMissing ??= new Map());
 const inFlight = (g.__bopsRoutineSyncInFlight ??= new Map());
 /** A batch Orgo refused (a 400, too big): not sent again as it is, but its deleteMissing and runs go with the next change. */
 const held = (g.__bopsRoutineSyncHeld ??= new Map());
-/** Each routine's Orgo id, by its Bops id, as Orgo last answered (a PUT, or its list): what its runs are read by. */
+/** Each routine's Orgo id, by its SmileDesk id, as Orgo last answered (a PUT, or its list): what its runs are read by. */
 const orgoIdOf = (g.__bopsRoutineOrgoIds ??= new Map());
 /** Finished runs Orgo hasn't taken yet, kept on disk until it does (the newest MAX_RUNS_WAITING per workspace). */
 const runsOutbox = outbox<Omit<WaitingRun, "oid">>("routine-runs", MAX_RUNS_WAITING);
@@ -112,7 +112,7 @@ const waitsForOk = (r: Routine) => !!r.last?.sessionId && waitingAsks(getState()
 
 /**
  * A routine as orgo-web takes it (app/api/projects/[id]/routines), or undefined for one whose schedule
- * isn't one (orgo-web would refuse the whole list for it). The schedule goes as Bops keeps it now
+ * isn't one (orgo-web would refuse the whole list for it). The schedule goes as SmileDesk keeps it now
  * (normalizeSchedule), so one kept before today's rules (an "every" over a day) still goes. While its
  * run waits for the user's OK it goes with no next time: each time that came would only be skipped (the
  * run is still going), so nothing is due on its computer, and Orgo's waker, which goes by the next time,
@@ -184,7 +184,7 @@ async function send(method: "GET" | "PUT" | "POST" | "DELETE", path: string, bod
   return callOrgo(key, path, { method, ...(body === undefined ? {} : { body }), timeoutMs });
 }
 
-/** The Orgo id of each routine the PUT answered with, by its Bops id. */
+/** The Orgo id of each routine the PUT answered with, by its SmileDesk id. */
 function orgoIds(json: unknown): Map<string, string> {
   const out = new Map<string, string>();
   const list = (json as { routines?: unknown })?.routines;
@@ -362,7 +362,7 @@ export function routinesRemovedInWorkspace(wsId: string) {
   }
 }
 
-/** Runs left in the outbox by a run of Bops before this one: queued again, once (queue calls this first). */
+/** Runs left in the outbox by a run of SmileDesk before this one: queued again, once (queue calls this first). */
 function restoreRuns() {
   const back = runsOutbox.restore();
   if (!back.length) return;
@@ -392,7 +392,7 @@ export function routineRan(routineId: string, run: RoutineRun, said?: string) {
     const r = getState().routines.find((x) => x.id === routineId);
     const at = r && projectOfBot(r.botId);
     if (!at || routesMissing(at.projectId)) return;
-    // What an earlier run of Bops left waiting first, so this one isn't handed back with it.
+    // What an earlier run of SmileDesk left waiting first, so this one isn't handed back with it.
     restoreRuns();
     const summary = run.status === "ok" ? runSummary(said) : undefined;
     const item = { bopsId: routineId, run: { ...run }, finishedAt: Date.now(), ...(summary ? { said: summary } : {}) };
@@ -471,7 +471,7 @@ export function syncRoutinesOnStart() {
   }
 }
 
-/** How long the Routines page waits on Orgo for a routine's runs before it shows what Bops has. */
+/** How long the Routines page waits on Orgo for a routine's runs before it shows what SmileDesk has. */
 const READ_TIMEOUT_MS = 8_000;
 
 /**
@@ -485,7 +485,7 @@ export type RoutineRunsAnswer = { orgo: "ok"; runs: RecordedRun[] } | { orgo: "n
  * A routine's runs as Orgo recorded them (GET /api/projects/{id}/routines/{orgoId}/runs, the newest `limit`,
  * at most 100), for its reports on the Routines page (lib/routine-reports.ts). Its Orgo id is the one the
  * last PUT answered, else Orgo's list is read for it (and an id Orgo no longer knows is looked up again,
- * once). A routine Orgo hasn't a copy of yet has no runs there. Undefined for a routine Bops hasn't.
+ * once). A routine Orgo hasn't a copy of yet has no runs there. Undefined for a routine SmileDesk hasn't.
  */
 export async function routineRuns(routineId: string, limit = RUNS_MAX): Promise<RoutineRunsAnswer | undefined> {
   const r = getState().routines.find((x) => x.id === routineId);

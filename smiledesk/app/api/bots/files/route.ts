@@ -12,10 +12,10 @@ export const dynamic = "force-dynamic";
  * on that computer's screen (useScreenDrop), so it goes there even for a bot set to work on the Mac. Answers
  * { file } for the message it goes with.
  *
- * In a workspace shared with the user, its bots and their computers are the owner's: the computer is the one Bops
+ * In a workspace shared with the user, its bots and their computers are the owner's: the computer is the one SmileDesk
  * Cloud names for that bot (lib/server/shared.ts sharedFileTarget, never the user's own bot of that id), for an Admin
  * (who has Write on every bot and Use its computer; Orgo's uploads take no Member yet), and the file goes with the
- * user's own Orgo key, which Orgo checks too. A refusal says why in Bops Cloud's or Orgo's words, made plain, as theirs
+ * user's own Orgo key, which Orgo checks too. A refusal says why in SmileDesk Cloud's or Orgo's words, made plain, as theirs
  * in their role there.
  *
  * proxy.ts leaves this path to its route, which streams the body instead of Next copying it for the proxy (which

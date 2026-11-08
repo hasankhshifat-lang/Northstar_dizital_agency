@@ -9,7 +9,7 @@ import { AI_CREDIT_EMPTY, AI_CREDIT_LOW, type BopsBilling } from "./protocol.ts"
 /**
  * AI credit: what a user's bots may spend on OpenAI, AgentPhone, Typesafe and texted codes, at what
  * Orgo pays for it (pricing.ts), in micro-dollars. The balance lives in orgo-web's database
- * (public.bops_ai_credit, with every grant in public.bops_ai_credit_grants), next to Bops' own schema:
+ * (public.bops_ai_credit, with every grant in public.bops_ai_credit_grants), next to SmileDesk's own schema:
  * orgo-web grants Pro's and Max's monthly credit when Stripe says an invoice is paid, and the cloud
  * reads the balance here and takes each use from it (usage.ts). The money math is orgo-web's three SQL
  * functions (its migration 20261022_bops_plans.sql); bops_app may use those two tables and nothing
@@ -22,11 +22,11 @@ import { AI_CREDIT_EMPTY, AI_CREDIT_LOW, type BopsBilling } from "./protocol.ts"
  *   left: a model's answer already asked for, or an agent turn's last few seconds before the cloud
  *   stopped it (turn-guard.ts holds running turns to the credit). The next grant covers it.
  *
- * A user billed by use (protocol.ts BopsBilling "usage") has no Bops credit: orgo-web's two functions
+ * A user billed by use (protocol.ts BopsBilling "usage") has no SmileDesk credit: orgo-web's two functions
  * answer for them from their Orgo credit (what's left, and each use taken from it at Orgo's rate), so
  * the cloud calls them the same way for everyone, and an older cloud spends from the right place too.
  * Only the words differ: they're told about their Orgo credit and to add some, never to upgrade
- * (creditWords). They get no Bops $5 either (welcome): Orgo's signup credit is their start.
+ * (creditWords). They get no SmileDesk $5 either (welcome): Orgo's signup credit is their start.
  *
  * Off unless BOPS_AI_CREDITS=1: then nothing is taken and nothing is refused (a self-hosted or local
  * cloud). On, the cloud won't start without access to the two tables (checkCreditAccess).
@@ -41,7 +41,7 @@ export const OUT_OF_ORGO_CREDIT = "You're out of Orgo credit, so your bots have 
 
 /**
  * The credit's words for how the user is billed: its name, and what a 402 (none left: `empty`) and a 403
- * or a stopped task (too little left: `low`) say. Bops' plans say AI credit and Upgrade; billing by use
+ * or a stopped task (too little left: `low`) say. SmileDesk's plans say AI credit and Upgrade; billing by use
  * says Orgo credit and Add credit.
  */
 export function creditWords(billing: BopsBilling = "plan") {
@@ -86,7 +86,7 @@ export async function spend(c: pg.PoolClient, userId: string, micros: number, ki
 /**
  * What a use is, for orgo-web's spend: "ai" (everything metered, at Orgo's rate for a user billed by
  * use: list price plus their markup) or "phone_number" (a number's month, at cost: $3 stays $3).
- * Bops' own plans spend both the same.
+ * SmileDesk's own plans spend both the same.
  */
 export type SpendKind = "ai" | "phone_number";
 
@@ -149,7 +149,7 @@ export async function hasCredit(userId: string): Promise<boolean> {
 
 /**
  * Give a new user Free's $5 (once ever; nothing if they've had it). Best effort: the gate gives it too.
- * Not asked for a user the cloud knows is billed by use: Bops gives them nothing (Orgo's signup credit
+ * Not asked for a user the cloud knows is billed by use: SmileDesk gives them nothing (Orgo's signup credit
  * is their start), and orgo-web's balance function gives them nothing either when asked.
  */
 export async function welcome(userId: string): Promise<void> {

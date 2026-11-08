@@ -43,14 +43,14 @@ import { atSpeed } from "./speed.ts";
 import { isWebSearch, recordTokens, recordWebSearch } from "./usage.ts";
 
 /**
- * The main bot's chat from the phone (Bops for iPhone; README "The main bot's chat from the phone").
+ * The main bot's chat from the phone (SmileDesk for iPhone; README "The main bot's chat from the phone").
  * Owner: edge builder.
  *
- * Bops Cloud answers every message sent from the phone itself, so each one has exactly one answerer:
+ * SmileDesk Cloud answers every message sent from the phone itself, so each one has exactly one answerer:
  * the user's Mac never answers a message it reads from the cloud (only its own chat, calls, texts and
  * channels start a turn there), so nothing is answered twice and no Mac release is needed. It answers
  * whenever the phone has a connection, whether the Mac is awake, asleep, closed, on an old build or
- * not there at all; a user who never used Bops on a Mac gets Boppy, as a new Mac install makes it.
+ * not there at all; a user who never used SmileDesk on a Mac gets Boppy, as a new Mac install makes it.
  *
  * - GET /v1/agent: the main bot and its chat. GET /v1/agent/messages: that chat, as the phone shows it
  *   (phoneMessage). POST /v1/agent/messages: the user's message, written into the main bot's chat
@@ -61,7 +61,7 @@ import { isWebSearch, recordTokens, recordWebSearch } from "./usage.ts";
  *   (openai.tokens, source "iphone"). It runs on after the request, so it finishes if the phone goes
  *   away; the phone polls for the answer. One turn at a time per user, in this process's memory: a
  *   restart mid-turn loses it, and the phone offers Try again (the same message id).
- * - Memory (cloud/honcho.ts) only when the phone says the user allowed it (MEMORY_HEADER), as Bops for
+ * - Memory (cloud/honcho.ts) only when the phone says the user allowed it (MEMORY_HEADER), as SmileDesk for
  *   iPhone asks before anything goes to a third-party AI; and no usage events for the phone's calls
  *   (cloud/analytics.ts), as it collects no usage data.
  * - The phone only makes short requests: never /v1/session, /v1/connect (the Mac's tunnel, one per
@@ -161,7 +161,7 @@ const line = (t: string, max: number) => {
 };
 
 /*
- * Words the Mac's bots write that send the user to buy, which Bops for iPhone never shows (it sells
+ * Words the Mac's bots write that send the user to buy, which SmileDesk for iPhone never shows (it sells
  * nothing: App Store 3.1.1 and 3.1.3(f)). A sentence that starts with them, Upgrade or Add credit (lib/server/cloud.ts
  * OUT_OF_CREDIT, lib/server/plan.ts, cloud/credit.ts, cloud/turn-guard.ts, cloud/plans.ts) and the
  * clause orgo-web's free hours end with ("…, or upgrade to Pro to keep it on").

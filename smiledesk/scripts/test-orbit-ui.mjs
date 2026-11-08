@@ -170,7 +170,7 @@ await test("a new Forget sends the one waiting before it", async () => {
 await test("one that fails comes back, and the page is told why", async () => {
   const was = answer;
   answer = (url, method, body) => (body?.action === "forget" ? { status: 500, body: { error: "Memory said no." } } : was(url, method, body));
-  // Relearned, and read again as Bops comes to the front.
+  // Relearned, and read again as SmileDesk comes to the front.
   items = [item("aaaaaaaaaa", "people", "Priya Shah"), item("bbbbbbbbbb", "people", "Dana Lee")];
   for (const f of listeners.get("focus") ?? []) f();
   await settle();
@@ -184,7 +184,7 @@ await test("one that fails comes back, and the page is told why", async () => {
   answer = was;
 });
 
-await test("Bops closing sends the Forget still waiting, with keepalive", async () => {
+await test("SmileDesk closing sends the Forget still waiting, with keepalive", async () => {
   const id = orbitStore.view("u1", "w1").items[0].id;
   orbitStore.forget("u1", "w1", [{ id, title: "x" }]);
   for (const f of listeners.get("pagehide") ?? []) f();
@@ -366,16 +366,16 @@ await test("a read that fails says why with Try again, never an endless spinner;
   assert.equal(orbitStore.failed("u1", "w9"), null, "gone once a read works");
   assert.ok(orbitStore.view("u1", "w9")?.on, "and the categories show");
   stopIt();
-  // Bops itself out of reach: said too.
+  // SmileDesk itself out of reach: said too.
   answer = (url, method, body) => (url.startsWith("/api/memory/categories?ws=w8") ? Promise.reject(new Error("offline")) : before(url, method, body));
   const stopOther = orbitStore.watch("u1", "w8", () => {});
   await settle();
-  assert.equal(orbitStore.failed("u1", "w8"), "Couldn't reach Bops.");
+  assert.equal(orbitStore.failed("u1", "w8"), "Couldn't reach SmileDesk.");
   stopOther();
   answer = before;
 });
 
-await test("in a workspace shared with the user, Knowledge says it's kept on the owner's Bops: no spinner, no kinds to pick", async () => {
+await test("in a workspace shared with the user, Knowledge says it's kept on the owner's SmileDesk: no spinner, no kinds to pick", async () => {
   const { MemoryView } = await import(pathToFileURL(`${root}/components/app/memory-categories.tsx`).href);
   const state = {
     account: { user: { id: "u1" } },
@@ -387,7 +387,7 @@ await test("in a workspace shared with the user, Knowledge says it's kept on the
   for (const category of ["all", "people", "issues"]) {
     const html = renderToStaticMarkup(h(MemoryView, { state, user: "u1", ws: "shared_p1", category, onCategory: noop, onClose: noop }));
     const t = text(html).replace(/&#x27;/g, "'");
-    assert.match(t, /Knowledge in acme is kept on the owner's Bops/, category);
+    assert.match(t, /Knowledge in acme is kept on the owner's SmileDesk/, category);
     assert.ok(!html.includes("animate-spin"), `${category}: no spinner`);
     assert.ok(!/aria-pressed/.test(html), `${category}: no kinds to pick`);
   }
@@ -583,19 +583,19 @@ await test("in a workspace shared with the user, Knowledge and the footer's Know
     win.dispatchEvent?.(new win.Event("focus"));
     await settle();
   });
-  assert.match(page.box.textContent, /kept on the owner's Bops/);
+  assert.match(page.box.textContent, /kept on the owner's SmileDesk/);
   assert.deepEqual(calls.filter((c) => /^\/api\/(memory|orbit)/.test(c.url)).map((c) => c.url), [], "no memory or issues read");
   await page.done();
   await button.done();
 });
 
-await test("Issues: Bops out of reach says so with Try again, never an endless spinner; Try again reads again, mounted", async () => {
+await test("Issues: SmileDesk out of reach says so with Try again, never an endless spinner; Try again reads again, mounted", async () => {
   const before = answer;
   let down = true;
   answer = (url, method, body) =>
     url.startsWith("/api/orbit/issues?ws=w6") ? (down ? Promise.reject(new Error("offline")) : { status: 200, body: { issues: [issue("issue-9", { ws: "w6", title: "Printer jam" })], tags: [] } }) : before(url, method, body);
   const page = await mount(h(IssuesPage, { user: "u1", ws: "w6", onClose: noop }));
-  assert.match(page.box.textContent, /Couldn't reach Bops\./);
+  assert.match(page.box.textContent, /Couldn't reach SmileDesk\./);
   assert.ok(!page.box.innerHTML.includes("animate-spin"), "no spinner");
   const again = [...page.box.querySelectorAll("button")].find((b) => b.textContent === "Try again");
   assert.ok(again, "Try again");
@@ -637,7 +637,7 @@ await test("Issues: an error answer says why with Try again, never an empty list
   answer = before;
 });
 
-await test("an issue's + Tag opens a Bops picker over the page, not a datalist: every workspace tag, the ones on it checked in place", async () => {
+await test("an issue's + Tag opens a SmileDesk picker over the page, not a datalist: every workspace tag, the ones on it checked in place", async () => {
   tagged = [issue("issue-9", { ws: "w9", tags: ["Customer", "Outage"] })];
   const m = await mount(opened("issue-9", "u9a"));
   try {

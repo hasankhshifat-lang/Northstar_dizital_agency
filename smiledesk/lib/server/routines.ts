@@ -25,11 +25,11 @@ import { findSkill, skillRefId } from "./workspace-skills";
  *
  * Times are wall clock times in the routine's own zone (Routine.timeZone) when it has one, else the
  * user's: Owner.timeZone, which this Mac keeps current, else this Mac's zone. The math is in
- * cloud/schedule.ts, so Bops Cloud can run the same schedules later. Each change and each run is also
+ * cloud/schedule.ts, so SmileDesk Cloud can run the same schedules later. Each change and each run is also
  * mirrored to the workspace's Orgo project when it has one (routine-sync.ts), never holding anything up:
  * every new next time too, which is when Orgo wakes a computer for its runner.
  *
- * Which Bops runs a routine is runner.ts's: the Mac, or the runner on the computer its bot works on
+ * Which SmileDesk runs a routine is runner.ts's: the Mac, or the runner on the computer its bot works on
  * (where the bots work: Cloud). Each one's timer skips the others' routines.
  */
 
@@ -39,8 +39,8 @@ const nodeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"
 /**
  * This Mac's time zone as macOS has it now. Node reads the zone once, at launch, and never follows a
  * change (travel), so the system's own setting (/etc/localtime, a link into the zone files) is read
- * fresh each time; Node's own is the fallback (another system, a link Bops can't read). A TZ that was
- * set before Bops started (someone's own setting) is the zone, as Node has it. Tests only:
+ * fresh each time; Node's own is the fallback (another system, a link SmileDesk can't read). A TZ that was
+ * set before SmileDesk started (someone's own setting) is the zone, as Node has it. Tests only:
  * BOPS_LOCALTIME_PATH stands in for /etc/localtime.
  */
 function macZone(): string {
@@ -73,7 +73,7 @@ export const isNothing = (text: string) => /^\s*NOTHING\.?\s*$/i.test(text);
  */
 export const NO_CREDIT_FOR_ROUTINES = "Out of credit. Add credit in Settings to keep routines running.";
 
-/** A text is kept to this many characters; the rest is in Bops. */
+/** A text is kept to this many characters; the rest is in SmileDesk. */
 const TEXT_MAX = 600;
 
 const KIND_NAME = { slack: "Slack", telegram: "Telegram", discord: "Discord" } as const;
@@ -106,7 +106,7 @@ const inSentence = (when: string) => when.replace(/^(Today|Tomorrow|Yesterday)\b
 
 /**
  * Set how the routine's last run went. On a computer's runner the record says it's that runner's
- * (RoutineRun.by): if its bot moves off the computer before the run ends, Bops Cloud still takes the run's
+ * (RoutineRun.by): if its bot moves off the computer before the run ends, SmileDesk Cloud still takes the run's
  * end and its words in the chat from it (cloud/computer-scope.ts runsOf, runsBy), so its result isn't lost.
  * A meeting routine's run that finished handled its window: the next one starts where it ended
  * (eventsThrough). `said`: what a run that went well said in the chat (its message), which goes to Orgo
@@ -131,14 +131,14 @@ function record(routineId: string, given: RoutineRun, said?: string): RoutineRun
 }
 
 /**
- * On a computer's runner: whether Bops Cloud took the start of the run recorded at `at` (store.ts
+ * On a computer's runner: whether SmileDesk Cloud took the start of the run recorded at `at` (store.ts
  * startLanded), before the run reaches past this server (a text or an email, a turn on the model; a task's
  * thread waits in sessions.ts route). The Mac may have moved its bot off the computer before the start
- * landed: Bops Cloud refuses it, and the Bops that has the bot now runs it, once.
+ * landed: SmileDesk Cloud refuses it, and the SmileDesk that has the bot now runs it, once.
  */
 const runLanded = (routineId: string, at: number) => startLanded((st) => Array.isArray(st.routines) && st.routines.some((x: Partial<Routine>) => x?.id === routineId && x.last?.at === at));
-/** What a run whose start Bops Cloud didn't take says (runLanded): another Bops runs it. Nothing records it. */
-const notLanded = (at: number): RoutineRun => ({ at, status: "skipped", error: "Another Bops runs it now." });
+/** What a run whose start SmileDesk Cloud didn't take says (runLanded): another SmileDesk runs it. Nothing records it. */
+const notLanded = (at: number): RoutineRun => ({ at, status: "skipped", error: "Another SmileDesk runs it now." });
 
 /** Where its result went, once it got there (or didn't), on the run it belongs to. */
 function recordDelivery(routineId: string, at: number, delivery: RoutineRun["delivery"]) {
@@ -165,7 +165,7 @@ function tidy(schedule: Schedule): { schedule?: Schedule; error?: string } {
 function checkZone(tz: string | undefined): { timeZone?: string; error?: string } {
   const t = tz?.trim();
   if (!t) return {};
-  return validTimeZone(t) ? { timeZone: t } : { error: `"${t}" isn't a time zone Bops knows. Use an IANA name, like America/New_York.` };
+  return validTimeZone(t) ? { timeZone: t } : { error: `"${t}" isn't a time zone SmileDesk knows. Use an IANA name, like America/New_York.` };
 }
 
 /** A skill of the bot's, by slug, its id from before as a procedure, or its name (as read_skill finds one): how the routine names it. */
@@ -390,7 +390,7 @@ export function skipRoutine(routineId: string, at?: number): { error?: string; s
   const now = Date.now();
   const want = at ?? r.nextRunAt;
   if (!Number.isFinite(want) || want <= now) return { error: "That time has passed." };
-  if (want - now > SKIP_AHEAD_MS) return { error: "Bops can skip a time up to 5 weeks ahead." };
+  if (want - now > SKIP_AHEAD_MS) return { error: "SmileDesk can skip a time up to 5 weeks ahead." };
   // Skipped already (it's before its next, or on its list): nothing to do.
   const already = r.skips?.find((x) => Math.abs(x - want) < 60_000);
   if (already !== undefined) return { skipped: already, nextRunAt: r.nextRunAt };
@@ -470,7 +470,7 @@ export function setRoutineWhere(routineId: string, where: "auto" | "cloud" | "ma
   if (!r) return { error: "No such routine." };
   if (r.fromOutside && where === "mac") return { error: outsideStaysInCloud(r) };
   update(() => (r.where = where));
-  // Which Bops runs it may change with it (runner.ts pinnedToMac): Orgo hears.
+  // Which SmileDesk runs it may change with it (runner.ts pinnedToMac): Orgo hears.
   routineChanged(r.botId);
   return {};
 }
@@ -488,12 +488,12 @@ export function deleteRoutine(routineId: string) {
 
 /**
  * How a run came: on its time (`due`, when it was due), or asked for now (`manual`, Run now): "app" for the
- * button in the Bops app, else the id of the chat message that asked for it (manage_routine), so its result
+ * button in the SmileDesk app, else the id of the chat message that asked for it (manage_routine), so its result
  * goes back only where that message came from (ranNow).
  */
 type RunOpts = { manual?: string; due?: number };
 
-/** The timer ran it well after it was due (the Mac was asleep, or Bops closed). */
+/** The timer ran it well after it was due (the Mac was asleep, or SmileDesk closed). */
 const isLate = (opts: RunOpts, at: number) => !opts.manual && opts.due !== undefined && at - opts.due > 2 * 60_000;
 
 /** "Routine · Every day at 9 AM", with "run now" when the user asked, or "late" and when it was due. */
@@ -520,8 +520,8 @@ async function run(routineId: string, opts: RunOpts): Promise<RoutineRun> {
   const r = routine(routineId);
   const at = Date.now();
   if (!r) return { at, status: "skipped", error: "No such routine." };
-  // A reminder or a chat run is never run on a computer (chat is the backend's: runner.ts needsNoComputer): Bops on the Mac runs it, and nothing here records it.
-  if (onRunner() && needsNoComputer(r)) return { at, status: "skipped", error: "Bops on your Mac runs it." };
+  // A reminder or a chat run is never run on a computer (chat is the backend's: runner.ts needsNoComputer): SmileDesk on the Mac runs it, and nothing here records it.
+  if (onRunner() && needsNoComputer(r)) return { at, status: "skipped", error: "SmileDesk on your Mac runs it." };
   const b = bot(r.botId);
   if (!b) return record(r.id, { at, status: "skipped", error: "Its bot isn't there anymore." });
   if (opts.manual) update(() => (r.lastRunAt = at));
@@ -578,10 +578,10 @@ const keepRanNow = (sessionId: string, r: Routine, opts: RunOpts) => {
 const tagOf = (r: Routine, opts: RunOpts, at: number): NonNullable<Message["routine"]> => ({ id: r.id, at, ...(opts.manual && opts.manual !== "app" ? { manual: true as const } : {}) });
 
 /**
- * A reminder: recorded first, and on a computer's runner posted and sent only once Bops Cloud took that
+ * A reminder: recorded first, and on a computer's runner posted and sent only once SmileDesk Cloud took that
  * record (runLanded). Posted before, a reminder whose bot the Mac just moved off the computer would still
- * reach the chat (Bops Cloud takes a runner's words on a routine it last ran: computer-scope.ts runsBy)
- * while the Bops that has the bot now posts it again.
+ * reach the chat (SmileDesk Cloud takes a runner's words on a routine it last ran: computer-scope.ts runsBy)
+ * while the SmileDesk that has the bot now posts it again.
  */
 async function remind(r: Routine, b: Bot, at: number, opts: RunOpts): Promise<RoutineRun> {
   const chatId = botChatId(b.id);
@@ -647,7 +647,7 @@ export async function chatRunResumed(routineId: string, out: { text: string | nu
  * What a chat run does with its turn's answer: says it (or keeps quiet), records the run, and sends it on. Replies it
  * offered for the user to send (Message.drafts) go on its message as cards; where they can't (a text, an email, a
  * channel) and in the run's record, as words after it (lib/reply-drafts.ts draftsText). Changes it proposed to a
- * skill (Message.skillProposals, skill-proposals.ts) go on its message as cards too, for the owner to accept in Bops.
+ * skill (Message.skillProposals, skill-proposals.ts) go on its message as cards too, for the owner to accept in SmileDesk.
  */
 async function endChatRun(r: Routine, b: Bot, at: number, opts: RunOpts, out: { text: string | null; error?: string; sessionId?: string; drafts?: ReplyDraft[]; skillProposals?: SkillProposal[] }, before?: RoutineRun): Promise<RoutineRun> {
   if (out.error) return failed(r, at, out.error, before);
@@ -695,7 +695,7 @@ export function goalFor(r: Routine, at: number): string {
  * A run that failed: said in the bot's chat, recorded, and sent where its results go (a broken run isn't
  * silent). Failing the same way as the run before (an app still disconnected, the credit still used up)
  * is recorded, not said or sent again, so a routine every 15 minutes doesn't repeat it all day. Out of AI
- * credit stays in the chat. On a computer's runner it's said and sent only once Bops Cloud took the record
+ * credit stays in the chat. On a computer's runner it's said and sent only once SmileDesk Cloud took the record
  * (runLanded), as a reminder is (remind).
  */
 async function failed(r: Routine, at: number, error: string, before?: RoutineRun): Promise<RoutineRun> {
@@ -717,21 +717,21 @@ const stillGoing = (last: RoutineRun | undefined, sessionId: string): Partial<Ro
 /** How the run before failed, for a new run's running record (RoutineRun.prevError). */
 const prevError = (before?: RoutineRun) => (before?.status === "failed" && before.error ? { prevError: before.error } : before?.status === "running" && before.prevError ? { prevError: before.prevError } : {});
 
-/** How long the Bops that has a run going (a computer's runner, the Mac) may show no sign of work (a step, a frame, a reply) on any of its live threads before that run is taken for one left behind. */
+/** How long the SmileDesk that has a run going (a computer's runner, the Mac) may show no sign of work (a step, a frame, a reply) on any of its live threads before that run is taken for one left behind. */
 const STRAY_QUIET_MS = 10 * 60_000;
 
 /**
- * Whether a routine's last run, still going, is one another Bops left going, with no sign of work from that
- * Bops on it or any of its live threads for STRAY_QUIET_MS (lastWorkOf: one queued there behind its bot's busy
- * screens waits on that Bops at work on them, never a stray for its own quiet), so it never holds the routine
+ * Whether a routine's last run, still going, is one another SmileDesk left going, with no sign of work from that
+ * SmileDesk on it or any of its live threads for STRAY_QUIET_MS (lastWorkOf: one queued there behind its bot's busy
+ * screens waits on that SmileDesk at work on them, never a stray for its own quiet), so it never holds the routine
  * ("The last run was still going") wherever it runs now:
  * - The Mac's (a Run now, a run from before its computer's runner was up), the Mac asleep or quit since: nothing
- *   ends the Mac's threads but the Mac (Bops opened again fails them: store.ts), so in Cloud the computer's
+ *   ends the Mac's threads but the Mac (SmileDesk opened again fails them: store.ts), so in Cloud the computer's
  *   runner would skip each run for as long as the Mac stays closed. Another Mac's, on this one, alike.
  * - A computer's runner's, of a routine that doesn't run on that computer anymore (its bot moved, it's set to
  *   run on the Mac or posts to a channel): that computer asleep (nothing may wake it: Free hours used up) or
  *   gone, and the Mac not looking (runner-install.ts strays ends it once one looks).
- * Never one of this Bops' own (it knows whether that one's still going), nor a runner's of a routine that still
+ * Never one of this SmileDesk's own (it knows whether that one's still going), nor a runner's of a routine that still
  * runs there. The old run's end never overwrites the newer run's record (onRoutineTaskEnd).
  */
 function strayRun(r: Routine, thread: Session): boolean {
@@ -836,13 +836,13 @@ async function sendOut(r: Routine, text: string, tag?: string, at?: number): Pro
   }
 }
 
-/** A long result, cut for a text message: the rest is in Bops. Markdown links read as words and an address. */
+/** A long result, cut for a text message: the rest is in SmileDesk. Markdown links read as words and an address. */
 function forText(text: string) {
   const t = plainLinks(text).trim();
   if (t.length <= TEXT_MAX) return t;
   const cut = t.slice(0, TEXT_MAX - 30);
   const at = Math.max(cut.lastIndexOf("\n"), cut.lastIndexOf(". "), cut.lastIndexOf(" "));
-  return `${(at > TEXT_MAX / 2 ? cut.slice(0, at) : cut).trimEnd()}… (the rest is in Bops)`;
+  return `${(at > TEXT_MAX / 2 ? cut.slice(0, at) : cut).trimEnd()}… (the rest is in SmileDesk)`;
 }
 
 /**
@@ -885,7 +885,7 @@ export async function deliver(r: Routine, text: string, at?: number): Promise<Ro
       const from = b?.mail ? b : b && getState().bots.find((x) => x.isMain && x.mail && workspaceOf(x) === workspaceOf(b));
       if (!b || !from) throw new Error(`${b?.name ?? "The bot"} has no email inbox yet`);
       const to = ownerAddresses()[0];
-      if (!to) throw new Error(`Bops doesn't know ${ownerName()}'s email address yet`);
+      if (!to) throw new Error(`SmileDesk doesn't know ${ownerName()}'s email address yet`);
       const said = await sendEmail(from.id, { to: [to], subject: r.title, text: from.id === b.id ? text : `${b.name}:\n\n${text}` }, { chatId: botChatId(r.botId) });
       if (!/^Sent to /.test(said)) throw new Error(said.replace(/\s*Nothing was sent\.?$/, "").replace(/\.$/, ""));
       return { status: "sent", to, at: Date.now() };
@@ -909,7 +909,7 @@ export async function deliver(r: Routine, text: string, at?: number): Promise<Ro
 /* ---------------- The timer ---------------- */
 
 /**
- * This Mac's zone is the user's (Owner.timeZone), kept current so routines (and Bops Cloud later) run
+ * This Mac's zone is the user's (Owner.timeZone), kept current so routines (and SmileDesk Cloud later) run
  * at their local times. A move to another zone (travel) works out the routines' next times again. Not
  * on a hosted server, nor on a computer's runner, whose own zone isn't the user's: a runner only takes the
  * user's as the Mac keeps it (it starts in it, TZ, and follows it from then on).
@@ -977,7 +977,7 @@ const LATE_NEXT_MS = 60 * 60_000;
  * row: when its last run was skipped too, it runs late, so a Mac that sleeps through 9 AM every day still
  * gets it, and that late run takes the place of the next time when it's close (not twice minutes apart).
  * An "every" or meeting routine outside its hours or days waits for them. A one-off, and anything with its next time further off, runs once, late, and says so.
- * Only for a run this Bops was off or asleep for (tick): one late for another reason runs.
+ * Only for a run this SmileDesk was off or asleep for (tick): one late for another reason runs.
  */
 function skipLate(r: Routine, due: number, next: number | undefined, now: number, tz?: string) {
   // `next` is its next time as the schedule has it, skipped or not: one the user skipped close by still means "wait".
@@ -994,7 +994,7 @@ const TICK_GAP_MS = 90_000;
 
 /**
  * The routine timer ran this account's routines at `now`: the first time in this process it has (a state
- * loaded at last: a sign-in, Bops Cloud reached after a while), one long after the last, and one with
+ * loaded at last: a sign-in, SmileDesk Cloud reached after a while), one long after the last, and one with
  * another account's state (a switch however quick) start a new stretch (awakeThrough). The timer may have
  * run all along, but never for this account's routines before.
  */
@@ -1006,17 +1006,17 @@ function noteTick(now: number) {
 }
 
 /**
- * Whether this Bops was up and awake, running this account's routines, from `due` until now: the Mac (or
- * a runner's computer) never slept since and Bops was open then (awake.ts awakeSince), and the routine
+ * Whether this SmileDesk was up and awake, running this account's routines, from `due` until now: the Mac (or
+ * a runner's computer) never slept since and SmileDesk was open then (awake.ts awakeSince), and the routine
  * timer ran them all along (noteTick). A routine due then that's late wasn't missed while it was off or asleep.
  */
 const awakeThrough = (due: number) => awakeSince(due) && g.__bopsTickingFrom !== undefined && g.__bopsTickingFrom <= due;
 
-/** How long a routine whose pick came to nothing (no Mac Bops can use yet, Jev didn't answer) waits before it's worked out again. */
+/** How long a routine whose pick came to nothing (no Mac SmileDesk can use yet, Jev didn't answer) waits before it's worked out again. */
 const PICK_RETRY_MS = 10 * 60_000;
 
 /**
- * In Cloud, a computer's runner runs a task left to Bops (where auto) that it can (runner.ts pinnedToMac),
+ * In Cloud, a computer's runner runs a task left to SmileDesk (where auto) that it can (runner.ts pinnedToMac),
  * and it has no Mac to tell one the Mac would take: the user's app rules, Jev's read of a job about an app
  * only on their Mac (Messages, Notes, Photos). So the Mac works out ahead of its runs where it would send
  * each, as for a run of its own (where.ts routinePick), and keeps it with the routine for its goal then
@@ -1043,7 +1043,7 @@ function pickWhere() {
         continue;
       }
       update(() => (x.macPick = { goal, where }));
-      // Which Bops runs it changed: Orgo hears.
+      // Which SmileDesk runs it changed: Orgo hears.
       if (where === "mac") routineChanged(x.botId);
     }
   })()
@@ -1052,7 +1052,7 @@ function pickWhere() {
 }
 
 /**
- * Routine runs whose thread this Bops ended as it started, without a word to the routine (store.ts migrate: it
+ * Routine runs whose thread this SmileDesk ended as it started, without a word to the routine (store.ts migrate: it
  * restarted mid-run, or another Mac left the thread behind and it's this Mac's now): recorded failed, and sent
  * where the routine's results go, as any run that dies is (sessions.ts endSessionOf), so the routine shows failed
  * with Run again (a one-off too, off since it fired) instead of Done, or "still running" for good.
@@ -1066,18 +1066,18 @@ function endedAtStart() {
 
 /**
  * Run everything that's due. Called on a timer; waits while there's no account's state to run. A run
- * missed while the Mac slept (or Bops was off; on a runner, while its computer slept) runs once, late,
+ * missed while the Mac slept (or SmileDesk was off; on a runner, while its computer slept) runs once, late,
  * and says so, unless it waits for its next time, which is close (skipLate), where a thread of the
- * routine's still going stays its run. One late while this Bops was up and awake through its time
- * (awakeThrough), or since it became this Bops's, runs, late, whatever its next time or hours: it's late
- * because another Bops had it (a computer's runner that stopped or couldn't start: runner.ts CameHere), not
+ * routine's still going stays its run. One late while this SmileDesk was up and awake through its time
+ * (awakeThrough), or since it became this SmileDesk's, runs, late, whatever its next time or hours: it's late
+ * because another SmileDesk had it (a computer's runner that stopped or couldn't start: runner.ts CameHere), not
  * because this one slept, and skipping it would say so falsely and wait for a next time the same may happen
  * to. One this Mac slept through once it had it is a missed run like any other. Each run's next time is set
- * before it starts, and a one-off is turned off as it fires (one Bops runs it start to finish, so nothing runs
+ * before it starts, and a one-off is turned off as it fires (one SmileDesk runs it start to finish, so nothing runs
  * it twice; a run that fails says so, and Run now runs it again), so a slow run never runs twice. Only this
- * Bops's routines (runner.ts runsHere); a runner also
+ * SmileDesk's routines (runner.ts runsHere); a runner also
  * waits until it's sure of where the bots work, of the state and of its computer (runnerReady), only once
- * one of its own needs the timer (runnerHasWork), and a Bops whose state a newer one wrote (it can't be
+ * one of its own needs the timer (runnerHasWork), and a SmileDesk whose state a newer one wrote (it can't be
  * given it now) runs none. Every new next time goes to Orgo (routineChanged).
  */
 function tick() {
@@ -1095,8 +1095,8 @@ function tick() {
   pickWhere();
   const now = Date.now();
   for (const r of getState().routines.filter((x) => x.enabled)) {
-    // A next time it's skipping that isn't due yet (a skip and a run on two Bops put together:
-    // state-merge.ts): the time after it now, whichever Bops runs it, so Orgo wakes nothing for it.
+    // A next time it's skipping that isn't due yet (a skip and a run on two SmileDesk put together:
+    // state-merge.ts): the time after it now, whichever SmileDesk runs it, so Orgo wakes nothing for it.
     if (!onRunner() && r.nextRunAt !== undefined && r.nextRunAt > now && skipping(r, r.nextRunAt)) {
       const next = pastSkips(r, r.nextRunAt, zoneOf(r));
       update(() => (r.nextRunAt = next));
@@ -1135,9 +1135,9 @@ function tick() {
       else routineChanged(r.botId);
       continue;
     }
-    // Late, but not for this Bops sleeping: it was up and awake through its time, or (it was a computer's
+    // Late, but not for this SmileDesk sleeping: it was up and awake through its time, or (it was a computer's
     // runner's then: runner.ts CameHere) through the time since it's this Mac's. Such a run runs, late,
-    // whatever its next time or hours, and takes no next time's place. One this Bops slept through too, once
+    // whatever its next time or hours, and takes no next time's place. One this SmileDesk slept through too, once
     // it was its own, is a missed run like any other.
     const awake = awakeThrough(typeof here === "object" ? Math.max(due, here.since) : due);
     if (!awake && skipLate(r, due, raw, now, tz)) {
@@ -1146,18 +1146,18 @@ function tick() {
       // A thread of the routine's still going (a login it waits on) stays its run: the next run waits for it, and its end is the routine's.
       const t = r.last?.sessionId ? session(r.last.sessionId) : undefined;
       const still = t && live(t) ? stillGoing(r.last, t.id) : {};
-      const missed = !onRunner() ? "Missed while Bops was off or this Mac was asleep" : sleptSince(due) ? "Missed while its computer was asleep" : "Missed while its computer's runner couldn't run routines";
+      const missed = !onRunner() ? "Missed while SmileDesk was off or this Mac was asleep" : sleptSince(due) ? "Missed while its computer was asleep" : "Missed while its computer's runner couldn't run routines";
       record(r.id, { at: now, status: "skipped", error: `${missed} (it was due ${inSentence(whenText(due, now, tz))}); runs next ${inSentence(whenText(next!, now, tz))}`, ...still });
       continue;
     }
-    // A late run that ran because the last was skipped too (missed while this Bops slept), with its next time close: it takes that one's place, so it doesn't run twice minutes apart.
+    // A late run that ran because the last was skipped too (missed while this SmileDesk slept), with its next time close: it takes that one's place, so it doesn't run twice minutes apart.
     const then = !awake && next !== undefined && beatOf(r.schedule) === undefined && now - due > 2 * 60_000 && next - now < LATE_NEXT_MS ? pastSkips(r, nextRun(r.schedule, next, tz), tz) : next;
     update(() => {
       r.lastRunAt = now;
       r.nextRunAt = then;
       if (then !== next) r.lateRun = true;
       else delete r.lateRun;
-      // A one-off is done as it fires: the Bops that runs it runs it start to finish, so nothing runs it twice.
+      // A one-off is done as it fires: the SmileDesk that runs it runs it start to finish, so nothing runs it twice.
       if (r.schedule.kind === "once") r.enabled = false;
     });
     // Orgo hears of the next time now, not when the run ends: a runner's computer is woken for it.
@@ -1211,7 +1211,7 @@ export function routinesNote(botIds: string[]) {
         ? "reminder message"
         : r.run === "chat"
           ? "chat run (tools, no computer)"
-          : `task, runs ${r.where && r.where !== "auto" ? `on ${r.where === "mac" ? `${owner}'s Mac` : "the cloud computer"}` : "where Bops picks"}`,
+          : `task, runs ${r.where && r.where !== "auto" ? `on ${r.where === "mac" ? `${owner}'s Mac` : "the cloud computer"}` : "where SmileDesk picks"}`,
       r.quiet ? "quiet (posts only when something needs the user)" : "",
       deliverText(r),
       r.procedure ? `follows skill "${findSkill(r.botId, r.procedure)?.name ?? r.procedure}"` : "",

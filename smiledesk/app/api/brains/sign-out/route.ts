@@ -4,9 +4,9 @@ import { fromBopsWindow } from "@/lib/server/ui-token";
 
 export const dynamic = "force-dynamic";
 
-/** Sign a Claude Code brain out on the computer `botId` works on (Claude Code's own sign-out there). Only from the Bops window. */
+/** Sign a Claude Code brain out on the computer `botId` works on (Claude Code's own sign-out there). Only from the SmileDesk window. */
 export async function POST(request: Request) {
-  const unready = brainsOff() ?? notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "Brains can only be changed in the Bops app." }, { status: 403 }));
+  const unready = brainsOff() ?? notReady() ?? (fromBopsWindow(request) ? null : Response.json({ error: "Brains can only be changed in the SmileDesk app." }, { status: 403 }));
   if (unready) return unready;
   const b = (await request.json().catch(() => ({}))) as { brainId?: unknown; botId?: unknown };
   if (typeof b.brainId !== "string" || typeof b.botId !== "string") return Response.json({ error: "which brain, on which bot's computer?" }, { status: 400 });

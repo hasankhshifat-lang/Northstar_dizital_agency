@@ -9,25 +9,25 @@ import { onRunner } from "./persist";
 import { chat, getState, pullState, stateDevice, stateUser } from "./store";
 
 /**
- * The owner's own messages through Bops Cloud (cloud/turns.ts POST /v1/chats/<chatId>/send). In a workspace switched to
- * it (Workspace.chatOn, mirrored from Bops Cloud's switch), a plain message in a one bot chat whose bot works on a
- * computer goes to Bops Cloud first, which writes it and owes its answer to that computer, as it does a member's: this
+ * The owner's own messages through SmileDesk Cloud (cloud/turns.ts POST /v1/chats/<chatId>/send). In a workspace switched to
+ * it (Workspace.chatOn, mirrored from SmileDesk Cloud's switch), a plain message in a one bot chat whose bot works on a
+ * computer goes to SmileDesk Cloud first, which writes it and owes its answer to that computer, as it does a member's: this
  * Mac runs nothing for it, and every viewer hears it and the answer at once.
  *
- * Offline still works, and nothing is answered twice: only when the request never went out (no route to Bops Cloud, it
- * refused the connection, its name didn't resolve) does this Mac answer it itself, as before (Bops Cloud never heard of
- * it). Sent and not answered (a timeout, Bops Cloud failing) it's sent again with the same key, which Bops Cloud takes
+ * Offline still works, and nothing is answered twice: only when the request never went out (no route to SmileDesk Cloud, it
+ * refused the connection, its name didn't resolve) does this Mac answer it itself, as before (SmileDesk Cloud never heard of
+ * it). Sent and not answered (a timeout, SmileDesk Cloud failing) it's sent again with the same key, which SmileDesk Cloud takes
  * once; then the window says it didn't go. Anything else (pictures, an app open beside the chat, Select's picks, a
  * group, a bot with no computer or set to work on the Mac) stays this Mac's, as before.
  */
 
-/** The errors of a request that never reached Bops Cloud: safe to answer here, as Bops Cloud never had it. */
+/** The errors of a request that never reached SmileDesk Cloud: safe to answer here, as SmileDesk Cloud never had it. */
 const NEVER_WENT = new Set(["ECONNREFUSED", "ENOTFOUND", "EAI_AGAIN", "ENETUNREACH", "EHOSTUNREACH", "ENETDOWN"]);
 const TRIES = 3;
 
 const g = globalThis as unknown as { __bopsCloudChat?: { fetch?: typeof fetch } };
 
-/** Whether this message goes through Bops Cloud (see above). */
+/** Whether this message goes through SmileDesk Cloud (see above). */
 export function sendsThroughCloud(chatId: string, extra: { images?: number; files?: number; lookingAt?: string; appNote?: boolean; picks?: boolean }): boolean {
   if (onRunner() || !cloudOn() || extra.images || extra.files || extra.lookingAt || extra.appNote || extra.picks) return false;
   const c = chat(chatId);
@@ -46,8 +46,8 @@ const causeOf = (e: unknown) => {
 };
 
 /**
- * Send the owner's message through Bops Cloud: "sent" (it's written there, and this Mac reads it now), "here" (this Mac
- * answers it itself: it never went out, or Bops Cloud says this chat isn't its), or "failed" (sent, and no answer
+ * Send the owner's message through SmileDesk Cloud: "sent" (it's written there, and this Mac reads it now), "here" (this Mac
+ * answers it itself: it never went out, or SmileDesk Cloud says this chat isn't its), or "failed" (sent, and no answer
  * after TRIES: the window says it didn't go).
  */
 export async function sendThroughCloud(chatId: string, text: string, replyTo?: string): Promise<"sent" | "here" | "failed"> {
@@ -75,7 +75,7 @@ export async function sendThroughCloud(chatId: string, text: string, replyTo?: s
       void pullState().catch(() => {});
       return "sent";
     }
-    // Not this chat's (switched off meanwhile, its bot moved to the Mac): answered here, as before. Bops Cloud wrote nothing.
+    // Not this chat's (switched off meanwhile, its bot moved to the Mac): answered here, as before. SmileDesk Cloud wrote nothing.
     if (res.status === 409 && body?.code === CHAT_NOT_IN_CLOUD) return "here";
     if (res.status < 500 && res.status !== 429) return "failed";
   }
@@ -83,17 +83,17 @@ export async function sendThroughCloud(chatId: string, text: string, replyTo?: s
 }
 
 /**
- * The owner's switch for a workspace's chat (Settings, General: components/app/chat-switch.tsx), to Bops Cloud (POST
- * /v1/chat-routing, cloud/turns.ts setRouting): "mac" chooses this Mac, and Bops Cloud never moves that workspace by
- * itself after; "auto" gives the choice back, so Bops Cloud moves it once its bots' computers answer there. Where Bops
+ * The owner's switch for a workspace's chat (Settings, General: components/app/chat-switch.tsx), to SmileDesk Cloud (POST
+ * /v1/chat-routing, cloud/turns.ts setRouting): "mac" chooses this Mac, and SmileDesk Cloud never moves that workspace by
+ * itself after; "auto" gives the choice back, so SmileDesk Cloud moves it once its bots' computers answer there. Where SmileDesk
  * Cloud doesn't move workspaces for this account, it refuses "auto" (409 chat_auto_off) and says so on the workspace
- * first (Workspace.chatAutoOff). The state is read again now: it carries the switch as Bops Cloud wrote it
- * (Workspace.chatOn, chatAuto, chatAutoOff). Refused: Bops Cloud's words (an older Bops on another Mac: 409).
+ * first (Workspace.chatAutoOff). The state is read again now: it carries the switch as SmileDesk Cloud wrote it
+ * (Workspace.chatOn, chatAuto, chatAutoOff). Refused: SmileDesk Cloud's words (an older SmileDesk on another Mac: 409).
  */
 export async function setChatRouting(wsId: string, mode: "auto" | "mac"): Promise<{ ok: true } | { error: string; status: number }> {
   const user = stateUser();
   const auth = cloudKey();
-  if (onRunner() || !cloudOn() || !user || !auth) return { error: "Sign in with Orgo to use Bops Cloud.", status: 409 };
+  if (onRunner() || !cloudOn() || !user || !auth) return { error: "Sign in with Orgo to use SmileDesk Cloud.", status: 409 };
   const f = g.__bopsCloudChat?.fetch ?? fetch;
   let res: Response;
   try {
@@ -105,15 +105,15 @@ export async function setChatRouting(wsId: string, mode: "auto" | "mac"): Promis
       cache: "no-store",
     });
   } catch {
-    return { error: "Couldn't reach Bops Cloud. Check your internet connection.", status: 502 };
+    return { error: "Couldn't reach SmileDesk Cloud. Check your internet connection.", status: 502 };
   }
   const body = (await res.json().catch(() => null)) as { ok?: boolean; error?: unknown } | null;
   if (res.ok && body?.ok) {
     await pullState().catch(() => {});
     return { ok: true };
   }
-  return { error: typeof body?.error === "string" && body.error ? body.error : "Bops Cloud couldn't change that. Try again.", status: res.status === 409 || res.status === 404 ? res.status : 502 };
+  return { error: typeof body?.error === "string" && body.error ? body.error : "SmileDesk Cloud couldn't change that. Try again.", status: res.status === 409 || res.status === 404 ? res.status : 502 };
 }
 
-/** For tests: this way to reach Bops Cloud (unset: fetch). */
+/** For tests: this way to reach SmileDesk Cloud (unset: fetch). */
 export const cloudChatForTests = (opts: { fetch?: typeof fetch }) => void (g.__bopsCloudChat = opts);

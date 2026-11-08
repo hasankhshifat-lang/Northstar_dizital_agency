@@ -4,7 +4,7 @@ import { botChatId, type AppState, type Bot, type BotSettings, type Message } fr
 /**
  * A bot's sequences (its settings page, components/app/sequences.tsx): what happens when mail, a call or a text comes
  * in, as a trigger, then steps, a switch and today's count. This build has only the four built in ones, which say what
- * Bops does today (lib/server/mail.ts, chat.ts, phone.ts, phone-voice.ts); a sequence of the user's own is to come.
+ * SmileDesk does today (lib/server/mail.ts, chat.ts, phone.ts, phone-voice.ts); a sequence of the user's own is to come.
  * Pure: the page and the tests read them alike.
  */
 
@@ -102,7 +102,7 @@ export function todayOf(state: Pick<AppState, "messages">, b: Pick<Bot, "id">, n
       if (e.held) t.held++;
     }
     if (e?.dir === "out" || (m.role === "bot" && m.emailed)) t.replied++;
-    // Bops' own notes when a send failed (chat.ts emailArrived, mail.ts sendFailed, phone.ts).
+    // SmileDesk's own notes when a send failed (chat.ts emailArrived, mail.ts sendFailed, phone.ts).
     if (m.role === "system" && /^Couldn't (email this back to you|send this email)/.test(m.text)) t.mailFailed++;
     if (m.role === "system" && /^Couldn't text this back to you/.test(m.text)) t.textFailed++;
     if (m.call && m.sms) {

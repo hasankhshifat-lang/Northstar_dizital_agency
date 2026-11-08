@@ -35,7 +35,7 @@ import { moveLegacyState, userDataDir } from "./user-paths";
 import { vmIdentityRejected } from "./vm-identity";
 
 /**
- * The Mac app's state lives in Bops Cloud, under the signed-in Orgo user (cloud/state.ts). There is
+ * The Mac app's state lives in SmileDesk Cloud, under the signed-in Orgo user (cloud/state.ts). There is
  * no state file: signing in loads the user's state from the cloud, every change goes back up, and
  * signing out lets it go from memory, so the next account to sign in on this Mac starts from its own.
  * Only what the cloud couldn't take yet waits on the Mac, in the user's own folder (see below).
@@ -53,22 +53,22 @@ import { vmIdentityRejected } from "./vm-identity";
  * - Hearing from the user's other Macs: the tunnel says when the state changed (a "state" frame,
  *   cloud-tunnel.ts), and every 30 seconds the head is looked at anyway (only one Mac holds the tunnel).
  *   What changed is merged in, so changes not sent yet are kept.
- * - A newer Bops of the user's wrote their state (426 STATE_TOO_NEW to a read or a write): this one
+ * - A newer SmileDesk of the user's wrote their state (426 STATE_TOO_NEW to a read or a write): this one
  *   keeps what it changes, as when offline, and its routines and in-use beat stop (tooNew), so an app
  *   that's still open after its state moved on runs nothing twice. It's told to update.
  * - Signing out, or another account signing in: what's still unsent is kept aside with that user's key
  *   and sent in the background, never into the next user's state.
- * - The cloud out of reach when a save fails, or when Bops quits or restarts: what's unsent is also
+ * - The cloud out of reach when a save fails, or when SmileDesk quits or restarts: what's unsent is also
  *   written to the user's folder on this Mac (unsent-state.json, with what it was based on), and goes
  *   up at their next sign-in here, merged over what the cloud has by then (their other Macs' changes
  *   stand beside it). It goes once it's all up.
  * - A computer's runner sends only what its computer may change (cloud/computer-scope.ts keepAllowed:
  *   its own threads, its bots' routines' runs and how they're doing), over the state it read, and chat
- *   messages only in its bots' chats; the rest stays on the runner, said once in its log, so Bops Cloud
- *   never refuses it (a path Bops Cloud refuses anyway is held from then on too). It never sends a state
+ *   messages only in its bots' chats; the rest stays on the runner, said once in its log, so SmileDesk Cloud
+ *   never refuses it (a path SmileDesk Cloud refuses anyway is held from then on too). It never sends a state
  *   of its own making. And the Mac takes of a computer's write only what that computer may change: a
  *   version it reads that a computer's runner wrote, right after the one it had, has the rest put back
- *   and written again (the second guard behind Bops Cloud's).
+ *   and written again (the second guard behind SmileDesk Cloud's).
  */
 
 const SAVE_MS = 1000;
@@ -138,9 +138,9 @@ type Box = {
   aside: Map<string, Aside>;
   poll?: ReturnType<typeof setInterval>;
   hooked?: boolean;
-  /** The cloud answered 426 STATE_TOO_NEW: a newer Bops of the user's wrote their state (Persistence.tooNew). Cleared by the next read or write that lands. */
+  /** The cloud answered 426 STATE_TOO_NEW: a newer SmileDesk of the user's wrote their state (Persistence.tooNew). Cleared by the next read or write that lands. */
   tooNew?: boolean;
-  /** A runner: paths Bops Cloud refused it ("routines.<id>", "workspaces"), held back from then on, and what its log already said it holds. */
+  /** A runner: paths SmileDesk Cloud refused it ("routines.<id>", "workspaces"), held back from then on, and what its log already said it holds. */
   refused?: Set<string>;
   heldSaid?: Set<string>;
 };
@@ -155,7 +155,7 @@ class CallError extends Error {
   }
 }
 
-/** The cloud keeps this Bops out of the user's state: a newer one of theirs wrote it (cloud/state.ts). */
+/** The cloud keeps this SmileDesk out of the user's state: a newer one of theirs wrote it (cloud/state.ts). */
 const tooNewError = (e: unknown) => e instanceof CallError && e.status === 426 && e.code === STATE_TOO_NEW;
 
 /** A fingerprint of a value as this Mac serializes it (the same object, the same text). */
@@ -225,10 +225,10 @@ async function call<T>(who: Who, path: string, init: { method?: string; body?: u
   try {
     res = await fetch(`${cloudUrl()}${path}`, { method: init.method ?? "GET", headers, body, cache: "no-store", signal: AbortSignal.timeout(REQUEST_MS) });
   } catch {
-    throw new CallError("Couldn't reach Bops Cloud", 0);
+    throw new CallError("Couldn't reach SmileDesk Cloud", 0);
   }
   const answer = (await res.json().catch(() => null)) as T;
-  // A runner's identity token Bops Cloud turned down (orgo-web said why): the runner takes its next credential (vm-identity.ts).
+  // A runner's identity token SmileDesk Cloud turned down (orgo-web said why): the runner takes its next credential (vm-identity.ts).
   if (res.status === 401) vmIdentityRejected(who.key, typeof (answer as { code?: unknown } | null)?.code === "string" ? (answer as { code: string }).code : undefined);
   return { status: res.status, body: answer };
 }
@@ -236,7 +236,7 @@ async function call<T>(who: Who, path: string, init: { method?: string; body?: u
 function refused(what: string, r: { status: number; body: unknown }): never {
   const body = r.body as { error?: unknown; code?: unknown } | null;
   const said = body?.error;
-  throw new CallError(`${what}: Bops Cloud answered ${r.status}${typeof said === "string" ? ` (${said})` : ""}`, r.status, typeof body?.code === "string" ? body.code : undefined);
+  throw new CallError(`${what}: SmileDesk Cloud answered ${r.status}${typeof said === "string" ? ` (${said})` : ""}`, r.status, typeof body?.code === "string" ? body.code : undefined);
 }
 
 /* ---------------- Loading ---------------- */
@@ -246,7 +246,7 @@ type Loaded = { got: CloudState | null; version: number; rows: CloudMessageRow[]
 /** The user's blob and every message they have, from the cloud. */
 async function fetchAll(who: Who): Promise<Loaded> {
   const r = await call<CloudState & { version?: number }>(who, "/v1/state");
-  if (r.status !== 200 && r.status !== 404) refused("Loading your Bops", r);
+  if (r.status !== 200 && r.status !== 404) refused("Loading your SmileDesk", r);
   const got = r.status === 200 ? r.body : null;
   const rows: CloudMessageRow[] = [];
   let after = 0;
@@ -310,7 +310,7 @@ function readKept(user: string): Kept | null {
 }
 
 /**
- * Write what's unsent to the user's folder on this Mac (Bops quitting with the cloud out of reach, or
+ * Write what's unsent to the user's folder on this Mac (SmileDesk quitting with the cloud out of reach, or
  * a save that failed): the blob and every message, and what this Mac last synced (the base for a merge,
  * and each message's fingerprint), so the next sign-in sends exactly what changed here.
  */
@@ -349,14 +349,14 @@ const nextRunWith = (owner: unknown) => (r: Blob) => {
   return nextRun(r.schedule as ScheduleLike, Date.now(), tz, typeof r.lastRunAt === "number" ? r.lastRunAt : undefined);
 };
 
-/** Why Bops Cloud refused an app older than the one that wrote the user's state (cloud/state.ts TOO_NEW), as a thread it ran failed with it. */
-const REFUSED_TOO_OLD = /state_too_new|Another of your Macs is on a newer Bops/i;
+/** Why SmileDesk Cloud refused an app older than the one that wrote the user's state (cloud/state.ts TOO_NEW), as a thread it ran failed with it. */
+const REFUSED_TOO_OLD = /state_too_new|Another of your Macs is on a newer SmileDesk/i;
 
 /**
- * What an older app's routines made while Bops Cloud refused it (a copy it kept: buildKept), to leave out:
+ * What an older app's routines made while SmileDesk Cloud refused it (a copy it kept: buildKept), to leave out:
  * it went on running every routine from memory, so each reminder it posted, each run's chip and note, and
- * each thread it started (failed at Bops Cloud's 426 for its AI, and then waiting on the user) is one the
- * newer Bops ran meanwhile, or a failure that never was. `threads`: the ones its copy added (in neither
+ * each thread it started (failed at SmileDesk Cloud's 426 for its AI, and then waiting on the user) is one the
+ * newer SmileDesk ran meanwhile, or a failure that never was. `threads`: the ones its copy added (in neither
  * its base nor the cloud's state) that a routine started, or that failed for the refusal; `made`: a
  * message it added of a routine's (Message.routine, a routine's chip) or of one of those threads. The
  * user's own messages and threads still go in.
@@ -385,10 +385,10 @@ function refusedWork(kept: Kept, cloud: Blob | null) {
  * read with it (see load).
  *
  * A copy kept by an older app than the one that wrote the cloud's state since (Kept.level below the
- * row's; a copy that doesn't say is 0.0.29's) may be what a Mac Bops Cloud refused as too old went on
+ * row's; a copy that doesn't say is 0.0.29's) may be what a Mac SmileDesk Cloud refused as too old went on
  * doing in memory until it updated: it never overrides the newer work. Where both changed something the
  * cloud's stands (state-merge.ts Me.older), and of its messages only the ones it added go in, never what
- * its routines made while it was refused (refusedWork): the newer Bops ran them meanwhile.
+ * its routines made while it was refused (refusedWork): the newer SmileDesk ran them meanwhile.
  */
 function buildKept(who: Who, loaded: Loaded, kept: Kept) {
   const rows = loaded.rows.map((r) => r.json as unknown as Message);
@@ -399,7 +399,7 @@ function buildKept(who: Who, loaded: Loaded, kept: Kept) {
   // A runner's held to what its computer may change over the cloud's, as mergeIn holds it.
   const scope = runnerScope(who);
   const allowed = cloud && scope ? keepAllowed(cloud, all, scope).blob : all;
-  if (older) console.info(`[store] the changes kept on this Mac are from an older Bops than the one that wrote ${who.user}'s state since: only what they add goes in`);
+  if (older) console.info(`[store] the changes kept on this Mac are from an older SmileDesk than the one that wrote ${who.user}'s state since: only what they add goes in`);
   const refused = older ? refusedWork(kept, cloud) : null;
   const blob = refused?.threads.size && Array.isArray(allowed.sessions) ? { ...allowed, sessions: (allowed.sessions as Blob[]).filter((x) => !refused.threads.has(x.id as string)) } : allowed;
   const synced = new Map(kept.msgHashes);
@@ -436,7 +436,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
     if (!fresh.length) return;
     for (const p of fresh) said.add(p);
     if (said.size > 5000) said.clear();
-    console.warn(`[store] kept on this runner, not sent to Bops Cloud (a computer may not change it): ${fresh.slice(0, 10).join(", ")}${fresh.length > 10 ? `, and ${fresh.length - 10} more` : ""}`);
+    console.warn(`[store] kept on this runner, not sent to SmileDesk Cloud (a computer may not change it): ${fresh.slice(0, 10).join(", ")}${fresh.length > 10 ? `, and ${fresh.length - 10} more` : ""}`);
   }
 
   /**
@@ -487,7 +487,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
    *
    * On a computer's runner the merge is then held to what its computer may change over theirs
    * (keepAllowed): where it changed something it can't send (a routine's clock while the Mac took the
-   * routine out, a bot the Mac moved off its computer), Bops Cloud's copy stands here too. Else its copy
+   * routine out, a bot the Mac moved off its computer), SmileDesk Cloud's copy stands here too. Else its copy
    * would stay apart for good: it never sends those, and later merges would keep its side.
    */
   function mergeIn(sync: Sync, state: AppState, theirs: { version: number; state: Blob }, actual?: Blob): Session[] {
@@ -495,7 +495,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
     const mine = JSON.parse(shared(state, sync.device)) as Blob;
     const scope = runnerScope(sync);
     const all = merge3(sync.base, mine, theirs.state, { device: sync.device, runner: onRunner(), nextRunOf: nextRunWith(state.owner) });
-    // Not held to what Bops Cloud refused it anyway (box.refused): what it keeps of that, a routine's clock, stays here as before.
+    // Not held to what SmileDesk Cloud refused it anyway (box.refused): what it keeps of that, a routine's clock, stays here as before.
     const merged = scope ? keepAllowed(theirs.state, all, scope).blob : all;
     // A copy into memory: the merge shares objects with theirs, which is the base from now on (see build()).
     applyShared(state as unknown as Blob, fromShared(structuredClone(merged), sync.device));
@@ -519,7 +519,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
   }
 
   /**
-   * The second guard (Bops Cloud's is the first): a version a computer's runner wrote, read right after
+   * The second guard (SmileDesk Cloud's is the first): a version a computer's runner wrote, read right after
    * the one this Mac had (so all it changed is that runner's), with what that computer may not change put
    * back (cloud/computer-scope.ts keepAllowed). Never on a runner, and as it came when it can't say.
    */
@@ -544,13 +544,13 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
     if (!st) return 0;
     const kept = sync.keptCount;
     const { now, upsert, remove } = diff(sync, st);
-    // A runner writes only its bots' messages and Bops' notes, in their chats, and those about its own threads
+    // A runner writes only its bots' messages and SmileDesk's notes, in their chats, and those about its own threads
     // and routines' runs in theirs, their bot moved off its computer or not (cloud/computer-scope.ts computersMessage): the rest stay here.
     const scope = runnerScope(sync);
     const chats = scope ? chatsOn(st as unknown as Blob, scope.desktopId) : null;
     const bots = scope ? botIdsOn(st as unknown as Blob, scope.desktopId) : null;
     const threads = scope ? threadsOf(st as unknown as Blob, scope.device) : undefined;
-    // Its routines' runs, here and as Bops Cloud has them, ended or not: a run's words (its result, a ping on it, a
+    // Its routines' runs, here and as SmileDesk Cloud has them, ended or not: a run's words (its result, a ping on it, a
     // "Couldn't send") may go up after its end recorded here did, which a save in flight sends first.
     const runs = scope ? new Map([...runsBy(sync.base ?? {}, scope.device), ...runsBy(st as unknown as Blob, scope.device)]) : undefined;
     const hold = (m: Message) => {
@@ -564,8 +564,8 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
       if (!batch.upsert.length && !batch.remove.length) return;
       const r = await call<{ seq: number }>(sync, "/v1/messages", { method: "POST", body: { upsert: batch.upsert.map(forCloud), remove: batch.remove } });
       const no = r.body as unknown as { code?: unknown; paths?: unknown } | null;
-      // Refused anyway (a newer Bops Cloud's rules; for the owner's Mac, a member's stamp in a workspace whose chat goes
-      // through Bops Cloud, which only it writes: MEMBER_STAMP): those stay here, the rest go, so one row never holds
+      // Refused anyway (a newer SmileDesk Cloud's rules; for the owner's Mac, a member's stamp in a workspace whose chat goes
+      // through SmileDesk Cloud, which only it writes: MEMBER_STAMP): those stay here, the rest go, so one row never holds
       // up every message after it.
       if (r.status === 403 && ((scope && no?.code === COMPUTER_NOT_ALLOWED) || (!scope && no?.code === MEMBER_STAMP)) && Array.isArray(no.paths)) {
         const ids = new Set(no.paths.filter((x): x is string => typeof x === "string" && x.startsWith("messages.")).map((x) => x.slice("messages.".length)));
@@ -631,12 +631,12 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
       const conflict = r.body as CloudStateConflict | null;
       const no = r.body as unknown as { code?: unknown; paths?: unknown } | null;
       if (r.status === 403 && scope && no?.code === COMPUTER_NOT_ALLOWED && Array.isArray(no.paths)) {
-        // Refused anyway (a newer Bops Cloud's rules): held back from now on, and the rest sent again.
+        // Refused anyway (a newer SmileDesk Cloud's rules): held back from now on, and the rest sent again.
         const had = (box.refused ??= new Set()).size;
         for (const x of no.paths) if (typeof x === "string") box.refused.add(x);
         if (box.refused.size > had) continue;
       }
-      if (r.status !== 409 || conflict?.code !== STATE_CONFLICT) refused("Saving your Bops", r);
+      if (r.status !== 409 || conflict?.code !== STATE_CONFLICT) refused("Saving your SmileDesk", r);
       // Another Mac wrote first: theirs and this Mac's together, then written over theirs.
       const target = state();
       if (!target) return 0;
@@ -652,14 +652,14 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
   function dropLegacy(sync: Sync) {
     if (!sync.legacyFile) return;
     rmSync(sync.legacyFile, { force: true });
-    console.info(`[store] the state from before is in Bops Cloud now; removed ${sync.legacyFile}`);
+    console.info(`[store] the state from before is in SmileDesk Cloud now; removed ${sync.legacyFile}`);
     sync.legacyFile = undefined;
   }
 
   function dropUnsent(sync: Sync) {
     if (!sync.unsentFile) return;
     rmSync(sync.unsentFile, { force: true });
-    console.info(`[store] the changes kept on this Mac are in Bops Cloud now; removed ${sync.unsentFile}`);
+    console.info(`[store] the changes kept on this Mac are in SmileDesk Cloud now; removed ${sync.unsentFile}`);
     sync.unsentFile = undefined;
   }
 
@@ -678,7 +678,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
       if (!sync) return;
       void lane(() => send(sync, live(sync), true, false))
         .then((wait) => {
-          if (box.failures) console.info(`[store] saving to Bops Cloud again after ${box.failures} failed ${box.failures === 1 ? "try" : "tries"}`);
+          if (box.failures) console.info(`[store] saving to SmileDesk Cloud again after ${box.failures} failed ${box.failures === 1 ? "try" : "tries"}`);
           box.failures = 0;
           box.tooNew = false;
           // The blob went up a moment ago: it goes again a little later.
@@ -689,8 +689,8 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
           if (tooNewError(e)) box.tooNew = true;
           box.failures++;
           // Keep working from memory; say so on the first failure and then now and then, not every retry.
-          if (box.failures === 1 || box.failures % 10 === 0) console.warn(`[store] saving to Bops Cloud failed (${box.failures}x, trying again in ${retryDelay() / 1000}s): ${e.message}`);
-          // Also on this Mac, until it's up: Bops may quit (or stop) before the cloud is back.
+          if (box.failures === 1 || box.failures % 10 === 0) console.warn(`[store] saving to SmileDesk Cloud failed (${box.failures}x, trying again in ${retryDelay() / 1000}s): ${e.message}`);
+          // Also on this Mac, until it's up: SmileDesk may quit (or stop) before the cloud is back.
           keepUnsent(sync, get());
           schedule(retryDelay());
         });
@@ -748,7 +748,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
   async function pullOnce(sync: Sync) {
     if (box.sync !== sync) return;
     const h = await call<CloudStateHead>(sync, "/v1/state/head");
-    if (h.status !== 200) refused("Reading your Bops", h);
+    if (h.status !== 200) refused("Reading your SmileDesk", h);
     let changed = false;
     const gone: Went = { messages: [], sessions: [] };
     if (h.body.version !== sync.version) {
@@ -758,7 +758,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
         const theirs = heldFromComputer(sync, r.body);
         gone.sessions.push(...mergeIn(sync, get(), theirs, theirs === r.body ? undefined : r.body.state));
         changed = true;
-      } else if (r.status !== 200 && r.status !== 404) refused("Reading your Bops", r);
+      } else if (r.status !== 200 && r.status !== 404) refused("Reading your SmileDesk", r);
     }
     // Away too long to have heard of every removal, or never read past the start (an account with no messages at
     // sign in): a read from the start leaves removed rows out (cloud/state.ts), so what went is what isn't there.
@@ -800,7 +800,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
     }
   }
 
-  /** A read the cloud refused for a newer Bops's state: this one stops its routines and beats (Persistence.tooNew). */
+  /** A read the cloud refused for a newer SmileDesk's state: this one stops its routines and beats (Persistence.tooNew). */
   function noteTooNew(e: unknown) {
     if (tooNewError(e)) box.tooNew = true;
   }
@@ -829,7 +829,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
         })
         .catch((e: Error) => {
           a.failures++;
-          if (a.failures === 1) console.warn(`[store] ${user}'s last changes didn't reach Bops Cloud (${e.message}); trying again`);
+          if (a.failures === 1) console.warn(`[store] ${user}'s last changes didn't reach SmileDesk Cloud (${e.message}); trying again`);
           if (box.aside.get(user) === a) keepUnsent(a.sync, a.state);
           return false;
         })
@@ -876,7 +876,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
         box.sync = a.sync;
         box.tooNew = false;
         replace(a.state as unknown as Record<string, unknown>);
-        console.info(`[store] ${userId}'s Bops, with changes still to send to Bops Cloud`);
+        console.info(`[store] ${userId}'s SmileDesk, with changes still to send to SmileDesk Cloud`);
         schedule(0);
         return;
       }
@@ -888,7 +888,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
       throw new StateLoadError((e as Error).message);
     }
     const legacyFile = join(userDataDir(userId), "legacy-state.json");
-    // Changes kept on this Mac when Bops last stopped with the cloud out of reach. When they hold the
+    // Changes kept on this Mac when SmileDesk last stopped with the cloud out of reach. When they hold the
     // file from before, it goes once they're up; one that came later (an older build run meanwhile) is
     // left for the next sign-in, read then as ever.
     const kept = readKept(userId);
@@ -901,16 +901,16 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
     if (kept) {
       sync.unsentFile = unsentFileOf(userId);
       if (kept.legacy && existsSync(legacyFile)) sync.legacyFile = legacyFile;
-      console.info(`[store] sending the changes kept on this Mac to ${userId}'s Bops Cloud`);
+      console.info(`[store] sending the changes kept on this Mac to ${userId}'s SmileDesk Cloud`);
     } else if (legacy) {
       sync.legacyFile = legacyFile;
-      console.info(`[store] uploading this Mac's state from before to ${userId}'s Bops Cloud`);
+      console.info(`[store] uploading this Mac's state from before to ${userId}'s SmileDesk Cloud`);
     } else if (loaded.got) {
       // Nothing to send for the cloud's own blob, unless it was in an older shape (brought up to date here): then it goes up as it is now.
       const now = shared(get(), sync.device);
       sync.blobHash = same(JSON.parse(now), sync.base) ? fp(now) : "";
     }
-    console.info(`[store] loaded ${userId}'s Bops from Bops Cloud (v${sync.version}, ${get().messages.length} messages)`);
+    console.info(`[store] loaded ${userId}'s SmileDesk from SmileDesk Cloud (v${sync.version}, ${get().messages.length} messages)`);
     // A new user's first state, the file from before, or what was kept on this Mac: up now.
     schedule(loaded.got && !legacy && !kept ? SAVE_MS : 0);
   }
@@ -928,7 +928,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
       },
       (e: Error) => {
         noteTooNew(e);
-        console.warn(`[store] saving to Bops Cloud: ${e.message}`);
+        console.warn(`[store] saving to SmileDesk Cloud: ${e.message}`);
         schedule(retryDelay());
         return false;
       },
@@ -958,7 +958,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
       const moved = moveLegacyState("legacy-state.json", true);
       if (moved)
         console.info(
-          moved.owner ? `[store] the state from before is Orgo user ${moved.owner}'s: it goes to Bops Cloud at their sign-in (${moved.to})` : `[store] the state from before isn't surely anyone's: kept aside, not uploaded (${moved.to})`,
+          moved.owner ? `[store] the state from before is Orgo user ${moved.owner}'s: it goes to SmileDesk Cloud at their sign-in (${moved.to})` : `[store] the state from before isn't surely anyone's: kept aside, not uploaded (${moved.to})`,
         );
       return null;
     },
@@ -1010,7 +1010,7 @@ export function cloudStore({ get, replace, touch, went }: StateAccess): Persiste
       return sync
         ? lane(() => pullOnce(sync)).catch((e: Error) => {
             noteTooNew(e);
-            console.warn(`[store] reading from Bops Cloud: ${e.message}`);
+            console.warn(`[store] reading from SmileDesk Cloud: ${e.message}`);
           })
         : Promise.resolve();
     },

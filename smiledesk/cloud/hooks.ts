@@ -287,7 +287,7 @@ async function incomingCall(event: unknown, body: Buffer, headers: Record<string
   if (typeof sessionId !== "string" || !sessionId || !firstDelivery(sessionId)) return;
   const sip = sipHeadersOf(event);
   const userId = await userForCall(sip);
-  if (!userId) return console.warn(`[hooks] call ${sessionId}: no Bops user has the number that was called`);
+  if (!userId) return console.warn(`[hooks] call ${sessionId}: no SmileDesk user has the number that was called`);
   await ownObject(userId, "openai", "live_session", sessionId);
   // Who's calling, as for AgentPhone's deliveries (lines.ts): the Mac follows it.
   const verdict = await callerVerdict(userId, calledNumbers(sip)[0] ?? "", callerOf(sip), "call").catch(() => null);

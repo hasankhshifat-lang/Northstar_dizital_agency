@@ -3,7 +3,7 @@ import { botChatId, live, type Chat, type Message, type Routine, type RoutineRun
 /*
  * A routine's reports: each of its runs, newest first, with what that run said in the bot's chat. The
  * runs are Orgo's record of them (orgo-web public.routine_runs, which routine-sync.ts fills as each run
- * finishes, read through /api/routines/{id}/runs) and the routine's last run as Bops has it (Routine.last,
+ * finishes, read through /api/routines/{id}/runs) and the routine's last run as SmileDesk has it (Routine.last,
  * which may not be in Orgo's yet, and alone says where its result was sent). What each run said is the
  * chat's: a reminder's or a chat run's message (Message.routine), a task's result (Message.resultOf, of a
  * thread with Session.routineId). A run's message carries when its run began (Message.routine.at), so it
@@ -54,9 +54,9 @@ export type Report = {
   summary?: string;
   /** Its thread, when it ran on a computer and the thread is still there. */
   thread?: Session;
-  /** Where its result was sent besides the chat (the last run only: Bops keeps it on Routine.last). */
+  /** Where its result was sent besides the chat (the last run only: SmileDesk keeps it on Routine.last). */
   delivery?: RoutineRun["delivery"];
-  /** The routine's last run, as Bops has it. */
+  /** The routine's last run, as SmileDesk has it. */
   last?: true;
   /** Words in the chat that no run's record was found for: shown as a run of their own, when they were said. */
   fromChat?: true;
@@ -123,7 +123,7 @@ export function routineReports({
       messages: [],
     });
   }
-  // The last run as Bops has it: over Orgo's record of it (how it went is Bops' to say; where it was sent only Bops knows), else ahead of them.
+  // The last run as SmileDesk has it: over Orgo's record of it (how it went is SmileDesk's to say; where it was sent only SmileDesk knows), else ahead of them.
   const last = r.last;
   if (last) {
     const had = list.find((x) => x.at === last.at);

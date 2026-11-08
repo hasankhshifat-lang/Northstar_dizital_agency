@@ -412,7 +412,7 @@ await test("Favorites in a workspace shared with the user: none of Knowledge's k
   assert.deepEqual([...fav.matchAll(/data-favorite="([^"]+)"/g)].map((m) => m[1]), ["attention"], "no Issues, Tasks or People");
 });
 
-await test("Favorites: pin, unpin and order, keeping a newer Bops's pins; what the server keeps", () => {
+await test("Favorites: pin, unpin and order, keeping a newer SmileDesk's pins; what the server keeps", () => {
   assert.deepEqual(F.toggledFavorite(["issues", "todos"], "events"), ["issues", "todos", "events"], "a new pin goes last");
   assert.deepEqual(F.toggledFavorite(["issues", "todos"], "issues"), ["todos"]);
   assert.deepEqual(F.toggledFavorite(F.storedFavorites({}), "people"), ["issues", "todos"], "unpinning a default saves the rest as the user's");

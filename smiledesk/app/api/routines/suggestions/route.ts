@@ -4,11 +4,11 @@ import { fromBopsWindow } from "@/lib/server/ui-token";
 import type { Schedule } from "@/lib/types";
 
 /**
- * Starter routines for a Connected App or a vault key (lib/routine-catalog.ts), from the Bops window only
+ * Starter routines for a Connected App or a vault key (lib/routine-catalog.ts), from the SmileDesk window only
  * (ui-token.ts), like the routines themselves: a page a bot's Chrome reached this server with mustn't set
  * up work. GET lists what a bot is offered for an app; POST turns the picked ones on for it.
  */
-const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Routines can only be changed in the Bops app." }, { status: 403 }));
+const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Routines can only be changed in the SmileDesk app." }, { status: 403 }));
 
 const bad = (error: string, status = 400) => Response.json({ error }, { status });
 

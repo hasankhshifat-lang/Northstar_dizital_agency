@@ -6,21 +6,21 @@ import type { BopsTier } from "@/cloud/protocol";
 import type { BopsBilling, UsageTerms } from "@/lib/bops-billing";
 
 /**
- * The user's Bops plan and credit (orgo-web's GET /api/bops/plan, read with their Orgo key), one of two
+ * The user's SmileDesk plan and credit (orgo-web's GET /api/bops/plan, read with their Orgo key), one of two
  * ways (lib/bops-billing.ts):
  *
- * - `billing` "plan": Bops' own plans. Free has $5 of AI credit once, Pro $20 and Max $200 each month,
+ * - `billing` "plan": SmileDesk's own plans. Free has $5 of AI credit once, Pro $20 and Max $200 each month,
  *   with nothing carried over; on any plan, credit can be added once (lib/credit-topup.ts), and that
  *   never expires. `extensionEndsAt`: the user was given a month more of it, free, and pays only for
  *   what they use from then on.
- * - `billing` "usage": no Bops plan (`tier` null). They pay for what they use from their Orgo credit
+ * - `billing` "usage": no SmileDesk plan (`tier` null). They pay for what they use from their Orgo credit
  *   (`usage`: the balance, the computer's hourly price, a number's month, where to add credit).
  *
  * Money in micro-dollars (1 cent = 10,000) unless named cents, times in Unix ms.
  */
 export type BopsPlan = {
   billing: BopsBilling;
-  /** The Bops plan; null when billed by use (there's none). */
+  /** The SmileDesk plan; null when billed by use (there's none). */
   tier: BopsTier | null;
   name: string;
   priceCents: number;
@@ -41,11 +41,11 @@ export type BopsPlan = {
     /** Credit was added once (lib/credit-topup.ts), so freeLeftMicros isn't only the one-time $5. */
     topUps?: true;
   };
-  /** On Free, the free Bops computer's month (orgo-web lib/bops-free-hours.ts): how long it ran, of how long, and when it starts over. */
+  /** On Free, the free SmileDesk computer's month (orgo-web lib/bops-free-hours.ts): how long it ran, of how long, and when it starts over. */
   computerTime?: { usedSeconds: number; limitSeconds: number; resetsAt: number };
   /** Billed by use: what they pay, and the Orgo credit they have left. */
   usage?: UsageTerms;
-  /** On Bops' plans, when the month more of it ends and billing by use starts. */
+  /** On SmileDesk's plans, when the month more of it ends and billing by use starts. */
   extensionEndsAt?: number;
 };
 
@@ -72,7 +72,7 @@ export type OrgoBilling = {
   };
   /**
    * The plan's computers: how many it allows (Orgo's count, computers bought on top and a custom deal
-   * included), how many are in use across the whole Orgo account (Bops' or not), and how many of those
+   * included), how many are in use across the whole Orgo account (SmileDesk's or not), and how many of those
    * aren't the bots'. In use is missing when Orgo didn't say.
    */
   computers?: { allowed: number; inUse?: number; outsideBops?: number };
@@ -86,7 +86,7 @@ export type OrgoBilling = {
 };
 
 /**
- * One month of Bops' usage. Through Bops Cloud, model use, calls and AI credit spent are the cloud's
+ * One month of SmileDesk's usage. Through SmileDesk Cloud, model use, calls and AI credit spent are the cloud's
  * own count (GET /v1/usage: the rows it charges), and the rest (computers, numbers and inboxes made)
  * this Mac's ledger; otherwise all of it is this Mac's ledger. Every way it's
  * cut adds up to the same: tokens by kind of work, by day and by bot each sum to `tokens`, and the
@@ -98,7 +98,7 @@ export type UsageTotals = {
   phoneNumbers: number;
   inboxes: number;
   callMinutes: number;
-  /** Model tokens Bops used (its OpenAI models and Jev, tasks on the user's Mac too): what AI credit pays for. */
+  /** Model tokens SmileDesk used (its OpenAI models and Jev, tasks on the user's Mac too): what AI credit pays for. */
   tokens: number;
   tokensBySource: Partial<Record<TokenSource, number>>;
   /** Tokens per day of the month, index 0 is the 1st. */
@@ -106,11 +106,11 @@ export type UsageTotals = {
   /** Per bot. `botId` "" is what wasn't for one bot (memory, quick checks about everything). */
   byBot: { botId: string; name: string; color?: string; tokens: number; callMinutes: number; computers: number; costMicros?: number }[];
   /**
-   * What it cost, by kind (Bops Cloud's count, in micro-dollars at cost): what AI credit paid for when
+   * What it cost, by kind (SmileDesk Cloud's count, in micro-dollars at cost): what AI credit paid for when
    * the cloud takes it (`charged`). Missing without the cloud's answer.
    */
   spend?: { costMicros: number; charged: boolean; parts: SpendPart[] };
-  /** Where model use and calls come from: Bops Cloud's count, or this Mac's ledger (self-hosted, or the cloud didn't answer). */
+  /** Where model use and calls come from: SmileDesk Cloud's count, or this Mac's ledger (self-hosted, or the cloud didn't answer). */
   from: "cloud" | "mac";
 };
 
@@ -126,12 +126,12 @@ export type AccountInfo = {
   /** Null when signed out. */
   orgo: OrgoBilling | null;
   /**
-   * The Bops plan and AI credit: null when Orgo didn't answer, missing when it doesn't apply (signed
-   * out, self-hosted, or a hosted server: AI credit is for Bops Cloud).
+   * The SmileDesk plan and AI credit: null when Orgo didn't answer, missing when it doesn't apply (signed
+   * out, self-hosted, or a hosted server: AI credit is for SmileDesk Cloud).
    */
   bops?: BopsPlan | null;
   /**
-   * How Bops Cloud said the user is billed at the session (CloudSession.plan.billing): what the sheet goes
+   * How SmileDesk Cloud said the user is billed at the session (CloudSession.plan.billing): what the sheet goes
    * by when orgo-web's answer didn't come. Missing when the cloud didn't say (an older cloud, or none).
    */
   billing?: BopsBilling;

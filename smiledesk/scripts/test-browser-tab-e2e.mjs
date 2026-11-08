@@ -36,7 +36,7 @@
 //      site (acme.test, this Mac by name) opens in Boppy's browser in the owner's control.
 // B2.11 The stand-in's step reaches the sign-in page and asks; sam presses "Sign in in Boppy's browser", signs in with
 //      the fixture's account, hands back; the step reads the signed-in name. The password is in neither app's
-//      /api/state nor the stack's log (Bops Cloud's and the relay's lines).
+//      /api/state nor the stack's log (SmileDesk Cloud's and the relay's lines).
 //
 // Shots go to <out>/shots. With --takes, each person is filmed for a film at 1920x1080: the page's own frames (CDP
 // Page.startScreencast, JPEG at quality 95, CSS pixels, each with its time) become <out>/takes/<who>.mp4 (H.264, a
@@ -464,7 +464,7 @@ try {
       await panelTab(sam.page, `${BOT.name}'s browser`).click();
     } else assert.deepEqual(titles, [`${BOT.name}'s browser`], "a Member's first tab is the browser, with nothing beside it");
     console.log(`  sam's tabs: ${titles.join(", ")}`);
-    assert.equal(await sam.page.getByText("Its screens show only in the owner's Bops").count(), 0, "not v0.0.37's line");
+    assert.equal(await sam.page.getByText("Its screens show only in the owner's SmileDesk").count(), 0, "not v0.0.37's line");
     await until(async () => (await view(sam.page))?.frame, "sam's frame", 15_000);
     results.sam = await seesNavigation(sam.page, "sam");
     await shot(sam.page, "after-sam-browser-tab");
@@ -855,7 +855,7 @@ try {
     console.log(`  the sign-in step read: ${r.signedInAs} (it waited ${r.waited} ms)`);
     assert.equal(r.signedInAs, ACCOUNT.name);
     for (const p of [owner.page, sam.page]) assert.ok(!(await p.evaluate(() => fetch("/api/state").then((x) => x.text()))).includes(ACCOUNT.password), "not in /api/state");
-    assert.ok(!readFileSync(join(root, ".scratch", "two-person", "stack.log"), "utf8").includes(ACCOUNT.password), "not in Bops Cloud's or the relay's log");
+    assert.ok(!readFileSync(join(root, ".scratch", "two-person", "stack.log"), "utf8").includes(ACCOUNT.password), "not in SmileDesk Cloud's or the relay's log");
     await beat(1500);
   });
 
@@ -1071,8 +1071,8 @@ try {
         "",
         "| File | What it shows |",
         "|---|---|",
-        "| `owner.mp4` | The owner's Bops: Boppy's browser in the tab beside its computer's; Boppy's named cursor travelling and pressing; the states (browsing, idle, Sam has control, \"Boppy is waiting for Sam to hand back\" in highlighter, Take over from Sam, can't be reached); the Watch chip while the browser is out of sight, and pressing Watch; links from the chat (Local for a localhost link, Boppy's browser for another site); Sam's named cursor following Sam's hand while Sam drives; the bot browsing again. |",
-        "| `sam.mp4` | Sam's Bops (a teammate with Write and Use its computer): Boppy's browser in place of the owner's computer; Boppy's cursor travelling to where it presses, with its name; pressing the page to take over (the press goes nowhere), Hand back, the chat's \"Sam handed back. Boppy carries on.\" and Boppy's cursor carrying on; opening a link from the chat in Boppy's browser, and being asked first while Boppy browses; Boppy asking for a sign-in, \"Sign in in Boppy's browser\", signing in, Hand back, Boppy reading the signed-in page; B1's take over, typing and sign-in by the address bar. |",
+        "| `owner.mp4` | The owner's SmileDesk: Boppy's browser in the tab beside its computer's; Boppy's named cursor travelling and pressing; the states (browsing, idle, Sam has control, \"Boppy is waiting for Sam to hand back\" in highlighter, Take over from Sam, can't be reached); the Watch chip while the browser is out of sight, and pressing Watch; links from the chat (Local for a localhost link, Boppy's browser for another site); Sam's named cursor following Sam's hand while Sam drives; the bot browsing again. |",
+        "| `sam.mp4` | Sam's SmileDesk (a teammate with Write and Use its computer): Boppy's browser in place of the owner's computer; Boppy's cursor travelling to where it presses, with its name; pressing the page to take over (the press goes nowhere), Hand back, the chat's \"Sam handed back. Boppy carries on.\" and Boppy's cursor carrying on; opening a link from the chat in Boppy's browser, and being asked first while Boppy browses; Boppy asking for a sign-in, \"Sign in in Boppy's browser\", signing in, Hand back, Boppy reading the signed-in page; B1's take over, typing and sign-in by the address bar. |",
         "",
         "Where each moment is in each video:",
         "",

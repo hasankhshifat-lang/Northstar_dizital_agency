@@ -29,7 +29,7 @@ import { knownSite, siteOf } from "@/lib/watch-sites";
  * and the main bot of the workspace gives the heads-up.
  *
  * A public web page (a price, a status page, a listing) can be watched with no screen at all (Watch.page):
- * Bops fetches it every few minutes, keeps a fingerprint of every line with what's certainly noise taken
+ * SmileDesk fetches it every few minutes, keeps a fingerprint of every line with what's certainly noise taken
  * out (a "5m ago", an "Updated 3:45 PM", a cache buster: cloud/page-diff.ts), and a model reads only the
  * lines that were added, only when there are some, with the lines they replaced. Every kind of watch
  * compares pages that way; anything else that moved (a counter, an ad) is the model's to call. A screen
@@ -41,7 +41,7 @@ import { knownSite, siteOf } from "@/lib/watch-sites";
 const LOOK_MS = 15_000;
 /** Jev reads a changed page at most this often per screen. */
 const READ_MS = 30_000;
-/** How sure Jev must be that something is waiting before Bops interrupts the user. */
+/** How sure Jev must be that something is waiting before SmileDesk interrupts the user. */
 const SURE = 0.7;
 /** A web page that keeps failing is fetched less and less often: the gap doubles each time, up to this. */
 const PAGE_BACKOFF_MAX_MS = 6 * 3600_000;
@@ -87,7 +87,7 @@ const suggested = new Map<string, { at: number; s: Suggestion }>();
 
 /**
  * What's worth watching this page for, read from the page itself: its name ("Hacker News") and a
- * few quick picks that fit it ("New top story", "Replies to my comments"). Sites Bops knows answer
+ * few quick picks that fit it ("New top story", "Replies to my comments"). Sites SmileDesk knows answer
  * at once; others get one quick, low-effort model read, remembered per address for a while.
  */
 export async function suggestWatch(botId: string, display: number): Promise<Suggestion> {
@@ -151,7 +151,7 @@ export async function startWatch(botId: string, display: number, lookFor?: strin
   if (existing) throw new Error(`${bot(existing.botId)?.name ?? "Another bot"} is already watching that screen`);
   if (busy(botId, display)) throw new Error(`That screen is in use right now`);
   const endpoint = screenEndpoint(b, display);
-  if (!endpoint) throw new Error(`Bops can't see ${b.name}'s screens yet`);
+  if (!endpoint) throw new Error(`SmileDesk can't see ${b.name}'s screens yet`);
   const page = await currentPage(endpoint).catch(() => null);
   if (!page || !/^https?:/.test(page.url)) throw new Error("open the site you want watched on that screen first");
   const { site, lookFor: usual } = siteOf(page.url, page.title);
@@ -190,7 +190,7 @@ export async function startMacWatch(app: string, windowId: number, title: string
   if (!main) throw new Error("there's no main bot to watch it");
   const existing = watches().find((w) => w.mac && w.mac.app === app && (w.mac.windowId === windowId || w.mac.title === title));
   if (existing) return existing;
-  if (!(await findWindow(app, title, windowId))) throw new Error(`Bops can't find that ${app} window`);
+  if (!(await findWindow(app, title, windowId))) throw new Error(`SmileDesk can't find that ${app} window`);
   const w: Watch = {
     id: id("watch"),
     botId: main.id,
@@ -210,13 +210,13 @@ export async function startMacWatch(app: string, windowId: number, title: string
 /* ---------------- Web pages, with no screen ---------------- */
 
 /**
- * A web address as Bops fetches it: "example.com/prices" gets https:// in front, the part after # goes.
+ * A web address as SmileDesk fetches it: "example.com/prices" gets https:// in front, the part after # goes.
  * Null for anything that isn't an http or https page (mailto:, javascript:, file:, a bare word).
  */
 function webUrl(raw: string): string | null {
   const t = raw.trim();
   if (!t) return null;
-  // "localhost:3000" is a host and a port; "javascript:" is a scheme Bops never fetches.
+  // "localhost:3000" is a host and a port; "javascript:" is a scheme SmileDesk never fetches.
   if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(t) && /^[a-z][a-z0-9+.-]*:(?!\d)/i.test(t)) return null;
   try {
     const u = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(t) ? t : `https://${t}`);
@@ -341,8 +341,8 @@ const noText = (page: WebPage) => page.kind === "html" && !page.lines.length;
 async function noTextWhy(host: string) {
   const { browserAvailable } = await import("./web-render");
   return browserAvailable()
-    ? `${host} shows no text Bops can read, even in a browser (it may need a sign in). Watch it on a computer instead.`
-    : `${host} shows no text Bops can read without a browser (it may need a sign in or JavaScript). Watch it on a computer instead.`;
+    ? `${host} shows no text SmileDesk can read, even in a browser (it may need a sign in). Watch it on a computer instead.`
+    : `${host} shows no text SmileDesk can read without a browser (it may need a sign in or JavaScript). Watch it on a computer instead.`;
 }
 
 const patchPage = (watchId: string, patch: Partial<NonNullable<Watch["page"]>>) =>
@@ -355,10 +355,10 @@ const patchPage = (watchId: string, patch: Partial<NonNullable<Watch["page"]>>) 
 const pageWatchOf = (botId: string, url: string) => watches().find((w) => w.botId === botId && w.page && pageKey(w.page.url) === pageKey(url));
 
 /**
- * Watch a public web page with no screen: Bops fetches it every `everyMin` minutes (5 at least, a day at
+ * Watch a public web page with no screen: SmileDesk fetches it every `everyMin` minutes (5 at least, a day at
  * most, 30 when unset) and the bot gives a heads-up when lines that match `lookFor` are added. The first
  * fetch happens now and is kept as how the page is. When it fails, or it's a web page (HTML) with no text
- * Bops can read without a browser, nothing is set up and the error says why in plain words, so the bot can
+ * SmileDesk can read without a browser, nothing is set up and the error says why in plain words, so the bot can
  * tell the user at once. JSON, text or a feed with nothing in it yet (an empty list of issues) is how the
  * page is, and can be watched. A bot watches a page once.
  */
@@ -379,7 +379,7 @@ export async function startPageWatch(botId: string, a: { url: string; lookFor?: 
   if (noText(page)) throw new Error(await noTextWhy(host));
   const lines = pageLinesOf(page.lines);
   // Signed out, or another account in, meanwhile: no watch is made in their state.
-  if (epoch !== stateEpoch()) throw new Error("Bops was signed out meanwhile.");
+  if (epoch !== stateEpoch()) throw new Error("SmileDesk was signed out meanwhile.");
   if (pageWatchOf(botId, url)) throw new Error(`${b.name} is already watching that page.`);
   const usual = siteOf(url, page.title);
   const site = a.site?.trim().slice(0, 40) || usual.site;
@@ -469,7 +469,7 @@ async function checkPage(watchId: string, now = false): Promise<CheckResult | un
       }
       return "same";
     }
-    // What went from the page (its lines that are gone, those Bops kept the text of): what new lines may have replaced.
+    // What went from the page (its lines that are gone, those SmileDesk kept the text of): what new lines may have replaced.
     const present = new Set(lines.map((l) => l.digest));
     const before = (kept.lines ?? []).filter((l) => !present.has(lineDigest(l))).slice(0, PAGE_JUDGE_LINES).map((l) => l.slice(0, 300));
     const judged = added.slice(0, PAGE_JUDGE_LINES);
@@ -649,7 +649,7 @@ export function draftReply(watchId: string) {
   if (drafting) return drafting;
   // A window on the Mac: bots can't write in the Mac's apps for now (lib/server/mac.ts).
   if (w.mac) throw new Error(`Bots can't write in ${w.mac.app} on your Mac for now.`);
-  if (w.page) throw new Error(`${w.site} is a web page Bops reads on its own: there's no screen to reply on.`);
+  if (w.page) throw new Error(`${w.site} is a web page SmileDesk reads on its own: there's no screen to reply on.`);
   const what = w.alert?.text ?? [w.told ?? []].flat().at(-1) ?? "the newest thing waiting for me";
   patchWatch(watchId, { alert: undefined });
   return startSession({
@@ -970,7 +970,7 @@ export function watchesNote(botIds: string[], withMac: boolean) {
   const state = (w: Watch) =>
     `${w.paused ? ` · paused by ${owner}` : ""}${w.away ? " · paused (not showing right now)" : ""}${w.page?.error ? ` · the last ${w.page.failures && w.page.failures > 1 ? `${w.page.failures} reads` : "read"} failed: ${w.page.error}` : ""}`;
   return [
-    `Watches (screens, Mac windows and web pages Bops keeps an eye on for ${owner}; stop_watch takes the id):`,
+    `Watches (screens, Mac windows and web pages SmileDesk keeps an eye on for ${owner}; stop_watch takes the id):`,
     ...mine.map((w) => `- ${w.id}: ${what(w)} · looking for ${w.lookFor}${state(w)}`),
   ].join("\n");
 }

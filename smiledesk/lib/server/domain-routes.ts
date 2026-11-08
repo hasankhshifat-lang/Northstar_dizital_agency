@@ -12,7 +12,7 @@ import { fromBopsWindow } from "./ui-token";
  */
 
 /**
- * A domains route's gate, in order: Bops ready (an account's state loaded); the Bops window only (ui-token.ts:
+ * A domains route's gate, in order: SmileDesk ready (an account's state loaded); the SmileDesk window only (ui-token.ts:
  * never a page a bot's browser reached, as these spend credits and carry the user's own address); and apps
  * open to this account (lib/apps-access.ts: an @orgo.ai one for now), else a 404 with nothing asked of Orgo.
  * `words`: what a page that isn't the window is told. Null when the route can go on.

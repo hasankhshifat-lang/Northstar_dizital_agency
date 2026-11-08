@@ -14,15 +14,15 @@ import { plainLinks } from "./style";
 
 /**
  * Bots where the user's team already talks: Slack channels, Telegram and Discord. Like texting a bot's
- * number, a message there is the user talking to the bot: it shows in the bot's chat in Bops, and the
+ * number, a message there is the user talking to the bot: it shows in the bot's chat in SmileDesk, and the
  * answer (and later, the result of work it started) goes back to the same place.
  *
  * - Telegram and Discord: each bot gets its own bot account there, which the user makes (BotFather,
  *   Discord's developer portal) and pastes the token of. So it shows up as "Boppy", with its own name.
- *   Its token lives in the Keychain. Bops talks to them directly: Telegram by long polling, Discord over
- *   its gateway. Neither needs Bops to be reachable from the internet.
- * - Slack: Bops' own Slack app (slack/manifest.json), connected as a Composio account (the "slackbot"
- *   app, in the Vault), and the channels each bot is in. Its events come to Bops Cloud, which passes
+ *   Its token lives in the Keychain. SmileDesk talks to them directly: Telegram by long polling, Discord over
+ *   its gateway. Neither needs SmileDesk to be reachable from the internet.
+ * - Slack: SmileDesk's own Slack app (slack/manifest.json), connected as a Composio account (the "slackbot"
+ *   app, in the Vault), and the channels each bot is in. Its events come to SmileDesk Cloud, which passes
  *   this Mac the ones for its bots over the tunnel, or keeps them a day while it's away; this Mac
  *   tells the cloud where its bots are (PUT /v1/slack/links: syncSlackLinks, below). Self-hosted, the
  *   self-hoster's own Slack app sends them to their front door (edge/, BOPS_SLACK_SIGNING_SECRET), or
@@ -31,7 +31,7 @@ import { plainLinks } from "./style";
  * Bots take requests only from the user, as on the phone: the first time, the user sends the bot its
  * pairing code there, and from then on only that account counts as them. Only the code itself pairs
  * (the whole message), only while nobody is paired, and only while it's fresh: an hour, and fewer than
- * five wrong codes (pairCodeLive in lib/types.ts); then the user gets a new one in Bops. In a group or
+ * five wrong codes (pairCodeLive in lib/types.ts); then the user gets a new one in SmileDesk. In a group or
  * channel the bot answers when it's mentioned or replied to; everyone else's messages are left alone.
  */
 
@@ -39,7 +39,7 @@ type Live = {
   telegram: Map<string, AbortController>;
   discord: Map<string, { ws?: WebSocket; beat?: ReturnType<typeof setInterval>; stop: boolean; seq: number | null }>;
   slack?: boolean;
-  /** Telling Bops Cloud where the bots are in Slack: what it last took, the next try, one at a time. */
+  /** Telling SmileDesk Cloud where the bots are in Slack: what it last took, the next try, one at a time. */
   slackLinks?: { sent?: string; chain: Promise<unknown>; failures: number; retryAt?: number; timer?: ReturnType<typeof setTimeout>; soon?: ReturnType<typeof setTimeout> };
   /** Who's been told the bot only takes requests from its owner, so they're told once. */
   toldOff: Set<string>;
@@ -118,15 +118,15 @@ export function startChannels() {
   if (!stateReady() || !loopHere("channels")) return;
   for (const l of linksOf("telegram")) if (!live.telegram.has(l.id)) void pollTelegram(l.id);
   for (const l of linksOf("discord")) if (!live.discord.has(l.id)) void connectDiscord(l.id);
-  // Signed in with Orgo, Slack's events come through Bops Cloud (which never passes Composio's live
+  // Signed in with Orgo, Slack's events come through SmileDesk Cloud (which never passes Composio's live
   // trigger feed on): it hears where the bots are instead.
   if (cloudOn()) void syncSlackLinks().catch(() => {});
   else if (linksOf("slack").length && !ownSlackApp()) void listenSlack();
 }
 
 /**
- * Bops' own Slack app is set up, so its events come straight to Bops: signed in with Orgo, Bops
- * Cloud takes them for it (CloudSession.slack: at Orgo, the "Bops" app); self-hosted, the
+ * SmileDesk's own Slack app is set up, so its events come straight to SmileDesk: signed in with Orgo, SmileDesk
+ * Cloud takes them for it (CloudSession.slack: at Orgo, the "SmileDesk" app); self-hosted, the
  * self-hoster's own app (slack/setup.mjs), signed with BOPS_SLACK_SIGNING_SECRET.
  */
 export const ownSlackApp = () => (cloudOn() ? !!cloudSessionNow()?.slack : !!process.env.BOPS_SLACK_SIGNING_SECRET);
@@ -194,7 +194,7 @@ async function messageIn(linkId: string, m: Incoming, pool?: ChannelLink[]) {
       place,
       l.owner
         ? `Hi, I'm ${b.name}, ${ownerName()}'s assistant. I only take requests from ${ownerName()}.`
-        : `Hi, I'm ${b.name}. To pair with me, send me the code shown in Bops (on my profile, under "Where to find ${b.name}"), and nothing else.`,
+        : `Hi, I'm ${b.name}. To pair with me, send me the code shown in SmileDesk (on my profile, under "Where to find ${b.name}"), and nothing else.`,
     );
     return;
   }
@@ -250,7 +250,7 @@ async function paired(l: ChannelLink, m: Incoming) {
   live.toldOff.delete(`${l.id}:${m.fromId}`);
   addMessage({ chatId: botChatId(b.id), role: "system", text: `${b.name} is paired with ${m.fromName} on ${KIND_NAME[l.kind]}. It takes requests from that account there now.` });
   const place: ChannelPlace = { linkId: l.id, chat: m.chat, messageId: m.messageId, thread: m.thread, from: m.fromId };
-  await send(linkOf(l.id) ?? l, place, `Hi ${m.fromName.split(" ")[0]}, it's ${b.name}. We're paired: talk to me here like you do in Bops.${m.direct ? "" : " In a group, mention me or reply to me."}`);
+  await send(linkOf(l.id) ?? l, place, `Hi ${m.fromName.split(" ")[0]}, it's ${b.name}. We're paired: talk to me here like you do in SmileDesk.${m.direct ? "" : " In a group, mention me or reply to me."}`);
 }
 
 /** A wrong code: counted on each link it could have been for (PAIR_CODE_TRIES of them and the code stops working). */
@@ -266,13 +266,13 @@ const TAPBACK_EMOJI: Record<string, string> = { love: "❤️", like: "👍", di
 /* ---------------- Each bot as itself ---------------- */
 
 /**
- * A bot's picture (its mascot, as drawn in Bops), from the set rendered ahead of time (pictureName in
- * lib/mascot.ts), at Bops' public address: Bops Cloud's, or a self-hoster's front door (edge/). A
- * color without a picture gets the Bops logo.
+ * A bot's picture (its mascot, as drawn in SmileDesk), from the set rendered ahead of time (pictureName in
+ * lib/mascot.ts), at SmileDesk's public address: SmileDesk Cloud's, or a self-hoster's front door (edge/). A
+ * color without a picture gets the SmileDesk logo.
  */
 export const mascotUrl = (b: Bot) => {
   const name = pictureName(b);
-  return name ? `${publicUrl()}/mascot/${name}.png` : `${publicUrl()}/brand/bops-512.png`;
+  return name ? `${publicUrl()}/mascot/${name}.png` : `${publicUrl()}/brand/smiledesk-512.png`;
 };
 
 /**
@@ -295,7 +295,7 @@ async function pictureFile(path: string): Promise<Buffer | null> {
 /** Telegram: the bot account takes the bot's name and picture (best effort: the link works without). */
 async function dressTelegram(token: string, b: Bot) {
   await tg(token, "setMyName", { name: b.name }).catch(() => {});
-  await tg(token, "setMyShortDescription", { short_description: `${b.name}, ${ownerName()}'s assistant on Bops.` }).catch(() => {});
+  await tg(token, "setMyShortDescription", { short_description: `${b.name}, ${ownerName()}'s assistant on SmileDesk.` }).catch(() => {});
   // Telegram takes a JPEG; the logo has none, so a bot without a picture keeps Telegram's.
   const name = pictureName(b);
   const pic = name ? await pictureFile(`mascot/${name}.jpg`) : null;
@@ -309,13 +309,13 @@ async function dressTelegram(token: string, b: Bot) {
 /** Discord: the bot user takes the bot's name and picture. Discord limits name changes, so the picture goes on its own if the name can't. */
 async function dressDiscord(token: string, b: Bot) {
   const name = pictureName(b);
-  const pic = await pictureFile(name ? `mascot/${name}.png` : "brand/bops-512.png");
+  const pic = await pictureFile(name ? `mascot/${name}.png` : "brand/smiledesk-512.png");
   if (!pic) return void (await dc(token, "PATCH", "/users/@me", { username: b.name }).catch(() => {}));
   const avatar = `data:image/png;base64,${pic.toString("base64")}`;
   await dc(token, "PATCH", "/users/@me", { username: b.name, avatar }).catch(() => dc(token, "PATCH", "/users/@me", { avatar }).catch(() => {}));
 }
 
-/** A bot was renamed in Bops: its Telegram and Discord accounts follow. */
+/** A bot was renamed in SmileDesk: its Telegram and Discord accounts follow. */
 export async function renameInChannels(botId: string) {
   const b = bot(botId);
   if (!b) return;
@@ -384,7 +384,7 @@ export async function postTo(linkId: string, text: string, chat?: string): Promi
   if (!l) throw new Error("That Slack, Telegram or Discord link isn't there anymore");
   const name = KIND_NAME[l.kind];
   if (l.status !== "live") throw new Error(`${name} isn't working right now${l.error ? `: ${l.error}` : ""}`);
-  if (!l.owner) throw new Error(`Nobody is paired with the bot in ${name} yet. Send it the pairing code from Bops first`);
+  if (!l.owner) throw new Error(`Nobody is paired with the bot in ${name} yet. Send it the pairing code from SmileDesk first`);
   if (!text.trim()) throw new Error("There's nothing to post");
   let place = chat?.trim();
   if (!place && l.kind === "telegram") place = l.owner;
@@ -393,7 +393,7 @@ export async function postTo(linkId: string, text: string, chat?: string): Promi
     if (!place) throw new Error("Write to the bot in Slack once first, so it can message you there");
   }
   if (!place && l.kind === "discord") place = (await dc<{ id: string }>(await tokenOf(l), "POST", "/users/@me/channels", { recipient_id: l.owner })).id;
-  if (!place) throw new Error(`Bops doesn't know where to post in ${name}`);
+  if (!place) throw new Error(`SmileDesk doesn't know where to post in ${name}`);
   await send(l, { linkId, chat: place }, text);
 }
 
@@ -475,7 +475,7 @@ function typing(l: ChannelLink, chat: string) {
 
 async function tokenOf(l: ChannelLink) {
   // Its token is in the Mac's Keychain, which a computer's runner hasn't.
-  if (onRunner()) throw new Error(`${KIND_NAME[l.kind]} works from the Bops app on your Mac, not from a bot's computer`);
+  if (onRunner()) throw new Error(`${KIND_NAME[l.kind]} works from the SmileDesk app on your Mac, not from a bot's computer`);
   const t = await getUserSecret(secretOf(l.id));
   if (!t) throw new Error(`${KIND_NAME[l.kind]} token is missing from the Keychain`);
   return t;
@@ -556,9 +556,9 @@ async function pollTelegram(linkId: string) {
         patchLink(linkId, { status: "error", error: "Telegram stopped accepting the token (it was revoked in BotFather?). Add the bot again with a new token." });
         break;
       }
-      // 409: another Bops (or app) is reading this bot's messages. Back off and try again.
+      // 409: another SmileDesk (or app) is reading this bot's messages. Back off and try again.
       wait = Math.min(60_000, (wait || 2000) * 2);
-      if (code === 409) patchLink(linkId, { status: "error", error: "Something else is reading this bot's messages (another Bops?)." });
+      if (code === 409) patchLink(linkId, { status: "error", error: "Something else is reading this bot's messages (another SmileDesk?)." });
       await new Promise((r) => setTimeout(r, wait));
     }
   }
@@ -756,7 +756,7 @@ async function slackIdentity(accountId: string) {
       throw new Error(`Couldn't ask Slack which workspace this is: ${e.message}`);
     })) as unknown as { data?: { ok?: boolean; error?: string; user_id?: string; team?: string; team_id?: string; bot_id?: string } };
   const d = r.data ?? {};
-  if (d.ok !== true || !d.team_id) throw new Error(`Slack wouldn't say which workspace this is${d.error ? ` (${d.error})` : ""}. Add Bops to Slack again.`);
+  if (d.ok !== true || !d.team_id) throw new Error(`Slack wouldn't say which workspace this is${d.error ? ` (${d.error})` : ""}. Add SmileDesk to Slack again.`);
   // Only a bot token's answer names the bot (it has bot_id); a person's token would name the person,
   // and then mentioning them would count as mentioning the bot.
   return { team: d.team, team_id: d.team_id, user_id: d.bot_id ? d.user_id : undefined };
@@ -767,14 +767,14 @@ export async function linkSlack(botId: string, accountId: string, channels: { id
   const b = bot(botId);
   const account = getState().accounts?.find((a) => a.id === accountId && a.app === "slackbot");
   if (!b || !account) throw new Error("Connect Slack first");
-  // Signed in with Orgo, Slack's events reach Bops only through Bops Cloud's Slack app.
-  if (cloudOn() && !(await cloudSession()).slack) throw new Error("Slack isn't available in Bops yet. Try again later.");
+  // Signed in with Orgo, Slack's events reach SmileDesk only through SmileDesk Cloud's Slack app.
+  if (cloudOn() && !(await cloudSession()).slack) throw new Error("Slack isn't available in SmileDesk yet. Try again later.");
   const existing = linksOf("slack").find((l) => l.botId === botId && l.slack?.accountId === accountId);
   // Which workspace it is comes first: without it the bot could never be found there, so a failure saves nothing.
   const who = existing?.slack?.teamId ? null : await slackIdentity(accountId);
   // The app can join public channels itself; a private one needs /invite from someone in it.
   for (const c of channels) await runAs(accountId, "SLACKBOT_JOIN_AN_EXISTING_CONVERSATION", { channel: c.id }).catch(() => null);
-  // With our own Slack app, Slack sends its events to Bops Cloud or the self-hoster's front door
+  // With our own Slack app, Slack sends its events to SmileDesk Cloud or the self-hoster's front door
   // (BOPS_SLACK_SIGNING_SECRET checks them). With Composio's shared app, Composio watches the messages:
   // set that up first, so a failure saves nothing.
   if (!ownSlackApp()) {
@@ -784,22 +784,22 @@ export async function linkSlack(botId: string, accountId: string, channels: { id
   if (existing) {
     const before = existing.slack!;
     patchLink(existing.id, { slack: { ...before, channels }, status: "live", error: undefined });
-    // Bops Cloud routes a channel's messages only once it knows the bot is there: a refusal saves nothing.
+    // SmileDesk Cloud routes a channel's messages only once it knows the bot is there: a refusal saves nothing.
     await syncSlackLinks({ now: true }).catch((e: Error) => {
       patchLink(existing.id, { slack: { ...(linkOf(existing.id)?.slack ?? before), channels: before.channels } });
-      throw new Error(`Bops Cloud didn't take the change: ${e.message}`);
+      throw new Error(`SmileDesk Cloud didn't take the change: ${e.message}`);
     });
     return linkOf(existing.id)!;
   }
   const made = addLink({ kind: "slack", botId, handle: who?.team ?? account.name ?? "Slack", slack: { accountId, teamId: who?.team_id, botUserId: who?.user_id, channels } });
   await syncSlackLinks({ now: true }).catch((e: Error) => {
     update((s) => void (s.channels = (s.channels ?? []).filter((x) => x.id !== made.id)));
-    throw new Error(`Bops Cloud couldn't add ${b.name} to Slack: ${e.message}`);
+    throw new Error(`SmileDesk Cloud couldn't add ${b.name} to Slack: ${e.message}`);
   });
   return linkOf(made.id) ?? made;
 }
 
-/** Composio watches the Slack app's channel messages and direct messages for Bops (once per Slack account). */
+/** Composio watches the Slack app's channel messages and direct messages for SmileDesk (once per Slack account). */
 async function ensureSlackTriggers(accountId: string) {
   const user = composioUser();
   const active = await composio().triggers.listActive({ connectedAccountIds: [accountId] }).catch(() => ({ items: [] as { triggerName: string }[] }));
@@ -836,7 +836,7 @@ async function slackIn(e: SlackEvent) {
 /**
  * The workspaces a Slack event belongs to: its own (team_id) and those of the app's installations it
  * was sent through (authorizations), which differ only in a channel shared between two workspaces.
- * The same rule Bops Cloud routes by (teamsOf in cloud/slack.ts).
+ * The same rule SmileDesk Cloud routes by (teamsOf in cloud/slack.ts).
  */
 export function slackTeams(envelope: { team_id?: unknown; authorizations?: unknown }): string[] {
   const through = Array.isArray(envelope.authorizations) ? envelope.authorizations.map((a) => (a as { team_id?: unknown } | null)?.team_id) : [];
@@ -844,8 +844,8 @@ export function slackTeams(envelope: { team_id?: unknown; authorizations?: unkno
 }
 
 /**
- * A delivery from Bops' own Slack app (its whole event_callback envelope), already proven to be
- * Slack's: by its signature here, or by Bops Cloud (replayed over the tunnel, or kept for this Mac
+ * A delivery from SmileDesk's own Slack app (its whole event_callback envelope), already proven to be
+ * Slack's: by its signature here, or by SmileDesk Cloud (replayed over the tunnel, or kept for this Mac
  * while it was away). Handled after the answer, as Slack wants one within 3 seconds.
  */
 export function slackDelivery(envelope: unknown) {
@@ -928,14 +928,14 @@ async function slackName(accountId: string, user: string) {
   return name;
 }
 
-/* ---------------- Bops Cloud: where the bots are in Slack ---------------- */
+/* ---------------- SmileDesk Cloud: where the bots are in Slack ---------------- */
 
 const SLACK_CHANNEL = /^[CG][A-Z0-9]{2,40}$/;
 const SLACK_DM = /^D[A-Z0-9]{2,40}$/;
 const SLACK_PERSON = /^[UW][A-Z0-9]{2,40}$/;
 
 /**
- * What Bops Cloud is told (SlackLinksBody in cloud/protocol.ts), one entry per Slack account its bots
+ * What SmileDesk Cloud is told (SlackLinksBody in cloud/protocol.ts), one entry per Slack account its bots
  * are in: their channels, the direct message with the person paired (only ever recorded from them, or
  * with the right code), the Slack people they're paired with, and whether a code is waiting. The cloud
  * passes this Mac only the events these name, within the account's own workspace.
@@ -958,7 +958,7 @@ export function slackLinksBody(now = Date.now()): SlackLinksBody {
 const slackSync = () => (live.slackLinks ??= { chain: Promise.resolve(), failures: 0 });
 
 /**
- * Tell Bops Cloud where the bots are in Slack (PUT /v1/slack/links), when that changed since it last
+ * Tell SmileDesk Cloud where the bots are in Slack (PUT /v1/slack/links), when that changed since it last
  * took it: a link, its channels, a pairing, or a code running out. Nothing when the app isn't on the
  * cloud, or the cloud doesn't take Slack's events. One at a time; after a failure it waits (5 seconds,
  * doubling, up to 10 minutes) unless `now` (a bot being added, which waits for the answer).
@@ -987,7 +987,7 @@ async function pushSlackLinks() {
     } catch (e) {
       sync.failures++;
       sync.retryAt = Date.now() + Math.min(600_000, 5000 * 2 ** (sync.failures - 1));
-      console.warn(`[slack] Bops Cloud didn't take where the bots are: ${(e as Error).message}`);
+      console.warn(`[slack] SmileDesk Cloud didn't take where the bots are: ${(e as Error).message}`);
       throw e;
     }
     sync.sent = key;

@@ -11,11 +11,11 @@ import { fullHash, sharedHash, sharedSlice, type SliceViewer } from "../ws-slice
 import { call, dropUsers, listen, newUserId, prepareDb, startCloud, until, type Listening } from "./core-fakes.ts";
 
 /**
- * Each site's Preview password as whoever set it tells Bops Cloud (preview-passwords.ts, POST /v1/apps/preview-password),
+ * Each site's Preview password as whoever set it tells SmileDesk Cloud (preview-passwords.ts, POST /v1/apps/preview-password),
  * and who is shown it (ws-slice.ts appsFor): the owner's own key and the app's own computer may tell it, never another
  * computer or a member's key; only a Preview password's shape (or null, which clears it), at an https link; kept on the
- * owner's state by Bops Cloud's clock, one more version written by "cloud"; never said back in any answer. A Write
- * member and an Admin see it beside its link (over the owner's Mac's copy, which stays where Bops Cloud has none), a Read
+ * owner's state by SmileDesk Cloud's clock, one more version written by "cloud"; never said back in any answer. A Write
+ * member and an Admin see it beside its link (over the owner's Mac's copy, which stays where SmileDesk Cloud has none), a Read
  * member never, nor a link it wasn't set for; and a computer never reads it, can't write one, and keeps it when it
  * writes back what it read. The owner's Mac's check (`seen`) lands only over the entry it saw. Each one kept is heard
  * at once: the owner's Mac on the tunnel, and every stream watching the workspace. orgo-web is a fake on localhost; the
@@ -27,7 +27,7 @@ const D2 = "d2d2d2d2-0000-4000-8000-0000000000bb";
 const LINK = "https://k7p2qxm4wr3d.orgo.dev";
 const ADMIN_LINK = "https://m3q8zt5kw2pd.orgo.dev";
 const NOTES_LINK = "https://w9r4tq2xk7mb.orgo.dev";
-/** What the owner's Mac read for members at Write (appsForMembers): the fallback where Bops Cloud has none. */
+/** What the owner's Mac read for members at Write (appsForMembers): the fallback where SmileDesk Cloud has none. */
 const MAC_PASS = "Mac4pas";
 const MAC_ADMIN = "Mac5adm";
 
@@ -124,7 +124,7 @@ async function row(u: string) {
 }
 const kept = async (u: string) => (await row(u)).state.workspaces[0].previewPasswords as Record<string, { url: string; password: string; at: number }> | undefined;
 
-/** A post as Bops sends it (`key`: whose). Every answer is kept, to be checked for a password at the end. */
+/** A post as SmileDesk sends it (`key`: whose). Every answer is kept, to be checked for a password at the end. */
 async function post(key: string, body: Record<string, unknown>) {
   if (typeof body.password === "string") sent.add(body.password);
   const r = await call(cloud.url, "POST", PREVIEW_PASSWORD_PATH, { key, json: body });
@@ -141,7 +141,7 @@ const ADA: SliceViewer = { role: "admin", email: "ada@example.com", id: "u-ada",
 const shown = (blob: unknown, viewer: SliceViewer, app = "shop", site = app) =>
   sharedSlice(blob as Record<string, unknown>, "ws_main", viewer).apps?.list.find((a) => a.name === app)?.sites?.find((s) => s.name === site);
 
-test("the owner's own key: the password kept on the workspace by Bops Cloud's clock, one more version by \"cloud\", 204 with nothing in it; null clears it", T, async () => {
+test("the owner's own key: the password kept on the workspace by SmileDesk Cloud's clock, one more version by \"cloud\", 204 with nothing in it; null clears it", T, async () => {
   clearAuthCache();
   const u = await seeded("owner");
   const was = await row(u);
@@ -154,7 +154,7 @@ test("the owner's own key: the password kept on the workspace by Bops Cloud's cl
   assert.equal(now.writer, "cloud");
   const p = (await kept(u))!["shop/shop"];
   assert.deepEqual({ ...p, at: 0 }, { url: LINK, password: "Kq7mZ3x", at: 0 });
-  assert.ok(p.at >= t0 && p.at <= Date.now(), "Bops Cloud's own clock");
+  assert.ok(p.at >= t0 && p.at <= Date.now(), "SmileDesk Cloud's own clock");
   // The admin site, by its own name; another one after it lands over the first, in the order they came.
   assert.equal((await post(`key-${u}`, body({ site: "admin", url: ADMIN_LINK, password: "Wq4tY7p" }))).status, 204);
   assert.equal((await post(`key-${u}`, body({ password: "Zr8uV3n" }))).status, 204);
@@ -196,7 +196,7 @@ test("the app's own computer may tell its app's; another computer's app is refus
   assert.equal(r.status, 200, r.text);
   assert.equal((await post(vm(u), body({ password: "Lp2dW6s" }))).status, 403, "lost its computer");
   assert.equal((await kept(u))!["shop/shop"].password, "Hn6pQ2w");
-  // A member of the owner's workspace, on their own key: it's their own Bops they'd be telling, which has no such app.
+  // A member of the owner's workspace, on their own key: it's their own SmileDesk they'd be telling, which has no such app.
   const member = newUserId("member");
   users.push(member);
   const m = await post(`key-${member}`, body({ password: "Mm7kR4v" }));
@@ -210,7 +210,7 @@ test("the app's own computer may tell its app's; another computer's app is refus
   }
   // No sign in at all.
   assert.equal((await call(cloud.url, "POST", PREVIEW_PASSWORD_PATH, { json: body() })).status, 401);
-  // Bops names the account each post is for (preview-password-share.ts): one sent on another account's sign in is 409, nothing kept.
+  // SmileDesk names the account each post is for (preview-password-share.ts): one sent on another account's sign in is 409, nothing kept.
   const v2 = (await row(u)).version;
   const named = async (key: string, who: string, password: string) => {
     sent.add(password);
@@ -274,20 +274,20 @@ test("who is shown it: a Write member and an Admin see the new one beside its li
   clearAuthCache();
   const u = await seeded("slice");
   const before = (await row(u)).state;
-  // Before Bops Cloud has any: the owner's Mac's copy, at Write only.
+  // Before SmileDesk Cloud has any: the owner's Mac's copy, at Write only.
   assert.equal(shown(before, SAM)?.previewPassword, MAC_PASS);
   assert.equal(shown(before, ADA)?.previewPassword, MAC_PASS);
   assert.equal(shown(before, RAE)?.previewPassword, undefined);
   const samWas = sharedHash(sharedSlice(before as unknown as Record<string, unknown>, "ws_main", SAM));
   const raeWas = sharedHash(sharedSlice(before as unknown as Record<string, unknown>, "ws_main", RAE));
   const fullWas = fullHash(before as unknown as Record<string, unknown>, "ws_main");
-  // A runner set a new one as its deploy went live, and told Bops Cloud.
+  // A runner set a new one as its deploy went live, and told SmileDesk Cloud.
   assert.equal((await post(vm(u), body({ password: "Ny4bH7k" }))).status, 204);
   const now = (await row(u)).state;
   for (const v of [SAM, ADA]) {
     assert.equal(shown(now, v)?.previewPassword, "Ny4bH7k", v.email);
     assert.equal(shown(now, v)?.previewProtected, true);
-    // A site Bops Cloud has none for: the owner's Mac's copy still.
+    // A site SmileDesk Cloud has none for: the owner's Mac's copy still.
     assert.equal(shown(now, v, "shop", "admin")?.previewPassword, MAC_ADMIN, v.email);
   }
   assert.equal(shown(now, RAE)?.previewProtected, true, "Read: that it asks for one");
@@ -307,7 +307,7 @@ test("who is shown it: a Write member and an Admin see the new one beside its li
   for (const v of [SAM, ADA]) assert.equal(sharedHash(sharedSlice(twin, "ws_main", v)), sharedHash(sharedSlice(nowBlob, "ws_main", v)), v.email);
   assert.equal(fullHash(twin, "ws_main"), fullHash(nowBlob, "ws_main"));
   entry.at += 1;
-  assert.notEqual(sharedHash(sharedSlice(twin, "ws_main", SAM)), sharedHash(sharedSlice(nowBlob, "ws_main", SAM)), "Bops Cloud's time");
+  assert.notEqual(sharedHash(sharedSlice(twin, "ws_main", SAM)), sharedHash(sharedSlice(nowBlob, "ws_main", SAM)), "SmileDesk Cloud's time");
   assert.notEqual(fullHash(twin, "ws_main"), fullHash(nowBlob, "ws_main"));
   const macTwin = structuredClone(nowBlob);
   (wsIn(macTwin).appsForMembers as { at: number }).at += 1;

@@ -67,7 +67,7 @@ export function usePendingSuggest(state: AppState, here: (s: { app: string; botI
 /** Puts the waiting suggestion off (Not now): the server forgets it. */
 const dismiss = () => void post("/api/routines/suggestions/dismiss", {}).catch(() => {});
 
-/** What Bops offers this bot for this app, or what the catalog here says when Bops can't be asked (not what its check of the app does already). */
+/** What SmileDesk offers this bot for this app, or what the catalog here says when SmileDesk can't be asked (not what its check of the app does already). */
 function useOffers(state: AppState, app: string, botId: string | null) {
   const [got, setGot] = useState<{ key: string; templates: Offer[] } | null>(null);
   const key = `${app}:${botId ?? ""}`;
@@ -281,7 +281,7 @@ export function RoutineSuggest({
       }
       onClose();
     } catch {
-      setError("Couldn't reach Bops. Try again.");
+      setError("Couldn't reach SmileDesk. Try again.");
       setBusy(false);
     }
   };

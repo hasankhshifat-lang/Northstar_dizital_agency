@@ -9,11 +9,11 @@ import { autoRoute, closeRunners, resetTurns, revertAuto, sweepTurns, turnTiming
 import { dropUsers, keyOf, listen, newUserId, prepareDb, startCloud, until, type Listening } from "./edge-fakes.ts";
 
 /**
- * Chat through Bops Cloud by default (cloud/turns.ts autoRoute): a workspace nobody chose for moves to Bops Cloud by
+ * Chat through SmileDesk Cloud by default (cloud/turns.ts autoRoute): a workspace nobody chose for moves to SmileDesk Cloud by
  * itself once the owner's Mac set up a runner on its bots' computer, saw it running, and that runner connected; back
  * to the Mac when its runner is taken down or fails, or its computer can't answer a turn; never a choice the owner or
- * staff made, either way, even when they race. The owner's Bops reads the switch on its state at once. Members'
- * messages in a workspace that may move are written by Bops Cloud first, so no move ever drops one. orgo-web is a
+ * staff made, either way, even when they race. The owner's SmileDesk reads the switch on its state at once. Members'
+ * messages in a workspace that may move are written by SmileDesk Cloud first, so no move ever drops one. orgo-web is a
  * fake on localhost.
  */
 
@@ -117,7 +117,7 @@ async function setup(opts: { runner?: boolean } = {}) {
     ...(opts.runner !== false ? { runners: { [desktop]: runnerState() } } : {}),
   };
   assert.equal((await fetch(`${cloud.url}/v1/state`, { method: "PUT", headers: own(owner), body: JSON.stringify({ base: 0, state }) })).status, 200);
-  // The account as Bops Cloud made it at the Mac's first session, with the version that Mac said (one with the switch).
+  // The account as SmileDesk Cloud made it at the Mac's first session, with the version that Mac said (one with the switch).
   await query("INSERT INTO bops.cloud_accounts (user_id, app_version) VALUES ($1, '0.0.38') ON CONFLICT (user_id) DO UPDATE SET app_version = '0.0.38'", [owner]);
   return { owner, writer, project, desktop };
 }
@@ -167,23 +167,23 @@ const act = (member: string, project: string, key: string, a: Record<string, unk
 const pendingOf = async (owner: string) => (await query<{ payload: { stored?: boolean; messageId?: string } }>("SELECT payload FROM bops.cloud_pending WHERE user_id = $1 AND kind = 'member'", [owner])).rows.map((r) => r.payload);
 const cloudNow = async (owner: string) => (await rowOf(owner))?.mode === "cloud";
 
-test("a workspace moves to Bops Cloud by itself once the runner the Mac set up connects: a turn is owed for a member's message, and the Mac reads the switch", async () => {
+test("a workspace moves to SmileDesk Cloud by itself once the runner the Mac set up connects: a turn is owed for a member's message, and the Mac reads the switch", async () => {
   const s = await setup();
   // Nobody chose, and its runner hasn't connected yet: still the Mac's, and the state says it may move.
   assert.equal(await rowOf(s.owner), undefined);
   assert.deepEqual([(await acmeOf(s.owner)).chatOn, (await acmeOf(s.owner)).chatAuto], [undefined, true]);
   const box = await listenAs(s.owner, s.desktop);
-  await until(() => cloudNow(s.owner), "moved to Bops Cloud");
+  await until(() => cloudNow(s.owner), "moved to SmileDesk Cloud");
   assert.deepEqual(await rowOf(s.owner), { mode: "cloud", set_by: "auto", allow_hourly: false });
   assert.deepEqual([(await acmeOf(s.owner)).chatOn, (await acmeOf(s.owner)).chatAuto], ["cloud", true]);
-  // A member's message now: written by Bops Cloud, its answer owed to the computer, nothing for the Mac.
+  // A member's message now: written by SmileDesk Cloud, its answer owed to the computer, nothing for the Mac.
   const a = (await (await act(s.writer, s.project, "key-auto-00001", { act: "chat", chatId: "bot:max", text: "hi" })).json()) as { turn?: string };
   assert.ok(a.turn);
   assert.deepEqual(await pendingOf(s.owner), []);
   box.close();
 });
 
-test("a runner that connects before the Mac marks it running: the Mac's write that does moves it; one from before chat through Bops Cloud never does", async () => {
+test("a runner that connects before the Mac marks it running: the Mac's write that does moves it; one from before chat through SmileDesk Cloud never does", async () => {
   const s = await setup({ runner: false });
   const box = await listenAs(s.owner, s.desktop);
   await autoRoute(s.owner);
@@ -219,7 +219,7 @@ test("the owner's or staff's choice stands: never moved by itself, either way, a
   assert.deepEqual(await rowOf(t.owner), { mode: "cloud", set_by: "staff", allow_hourly: false });
 });
 
-test("the owner's switch back on gives the choice back: Bops Cloud moves it once its runner answers", async () => {
+test("the owner's switch back on gives the choice back: SmileDesk Cloud moves it once its runner answers", async () => {
   const s = await setup();
   assert.equal((await routeAs(s.owner, { mode: "mac" })).status, 200);
   const box = await listenAs(s.owner, s.desktop);
@@ -229,7 +229,7 @@ test("the owner's switch back on gives the choice back: Bops Cloud moves it once
   box.close();
 });
 
-test("where Bops Cloud doesn't move workspaces for the owner yet, the switch back on is refused and the Mac's stays the choice", async () => {
+test("where SmileDesk Cloud doesn't move workspaces for the owner yet, the switch back on is refused and the Mac's stays the choice", async () => {
   const s = await setup({ runner: false });
   assert.equal((await routeAs(s.owner, { mode: "mac" })).status, 200);
   delete process.env.BOPS_CHAT_AUTO;
@@ -248,7 +248,7 @@ test("where Bops Cloud doesn't move workspaces for the owner yet, the switch bac
   }
 });
 
-test("taken down or failed on the Mac's write, it goes back to the Mac; back up and connected, to Bops Cloud again", async () => {
+test("taken down or failed on the Mac's write, it goes back to the Mac; back up and connected, to SmileDesk Cloud again", async () => {
   const s = await setup();
   const box = await listenAs(s.owner, s.desktop);
   await until(() => cloudNow(s.owner), "moved");
@@ -258,13 +258,13 @@ test("taken down or failed on the Mac's write, it goes back to the Mac; back up 
   assert.deepEqual([(await acmeOf(s.owner)).chatOn, (await acmeOf(s.owner)).chatAuto], [undefined, true]);
   // Set up again: the Mac marks it running, and its runner (still connected) answers.
   await ownerChanges(s.owner, (st) => void (st.runners = { [s.desktop]: runnerState() }));
-  await until(() => cloudNow(s.owner), "to Bops Cloud again");
+  await until(() => cloudNow(s.owner), "to SmileDesk Cloud again");
   await ownerChanges(s.owner, (st) => delete st.runners);
   await until(async () => !(await cloudNow(s.owner)), "back with no runner");
   box.close();
 });
 
-test("a computer that's on with no runner coming goes back to the Mac after its turns end, and to Bops Cloud again once its runner connects", async () => {
+test("a computer that's on with no runner coming goes back to the Mac after its turns end, and to SmileDesk Cloud again once its runner connects", async () => {
   const s = await setup();
   const box = await listenAs(s.owner, s.desktop);
   await until(() => cloudNow(s.owner), "moved");
@@ -282,7 +282,7 @@ test("a computer that's on with no runner coming goes back to the Mac after its 
   assert.deepEqual([b.turn, b.stored], [undefined, true]);
   assert.ok((await pendingOf(s.owner)).some((p) => p.stored && p.messageId === b.messageId));
   const again = await listenAs(s.owner, s.desktop);
-  await until(() => cloudNow(s.owner), "to Bops Cloud again once it connects");
+  await until(() => cloudNow(s.owner), "to SmileDesk Cloud again once it connects");
   again.close();
   wakeAnswers.delete(s.desktop);
 });
@@ -304,7 +304,7 @@ test("a computer that can't be woken (billed by the hour) goes back to the Mac a
   wakeAnswers.delete(s.desktop);
 });
 
-test("a restart of Bops Cloud leaves a moved workspace as it is, and its runner connecting again proves it once more", async () => {
+test("a restart of SmileDesk Cloud leaves a moved workspace as it is, and its runner connecting again proves it once more", async () => {
   const s = await setup();
   const box = await listenAs(s.owner, s.desktop);
   await until(() => cloudNow(s.owner), "moved");
@@ -313,18 +313,18 @@ test("a restart of Bops Cloud leaves a moved workspace as it is, and its runner 
   resetTurns();
   await autoRoute(s.owner);
   assert.equal(await cloudNow(s.owner), true);
-  // Its runner fails and is set up again: not to Bops Cloud until it connects since the start.
+  // Its runner fails and is set up again: not to SmileDesk Cloud until it connects since the start.
   await ownerChanges(s.owner, (st) => void (st.runners = { [s.desktop]: runnerState("0.0.37", { status: "failed" }) }));
   await until(async () => !(await cloudNow(s.owner)), "back to the Mac");
   await ownerChanges(s.owner, (st) => void (st.runners = { [s.desktop]: runnerState() }));
   await autoRoute(s.owner);
   assert.equal(await cloudNow(s.owner), false, "not proved since the start");
   const again = await listenAs(s.owner, s.desktop);
-  await until(() => cloudNow(s.owner), "to Bops Cloud once it connects");
+  await until(() => cloudNow(s.owner), "to SmileDesk Cloud once it connects");
   again.close();
 });
 
-test("an owner whose last Mac is older than chat through Bops Cloud, or outside the canary, isn't moved", async () => {
+test("an owner whose last Mac is older than chat through SmileDesk Cloud, or outside the canary, isn't moved", async () => {
   const s = await setup();
   // The Mac at 0.0.35 calls (a runner's call never counts: only a Mac's).
   await fetch(`${cloud.url}/v1/state/head`, { headers: own(s.owner, "0.0.35", "mac-old") });
@@ -335,7 +335,7 @@ test("an owner whose last Mac is older than chat through Bops Cloud, or outside 
   assert.equal((await query("SELECT app_version FROM bops.cloud_accounts WHERE user_id = $1", [s.owner])).rows[0].app_version, "0.0.35", "the runner's call didn't say it");
   box.close();
 
-  // A Mac that keeps to chat through Bops Cloud but has no switch (0.0.37): the owner couldn't choose it back, so not moved.
+  // A Mac that keeps to chat through SmileDesk Cloud but has no switch (0.0.37): the owner couldn't choose it back, so not moved.
   const w = await setup();
   await ownerChanges(w.owner, () => {}, own(w.owner, "0.0.37", "mac-old"));
   await until(async () => (await query("SELECT 1 FROM bops.cloud_accounts WHERE user_id = $1 AND app_version = '0.0.37'", [w.owner])).rowCount === 1, "the 0.0.37 Mac's version kept");
@@ -393,10 +393,10 @@ test("a member's message in a workspace still on the Mac is written first and ha
   // The Mac's away: the chat says the Mac answers it for now.
   const read = async () => ((await (await fetch(`${cloud.url}/v1/messages?after=0`, { headers: own(s.owner) })).json()) as { messages: { id: string; json: { text: string } }[] }).messages;
   const note = await until(async () => (await read()).find((m) => m.id === `${a.messageId}_note`), "the note");
-  assert.equal(note.json.text, "Tara's Mac answers Max for now, so Max will answer once Tara opens Bops.");
+  assert.equal(note.json.text, "Tara's Mac answers Max for now, so Max will answer once Tara opens SmileDesk.");
 });
 
-test("the Mac's save without the switch on it gets one more version, Bops Cloud's, so the Mac reads it", async () => {
+test("the Mac's save without the switch on it gets one more version, SmileDesk Cloud's, so the Mac reads it", async () => {
   const s = await setup();
   const head = await stateOf(s.owner);
   const answered = await ownerChanges(s.owner, (st) => delete st.workspaces.find((w) => w.id === "ws_acme")!.chatAuto);
@@ -408,7 +408,7 @@ test("the Mac's save without the switch on it gets one more version, Bops Cloud'
   assert.equal((await stateOf(s.owner)).version, next);
 });
 
-test("BOPS_CHAT_AUTO=revert sends every workspace Bops Cloud moved back to the Mac, with the switch on the owner's state", async () => {
+test("BOPS_CHAT_AUTO=revert sends every workspace SmileDesk Cloud moved back to the Mac, with the switch on the owner's state", async () => {
   const s = await setup();
   const box = await listenAs(s.owner, s.desktop);
   await until(() => cloudNow(s.owner), "moved");
@@ -474,7 +474,7 @@ test("moved back to the Mac while a member's turn waits on its computer: the Mac
     assert.equal(pending.filter((p) => p.stored && p.messageId === a.messageId).length, 1, "the Mac answers the member's message");
     const all = await readAllMessages(s.owner);
     const note = all.find((m) => m.id === `${a.messageId}_note`)?.json?.text;
-    assert.equal(note, "Tara's Mac answers Max for now, so Max will answer once Tara opens Bops.");
+    assert.equal(note, "Tara's Mac answers Max for now, so Max will answer once Tara opens SmileDesk.");
     assert.equal(all.find((m) => m.id === "msg_o_key-auto-hbown_note")?.json?.text, "Tara's Mac answers Max for now, and Max hadn't started on this yet. Send it again.");
     assert.ok(!all.some((m) => /can't answer chats yet|didn't wake up/.test(m.json?.text ?? "")), "no failure note");
   } finally {

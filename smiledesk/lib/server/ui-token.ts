@@ -2,7 +2,7 @@ import "server-only";
 import { timingSafeEqual } from "node:crypto";
 
 /**
- * Whether a request comes from the Bops window on this Mac. desktop/main.cjs keeps a token, gives it to
+ * Whether a request comes from the SmileDesk window on this Mac. desktop/main.cjs keeps a token, gives it to
  * this server (BOPS_UI_TOKEN) and sets it in the window's session as an httpOnly cookie, so every
  * request the window makes carries it and no page script can read it; main.cjs's own calls send it as
  * x-bops-window. A page that reached this server some other way can't have it: a bot's Chrome on this

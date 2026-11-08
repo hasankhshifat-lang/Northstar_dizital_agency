@@ -799,7 +799,7 @@ What Bops' front door (`edge/server.mjs`) served, now here, with nothing of any 
 
 - `GET /connected?app=<name>&status=…`: where people land after connecting an app (the app's
   `callbackUrl` is `<public>/connected`). Every value from the address is escaped; the page's
-  pictures are relative (`brand/bops-512.png`), so they stay under the public path's `/api`; a
+  pictures are relative (`brand/smiledesk-512.png`), so they stay under the public path's `/api`; a
   content security policy lets only its own style and script run.
 - `GET /oauth/callback`: a 302 to `https://backend.composio.dev/api/v3/toolkits/auth/callback` with
   the query as it came. The query carries the sign-in's code: it's never logged.

@@ -12,7 +12,7 @@ import { bot, getState, pullState, stateReady, stateUser, touchState, watchChang
 
 /**
  * Live on this Mac (cloud/README.md "Live"; the parts without the server are live-core.ts). While the
- * app works through Bops Cloud and someone's signed in:
+ * app works through SmileDesk Cloud and someone's signed in:
  *
  * - What this Mac's bots are doing (typing in a chat, a thread this Mac runs, the call the user is on)
  *   goes to POST /v1/live when it changes, and again every 5 seconds while it holds; so do the threads
@@ -23,7 +23,7 @@ import { bot, getState, pullState, stateReady, stateUser, touchState, watchChang
  *
  * A sign-out, another account's sign-in, or the app quitting closes the stream and says this Mac's bots
  * are idle. With the stream down, nothing else changes: the state is read every 30 seconds as before.
- * A computer's runner has none of it (persist.ts MAC_LOOPS; Bops Cloud refuses it /v1/live): what its
+ * A computer's runner has none of it (persist.ts MAC_LOOPS; SmileDesk Cloud refuses it /v1/live): what its
  * routines do reaches this Mac as the "state" event its state writes send.
  */
 
@@ -68,7 +68,7 @@ function changed() {
 }
 
 /**
- * Live running whenever it should: the app on Bops Cloud and the signed-in user's state loaded. Cheap
+ * Live running whenever it should: the app on SmileDesk Cloud and the signed-in user's state loaded. Cheap
  * when it already is (cloud-tunnel.ts calls it on every poll of the state); another user or key starts it over.
  */
 export function ensureLive() {

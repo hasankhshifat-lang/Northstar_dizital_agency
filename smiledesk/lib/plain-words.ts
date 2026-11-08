@@ -119,7 +119,7 @@ export const isLocalLink = (href: string) => /^https?:\/\/(?:localhost|127\.0\.0
 export const localOnlyLine = (botName?: string) => `opens only on ${botName ? `${botName}'s` : "the bot's"} computer`;
 
 /**
- * The run target an app's copy has on the bot's computer, as a bot titles work on it: Bops calls that copy its Local
+ * The run target an app's copy has on the bot's computer, as a bot titles work on it: SmileDesk calls that copy its Local
  * (app-envs.tsx ENV_NAMES; "Run it as its Local" in the bot's instructions, lib/server/hosted-apps.ts appWork), so a
  * bot writes "Run Trail Guides Local" or "Start the site locally". Only a title that runs, starts or opens something
  * there: any other title ending in "local" ("Shop local") is the word.

@@ -4,7 +4,7 @@ import type { HostedSite, LocalSite } from "./hosted-apps";
  * An app's page beside its bot's chat (components/app/preview-tab.tsx), as Lovable shows the app being built, in
  * what can be said without a window: which of its three places it can show (Local, Preview, Published) and why not
  * when it can't, the widths a page is seen at, when Fix it is offered and what it sends, and Select's script and what
- * Bops keeps of what it answers. Plain functions, so scripts/test-preview-tools.mjs runs them in node.
+ * SmileDesk keeps of what it answers. Plain functions, so scripts/test-preview-tools.mjs runs them in node.
  */
 
 /* ---------------- Its places: Local, Preview and Published ---------------- */
@@ -55,7 +55,7 @@ export const WIDTHS: readonly { id: Width; px: number | null; name: string }[] =
 ];
 export const isWidth = (v: unknown): v is Width => WIDTHS.some((w) => w.id === v);
 
-/** Where an app's width is kept on this Mac (per Bops user, workspace and app). */
+/** Where an app's width is kept on this Mac (per SmileDesk user, workspace and app). */
 const widthKey = (user: string | undefined, ws: string, name: string) => `bops.preview.width.${user || "me"}.${ws}.${name}`;
 
 /** The width an app's page was left at on this Mac (Full until one is picked; guarded: no storage, Full). */
@@ -165,7 +165,7 @@ export function restorePlanOf(raw: unknown): { later: LaterChange[]; blocked?: s
  * Select's script, run in the page (webview.executeJavaScript): it outlines what's under the pointer and answers,
  * once, what was clicked (`{ pick, add }`, add: with Cmd), or `{ esc: true }` for Esc, or null when it was turned off
  * (OFF_SCRIPT, or this script run again). The click never reaches the page. The page's own scripts run in the same
- * world and can change anything it reads or answers, so Bops takes the answer as data only (pickAnswerOf), never
+ * world and can change anything it reads or answers, so SmileDesk takes the answer as data only (pickAnswerOf), never
  * runs it, and caps every part of it.
  */
 export const SELECT_SCRIPT = `(() => {
@@ -245,7 +245,7 @@ export const SELECT_SCRIPT = `(() => {
 /** Turns Select off in the page (its outline gone; the pending answer is null). */
 export const OFF_SCRIPT = `(() => { const f = window.__bopsSelect; if (typeof f === "function") f(); })()`;
 
-/** One thing picked on the page, as Bops keeps it: every part capped here, whatever the page answered. */
+/** One thing picked on the page, as SmileDesk keeps it: every part capped here, whatever the page answered. */
 export type Picked = {
   /** Its page's path ("/pricing"). */
   route: string;
@@ -388,7 +388,7 @@ const CODE = /^[a-z][a-z0-9-]{0,31}(?:#[A-Za-z][\w-]{0,59}|(?:\.-?[A-Za-z_][\w-]
 const MAX_NOTES = 10;
 
 /**
- * The picks a message from the Bops window says it has (POST /api/chats/[chatId]/messages `picks`), as the server
+ * The picks a message from the SmileDesk window says it has (POST /api/chats/[chatId]/messages `picks`), as the server
  * keeps them: only lines still in its words (`text`), each with a code in pickCode's shape, none twice. Anything else
  * is dropped.
  */
@@ -405,7 +405,7 @@ export function picksOf(raw: unknown, text: string): PickNote[] {
 
 /**
  * The part of the page a pick's picture shows: its box with `pad` around it, inside the page's window (`view`, as
- * Bops measures it, never as the page says), in whole pixels. Null when nothing of it is in view (the whole window
+ * SmileDesk measures it, never as the page says), in whole pixels. Null when nothing of it is in view (the whole window
  * then).
  */
 export function captureRect(box: Picked["box"], view: { w: number; h: number }, pad = 16): { x: number; y: number; width: number; height: number } | null {

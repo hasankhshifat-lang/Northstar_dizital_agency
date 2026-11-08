@@ -1,6 +1,6 @@
 // Tests for the bots that work on one computer, together in the sidebar, and the site each bot works on
 // (lib/bot-groups.ts, components/app/bot-groups.tsx, the sidebar and its rail, lib/server/bot-groups.ts, and what
-// Bops Cloud sends a member: cloud/ws-slice.ts computersOf and sitesOf).
+// SmileDesk Cloud sends a member: cloud/ws-slice.ts computersOf and sitesOf).
 //
 // - Which bots are a group: a computer of the open workspace with two or more bots on it besides the main bot (the
 //   main bot keeps its own row on top and its computer's group comes right under it); none for a computer not made
@@ -18,7 +18,7 @@
 // - For a member: only the bots shown, keys never a computer's id, the owner's names, and sites only with Your Apps.
 // - Every word plain: no dashes, and Knowledge never its old name.
 //
-// The .tsx files are compiled with the TypeScript in node_modules as they load; Bops' server and Orgo are fakes.
+// The .tsx files are compiled with the TypeScript in node_modules as they load; SmileDesk's server and Orgo are fakes.
 // Usage: node scripts/test-bot-groups.mjs   (not with --conditions=react-server: the window's are client components)
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -61,7 +61,7 @@ registerHooks({
 const emitWarning = process.emitWarning.bind(process);
 process.emitWarning = (warning, ...rest) => (rest[0]?.code === "MODULE_TYPELESS_PACKAGE_JSON" ? undefined : emitWarning(warning, ...rest));
 
-/* ---------------- A window, and Bops' server, faked ---------------- */
+/* ---------------- A window, and SmileDesk's server, faked ---------------- */
 
 const { parseHTML } = await import("linkedom");
 const { window: win } = parseHTML("<!doctype html><html><body></body></html>");
@@ -98,7 +98,7 @@ globalThis.matchMedia = () => ({ matches: false });
 Object.defineProperty(globalThis, "navigator", { configurable: true, value: { userAgent: "test", clipboard: { writeText: async () => {} } } });
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-/** Bops' server: every request, and how it answers (`renameOk`, the domains it reads). */
+/** SmileDesk's server: every request, and how it answers (`renameOk`, the domains it reads). */
 const bops = { sent: [], renameOk: true, domains: {} };
 const json = (j, status = 200) => ({ ok: status < 400, status, json: async () => j });
 globalThis.fetch = async (url, init = {}) => {
@@ -482,7 +482,7 @@ await test("In the sidebar: the name first, then its site where the role was; a 
   bops.domains = { ada: "shop.example.com", bo: null, cy: "docs.example.com" };
   const html = render(linked());
   // Each a coder's (lib/bot-mood.ts codersOf): its site after a </> (test-bot-moods.mjs has the rest of that).
-  assert.match(html, />Ada<\/span><span data-row-line="site" title="Runs the shop website. Works on shop"[^>]*><span aria-hidden="true" data-code-mark="true"[^>]*>&lt;\/&gt;<\/span>shop</, "before Bops has read the domains: the site's name");
+  assert.match(html, />Ada<\/span><span data-row-line="site" title="Runs the shop website. Works on shop"[^>]*><span aria-hidden="true" data-code-mark="true"[^>]*>&lt;\/&gt;<\/span>shop</, "before SmileDesk has read the domains: the site's name");
   assert.match(html, />Bo<\/span><span data-row-line="site"[^>]*><span aria-hidden="true" data-code-mark="true"[^>]*>&lt;\/&gt;<\/span>blog</);
   assert.match(html, />Lex<\/span><span data-row-line="role"[^>]*>Sales</);
   assert.match(html, /class="truncate text-\[15px\] font-semibold leading-\[18px\] shrink-0 max-w-\[65%\]">Ada</, "the name keeps its room");
@@ -561,7 +561,7 @@ await test("Works on: the workspace's sites and None; picking one or None saves 
 
 /* ---------------- A workspace shared with the user ---------------- */
 
-/** What a member's window has: the owner's bots shown, the groups and sites Bops Cloud sent, as lib/server/shared-core.ts viewState puts them. */
+/** What a member's window has: the owner's bots shown, the groups and sites SmileDesk Cloud sent, as lib/server/shared-core.ts viewState puts them. */
 function memberView(slice, shownApps) {
   const s = world();
   const shown = new Set(slice.bots.map((b) => b.id));
@@ -585,7 +585,7 @@ const ownerBlob = () => {
   return s;
 };
 
-await test("Bops Cloud sends a member the groups of the bots they see: a key that's never the computer's id, the owner's name, the host only when shown", () => {
+await test("SmileDesk Cloud sends a member the groups of the bots they see: a key that's never the computer's id, the owner's name, the host only when shown", () => {
   const kim = Slice.sharedSlice(ownerBlob(), "ws_main", { role: "member", id: "u_kim", email: "kim@example.com" });
   assert.equal(kim.groups.length, 1);
   const [g] = kim.groups;
@@ -727,7 +727,7 @@ await test("A group of one app's bots renames by the computer and the app", asyn
   await m.done();
 });
 
-await test("Bops Cloud splits a member's groups by app the same way: keys never a computer's id, the owner's names, else the app's", () => {
+await test("SmileDesk Cloud splits a member's groups by app the same way: keys never a computer's id, the owner's names, else the app's", () => {
   const blob = twoApps();
   ws(blob).computerNames = { comp_a: "Storefront", "comp_a/shop": "Four Corners" };
   ws(blob).memberAccess = { "kim@example.com": { others: "read", bots: {}, at: 1 } };

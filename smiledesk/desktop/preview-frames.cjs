@@ -1,9 +1,9 @@
 /**
  * An app's Local beside its bot's chat (components/app/preview-tab.tsx) loads in a <webview> on a session of its
- * own, per Bops user, workspace and app (persist:bops-preview-<user>-<ws>-<app>), never the window's: the window's
+ * own, per SmileDesk user, workspace and app (persist:bops-preview-<user>-<ws>-<app>), never the window's: the window's
  * own cookie is on localhost too and would go to the app's port. Each such session is prepared once:
  *
- * - a plain Chrome's user agent (without Electron/… and Bops/…), so Google's sign in takes it as a browser;
+ * - a plain Chrome's user agent (without Electron/… and SmileDesk/…), so Google's sign in takes it as a browser;
  * - the tabs' permission rules (main.cjs fenceTabSession: no clipboard reads, USB, HID, serial or MIDI).
  *
  * Each such webview gets desktop/preview-frame-preload.cjs (sandboxed, isolated, no Node, never one the window
@@ -22,7 +22,7 @@ const PREFIX = "persist:bops-preview-";
 const isPreviewPartition = (p) => typeof p === "string" && p.startsWith(PREFIX) && /^[A-Za-z0-9_-]+$/.test(p.slice(PREFIX.length));
 
 /** A plain Chrome's user agent from Electron's (this is Chromium): what a sign in page reads. */
-const plainAgent = (ua) => String(ua).replace(/\s(?:Electron|Bops|bops)\/\S+/g, "");
+const plainAgent = (ua) => String(ua).replace(/\s(?:Electron|SmileDesk|bops)\/\S+/g, "");
 
 /** Whether a preview's page may open `url` as a child window on its session: Google's sign in, or a localhost page. */
 function popupAllowed(url) {

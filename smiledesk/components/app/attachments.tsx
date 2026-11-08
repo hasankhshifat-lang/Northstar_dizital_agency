@@ -63,7 +63,7 @@ export function sendFile(botId: string, file: File, onProgress?: (part: number) 
       if (xhr.status === 200 && j.file) resolve(j.file);
       else reject(new Error(j.error ?? "Couldn't add this file"));
     };
-    xhr.onerror = () => reject(new Error("Couldn't reach Bops. Try again."));
+    xhr.onerror = () => reject(new Error("Couldn't reach SmileDesk. Try again."));
     xhr.onabort = () => reject(new Error(STOPPED));
     signal?.addEventListener("abort", () => xhr.abort(), { once: true });
     xhr.send(file);
@@ -123,7 +123,7 @@ export function attachKind(type: string, botId: string | undefined, onlyFiles = 
  * shows and sends only those); taking one out (×) stops its upload. `asFiles()`: every one goes as a file, a picture
  * too (a workspace shared with the user: a picture for the model would stay on this Mac, a file goes to the owner's
  * computer), and none is added without a bot to put it with. Each image's preview is an object URL, which
- * holds on to its image (a pasted one's in Bops' main process) until it's let go: on taking one out, on leaving
+ * holds on to its image (a pasted one's in SmileDesk's main process) until it's let go: on taking one out, on leaving
  * with them still there, and (ChatView.send) once its message no longer shows it.
  */
 export function useAttachments(target?: () => string | undefined, { asFiles }: { asFiles?: () => boolean } = {}) {

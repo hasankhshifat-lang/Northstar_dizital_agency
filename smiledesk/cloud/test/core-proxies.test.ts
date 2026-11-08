@@ -67,7 +67,7 @@ const signIns: Record<string, unknown>[] = [
   { id: "ac_1", name: "Gmail", type: "default", status: "ENABLED", toolkit: { slug: "gmail", logo: "" }, auth_scheme: "OAUTH2", is_composio_managed: true, no_of_connections: 9 },
   {
     id: "ac_slack",
-    name: "Slack (Bops)",
+    name: "Slack (SmileDesk)",
     type: "custom",
     status: "ENABLED",
     toolkit: { slug: "slackbot", logo: "" },
@@ -511,13 +511,13 @@ test("Composio: the sign-in setups listed are only the usable ones, each without
 
 test("Composio: a sign-in setup is Composio's own, or one that asks each person for their own key; one made here is everyone's to use", async () => {
   const create = (who: string, slug: string, auth_config: unknown) => as(who, "POST", "/proxy/composio/api/v3.1/auth_configs", { toolkit: { slug }, auth_config });
-  const managed = await create(alice, "notion", { type: "use_composio_managed_auth", name: "Notion (Bops)" });
+  const managed = await create(alice, "notion", { type: "use_composio_managed_auth", name: "Notion (SmileDesk)" });
   assert.equal(managed.status, 201, managed.text);
-  assert.deepEqual(composio.got.at(-1)!.json, { toolkit: { slug: "notion" }, auth_config: { type: "use_composio_managed_auth", name: "Notion (Bops)" } });
+  assert.deepEqual(composio.got.at(-1)!.json, { toolkit: { slug: "notion" }, auth_config: { type: "use_composio_managed_auth", name: "Notion (SmileDesk)" } });
   // An app with no sign-in of Composio's own (lib/server/composio.ts authConfigFor): each person types their own key.
-  const keyed = await create(alice, "attio", { type: "use_custom_auth", authScheme: "API_KEY", name: "Attio (Bops)", credentials: {} });
+  const keyed = await create(alice, "attio", { type: "use_custom_auth", authScheme: "API_KEY", name: "Attio (SmileDesk)", credentials: {} });
   assert.equal(keyed.status, 201, keyed.text);
-  assert.deepEqual(composio.got.at(-1)!.json, { toolkit: { slug: "attio" }, auth_config: { type: "use_custom_auth", authScheme: "API_KEY", credentials: {}, name: "Attio (Bops)" } });
+  assert.deepEqual(composio.got.at(-1)!.json, { toolkit: { slug: "attio" }, auth_config: { type: "use_custom_auth", authScheme: "API_KEY", credentials: {}, name: "Attio (SmileDesk)" } });
   const keyedId = keyed.json.auth_config.id as string;
   assert.equal(await objectOwner("composio", keyedId), alice, "recorded as made through the cloud");
   // Bob sees it and connects his own account with it.
@@ -646,8 +646,8 @@ test("Composio: every call of the apps code (several accounts per app) works thr
   // authConfigFor: the app's setups, then a new one: Composio's own, or one asking for the person's own key.
   const { items } = await cx.authConfigs.list({ toolkit: "gmail" });
   assert.ok(items.some((a) => a.id === "ac_1") && !items.some((a) => a.id === "ac_other"));
-  await cx.authConfigs.create("linear", { type: "use_composio_managed_auth", name: "Linear (Bops)" });
-  const keyed = await cx.authConfigs.create("clay", { type: "use_custom_auth", authScheme: "API_KEY", name: "Clay (Bops)", credentials: {} } as never);
+  await cx.authConfigs.create("linear", { type: "use_composio_managed_auth", name: "Linear (SmileDesk)" });
+  const keyed = await cx.authConfigs.create("clay", { type: "use_custom_auth", authScheme: "API_KEY", name: "Clay (SmileDesk)", credentials: {} } as never);
   // connectApp: a second Gmail account next to the first, landing on the cloud's own page after.
   const req = await cx.connectedAccounts.link(me, "ac_1", { allowMultiple: true, callbackUrl: "https://bops-api.test/connected?app=Gmail" });
   assert.equal(await objectOwner("composio", req.id), alice);

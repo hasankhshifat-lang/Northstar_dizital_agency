@@ -21,7 +21,7 @@ type LineLink = {
 };
 
 /**
- * The bots' numbers and the phone each is linked to (Bops Cloud keeps who owns a line: lib/server/
+ * The bots' numbers and the phone each is linked to (SmileDesk Cloud keeps who owns a line: lib/server/
  * phone-lines.ts). `on` is false where lines aren't linked this way (not signed in with Orgo, or
  * self-hosting): then only Settings' verified numbers count.
  */

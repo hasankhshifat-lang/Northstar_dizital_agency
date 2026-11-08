@@ -33,7 +33,7 @@ const bytes = (t: string) => new TextEncoder().encode(t).length;
 /**
  * A file's name safe to put on a computer: its last part only, no control characters, no leading dots (a hidden
  * file, or . and ..), no space at either end, at most NAME_BYTES with its extension kept, cut between characters
- * (never inside one). Empty when nothing is left. So every name claimed from it is one a shared workspace's Bops Cloud
+ * (never inside one). Empty when nothing is left. So every name claimed from it is one a shared workspace's SmileDesk Cloud
  * takes on a member's message (cloud/protocol.ts plainFileName): ". notes.txt" is "notes.txt", never " notes.txt".
  */
 export function cleanFileName(raw: string): string {

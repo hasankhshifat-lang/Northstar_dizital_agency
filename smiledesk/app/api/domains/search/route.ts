@@ -5,11 +5,11 @@ export const dynamic = "force-dynamic";
 
 /**
  * Names to buy for the workspace, no app needed (DomainSearchAnswer in lib/hosted-apps.ts), ?ws=&q=&page=,
- * priced in Orgo credits. Each search is one of the few a minute Orgo allows the user: the Bops window only.
+ * priced in Orgo credits. Each search is one of the few a minute Orgo allows the user: the SmileDesk window only.
  * (A static folder, so it comes before [zone], whose ids are UUIDs.)
  */
 export async function GET(request: Request) {
-  const gate = domainsGate(request, "Domains can only be searched in the Bops app.");
+  const gate = domainsGate(request, "Domains can only be searched in the SmileDesk app.");
   if (gate) return gate;
   const q = new URL(request.url).searchParams;
   try {

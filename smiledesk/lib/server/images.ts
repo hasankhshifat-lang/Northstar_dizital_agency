@@ -9,7 +9,7 @@ import { recordTokens, usageTags } from "./usage";
 /**
  * Pictures a bot makes in chat (make_image, chat.ts): drawn new with gpt-image-2.5-flare, or made from
  * pictures already in the chat with gpt-image-2.5-sunburst (OpenAI's model for precise edits). Saved
- * with the user's uploads, so the chat shows them like any other image, and through Bops Cloud their
+ * with the user's uploads, so the chat shows them like any other image, and through SmileDesk Cloud their
  * tokens are counted for the bot (cloud/proxy.ts, the image routes).
  */
 

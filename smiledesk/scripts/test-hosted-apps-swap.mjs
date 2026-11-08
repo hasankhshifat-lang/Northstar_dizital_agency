@@ -119,7 +119,7 @@ globalThis.fetch = async (input, init) => {
       if (cmd === "# bops-ingot git") return json({ output: "INGOT_GIT=ok", exit_code: 0 });
       return json({ output: "INGOT_FOLDER=pull", exit_code: 0 });
     }
-    // Its computer's projects: the shop's Published (its record names it, as Bops 0.0.32 made it); its public URLs: none yet.
+    // Its computer's projects: the shop's Published (its record names it, as SmileDesk 0.0.32 made it); its public URLs: none yet.
     if (url.pathname === "/api/computers/c_a/deploy-projects" && req.method === "GET") return json({ projects: [{ id: "dp_live", name: "shop", port: 3000, source: "ingot", ingot_repo: `${PA}/shop`, url: "https://shop.orgo.dev", deployments: [] }] });
     if (url.pathname === "/api/computers/c_a/public-urls" && req.method === "GET") return json({ enabled: true, public_urls: [] });
     if (url.pathname === "/api/computers/c_a/public-urls" && req.method === "POST") return json({ id: "pu_1", url: `https://${body.label}.orgo.dev`, hostname: `${body.label}.orgo.dev`, label: body.label, port: body.port, created_at: new Date().toISOString() }, 201);
@@ -155,7 +155,7 @@ const { SWAPPED } = await import(`${root}/lib/server/ingot.ts`);
 const { botChatId } = await import(`${root}/lib/types.ts`);
 clearInterval(globalThis.__bopsRoutines);
 
-// Bob has used Bops on this Mac before: his own state, its main workspace on his own Orgo project, his own computer.
+// Bob has used SmileDesk on this Mac before: his own state, its main workspace on his own Orgo project, his own computer.
 await Auth.signIn(KEY_B, bob);
 S.update((s) => {
   s.workspaces[0].orgoProjectId = PB;

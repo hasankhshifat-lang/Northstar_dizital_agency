@@ -8,7 +8,7 @@ import { RtcDesktop, rtcWorthTrying } from "./rtc-desktop";
 import { useWindowFocused, useWindowVisible } from "./window-visible";
 
 // noVNC reports a screen's connection coming and going (couldn't connect yet, dropped, didn't say
-// goodbye, data still arriving while it closes) as console errors. Bops handles all of those itself (it waits, retries, falls back), and in
+// goodbye, data still arriving while it closes) as console errors. SmileDesk handles all of those itself (it waits, retries, falls back), and in
 // development a console error pops Next's error overlay, so those go to the debug log instead. Other
 // noVNC errors (a display problem, say) still show. This runs before noVNC loads (lazily, below),
 // which is when noVNC takes hold of console.error. The patch goes in once per page but reads the
@@ -39,7 +39,7 @@ export type Transport = "udp" | "vnc";
  * VNC shows the screen as soon as it connects, and WebRTC is tried alongside: its first frame fades in
  * over VNC, which is then let go. WebRTC that doesn't get there (UDP blocked on this network, a stream
  * smaller than the screen, anything else RtcDesktop gives up on) just ends, and the screen carries on
- * over VNC with nothing said. When it would have shrunk the screen, Bops puts the screen back (POST
+ * over VNC with nothing said. When it would have shrunk the screen, SmileDesk puts the screen back (POST
  * /api/vnc). A stream that drops after it was live comes back by itself, the same way. Falls back
  * (onFail) when nothing connects at first, and the caller shows the mirror or video. Another screen
  * streamed through Orgo (?screen=) also goes by how Orgo closed it (afterVncClose): a screen Orgo can't
@@ -287,7 +287,7 @@ function LiveStream({
   }
   /** WebRTC ended, and why; `streamed`: it had been showing the screen. */
   function rtcEnded(reason: string, streamed: boolean) {
-    // Orgo's gateway shrank the screen to fit its limit before saying so: Bops puts it back.
+    // Orgo's gateway shrank the screen to fit its limit before saying so: SmileDesk puts it back.
     if (reason === "shrunk" && !planUrl) void fetch(`/api/vnc?bot=${botId}&display=${display}`, { method: "POST" }).catch(() => {});
     setRtc("off");
     // Live before: a fresh try, VNC first and WebRTC alongside again.
@@ -493,7 +493,7 @@ class DecodedRect {
  * four minutes, until macOS killed it (10-18). Here each piece is decoded in the window with ImageDecoder
  * instead, drawn in order by noVNC's own queue, and closed as soon as it's drawn: no element, no data URL,
  * nothing kept. Not as a Blob for createImageBitmap, which is only the fallback: every Blob is kept track of in
- * Bops' main process, and at the 5,000 or so pieces a second of one moving screen (open, and as its thumbnail),
+ * SmileDesk's main process, and at the 5,000 or so pieces a second of one moving screen (open, and as its thumbnail),
  * main and the window each grew about 60 MB a minute (10-18). A noVNC whose display isn't the one this was
  * written for (1.7) is left as it is. (scripts/test-vnc-decode.mjs)
  */

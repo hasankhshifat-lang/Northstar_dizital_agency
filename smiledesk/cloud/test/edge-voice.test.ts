@@ -54,7 +54,7 @@ test("the owner's bot knows the computer is offline and what it can use, keeps t
   openai.state.respond = () => ({ text: "Hi Alex, it's Sam. My computer's offline, but I can take a note." });
   assert.deepEqual(await voice.cloudVoiceTurn(userId, turn(agentId, line.phone, from, callId, ""), { owner: true }), { text: "Hi Alex, it's Sam. My computer's offline, but I can take a note." });
   const first = openai.responses[0].body;
-  assert.match(String(first.instructions), /^You are Sam, Alex's chief of staff in Bops, on a phone call with Alex, who you work for/);
+  assert.match(String(first.instructions), /^You are Sam, Alex's chief of staff in SmileDesk, on a phone call with Alex, who you work for/);
   assert.match(String(first.instructions), /About Alex: Lives in Oakland\./, "what the owner wrote about themselves, as a call in the app knows it");
   assert.match(String(first.instructions), /When it's back you can use Alex's apps again: Gmail \(alex@example\.com: read & act\)\./);
   assert.match(String(first.instructions), /no markdown/);
@@ -184,7 +184,7 @@ test("calls turned away on the bot's settings page hear a short no, with no mode
   assert.equal(openai.responses.length, 0);
   assert.deepEqual(await voice.cloudVoiceTurn(others.userId, turn(others.agentId, others.line.phone, newNumber(), `call_${randomUUID()}`, ""), { owner: true }), { text: "Hi there." });
   assert.equal(openai.responses.length, 1, "the owner's call is answered");
-  // Nothing set (a Bops from before): answered as always; only the shapes the app writes count.
+  // Nothing set (a SmileDesk from before): answered as always; only the shapes the app writes count.
   const st = (x: unknown) => ({ workspaces: [{ id: "ws_main", botSettings: { sam: x } }] });
   assert.equal(voice.turnedAway({ name: "Sam" }, calls.callSettings(st(undefined), { id: "sam" }), false), null);
   assert.equal(voice.turnedAway({ name: "Sam" }, calls.callSettings(st({ sequencesOff: "yes", answersCalls: "no" }), { id: "sam" }), false), null);

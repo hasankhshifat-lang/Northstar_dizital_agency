@@ -21,10 +21,10 @@ export const dynamic = "force-dynamic";
  * changeset on main (hosted-apps.ts restoreApp: the owner's alone, never while a workspace shared with the user is
  * open); "github" { github: { repo, branch, path, keep?, dispatch? } | null } where its production is on GitHub, so
  * Publish pushes there (lib/server/github-mirror.ts), "githubLink" linking it there as both are now, and "githubPull"
- * bringing GitHub's changes in, GitHub's version winning (the owner's alone too). Answers { app }. A deploy makes the site public, so it's done only from the Bops window (ui-token.ts): never
+ * bringing GitHub's changes in, GitHub's version winning (the owner's alone too). Answers { app }. A deploy makes the site public, so it's done only from the SmileDesk window (ui-token.ts): never
  * from a page a bot's browser reached this server with.
  */
-const notFromWindow = (request: Request, words = "Apps can only be deployed in the Bops app.") => (fromBopsWindow(request) ? null : Response.json({ error: words }, { status: 403 }));
+const notFromWindow = (request: Request, words = "Apps can only be deployed in the SmileDesk app.") => (fromBopsWindow(request) ? null : Response.json({ error: words }, { status: 403 }));
 
 const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
 
@@ -94,11 +94,11 @@ export async function POST(request: Request, ctx: { params: Promise<{ name: stri
 
 /**
  * Remove an app from the workspace ({ ws, repo }): its sites and their domains off its computer, its record
- * dropped, and its Ingot repo deleted too only when `repo` is true. Only from the Bops window, where it's
+ * dropped, and its Ingot repo deleted too only when `repo` is true. Only from the SmileDesk window, where it's
  * asked once more first. Answers RemoveAppAnswer.
  */
 export async function DELETE(request: Request, ctx: { params: Promise<{ name: string }> }) {
-  const unready = notReady() ?? notFromWindow(request, "Apps can only be removed in the Bops app.");
+  const unready = notReady() ?? notFromWindow(request, "Apps can only be removed in the SmileDesk app.");
   if (unready) return unready;
   if (!appsOpen(getState())) return Response.json({ error: "Not found" }, { status: 404 });
   const { name } = await ctx.params;

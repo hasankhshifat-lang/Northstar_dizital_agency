@@ -56,7 +56,7 @@ export function MacSettings({ state }: { state: AppState }) {
         <div className={section}>
           <div className="flex flex-col gap-0.5">
             <span className={heading}>These mean your Mac</span>
-            <span className={sub}>A task that mentions one of these runs on your Mac. Otherwise Bops decides, and asks you when it can&apos;t tell.</span>
+            <span className={sub}>A task that mentions one of these runs on your Mac. Otherwise SmileDesk decides, and asks you when it can&apos;t tell.</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {m?.rules.map((r) => (
@@ -85,7 +85,7 @@ export function MacSettings({ state }: { state: AppState }) {
   );
 }
 
-/** One window a bot uses on the user's Mac: live video in the Bops app, else a picture refreshed every second. */
+/** One window a bot uses on the user's Mac: live video in the SmileDesk app, else a picture refreshed every second. */
 export function MacWindow({ app, max = 640, className = "" }: { app: string; max?: number; className?: string }) {
   const source = useAppWindowSource(app);
   if (source) return <MacStream key={source} sourceId={source} fps={10} maxWidth={max * 2} className={className} />;
@@ -124,7 +124,7 @@ export function useMacTiles(state: AppState | null) {
     .map((s) => ({ s, app: s.macApps!.at(-1)!, b: state!.bots.find((x) => x.id === s.botId) }));
 }
 
-/** The preview tiles themselves, shared by the corner preview in Bops and its popped-out window. */
+/** The preview tiles themselves, shared by the corner preview in SmileDesk and its popped-out window. */
 export function MacTiles({ tiles, onOpen, max = 480, tall = false }: { tiles: ReturnType<typeof useMacTiles>; onOpen: () => void; max?: number; tall?: boolean }) {
   return (
     <>
@@ -151,8 +151,8 @@ const POS_KEY = "bops.macPreview.pos";
 export const PIP_KEY = "bops.macPreview.popped";
 
 /**
- * The windows bots are using on the user's Mac, live, in a corner of Bops (like Codex's and T3's
- * previews). Drag the bar to move it anywhere in Bops (it remembers); pop it out into a small
+ * The windows bots are using on the user's Mac, live, in a corner of SmileDesk (like Codex's and T3's
+ * previews). Drag the bar to move it anywhere in SmileDesk (it remembers); pop it out into a small
  * window that floats over every app; or fold it into a pill.
  */
 export function MacPreviews({ state, onOpen }: { state: AppState; onOpen: () => void }) {

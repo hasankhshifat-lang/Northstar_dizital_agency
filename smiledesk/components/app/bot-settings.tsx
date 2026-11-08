@@ -53,7 +53,7 @@ export type SettingsLinks = {
 
 const reduced = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/** Whether a Mac or runner on the account runs a Bops from before these settings (the org chart's check). */
+/** Whether a Mac or runner on the account runs a SmileDesk from before these settings (the org chart's check). */
 function useOlderBops() {
   const [older, setOlder] = useState(false);
   useEffect(() => {
@@ -244,8 +244,8 @@ const Note = ({ children, tone }: { children: React.ReactNode; tone?: "error" })
 /** How it works on its computer, in a line (the Computer card's, as ComputerChoice words it). */
 export function computerLine(state: AppState, b: Bot): string {
   if (!state.shared && state.host === "mac") return `Works on ${yourMac(state)}`;
-  if (sharesComputer(b)) return b.isMain ? `Works on ${your(state)} free Bops computer` : `Works on ${workBot({ ...b, computer: "shared" }, state.bots).name}'s computer`;
-  return b.freeComputer ? "Its own Bops computer" : "Its own cloud computer";
+  if (sharesComputer(b)) return b.isMain ? `Works on ${your(state)} free SmileDesk computer` : `Works on ${workBot({ ...b, computer: "shared" }, state.bots).name}'s computer`;
+  return b.freeComputer ? "Its own SmileDesk computer" : "Its own cloud computer";
 }
 
 /** The voice its calls are in, by name: the one picked, else the one picked for its name (Bot.voice), unknown before its first call. */
@@ -327,7 +327,7 @@ function ShareAndPause({ state, bot: b }: { state: AppState; bot: Bot }) {
   const [copied, setCopied] = useState(false);
   const running = state.sessions.filter((s) => s.botId === b.id && live(s)).length;
   const share = async () => {
-    await navigator.clipboard.writeText([`${b.name} (${b.role}, Bops)`, b.phone, b.email].filter(Boolean).join("\n"));
+    await navigator.clipboard.writeText([`${b.name} (${b.role}, SmileDesk)`, b.phone, b.email].filter(Boolean).join("\n"));
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };

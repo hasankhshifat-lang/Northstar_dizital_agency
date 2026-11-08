@@ -9,10 +9,10 @@ const SPEEDS = ["default", "fast", "ultrafast"] as const;
 
 /**
  * Start a thread directly on a bot, bypassing chat (used for testing). With `model` (and `effort`,
- * `speed`), it runs on that, not on what Bops would route it to: a benchmark's run of one
+ * `speed`), it runs on that, not on what SmileDesk would route it to: a benchmark's run of one
  * configuration (scripts/bench-tasks.mjs --grid). Then it's always a new thread.
  * With `agentId` (the profile's New thread with: one of the bot's agents, lib/agents.ts), a new thread on that
- * agent, with `model` its model when the agent allows it. Only from the Bops window.
+ * agent, with `model` its model when the agent allows it. Only from the SmileDesk window.
  */
 export async function POST(request: Request) {
   const unready = notReady();
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   if (!botId || !goal?.trim()) return Response.json({ error: "botId and goal required" }, { status: 400 });
   if (agentId !== undefined) {
     if (typeof agentId !== "string" || !/^[A-Za-z0-9_]{1,40}$/.test(agentId)) return Response.json({ error: "agentId isn't an agent" }, { status: 400 });
-    if (!fromBopsWindow(request)) return Response.json({ error: "A thread's agent can only be picked in the Bops app." }, { status: 403 });
+    if (!fromBopsWindow(request)) return Response.json({ error: "A thread's agent can only be picked in the SmileDesk app." }, { status: 403 });
     if (model !== undefined && (typeof model !== "string" || !/^[A-Za-z0-9._:/-]{1,120}$/.test(model))) return Response.json({ error: "model isn't a model name" }, { status: 400 });
     return Response.json(startSession({ botId, goal: goal.trim(), title, fresh: true, agents: [agentId], model }));
   }

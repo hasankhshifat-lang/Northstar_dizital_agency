@@ -309,7 +309,7 @@ async function mount(el) {
   return { box, again: (next) => act(async () => root.render(next)), done: async () => (await act(async () => root.unmount()), box.remove()) };
 }
 const click = (el) => act(async () => void el.dispatchEvent(new win.Event("click", { bubbles: true })));
-/** Bops, faked: what it was sent, and what it answers. */
+/** SmileDesk, faked: what it was sent, and what it answers. */
 function server(status = 200, body = { ok: true }) {
   const calls = [];
   globalThis.fetch = async (url, init = {}) => {
@@ -410,7 +410,7 @@ await test("the last routine of the day deleted: focus goes to the day's heading
 });
 
 await test("refused: why shows on the line, the question stays with Cancel focused, and the routine is still there", async () => {
-  server(403, { error: "Routines can only be changed in the Bops app." });
+  server(403, { error: "Routines can only be changed in the SmileDesk app." });
   const a = routine("a", { kind: "daily", time: "09:00" }, { title: "Morning inbox", nextRunAt: Z("2026-10-19T13:00:00Z") });
   const m = await mount(week([a]));
   try {
@@ -418,7 +418,7 @@ await test("refused: why shows on the line, the question stays with Cancel focus
     await click(li.querySelector('button[aria-label="Delete Morning inbox"]'));
     await click([...li.querySelectorAll("button")].find((x) => x.textContent === "Delete"));
     await sleep(0);
-    assert.equal(li.querySelector('[role="alert"]')?.textContent, "Routines can only be changed in the Bops app.");
+    assert.equal(li.querySelector('[role="alert"]')?.textContent, "Routines can only be changed in the SmileDesk app.");
     assert.match(li.textContent, /Delete Morning inbox\?/, "still asking");
     assert.equal(doc.activeElement.textContent, "Cancel");
     assert.ok(m.box.querySelector('li[data-routine="a"]'));

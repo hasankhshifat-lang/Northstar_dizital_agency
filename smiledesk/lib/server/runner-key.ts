@@ -3,7 +3,7 @@ import { lstat, readFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
 /**
- * A computer's own Orgo key, which its Bops runner signs in with (orgo-auth.ts loadOrgoKey on a runner).
+ * A computer's own Orgo key, which its SmileDesk runner signs in with (orgo-auth.ts loadOrgoKey on a runner).
  * Orgo makes it for that computer alone and writes it there as ORGO_API_KEY: when the computer is made
  * from a template that asks for it (bops-base 0.1.9 on: metal writes `export ORGO_API_KEY='…'` into
  * /root/.env), or when the Mac sets a runner up on a computer without it (PUT orgo-web

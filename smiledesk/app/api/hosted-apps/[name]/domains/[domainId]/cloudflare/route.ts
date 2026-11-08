@@ -7,15 +7,15 @@ import { MAIN_WORKSPACE } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-/** A domain's records in the user's Cloudflare are read and set only from the Bops window (ui-token.ts), never a page a bot's browser reached. */
-const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Domains can only be changed in the Bops app." }, { status: 403 }));
+/** A domain's records in the user's Cloudflare are read and set only from the SmileDesk window (ui-token.ts), never a page a bot's browser reached. */
+const notFromWindow = (request: Request) => (fromBopsWindow(request) ? null : Response.json({ error: "Domains can only be changed in the SmileDesk app." }, { status: 403 }));
 
 const answer = (e: unknown) =>
   e instanceof HostedAppError ? Response.json({ error: e.message, ...e.extra }, { status: e.status }) : Response.json({ error: (e as Error).message }, { status: 500 });
 
 const wsOf = (b: Record<string, unknown>) => (typeof b.ws === "string" && b.ws.trim()) || getState().workspace || MAIN_WORKSPACE;
 
-/** What Bops would set in Cloudflare for one of the app's domains (?ws=&site=): CloudflarePlan. Nothing is written. */
+/** What SmileDesk would set in Cloudflare for one of the app's domains (?ws=&site=): CloudflarePlan. Nothing is written. */
 export async function GET(request: Request, ctx: { params: Promise<{ name: string; domainId: string }> }) {
   const unready = notReady() ?? notFromWindow(request);
   if (unready) return unready;

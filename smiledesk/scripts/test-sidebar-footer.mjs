@@ -268,7 +268,7 @@ await test("Knowledge is new when an item was learned or mentioned after the new
   assert.equal(seenOf("u1", "w1"), 200, "an older copy (something forgotten) doesn't make old items new");
   assert.equal(newSince([...items, { last: 250 }], seenOf("u1", "w1")), true, "learned after: new");
   assert.equal(seenOf("u1", "w2"), undefined, "another workspace has its own");
-  // No localStorage (it throws): still works, for as long as Bops is open.
+  // No localStorage (it throws): still works, for as long as SmileDesk is open.
   globalThis.localStorage = { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } };
   assert.equal(seenOf("u1", "w3"), undefined);
   markSeen("u1", "w3", items);
@@ -388,14 +388,14 @@ await test("the workspace switcher says under the default why Orgo still shows b
     renderToStaticMarkup(h(WorkspaceSwitcher, { opened: true, state: { ...base, workspaces: ws, workspace: "ws_main", orgoMigration: { v: 2, step: "done", created: [], ...(defaultRename ? { defaultRename } : {}) } } }));
   const old = switcher({ to: "bops-", reason: "old_app", checkedAt: "2026-10-21T01:00:00Z", at: "2026-10-21T01:00:00Z" });
   const notes = [...old.matchAll(/<span data-held-name[^>]*>([^<]*)<\/span>/g)].map((m) => m[1]);
-  assert.deepEqual(notes, ["Orgo keeps the name bops until every Bops app you use is updated to 0.0.29."], "once, for the default only");
+  assert.deepEqual(notes, ["Orgo keeps the name bops until every SmileDesk app you use is updated to 0.0.29."], "once, for the default only");
   // Right under the default's row, before the next workspace.
   assert.ok(old.indexOf("data-held-name") > old.indexOf(">bops-<") && old.indexOf("data-held-name") < old.indexOf(">Acme<"), old);
   assert.ok(!switcher(null).includes("data-held-name"), "nothing waits: nothing said");
   // Every reason the gate or the retry gives says something plain, with no dashes.
   const say = Object.fromEntries(["old_app", "silent_app", "no_record", "no_signal", "unreachable", "no_project", "no_free_name"].map((r) => [r, heldNameNote(r)]));
-  for (const r of ["old_app", "silent_app", "no_record", "no_signal"]) assert.equal(say[r], "Orgo keeps the name bops until every Bops app you use is updated to 0.0.29.", r);
-  assert.equal(say.unreachable, "Orgo keeps the name bops for now: Bops couldn't reach Orgo, and tries again by itself.");
+  for (const r of ["old_app", "silent_app", "no_record", "no_signal"]) assert.equal(say[r], "Orgo keeps the name bops until every SmileDesk app you use is updated to 0.0.29.", r);
+  assert.equal(say.unreachable, "Orgo keeps the name bops for now: SmileDesk couldn't reach Orgo, and tries again by itself.");
   assert.equal(say.no_project, "Orgo gets this name once its Orgo workspace is made, with your first computer.");
   assert.equal(say.no_free_name, "Orgo keeps the name bops: your Orgo already has workspaces with this name.");
   for (const t of Object.values(say)) assert.ok(!/[\u2013\u2014]/.test(t), t);

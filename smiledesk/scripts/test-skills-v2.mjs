@@ -1,6 +1,6 @@
 // Tests for skills v2 (lib/server/skill-bundle.ts, lib/server/workspace-skills.ts, lib/skill-labels.ts,
 // lib/server/skill-proposals.ts, lib/skill-proposals.ts, lib/server/bops-sync.ts, app/api/skills): SKILL.md in the
-// Agent Skills spec's form (Bops' own fields as strings in metadata) written, and the form from before still read
+// Agent Skills spec's form (SmileDesk's own fields as strings in metadata) written, and the form from before still read
 // (a stored version never refused for it, one from Orgo made fit whatever its metadata says, a metadata.version that
 // isn't one only a warning, as orgo-web); the spec's name rules on an import (the folder's own name, no double
 // hyphen), an existing skill with another name still working; which bot has which skill (a skill's own bot list,
@@ -237,7 +237,7 @@ const setLabels = (id, labels) => S.update((s) => {
 
 /* ---------------- The spec's form ---------------- */
 
-await check("specOf reads both forms (metadata first); toSpecForm moves Bops' fields into metadata as strings, the rest where it was", async () => {
+await check("specOf reads both forms (metadata first); toSpecForm moves SmileDesk's fields into metadata as strings, the rest where it was", async () => {
   const old = { name: "vm-health", description: "x", version: "1.2.0", risk: "read", runs_on: "local", requires_secrets: ["DATABASE_URL", "GITHUB_TOKEN"], label: "Ops", license: "MIT", applies_to: { env: "prod" } };
   assert.deepEqual(B.specOf(old), { label: "Ops", version: "1.2.0", risk: "read", runsOn: "local", requiresSecrets: ["DATABASE_URL", "GITHUB_TOKEN"] });
   const spec = B.toSpecForm(old);
@@ -255,7 +255,7 @@ await check("specOf reads both forms (metadata first); toSpecForm moves Bops' fi
   assert.deepEqual(B.validateFrontmatter({ name: "pdf-tools", description: "x", metadata: { author: "example-org", version: "1.0" } }), [], "the spec's own example");
   assert.deepEqual(B.frontmatterWarnings({ metadata: { version: "1.0" }, compatibility: "x".repeat(501) }).map((p) => p.reason), ["metadata.version is not a version such as 1.2.0, so the version number is set for you", "compatibility is text of 500 characters at most"]);
   assert.equal(B.specOf({ metadata: { version: "1.0" } }).version, undefined, "read as none: it's numbered");
-  assert.deepEqual(B.specOf({ version: "1.2.0", risk: "read", metadata: { version: "1.0", risk: "high" } }), { version: "1.2.0", risk: "read" }, "one Bops wouldn't take reads as none, then the old form");
+  assert.deepEqual(B.specOf({ version: "1.2.0", risk: "read", metadata: { version: "1.0", risk: "high" } }), { version: "1.2.0", risk: "read" }, "one SmileDesk wouldn't take reads as none, then the old form");
   assert.deepEqual(B.validateFrontmatter(old), [], "the form from before passes as it did");
   assert.deepEqual(B.validateFrontmatter({ version: "1.0" }).map((p) => p.reason), ["frontmatter version: a version such as 1.2.0"], "the old form checked as before");
   assert.deepEqual(B.validateFrontmatter({ compatibility: "x".repeat(501) }), [], "a warning, as orgo-web takes it");
@@ -285,10 +285,10 @@ await check("A skill made, imported and published is written in the spec's form;
   const md = skillMd("ws_main", "deploy-check");
   assert.match(md, /^---\nname: deploy-check\ndescription: Checks a deploy\nmetadata: \{[^}\n]+\}\n---\n/);
   assert.deepEqual(B.parseSkillMd(md).frontmatter, { name: "deploy-check", description: "Checks a deploy", metadata: { label: "Ops", risk: "write", "runs-on": "remote-host", "requires-secrets": "DEPLOY_TOKEN" } });
-  assert.doesNotMatch(md, /\n(version|risk|runs_on|requires_secrets|label):/, "nothing of Bops' at the top");
+  assert.doesNotMatch(md, /\n(version|risk|runs_on|requires_secrets|label):/, "nothing of SmileDesk's at the top");
   const pub = W.publishSkill("ws_main", "skill", "deploy-check");
   assert.match(versionMd("ws_main", "deploy-check", pub.version), /\nmetadata: \{[^}]*version: "0\.1\.0"[^}]*\}\n/);
-  // A version kept in the form from before (as Orgo or an older Bops wrote it): read as it is, and the same folder is "nothing changed".
+  // A version kept in the form from before (as Orgo or an older SmileDesk wrote it): read as it is, and the same folder is "nothing changed".
   const vdir = join(dataDir(), "ws_main", ".versions", "skills", "deploy-check", "0.1.0");
   writeFileSync(join(vdir, "SKILL.md"), "---\nname: deploy-check\ndescription: Checks a deploy\nversion: \"0.1.0\"\nrisk: write\nruns_on: remote-host\nrequires_secrets: [DEPLOY_TOKEN]\nlabel: Ops\n---\n# Deploy check\n\nRun it.\n");
   S.update((s) => (s.workspaces[0].skills.find((x) => x.slug === "deploy-check").versions[0].sha256 = "0".repeat(64)));
@@ -582,7 +582,7 @@ await check("Accept: only from the window, never on a runner; the next version t
   assert.equal((await route({ action: "proposal", do: "accept", messageId: m.id, proposalId: p.id }, { window: false })).status, 403);
   process.env.BOPS_RUNNER = "1";
   try {
-    assert.deepEqual(P.acceptProposal(m.id, p.id), { ok: false, status: 409, error: "Accept it in Bops on your Mac." });
+    assert.deepEqual(P.acceptProposal(m.id, p.id), { ok: false, status: 409, error: "Accept it in SmileDesk on your Mac." });
   } finally {
     delete process.env.BOPS_RUNNER;
   }
@@ -595,7 +595,7 @@ await check("Accept: only from the window, never on a runner; the next version t
   assert.equal((await route({ action: "proposal", do: "reject", messageId: m.id, proposalId: p.id })).status, 409);
 });
 
-await check("A secret in a proposal is refused, never kept; an edit that isn't in the file once is refused; Bops' own skills and unknown ones too", async () => {
+await check("A secret in a proposal is refused, never kept; an edit that isn't in the file once is refused; SmileDesk's own skills and unknown ones too", async () => {
   const b = bot("boppy");
   const from = { chatId, read: () => [] };
   assert.match(hear(P.offerProposal(b, proposeArgs({ edits: [{ old: "2. Sort by sender.", new: `2. Use ${FAKE_STRIPE}.` }] }), from, []).said), /^Not proposed: it holds what looks like a secret \(edit 1 line 1: Stripe secret key\)\./);
@@ -638,7 +638,7 @@ await check("Every turn kind has it: a routine's run (its card on the run's mess
   at = asked.length;
   await Chat.handleMessage(chatId, "Save a spam check skill and fix the sweep");
   const outs = asked[at + 1].input.filter((x) => x.type === "function_call_output").map((x) => x.output);
-  assert.match(outs[0], /^Not saved: this turn read something from outside Bops/);
+  assert.match(outs[0], /^Not saved: this turn read something from outside SmileDesk/);
   assert.match(outs[1], /^Proposed\./);
   assert.deepEqual(lastBot().skillProposals[0].read, ["Web search results"]);
 });

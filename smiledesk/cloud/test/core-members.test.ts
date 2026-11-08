@@ -14,7 +14,7 @@ import { appBotsFor, appThreadsFor, appThreadsOf, botsOf, chatIdsOf, computerUse
 /**
  * Shared workspaces, read only (members.ts, ws-slice.ts): who may watch is what orgo-web's bops-role
  * says for the caller (owner, admin, member; nobody else), kept a minute and asked again while a stream
- * is open, dropped on orgo-web's notice; a project with no Bops workspace of its own is refused; what a
+ * is open, dropped on orgo-web's notice; a project with no SmileDesk workspace of its own is refused; what a
  * member is shown of the owner's state is an allow list of one workspace, and of it only the bots the
  * owner gave them (member-access.ts); and a member's stream is the owner's, counted as the member's,
  * carrying only what's of their bots, which a member can't publish into. orgo-web is a fake (a function,
@@ -67,7 +67,7 @@ test("an answer that isn't one, or Orgo failing, is a 503, never access", async 
   assert.equal(await accessFor("u", "k", "../x"), null, "a malformed project id never reaches Orgo");
 });
 
-test("a project with no Bops workspace of its own is refused", async () => {
+test("a project with no SmileDesk workspace of its own is refused", async () => {
   const { fetch } = fakeRoles({ "k p1": access("member", null) });
   resetMembers({ fetch });
   await assert.rejects(watchable({ id: "u" }, "k", "p1"), (e: { status: number; extra?: { code?: string } }) => e.status === 409 && e.extra?.code === "not_shareable");
@@ -368,7 +368,7 @@ test("Use its computer: off unless the owner turned it on for them, on an entry 
   assert.equal(sharedSlice(blob("none"), "ws_acme", member()).computer, undefined);
   assert.equal(sharedSlice(blob("use"), "ws_acme", OWNER_VIEW).computer, undefined);
   assert.notEqual(sharedHash(sharedSlice(blob("use"), "ws_acme", member())), sharedHash(sharedSlice(blob("none"), "ws_acme", member())));
-  // Kept by Bops Cloud's own rules (cleanAccess), and new invites never have it.
+  // Kept by SmileDesk Cloud's own rules (cleanAccess), and new invites never have it.
   assert.equal(cleanAccess({ others: "none", bots: {}, computer: "use" })?.computer, "use");
   assert.equal(cleanAccess({ others: "none", bots: {}, computer: true })?.computer, undefined);
   assert.equal(inviteDefault(["a"]).computer, undefined);
@@ -703,12 +703,12 @@ test("Keys as orgo-web says it: bops-role's keys is read (a real yes or no only)
   assert.equal(keysOf({ role: "admin", id: "u-tom", keys: true }), true);
   assert.equal(keysOf({ role: "admin", id: "u-tom", keys: false }), false, "orgo-web's no for an Admin (a share link's guest) stands");
   assert.equal(keysOf(OWNER_VIEW), false, "the owner's own Keys page reads their vault: nothing in a slice");
-  // viewerOf carries it, and the owner's Bops taking key switches only to someone with Keys.
+  // viewerOf carries it, and the owner's SmileDesk taking key switches only to someone with Keys.
   const user = { id: "u-ann", email: "ann@acme.com" } as Parameters<typeof viewerOf>[0];
   assert.deepEqual([viewerOf(user, { ...access("member"), keys: true }, false, false, true).keyActs, viewerOf(user, access("member"), false, false, true).keyActs], [true, undefined]);
 });
 
-test("Keys in the slice: for someone with it, the names the owner's Mac said (an allow list, never a value) and each bot's keys; whether the owner's Bops takes their switches; all part of the fingerprint", () => {
+test("Keys in the slice: for someone with it, the names the owner's Mac said (an allow list, never a value) and each bot's keys; whether the owner's SmileDesk takes their switches; all part of the fingerprint", () => {
   const blob = keyed();
   const s = sharedSlice(blob, "ws_acme", member({ keys: true, keyActs: true }));
   assert.equal(s.keys, true);
@@ -1319,8 +1319,8 @@ function actFakes(opts: { on?: boolean; owner?: Record<string, unknown>; ownerEm
     isOn: () => opts.on ?? true,
     drop: async (projectId, userId) => void dropped.push(`${projectId} ${userId}`),
     count: async (userId, what) => void countedNow?.push(`${what ?? "act"} ${userId}`),
-    // Whether the owner's Bops takes an Admin's acts (members.ts adminGate): no, unless the test says. `edits`: a change to
-    // a bot's "How I work" (a newer Bops than the other acts need), as `adminGate` unless the test says.
+    // Whether the owner's SmileDesk takes an Admin's acts (members.ts adminGate): no, unless the test says. `edits`: a change to
+    // a bot's "How I work" (a newer SmileDesk than the other acts need), as `adminGate` unless the test says.
     // `keysGate`: whether it takes a "key" act (KEYS_MIN_VERSION), no unless the test says.
     // `changesGate`: whether it takes a "change" act and Members' switches (CHANGES_MIN_VERSION), no unless the test says.
     // `filesGate`: whether it takes a member's message with files (MEMBER_FILES_MIN_VERSION), no unless the test says.
@@ -1463,7 +1463,7 @@ const filesOwner: Record<string, unknown> = {
   ],
 };
 /**
- * The same, with a plan too short for Max to have a computer of his own: he works on the free Bops computer, which the
+ * The same, with a plan too short for Max to have a computer of his own: he works on the free SmileDesk computer, which the
  * main bot of the owner's other workspace has (lib/server/plan.ts shareFree), in that workspace's Orgo project.
  */
 const freeOwner: Record<string, unknown> = {
@@ -1495,7 +1495,7 @@ test("over HTTP: files: an Admin is named the owner's computer, woken as a messa
   assert.deepEqual((await filesAt("act-tom", { botId: "mia", screen: true })).json, { computerId: "pc_mia", botId: "mia", hostId: "mia", hostName: "Mia" });
 });
 
-test("over HTTP: files: a Member, a bot on the owner's Mac, a computer of another of the owner's workspaces, an old owner's Bops, or a computer that won't wake are refused in words, nothing woken", async () => {
+test("over HTTP: files: a Member, a bot on the owner's Mac, a computer of another of the owner's workspaces, an old owner's SmileDesk, or a computer that won't wake are refused in words, nothing woken", async () => {
   filesFakes();
   const refused = async (user: string, body: unknown, status: number, code?: string, words?: RegExp) => {
     const r = await filesAt(user, body);
@@ -1516,12 +1516,12 @@ test("over HTTP: files: a Member, a bot on the owner's Mac, a computer of anothe
   await refused("act-tom", { botId: "max" }, 409, "not_waiting", /^Max's computer is paid by the hour, and Alex hasn't let messages wake it, so files can't go on it now\.$/);
   wakeSays = { ok: false, state: "refused", note: "noCredit" };
   await refused("act-tom", { botId: "max" }, 402, "not_waiting", /Alex is out of Orgo credit/);
-  // Waking not set up on this Bops Cloud: Orgo wakes it for the file's first step.
+  // Waking not set up on this SmileDesk Cloud: Orgo wakes it for the file's first step.
   wakeSays = { ok: false, state: "unset", why: "Waking computers isn't set up here." };
   assert.equal((await filesAt("act-tom", { botId: "max" })).status, 200);
   filesFakes({ filesGate: false });
   await refused("act-tom", { botId: "max" }, 409, "owner_bops_old", /needs an update before you can add files/);
-  // The free Bops computer the other workspace's main bot has: in that workspace's Orgo project, which an Admin here isn't in.
+  // The free SmileDesk computer the other workspace's main bot has: in that workspace's Orgo project, which an Admin here isn't in.
   filesFakes({ owner: freeOwner });
   await refused("act-tom", { botId: "max" }, 403, "member_owner_only", /^Max works on a computer in another of Alex's workspaces, so only Alex can add files to it\.$/);
   await refused("act-tom", { botId: "rex" }, 403, "member_owner_only", /^Rex works on a computer in another of Alex's workspaces/);
@@ -1535,7 +1535,7 @@ test("over HTTP: an Admin's message with files carries them to the owner's Mac, 
   assert.deepEqual(queued.at(-1)?.payload.act, { act: "chat", chatId: "bot:max", text: "Read this", files: [aFile()] });
   assert.equal((await act("act-tom", { key: "k_files_002", act: { act: "chat", chatId: "bot:max", text: "", files: [aFile()] } })).status, 202, "files alone");
   assert.equal((await act("act-tom", { key: "k_files_003", act: { act: "chat", chatId: "bot:rex", text: "x", files: [aFile({ botId: "rex" })] } })).status, 202, "Rex's, on Max's computer");
-  // The name everyone sees on it, and the bot is told: the owner's, never the one their Bops sent.
+  // The name everyone sees on it, and the bot is told: the owner's, never the one their SmileDesk sent.
   assert.equal((await act("act-tom", { key: "k_files_00a", act: { act: "chat", chatId: "bot:max", text: "x", files: [aFile({ hostName: "Someone else" })] } })).status, 202);
   assert.deepEqual(queued.at(-1)?.payload.act, { act: "chat", chatId: "bot:max", text: "x", files: [aFile()] });
   const refused = async (body: unknown, status: number, code?: string, user = "act-tom") => {
@@ -1557,7 +1557,7 @@ test("over HTTP: an Admin's message with files carries them to the owner's Mac, 
   filesFakes({ filesGate: false });
   await refused({ key: "k_files_010", act: { act: "chat", chatId: "bot:max", text: "x", files: [aFile()] } }, 409, "owner_bops_old");
   assert.equal(queued.length, 0);
-  // Words alone still go, whatever the owner's Bops, from a Member too, on the count their acts go on.
+  // Words alone still go, whatever the owner's SmileDesk, from a Member too, on the count their acts go on.
   assert.equal((await act("act-sam", chatAct("bot:max", "k_files_011"))).status, 202);
   assert.deepEqual(counted.at(-1), "act act-sam");
 });
@@ -1590,7 +1590,7 @@ const whereOwner: Record<string, unknown> = {
   sessions: [...(actOwner.sessions as unknown[]), { id: "t-where", botId: "max", chatId: "bot:max", title: "Plan a trip", status: "queued", askWhere: true }, { id: "t-picked", botId: "max", chatId: "bot:max", title: "Picked", status: "queued" }],
 };
 
-test("over HTTP: an Admin answers the owner's own asks and a thread on the owner's Mac's asks, and tells a Mac thread more, once the owner's Bops takes it; a Member never", async () => {
+test("over HTTP: an Admin answers the owner's own asks and a thread on the owner's Mac's asks, and tells a Mac thread more, once the owner's SmileDesk takes it; a Member never", async () => {
   actFakes({ adminGate: true });
   const before = Date.now();
   for (const askId of ["ask-gmail", "ask-nokind", "ask-key", "ask-mac"]) {
@@ -1617,7 +1617,7 @@ test("over HTTP: an Admin answers the owner's own asks and a thread on the owner
   assert.ok(queued.every((q) => q.payload.role === "admin"));
 });
 
-test("over HTTP: an Admin whose owner's Bops is too old to take it is told so (409 owner_bops_old), never queued; their other acts go as before", async () => {
+test("over HTTP: an Admin whose owner's SmileDesk is too old to take it is told so (409 owner_bops_old), never queued; their other acts go as before", async () => {
   actFakes({ adminGate: false });
   for (const askId of ["ask-gmail", "ask-mac"]) {
     const r = await act("act-tom", { key: `k_old_${askId.slice(4)}x`, act: { act: "answer", askId, reply: "once" } });
@@ -1648,7 +1648,7 @@ test("over HTTP: where a thread runs is an Admin's to pick, the bot's computer o
   assert.equal(queued.length, 0);
 });
 
-test("over HTTP: an Admin changes a bot's How I work once the owner's Bops takes it; a Member never; an older owner's Bops is said, never queued", async () => {
+test("over HTTP: an Admin changes a bot's How I work once the owner's SmileDesk takes it; a Member never; an older owner's SmileDesk is said, never queued", async () => {
   actFakes({ adminGate: true, edits: true });
   // Zed: no entry for anyone, an Admin's all the same (every bot).
   const r = await act("act-tom", { key: "k_persona_01", act: { act: "persona", botId: "zed", text: "  Keep replies short.  ", was: "", extra: "dropped" } });
@@ -1674,15 +1674,15 @@ test("over HTTP: an Admin changes a bot's How I work once the owner's Bops takes
   const stale = await act("act-tom", { key: "k_persona_7b", act: { act: "persona", botId: "max", text: "Mine", was: "" } });
   assert.deepEqual([stale.status, stale.json.code, stale.json.error], [409, "not_waiting", "Changed by someone else. Here's the latest."]);
   assert.equal(queued.length, 0);
-  // The owner's Bops takes an Admin's other acts but not this one yet: said so, never queued (it would drop it).
+  // The owner's SmileDesk takes an Admin's other acts but not this one yet: said so, never queued (it would drop it).
   actFakes({ adminGate: true, edits: false });
   const old = await act("act-tom", { key: "k_persona_08", act: { act: "persona", botId: "max", text: "Hi", was: "" } });
-  assert.deepEqual([old.status, old.json.code, old.json.error], [409, "owner_bops_old", "The owner's Bops needs an update first."]);
+  assert.deepEqual([old.status, old.json.code, old.json.error], [409, "owner_bops_old", "The owner's SmileDesk needs an update first."]);
   assert.equal(queued.length, 0);
   assert.equal((await act("act-tom", { key: "k_persona_09", act: { act: "where", sessionId: "t-max", to: "mac" } })).json.code, "member_owner_only", "its other acts go by their own gate");
 });
 
-test("over HTTP: a bot's key is switched by someone with Keys (an Admin, or a Member orgo-web says has it), for a bot they see at Read or more, once the owner's Bops takes it; queued as theirs with keys", async () => {
+test("over HTTP: a bot's key is switched by someone with Keys (an Admin, or a Member orgo-web says has it), for a bot they see at Read or more, once the owner's SmileDesk takes it; queued as theirs with keys", async () => {
   const kimOwner = { ...actOwner, workspaces: [{ ...(actOwner.workspaces as Record<string, unknown>[])[0], memberAccess: { ...((actOwner.workspaces as Record<string, unknown>[])[0].memberAccess as MemberAccessMap), "kim@example.com": { others: "none", bots: { ivy: "read" } } } }] };
   actFakes({ owner: kimOwner, keysGate: true });
   const r = await act("act-kim", { key: "k_key_0001", act: { act: "key", botId: "ivy", name: "GITHUB_TOKEN", on: true } });
@@ -1705,7 +1705,7 @@ test("over HTTP: a bot's key is switched by someone with Keys (an Admin, or a Me
   queued.length = 0;
   const sam = await act("act-sam", { key: "k_key_0004", act: { act: "key", botId: "max", name: "GITHUB_TOKEN", on: true } });
   assert.deepEqual([sam.status, sam.json.code, sam.json.error], [403, "member_no_keys", "The owner or an Admin can give you Keys."]);
-  // The owner's Bops older than KEYS_MIN_VERSION: said so, never queued (it would drop it).
+  // The owner's SmileDesk older than KEYS_MIN_VERSION: said so, never queued (it would drop it).
   actFakes({ owner: kimOwner, keysGate: false, adminGate: true, edits: true });
   const old = await act("act-kim", { key: "k_key_0005", act: { act: "key", botId: "ivy", name: "GITHUB_TOKEN", on: true } });
   assert.deepEqual([old.status, old.json.code], [409, "owner_bops_old"]);
@@ -1752,13 +1752,13 @@ test("a bot's How I work is in an Admin's slice, who changes it, and never a Mem
   const blob = { ...actOwner, bots: [{ id: "max", name: "Max", workspaceId: "ws_act", persona: "Keep replies short." }, { id: "ivy", name: "Ivy", workspaceId: "ws_act", persona: "Ivy's own" }] };
   const of = (v: SliceViewer) => Object.fromEntries(sharedSlice(blob, "ws_act", v).bots.map((b) => [b.id, b.persona]));
   assert.deepEqual(of({ role: "admin", id: "u-tom", adminActs: true }), { max: "Keep replies short.", ivy: "Ivy's own" });
-  assert.deepEqual(of({ role: "admin", id: "u-tom", adminActs: false }), { max: "Keep replies short.", ivy: "Ivy's own" }, "shown while the owner's Bops can't take a change yet");
+  assert.deepEqual(of({ role: "admin", id: "u-tom", adminActs: false }), { max: "Keep replies short.", ivy: "Ivy's own" }, "shown while the owner's SmileDesk can't take a change yet");
   assert.ok(!JSON.stringify(sharedSlice(blob, "ws_act", { role: "member", id: "u-sam", email: "sam@example.com" })).includes("Keep replies short."), "a Member's: as before");
   const changed = { ...blob, bots: [{ ...blob.bots[0], persona: "Changed" }, blob.bots[1]] };
   assert.notEqual(sharedHash(sharedSlice(changed, "ws_act", { role: "admin", id: "u-tom", adminActs: true })), sharedHash(sharedSlice(blob, "ws_act", { role: "admin", id: "u-tom", adminActs: true })), "a change gives a new fingerprint");
 });
 
-test("the slice says when the owner's Bops takes an Admin's acts (adminActs), and tells an Admin when it doesn't (ownerOld); never for the owner", () => {
+test("the slice says when the owner's SmileDesk takes an Admin's acts (adminActs), and tells an Admin when it doesn't (ownerOld); never for the owner", () => {
   const ws = (actOwner.workspaces as Record<string, unknown>[])[0];
   const blob = { ...actOwner, workspaces: [ws] };
   const v = (role: "member" | "admin" | "owner", adminActs: boolean) => sharedSlice(blob, "ws_act", { role, id: `u-${role}`, email: role === "member" ? "sam@example.com" : "ada@example.com", adminActs });
@@ -1781,7 +1781,7 @@ test("the slice says when the owner's Bops takes an Admin's acts (adminActs), an
   assert.deepEqual(changed.approvals?.[0]?.api, { label: "GitHub", method: "POST", path: "/repos/acme/site/git/commits", change });
 });
 
-test("the gate: whether an owner's Bops takes an Admin's acts is asked once a minute, and no answer is a no", async () => {
+test("the gate: whether an owner's SmileDesk takes an Admin's acts is asked once a minute, and no answer is a no", async () => {
   let asked = 0;
   let t = 1_000_000;
   resetMembers({ now: () => t, adminGate: async () => (asked++, true) });
@@ -1877,7 +1877,7 @@ test("over HTTP: orgo-web's notice coming while an act is being queued takes it 
 test("Your Apps as a level of its own: kept when it's a level, none when missing, Read for a new invite", () => {
   assert.deepEqual(cleanAccess({ others: "none", bots: { sam: "read" }, apps: "write" }), { others: "none", bots: { sam: "read" }, apps: "write" });
   for (const bad of ["admin", 2, null, { level: "write" }]) assert.equal("apps" in cleanAccess({ others: "none", bots: {}, apps: bad })!, false, `${JSON.stringify(bad)} left out`);
-  assert.equal(appsLevelOf({ others: "none", bots: {} } as MemberAccess), "none", "missing is none: an older Bops's entry gives nothing");
+  assert.equal(appsLevelOf({ others: "none", bots: {} } as MemberAccess), "none", "missing is none: an older SmileDesk's entry gives nothing");
   assert.equal(appsLevelOf({ apps: "admin" }), "none");
   assert.equal(appsLevelOf(null), "none");
   assert.deepEqual(inviteDefault(["sam", "max"]), { others: "none", bots: { sam: "read", max: "read" }, apps: "read" });
@@ -1886,7 +1886,7 @@ test("Your Apps as a level of its own: kept when it's a level, none when missing
   assert.equal(appsSummary({ apps: "none" }), "", "nothing at None");
   assert.equal(appsSummary({}), "Your Apps not set", "never None before a level is given");
   assert.equal(accessSummary({ others: "none", bots: { sam: "read" }, apps: "write" }, ["sam"]), "Every bot, read", "the bots' line is the bots' alone");
-  // A Bops from before (v0.0.32) keeps an entry as its cleanAccess makes it: { others, bots } only, with its `at`.
+  // A SmileDesk from before (v0.0.32) keeps an entry as its cleanAccess makes it: { others, bots } only, with its `at`.
   const older: { others: string; bots: Record<string, string>; at: number; apps?: string } = { others: "none", bots: { sam: "read" }, at: 150 };
   assert.equal(appsLevelOf(older), "none", "read as none: access lost, never gained");
   const before = { ...older, apps: "write" };
@@ -1963,7 +1963,7 @@ test("Your Apps at Write adds each site's settings and the workspace's domains, 
   }
   for (const [why, blob, viewer] of [
     ["None", appsBlob({ apps: "none" }), TOM_VIEW],
-    ["an entry an older Bops wrote (no level)", appsBlob(undefined), TOM_VIEW],
+    ["an entry an older SmileDesk wrote (no level)", appsBlob(undefined), TOM_VIEW],
     ["set before they joined", appsBlob({ apps: "write", at: 5 }), { ...TOM_VIEW, joinedAt: 10 }],
     ["the owner", appsBlob({ apps: "write" }), OWNER_VIEW],
     ["an owner of example.com, for anyone not of Orgo's team", appsBlob({ apps: "write" }), { ...SAM_VIEW, ownerEmail: "owner@example.com" }],
@@ -1986,7 +1986,7 @@ test("Your Apps at Write adds each site's settings and the workspace's domains, 
   assert.equal(sharedSlice(appsBlob({ apps: "none" }), "ws_apps", { role: "admin", email: "tom@orgo.ai", id: "u-tom", ownerEmail: STAFF_OWNER }).apps?.level, "write", "an Admin over an entry of None");
 });
 
-test("Your Apps: each site's Preview, where members deploy (its link, newest deploy, what it serves, whether it asks for a password), and where each deploy went; its password at Write only; nothing new from an owner's Bops before Preview", () => {
+test("Your Apps: each site's Preview, where members deploy (its link, newest deploy, what it serves, whether it asks for a password), and where each deploy went; its password at Write only; nothing new from an owner's SmileDesk before Preview", () => {
   const PASSWORD = "Mx4tR8q";
   /** The owner's Mac of v0.0.35 on: Published with no domain yet, its Preview beside it, each deploy saying where it went. */
   const withPreview = (apps: Record<string, unknown>) => {
@@ -2021,14 +2021,14 @@ test("Your Apps: each site's Preview, where members deploy (its link, newest dep
   assert.equal(sharedSlice(withPreview({ apps: "write" }), "ws_apps", { role: "admin", email: "ada@example.com", id: "u-ada", ownerEmail: STAFF_OWNER }).apps!.list[0].sites![0].previewPassword, PASSWORD, "an Admin");
   for (const [why, blob, viewer] of [
     ["None", withPreview({ apps: "none" }), TOM_VIEW],
-    ["an entry an older Bops wrote (no level)", withPreview({}), TOM_VIEW],
+    ["an entry an older SmileDesk wrote (no level)", withPreview({}), TOM_VIEW],
     ["set before they joined", withPreview({ apps: "write", at: 5 }), { ...TOM_VIEW, joinedAt: 10 }],
     ["someone the owner gave nothing", withPreview({ apps: "write" }), { role: "member", email: "kim@example.com", id: "u-kim", ownerEmail: STAFF_OWNER }],
     ["Orgo's team where the owner isn't (read only)", withPreview({ apps: "write" }), { ...TOM_VIEW, ownerEmail: "owner@example.com" }],
     ["the owner (their own page reads it)", withPreview({ apps: "write" }), OWNER_VIEW],
   ] as const)
     assert.ok(!JSON.stringify(sharedSlice(blob as Record<string, unknown>, "ws_apps", viewer as SliceViewer)).includes(PASSWORD), why);
-  // From an owner's Bops of v0.0.34 (no Preview, deploys that say nothing of where): its sites and deploys as they were.
+  // From an owner's SmileDesk of v0.0.34 (no Preview, deploys that say nothing of where): its sites and deploys as they were.
   const older = sharedSlice(appsBlob({ apps: "write" }), "ws_apps", TOM_VIEW).apps!.list[0];
   assert.deepEqual(Object.keys(older.sites![0]).sort(), ["domains", "live", "name", "serving", "url"]);
   assert.ok(older.deploys!.every((d) => !("env" in d)));
@@ -2095,9 +2095,9 @@ test("over HTTP: in a workspace of Orgo's team, Your Apps at Write deploys, goes
   assert.equal(queued.length, n, "nothing refused was queued");
 });
 
-test("Publish from Your Apps (a deploy or a rollback with env prod) is an Admin's, once the owner's Bops takes it: queued with where it goes; a Member's, an Admin's while the owner's Bops is older and any other env are refused, nothing queued; the slice says so to an Admin alone", async () => {
+test("Publish from Your Apps (a deploy or a rollback with env prod) is an Admin's, once the owner's SmileDesk takes it: queued with where it goes; a Member's, an Admin's while the owner's SmileDesk is older and any other env are refused, nothing queued; the slice says so to an Admin alone", async () => {
   const blob = appsBlob({ apps: "write" });
-  // The owner's Bops takes an Admin's acts (ADMIN_POWERS_MIN_VERSION); Publish only while ownerNew (members.ts adminGate's `min`).
+  // The owner's SmileDesk takes an Admin's acts (ADMIN_POWERS_MIN_VERSION); Publish only while ownerNew (members.ts adminGate's `min`).
   let ownerNew = true;
   const fakes = () =>
     resetMembers({
@@ -2132,14 +2132,14 @@ test("Publish from Your Apps (a deploy or a rollback with env prod) is an Admin'
   await refused("apps-sam", { act: "rollback", app: "shop", deployment: "dep-1", env: "prod" }, 403, "admin_only");
   // No other env is an act.
   await refused("apps-ada", { act: "deploy", app: "shop", env: "staging" }, 400);
-  // The owner's Bops older than Publish for Admins would put it on the Preview: refused first.
+  // The owner's SmileDesk older than Publish for Admins would put it on the Preview: refused first.
   ownerNew = false;
   fakes();
   await refused("apps-ada", { act: "deploy", app: "shop", env: "prod" }, 409, "owner_bops_old");
   await refused("apps-ada", { act: "rollback", app: "shop", deployment: "dep-1", env: "prod" }, 409, "owner_bops_old");
   assert.equal(queued.length, n, "nothing refused was queued");
   assert.equal((await go("apps-ada", { act: "deploy", app: "shop" }, "k_pub_00004")).status, 202, "the Preview's still");
-  // The slice: Publish for an Admin whose owner's Bops takes it (viewerOf, from the gate), never for a Member or the owner.
+  // The slice: Publish for an Admin whose owner's SmileDesk takes it (viewerOf, from the gate), never for a Member or the owner.
   const slice = (role: "admin" | "member" | "owner", publish: boolean) => sharedSlice(blob, "ws_apps", viewerOf({ id: `u-${role}`, email: `${role}@example.com` } as Parameters<typeof viewerOf>[0], { role, ownerUserId: "apps-owner", bopsWsId: "ws_apps", name: "Apps", ownerEmail: STAFF_OWNER } as WsAccess, true, publish));
   assert.equal(slice("admin", true).adminPublish, true);
   assert.deepEqual([slice("admin", false).adminPublish, slice("member", true).adminPublish, slice("owner", true).adminPublish], [undefined, undefined, undefined]);
@@ -2200,7 +2200,7 @@ const switchedOwner = (can: Record<string, true>, others = "none"): Record<strin
 });
 const change = (body: Record<string, unknown>, method = "PATCH", path = "/api/workspaces") => ({ act: "change", method, path, body });
 
-test("over HTTP: an Admin's change goes to the owner's Mac, with the workspace as @ws, once the owner's Bops takes it; an older one says so", async () => {
+test("over HTTP: an Admin's change goes to the owner's Mac, with the workspace as @ws, once the owner's SmileDesk takes it; an older one says so", async () => {
   actFakes({ adminGate: true, changesGate: true });
   const r = await act("act-tom", { key: "k_chg_00001", act: change({ id: THIS_WS, chain: { bots: { max: { lead: "ivy" } } } }) });
   assert.equal(r.status, 202);
@@ -2212,7 +2212,7 @@ test("over HTTP: an Admin's change goes to the owner's Mac, with the workspace a
   // Never what no route lists, and never another workspace.
   const no = await act("act-tom", { key: "k_chg_00003", act: change({ id: "ws_else", chain: {} }) });
   assert.deepEqual([no.status, no.json.code], [403, "member_owner_only"]);
-  // The owner's Bops too old: told so, nothing queued.
+  // The owner's SmileDesk too old: told so, nothing queued.
   actFakes({ adminGate: true, changesGate: false });
   const old = await act("act-tom", { key: "k_chg_00004", act: change({ id: THIS_WS, chain: {} }) });
   assert.deepEqual([old.status, old.json.code], [409, "owner_bops_old"]);
@@ -2238,12 +2238,12 @@ test("over HTTP: a Member's change needs its switch, a bot they have at Write, a
   // Seeing every bot (others at Read): it goes.
   actFakes({ adminGate: true, changesGate: true, owner: switchedOwner({ chart: true }, "read") });
   assert.equal((await act("act-sam", { key: "k_mchg_0006", act: change({ id: THIS_WS, chain: {} }) })).status, 202);
-  // Their switches count only once the owner's Bops takes them.
+  // Their switches count only once the owner's SmileDesk takes them.
   actFakes({ adminGate: true, changesGate: false, owner: switchedOwner({ chart: true }, "read") });
   assert.equal((await act("act-sam", { key: "k_mchg_0007", act: change({ id: THIS_WS, chain: {} }) })).status, 409);
 });
 
-test("over HTTP: a Member with The owner's Mac on tells a thread there more, once the owner's Bops takes switches", async () => {
+test("over HTTP: a Member with The owner's Mac on tells a thread there more, once the owner's SmileDesk takes switches", async () => {
   actFakes({ adminGate: true, changesGate: true, owner: switchedOwner({ mac: true }) });
   assert.equal((await act("act-sam", { key: "k_mmac_0001", act: { act: "reply", sessionId: "t-mac", text: "open Messages" } })).status, 202);
   actFakes({ adminGate: true, changesGate: false, owner: switchedOwner({ mac: true }) });
