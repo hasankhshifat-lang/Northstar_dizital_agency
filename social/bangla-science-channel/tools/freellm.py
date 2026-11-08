@@ -16,8 +16,9 @@ Never commit real keys.
 Usage:
   python3 freellm.py ask "প্রশ্ন..."
   python3 freellm.py draft --topic "..." --syllabus "..." --out drafts/x.md
+  python3 freellm.py code --task "..." --file a.py [--file b.html] [--dry-run]
 """
-import argparse, json, os, sys, time, urllib.request, urllib.error
+import argparse, json, os, sys, time, urllib.request, urllib.error, re, difflib
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -38,13 +39,27 @@ def providers():
     ]
     return p
 
-def chat(messages, temperature=0.7, max_tokens=8000, only=None):
+def chat(messages, temperature=0.7, max_tokens=8000, only=None, effort=None, parts=4):
+    """Like _chat, but if the reply is cut off at the token limit, ask the same provider to continue (up to `parts` pieces)."""
+    res = _chat(messages, temperature, max_tokens, only, effort)
+    text = res["text"]
+    for _ in range(parts - 1):
+        if res.get("finish") != "length": break
+        msgs = messages + [{"role": "assistant", "content": text},
+                           {"role": "user", "content": "Your reply was cut off. Continue exactly where it stopped, with no repetition and no preamble."}]
+        res = _chat(msgs, temperature, max_tokens, res["provider"], effort)
+        text += res["text"]
+    if res.get("finish") == "length": print("warning: reply still truncated", file=sys.stderr)
+    return {**res, "text": text}
+
+def _chat(messages, temperature=0.7, max_tokens=8000, only=None, effort=None):
     errors = []
     for name, base, key, model in providers():
         if only and name != only:
             continue
-        body = json.dumps({"model": model, "messages": messages, "temperature": temperature,
-                           "max_tokens": max_tokens}).encode()
+        payload = {"model": model, "messages": messages, "temperature": temperature, "max_tokens": max_tokens}
+        if effort and name == "gemini": payload["reasoning_effort"] = effort
+        body = json.dumps(payload).encode()
         req = urllib.request.Request(base + "/chat/completions", data=body, method="POST",
                                      headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}",
                                               "User-Agent": "Mozilla/5.0 (golpe-biggan-script-tool)"})
@@ -54,7 +69,8 @@ def chat(messages, temperature=0.7, max_tokens=8000, only=None):
                     data = json.load(r)
                 text = data["choices"][0]["message"]["content"]
                 if text and text.strip():
-                    return {"provider": name, "model": data.get("model", model), "text": text}
+                    return {"provider": name, "model": data.get("model", model), "text": text,
+                            "finish": data["choices"][0].get("finish_reason")}
                 errors.append(f"{name}: empty response"); break
             except urllib.error.HTTPError as e:
                 msg = e.read().decode(errors="replace")[:300]
@@ -95,6 +111,54 @@ def cmd_draft(a):
     out.write_text(header + res["text"].strip() + "\n", encoding="utf-8")
     print(f"saved {out} via {res['provider']} ({res['model']}), {len(res['text'])} chars")
 
+
+CODE_SYSTEM = """You are a careful senior programmer editing an existing codebase.
+Return ONLY edit blocks in exactly this format, one or more, nothing else:
+
+FILE: <path exactly as given>
+<<<<<<< SEARCH
+<lines copied exactly from the file, enough to be unique>
+=======
+<replacement lines>
+>>>>>>> REPLACE
+
+Rules: SEARCH text must match the file byte-for-byte (same indentation) and occur exactly once.
+Keep edits minimal. To create a new file, use an empty SEARCH section. No explanations."""
+
+EDIT_RE = re.compile(r"FILE:\s*(?P<f>[^\n]+)\n<<<<<<< SEARCH\n(?P<s>.*?)\n?=======\n(?P<r>.*?)\n?>>>>>>> REPLACE", re.S)
+
+def apply_edits(text, dry):
+    edits = list(EDIT_RE.finditer(text))
+    if not edits: raise SystemExit("no edit blocks in the model reply:\n" + text[:1500])
+    new = {}
+    for m in edits:
+        f = Path(m["f"].strip().strip("`")); s, r = m["s"], m["r"]
+        cur = new.get(f, f.read_text(encoding="utf-8") if f.exists() else "")
+        if s == "":
+            if f.exists() and f not in new: raise SystemExit(f"{f}: empty SEARCH but file exists")
+            cur = r + "\n"
+        else:
+            n = cur.count(s)
+            if n != 1: raise SystemExit(f"{f}: SEARCH block found {n} times (must be 1):\n{s[:400]}")
+            cur = cur.replace(s, r)
+        new[f] = cur
+    for f, cur in new.items():
+        old = f.read_text(encoding="utf-8") if f.exists() else ""
+        diff = "".join(difflib.unified_diff(old.splitlines(True), cur.splitlines(True), str(f), str(f)))
+        print(diff or f"(no change in {f})")
+        if not dry: f.parent.mkdir(parents=True, exist_ok=True); f.write_text(cur, encoding="utf-8")
+    print(("dry run: nothing written" if dry else f"applied {len(edits)} edit(s) to {len(new)} file(s)"))
+
+def cmd_code(a):
+    parts = []
+    for f in a.file:
+        parts.append(f"--- FILE: {f} ---\n" + Path(f).read_text(encoding="utf-8"))
+    user = f"Task:\n{a.task}\n\nFiles:\n\n" + "\n\n".join(parts)
+    res = chat([{"role": "system", "content": CODE_SYSTEM}, {"role": "user", "content": user}],
+               temperature=0.1, max_tokens=16000, only=a.provider, effort="low")
+    print(f"[{res['provider']} / {res['model']}]")
+    apply_edits(res["text"], a.dry_run)
+
 def cmd_ask(a):
     res = chat([{"role": "user", "content": a.prompt}], only=a.provider)
     print(f"[{res['provider']} / {res['model']}]\n{res['text']}")
@@ -106,6 +170,9 @@ def main():
     s = sp.add_parser("draft"); s.add_argument("--topic", required=True); s.add_argument("--syllabus", required=True)
     s.add_argument("--facts", default=""); s.add_argument("--out", required=True); s.add_argument("--provider")
     s.set_defaults(f=cmd_draft)
+    s = sp.add_parser("code", help="let a free model write code edits (search/replace), checked and applied locally")
+    s.add_argument("--task", required=True); s.add_argument("--file", action="append", required=True, help="file to send (repeatable); edits may only touch these or new files")
+    s.add_argument("--dry-run", action="store_true"); s.add_argument("--provider"); s.set_defaults(f=cmd_code)
     a = ap.parse_args(); a.f(a)
 
 if __name__ == "__main__":

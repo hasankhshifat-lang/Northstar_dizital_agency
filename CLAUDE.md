@@ -49,3 +49,15 @@ deleting, timed takedowns, checking status), use `.claude/skills/facebook-page-a
   injected by the proxy). Do not use Clawlink or Metricool for the Facebook Page.
 - Never delete an uploaded video or post unless the user explicitly asks for that deletion.
 - Log every action in `social/facebook-page-log.md`, then commit and push.
+
+## Bangla science channel (Scientific Bithi): use the free LLM router
+
+For work on `social/bangla-science-channel/` (scripts, proofreading, colour/text checks and coding),
+send the heavy generation to the free LLM router `social/bangla-science-channel/tools/freellm.py`
+(Gemini → Groq → OpenRouter free tiers, keys injected by the proxy) instead of spending Claude tokens:
+- Text: `freellm.py ask "..."`, new episode drafts: `freellm.py draft ...`.
+- Code: `freellm.py code --task "..." --file <file> [--file ...] [--dry-run]`. The model returns
+  search/replace edits that are checked (each must match exactly once) and applied locally, with a diff.
+- Claude still reviews every result, runs and tests the code, and fixes what the free model gets wrong.
+  Facts in scripts still need the two-step check against the NCTB textbooks.
+- Say in the reply which free model did the work.
