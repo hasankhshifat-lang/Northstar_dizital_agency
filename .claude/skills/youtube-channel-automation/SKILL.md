@@ -16,8 +16,8 @@ Do **not** use Clawlink or Metricool for YouTube, in chat or in scheduled tasks.
 - Channel: **Which Life Next** (`@whichlifenext`), ID `UCPTrW0n3ONI9uU4WetWwFCQ`.
 - Granted scopes: `youtube.force-ssl` (manage videos, comments, playlists, captions, channel),
   `youtube.upload`, `youtube.readonly`.
-- Not yet available: YouTube Analytics (API not enabled in the project, and the refresh token
-  lacks `yt-analytics.readonly`). Until fixed, `yt.py analytics` returns 403; say so and use vidIQ.
+- YouTube Analytics API: **enabled** (2026-11-08) and working; the refresh token also has
+  `yt-analytics.readonly`. Data runs ~2–3 days behind (the latest days come back empty).
 - Quota: the project's own 10,000 units/day (an upload is ~100 units, a comment reply 50,
   a list call 1). If the quota is exhausted, say so and stop; do not fall back to Clawlink/Metricool.
 - Check the connection first if anything looks off: `python3 yt.py whoami`.
@@ -86,4 +86,13 @@ the skip rules strictly. Report a summary at the end (replied / skipped / errors
 ## Analytics
 
 Per `CLAUDE.md`, use vidIQ first. The YouTube Analytics API through this project is the fallback
-once it is enabled: `yt.py analytics 2026-10-01 2026-11-01 [--metrics ...] [--dimensions day]`.
+(also when vidIQ is out of credits): `yt.py analytics START END [--metrics ...] [--dimensions ...]`.
+
+Useful reports for Shorts (all tested 2026-11-08):
+- Per video: `--metrics views,engagedViews,averageViewDuration,averageViewPercentage --dimensions video`.
+  `engagedViews / views` ≈ share of viewers who did not swipe away in the first second.
+- Traffic sources: `--metrics views --dimensions insightTrafficSourceType` (`SHORTS` = the Shorts feed).
+- Countries: `--metrics views --dimensions country`.
+- Retention curve for one video: `--metrics audienceWatchRatio --dimensions elapsedVideoTimeRatio`
+  plus the filter `video==VIDEO_ID` (call the API with `filters`; yt.py has no `--filters` flag yet,
+  so use `yt._call` from Python for this one).
