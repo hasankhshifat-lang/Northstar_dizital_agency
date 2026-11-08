@@ -58,9 +58,70 @@ def mouths(cx, cy, w=30):
 def ear(x, y, sx):
     return f'<g class="{"earL" if sx<0 else "earR"}">' + P(f"M{x} {y-22} Q{x+sx*22} {y-26} {x+sx*20} {y} Q{x+sx*18} {y+22} {x} {y+20}Z", SKIN, 3.5) + L(f"M{x+sx*6} {y-10} Q{x+sx*14} {y} {x+sx*6} {y+10}", 2.5) + "</g>"
 
+import math
+def _cap(x1, y1, cx, cy, x2, y2, w, fill):
+    """finger/toe capsule along a quadratic path: outline stroke + fill stroke (round caps)."""
+    d = f"M{x1:.1f} {y1:.1f} Q{cx:.1f} {cy:.1f} {x2:.1f} {y2:.1f}"
+    return (f'<path d="{d}" fill="none" stroke="{O}" stroke-width="{w+5:.1f}" stroke-linecap="round"/>',
+            f'<path d="{d}" fill="none" stroke="{fill}" stroke-width="{w:.1f}" stroke-linecap="round"/>')
+
 def hand(x, y, sx=1, s=1.0):
-    return (P(f"M{x-14*s} {y-6*s} Q{x-18*s} {y+16*s} {x-6*s} {y+26*s} Q{x+6*s} {y+32*s} {x+14*s} {y+22*s} Q{x+20*s} {y+8*s} {x+14*s} {y-8*s} Z", SKIN, 3.5)
-            + P(f"M{x+sx*12*s} {y+2*s} Q{x+sx*24*s} {y+4*s} {x+sx*20*s} {y+14*s} Q{x+sx*14*s} {y+16*s} {x+sx*10*s} {y+12*s}", SKIN, 3))
+    """Two hand poses at wrist (x,y), hanging down: relaxed (back of hand, curled fingers) and open (spread, palm out).
+    sx = side of the body (-1 left, +1 right); the thumb is on the inner side."""
+    inn = -sx
+    # ---- relaxed
+    outl, fill = [], []
+    for i, (ln, dx) in enumerate(zip((24, 27, 25.5, 20), (8.2, 2.9, -2.5, -7.6))):
+        fx = x + inn * dx * s; by = y + 15 * s
+        a, b = _cap(fx, by, fx - inn * 0.5 * s, by + ln * 0.62 * s, fx + inn * 2.6 * s, by + ln * s, 5.0 * s, SKIN)
+        outl.append(a); fill.append(b)
+    tb = _cap(x + inn * 10 * s, y + 4 * s, x + inn * 17 * s, y + 13 * s, x + inn * 14.5 * s, y + 25 * s, 7.4 * s, SKIN)
+    palm = P(f"M{x-11*s} {y-4*s} Q{x-14.5*s} {y+8*s} {x-12.5*s} {y+19*s} Q{x} {y+22*s} {x+12.5*s} {y+19*s} Q{x+14.5*s} {y+8*s} {x+11*s} {y-4*s}Z", SKIN, 3.5)
+    shade = S(f"M{x-inn*4*s} {y-2*s} Q{x-inn*13*s} {y+8*s} {x-inn*12*s} {y+19*s} Q{x-inn*6*s} {y+21*s} {x-inn*3*s} {y+20*s}Z", SKIN_S, .55)
+    knuck = "".join(L(f"M{x+inn*dx*s-1.6*s} {y+19*s} q{1.6*s} {1.2*s} {3.2*s} 0", 1.2, SKIN_S) for dx in (8.2, 2.9, -2.5, -7.6))
+    tips = "".join(L(f"M{x+inn*dx*s+inn*1.5*s-2*s} {y+15*s+ln*0.72*s} q{2*s} {1.5*s} {4*s} 0", 1.3) for ln, dx in zip((24, 27, 25.5, 20), (8.2, 2.9, -2.5, -7.6)))
+    fingers = "".join(o + f for o, f in reversed(list(zip(outl, fill))))
+    relax = palm + shade + fingers + knuck + tb[0] + tb[1]
+    # ---- open (palm facing viewer, fingers spread)
+    outl, fill = [], []
+    for ln, dx, ang in zip((25, 29, 27, 21), (8.5, 3, -2.6, -8), (14, 4, -6, -17)):
+        bx, by = x + inn * dx * s, y + 22 * s; a_ = math.radians(ang) * inn
+        ex, ey = bx + math.sin(a_) * ln * s, by + math.cos(a_) * ln * s
+        a, b = _cap(bx, by, (bx + ex) / 2, (by + ey) / 2, ex, ey, 6.6 * s, SKIN)
+        outl.append(a); fill.append(b)
+    ta = math.radians(55) * inn
+    tbx, tby = x + inn * 10 * s, y + 12 * s
+    tb = _cap(tbx, tby, tbx + math.sin(ta) * 9 * s, tby + math.cos(ta) * 9 * s, tbx + math.sin(ta) * 22 * s, tby + math.cos(ta) * 20 * s, 7.6 * s, SKIN)
+    palm = P(f"M{x-12*s} {y} Q{x-15.5*s} {y+12*s} {x-13.5*s} {y+25*s} Q{x} {y+29*s} {x+13.5*s} {y+25*s} Q{x+15.5*s} {y+12*s} {x+12*s} {y}Z", "#E6B285", 3.5)
+    lines = L(f"M{x-inn*9*s} {y+12*s} Q{x} {y+9*s} {x+inn*8*s} {y+15*s} M{x-inn*8*s} {y+18*s} Q{x} {y+15*s} {x+inn*4*s} {y+22*s}", 1.5, SKIN_S)
+    openh = "".join(outl) + "".join(fill) + tb[0] + tb[1] + palm + lines
+    return f'<g class="handRelax">{relax}</g><g class="handOpen" style="display:none">{openh}</g>'
+
+def shoe(x, ya, sx):
+    """Front view school shoe (Mary Jane), toe turned slightly outward. ya = top of the shoe."""
+    tx = x + sx * 4
+    body = P(f"M{x-15} {ya} L{x+15} {ya} Q{x+19} {ya+18} {x+21+sx*3} {ya+33} Q{tx+17} {ya+49} {tx} {ya+50} Q{tx-17} {ya+49} {x-21+sx*3} {ya+33} Q{x-19} {ya+18} {x-15} {ya}Z", "#1E1E22", SW)
+    sole = P(f"M{x-22+sx*3} {ya+36} Q{tx} {ya+60} {x+22+sx*3} {ya+36} L{x+21+sx*3} {ya+42} Q{tx} {ya+64} {x-21+sx*3} {ya+42}Z", "#55555C", 3)
+    strap = (f'<path d="M{x-17} {ya+15} Q{x} {ya+20} {x+17} {ya+15}" fill="none" stroke="#3A3A42" stroke-width="6"/>'
+             f'<rect x="{x+sx*9-4}" y="{ya+12}" width="8" height="8" rx="2" fill="#C9CED6" stroke="{O}" stroke-width="2"/>')
+    shine = f'<ellipse cx="{tx-sx*5}" cy="{ya+38}" rx="7" ry="3.5" fill="#fff" opacity=".35"/>'
+    return body + strap + sole + shine
+
+def bare_foot(x, ya, sx, s=1.0, sole_col="#7A4A24"):
+    """Front view bare foot in a chappal (thong sandal); big toe on the inner side. ya = ankle."""
+    inn = -sx
+    sole = (P(f"M{x-24*s} {ya+24*s} Q{x-27*s} {ya+50*s} {x} {ya+54*s} Q{x+27*s} {ya+50*s} {x+24*s} {ya+24*s} Q{x} {ya+18*s} {x-24*s} {ya+24*s}Z", sole_col, 3)
+            + P(f"M{x-26*s} {ya+44*s} Q{x} {ya+60*s} {x+26*s} {ya+44*s} L{x+25*s} {ya+49*s} Q{x} {ya+64*s} {x-25*s} {ya+49*s}Z", "#4E2E16", 3))
+    foot = P(f"M{x-13*s} {ya} L{x+13*s} {ya} Q{x+17*s} {ya+18*s} {x+19*s} {ya+33*s} L{x-19*s} {ya+33*s} Q{x-17*s} {ya+18*s} {x-13*s} {ya}Z", SKIN, SW)
+    shade = S(f"M{x-inn*4*s} {ya+2*s} Q{x-inn*15*s} {ya+18*s} {x-inn*18*s} {ya+32*s} L{x-inn*9*s} {ya+32*s}Z", SKIN_S, .5)
+    toes = ""
+    for dx, r, dy in ((12.5, 7.6, 38), (3.2, 5.6, 39), (-4.6, 5.2, 38.5), (-11.4, 4.8, 37.5), (-17.4, 4.2, 36)):
+        cx_, cy_ = x + inn * dx * s, ya + dy * s
+        toes += f'<ellipse cx="{cx_:.1f}" cy="{cy_:.1f}" rx="{r*s:.1f}" ry="{r*1.15*s:.1f}" fill="{SKIN}" stroke="{O}" stroke-width="2.6"/>'
+        toes += f'<ellipse cx="{cx_:.1f}" cy="{cy_+r*0.35*s:.1f}" rx="{r*0.55*s:.1f}" ry="{r*0.45*s:.1f}" fill="#F3D3B8" opacity=".8"/>'
+    strap = (f'<path d="M{x+inn*8*s} {ya+33*s} L{x-15*s} {ya+16*s} M{x+inn*8*s} {ya+33*s} L{x+15*s} {ya+16*s}" fill="none" stroke="{O}" stroke-width="{8.5*s:.1f}" stroke-linecap="round"/>'
+             f'<path d="M{x+inn*8*s} {ya+33*s} L{x-15*s} {ya+16*s} M{x+inn*8*s} {ya+33*s} L{x+15*s} {ya+16*s}" fill="none" stroke="#B5793A" stroke-width="{4.5*s:.1f}" stroke-linecap="round"/>')
+    return sole + foot + shade + toes + strap
 
 def arm(px, py, length, sleeve_col, sleeve_s, sleeve_len, sx, w=30, cls="armL"):
     """Arm hanging from shoulder pivot (px,py). Upper arm + forearm with an elbow joint:
@@ -74,7 +135,7 @@ def arm(px, py, length, sleeve_col, sleeve_s, sleeve_len, sx, w=30, cls="armL"):
             + P(f"M{elx-fw} {ely} Q{elx-fw+sx*2} {(ely+wy)/2} {wx-ww} {wy} L{wx+ww} {wy} Q{elx+fw+sx*2} {(ely+wy)/2} {elx+fw} {ely}Z", SKIN, SW)
             + S(f"M{elx+sx*fw*0.2} {ely+2} L{wx+sx*ww*0.1} {wy-2} L{wx+sx*ww} {wy-2} L{elx+sx*fw} {ely+2}Z", SKIN_S, .55)
             + f'<circle cx="{elx}" cy="{ely}" r="{fw-2}" fill="{SKIN}" stroke="none"/>'
-            + hand(wx, wy + 4, sx))
+            + hand(wx, wy - 2, sx, w / 34))
     fcls = "foreL" if cls == "armL" else "foreR"
     sleeve = (P(f"M{px-w*0.62} {py-6} Q{px+sx*4} {py-16} {px+w*0.62} {py-6} L{px+w*0.55+sx*4} {py+sleeve_len} L{px-w*0.55+sx*4} {py+sleeve_len} Z", sleeve_col, SW)
               + S(f"M{px+sx*w*0.15} {py} L{px+sx*w*0.55} {py-4} L{px+sx*w*0.5+sx*4} {py+sleeve_len-2} L{px+sx*w*0.1+sx*4} {py+sleeve_len-2}Z", sleeve_s, 0.8))
@@ -98,8 +159,8 @@ def bithi():
     for sx in (-1, 1):
         x = cx + sx * 34
         b += P(f"M{x-17} 690 L{x-14} 905 L{x+14} 905 L{x+17} 690Z", SKIN, SW) + S(f"M{x+4} 692 L{x+6} 900 L{x+14} 900 L{x+16} 692Z", SKIN_S, .5)
-        b += P(f"M{x-15} 862 L{x-15} 925 L{x+15} 925 L{x+15} 862Z", WHITE, SW)
-        b += P(f"M{x-17} 920 L{x+17} 920 Q{x+24} 958 {x+18} 968 Q{x} 976 {x-18} 968 Q{x-24} 958 {x-17} 920Z", "#1A1A1A", SW) + L(f"M{x-10} 930 Q{x} 926 {x+10} 930", 2.5, "#555")
+        b += P(f"M{x-15} 858 L{x-15} 925 L{x+15} 925 L{x+15} 858Z", WHITE, SW) + P(f"M{x-17} 856 L{x+17} 856 L{x+16} 872 L{x-16} 872Z", WHITE, 3) + S(f"M{x+5} 874 L{x+15} 874 L{x+15} 922 L{x+5} 922Z", WHITE_S, .8)
+        b += shoe(x, 916, sx)
     # skirt (navy, pleats)
     b += P(f"M{cx-92} 500 L{cx+92} 500 L{cx+122} 712 Q{cx} 728 {cx-122} 712Z", "#1F3F7A", SW)
     for k in (-80, -40, 0, 40, 80): b += L(f"M{cx+k*0.75} 512 L{cx+k*1.05} 716", 2.5, "#132A55")
@@ -147,8 +208,7 @@ def boltu():
     for sx in (-1, 1):
         x = cx + sx * 30
         b += P(f"M{x-15} 610 L{x-13} 790 L{x+13} 790 L{x+15} 610Z", SKIN, SW) + S(f"M{x+3} 612 L{x+4} 786 L{x+13} 786 L{x+14} 612Z", SKIN_S, .5)
-        b += P(f"M{x-16} 784 L{x+16} 784 Q{x+22} 818 {x+16} 828 Q{x} 834 {x-16} 828 Q{x-22} 818 {x-16} 784Z", SKIN, SW) + P(f"M{x-22} 820 L{x+22} 820 L{x+22} 832 Q{x} 838 {x-22} 832Z", "#7A4A24", 3)
-        b += L(f"M{x-12} 800 L{x+12} 800", 3, "#C98B4A")
+        b += bare_foot(x, 782, sx, 0.88, "#2F6FB5")
     b += P(f"M{cx-78} 470 L{cx+78} 470 L{cx+86} 640 L{cx+6} 640 L{cx} 590 L{cx-6} 640 L{cx-86} 640Z", "#B58B4C", SW)  # khaki shorts
     b += S(f"M{cx+30} 474 L{cx+78} 474 L{cx+86} 636 L{cx+46} 636Z", "#8C6A36", .6)
     # striped t-shirt
@@ -183,8 +243,8 @@ def mama():
     b = ""
     for sx in (-1, 1):   # feet in sandals
         x = cx + sx * 40
-        b += P(f"M{x-20} 930 L{x+20} 930 Q{x+26} 964 {x+20} 974 Q{x} 980 {x-20} 974 Q{x-26} 964 {x-20} 930Z", SKIN, SW) + P(f"M{x-27} 962 L{x+27} 962 L{x+27} 976 Q{x} 984 {x-27} 976Z", "#7A4A24", 3)
-        b += P(f"M{x-18} 900 L{x-18} 936 L{x+18} 936 L{x+18} 900Z", SKIN, SW)
+        b += P(f"M{x-16} 900 L{x-15} 922 L{x+15} 922 L{x+16} 900Z", SKIN, SW)
+        b += bare_foot(x, 918, sx, 1.12)
     # lungi: red with green checks
     lungi = f"M{cx-118} 600 L{cx+118} 600 L{cx+124} 912 Q{cx} 924 {cx-124} 912Z"
     checks = "".join(S(f"M{x} 600 L{x+16} 600 L{x+16} 925 L{x} 925Z", "#2BA84A", .9) for x in range(cx-110, cx+120, 46))
