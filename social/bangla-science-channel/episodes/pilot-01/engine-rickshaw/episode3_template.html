@@ -244,7 +244,10 @@ B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
 </g>
 <!-- end -->
 <g id="bEnd" stroke="${INK}" stroke-linejoin="round">
- ${g("eTitle",tag("লঞ্চ ডুববে?",110,"#D7263D","#FFC300","Baloo"))}${g("eCh",tag("গল্পে বিজ্ঞান",56,"#fff",INK,"Baloo"))}
+ ${g("eTitle",tag("লঞ্চ ডুববে?",110,"#D7263D","#FFC300","Baloo"))}${g("eCh",tag("গল্পে বিজ্ঞান",56,"#fff",INK,"Baloo"))}<g id="eBrand"><g filter="url(#cut)"><rect x="-430" y="-95" width="860" height="190" rx="26" fill="#1A1A1A" stroke-width="6"/></g>
+   <rect x="-410" y="-75" width="820" height="150" rx="18" fill="none" stroke="#FFC300" stroke-width="6" stroke-dasharray="22 12"/>
+   <g stroke="none"><circle cx="-372" cy="0" r="14" fill="#F72585"/><circle cx="372" cy="0" r="14" fill="#F72585"/><circle cx="-372" cy="0" r="6" fill="#FFC300"/><circle cx="372" cy="0" r="6" fill="#FFC300"/></g>
+   <text x="0" y="8" text-anchor="middle" dominant-baseline="middle" font-family="Baloo" font-weight="700" font-size="104" fill="#FFC300" stroke="#D7263D" stroke-width="10" paint-order="stroke">সাইন্টিফিক বিথী</text></g>
  <g id="eWheel"><g filter="url(#cut)"><circle r="170" fill="none" stroke-width="22"/><circle r="150" fill="none" stroke="#F72585" stroke-width="10"/>${[...Array(12).keys()].map(i=>`<path d="M0 0 L${(150*Math.cos(i*Math.PI/6)).toFixed(1)} ${(150*Math.sin(i*Math.PI/6)).toFixed(1)}" stroke-width="7"/>`).join("")}<circle r="30" fill="#FFC300" stroke-width="7"/></g></g>
  ${g("eNext",tag("পরের পর্বে আবার দেখা হবে!",40,"#fff"))}
  <g id="eNames">${g("nMama",tag("মন্টু মামা",46,"#FFC300"))}${g("nTuni",tag("বিথী",46,"#FFFFFF"))}${g("nBoltu",tag("বল্টু",46,"#F72585","#1A1A1A"))}</g>
@@ -467,6 +470,7 @@ function mainRender(t){
   if (sc===13){ vis("bEnd",true);
     setT("eTitle",540,560,pop(t,106.2),-3,101); setT("eCh",540,730,pop(t,106.4),2,102);
     setT("eWheel",540,820,1,(t-106.2)*120,103);
+    vis("eBrand",true); setT("eBrand",540,430,1,-1.5,104);
     vis("eNames",true); [["nMama",250,106.5],["nTuni",540,106.7],["nBoltu",830,106.9]].forEach(([id,x,t0])=>{ vis(id,t>=t0); setT(id,x,1205,pop(t,t0),id==="nTuni"?2:-2); });
     for(const [id,c,x] of [["mamaMini","mama",250],["tuniMini","tuni",540],["boltuMini","boltu",830]]){ setExpr($(id),"Happy"); place(id,c,x,1650,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*3.5), id==="mamaMini"?-130-25*Math.sin(t*3.5):-20, 4*Math.sin(t*5)); }
   }
@@ -517,6 +521,7 @@ window.render = function(T){
     vis("rFrame",true); vis("bEnd",true); ["eTitle","eCh","eNext"].forEach(id=>vis(id,false)); vis("eNames",true);
     [["nMama",250,7.4],["nTuni",540,7.55],["nBoltu",830,7.7]].forEach(([id,x,t0])=>{ vis(id,t>=t0); setT(id,x,1205,pop(t,t0),id==="nTuni"?2:-2); });
     setT("eWheel",540,820,pop(t,7.1),(t-7.1)*220,103);
+    vis("eBrand",true); setT("eBrand",540,430,pop(t,7.15),-1.5,104);
     [["mamaMini","mama",250,7.25],["tuniMini","tuni",540,7.4],["boltuMini","boltu",830,7.55]].forEach(([id,c,x,t0])=>{ if(t<t0) return; setExpr($(id),"Happy");
       place(id,c,x,1650+ (1-back(clamp((t-t0)/0.35)))*400,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*4.2), id==="mamaMini"?-130-25*Math.sin(t*4.2):-20, 4*Math.sin(t*6)); });
   }

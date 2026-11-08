@@ -56,3 +56,6 @@
 
 ### v8 changes
 - Channel sting after the hook (0:07–0:08) now shows the Bangla name plates too: মন্টু মামা, বিথী, বল্টু.
+
+### v9 changes
+- Channel name banner "সাইন্টিফিক বিথী" (Scientific Bithi) above the wheel on the channel sting (0:07–0:08) and on the end card.
