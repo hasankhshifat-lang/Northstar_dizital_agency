@@ -56,7 +56,7 @@ def mama(expr):
     b+=f'<g class="head" data-p="210,205"><g transform="translate(-45 -334)">{h}</g></g>'
     return svg(420,600,b)
 
-# ---------- TUNI (360x600) ----------
+# ---------- BITHI (360x600) ----------
 def tuni(expr):
     b=f'<ellipse cx="180" cy="586" rx="80" ry="10" fill="{INK}" opacity="0.15" stroke="none"/>'
     b+=limb("M159 448 V548",SKIN,18)+limb("M201 448 V548",SKIN,18)

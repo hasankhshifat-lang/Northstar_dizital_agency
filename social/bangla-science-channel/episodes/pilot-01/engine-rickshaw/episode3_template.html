@@ -157,7 +157,7 @@ B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
  </g></g>
 <!-- foil experiment -->
 <g id="bFoil" stroke="${INK}" stroke-linejoin="round" stroke-linecap="round">
- ${g("fHead",tag("টুনির পরীক্ষা: একই রাংতা, দুই আকৃতি",40,"#FFC300"))}
+ ${g("fHead",tag("বিথীর পরীক্ষা: একই রাংতা, দুই আকৃতি",40,"#FFC300"))}
  <g id="fScale"><g filter="url(#cut)"><rect x="-90" y="190" width="180" height="26" fill="#8B4A1F" stroke-width="6"/><rect x="-12" y="0" width="24" height="200" fill="#B5793A" stroke-width="6"/></g>
   <g id="fBeam"><g filter="url(#cut)"><rect x="-250" y="-10" width="500" height="20" rx="8" fill="#B5793A" stroke-width="6"/></g></g>
   <g id="fPanL"><path d="M-70 0 Q0 50 70 0 Z" fill="#E4C27A" stroke-width="6"/><rect x="-55" y="-14" width="110" height="12" fill="#E4E9ED" stroke-width="4"/></g>
@@ -247,7 +247,7 @@ B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
  ${g("eTitle",tag("লঞ্চ ডুববে?",110,"#D7263D","#FFC300","Baloo"))}${g("eCh",tag("গল্পে বিজ্ঞান",56,"#fff",INK,"Baloo"))}
  <g id="eWheel"><g filter="url(#cut)"><circle r="170" fill="none" stroke-width="22"/><circle r="150" fill="none" stroke="#F72585" stroke-width="10"/>${[...Array(12).keys()].map(i=>`<path d="M0 0 L${(150*Math.cos(i*Math.PI/6)).toFixed(1)} ${(150*Math.sin(i*Math.PI/6)).toFixed(1)}" stroke-width="7"/>`).join("")}<circle r="30" fill="#FFC300" stroke-width="7"/></g></g>
  ${g("eNext",tag("পরের পর্বে আবার দেখা হবে!",40,"#fff"))}
- <g id="eNames">${g("nMama",tag("মন্টু মামা",46,"#FFC300"))}${g("nTuni",tag("টুনি",46,"#FFFFFF"))}${g("nBoltu",tag("বল্টু",46,"#F72585","#1A1A1A"))}</g>
+ <g id="eNames">${g("nMama",tag("মন্টু মামা",46,"#FFC300"))}${g("nTuni",tag("বিথী",46,"#FFFFFF"))}${g("nBoltu",tag("বল্টু",46,"#F72585","#1A1A1A"))}</g>
 </g><g id="ripples" fill="none" stroke="#fff" stroke-width="6"></g></g>`;
 B.insertAdjacentHTML("beforeend", (()=>{ let s=`<g id="rFrame"><rect x="28" y="28" width="1024" height="1864" fill="none" stroke="#00A6A6" stroke-width="14"/><rect x="50" y="50" width="980" height="1820" fill="none" stroke="#D7263D" stroke-width="6"/>`;
   const fl=(x,y,c)=>`<g transform="translate(${x} ${y})" stroke="#1A1A1A" stroke-width="3"><ellipse cx="0" cy="-12" rx="8" ry="12" fill="${c}"/><ellipse cx="0" cy="12" rx="8" ry="12" fill="${c}"/><ellipse cx="-12" cy="0" rx="12" ry="8" fill="${c}"/><ellipse cx="12" cy="0" rx="12" ry="8" fill="${c}"/><circle r="7" fill="${c==="#FFC300"?"#D7263D":"#FFC300"}"/></g>`;

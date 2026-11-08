@@ -148,7 +148,7 @@ const STYLE = new URLSearchParams(location.search).get("style") || "cutout";
 document.documentElement.className = STYLE;
 const LABELS = {cutout:"নমুনা ১ · রিকশা-আর্ট কাট-আউট অ্যানিমেশন", comic:"নমুনা ২ · মোশন কমিক", doodle:"নমুনা ৩ · খাতার ডুডল (হোয়াইটবোর্ড)", paper:"নমুনা ৪ · কাগজের কোলাজ স্টপ-মোশন"};
 document.getElementById("label").textContent = LABELS[STYLE];
-const NAMES = {mama:"মন্টু মামা", tuni:"টুনি", boltu:"বল্টু"};
+const NAMES = {mama:"মন্টু মামা", tuni:"বিথী", boltu:"বল্টু"};
 const $ = id => document.getElementById(id);
 $("bgLayer").innerHTML = D.bg;
 $("bucket").innerHTML = D.props.bucket; $("inset").querySelector(".nail").innerHTML = D.props.nail;
@@ -264,7 +264,7 @@ window.render = function(t){
       b.textContent = L.text.slice(0,Math.max(n,1));
       const pos = {mama:[70,560,150], boltu:[300,600,300], tuni:[300,560,380]}[L.speaker]; b.style.left=pos[0]+"px"; b.style.top=pos[1]+"px"; b.style.setProperty("--tail",pos[2]+"px");
     } else b.style.opacity=0;
-    const caps = {1:"সদরঘাট, ঈদের আগে...", 3:"এদিকে মামার মাথায় চিন্তা!", 5:"টুনির হাতে-কলমে পরীক্ষা"};
+    const caps = {1:"সদরঘাট, ঈদের আগে...", 3:"এদিকে মামার মাথায় চিন্তা!", 5:"বিথীর হাতে-কলমে পরীক্ষা"};
     const c=$("cap"); const cs={1:0,3:7.5,5:23}[shot];
     if (caps[shot] && t-cs<3.5){ c.style.opacity=1; c.textContent=caps[shot]; c.style.left="70px"; c.style.top="350px"; } else c.style.opacity=0;
   } else {

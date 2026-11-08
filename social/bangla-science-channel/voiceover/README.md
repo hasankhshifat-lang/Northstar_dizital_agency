@@ -10,7 +10,7 @@
 | চরিত্র | ভয়েস | নোট |
 |---|---|---|
 | মন্টু মামা | Jafor – voice persona (মধ্যবয়সী পুরুষ, বাংলা) | `[deep voice]` + লাইনভেদে `[excited]`, `[nervous]`, `[shouting]`; ঢাকাইয়া টানের সংলাপ |
-| টুনি | Swati S – Pleasant Engaging Creator (তরুণী, বাংলা) | `[warmly]`, `[excited]`; ব্যাখ্যার অংশ স্বাভাবিক গতিতে |
+| বিথী | Swati S – Pleasant Engaging Creator (তরুণী, বাংলা) | `[warmly]`, `[excited]`; ব্যাখ্যার অংশ স্বাভাবিক গতিতে |
 | বল্টু | Indrani K – Energetic & Animated (কার্টুন চরিত্রের শিল্পী) | `[childlike voice] [high voice]`; লাইব্রেরিতে শিশুকণ্ঠ নেই, তাই কার্টুনে প্রচলিত পদ্ধতিতে নারী শিল্পী দিয়ে শিশুকণ্ঠ |
 
 ## কীভাবে বানানো

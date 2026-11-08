@@ -254,13 +254,13 @@ Pick one and keep it consistent:
 | Character | Look | Personality / role |
 |---|---|---|
 | **মন্টু মামা (Montu Mama)** | Big belly, lungi and fotua, gamchha on shoulder, thick moustache | Runs a tea stall. Always has a "brilliant" wrong idea (the confused common man) |
-| **টুনি (Tuni)** | Class 8 girl, two braids, school uniform, oversized glasses | The clever solver who explains with experiments |
-| **বল্টু (Boltu)** | Tuni's little brother, round face, missing tooth | Asks the funny "keno?" (why?) questions, does the slapstick |
+| **বিথী (Bithi)** | Class 8 girl, two braids, school uniform, oversized glasses | The clever solver who explains with experiments |
+| **বল্টু (Boltu)** | Bithi's little brother, round face, missing tooth | Asks the funny "keno?" (why?) questions, does the slapstick |
 | **হেডস্যার (Headsir)** | Bald, punjabi, umbrella always under arm | Strict but loving. Sets up exam-chapter context |
 | **রহিম চাচা (Rahim Chacha)** | Rickshaw puller / farmer, cap, sharp eyes | Practical village wisdom that turns out to be real science |
 | **Guest scientists** | Jagadish Chandra Bose, Satyendra Nath Bose, Newton, Marie Curie, Darwin | "Story of discovery" specials. Bose episodes are a strong local hook |
 
-Keep **3 core characters in every episode** (Montu Mama, Tuni, Boltu) for recognisability, and
+Keep **3 core characters in every episode** (Montu Mama, Bithi, Boltu) for recognisability, and
 rotate guests. Make a character sheet (front, side, 6 expressions, 6 poses) before episode 1.
 
 ### 8.4 Bangladeshi story settings
@@ -274,9 +274,9 @@ pond bathing, a jhalmuri seller, a monsoon rooftop, a village pitha festival, sc
 | 0–8 s | Funny cold open | Load-shedding. Montu Mama's ice for the tea stall is melting. He wraps the ice in a **thick blanket**. Customers laugh: "কম্বল দিলে তো গরম হবে!" ("A blanket will just make it warmer!") |
 | 8–20 s | The question | Boltu: "মামা, কম্বল তো গরম রাখে, বরফ গলে যাবে না?" ("Mama, a blanket keeps things warm. Won't the ice melt?") Hold on Boltu's face, then cut to the "?" |
 | 20–60 s | Wrong idea / comedy | Mama tries a fan on the ice instead. It melts faster and a puddle soaks his lungi |
-| 60–120 s | Science turn | Tuni: "কম্বল গরম তৈরি করে না, তাপ আটকে রাখে!" ("A blanket doesn't make heat, it traps it!") The notebook panel draws the arrows: heat from the air → blocked by the insulator. Conduction and convection labelled |
+| 60–120 s | Science turn | Bithi: "কম্বল গরম তৈরি করে না, তাপ আটকে রাখে!" ("A blanket doesn't make heat, it traps it!") The notebook panel draws the arrows: heat from the air → blocked by the insulator. Conduction and convection labelled |
 | 120–150 s | Resolution + twist | The blanket-wrapped ice survives. Mama now wraps *himself* in a blanket to "stay cold" and sweats |
-| 150–165 s | Comment puzzle | Tuni: "বলো তো, কোনটা তাড়াতাড়ি গলবে: স্টিলের প্লেটে বরফ নাকি কাঠের প্লেটে? কমেন্টে লেখো!" ("Tell us: which melts faster, ice on a steel plate or on a wooden plate? Write it in the comments!") |
+| 150–165 s | Comment puzzle | Bithi: "বলো তো, কোনটা তাড়াতাড়ি গলবে: স্টিলের প্লেটে বরফ নাকি কাঠের প্লেটে? কমেন্টে লেখো!" ("Tell us: which melts faster, ice on a steel plate or on a wooden plate? Write it in the comments!") |
 
 **Title formula (your version):** `[Bangla story hook] | [Concept in Bangla + English]`
 for example: "কম্বলে বরফ? | তাপ পরিবহন (Heat Transfer)" ("Ice in a blanket? | Heat transfer").
