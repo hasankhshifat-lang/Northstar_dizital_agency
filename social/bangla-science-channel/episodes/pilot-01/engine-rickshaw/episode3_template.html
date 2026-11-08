@@ -245,20 +245,24 @@ $("backdrops").innerHTML = `
  <rect y="1480" width="1080" height="440" fill="#1A6FA8"/></g>
 <g id="bdLand"><rect width="1080" height="1920" fill="#A8D58A"/>${[...Array(18).keys()].map(i=>`<g transform="translate(${(i*173)%1000+40} ${(i*311)%1350+300})" stroke="#1A1A1A" stroke-width="3"><circle r="22" fill="#2BA84A"/><rect x="-4" y="18" width="8" height="18" fill="#8B5A2B"/></g>`).join("")}</g>
 <g id="bdPaper"><rect width="1080" height="1920" fill="#FFF6E5"/></g>`;
-// ---- single-take board camera: keyframes [time, cx, cy, zoom]; moves glide 0.9 s, then hold with a slow push ----
+// ---- single-take board camera: each key = [time, x0,y0,x1,y1] box that must be fully visible (objects + labels).
+// The camera fits the box inside the safe area (edges, presenter, YouTube overlay) and glides 0.9 s between keys.
+const SAFE={x0:70,y0:150,x1:1010,y1:1270};
 const CAM = {
- 6: [[34.6,590,660,1.5],[37.55,590,940,1.0],[38.0,590,1000,1.25],[39.45,385,1180,1.7],[40.85,795,1170,1.7],[42.55,590,1150,1.15],[44.95,590,640,1.55]],
- 7: [[47.3,560,660,1.6],[50.7,560,840,1.45],[53.4,600,780,1.2],[55.15,590,1240,1.45],[59.55,590,860,1.0],[60.9,830,720,1.5],[62.95,590,1250,1.45],[65.6,840,1000,1.3]],
- 8: [[67.2,560,650,1.05],[69.5,560,660,1.12],[71.8,560,780,1.12]],
- 10:[[80.7,560,900,1.0],[81.4,560,850,1.6],[83.4,860,620,1.7],[84.9,620,960,1.45],[87.2,560,820,1.05]],
- 12:[[95.8,590,560,1.2],[97.7,0,0,1.6],[101.7,560,880,1.0],[102.4,560,880,1.12]],
+ 6: [[34.6,290,480,890,870],[37.55,200,760,990,1465],[39.45,195,870,575,1465],[40.85,600,870,990,1465],[42.55,10,880,1000,1470],[44.95,10,440,1000,1470]],
+ 7: [[47.3,140,330,980,880],[50.7,140,330,980,1045],[53.4,140,380,1000,1045],[55.15,100,820,1020,1480],[59.55,60,240,1035,1480],[60.9,60,460,1000,965],[62.95,100,620,1020,1480],[65.6,500,540,1010,1330]],
+ 8: [[67.2,90,420,1000,770]],
+ 10:[[80.7,40,410,1040,1260],[81.4,170,540,950,1010],[83.4,680,430,1035,680],[84.9,40,520,1040,1265],[87.2,40,400,1040,1260]],
+ 12:[[95.8,40,450,1040,1360],[101.7,210,490,1000,1250]],
 };
+function boxPose(b){ const w=b[3]-b[1], h=b[4]-b[2]; let z=Math.min((SAFE.x1-SAFE.x0)/w,(SAFE.y1-SAFE.y0)/h); z=clamp(z,1,1.8);
+  return [(b[1]+b[3])/2,(b[2]+b[4])/2,z]; }
 function camPose(keys,t){ let i=0; while(i<keys.length-1 && t>=keys[i+1][0]) i++;
-  const cur=keys[i], prev=keys[Math.max(0,i-1)], k=i===0?1:ease((t-cur[0])/0.9);
-  const z=lerp(prev[3],cur[3],k)*(1+0.012*Math.max(0,t-cur[0]-0.9));
-  return [lerp(prev[1],cur[1],k), lerp(prev[2],cur[2],k), z]; }
-function setCam(cx,cy,z){ z=Math.max(1,z); const hw=540/z, hh=960/z; cx=clamp(cx,hw,1080-hw); cy=clamp(cy,hh,1920-hh);
-  $("bcam").setAttribute("transform",`translate(540 960) scale(${z.toFixed(4)}) translate(${(-cx).toFixed(1)} ${(-cy).toFixed(1)})`); }
+  const cur=boxPose(keys[i]), prev=boxPose(keys[Math.max(0,i-1)]), k=i===0?1:ease((t-keys[i][0])/0.9);
+  return [lerp(prev[0],cur[0],k), lerp(prev[1],cur[1],k), lerp(prev[2],cur[2],k)]; }
+function setCam(cx,cy,z){ const Sx=(SAFE.x0+SAFE.x1)/2, Sy=(SAFE.y0+SAFE.y1)/2;
+  cx=clamp(cx, Sx/z, 1080-(1080-Sx)/z); cy=clamp(cy, Sy/z, 1920-(1920-Sy)/z);
+  $("bcam").setAttribute("transform",`translate(${Sx} ${Sy}) scale(${z.toFixed(4)}) translate(${(-cx).toFixed(1)} ${(-cy).toFixed(1)})`); }
 function ripples(list,t){ $("ripples").innerHTML = list.filter(([t0])=>t>=t0&&t<t0+1.0).map(([t0,x,y])=>{const k=(t-t0)/1.0; return [0,0.25].map(d=>{const kk=clamp(k-d); return `<ellipse cx="${x}" cy="${y}" rx="${20+kk*150}" ry="${6+kk*30}" opacity="${(1-kk).toFixed(2)}"/>`;}).join("");}).join(""); }
 $("rFrame").remove();   // no decorative border
 const BOARDS=["bQ","bMat","bFoil","bLaunch","bMorph","bSafe","bPuz","bEnd"];
@@ -292,7 +296,7 @@ function mainRender(t){
     if (sc===1) cam={s:1.3+0.05*ease(t/4.6),x:-162-27*ease(t/4.6),y:-729-60*ease(t/4.6)};
     if (sc===2) cam={s:1.36,x:-195,y:-800};
     if (sc===3){const k=ease((t-7.3)/1.6),k2=ease((t-11)/1.4); const s0=lerp(1.36,1.15,k),x0=lerp(-195,-81,k),y0=lerp(-800,-292,k); cam={s:lerp(s0,1.7,k2),x:lerp(x0,-21,k2),y:lerp(y0,-1072,k2)};}
-    if (sc===9){ const k=ease((t-76.3)/0.8)*(1-ease((t-80.0)/0.5)); const C={s:1.75,x:540-1.75*730,y:960-1.75*1470}; cam={s:lerp(1.3,C.s,k),x:lerp(-162,C.x,k),y:lerp(-729,C.y,k)}; }
+    if (sc===9){ const k=ease((t-76.3)/0.8)*(1-ease((t-80.0)/0.5)); const C={s:1.16,x:540-1.16*495,y:900-1.16*1420}; cam={s:lerp(1.3,C.s,k),x:lerp(-162,C.x,k),y:lerp(-729,C.y,k)}; }
     $("inner").style.transform=`translate(${cam.x+J(1,7)}px,${cam.y+J(2,7)}px) scale(${cam.s})`;
     // fx: gulls + smoke + waves
     let gl=""; for(let i=0;i<3;i++){ const x=((t*55+i*360)%1300)-100, y=520+i*70+Math.sin(t+i)*14, up=(FR+i)%4<2;
@@ -372,7 +376,9 @@ function mainRender(t){
     vis("fBall", t>=37.7); const r=$("fBallP"); r.setAttribute("x",-bw/2); r.setAttribute("y",-bh/2); r.setAttribute("width",bw); r.setAttribute("height",bh); r.setAttribute("rx",lerp(2,36,bk));
     const yb = t<41.0? 840 : lerp(840, 1336, stp((t-41.0)/1.2,10)); setT("fBall",795,yb,1,0,40);
     let bub=""; if(t>41.5&&t<44){ for(let i=0;i<4;i++){const ph=((t*1.4+i/4)%1); bub+=`<circle cx="${795+Math.sin(i*2+t*3)*20}" cy="${yb-20-ph*200}" r="${6+i*2}"/>`;} } $("fBub").innerHTML=bub;
-    vis("tMore", t>=40.6); setT("tMore",385,1330,pop(t,40.6),-2,41); vis("tLess", t>=42.0); setT("tLess",795,1040,pop(t,42.0),2,42);
+    const focL = t>=39.45 && t<40.85, focR = t>=40.85 && t<42.55;
+    vis("tMore", t>=40.6 && !focR); setT("tMore",385,1330,pop(t,40.6),-2,41); vis("tLess", t>=42.0 && !focL); setT("tLess",795,1040,pop(t,42.0),2,42);
+    vis("lblL", !focR); vis("lblR", !focL);
     // force arrows
     const ak=stp((t-42.6)/0.8,4), on=t>=42.6;
     $("aUpL").setAttribute("d", on?arrowPath(385,LW+170,LW+170-150*ak):""); $("aDnL").setAttribute("d", on?arrowPath(470,by-150,by-150+100*ak):"");
@@ -389,7 +395,7 @@ function mainRender(t){
     vis("lDisp", t>=51.2); vis("lMark", t>=54.4);
     vis("tAirL", t>=48.8 && t<51.2); setT("tAirL",300,390,pop(t,48.8),-4,52);
     vis("tDispL", t>=51.4 && t<60.9); setT("tDispL",560,1000,pop(t,51.4),2,53);
-    vis("tSinkL", t>=54.6 && t<60.9); setT("tSinkL",900,700,pop(t,54.6),3,54);
+    vis("tSinkL", t>=54.6 && t<60.9); setT("tSinkL",850,700,pop(t,54.6),3,54);
     // balance card
     const cardOn=t>=55.2; vis("lCard",cardOn); vis("lBeam",cardOn); vis("lPanL",cardOn); vis("lPanR",cardOn);
     const tilt = t<63.6?0: 12*stp((t-63.6)/0.6,4), ang=tilt*Math.PI/180;
@@ -429,7 +435,7 @@ function mainRender(t){
     vis("sGauge", t>=81.2); setT("sGauge",860,600,pop(t,81.2),2,83); $("sNeedle").setAttribute("transform",`rotate(${lerp(-80,72,clamp((t-81.4)/6.0))})`);
     $("sDown").setAttribute("d", t>=85.1? arrowPath(560,760+sink,760+sink+100*stp((t-85.1)/0.5,4)) : "");
     vis("sMore", t>=85.3 && t<87.3); setT("sMore",560,700,pop(t,85.3),-2,84);
-    vis("sNear", t>=86.0); setT("sNear",800,850+sink*0.4,pop(t,86.0),3,85);
+    vis("sNear", t>=86.0); setT("sNear",700,850+sink*0.4,pop(t,86.0),3,85);
     vis("sWarn", t>=87.3 && (FR%6<4)); setT("sWarn",560,470,pop(t,87.3),-4,86);
   }
   if (sc===12){ vis("bPuz",true); tuniMini(true);
@@ -449,8 +455,7 @@ function mainRender(t){
   }
   ["fHead","lHead","sHead","mOK","pHead","pCom","eTitle","eCh","eNext"].forEach(id=>vis(id,false));
   vis("bdLab", sc===6); vis("bdSky", sc===7||sc===10); vis("bdLand", sc===12 && t<101.7); vis("bdPaper", sc===8||sc===13); vis("backdrops", !(sc===3||sc===5));
-  if (sc===12 && t>=97.7 && t<101.7){ const path=$("riverC"), L=path.getTotalLength(), pt=path.getPointAtLength(L*ease((t-97.9)/3.6)); const z=lerp(1.2,1.6,ease((t-97.7)/0.8)); setCam(lerp(590,pt.x,ease((t-97.7)/0.8)), lerp(560,pt.y,ease((t-97.7)/0.8)), z); }
-  else if (CAM[sc]) { const [cx,cy,z]=camPose(CAM[sc],t); setCam(cx,cy,z); } else $("bcam").setAttribute("transform","");
+  if (CAM[sc]) { const [cx,cy,z]=camPose(CAM[sc],t); setCam(cx,cy,z); } else $("bcam").setAttribute("transform","");
   ripples(sc===6?[[39.95,385,1100],[41.15,795,1115]]: sc===7?[[54.3,560,760],[61.2,830,760],[65.85,830,760]]: [], t);
   // ---------------- sfx & captions ----------------
   const sfx=(id,a,b)=>{const e=$(id), on=t>=a&&t<=b; e.style.opacity=on?1:0; if(on) e.style.transform=`rotate(${-6+J(id.length,3)}deg) scale(${pop(t,a)})`;};
