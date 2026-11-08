@@ -124,7 +124,13 @@ function rig(id,aL,aR,hd){
   if(r.armL) r.armL.setAttribute("transform",`rotate(${aL.toFixed(1)} ${r.armLP[0]} ${r.armLP[1]})`);
   if(r.armR) r.armR.setAttribute("transform",`rotate(${aR.toFixed(1)} ${r.armRP[0]} ${r.armRP[1]})`);
 
-  const fL = -(8 + 0.18*Math.abs(aL)), fR = 8 + 0.18*Math.abs(aR);
+  // forearm bends the natural way: raised arm -> forearm turns further up toward the head; hanging arm -> slight inward bend
+  const fL = aL > 25 ? Math.min(45, 0.35*aL) : -(6 + 0.08*Math.abs(aL));
+  const fR = aR < -25 ? -Math.min(45, 0.35*Math.abs(aR)) : (6 + 0.08*Math.abs(aR));
+  // when the arm points up, mirror the hand so the thumb stays on the inner (head) side
+  const mirror = (rel, open, cx, on) => { const tf = on ? `translate(${2*cx} 0) scale(-1 1)` : ""; for (const g of [rel, open]) if (g) { if (tf) g.setAttribute("transform", tf); else g.removeAttribute("transform"); } };
+  mirror(r.handLRelax, r.handLOpen, r.foreLP[0] - 4, aL + fL > 70);
+  mirror(r.handRRelax, r.handROpen, r.foreRP[0] + 4, -(aR + fR) > 70);
   if(r.foreL) r.foreL.setAttribute("transform",`rotate(${fL.toFixed(1)} ${r.foreLP[0]} ${r.foreLP[1]})`);
   if(r.foreR) r.foreR.setAttribute("transform",`rotate(${fR.toFixed(1)} ${r.foreRP[0]} ${r.foreRP[1]})`);
 
@@ -250,7 +256,7 @@ function applyLips(tm){
 
 function gest(id,who,t,base){ // base: {aL,aR,hd}; talking adds lively gestures
   const sp=speaking(who,t); let {aL,aR,hd}=base; const w=Math.sin(t*2.6), w2=Math.sin(t*1.8+1);
-  if(sp){ aR += -16 - 14*w; aL += 6 + 6*w2; hd += 3*Math.sin(t*2.1); } else { aL += 2*Math.sin(t*1.7); aR += -2*Math.sin(t*1.9+1); hd += 1.2*Math.sin(t*1.3); }
+  if(sp){ aR += -3 - 3*w; aL += 2 + 2*w2; hd += 3*Math.sin(t*2.1); } else { aL += 2*Math.sin(t*1.7); aR += -2*Math.sin(t*1.9+1); hd += 1.2*Math.sin(t*1.3); }
   rig(id,aL,aR,hd); }
 function hide(id){$(id).style.display="none";}
 function speaking(who,t){return D.lines.find(l=>l.speaker===who&&t>=l.start&&t<=l.end);}
@@ -491,10 +497,10 @@ function mainRender(t){
       if (sc===4){ jackets=true; mx=300; mExpr=talkExpr("mama",t,"Worried","Worried"); if(t>21.3&&t<22.6) rot=-14*Math.sin(clamp((t-21.3)/1.3)*Math.PI); }
       setExpr($("mama"),mExpr); $("mama").querySelector(".jackets").style.display=jackets?"block":"none";
       place("mama","mama",mx+J(3,8),1720+bob(0)+J(4,6),ms,rot+J(5,2.5));
-      { let b={aL:0,aR:0,hd:0}; if(sc===1&&t>0.5&&t<3.6) b={aL:125+25*Math.sin(t*3.8),aR:0,hd:4*Math.sin(t*6)}; if(sc===3&&t>7.7&&t<10.4) b={aL:0,aR:-150,hd:-8}; if(sc===3&&t>12.5) b={aL:152+12*Math.sin(t*4.9),aR:-152-12*Math.sin(t*4.9),hd:8*Math.sin(t*5.2)}; if(sc===2) b={aL:20,aR:-30,hd:-10}; gest("mama","mama",t,b); }
+      { let b={aL:0,aR:0,hd:0}; if(sc===1&&t>0.5&&t<3.6) b={aL:128+10*Math.sin(t*3.2),aR:0,hd:3*Math.sin(t*3)}; if(sc===3&&t>7.7&&t<10.4) b={aL:0,aR:-100,hd:-8}; if(sc===3&&t>12.5) b={aL:140+5*Math.sin(t*4),aR:-140-5*Math.sin(t*4),hd:5*Math.sin(t*3.5)}; if(sc===2) b={aL:20,aR:-30,hd:-10}; gest("mama","mama",t,b); }
       if (sc===4){ const bx=lerp(1300,820,stp((t-16.2)/1.4,8)); setExpr($("boltu"), t>18.4?talkExpr("boltu",t,"Happy","Happy"):"Default");
         place("boltu","boltu",bx+J(6,8),1730+bob(2)+J(7,6),0.82,J(8,2.5)+(speaking("boltu",t)?Math.sin(t*3.2)*2:0));
-        gest("boltu","boltu",t, t>18.4?{aL:100+12*Math.sin(t*4.2),aR:-30-20*Math.abs(Math.sin(t*3.5)),hd:6*Math.sin(t*3.5)}:{aL:0,aR:0,hd:0}); }
+        gest("boltu","boltu",t, t>18.4?{aL:72+4*Math.sin(t*2.5),aR:0,hd:4*Math.sin(t*2.2)}:{aL:0,aR:0,hd:0}); }
     }
     if (sc===2){ const k=stp((t-5.1)/2.0,12); $("inNail").style.top=lerp(-60,500,k)+"px"; $("inset").style.transform=`scale(${pop(t,4.6)}) rotate(${J(30,2)}deg)`;
       let bb=""; if(t>5.6){ for(let i=0;i<5;i++){const ph=((t*1.3+i/5)%1); bb+=`<circle cx="${320+Math.sin(i*2.3+t*3)*30}" cy="${lerp(-60,500,k)+40-ph*260}" r="${6+i*2}"/>`;} } $("inBub").innerHTML=bb; }
@@ -503,8 +509,8 @@ function mainRender(t){
     if (sc===5){
       setExpr($("mama"),"Worried"); $("mama").querySelector(".jackets").style.display="block";
       place("mama","mama",150+J(3,8),1720+J(4,6),0.9,J(5,2.5)); gest("mama","mama",t,{aL:0,aR:0,hd:-4});
-      setExpr($("boltu"), talkExpr("boltu",t,"Happy","Default")); place("boltu","boltu",370+J(6,8),1730+bob(2)+J(7,6),0.82,J(8,2.5)+(speaking("boltu",t)?-6:0)); gest("boltu","boltu",t, speaking("boltu",t)?{aL:62,aR:-62,hd:-8}:{aL:0,aR:0,hd:0});
-      const tx=lerp(1300,600,stp((t-23)/1.2,10)); setExpr($("tuni"),talkExpr("tuni",t,"Happy","Default")); place("tuni","tuni",tx+J(9,8),1725+bob(4)+J(10,6),0.86,J(11,2.5)); gest("tuni","tuni",t, t>24.6?{aL:0,aR:-95,hd:0}:{aL:0,aR:0,hd:0});
+      setExpr($("boltu"), talkExpr("boltu",t,"Happy","Default")); place("boltu","boltu",370+J(6,8),1730+bob(2)+J(7,6),0.82,J(8,2.5)+(speaking("boltu",t)?-6:0)); gest("boltu","boltu",t, speaking("boltu",t)?{aL:22,aR:-22,hd:-8}:{aL:0,aR:0,hd:0});
+      const tx=lerp(1300,600,stp((t-23)/1.2,10)); setExpr($("tuni"),talkExpr("tuni",t,"Happy","Default")); place("tuni","tuni",tx+J(9,8),1725+bob(4)+J(10,6),0.86,J(11,2.5)); gest("tuni","tuni",t, t>24.6?{aL:0,aR:-70,hd:0}:{aL:0,aR:0,hd:0});
       $("bucket").style.display="block"; $("bucket").style.left=(740+J(12,6))+"px"; $("bucket").style.top=(1470+J(13,6))+"px";
       // material card overlay (screen coords)
       vis("bMat", t>=24.9); setT("matCard",540,575,pop(t,24.9),-1.2);
@@ -514,7 +520,7 @@ function mainRender(t){
     if (sc===9){
       setExpr($("mama"), t>=79.2 ? talkExpr("mama",t,"Worried","Worried") : talkExpr("mama",t,"Happy","Happy"));
       place("mama","mama",250+J(3,8),1720+bob(0)+J(4,6),1,J(5,2.5)+(t>=79.2?Math.sin(t*8.8)*2:0));
-      gest("mama","mama",t, t>=79.2?{aL:150+14*Math.sin(t*5.6),aR:-150-14*Math.sin(t*5.6),hd:7*Math.sin(t*4.9)} : (t>74.5&&t<76.9?{aL:0,aR:-110,hd:6}:{aL:0,aR:-60,hd:0}));
+      gest("mama","mama",t, t>=79.2?{aL:140+5*Math.sin(t*4),aR:-140-5*Math.sin(t*4),hd:5*Math.sin(t*3.5)} : (t>74.5&&t<76.9?{aL:0,aR:-75,hd:6}:{aL:0,aR:-20,hd:0}));
       const tb=$("tiffinBucket"); tb.style.display="block"; tb.style.left=(560+J(12,6))+"px"; tb.style.top=(1720-420+J(13,6))+"px"; tb.style.transform="scale(1.15)"; tb.style.transformOrigin="50% 100%";
       const nfood = t<76.9?0: t<77.4?1: t<77.9?2: t<78.4?3: 4;
       const sink = clamp((t-78.6)/0.9); const ty = 172 + 4 + stp(sink,6)*240 + Math.sin(t*3)*3*(1-sink);
@@ -528,12 +534,12 @@ function mainRender(t){
     if (sc===11){
       $("trunk").style.display="block"; $("trunk").style.left=(300-180+J(14,6))+"px"; $("trunk").style.top=(1720-220)+"px"; $("trunk").style.transform=`scale(1.05)`;
       setExpr($("mama"), t>95.0?"Worried":"Default"); place("mama","mama",300+J(3,6),1600+J(4,5),0.95,J(5,2)); gest("mama","mama",t,{aL:0,aR:0,hd:t>95?-8:0});
-      setExpr($("boltu"), talkExpr("boltu",t,"Happy","Happy")); place("boltu","boltu",620+J(6,6),1730+J(7,5),0.82,-8+J(8,2)); gest("boltu","boltu",t,{aL:150,aR:0,hd:-10});
+      setExpr($("boltu"), talkExpr("boltu",t,"Happy","Happy")); place("boltu","boltu",620+J(6,6),1730+J(7,5),0.82,-8+J(8,2)); gest("boltu","boltu",t,{aL:78,aR:0,hd:-8});
       $("trunk").style.zIndex=5; $("mama").style.zIndex=4;
     } else { $("trunk").style.zIndex=""; $("mama").style.zIndex=""; }
   }
   // ---------------- boards ----------------
-  const tuniMini=(on)=>{ if(!on) return; setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",130+J(21,6),1655+J(22,5),0.66,J(23,2)); gest("tuniMini","tuni",t,{aL:0,aR:-128,hd:0}); };
+  const tuniMini=(on)=>{ if(!on) return; setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",130+J(21,6),1655+J(22,5),0.66,J(23,2)); gest("tuniMini","tuni",t,{aL:0,aR:-72,hd:0}); };
   if (sc===6){ vis("bFoil",true); tuniMini(true);
     setT("fHead",590,290,1,-1.5);
     vis("fScale", t<38.6); { const k=stp((t-35.0)/0.5,4); setT("fScale",590,520+(1-k)*-500+(t>38.0?stp((t-38)/0.6,4)*-700:0),1,0,31);
@@ -601,8 +607,8 @@ function mainRender(t){
     vis("mEq", t>=69.0); setT("mEq",540,560,pop(t,69.0),0,73);
     vis("mShip", t>=69.6); setT("mShip",800,600,pop(t,69.6),0,74); vis("mLs", t>=69.6); setT("mLs",800,700,1,2,75);
     vis("mOK", t>=71.9); setT("mOK",540,880,pop(t,71.9),-5,76);
-    setExpr($("boltuMini"),talkExpr("boltu",t,"Happy","Happy")); place("boltuMini","boltu",400+J(24,6),1600+J(25,5),0.8,J(26,2)); gest("boltuMini","boltu",t, speaking("boltu",t)?{aL:120,aR:-120,hd:0}:{aL:0,aR:0,hd:0});
-    setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",700+J(21,6),1600+J(22,5),0.86,J(23,2)); gest("tuniMini","tuni",t, t>71.9?{aL:0,aR:-150,hd:4}:{aL:0,aR:-90,hd:0});
+    setExpr($("boltuMini"),talkExpr("boltu",t,"Happy","Happy")); place("boltuMini","boltu",400+J(24,6),1600+J(25,5),0.8,J(26,2)); gest("boltuMini","boltu",t, speaking("boltu",t)?{aL:55,aR:0,hd:0}:{aL:0,aR:0,hd:0});
+    setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",700+J(21,6),1600+J(22,5),0.86,J(23,2)); gest("tuniMini","tuni",t, t>71.9?{aL:0,aR:-110,hd:4}:{aL:0,aR:-65,hd:0});
   }
   if (sc===10){ vis("bSafe",true); tuniMini(true); waves("sWaves",t);
     setT("sHead",590,290,pop(t,80.8),-1.5);
@@ -631,7 +637,7 @@ function mainRender(t){
     setT("eWheel",540,820,1,(t-106.2)*120,103);
     vis("eBrand",true); setT("eBrand",540,430,1,-1.5,104);
     vis("eNames",true); [["nMama",250,106.5],["nTuni",540,106.7],["nBoltu",830,106.9]].forEach(([id,x,t0])=>{ vis(id,t>=t0); setT(id,x,1128,pop(t,t0),id==="nTuni"?2:-2); });
-    for(const [id,c,x] of [["mamaMini","mama",250],["tuniMini","tuni",540],["boltuMini","boltu",830]]){ setExpr($(id),"Happy"); place(id,c,x,1650,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*3.5), id==="mamaMini"?-130-25*Math.sin(t*3.5):-20, 4*Math.sin(t*5)); }
+    for(const [id,c,x] of [["mamaMini","mama",250],["tuniMini","tuni",540],["boltuMini","boltu",830]]){ setExpr($(id),"Happy"); place(id,c,x,1650,0.62,0); rig(id, id==="mamaMini"?128+12*Math.sin(t*3.2):0, id==="mamaMini"?0:-128-12*Math.sin(t*3.2), 4*Math.sin(t*5)); }
   }
   ["fHead","lHead","sHead","mOK","pHead","pCom","eTitle","eCh","eNext"].forEach(id=>vis(id,false));
   vis("bdLab", sc===6); vis("bdSky", sc===7||sc===10); vis("bdLand", sc===12 && t<101.7); vis("bdPaper", sc===8||sc===13); vis("backdrops", !(sc===3||sc===5));
@@ -668,7 +674,7 @@ window.render = function(T){
     setExpr($("mama"), talkExpr("mama",t+7.68-0.3,"Worried","Default"));
     $("mama").querySelector(".jackets").style.display="none";
     place("mama","mama",330,1720,1, t>=HP[3][0]? Math.sin(t*7.0)*3:0);
-    let b = t<HP[1][0]? {aL:0,aR:-150,hd:-8} : t<HP[3][0]? {aL:20,aR:-40,hd:-6} : {aL:152+12*Math.sin(t*4.9),aR:-152-12*Math.sin(t*4.9),hd:8*Math.sin(t*5.2)};
+    let b = t<HP[1][0]? {aL:0,aR:-150,hd:-8} : t<HP[3][0]? {aL:20,aR:-40,hd:-6} : {aL:140+5*Math.sin(t*4),aR:-140-5*Math.sin(t*4),hd:5*Math.sin(t*3.5)};
     rig("mama", b.aL+(t%1<0.5?2:0), b.aR, b.hd);
     if (inNail){ $("inset").style.display="block"; const k=ease((t-HP[1][0])/1.3); $("inNail").style.top=lerp(-60,500,k)+"px"; $("inset").style.transform=`scale(${pop(t,HP[1][0])})`;
       let bb=""; for(let i=0;i<5;i++){const ph=((t*1.3+i/5)%1); bb+=`<circle cx="${320+Math.sin(i*2.3+t*3)*30}" cy="${lerp(-60,500,k)+40-ph*260}" r="${6+i*2}"/>`;} $("inBub").innerHTML=bb; }
@@ -682,7 +688,7 @@ window.render = function(T){
     setT("eWheel",540,820,pop(t,7.1),(t-7.1)*220,103);
     vis("eBrand",true); setT("eBrand",540,430,pop(t,7.15),-1.5,104);
     [["mamaMini","mama",250,7.25],["tuniMini","tuni",540,7.4],["boltuMini","boltu",830,7.55]].forEach(([id,c,x,t0])=>{ if(t<t0) return; setExpr($(id),"Happy");
-      place(id,c,x,1650+ (1-back(clamp((t-t0)/0.35)))*400,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*4.2), id==="mamaMini"?-130-25*Math.sin(t*4.2):-20, 4*Math.sin(t*6)); });
+      place(id,c,x,1650+ (1-back(clamp((t-t0)/0.35)))*400,0.62,0); rig(id, id==="mamaMini"?128+12*Math.sin(t*3.2):0, id==="mamaMini"?0:-128-12*Math.sin(t*3.2), 4*Math.sin(t*6)); });
   }
   applyLips(T < 7.1 ? T+7.68-0.3 : -1);
 };
