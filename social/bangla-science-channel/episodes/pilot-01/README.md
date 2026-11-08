@@ -53,3 +53,6 @@
 
 ### v7 changes
 - The schoolgirl character is renamed from টুনি (Tuni) to বিথী (Bithi) in all scripts, docs and the video's end-card name plate. The free LLM router proofread every renamed line (no problems found). No spoken line says her name, so the voice track is unchanged. Internal code keys (`tuni`) are kept.
+
+### v8 changes
+- Channel sting after the hook (0:07–0:08) now shows the Bangla name plates too: মন্টু মামা, বিথী, বল্টু.

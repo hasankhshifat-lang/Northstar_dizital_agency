@@ -514,7 +514,8 @@ window.render = function(T){
   } else {
     // channel sting: rickshaw wheel + the three friends waving (no text)
     $("world").style.display="none"; $("board").style.display="block"; $("board").style.background="var(--paper)";
-    vis("rFrame",true); vis("bEnd",true); ["eTitle","eCh","eNext"].forEach(id=>vis(id,false)); vis("eNames",false);
+    vis("rFrame",true); vis("bEnd",true); ["eTitle","eCh","eNext"].forEach(id=>vis(id,false)); vis("eNames",true);
+    [["nMama",250,7.4],["nTuni",540,7.55],["nBoltu",830,7.7]].forEach(([id,x,t0])=>{ vis(id,t>=t0); setT(id,x,1205,pop(t,t0),id==="nTuni"?2:-2); });
     setT("eWheel",540,820,pop(t,7.1),(t-7.1)*220,103);
     [["mamaMini","mama",250,7.25],["tuniMini","tuni",540,7.4],["boltuMini","boltu",830,7.55]].forEach(([id,c,x,t0])=>{ if(t<t0) return; setExpr($(id),"Happy");
       place(id,c,x,1650+ (1-back(clamp((t-t0)/0.35)))*400,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*4.2), id==="mamaMini"?-130-25*Math.sin(t*4.2):-20, 4*Math.sin(t*6)); });
