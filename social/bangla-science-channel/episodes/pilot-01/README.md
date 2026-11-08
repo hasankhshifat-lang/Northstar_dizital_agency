@@ -41,3 +41,7 @@
   রিকশার বেল, লঞ্চের ভোঁ, পেরেকের টুপ আর বুদবুদ, ছিটকানো পানি, রাংতা মোচড়ানো, হুশ, পপ, ✓ টুং, ✗ বাজার, পাল্লার ঠক, স্ট্যাম্প, লঞ্চের ক্যাঁচক্যাঁচ, সতর্ক বিপ, পানির কুলকুল।
   মিউজিক: ১০০ BPM লোকসুরের লুপ (একতারার মতো তার, তানপুরার মতো ড্রোন, ঢোলকের মতো তাল), কথা বলার সময় আপনা-আপনি কমে যায় (sidechain ducking)।
 - **মিক্স:** −14.8 LUFS (YouTube-এর স্তরের কাছাকাছি)। যাচাই: পুরো মিক্স Whisper দিয়ে ট্রান্সক্রাইব করে দেখা হয়েছে, মিউজিক আর ইফেক্টের মধ্যেও সব সংলাপ (হুকসহ) শোনা যায়।
+
+### v5 changes
+- Story location redrawn as a detailed launch ghat (`engine-rickshaw/ghat_bg.py`): Old Dhaka skyline with mosque and water tower, three docked multi-deck launches with passengers, flags and life rings, country boats with boatmen, water hyacinth, steel pontoon with hazard edge, bollards and mooring ropes, gangway, lamp post, crows, porters and passers-by. No text in the background.
+- End card: Bangla name plates over each character — মন্টু মামা, টুনি, বল্টু.

@@ -9,6 +9,7 @@ src = (S / "anim/build.py").read_text()
 ns = {"__name__": "x", "sys": type("s", (), {"argv": ["", str(S)]})}
 exec(src.split("DATA = {")[0].replace("S = Path(sys.argv[1])", f"S = Path({str(S)!r})"), ns)
 BG, JACKETS, PROPS, FONT_CSS = ns["BG"], ns["JACKETS"], ns["PROPS"], ns["FONT_CSS"]
+sys.path.insert(0, str(S / "anim")); import ghat_bg; BG = ghat_bg.ghat_svg()
 chars = json.loads((S / "chars/chars2.json").read_text())
 tl = json.loads((S / "vo/timeline.json").read_text())
 
