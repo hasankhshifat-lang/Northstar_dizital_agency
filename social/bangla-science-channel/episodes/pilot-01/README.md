@@ -45,3 +45,8 @@
 ### v5 changes
 - Story location redrawn as a detailed launch ghat (`engine-rickshaw/ghat_bg.py`): Old Dhaka skyline with mosque and water tower, three docked multi-deck launches with passengers, flags and life rings, country boats with boatmen, water hyacinth, steel pontoon with hazard edge, bollards and mooring ropes, gangway, lamp post, crows, porters and passers-by. No text in the background.
 - End card: Bangla name plates over each character — মন্টু মামা, টুনি, বল্টু.
+
+### v6 changes
+- Lip-sync: each character has a mouth that follows the voice loudness frame by frame (`engine-rickshaw/mouth_env.py` -> `mouth_env.json`). Boltu's mouth now moves when he talks (before, both of his talk faces were the same).
+- Calmer talking: arm, head and body gestures slowed to about a third of their old speed, and the face no longer flickers between two expressions.
+- Text contrast: `engine-rickshaw/contrast_audit.js` measures every on-screen label against what is behind it. The free LLM router (`tools/freellm.py`) suggested the colour fixes: darker red/teal/green/blue, white outlines on labels over busy scenes, and dark text on Boltu's pink name plate. The "সরানো পানি" label is now drawn above the moving water block.

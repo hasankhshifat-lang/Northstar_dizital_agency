@@ -37,7 +37,7 @@ for ln in tl["lines"]:
             d = (span_end - t0) * len(p[0]) / total
             caps.append({"s": round(tt, 2), "e": round(tt + d, 2), "t": p[0], "who": ln["speaker"]}); tt += d
         t0 = span_end; k = j + 1
-DATA = {"chars": chars, "bg": BG, "jackets": JACKETS, "props": PROPS, "lines": tl["lines"], "caps": caps, "dur": tl["duration"]}
+DATA = {"chars": chars, "bg": BG, "jackets": JACKETS, "props": PROPS, "lines": tl["lines"], "caps": caps, "dur": tl["duration"], "mouth": json.loads((S / "anim/mouth_env.json").read_text())}
 
 HTML = (S / "anim/episode3_template.html").read_text()
 out = S / "anim/episode3.html"

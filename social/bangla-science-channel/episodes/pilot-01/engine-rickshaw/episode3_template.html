@@ -68,19 +68,34 @@ const SIZE={mama:[420,600],tuni:[360,600],boltu:[320,600]}, KEY={mama:"Montu Mam
 function buildChar(el,c){ el.style.width=SIZE[c][0]+"px"; el.style.height=SIZE[c][1]+"px";
   for(const e of ["Default","Happy","Worried"]){const w=document.createElement("div");w.className="expr e"+e;w.style.cssText="position:absolute;inset:0;display:none";w.innerHTML=D.chars[KEY[c]][e];el.appendChild(w);} }
 for(const c of ["mama","tuni","boltu"]) buildChar($(c),c);
+const MP={mama:{x:255,y:532,w:24,sk:"#C98B5A",before:true},tuni:{x:550,y:644,w:17,sk:"#C98B5A"},boltu:{x:895,y:607,w:24,sk:"#C98B5A"}};
+function addMouth(el,c){ const m=MP[c]; el.querySelectorAll(".expr").forEach(w=>{ const inner=w.querySelector("g.head > g"); if(!inner) return;
+  const g=document.createElementNS("http://www.w3.org/2000/svg","g"); g.setAttribute("class","lip"); g.style.display="none";
+  g.innerHTML=`<ellipse cx="${m.x}" cy="${m.y}" rx="${m.w+6}" ry="${m.w*0.75}" fill="${m.sk}" stroke="none"/>`+
+   `<path class="l0" d="M${m.x-m.w*0.6} ${m.y} q${m.w*0.6} ${m.w*0.3} ${m.w*1.2} 0" fill="none" stroke-width="5"/>`+
+   `<g class="l1"><ellipse cx="${m.x}" cy="${m.y}" rx="${m.w*0.6}" ry="${m.w*0.28}" fill="#7A2E1A" stroke-width="4.5"/></g>`+
+   `<g class="l2"><ellipse cx="${m.x}" cy="${m.y+2}" rx="${m.w*0.68}" ry="${m.w*0.55}" fill="#7A2E1A" stroke-width="5"/><ellipse cx="${m.x}" cy="${m.y+m.w*0.32}" rx="${m.w*0.38}" ry="${m.w*0.18}" fill="#F72585" stroke="none"/></g>`;
+  if(m.before) inner.insertBefore(g, inner.lastElementChild); else inner.appendChild(g); }); }
+const LIPENV=D.mouth;
+function lipLevel(who,tm){ return speaking(who,tm)? +(LIPENV[Math.round(tm*24)]||0) : -1; }
+function applyLips(tm){ for(const [id,who] of [["mama","mama"],["tuni","tuni"],["boltu","boltu"],["mamaMini","mama"],["tuniMini","tuni"],["boltuMini","boltu"]]){
+  const lv=lipLevel(who,tm); $(id).querySelectorAll(".lip").forEach(g=>{ g.style.display= lv<0?"none":"inline";
+    if(lv>=0) for(const k of [0,1,2]) g.querySelector(".l"+k).style.display = k===lv?"inline":"none"; }); } }
+
 buildChar($("tuniMini"),"tuni"); buildChar($("boltuMini"),"boltu"); buildChar($("mamaMini"),"mama");
+for(const [id,c] of [["mama","mama"],["tuni","tuni"],["boltu","boltu"],["mamaMini","mama"],["tuniMini","tuni"],["boltuMini","boltu"]]) addMouth($(id),c);
 {const j=document.createElement("div");j.className="jackets";j.style.cssText="position:absolute;inset:0;display:none";j.innerHTML=D.jackets;$("mama").appendChild(j);}
 function setExpr(el,e){el.querySelectorAll(".expr").forEach(w=>w.style.display=w.classList.contains("e"+e)?"block":"none");}
 function rig(id,aL,aR,hd){ const el=$(id); for(const cls of ["armL","armR","head"]){ const a = cls==="armL"?aL:cls==="armR"?aR:hd;
    el.querySelectorAll("g."+cls).forEach(g=>{const p=g.dataset.p.split(","); g.setAttribute("transform",`rotate(${a.toFixed(1)} ${p[0]} ${p[1]})`);}); } }
 function gest(id,who,t,base){ // base: {aL,aR,hd}; talking adds lively gestures
-  const sp=speaking(who,t); let {aL,aR,hd}=base; const w=Math.sin(t*6.5), w2=Math.sin(t*4.1+1);
-  if(sp){ aR += -16 - 14*w; aL += 6 + 6*w2; hd += 3*Math.sin(t*5); } else { aL += 2*Math.sin(t*1.7); aR += -2*Math.sin(t*1.9+1); hd += 1.2*Math.sin(t*1.3); }
+  const sp=speaking(who,t); let {aL,aR,hd}=base; const w=Math.sin(t*2.6), w2=Math.sin(t*1.8+1);
+  if(sp){ aR += -16 - 14*w; aL += 6 + 6*w2; hd += 3*Math.sin(t*2.1); } else { aL += 2*Math.sin(t*1.7); aR += -2*Math.sin(t*1.9+1); hd += 1.2*Math.sin(t*1.3); }
   rig(id,aL,aR,hd); }
 function place(id,c,x,y,s,r=0){const el=$(id);el.style.display="block";el.style.left=(x-SIZE[c][0]/2)+"px";el.style.top=(y-SIZE[c][1])+"px";el.style.transform=`scale(${s}) rotate(${r}deg)`;}
 function hide(id){$(id).style.display="none";}
 function speaking(who,t){return D.lines.find(l=>l.speaker===who&&t>=l.start&&t<=l.end);}
-function talkExpr(who,t,open,closed){return speaking(who,t)?(FR%4<2?open:closed):closed;}
+function talkExpr(who,t,open,closed){return speaking(who,t)?open:closed;}
 // ---------- world props ----------
 $("bgLayer").innerHTML=D.bg; $("bucket").innerHTML=D.props.bucket; $("inNail").innerHTML=D.props.nail;
 $("trunk").innerHTML=`<svg viewBox="0 0 360 220" width="360" height="220"><g stroke="${INK}" stroke-width="7" stroke-linejoin="round"><rect x="10" y="40" width="340" height="170" rx="14" fill="#2E6FB5"/><rect x="10" y="40" width="340" height="50" rx="14" fill="#3D86D1"/><g fill="#FFC300"><rect x="70" y="40" width="26" height="170"/><rect x="264" y="40" width="26" height="170"/></g><rect x="150" y="70" width="60" height="40" rx="6" fill="#C9D1D6"/><path d="M130 40 Q180 0 230 40" fill="none" stroke-width="9"/><g fill="#F72585" stroke-width="3"><circle cx="180" cy="160" r="16"/></g></g></svg>`;
@@ -93,8 +108,8 @@ $("tiffinBucket").innerHTML=`<svg viewBox="0 0 340 420" width="340" height="420"
  <g id="tif"><g filter="url(#cut)"><rect x="-58" y="-96" width="116" height="32" rx="10" fill="#C9D1D6"/><rect x="-58" y="-64" width="116" height="32" rx="10" fill="#DCE2E6"/><rect x="-58" y="-32" width="116" height="32" rx="10" fill="#C9D1D6"/><path d="M-40 -96 Q0 -140 40 -96" fill="none" stroke-width="7"/></g></g>
  <g id="foods"></g>
  <g filter="url(#cut)"><path d="M48 190 L292 190 L276 410 L64 410 Z" fill="#9AA7B0"/><path d="M54 250 H286 M60 320 H280" stroke-width="5"/></g>
- <g id="tifW"><path id="tifWp" fill="#D7263D"/><text id="tifWt" x="44" y="0" font-family="Hind" font-weight="700" font-size="30" fill="#D7263D" stroke="none" text-anchor="middle">ওজন</text></g>
- <g id="tifB"><path id="tifBp" fill="#00A6A6"/><text x="300" y="0" id="tifBt" font-family="Hind" font-weight="700" font-size="30" fill="#00A6A6" stroke="none" text-anchor="middle">প্লবতা</text></g>
+ <g id="tifW"><path id="tifWp" fill="#D7263D"/><text id="tifWt" x="44" y="0" font-family="Hind" font-weight="700" font-size="34" fill="#A3122A" stroke="#fff" stroke-width="9" paint-order="stroke" text-anchor="middle">ওজন</text></g>
+ <g id="tifB"><path id="tifBp" fill="#00A6A6"/><text x="300" y="0" id="tifBt" font-family="Hind" font-weight="700" font-size="34" fill="#006B6B" stroke="#fff" stroke-width="9" paint-order="stroke" text-anchor="middle">প্লবতা</text></g>
  <g id="tifTag"></g></g></svg>`;
 // world fx (gulls, smoke, waves)
 $("fx").innerHTML=`<g id="smoke"></g><g id="gulls"></g><g id="waves" stroke="#fff" stroke-width="6" fill="none" opacity=".8"></g>`;
@@ -126,13 +141,13 @@ B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
  <g id="qc2"><g filter="url(#cut)"><rect x="-220" y="-120" width="440" height="240" rx="10" fill="#FFF9EC" stroke-width="5"/></g><g transform="translate(-110 40)">${launchSolid(0.2)}</g>
   <text x="60" y="-30" text-anchor="middle" font-family="Baloo" font-size="44" fill="${INK}" stroke="none">লোহার লঞ্চ</text>
   <text x="110" y="80" text-anchor="middle" font-family="Baloo" font-size="40" fill="#1F5FA8" stroke="none">ভাসে?</text></g>
- ${g("qMark",`<text x="0" y="0" text-anchor="middle" font-family="Baloo" font-size="260" fill="#D7263D" stroke="#fff" stroke-width="12" paint-order="stroke">?</text>`)}
+ ${g("qMark",`<text x="0" y="0" text-anchor="middle" font-family="Baloo" font-size="260" fill="#A3122A" stroke="#fff" stroke-width="12" paint-order="stroke">?</text>`)}
 </g>
 <!-- material card (overlay on story) -->
 <g id="bMat" stroke="${INK}" stroke-linejoin="round">
  <g id="matCard"><g filter="url(#cut)"><rect x="-470" y="-270" width="940" height="540" rx="10" fill="#FFF9EC" stroke-width="5"/></g>${tape(-400,-268,-8)}${tape(400,-268,7)}
   <text x="0" y="-205" text-anchor="middle" font-family="Hind" font-weight="700" font-size="42" fill="${INK}" stroke="none">ডুববে কি না, তা নির্ভর করে কিসের ওপর?</text>
-  <g id="matL"><g filter="url(#cut)"><rect x="-330" y="-140" width="200" height="130" fill="#8E9AA3" stroke-width="6"/></g><text x="-230" y="-70" text-anchor="middle" font-family="Baloo" font-size="48" fill="#fff" stroke="none">লোহা</text>
+  <g id="matL"><g filter="url(#cut)"><rect x="-330" y="-140" width="200" height="130" fill="#8E9AA3" stroke-width="6"/></g><text x="-230" y="-70" text-anchor="middle" font-family="Baloo" font-size="48" fill="#fff" stroke="#1A1A1A" stroke-width="8" paint-order="stroke">লোহা</text>
    <text x="-230" y="70" text-anchor="middle" font-family="Baloo" font-size="56" fill="${INK}" stroke="none">শুধু উপাদান?</text></g>
   <g id="matX" stroke="#D7263D" stroke-width="22" stroke-linecap="round"><path d="M-320 -150 L-140 20 M-140 -150 L-320 20"/></g>
   <g id="matR"><g filter="url(#cut)"><path d="M110 -110 L250 -110 L225 -55 L135 -55 Z" fill="#E4E9ED" stroke-width="6"/><circle cx="320" cy="-82" r="38" fill="#C9D1D6" stroke-width="6"/></g>
@@ -158,7 +173,7 @@ B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
  <g id="fBub" fill="#fff" stroke="#1F5FA8" stroke-width="3"></g>
  ${g("tMore",tag("বেশি পানি সরায়",34,"#fff","#1F5FA8"))}${g("tLess",tag("অল্প পানি সরায়",34,"#fff","#1F5FA8"))}
  <path id="aUpL" fill="#00A6A6" stroke-width="5"/><path id="aDnL" fill="#D7263D" stroke-width="5"/><path id="aUpR" fill="#00A6A6" stroke-width="5"/><path id="aDnR" fill="#D7263D" stroke-width="5"/>
- ${g("tPush",tag("পানির ধাক্কা",32,"#fff","#00A6A6"))}${g("tW",tag("ওজন",32,"#fff","#D7263D"))}
+ ${g("tPush",tag("পানির ধাক্কা",32,"#fff","#006B6B"))}${g("tW",tag("ওজন",32,"#fff","#D7263D"))}
  <g id="fStamp">${tag("প্লবতা",110,"#fff","#D7263D","Baloo")}<g transform="translate(0 115)">${tag("পানির উপরের দিকে ধাক্কা (Buoyancy)",34,"#FFC300")}</g></g>
 </g>
 <!-- launch cut-away -->
@@ -173,18 +188,18 @@ B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
    <text x="-20" y="-20" text-anchor="middle" font-family="Baloo" font-size="64" fill="#1F5FA8" stroke="none">বাতাস</text></g>
   <path id="lDisp" d="${UNDER}" fill="url(#hatch)" stroke="#00A6A6" stroke-width="6" stroke-dasharray="14 10"/>
   <g id="lMark"><path d="M395 0 H470" stroke="#D7263D" stroke-width="8"/></g></g>
- ${g("tDispL",tag("সরানো পানি",36,"#fff","#1F5FA8"))}${g("tSinkL",tag("এতটুকু ডোবে",32,"#fff","#D7263D"))}${g("tAirL",tag("ভেতরটা ফাঁপা",36,"#fff"))}
  <g id="lCard"><g filter="url(#cut)"><rect x="110" y="1170" width="900" height="300" rx="10" fill="#FFF9EC" stroke-width="5"/></g>
   <g filter="url(#cut)"><rect x="530" y="1430" width="120" height="22" fill="#8B4A1F" stroke-width="5"/><rect x="580" y="1270" width="20" height="165" fill="#B5793A" stroke-width="5"/></g>
   <g id="lBeam"><g filter="url(#cut)"><rect x="-280" y="-9" width="560" height="18" rx="7" fill="#B5793A" stroke-width="5"/></g></g>
   <g id="lPanL"><path d="M-80 0 Q0 46 80 0 Z" fill="#E4C27A" stroke-width="5"/></g><g id="lPanR"><path d="M-80 0 Q0 46 80 0 Z" fill="#E4C27A" stroke-width="5"/></g></g>
  <g id="lWater"><rect x="-60" y="-50" width="120" height="50" fill="#4CC9F0" stroke-width="5" filter="url(#cut)"/></g>
+ ${g("tDispL",tag("সরানো পানি",36,"#fff","#123E7A"))}${g("tSinkL",tag("এতটুকু ডোবে",32,"#fff","#D7263D"))}${g("tAirL",tag("ভেতরটা ফাঁপা",36,"#fff"))}
  <g id="lWaterS"><rect x="-18" y="-16" width="36" height="16" fill="#4CC9F0" stroke-width="4"/></g>
  <g id="lMiniShip">${launchSolid(0.17)}</g>
  <g id="lMiniNail" transform="scale(.42)">${nailShape()}</g>
- ${g("lEq",tag("=",60,"#fff","#2BA84A","Baloo"))}${g("lLt",tag("সরানো পানির ওজন  <  পেরেকের ওজন",30,"#fff","#D7263D"))}
- ${g("lLblW",tag("সরানো পানি",26,"#fff","#1F5FA8"))}${g("lLblS",tag("লঞ্চের ওজন",26,"#fff","#D7263D"))}
- ${g("lOK",tag("তাই লঞ্চ ভাসে",46,"#fff","#2BA84A"))}
+ ${g("lEq",tag("=",60,"#fff","#1B7A35","Baloo"))}${g("lLt",tag("সরানো পানির ওজন  <  পেরেকের ওজন",30,"#fff","#D7263D"))}
+ ${g("lLblW",tag("সরানো পানি",26,"#fff","#123E7A"))}${g("lLblS",tag("লঞ্চের ওজন",26,"#fff","#D7263D"))}
+ ${g("lOK",tag("তাই লঞ্চ ভাসে",46,"#fff","#1B7A35"))}
  <g id="lNail">${nailShape()}</g>${g("tNail",tag("নিরেট আর ছোট",36,"#fff"))}
  <g id="lBub" fill="#fff" stroke="#1F5FA8" stroke-width="3"></g>
  ${g("lNO",tag("তাই ডোবে",46,"#fff","#D7263D"))}
@@ -192,7 +207,7 @@ B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
 <!-- morph -->
 <g id="bMorph" stroke="${INK}" stroke-linejoin="round">
  <g id="mBoat"><path d="M-110 -40 L110 -40 L80 30 L-80 30 Z" fill="#E4E9ED" stroke-width="6" filter="url(#cut)"/></g>
- ${g("mEq",tag("=",90,"#fff","#2BA84A","Baloo"))}
+ ${g("mEq",tag("=",90,"#fff","#1B7A35","Baloo"))}
  <g id="mShip">${launchSolid(0.42)}</g>
  ${g("mLb",tag("রাংতার নৌকা",36,"#fff"))}${g("mLs",tag("বিশাল লঞ্চ",36,"#fff"))}
  ${g("mOK",tag("একদম ঠিক!",70,"#FFC300","#1A1A1A","Baloo"))}
@@ -223,8 +238,8 @@ B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
   ${g("pRiverT",tag("নদী: মিঠা পানি",36,"#fff","#1F5FA8"))}${g("pSeaT",tag("সাগর: লোনা পানি",36,"#fff","#1F4F94"))}
   <g id="pBoat">${launchSolid(0.16)}</g></g>
  <g id="pClose"><g filter="url(#rough)"><rect x="0" y="900" width="1080" height="600" fill="#1F4F94" stroke="none"/></g><g id="pShip">${launchSolid(0.8)}</g>
-  ${g("pUp",tag("⬆ একটু উপরে উঠবে?",48,"#fff","#2BA84A"))}${g("pDn",tag("⬇ নাকি আরো ডুবে যাবে?",48,"#fff","#D7263D"))}
-  ${g("pQ",`<text x="0" y="0" text-anchor="middle" font-family="Baloo" font-size="220" fill="#D7263D" stroke="#fff" stroke-width="10" paint-order="stroke">?</text>`)}
+  ${g("pUp",tag("⬆ একটু উপরে উঠবে?",48,"#fff","#1B7A35"))}${g("pDn",tag("⬇ নাকি আরো ডুবে যাবে?",48,"#fff","#D7263D"))}
+  ${g("pQ",`<text x="0" y="0" text-anchor="middle" font-family="Baloo" font-size="220" fill="#A3122A" stroke="#fff" stroke-width="10" paint-order="stroke">?</text>`)}
   ${g("pCom",tag("কমেন্টে লেখো!",64,"#FFC300",INK,"Baloo"))}</g>
 </g>
 <!-- end -->
@@ -232,7 +247,7 @@ B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
  ${g("eTitle",tag("লঞ্চ ডুববে?",110,"#D7263D","#FFC300","Baloo"))}${g("eCh",tag("গল্পে বিজ্ঞান",56,"#fff",INK,"Baloo"))}
  <g id="eWheel"><g filter="url(#cut)"><circle r="170" fill="none" stroke-width="22"/><circle r="150" fill="none" stroke="#F72585" stroke-width="10"/>${[...Array(12).keys()].map(i=>`<path d="M0 0 L${(150*Math.cos(i*Math.PI/6)).toFixed(1)} ${(150*Math.sin(i*Math.PI/6)).toFixed(1)}" stroke-width="7"/>`).join("")}<circle r="30" fill="#FFC300" stroke-width="7"/></g></g>
  ${g("eNext",tag("পরের পর্বে আবার দেখা হবে!",40,"#fff"))}
- <g id="eNames">${g("nMama",tag("মন্টু মামা",46,"#FFC300"))}${g("nTuni",tag("টুনি",46,"#FFFFFF"))}${g("nBoltu",tag("বল্টু",46,"#F72585","#FFFFFF"))}</g>
+ <g id="eNames">${g("nMama",tag("মন্টু মামা",46,"#FFC300"))}${g("nTuni",tag("টুনি",46,"#FFFFFF"))}${g("nBoltu",tag("বল্টু",46,"#F72585","#1A1A1A"))}</g>
 </g><g id="ripples" fill="none" stroke="#fff" stroke-width="6"></g></g>`;
 B.insertAdjacentHTML("beforeend", (()=>{ let s=`<g id="rFrame"><rect x="28" y="28" width="1024" height="1864" fill="none" stroke="#00A6A6" stroke-width="14"/><rect x="50" y="50" width="980" height="1820" fill="none" stroke="#D7263D" stroke-width="6"/>`;
   const fl=(x,y,c)=>`<g transform="translate(${x} ${y})" stroke="#1A1A1A" stroke-width="3"><ellipse cx="0" cy="-12" rx="8" ry="12" fill="${c}"/><ellipse cx="0" cy="12" rx="8" ry="12" fill="${c}"/><ellipse cx="-12" cy="0" rx="12" ry="8" fill="${c}"/><ellipse cx="12" cy="0" rx="12" ry="8" fill="${c}"/><circle r="7" fill="${c==="#FFC300"?"#D7263D":"#FFC300"}"/></g>`;
@@ -305,7 +320,7 @@ function mainRender(t){
     $("gulls").innerHTML=gl;
     let sm=""; for(let i=0;i<4;i++){const ph=((t*0.6+i/4)%1); sm+=`<circle cx="${554+ph*40}" cy="${720-ph*260}" r="${18+ph*30}" fill="#E9E4DA" stroke="#1A1A1A" stroke-width="4" opacity="${(1-ph).toFixed(2)}" filter="url(#cut)"/>`;} $("smoke").innerHTML=sm;
     let wv=""; for(let i=0;i<3;i++){const y=1110+i*70, off=(stp(t/3%1,36)*240+i*80)%240; for(let x=-240+off;x<1080;x+=240) wv+=`<path d="M${x} ${y} q30 -16 60 0 t60 0"/>`;} $("waves").innerHTML=wv;
-    const bob=k=>Math.sin(t*6+k)*3;
+    const bob=k=>Math.sin(t*2.4+k)*2.5;
     if (sc<=4){
       let mx=330, mExpr="Default", jackets=false, rot=0, ms=1;
       if (sc===1){ const k=stp(t/2.4,14); mx=lerp(-260,330,k); rot = (FR%4<2?-3:3)*(k<1?1:0); mExpr=talkExpr("mama",t,"Happy","Happy");
@@ -314,10 +329,10 @@ function mainRender(t){
       if (sc===4){ jackets=true; mx=300; mExpr=talkExpr("mama",t,"Worried","Worried"); if(t>21.3&&t<22.6) rot=-14*Math.sin(clamp((t-21.3)/1.3)*Math.PI); }
       setExpr($("mama"),mExpr); $("mama").querySelector(".jackets").style.display=jackets?"block":"none";
       place("mama","mama",mx+J(3,8),1720+bob(0)+J(4,6),ms,rot+J(5,2.5));
-      { let b={aL:0,aR:0,hd:0}; if(sc===1&&t>0.5&&t<3.6) b={aL:125+25*Math.sin(t*11),aR:0,hd:4*Math.sin(t*6)}; if(sc===3&&t>7.7&&t<10.4) b={aL:0,aR:-150,hd:-8}; if(sc===3&&t>12.5) b={aL:152+12*Math.sin(t*14),aR:-152-12*Math.sin(t*14),hd:8*Math.sin(t*15)}; if(sc===2) b={aL:20,aR:-30,hd:-10}; gest("mama","mama",t,b); }
+      { let b={aL:0,aR:0,hd:0}; if(sc===1&&t>0.5&&t<3.6) b={aL:125+25*Math.sin(t*3.8),aR:0,hd:4*Math.sin(t*6)}; if(sc===3&&t>7.7&&t<10.4) b={aL:0,aR:-150,hd:-8}; if(sc===3&&t>12.5) b={aL:152+12*Math.sin(t*4.9),aR:-152-12*Math.sin(t*4.9),hd:8*Math.sin(t*5.2)}; if(sc===2) b={aL:20,aR:-30,hd:-10}; gest("mama","mama",t,b); }
       if (sc===4){ const bx=lerp(1300,820,stp((t-16.2)/1.4,8)); setExpr($("boltu"), t>18.4?talkExpr("boltu",t,"Happy","Happy"):"Default");
-        place("boltu","boltu",bx+J(6,8),1730+bob(2)+J(7,6),0.82,J(8,2.5)+(speaking("boltu",t)?Math.sin(t*20)*3:0));
-        gest("boltu","boltu",t, t>18.4?{aL:100+12*Math.sin(t*12),aR:-30-20*Math.abs(Math.sin(t*8)),hd:6*Math.sin(t*9)}:{aL:0,aR:0,hd:0}); }
+        place("boltu","boltu",bx+J(6,8),1730+bob(2)+J(7,6),0.82,J(8,2.5)+(speaking("boltu",t)?Math.sin(t*3.2)*2:0));
+        gest("boltu","boltu",t, t>18.4?{aL:100+12*Math.sin(t*4.2),aR:-30-20*Math.abs(Math.sin(t*3.5)),hd:6*Math.sin(t*3.5)}:{aL:0,aR:0,hd:0}); }
     }
     if (sc===2){ const k=stp((t-5.1)/2.0,12); $("inNail").style.top=lerp(-60,500,k)+"px"; $("inset").style.transform=`scale(${pop(t,4.6)}) rotate(${J(30,2)}deg)`;
       let bb=""; if(t>5.6){ for(let i=0;i<5;i++){const ph=((t*1.3+i/5)%1); bb+=`<circle cx="${320+Math.sin(i*2.3+t*3)*30}" cy="${lerp(-60,500,k)+40-ph*260}" r="${6+i*2}"/>`;} } $("inBub").innerHTML=bb; }
@@ -336,8 +351,8 @@ function mainRender(t){
     }
     if (sc===9){
       setExpr($("mama"), t>=79.2 ? talkExpr("mama",t,"Worried","Worried") : talkExpr("mama",t,"Happy","Happy"));
-      place("mama","mama",250+J(3,8),1720+bob(0)+J(4,6),1,J(5,2.5)+(t>=79.2?Math.sin(t*25)*2:0));
-      gest("mama","mama",t, t>=79.2?{aL:150+14*Math.sin(t*16),aR:-150-14*Math.sin(t*16),hd:7*Math.sin(t*14)} : (t>74.5&&t<76.9?{aL:0,aR:-110,hd:6}:{aL:0,aR:-60,hd:0}));
+      place("mama","mama",250+J(3,8),1720+bob(0)+J(4,6),1,J(5,2.5)+(t>=79.2?Math.sin(t*8.8)*2:0));
+      gest("mama","mama",t, t>=79.2?{aL:150+14*Math.sin(t*5.6),aR:-150-14*Math.sin(t*5.6),hd:7*Math.sin(t*4.9)} : (t>74.5&&t<76.9?{aL:0,aR:-110,hd:6}:{aL:0,aR:-60,hd:0}));
       const tb=$("tiffinBucket"); tb.style.display="block"; tb.style.left=(560+J(12,6))+"px"; tb.style.top=(1720-420+J(13,6))+"px"; tb.style.transform="scale(1.15)"; tb.style.transformOrigin="50% 100%";
       const nfood = t<76.9?0: t<77.4?1: t<77.9?2: t<78.4?3: 4;
       const sink = clamp((t-78.6)/0.9); const ty = 172 + 4 + stp(sink,6)*240 + Math.sin(t*3)*3*(1-sink);
@@ -453,7 +468,7 @@ function mainRender(t){
     setT("eTitle",540,560,pop(t,106.2),-3,101); setT("eCh",540,730,pop(t,106.4),2,102);
     setT("eWheel",540,820,1,(t-106.2)*120,103);
     vis("eNames",true); [["nMama",250,106.5],["nTuni",540,106.7],["nBoltu",830,106.9]].forEach(([id,x,t0])=>{ vis(id,t>=t0); setT(id,x,1205,pop(t,t0),id==="nTuni"?2:-2); });
-    for(const [id,c,x] of [["mamaMini","mama",250],["tuniMini","tuni",540],["boltuMini","boltu",830]]){ setExpr($(id),"Happy"); place(id,c,x,1650,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*10), id==="mamaMini"?-130-25*Math.sin(t*10):-20, 4*Math.sin(t*5)); }
+    for(const [id,c,x] of [["mamaMini","mama",250],["tuniMini","tuni",540],["boltuMini","boltu",830]]){ setExpr($(id),"Happy"); place(id,c,x,1650,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*3.5), id==="mamaMini"?-130-25*Math.sin(t*3.5):-20, 4*Math.sin(t*5)); }
   }
   ["fHead","lHead","sHead","mOK","pHead","pCom","eTitle","eCh","eNext"].forEach(id=>vis(id,false));
   vis("bdLab", sc===6); vis("bdSky", sc===7||sc===10); vis("bdLand", sc===12 && t<101.7); vis("bdPaper", sc===8||sc===13); vis("backdrops", !(sc===3||sc===5));
@@ -471,7 +486,7 @@ function mainRender(t){
 const OFF = __OFF__;
 const HP = [[0.3,1.88],[1.88,3.37],[3.37,5.69],[5.69,7.02]];   // hook phrase windows (Mama, script line 3)
 window.render = function(T){
-  if (T >= OFF) { mainRender(T - OFF); return; }
+  if (T >= OFF) { mainRender(T - OFF); applyLips(T - OFF); return; }
   FR = Math.floor(T*FPS); const t = FR/FPS;
   BOARDS.forEach(b=>vis(b,false)); ["mama","tuni","boltu","bucket","trunk","tiffinBucket","tuniMini","boltuMini","mamaMini"].forEach(hide);
   $("inset").style.display="none"; vis("rFrame",false); vis("kraftDeco",false);
@@ -489,9 +504,9 @@ window.render = function(T){
     $("gulls").innerHTML=""; 
     setExpr($("mama"), talkExpr("mama",t+7.68-0.3,"Worried","Default"));
     $("mama").querySelector(".jackets").style.display="none";
-    place("mama","mama",330,1720,1, t>=HP[3][0]? Math.sin(t*20)*3:0);
-    let b = t<HP[1][0]? {aL:0,aR:-150,hd:-8} : t<HP[3][0]? {aL:20,aR:-40,hd:-6} : {aL:152+12*Math.sin(t*14),aR:-152-12*Math.sin(t*14),hd:8*Math.sin(t*15)};
-    rig("mama", b.aL+(t%0.5<0.25?3:0), b.aR, b.hd);
+    place("mama","mama",330,1720,1, t>=HP[3][0]? Math.sin(t*7.0)*3:0);
+    let b = t<HP[1][0]? {aL:0,aR:-150,hd:-8} : t<HP[3][0]? {aL:20,aR:-40,hd:-6} : {aL:152+12*Math.sin(t*4.9),aR:-152-12*Math.sin(t*4.9),hd:8*Math.sin(t*5.2)};
+    rig("mama", b.aL+(t%1<0.5?2:0), b.aR, b.hd);
     if (inNail){ $("inset").style.display="block"; const k=ease((t-HP[1][0])/1.3); $("inNail").style.top=lerp(-60,500,k)+"px"; $("inset").style.transform=`scale(${pop(t,HP[1][0])})`;
       let bb=""; for(let i=0;i<5;i++){const ph=((t*1.3+i/5)%1); bb+=`<circle cx="${320+Math.sin(i*2.3+t*3)*30}" cy="${lerp(-60,500,k)+40-ph*260}" r="${6+i*2}"/>`;} $("inBub").innerHTML=bb; }
     if (cards){ vis("bQ",true); vis("qc1",true); setT("qc1",300,470,pop(t,HP[2][0]),-3,27); vis("qc2",t>=HP[2][0]+0.7); setT("qc2",790,470,pop(t,HP[2][0]+0.7),3,28);
@@ -502,8 +517,9 @@ window.render = function(T){
     vis("rFrame",true); vis("bEnd",true); ["eTitle","eCh","eNext"].forEach(id=>vis(id,false)); vis("eNames",false);
     setT("eWheel",540,820,pop(t,7.1),(t-7.1)*220,103);
     [["mamaMini","mama",250,7.25],["tuniMini","tuni",540,7.4],["boltuMini","boltu",830,7.55]].forEach(([id,c,x,t0])=>{ if(t<t0) return; setExpr($(id),"Happy");
-      place(id,c,x,1650+ (1-back(clamp((t-t0)/0.35)))*400,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*12), id==="mamaMini"?-130-25*Math.sin(t*12):-20, 4*Math.sin(t*6)); });
+      place(id,c,x,1650+ (1-back(clamp((t-t0)/0.35)))*400,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*4.2), id==="mamaMini"?-130-25*Math.sin(t*4.2):-20, 4*Math.sin(t*6)); });
   }
+  applyLips(T < 7.1 ? T+7.68-0.3 : -1);
 };
 window.render(0);
 </script></body></html>
