@@ -7,7 +7,7 @@ target **10M views in 60 days** (2026-11-09 → 2027-01-07). Research topics, sc
 
 - **vidIQ: not usable today.** 4 credits left, every call costs 5; credits renew 2026-11-30
   (150/month on the current plan). A daily vidIQ step needs a bigger plan.
-- **YouTube Analytics API: disabled** in Google Cloud project 168994544641, so retention / CTR /
+- **YouTube Analytics API: enabled on 2026-11-08** (it was disabled when this plan was written, so retention / CTR /
   traffic sources are not available.
 - **Used instead:** YouTube Data API search through our own client: 18 history queries, US region,
   English, Shorts published since 2026-08-10, top 25 by views each → **430 Shorts from 361 channels**.
@@ -75,7 +75,7 @@ but cut harder: a new shot every 2–4 s, and the first frame must already show 
 - Cross-post the same file to the Which Life Next Facebook Page (existing rule).
 
 ### Measure and adjust (every day, 2 minutes)
-- Views at 24 h and 72 h per Short (YouTube Data API until Analytics is enabled).
+- Views at 24 h and 72 h per Short plus swipe-away (engagedViews ÷ views) and % watched from YouTube Analytics.
 - A Short that passes **10K in 24 h**: make 2 follow-ups in the same bucket within 3 days ("Part 2", same title pattern).
 - A bucket that stays under 2K for 3 Shorts: drop it for 2 weeks.
 - Weekly: re-rank the buckets and rewrite the next 7 topics in the queue.
@@ -84,8 +84,8 @@ but cut harder: a new shot every 2–4 s, and the first frame must already show 
 
 1. **vidIQ credits:** upgrade the plan (or wait for the 150 credits on 2026-11-30). With credits,
    the daily job adds keyword checks, outliers and title/thumbnail scoring for each Short.
-2. **Enable the YouTube Analytics API** in project 168994544641 and re-authorize with
-   `yt-analytics.readonly`, so the job can see retention and swipe-away rates, the numbers that decide Shorts.
+2. ~~Enable the YouTube Analytics API~~ Done 2026-11-08. First numbers: ~35–40% of viewers swipe away in
+   the first second, 97% of views come from the Shorts feed, and only ~22% are from the US (then UK, PH, CA, AU).
 3. **Claude usage:** the daily Shorts task failed on 2026-11-07 and 11-08 with "usage limit reached",
    so nothing has been posted since 2026-11-05. Moving to 1 Short a day cuts the work by ~75%, but the
    task still needs plan usage left when it fires.

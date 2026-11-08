@@ -36,7 +36,7 @@ channel's illustrated map style (the same look as the maps inside the Shorts):
 For any YouTube analysis (channel or video performance, keyword and topic research, competitor
 channels, titles, tags, best posting times, outlier videos), use the **vidIQ** connector first.
 - Fall back to the YouTube Analytics API through the youtube-channel-automation skill
-  (`yt.py analytics`) only when vidIQ is not connected or has no tool for the question.
+  (`yt.py analytics`) only when vidIQ is not connected, is out of credits, or has no tool for the question.
   Do not use Clawlink or Metricool analytics. Say which source was used.
 - If vidIQ is not connected, tell the user it needs to be authorized in claude.ai connector
   settings before using the fallback.
