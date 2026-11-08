@@ -260,6 +260,7 @@ function camPose(keys,t){ let i=0; while(i<keys.length-1 && t>=keys[i+1][0]) i++
 function setCam(cx,cy,z){ z=Math.max(1,z); const hw=540/z, hh=960/z; cx=clamp(cx,hw,1080-hw); cy=clamp(cy,hh,1920-hh);
   $("bcam").setAttribute("transform",`translate(540 960) scale(${z.toFixed(4)}) translate(${(-cx).toFixed(1)} ${(-cy).toFixed(1)})`); }
 function ripples(list,t){ $("ripples").innerHTML = list.filter(([t0])=>t>=t0&&t<t0+1.0).map(([t0,x,y])=>{const k=(t-t0)/1.0; return [0,0.25].map(d=>{const kk=clamp(k-d); return `<ellipse cx="${x}" cy="${y}" rx="${20+kk*150}" ry="${6+kk*30}" opacity="${(1-kk).toFixed(2)}"/>`;}).join("");}).join(""); }
+$("rFrame").remove();   // no decorative border
 const BOARDS=["bQ","bMat","bFoil","bLaunch","bMorph","bSafe","bPuz","bEnd"];
 // waves for boards
 $("lWaves").innerHTML=[...Array(7).keys()].map(i=>`<path data-y="${820+i*90}" d=""/>`).join("");
