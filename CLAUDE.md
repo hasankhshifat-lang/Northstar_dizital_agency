@@ -49,3 +49,19 @@ deleting, timed takedowns, checking status), use `.claude/skills/facebook-page-a
   injected by the proxy). Do not use Clawlink or Metricool for the Facebook Page.
 - Never delete an uploaded video or post unless the user explicitly asks for that deletion.
 - Log every action in `social/facebook-page-log.md`, then commit and push.
+
+## Token budget: switch to free LLM APIs at 95% usage
+
+When Claude's token usage reaches **95%** (the session/plan usage limit, or the context window
+is nearly full, or the user says usage is at 95%), hand the heavy text-generation work to a free
+LLM API instead of writing it with Claude:
+- Run `python3 tools/free_llm.py "<prompt>"` (stdin: `-`, attach files with `--file PATH`,
+  optional `--system`). It tries Groq (`openai/gpt-oss-120b`) → Gemini (`gemini-3.5-flash`) →
+  OpenRouter (`google/gemma-4-31b-it:free`) and prints the first answer. Keys are injected by the
+  proxy; no key in code.
+- Offload: drafts, rewrites, summaries of long files/scripts, title/description/tag ideas,
+  comment-reply drafts, translations, bulk copy. Keep Claude for tool calls, file edits, commits,
+  and final checks; review the free model's output before using or publishing it.
+- Never send secrets, credentials, or private user data to the free APIs.
+- Say in the reply that the free LLM was used and which provider answered (printed on stderr).
+- If every provider fails, say so and continue with Claude only if usage allows.
