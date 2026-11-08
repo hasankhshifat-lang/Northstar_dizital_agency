@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; overflow: hidden; width: 1080px; height: 1920px; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+  #world { position: absolute; width: 1080px; height: 1920px; transform-origin: 0 0; }
+  #bg { position: absolute; width: 1080px; height: 1920px; transform-origin: center center; transform: scale(1.04); }
+  .char-wrap { position: absolute; transform-origin: bottom center; }
+  .char-inner { width: 100%; height: 100%; transform-origin: bottom center; }
+  #fade { position: absolute; inset: 0; background: #000; pointer-events: none; z-index: 9999; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="bg"></div>
+    <div id="chars"></div>
+  </div>
+  <div id="fade"></div>
+</div>
+
+<script>
+const D = __DATA__;
+
+// Hash helper for deterministic randomness
+function hash(n) {
+  let h = Math.sin(n * 12.9898 + 78.233) * 43758.5453;
+  return h - Math.floor(h);
+}
+
+// Character phases & index mapping
+const CHAR_NAMES = ['mama', 'bithi', 'boltu'];
+const PHASES = { mama: 0.5, bithi: 2.1, boltu: 4.3 };
+
+// Pre-compute blink timestamps per character up to max duration
+const blinks = {};
+CHAR_NAMES.forEach((name, cIdx) => {
+  blinks[name] = [];
+  let t = 1.0 + hash(cIdx * 10) * 2.0;
+  let bCount = 0;
+  while (t < (D.dur || 100) + 10) {
+    blinks[name].push(t);
+    bCount++;
+    const gap = 2.6 + hash(cIdx * 1000 + bCount) * 1.6;
+    t += gap;
+  }
+});
+
+// Setup DOM elements for BG and Chars
+const bgEl = document.getElementById('bg');
+const charsEl = document.getElementById('chars');
+if (D.bg) bgEl.innerHTML = D.bg;
+
+const charNodes = {};
+CHAR_NAMES.forEach(name => {
+  if (!D.chars || !D.chars[name]) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'char-wrap';
+  wrap.id = 'char-' + name;
+  const inner = document.createElement('div');
+  inner.className = 'char-inner';
+  inner.innerHTML = D.chars[name];
+  wrap.appendChild(inner);
+  charsEl.appendChild(wrap);
+
+  const svg = inner.querySelector('svg');
+  if (svg) {
+    const w = parseFloat(svg.getAttribute('width')) || 300;
+    const h = parseFloat(svg.getAttribute('height')) || 600;
+    wrap.style.width = w + 'px';
+    wrap.style.height = h + 'px';
+  }
+
+  // Helper to parse data-p="x,y" pivot
+  const getP = (el) => {
+    if (!el) return [0, 0];
+    const p = el.getAttribute('data-p');
+    return p ? p.split(',').map(Number) : [0, 0];
+  };
+
+  const head = inner.querySelector('.head');
+  const armL = inner.querySelector('.armL');
+  const armR = inner.querySelector('.armR');
+  const browL = inner.querySelector('.browL');
+  const browR = inner.querySelector('.browR');
+  const brows = inner.querySelector('.brows');
+
+  // Find centers for brows rotation if needed
+  const getCenter = (el) => {
+    if (!el) return [0, 0];
+    try {
+      const b = el.getBBox();
+      return [b.x + b.width / 2, b.y + b.height / 2];
+    } catch (e) { return [0, 0]; }
+  };
+
+  charNodes[name] = {
+    wrap, inner, svg, head, armL, armR, browL, browR, brows,
+    headP: getP(head), armLP: getP(armL), armRP: getP(armR),
+    browLC: getCenter(browL), browRC: getCenter(browR),
+    eyesOpen: inner.querySelector('.eyes-open'),
+    eyesClosed: inner.querySelector('.eyes-closed'),
+    mouths: {
+      rest: inner.querySelector('.m-rest'),
+      a: inner.querySelector('.m-a'),
+      e: inner.querySelector('.m-e'),
+      o: inner.querySelector('.m-o'),
+      smile: inner.querySelector('.m-smile')
+    }
+  };
+});
+
+function render(t) {
+  // 1. Find active shot
+  const shot = (D.shots || []).find(s => t >= s.start && t < s.end) || D.shots[0];
+  if (!shot) return;
+
+  // Camera ease-in-out
+  const shotDur = Math.max(0.001, shot.end - shot.start);
+  const st = Math.max(0, Math.min(1, (t - shot.start) / shotDur));
+  const ease = st * st * (3 - 2 * st);
+  const cx = shot.cam.from[0] + (shot.cam.to[0] - shot.cam.from[0]) * ease;
+  const cy = shot.cam.from[1] + (shot.cam.to[1] - shot.cam.from[1]) * ease;
+  const cs = shot.cam.from[2] + (shot.cam.to[2] - shot.cam.from[2]) * ease;
+  document.getElementById('world').style.transform = `translate(${cx}px, ${cy}px) scale(${cs})`;
+
+  // Blur background
+  bgEl.style.filter = shot.blur ? `blur(${shot.blur}px)` : 'none';
+
+  // 2. Fade opacity
+  let fadeOp = 0;
+  if (t < 0.25) fadeOp = 1 - (t / 0.25);
+  else if (t > D.dur - 0.3) fadeOp = (t - (D.dur - 0.3)) / 0.3;
+  document.getElementById('fade').style.opacity = Math.max(0, Math.min(1, fadeOp));
+
+  // 3. Characters setup & sort z-order
+  const visNames = Object.keys(shot.chars || {});
+  CHAR_NAMES.forEach(name => {
+    if (charNodes[name]) {
+      charNodes[name].wrap.style.display = visNames.includes(name) ? 'block' : 'none';
+    }
+  });
+
+  visNames.sort((a, b) => (shot.chars[a][1] || 0) - (shot.chars[b][1] || 0));
+  visNames.forEach((name, idx) => {
+    if (charNodes[name]) charNodes[name].wrap.style.zIndex = idx + 1;
+  });
+
+  // Active speaking line check
+  const activeLine = (D.lines || []).find(l => t >= l.start && t <= l.end);
+
+  // 4. Update each visible character
+  visNames.forEach(name => {
+    const node = charNodes[name];
+    if (!node) return;
+    const cPos = shot.chars[name];
+    const mood = (shot.mood && shot.mood[name]) || 'neutral';
+    const isSpeaking = activeLine && activeLine.speaker === name;
+    const phase = PHASES[name] || 0;
+
+    // Position feet at (x,y)
+    const w = parseFloat(node.wrap.style.width) || 300;
+    const h = parseFloat(node.wrap.style.height) || 600;
+    node.wrap.style.left = (cPos[0] - w / 2) + 'px';
+    node.wrap.style.top = (cPos[1] - h) + 'px';
+    node.wrap.style.transform = `scale(${cPos[2]})`;
+
+    // Breathing
+    const breath = 1 + 0.012 * Math.sin(2 * Math.PI * t / 3.2 + phase);
+    node.inner.style.transform = `scaleY(${breath})`;
+
+    // Head rotation
+    let hRot = 1.5 * Math.sin(2 * Math.PI * t / 4.1 + phase);
+    if (isSpeaking) {
+      hRot += 3 * Math.sin(2 * Math.PI * t / 1.7 + phase) + 2 * Math.sin(2 * Math.PI * t / 0.9);
+    }
+    if (node.head) {
+      node.head.setAttribute('transform', `rotate(${hRot} ${node.headP[0]} ${node.headP[1]})`);
+    }
+
+    // Arms rotation
+    let aLRot = 2 * Math.sin(2 * Math.PI * t / 3.7 + phase);
+    let aRRot = -2 * Math.sin(2 * Math.PI * t / 3.7 + phase);
+    if (isSpeaking) {
+      const talkArm = (name === 'bithi') ? 'L' : 'R';
+      const gAngle = name === 'mama' ? -35 : (name === 'boltu' ? -55 : 40);
+      const lDur = Math.max(0.001, activeLine.end - activeLine.start);
+      const lTime = t - activeLine.start;
+      let easeArm = 1;
+      if (lTime < 0.35) easeArm = lTime / 0.35;
+      else if (lTime > lDur - 0.35) easeArm = (lDur - lTime) / 0.35;
+      easeArm = Math.max(0, Math.min(1, easeArm));
+      const gRot = gAngle * easeArm + 6 * Math.sin(2 * Math.PI * t / 1.3);
+
+      if (talkArm === 'L') aLRot = gRot;
+      else aRRot = gRot;
+    }
+    if (node.armL) node.armL.setAttribute('transform', `rotate(${aLRot} ${node.armLP[0]} ${node.armLP[1]})`);
+    if (node.armR) node.armR.setAttribute('transform', `rotate(${aRRot} ${node.armRP[0]} ${node.armRP[1]})`);
+
+    // Blinking
+    const isBlinking = blinks[name].some(bt => t >= bt && t < bt + 0.125);
+    if (node.eyesOpen && node.eyesClosed) {
+      node.eyesOpen.style.display = isBlinking ? 'none' : '';
+      node.eyesClosed.style.display = isBlinking ? '' : 'none';
+    }
+
+    // Mouth selection
+    let mLevel = 0;
+    let mouthKey = 'rest';
+    const frameIdx = Math.round(t * 24);
+
+    if (isSpeaking) {
+      mLevel = Number((D.mouth && D.mouth[frameIdx]) || 0);
+      if (mLevel === 1) mouthKey = 'e';
+      else if (mLevel === 2) {
+        // Every 5th level 2 uses 'o'
+        const useO = Math.floor(hash(Math.floor(frameIdx / 3)) * 100) % 5 === 0; // hold 3 frames
+        mouthKey = useO ? 'o' : 'a';
+      }
+    } else {
+      if (mood === 'happy') mouthKey = 'smile';
+    }
+
+    Object.keys(node.mouths).forEach(k => {
+      if (node.mouths[k]) node.mouths[k].style.display = (k === mouthKey) ? '' : 'none';
+    });
+
+    // Eyebrows styling
+    if (node.brows) {
+      let bY = 0;
+      if (mood === 'happy') bY = -3;
+      if (isSpeaking && mLevel === 2) bY = -4;
+      node.brows.setAttribute('transform', `translate(0, ${bY})`);
+    }
+
+    if (node.browL && node.browR) {
+      if (mood === 'worried') {
+        node.browL.setAttribute('transform', `rotate(10 ${node.browLC[0]} ${node.browLC[1]})`);
+        node.browR.setAttribute('transform', `rotate(-10 ${node.browRC[0]} ${node.browRC[1]})`);
+      } else {
+        node.browL.removeAttribute('transform');
+        node.browR.removeAttribute('transform');
+      }
+    }
+  });
+}
+
+window.render = render;
+window.onload = () => render(0);
+</script>
+</body>
+</html>
