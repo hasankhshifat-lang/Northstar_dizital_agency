@@ -258,6 +258,10 @@ function gest(id,who,t,base){ // base: {aL,aR,hd}; talking adds lively gestures
   const sp=speaking(who,t); let {aL,aR,hd}=base; const w=Math.sin(t*2.6), w2=Math.sin(t*1.8+1);
   if(sp){ aR += -3 - 3*w; aL += 2 + 2*w2; hd += 3*Math.sin(t*2.1); } else { aL += 2*Math.sin(t*1.7); aR += -2*Math.sin(t*1.9+1); hd += 1.2*Math.sin(t*1.3); }
   rig(id,aL,aR,hd); }
+
+// Bithi points only on her key words (eased in/out), otherwise her arms rest
+const BITHI_BEATS=[[30.9,32.4],[37.6,39.2],[45.0,46.6],[48.0,49.5],[57.6,59.2],[60.9,62.4],[71.9,73.2],[87.3,88.8],[96.6,97.9],[105.0,106.1]];
+function bithiPoint(t,ang){ let k=0; for(const [a,b] of BITHI_BEATS){ if(t>a-0.3&&t<b+0.3) k=Math.max(k, Math.min(1,(t-a+0.3)/0.3, (b+0.3-t)/0.3)); } k=k*k*(3-2*k); return ang*k; }
 function hide(id){$(id).style.display="none";}
 function speaking(who,t){return D.lines.find(l=>l.speaker===who&&t>=l.start&&t<=l.end);}
 function talkExpr(who,t,open,closed){return speaking(who,t)?open:closed;}
@@ -510,7 +514,7 @@ function mainRender(t){
       setExpr($("mama"),"Worried"); $("mama").querySelector(".jackets").style.display="block";
       place("mama","mama",150+J(3,8),1720+J(4,6),0.9,J(5,2.5)); gest("mama","mama",t,{aL:0,aR:0,hd:-4});
       setExpr($("boltu"), talkExpr("boltu",t,"Happy","Default")); place("boltu","boltu",370+J(6,8),1730+bob(2)+J(7,6),0.82,J(8,2.5)+(speaking("boltu",t)?-6:0)); gest("boltu","boltu",t, speaking("boltu",t)?{aL:22,aR:-22,hd:-8}:{aL:0,aR:0,hd:0});
-      const tx=lerp(1300,600,stp((t-23)/1.2,10)); setExpr($("tuni"),talkExpr("tuni",t,"Happy","Default")); place("tuni","tuni",tx+J(9,8),1725+bob(4)+J(10,6),0.86,J(11,2.5)); gest("tuni","tuni",t, t>24.6?{aL:0,aR:-70,hd:0}:{aL:0,aR:0,hd:0});
+      const tx=lerp(1300,600,stp((t-23)/1.2,10)); setExpr($("tuni"),talkExpr("tuni",t,"Happy","Default")); place("tuni","tuni",tx+J(9,8),1725+bob(4)+J(10,6),0.86,J(11,2.5)); gest("tuni","tuni",t,{aL:0,aR:bithiPoint(t,-70),hd:0});
       $("bucket").style.display="block"; $("bucket").style.left=(740+J(12,6))+"px"; $("bucket").style.top=(1470+J(13,6))+"px";
       // material card overlay (screen coords)
       vis("bMat", t>=24.9); setT("matCard",540,575,pop(t,24.9),-1.2);
@@ -539,7 +543,7 @@ function mainRender(t){
     } else { $("trunk").style.zIndex=""; $("mama").style.zIndex=""; }
   }
   // ---------------- boards ----------------
-  const tuniMini=(on)=>{ if(!on) return; setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",130+J(21,6),1655+J(22,5),0.66,J(23,2)); gest("tuniMini","tuni",t,{aL:0,aR:-72,hd:0}); };
+  const tuniMini=(on)=>{ if(!on) return; setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",130+J(21,6),1655+J(22,5),0.66,J(23,2)); gest("tuniMini","tuni",t,{aL:0,aR:bithiPoint(t,-72),hd:0}); };
   if (sc===6){ vis("bFoil",true); tuniMini(true);
     setT("fHead",590,290,1,-1.5);
     vis("fScale", t<38.6); { const k=stp((t-35.0)/0.5,4); setT("fScale",590,520+(1-k)*-500+(t>38.0?stp((t-38)/0.6,4)*-700:0),1,0,31);
@@ -608,7 +612,7 @@ function mainRender(t){
     vis("mShip", t>=69.6); setT("mShip",800,600,pop(t,69.6),0,74); vis("mLs", t>=69.6); setT("mLs",800,700,1,2,75);
     vis("mOK", t>=71.9); setT("mOK",540,880,pop(t,71.9),-5,76);
     setExpr($("boltuMini"),talkExpr("boltu",t,"Happy","Happy")); place("boltuMini","boltu",400+J(24,6),1600+J(25,5),0.8,J(26,2)); gest("boltuMini","boltu",t, speaking("boltu",t)?{aL:55,aR:0,hd:0}:{aL:0,aR:0,hd:0});
-    setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",700+J(21,6),1600+J(22,5),0.86,J(23,2)); gest("tuniMini","tuni",t, t>71.9?{aL:0,aR:-110,hd:4}:{aL:0,aR:-65,hd:0});
+    setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",700+J(21,6),1600+J(22,5),0.86,J(23,2)); gest("tuniMini","tuni",t,{aL:0,aR:bithiPoint(t,-110),hd:t>71.9?4:0});
   }
   if (sc===10){ vis("bSafe",true); tuniMini(true); waves("sWaves",t);
     setT("sHead",590,290,pop(t,80.8),-1.5);
