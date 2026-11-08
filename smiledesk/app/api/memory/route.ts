@@ -1,0 +1,96 @@
+import { askMemory, askWorkspace, copyMemory, deleteGroup, fixFact, forgetFact, memoryFor, memoryInfo, pinFact, previewCopy, reviewMemory, scopeOf, settleFlag, shareMemory, undoMemory } from "@/lib/server/memory";
+import { bringInOwnBank, dropOwnBank } from "@/lib/server/memory-deletes";
+import { getState } from "@/lib/server/store";
+import { ownMemory } from "@/lib/chain";
+import { sharedOpen } from "@/lib/server/shared";
+import { currentWorkspaceId, setChainBot } from "@/lib/server/workspaces";
+import type { MemoryGroup } from "@/lib/types";
+import { notReady } from "@/lib/server/ready";
+
+/** A workspace's memory, for the Memory sheet; with ?bot=, a bot's Memory tab (?q= searches, ?mine=1 is what it learned). */
+export async function GET(request: Request) {
+  const u = new URL(request.url).searchParams;
+  const botId = u.get("bot");
+  try {
+    if (botId) return Response.json(await memoryFor(botId, { q: u.get("q") ?? undefined, mine: u.get("mine") === "1" }));
+    return Response.json(await memoryInfo(u.get("ws") ?? currentWorkspaceId()));
+  } catch (e) {
+    return Response.json({ error: (e as Error).message }, { status: 500 });
+  }
+}
+
+type Body = {
+  action: "undo" | "forget-old" | "review" | "delete" | "keep" | "delete-group" | "ask" | "fix" | "pin" | "forget" | "preview-copy" | "copy" | "share" | "own" | "bring-in" | "drop-own";
+  messageId?: string;
+  ws?: string;
+  id?: string;
+  from?: string;
+  kinds?: ("personal" | "work")[];
+  group?: MemoryGroup;
+  bot?: string;
+  question?: string;
+  text?: string;
+};
+
+export async function POST(request: Request) {
+  const unready = notReady();
+  if (unready) return unready;
+  const b = (await request.json().catch(() => ({}))) as Body;
+  const ws = b.ws ?? currentWorkspaceId();
+  // From a bot's Memory tab: its memory scope (its own bank while it keeps its memory to itself: lib/chain.ts).
+  const where = b.bot ? scopeOf(b.bot) : ws;
+  try {
+    switch (b.action) {
+      case "undo":
+      case "forget-old":
+        await undoMemory(b.messageId ?? "", b.action);
+        return Response.json({ ok: true });
+      case "review":
+        reviewMemory(ws);
+        return Response.json({ ok: true });
+      case "delete":
+      case "keep":
+        await settleFlag(ws, b.id ?? "", b.action === "keep");
+        return Response.json({ ok: true });
+      case "ask":
+        // A bot's Memory tab asks as that bot (its workspace); the Knowledge page asks its workspace.
+        return Response.json(b.bot ? await askMemory(b.bot, b.question ?? "") : await askWorkspace(ws, b.question ?? ""));
+      case "fix":
+        await fixFact(where, b.id ?? "", b.text ?? "");
+        return Response.json({ ok: true });
+      case "pin":
+        await pinFact(where, b.text ?? "");
+        return Response.json({ ok: true });
+      case "forget":
+        await forgetFact(where, b.id ?? "");
+        return Response.json({ ok: true });
+      // What a bot kept to itself, back with the team's (Bring it in), or deleted (a bank kept apart let go): the owner's only.
+      case "bring-in":
+      case "drop-own": {
+        if (!b.bot || sharedOpen()) return Response.json({ error: "Only the owner can change this." }, { status: 403 });
+        // Only a bank kept apart: never the one a bot still keeps its memory in (the chart's change comes first).
+        if (ownMemory(getState(), b.bot)) return Response.json({ error: "It still keeps its memory to itself." }, { status: 409 });
+        // (Its bank goes through the outbox: memory not answering now only puts that off. Memory off refuses Bring it in.)
+        const count = b.action === "bring-in" ? await bringInOwnBank(b.bot) : (await dropOwnBank(b.bot), 0);
+        setChainBot(b.bot, { kept: undefined });
+        return Response.json({ ok: true, count });
+      }
+      case "delete-group":
+        if (b.group) deleteGroup(ws, b.group);
+        return Response.json({ ok: true });
+      case "preview-copy":
+        return Response.json(await previewCopy(ws, b.from ?? ""));
+      case "copy":
+        return Response.json(await copyMemory(ws, b.from ?? "", b.kinds ?? ["personal"]));
+      case "share":
+        shareMemory(ws, b.from ?? null);
+        return Response.json({ ok: true });
+      case "own":
+        shareMemory(ws, null);
+        return Response.json({ ok: true });
+    }
+    return Response.json({ error: "unknown action" }, { status: 400 });
+  } catch (e) {
+    return Response.json({ error: (e as Error).message }, { status: 400 });
+  }
+}

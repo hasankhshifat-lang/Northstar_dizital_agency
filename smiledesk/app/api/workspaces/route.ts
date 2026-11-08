@@ -1,0 +1,159 @@
+import { deleteWorkspace } from "@/lib/server/remove";
+import { relayChange } from "@/lib/server/change-relay";
+import { createWorkspace, deletePreview, dismissRenamedNotice, ensureMain, renameWorkspace, revertWorkspaceMigration, setChain, setFavorites, switchWorkspace, syncWorkspaceNames, WorkspaceError } from "@/lib/server/workspaces";
+import { notReady } from "@/lib/server/ready";
+import { closeShared, sharedOpen } from "@/lib/server/shared";
+import { fromBopsWindow } from "@/lib/server/ui-token";
+import { olderBopsOnAccount } from "@/lib/server/chart";
+import { GroupError, setComputerName } from "@/lib/server/bot-groups";
+import { setChatRouting } from "@/lib/server/cloud-chat";
+import { runnersSoon } from "@/lib/server/runner-install";
+
+/**
+ * `?preview=<id>`: what deleting that workspace takes with it, for the confirm (its computers, keys, skills
+ * and apps, Bops' and its Orgo workspace's). 400 for the default workspace, 502 when Orgo didn't say.
+ * `?olderBops=1`: whether a Mac or runner on the account runs a Bops older than the team chart's, for the
+ * chart's note ({ older }).
+ */
+export async function GET(request: Request) {
+  const unready = notReady();
+  if (unready) return unready;
+  const params = new URL(request.url).searchParams;
+  if (params.get("olderBops") === "1") return Response.json({ older: await olderBopsOnAccount() });
+  const id = params.get("preview");
+  if (!id) return Response.json({ error: "Say which workspace (?preview=<id>)." }, { status: 400 });
+  ensureMain();
+  try {
+    return Response.json(await deletePreview(id));
+  } catch (e) {
+    return Response.json({ error: (e as Error).message }, { status: e instanceof WorkspaceError ? e.status : 502 });
+  }
+}
+
+/**
+ * A new workspace: its own team, starting with its own Boppy. It becomes the current one. Where Orgo has a
+ * workspace per Bops workspace, its Orgo workspace is made too; a name the user's Orgo already has comes
+ * back as 409 `name_taken` with a name to suggest, and nothing is made.
+ */
+export async function POST(request: Request) {
+  const unready = notReady();
+  if (unready) return unready;
+  const { name } = (await request.json().catch(() => ({}))) as { name?: string };
+  ensureMain();
+  const made = await createWorkspace(typeof name === "string" ? name : "");
+  if ("error" in made) return Response.json(made, { status: made.code === "name_taken" ? 409 : made.status });
+  // The new one is open now, in place of a shared one that was.
+  closeShared();
+  return Response.json(made);
+}
+
+/**
+ * Switch to a workspace, or rename one (its Orgo workspace too, when it has one; the default's waits for every
+ * app on the account to be new, and says so in `waiting`). `noticeSeen`: the switcher's note about names Orgo
+ * already had was seen. `syncNames`: take renames made on orgo.ai (the sidebar asks every 10 minutes). `revertOrgoMove`: undo the move onto Orgo workspaces
+ * (revertWorkspaceMigration, DESIGN.md section 8), for a rollback. `favorites` (with `id`): the kinds pinned to
+ * the sidebar, the whole list in order (setFavorites). `chain` (with `id`): the workspace's team chart, whole
+ * (setChain), only from the Bops window and never while a workspace shared with the user is open; what was kept
+ * comes back. `computerName` (with `id`): { computer, name } names one of its computers, the one its bots' group in the
+ * sidebar is called (lib/bot-groups.ts; an empty name gives it its default back), the owner's alone as the chart is;
+ * answers { ok, name }. `chat` (with `id`): "mac" or "auto", the owner's switch for its chat through Bops Cloud
+ * (lib/server/cloud-chat.ts setChatRouting), the owner's alone too; Bops Cloud's words when it refuses.
+ */
+export async function PATCH(request: Request) {
+  const unready = notReady();
+  if (unready) return unready;
+  // A change in a workspace shared with the user: done by its owner's Mac, for someone allowed to (change-relay.ts).
+  const relayed = await relayChange(request);
+  if (relayed) return relayed;
+  const { id, name, current, noticeSeen, revertOrgoMove, syncNames, favorites, chain, computerName, chat } = (await request.json().catch(() => ({}))) as {
+    id?: string;
+    name?: string;
+    current?: string;
+    noticeSeen?: boolean;
+    revertOrgoMove?: boolean;
+    syncNames?: boolean;
+    favorites?: unknown;
+    chain?: unknown;
+    computerName?: { computer?: unknown; name?: unknown };
+    chat?: unknown;
+  };
+  ensureMain();
+  // Where its chat is answered is the owner's to say: from their own window, with their own workspace open.
+  if (chat !== undefined) {
+    if (!id || (chat !== "mac" && chat !== "auto")) return Response.json({ error: 'Say which workspace, and "mac" or "auto".' }, { status: 400 });
+    if (!fromBopsWindow(request) || sharedOpen()) return Response.json({ error: "Only the owner can change where the chat is answered." }, { status: 403 });
+    const r = await setChatRouting(id, chat);
+    if ("error" in r) return Response.json({ error: r.error }, { status: r.status });
+    // A computer someone else can use keeps a runner by it (runner-install.ts sharedRunnerOk): looked at now, not in ten minutes.
+    runnersSoon();
+    return Response.json({ ok: true });
+  }
+  // What a computer is called is the owner's to say too: from their own window, with their own workspace open.
+  if (computerName !== undefined) {
+    if (!id) return Response.json({ error: "Say which workspace." }, { status: 400 });
+    if (!fromBopsWindow(request) || sharedOpen()) return Response.json({ error: "Only the owner can name a computer." }, { status: 403 });
+    try {
+      return Response.json({ ok: true, name: setComputerName(id, computerName?.computer, computerName?.name) });
+    } catch (e) {
+      return Response.json({ error: (e as Error).message }, { status: e instanceof GroupError ? e.status : 400 });
+    }
+  }
+  // Who may ask whom is the owner's to say: from their own window, with their own workspace open.
+  if (chain !== undefined) {
+    if (!id) return Response.json({ error: "Say which workspace." }, { status: 400 });
+    if (!fromBopsWindow(request) || sharedOpen()) return Response.json({ error: "Only the owner can change the org chart." }, { status: 403 });
+    try {
+      return Response.json({ ok: true, chain: setChain(id, chain) });
+    } catch (e) {
+      return Response.json({ error: (e as Error).message }, { status: e instanceof WorkspaceError ? e.status : 400 });
+    }
+  }
+  if (noticeSeen === true) dismissRenamedNotice();
+  if (syncNames === true) {
+    const r = await syncWorkspaceNames().catch(() => null);
+    return Response.json({ ok: true, renamed: r?.renamed ?? [] });
+  }
+  if (revertOrgoMove === true) {
+    try {
+      return Response.json({ ok: true, ...(await revertWorkspaceMigration()) });
+    } catch (e) {
+      return Response.json({ error: (e as Error).message }, { status: 502 });
+    }
+  }
+  try {
+    if (current) {
+      switchWorkspace(current);
+      // One of the user's own, in place of a shared one that was open (lib/server/shared.ts).
+      closeShared();
+    }
+    if (id && favorites !== undefined) {
+      setFavorites(id, favorites);
+      return Response.json({ ok: true });
+    }
+    if (id && typeof name === "string") {
+      const r = await renameWorkspace(id, name);
+      if ("error" in r) return Response.json(r, { status: r.code === "name_taken" ? 409 : 502 });
+      return Response.json(r);
+    }
+    return Response.json({ ok: true });
+  } catch (e) {
+    return Response.json({ error: (e as Error).message }, { status: 404 });
+  }
+}
+
+/**
+ * Delete a workspace with its team and their computers, and its Orgo workspace with what's in it (after the
+ * confirm, from GET ?preview). The default workspace can't be. A refusal leaves it whole, with Orgo's words.
+ */
+export async function DELETE(request: Request) {
+  const unready = notReady();
+  if (unready) return unready;
+  const { id } = (await request.json().catch(() => ({}))) as { id?: string };
+  ensureMain();
+  try {
+    if (id) await deleteWorkspace(id);
+    return Response.json({ ok: true });
+  } catch (e) {
+    return Response.json({ error: (e as Error).message }, { status: e instanceof WorkspaceError ? e.status : 400 });
+  }
+}

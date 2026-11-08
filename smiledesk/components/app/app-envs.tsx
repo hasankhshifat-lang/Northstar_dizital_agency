@@ -1,0 +1,771 @@
+"use client";
+
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { allLocals, localWords, type AppDeploy, type AppEnv, type HostedApp, type HostedAppsAnswer, type HostedSite, type LocalAnswer, type LocalSite, type PreviewSite, type SiteDomain } from "@/lib/hosted-apps";
+import { readSettings, Variables } from "./app-settings";
+import { act, deploying, isSending, OpenHostedApp, PROBLEM, PULSE, short, UrlLink, useSending } from "./hosted-apps";
+import { useDismiss } from "./new-thread";
+import { OpenPreview } from "./panel-tabs";
+import { PasswordBeside } from "./preview-password";
+import { InlineConfirm, undash } from "./side-group";
+import { post } from "./ui";
+
+/*
+ * An app's three environments, all on its bot's own computer (lib/hosted-apps.ts AppEnv), in the words a person
+ * building with a bot reads them (Lovable's): Local, the live view while the bot works (its working folder run
+ * as a dev server there, with hot reload, each site at its own localhost:<port>: Open preview puts it beside the
+ * bot's chat at that same address); Preview
+ * (a deploy of each site at a fixed link of its own, https://<12 letters and digits>.orgo.dev, where Deploy goes);
+ * and Published (each site on its own domain only, which Publish fills with what the preview serves). One line
+ * each: its state in a word, where it is, the changeset it serves, and its actions: Start, Open preview and Stop
+ * (Local), Deploy (Preview), Publish or Connect a domain, with Roll back, Apply variables and Domain in
+ * Published's menu (Domain is Cloudflare first). On the Apps page under each app; on its tab, a line pressed
+ * picks what the sections under it are about. When more bots work on it, each bot's copy of it has a Local line of
+ * its own, named for its bot, with the same Start, Open preview (beside that bot's chat) and Stop, and so does its own
+ * folder's, named for its own bot. Asks are inline: no dialogs. A line reads as a row of columns where the panel is
+ * wide; narrow, its place and actions stay on its first line, and its state and where it is wrap under its name,
+ * nothing drawn over anything else.
+ */
+
+/**
+ * Open an app's tab with something already open there (Domain: Prod picked, Add a domain open; history: its History
+ * in view, from a change card's View changes), read once by the tab.
+ */
+const opening = new Map<string, "domain" | "history">();
+export const openIntent = (name: string) => {
+  const x = opening.get(name);
+  opening.delete(name);
+  return x;
+};
+/** The next opening of app `name`'s tab (OpenHostedApp) at its History (app-change.tsx View changes). */
+export const openAtHistory = (name: string) => void opening.set(name, "history");
+
+/** What each is called where people read it: Prod is what's Published. */
+export const ENV_NAMES: Record<AppEnv, string> = { local: "Local", preview: "Preview", prod: "Published" };
+
+/** A state in a word, its dot, and more in its tooltip. */
+type EnvState = { word: string; dot: string; tip?: string };
+const DOTS = { on: "bg-[#2BB673]", bad: "bg-[#B42318]", off: "shadow-[inset_0_0_0_1.5px_#C9C9C6]", grey: "bg-[#9A9A98]" };
+
+/** The Preview's or Published's state from what Orgo says of its newest deploy and what it serves (a Preview's link Orgo turned off: Off). */
+export function deployState(x: { live: HostedApp["live"]; serving: string | null; off?: true } | undefined | null): EnvState {
+  if (x?.off) return { word: "Off", dot: DOTS.grey, tip: "Orgo turned its link off." };
+  const s = x?.live?.state;
+  if (s === "queued" || s === "running") return { word: "Deploying", dot: PULSE };
+  if (s === "failed") return { word: "Failed", dot: DOTS.bad, tip: x?.live?.error ? `Its last deploy failed: ${x.live.error}` : "Its last deploy failed." };
+  if (s === "succeeded" || x?.serving) return { word: "Running", dot: DOTS.on };
+  if (s === "cancelled" || s === "superseded") return { word: "Stopped", dot: DOTS.grey };
+  return { word: "Not deployed yet", dot: DOTS.off };
+}
+
+/** Local's state, from its computer (null: not read yet; `asleep`: its computer sleeps). */
+export function localState(x: LocalSite | undefined, read: LocalAnswer | null): EnvState {
+  if (!read) return { word: "Reading…", dot: DOTS.off };
+  if (read.asleep) return { word: "Stopped", dot: DOTS.off, tip: "Its computer is asleep, so nothing runs there. Start wakes it." };
+  if (read.why) return { word: "Not known", dot: DOTS.off, tip: read.why };
+  if (!x || x.state === "stopped") return { word: "Stopped", dot: DOTS.off };
+  if (x.state === "starting") return { word: "Starting", dot: PULSE, tip: "Its port doesn't answer yet. A first start installs what it needs." };
+  if (x.state === "failed") return { word: "Failed", dot: DOTS.bad, tip: x.error ? `It stopped: ${localWords(x.error)}` : "It stopped." };
+  return { word: "Running", dot: DOTS.on };
+}
+
+/** Of an app with more sites, the state of all of them in one word: any deploying, any failed, else all running. */
+function allSites(xs: { live: HostedApp["live"]; serving: string | null }[]): EnvState {
+  const each = xs.map(deployState);
+  const word = each.find((s) => s.word === "Deploying") ?? each.find((s) => s.word === "Failed") ?? (each.every((s) => s.word === "Running") ? each[0] : each.find((s) => s.word !== "Running") ?? each[0]);
+  const on = each.filter((s) => s.word === "Running").length;
+  return word.word === "Running" || on === 0 ? word : { ...word, tip: `${on} of ${xs.length} sites running` };
+}
+
+/** An app's Local, read from its computer: again when the window comes back, every few seconds while one starts, and as an act answers it. */
+export function useLocal(ws: string, name: string, on = true) {
+  const [read, setRead] = useState<{ key: string; answer: LocalAnswer | null }>({ key: "", answer: null });
+  const key = `${ws}\n${name}`;
+  const answer = read.key === key ? read.answer : (kept.get(key) ?? null);
+  const starting = allLocals(answer).some((x) => x.state === "starting");
+  useEffect(() => {
+    if (!on) return;
+    let stop = false;
+    const get = async () => {
+      const r = await fetch(`/api/hosted-apps/${encodeURIComponent(name)}/local?ws=${encodeURIComponent(ws)}`, { cache: "no-store" }).catch(() => null);
+      const j = r?.ok ? ((await r.json().catch(() => null)) as LocalAnswer | null) : null;
+      if (stop || !j?.sites) return;
+      kept.set(key, j);
+      setRead({ key, answer: j });
+    };
+    void get();
+    const t = starting ? setInterval(get, 3000) : undefined;
+    window.addEventListener("focus", get);
+    return () => {
+      stop = true;
+      if (t) clearInterval(t);
+      window.removeEventListener("focus", get);
+    };
+  }, [ws, name, key, on, starting]);
+  const put = (a: LocalAnswer) => {
+    kept.set(key, a);
+    setRead({ key, answer: a });
+  };
+  return { answer, put };
+}
+const kept = new Map<string, LocalAnswer>();
+
+/**
+ * A site's Local (`bot`'s copy's, else the app's own folder's) started (`port`: a port of its own, or "auto" for the
+ * lowest free one), stopped or opened on a screen of its computer: the app's Locals as they are then, or why not.
+ */
+export async function localAct(ws: string, name: string, body: { action: "start" | "stop" | "open"; site?: string; bot?: string; command?: string; port?: number | "auto" }): Promise<{ ok?: LocalAnswer; error?: string }> {
+  const r = await post(`/api/hosted-apps/${encodeURIComponent(name)}/local`, { ws, ...body }).catch(() => null);
+  const j = ((await r?.json().catch(() => null)) ?? {}) as LocalAnswer & { error?: string };
+  return r?.ok && j.sites ? { ok: j } : { error: undash(j.error || "Couldn't reach its computer. Try again.") };
+}
+
+const BTN =
+  "whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-medium leading-4 text-ink shadow-[0_0_0_1px_#E2E2DF] hover:bg-white disabled:text-[#9A9A98] disabled:shadow-[0_0_0_1px_#ECECEA]";
+const DARK = "whitespace-nowrap rounded-full bg-ink px-2.5 py-1 text-[12px] font-semibold leading-4 text-white disabled:bg-[#E6E6E3] disabled:text-[#9A9A98]";
+
+/** A button greyed with why in its tooltip (on what holds it: a disabled button gets no pointer events in some browsers). */
+function Btn({ why, busy, label, doing, onClick, dark, tag }: { why?: string; busy?: boolean; label: string; doing?: string; onClick: () => void; dark?: boolean; tag: string }) {
+  return (
+    <span data-tip={why} onClick={(e) => e.stopPropagation()} className="flex shrink-0">
+      <button data-act={tag} disabled={!!why || busy} onClick={onClick} className={dark ? DARK : BTN}>
+        {busy ? (doing ?? `${label}…`) : label}
+      </button>
+    </span>
+  );
+}
+
+/** Whether a site has a domain on Published that isn't failed or turned off (a pending one is enough to publish). */
+const hasDomain = (x: { domains?: SiteDomain[] }) => !!x.domains?.some((d) => d.status !== "failed" && d.status !== "disabled");
+/** Whether a site's Published ever served something (a legacy one, live with no domain, publishes all the same). */
+const everLive = (x: { serving: string | null; live: HostedApp["live"] }) => !!x.serving || x.live?.state === "succeeded";
+/** A site can be published: it has a domain, or it was live before. */
+export const canPublish = (x: { domains?: SiteDomain[]; serving: string | null; live: HostedApp["live"] }) => hasDomain(x) || everLive(x);
+
+/**
+ * Why Deploy (to the Preview) or Publish can't be pressed now (undefined: it can). Publish needs the Preview to
+ * serve something Published doesn't already, and a domain (or a Published that was live before).
+ */
+export function whyNotEnv(answer: Pick<HostedAppsAnswer, "enabled" | "why">, a: HostedApp, env: "preview" | "prod", sites: (HostedSite | HostedApp)[]): string | undefined {
+  if (!answer.enabled) return answer.why || "Deploying isn't open here.";
+  if (isSending(a.name)) return "A deploy is being sent. Wait for it.";
+  const previews = sites.map((x) => x.preview);
+  if (env === "preview") {
+    if (!a.head) return "Nothing is committed yet.";
+    if (previews.some((x) => x && deploying(x))) return "The preview is deploying. Wait for it to finish.";
+    return undefined;
+  }
+  if (a.hosting?.lost) return "Its computer is gone. Deploy a preview to give it a new home.";
+  // Production on GitHub (AppHosting.github): Publish pushes what the Preview serves there, linked first.
+  const gh = a.hosting?.github;
+  if (gh) {
+    if (!a.preview?.serving) return "The preview isn't live yet. Deploy a preview first.";
+    if (!gh.last) return "Link it to GitHub first, in the menu beside Publish.";
+    // (Whether GitHub has this preview already is the server's to say: Publish then sends nothing.)
+    return undefined;
+  }
+  if (sites.some((x) => deploying(x))) return "It's publishing. Wait for it to finish.";
+  if (!previews.some((x) => x?.serving)) return "The preview isn't live yet. Deploy a preview first.";
+  if (sites.every((x) => !x.preview?.serving || x.preview.serving === x.serving)) return "What's published is the preview already.";
+  if (!sites.some((x) => x.preview?.serving && canPublish(x))) return "Connect a domain first. Published sites live only on their own domain.";
+  return undefined;
+}
+
+/** The GitHub production form as typed: its lists as one line each ("a, b", "client=cclc"). */
+type GhForm = { repo: string; branch: string; path: string; keep: string; workflow: string; inputs: string };
+
+/** The form as the route takes it (lib/hosted-apps.ts cleanGithubMirror checks it again). */
+export function ghMirrorOf(f: GhForm) {
+  const keep = f.keep.split(",").map((x) => x.trim()).filter(Boolean);
+  const inputs = Object.fromEntries(
+    f.inputs
+      .split(",")
+      .map((x) => x.split("=").map((y) => y.trim()))
+      .filter((kv) => kv.length === 2 && kv[0])
+      .map((kv) => [kv[0], kv[1]] as const),
+  );
+  return {
+    repo: f.repo.trim(),
+    branch: f.branch.trim() || "main",
+    path: f.path.trim(),
+    ...(keep.length ? { keep } : {}),
+    ...(f.workflow.trim() ? { dispatch: { workflow: f.workflow.trim(), ...(Object.keys(inputs).length ? { inputs } : {}) } } : {}),
+  };
+}
+
+/**
+ * Where an app's production is on GitHub: the repo, its branch and the app's folder in it, the files that stay in
+ * Ingot alone, and a workflow to run after a push (for one that doesn't start on a push).
+ */
+function GithubForm({ form, onChange, busy, onSave, onCancel, compact }: { form: GhForm; onChange: (f: GhForm) => void; busy: boolean; onSave: () => void; onCancel: () => void; compact?: boolean }) {
+  const field = (key: keyof GhForm, label: string, placeholder: string) => (
+    <label className="flex flex-col gap-1">
+      <span className="text-[11.5px] font-medium leading-4 text-[#6B6B6B]">{label}</span>
+      <input
+        data-gh-field={key}
+        value={form[key]}
+        placeholder={placeholder}
+        onChange={(e) => onChange({ ...form, [key]: e.target.value })}
+        className="h-8 rounded-[8px] bg-white px-2.5 text-[12.5px] leading-4 text-ink shadow-[0_0_0_1px_#E2E2DF] outline-none placeholder:text-[#B0B0AE] focus:shadow-[0_0_0_1.5px_#0A0A0A]"
+      />
+    </label>
+  );
+  return (
+    <div data-gh-form className={`${compact ? "pl-[26px] pr-2" : ""} pt-2`} onClick={(e) => e.stopPropagation()}>
+      <div className="flex flex-col gap-2.5 rounded-[12px] bg-[#F7F7F6] p-3">
+        <span className="text-[12.5px] font-semibold leading-4 text-ink">Publish to GitHub</span>
+        <span className="text-[12px] leading-[17px] text-[#6B6B6B]">
+          Ingot stays where it&apos;s worked on and previewed. Publish pushes what the Preview serves into this folder, with your GitHub key in Keys, and that repo&apos;s own workflow deploys it.
+        </span>
+        <div className="grid grid-cols-1 gap-2 @[420px]:grid-cols-3">
+          {field("repo", "Repo", "OrgoAI/orgo-brandlord")}
+          {field("branch", "Branch", "main")}
+          {field("path", "Folder in it", "formula (empty: the whole repo)")}
+        </div>
+        {field("keep", "Left alone both ways (files, or folders ending in /)", "proxy.ts, clients/other/")}
+        <div className="grid grid-cols-1 gap-2 @[420px]:grid-cols-2">
+          {field("workflow", "Workflow to run after a push (optional)", "deploy.yml")}
+          {field("inputs", "Its inputs", "client=cclc")}
+        </div>
+        <div className="flex items-center gap-2">
+          <Btn tag="gh-save" dark label="Save" doing="Saving…" busy={busy} why={form.repo.trim() ? undefined : "Which repo?"} onClick={onSave} />
+          <button onClick={onCancel} className="text-[12.5px] leading-4 text-[#6B6B6B] hover:text-ink">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** One line: its environment, state, where it is and what it serves; a Local's of a bot's copy (`bot`), with whose it is (`who`). */
+type Line = { env: AppEnv; state: EnvState; where: ReactNode; at: string | null; bot?: string; who?: string };
+
+/**
+ * The three lines of an app (`app`: of one of its sites, as siteView makes it, or the app itself), with their
+ * actions. `sites`: every site it's about (one, or all of an app's on the Apps page). `picked`/`onPick`: on its
+ * tab, which one the sections under it are about. `onDomain`: Domain in Prod's menu (its tab opens Add a domain).
+ */
+export function AppEnvs({
+  ws,
+  answer,
+  app,
+  site,
+  sites,
+  local,
+  onLocal,
+  onChanged,
+  picked,
+  onPick,
+  onDomain,
+  compact,
+}: {
+  ws: string;
+  answer: Pick<HostedAppsAnswer, "enabled" | "why">;
+  app: HostedApp;
+  /** The site it's about, of an app with more (none: the app's own, or all of them on the Apps page). */
+  site?: string;
+  sites: (HostedSite | HostedApp)[];
+  local: LocalAnswer | null;
+  onLocal: (a: LocalAnswer) => void;
+  onChanged: (app: HostedApp) => void;
+  picked?: AppEnv;
+  onPick?: (env: AppEnv) => void;
+  onDomain?: () => void;
+  compact?: boolean;
+}) {
+  useSending();
+  const open = useContext(OpenHostedApp);
+  const openPreview = useContext(OpenPreview);
+  const openBot = useContext(OpenBotComputer);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [said, setSaid] = useState<string | null>(null);
+  const [menu, setMenu] = useState(false);
+  const [back, setBack] = useState<{ d: AppDeploy } | "none" | null>(null);
+  const menuBox = useRef<HTMLDivElement>(null);
+  useDismiss(menu, () => setMenu(false), menuBox);
+  const own = site ?? app.name;
+  const many = sites.length > 1;
+  const loc = local?.sites[own];
+  const run = async (key: string, f: () => Promise<{ app?: HostedApp; error?: string; said?: string }>) => {
+    setBusy(key);
+    setError(null);
+    setSaid(null);
+    const r = await f();
+    setBusy(null);
+    if (r.app) onChanged(r.app);
+    if (r.error) setError(undash(r.error));
+    if (r.said) setSaid(undash(r.said));
+  };
+  const deploy = () => run("preview", () => act(app.name, { ws, action: "deploy", env: "preview", ...(site ? { site } : {}) }));
+  const promote = () => {
+    const at = app.preview?.serving;
+    return run("promote", () => act(app.name, site && at ? { ws, action: "promote", site, at } : !many && at ? { ws, action: "promote", site: app.name, at } : { ws, action: "promote" }));
+  };
+  /** Apply variables: Published's own changeset built again, with its variables as they are now. */
+  const reapply = () => {
+    setMenu(false);
+    return run("reapply", async () => {
+      const r = await act(app.name, { ws, action: "reapply", ...(site ? { site } : {}) });
+      return r.app ? { ...r, said: "Building it again with its variables." } : r;
+    });
+  };
+  /** Its domain flow: the app's tab with Add a domain open (or the tab's own, `onDomain`). */
+  const domainFlow = () => {
+    setMenu(false);
+    if (onDomain) return onDomain();
+    opening.set(app.name, "domain");
+    open?.(ws, app.name);
+  };
+  // (`bot`: of that bot's copy of the app; none, of its own folder.)
+  const localDo = async (action: "start" | "stop" | "open", bot?: string) => {
+    setBusy(`local:${action}${bot ? `:${bot}` : ""}`);
+    setError(null);
+    setSaid(null);
+    const r = await localAct(ws, app.name, { action, ...(site ? { site } : {}), ...(bot ? { bot } : {}) });
+    setBusy(null);
+    if (r.ok) onLocal(r.ok);
+    if (r.error) setError(r.error);
+    if (action === "open" && r.ok?.opened) {
+      setSaid("Opened on its computer's screen.");
+      const on = bot ?? app.hosting?.botId;
+      if (on) openBot?.(on, r.ok.display ?? 99);
+    }
+  };
+  /**
+   * Open preview: Local beside the bot's chat, at its own localhost:<port> on this Mac too (bops-app.tsx openPreview),
+   * started first when it isn't; when this Mac can't reach its computer, on its screen, said here. Where there's no
+   * panel, on its computer's screen.
+   */
+  const preview = async (bot?: string) => {
+    if (!openPreview) return void localDo("open", bot);
+    setBusy(`local:open${bot ? `:${bot}` : ""}`);
+    setError(null);
+    setSaid(null);
+    const r = await openPreview(ws, app.name, site, bot);
+    setBusy(null);
+    if (r.error) setError(undash(r.error));
+    else if (r.screen) setSaid(undash(r.said ?? "This Mac can't reach its computer, so it opens on its screen."));
+  };
+  /** Roll back: Prod's newest deploy that can be put back, asked once more first. */
+  const rollbackAsk = async () => {
+    setMenu(false);
+    setBusy("rollback-read");
+    setError(null);
+    const r = await readSettings(ws, app.name, site);
+    setBusy(null);
+    if (!r.ok) return setError(r.no.error);
+    const d = r.ok.deploys.find((x) => !x.live && x.canRollback);
+    setBack(d ? { d } : "none");
+  };
+  const rollback = (d: AppDeploy) => run("rollback", () => act(app.name, { ws, action: "rollback", deployment: d.id, ...(site ? { site } : {}) }));
+  // Production on GitHub (lib/server/github-mirror.ts): where it is (the form while it's being set), linking it, or off.
+  const [ghForm, setGhForm] = useState<GhForm | null>(null);
+  const githubSet = (v: GhForm | null) => {
+    setMenu(false);
+    return run("github", async () => {
+      const r = await act(app.name, { ws, action: "github", github: v ? ghMirrorOf(v) : null });
+      if (r.app) setGhForm(null);
+      return r.app ? { ...r, said: v ? "Saved. Link it to GitHub next, in the menu beside Publish." : "Publish deploys on Orgo again." } : r;
+    });
+  };
+  // GitHub's changes into Ingot, GitHub's version winning where both changed a file (what Publish's conflict says to do).
+  const githubPull = () => {
+    setMenu(false);
+    return run("github", () => act(app.name, { ws, action: "githubPull" }));
+  };
+  const githubLink = () => {
+    setMenu(false);
+    return run("github", async () => {
+      const r = await act(app.name, { ws, action: "githubLink" });
+      return r.app ? { ...r, said: "Linked. From now on Publish pushes only what changed since, and brings in what changed on GitHub first." } : r;
+    });
+  };
+  // Its computer gone: the Preview's and Published's projects went with it.
+  const lost: EnvState | null = app.hosting?.lost ? { word: "Needs a new home", dot: DOTS.off, tip: "Its computer is gone, and its projects with it. Deploy a preview to give it a new home." } : null;
+  const previewOf = (x: { preview?: PreviewSite }) => x.preview;
+  // (Anything that can be cut short has all of it in its tooltip.)
+  const quiet = (words: string) => (
+    <span data-tip={words} className="min-w-0 max-w-full truncate text-[12px] leading-4 text-[#9A9A98]">
+      {words}
+    </span>
+  );
+  const portOf = (x: LocalSite) => x.port ?? x.devPort;
+  /**
+   * Where a folder's Locals are (`of`: the app's own folder's, or a bot's copy's): each one's address, its own port
+   * (every site's of an app with more, on the Apps page), and one listening elsewhere, said.
+   */
+  const localWhere = (of: Record<string, LocalSite> | undefined, idle: string) => {
+    const named = (many && !site ? sites.map((x) => [x.name, of?.[x.name]] as const) : [[own, of?.[own]] as const]).filter((p): p is readonly [string, LocalSite] => !!p[1] && (p[1].state === "running" || p[1].state === "starting"));
+    const ups = named.map(([, x]) => x);
+    const off = ups.find((x) => x.mismatch);
+    const at = ups.map((x, i) => `${i ? ":" : "localhost:"}${portOf(x)}`).join(", ");
+    return ups.length ? (
+      // (More sites: the first address whole, the others by their port, and which is whose on hover.)
+      <span
+        data-local-where
+        data-tip={off ? `Its dev server listens on ${off.mismatch} instead of ${portOf(off)}. Make its command use $PORT.` : named.length > 1 ? named.map(([n, x]) => `${n} at localhost:${portOf(x)}`).join(", ") : at}
+        className="min-w-0 max-w-full truncate font-mono text-[11.5px] leading-4 text-[#6B6B6B]"
+      >
+        {at}
+      </span>
+    ) : (
+      quiet(idle)
+    );
+  };
+  // Each bot's copy of it (more bots work on it): a Local line of its own, named for its bot, as is its own folder's then.
+  const copies = local?.copies ?? [];
+  // Published: its own domain only (the first active one as a link), never an orgo.dev name.
+  const shownSites = many && !site ? sites : [app];
+  const domain = shownSites.map((x) => x.domain).find(Boolean) ?? null;
+  const pending = shownSites.flatMap((x) => x.domains ?? []).find((d) => d.status === "pending" || d.status === "verifying");
+  const noDomain = !shownSites.some((x) => hasDomain(x));
+  const neverLive = !shownSites.some((x) => everLive(x));
+  const gh = app.hosting?.github;
+  const ghWhere = gh ? `GitHub ${gh.repo} ${gh.branch}${gh.path ? `, ${gh.path}/` : ""}${gh.last ? `, at ${gh.last.sha.slice(0, 7)}` : ", not linked yet"}` : "";
+  const prodState: EnvState = gh
+    ? gh.last
+      ? { word: "On GitHub", dot: DOTS.on, tip: `Publish pushes what the Preview serves to ${gh.repo} ${gh.branch}, where its own workflow deploys it.` }
+      : { word: "Not linked", dot: DOTS.off, tip: "Link it to GitHub in the menu beside Publish." }
+    : lost ?? (noDomain && neverLive ? { word: "Not published", dot: DOTS.off } : (() => {
+    const st = many && !site ? allSites(sites) : deployState(app);
+    return st.word === "Not deployed yet" ? { ...st, word: "Not published" } : st;
+  })());
+  const lines: Line[] = [
+    {
+      env: "local",
+      state: localState(loc, local),
+      where: localWhere(local?.sites, many && !site ? "Its working folder, on its computer" : "Runs its working folder with hot reload"),
+      at: null,
+      ...(copies.length && local?.bot ? { who: local.bot.name } : {}),
+    },
+    ...copies.map((c): Line => ({ env: "local", state: localState(c.sites[own], local), where: localWhere(c.sites, "Its own copy of the code"), at: null, bot: c.bot, who: c.name })),
+    {
+      env: "preview",
+      state: lost ?? (many && !site ? allSites(sites.map((x) => previewOf(x) ?? { live: null, serving: null })) : deployState(app.preview)),
+      where: app.preview?.url ? (
+        app.preview.off ? (
+          <span title={app.preview.url} className="min-w-0 max-w-full truncate font-mono text-[11.5px] leading-4 text-[#9A9A98]">
+            {app.preview.url.replace(/^https:\/\//, "")}
+          </span>
+        ) : (
+          <>
+            <UrlLink url={app.preview.url} />
+            {/* Its password beside it, while it asks for one (preview-password.tsx). */}
+            <PasswordBeside ws={ws} name={app.name} site={site} preview={app.preview} />
+          </>
+        )
+      ) : (
+        quiet("Gets a link of its own on its first deploy")
+      ),
+      at: app.preview?.serving ?? null,
+    },
+    {
+      env: "prod",
+      state: prodState,
+      where: gh ? quiet(ghWhere) : domain ? <UrlLink url={domain} /> : pending ? quiet(`${pending.domain}, waiting for DNS`) : quiet(noDomain && !neverLive ? "Live, no domain yet" : "No domain yet"),
+      at: gh ? (gh.last?.ingot ?? null) : app.serving,
+    },
+  ];
+  const actions = (env: AppEnv, bot?: string) => {
+    if (env === "local") {
+      const x = bot ? copies.find((c) => c.bot === bot)?.sites[own] : loc;
+      const up = x && (x.state === "running" || x.state === "starting");
+      const why = app.hosting?.lost ? "Its computer is gone. Deploy a preview to give it a new home." : local?.why;
+      const k = bot ? `:${bot}` : "";
+      return up ? (
+        <>
+          <Btn tag="local-open" label="Open preview" doing="Opening…" busy={busy === `local:open${k}`} why={why} onClick={() => void preview(bot)} />
+          <Btn tag="local-stop" label="Stop" doing="Stopping…" busy={busy === `local:stop${k}`} why={why} onClick={() => void localDo("stop", bot)} />
+        </>
+      ) : (
+        <Btn tag="local-start" label="Start" doing="Starting…" busy={busy === `local:start${k}`} why={why} onClick={() => void localDo("start", bot)} />
+      );
+    }
+    if (env === "preview") return <Btn tag="deploy" label="Deploy" doing="Deploying…" busy={busy === "preview"} why={whyNotEnv(answer, app, "preview", sites)} onClick={() => void deploy()} />;
+    // No domain and never live: connecting one comes first (Published lives on its domain only).
+    if (!gh && !lost && noDomain && neverLive && answer.enabled)
+      return <Btn tag="connect-domain" dark label="Connect a domain" onClick={domainFlow} />;
+    return (
+      <>
+        <Btn tag="promote" dark label={gh ? "Publish to GitHub" : "Publish"} doing={gh ? "Pushing…" : "Publishing…"} busy={busy === "promote" || busy === "reapply"} why={whyNotEnv(answer, app, "prod", sites)} onClick={() => void promote()} />
+        <div ref={menuBox} className="relative flex shrink-0" onClick={(e) => e.stopPropagation()}>
+          <button data-prod-menu aria-label="More for Published" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(!menu)} className="flex size-6 items-center justify-center rounded-md text-[#6B6B6B] hover:bg-black/[0.05] hover:text-ink">
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
+              <circle cx="2.5" cy="6" r="1.1" fill="currentColor" />
+              <circle cx="6" cy="6" r="1.1" fill="currentColor" />
+              <circle cx="9.5" cy="6" r="1.1" fill="currentColor" />
+            </svg>
+          </button>
+          {menu && gh && (
+            <div role="menu" aria-label="Published" className="absolute right-0 top-[calc(100%+4px)] z-20 flex min-w-[200px] flex-col rounded-[12px] bg-white p-1 shadow-[0_0_0_1px_#0000000F,0_12px_32px_-12px_#00000040]">
+              <button data-gh-link role="menuitem" onClick={() => void githubLink()} className="rounded-lg px-2.5 py-1.5 text-left text-[12.5px] leading-4 text-ink hover:bg-[#F6F6F4]">
+                {gh.last ? "Link to GitHub again, as it is now" : "Link to GitHub, as it is now"}
+              </button>
+              {gh.last && (
+                <button data-gh-pull role="menuitem" onClick={() => void githubPull()} className="rounded-lg px-2.5 py-1.5 text-left text-[12.5px] leading-4 text-ink hover:bg-[#F6F6F4]">
+                  Bring in GitHub&apos;s changes
+                </button>
+              )}
+              <button data-gh-edit role="menuitem" onClick={() => (setMenu(false), setGhForm({ repo: gh.repo, branch: gh.branch, path: gh.path, keep: (gh.keep ?? []).join(", "), workflow: gh.dispatch?.workflow ?? "", inputs: Object.entries(gh.dispatch?.inputs ?? {}).map(([k, v]) => `${k}=${v}`).join(", ") }))} className="rounded-lg px-2.5 py-1.5 text-left text-[12.5px] leading-4 text-ink hover:bg-[#F6F6F4]">
+                GitHub settings
+              </button>
+              <button data-gh-off role="menuitem" onClick={() => void githubSet(null)} className="rounded-lg px-2.5 py-1.5 text-left text-[12.5px] leading-4 text-ink hover:bg-[#F6F6F4]">
+                Publish on Orgo instead
+              </button>
+            </div>
+          )}
+          {menu && !gh && (
+            <div role="menu" aria-label="Published" className="absolute right-0 top-[calc(100%+4px)] z-20 flex min-w-[180px] flex-col rounded-[12px] bg-white p-1 shadow-[0_0_0_1px_#0000000F,0_12px_32px_-12px_#00000040]">
+              <button data-gh-start role="menuitem" onClick={() => (setMenu(false), setGhForm({ repo: "", branch: "main", path: "", keep: "", workflow: "", inputs: "" }))} className="rounded-lg px-2.5 py-1.5 text-left text-[12.5px] leading-4 text-ink hover:bg-[#F6F6F4]">
+                Publish to GitHub instead
+              </button>
+              <button data-rollback role="menuitem" disabled={!app.serving} onClick={() => void rollbackAsk()} className="rounded-lg px-2.5 py-1.5 text-left text-[12.5px] leading-4 text-ink hover:bg-[#F6F6F4] disabled:text-[#9A9A98]">
+                Roll back
+              </button>
+              <button data-reapply role="menuitem" disabled={!app.serving || busy === "reapply"} onClick={() => void reapply()} className="rounded-lg px-2.5 py-1.5 text-left text-[12.5px] leading-4 text-ink hover:bg-[#F6F6F4] disabled:text-[#9A9A98]">
+                {busy === "reapply" ? "Applying…" : "Apply variables"}
+              </button>
+              <button data-domain-menu role="menuitem" onClick={domainFlow} className="rounded-lg px-2.5 py-1.5 text-left text-[12.5px] leading-4 text-ink hover:bg-[#F6F6F4]">
+                Domain
+              </button>
+            </div>
+          )}
+        </div>
+      </>
+    );
+  };
+  // Lines named for their bots (more bots work on it): a wider column for the names, so the states line up.
+  const named = lines.some((l) => l.who);
+  return (
+    // (Its lines read the width they have, not the window's: the Apps page's, or its tab's in a panel. Its menu open, it's over the lines after it.)
+    <div data-app-envs className={`@container flex flex-col ${compact ? "" : "gap-0.5"} ${menu ? "relative z-10" : ""}`}>
+      {!compact && <span className="pb-1 text-[12px] font-semibold leading-4 text-[#6B6B6B]">Local, Preview and Published</span>}
+      <div className={compact ? "flex flex-col" : "-mx-2 flex flex-col gap-0.5"}>
+        {lines.map((l) => {
+          const isPicked = picked === l.env;
+          return (
+            <div
+              key={l.bot ? `${l.env}:${l.bot}` : l.env}
+              data-app-env={l.env}
+              data-app-env-bot={l.bot}
+              data-app-env-state={l.state.word}
+              data-app-env-picked={isPicked || undefined}
+              onClick={onPick ? () => onPick(l.env) : undefined}
+              className={`flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 rounded-lg ${compact ? "min-h-7 py-0.5 pl-[26px] pr-2" : "min-h-8 px-2 py-1"} ${onPick ? "cursor-pointer" : ""} ${isPicked ? "bg-[#F2F2F0] shadow-[0_0_0_1px_#E2E2DF]" : onPick ? "hover:bg-[#F6F6F4]" : ""}`}
+            >
+              {/* Its place: its dot, its name, and whose it is (Local · Nova). Wide, a column of its own; narrow, what's left of the first line. */}
+              <span data-app-env-place className={`flex min-w-0 flex-1 items-center gap-2 @2xl:flex-none ${named ? "@2xl:w-[134px]" : "@2xl:w-[84px]"}`}>
+                <span data-tip={l.state.tip ?? l.state.word} className={`size-1.5 shrink-0 rounded-full ${l.state.dot}`} />
+                <span className="flex min-w-0 items-center gap-1 text-[12.5px] leading-4 text-ink">
+                  {onPick ? (
+                    <button aria-pressed={isPicked} className={`shrink-0 whitespace-nowrap text-left ${isPicked ? "font-semibold" : "font-medium"}`}>
+                      {ENV_NAMES[l.env]}
+                    </button>
+                  ) : (
+                    <span className="shrink-0 whitespace-nowrap font-medium">{ENV_NAMES[l.env]}</span>
+                  )}
+                  {l.who && (
+                    <>
+                      <span aria-hidden className="shrink-0 text-[#9A9A98]">
+                        ·
+                      </span>
+                      <span data-local-bot title={l.who} className="min-w-0 truncate font-medium">
+                        {l.who}
+                      </span>
+                    </>
+                  )}
+                </span>
+              </span>
+              {/* Its state and where it is: wide, between its name and what it serves; narrow, a line of its own under its name, wrapping. */}
+              <span data-app-env-where className="order-last flex min-w-0 basis-full flex-wrap items-center gap-x-2 gap-y-0.5 pl-3.5 @2xl:order-none @2xl:grow @2xl:basis-0 @2xl:flex-nowrap @2xl:pl-0">
+                <span data-tip={l.state.tip ?? l.state.word} className="min-w-0 max-w-full truncate text-[12px] leading-4 text-[#6B6B6B] @2xl:w-[112px] @2xl:shrink-0">
+                  {l.state.word}
+                </span>
+                {l.where}
+              </span>
+              {l.at && (
+                <span data-app-env-at title={l.at} className="shrink-0 font-mono text-[11px] leading-[14px] text-[#6B6B6B]">
+                  {short(l.at)}
+                </span>
+              )}
+              <span className="flex shrink-0 items-center gap-1">{actions(l.env, l.bot)}</span>
+            </div>
+          );
+        })}
+      </div>
+      {back && (
+        <div className={compact ? "pl-[26px] pr-2 pt-1" : "pt-1"} onClick={(e) => e.stopPropagation()}>
+          {back === "none" ? (
+            <span className="flex items-center gap-2 text-[12px] leading-4 text-[#6B6B6B]">
+              Nothing published earlier to put back.
+              <button onClick={() => setBack(null)} className="text-ink underline">
+                Close
+              </button>
+            </span>
+          ) : (
+            <InlineConfirm
+              text={`Publish ${back.d.at ? short(back.d.at) : "its earlier deploy"} again? No build: it's on its computer already.`}
+              action="Roll back"
+              doing="Rolling back…"
+              busy={busy === "rollback"}
+              onConfirm={() => {
+                const d = (back as { d: AppDeploy }).d;
+                void rollback(d).then(() => setBack(null));
+              }}
+              onCancel={() => setBack(null)}
+            />
+          )}
+        </div>
+      )}
+      {ghForm && <GithubForm form={ghForm} onChange={setGhForm} busy={busy === "github"} onSave={() => void githubSet(ghForm)} onCancel={() => setGhForm(null)} compact={compact} />}
+      {error && (
+        <span role="alert" className={`${PROBLEM} ${compact ? "pl-[26px]" : ""} whitespace-normal`}>
+          {error}
+        </span>
+      )}
+      {said && <span className={`text-[12px] leading-4 text-[#6B6B6B] ${compact ? "pl-[26px]" : ""}`}>{said}</span>}
+      {busy === "rollback-read" && <span className={`text-[12px] leading-4 text-[#9A9A98] ${compact ? "pl-[26px]" : ""}`}>Reading its deploys…</span>}
+    </div>
+  );
+}
+
+const HEAD = "pb-1 text-[12px] font-semibold leading-4 text-[#6B6B6B]";
+const HINT = "text-[12px] leading-4 text-[#9A9A98]";
+
+/** Open a bot's computer in the panel (bops-app.tsx), its screen showing (`screen`: that one, 99 for Local); null where there's no panel. */
+export const OpenBotComputer = createContext<((botId: string, screen?: number) => void) | null>(null);
+
+/**
+ * Local, picked on an app's tab (of the picked site): how it is and Open preview (beside the bot's chat, at its
+ * own localhost:<port>, the same as on its computer), the command it runs (its own, typed here, kept on its
+ * computer; else what its folder says, npm run dev or a plain site's index.html) and its port (one a site, given
+ * by its computer; one typed here is its own from then on, and the field cleared gets it a free one again),
+ * Start or Restart with them, and its own variables (on top of its Preview's, kept on its computer).
+ */
+export function LocalSection({ ws, app, site, local, onLocal }: { ws: string; app: HostedApp; site?: string; local: LocalAnswer | null; onLocal: (a: LocalAnswer) => void }) {
+  const own = site ?? app.name;
+  const x = local?.sites[own];
+  const openPreview = useContext(OpenPreview);
+  const openBot = useContext(OpenBotComputer);
+  const [typed, setTyped] = useState<string | null>(null);
+  const [port, setPort] = useState<string | null>(null);
+  const [busy, setBusy] = useState<"start" | "open" | null>(null);
+  const [error, setError] = useState<{ words: string; field?: "port" } | null>(null);
+  const [said, setSaid] = useState<string | null>(null);
+  const command = typed ?? x?.command ?? "";
+  const at = x ? (x.port ?? x.devPort) : null;
+  const portShown = port ?? (at ? String(at) : "");
+  const up = x && (x.state === "running" || x.state === "starting");
+  const start = async () => {
+    const p = portShown.trim();
+    if (p && (!/^\d{1,5}$/.test(p) || Number(p) < 1024 || Number(p) > 65535)) return setError({ words: "Use a port from 1024 to 65535.", field: "port" });
+    if (p === "3210") return setError({ words: "Bops uses 3210 on this Mac. Pick another.", field: "port" });
+    setBusy("start");
+    setError(null);
+    const r = await localAct(ws, app.name, {
+      action: "start",
+      ...(site ? { site } : {}),
+      ...(command.trim() && command.trim() !== x?.command ? { command: command.trim() } : {}),
+      // Only when it was changed here: a port typed, or cleared for a free one (never 3000 as such).
+      ...(port === null ? {} : p ? { port: Number(p) } : { port: "auto" as const }),
+    });
+    setBusy(null);
+    if (r.ok) {
+      onLocal(r.ok);
+      setTyped(null);
+      setPort(null);
+    } else setError(r.error ? { words: r.error } : null);
+  };
+  const open = async () => {
+    setBusy("open");
+    setError(null);
+    setSaid(null);
+    if (openPreview) {
+      const r = await openPreview(ws, app.name, site);
+      setBusy(null);
+      if (r.error) setError({ words: undash(r.error) });
+      else if (r.screen) setSaid(undash(r.said ?? "This Mac can't reach its computer, so it opens on its screen."));
+      return;
+    }
+    const r = await localAct(ws, app.name, { action: "open", ...(site ? { site } : {}) });
+    setBusy(null);
+    if (r.ok) {
+      onLocal(r.ok);
+      if (app.hosting?.botId) openBot?.(app.hosting.botId, r.ok.display ?? 99);
+    } else setError(r.error ? { words: r.error } : null);
+  };
+  const s = localState(x, local);
+  return (
+    <div data-local-section className="flex flex-col gap-3">
+      <div className="flex flex-col">
+        <span className={HEAD}>Local</span>
+        <span className={HINT}>{`Runs its working folder with hot reload, at ${at ? `localhost:${at}` : "a localhost address of its own"} here and on its computer.`}</span>
+        <div className="flex min-h-8 items-center gap-2">
+          <span className={`size-1.5 shrink-0 rounded-full ${s.dot}`} />
+          <span data-local-state className="text-[12.5px] leading-4 text-ink">
+            {s.word}
+          </span>
+          {up && <span className="font-mono text-[11.5px] leading-4 text-[#6B6B6B]">localhost:{at}</span>}
+          <span className="flex-1" />
+          {up && <Btn tag="local-open-tab" label="Open preview" doing="Opening…" busy={busy === "open"} onClick={() => void open()} />}
+        </div>
+        {s.tip && s.word !== "Running" && <span className={HINT}>{s.tip}</span>}
+        {up && x?.mismatch && <span className={HINT}>{`Its dev server listens on ${x.mismatch} instead of ${at}. Make its command use $PORT, then restart it.`}</span>}
+        {said && <span className="text-[12px] leading-4 text-[#6B6B6B]">{said}</span>}
+      </div>
+      <form
+        data-local-command
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!busy) void start();
+        }}
+        className="flex flex-col gap-1.5"
+      >
+        <label className="flex min-w-0 items-center gap-2">
+          <span className="w-[64px] shrink-0 text-[12px] leading-4 text-[#6B6B6B]">Command</span>
+          <input
+            aria-label="Its command"
+            value={command}
+            onChange={(e) => {
+              setTyped(e.target.value);
+              setError(null);
+            }}
+            placeholder="Found from its folder: npm run dev, or index.html"
+            autoComplete="off"
+            spellCheck={false}
+            className="min-w-0 flex-1 rounded-lg bg-white px-2.5 py-1.5 font-mono text-[12px] leading-4 text-ink shadow-[0_0_0_1px_#E2E2DF] outline-none focus:shadow-[0_0_0_1.5px_#0A0A0A]"
+          />
+        </label>
+        <label className="flex min-w-0 items-center gap-2">
+          <span className="w-[64px] shrink-0 text-[12px] leading-4 text-[#6B6B6B]">Port</span>
+          <input
+            data-local-port
+            aria-label="Its port"
+            value={portShown}
+            onChange={(e) => {
+              setPort(e.target.value.replace(/[^\d]/g, "").slice(0, 5));
+              setError(null);
+            }}
+            placeholder="Free one"
+            inputMode="numeric"
+            autoComplete="off"
+            className={`w-[88px] rounded-lg bg-white px-2.5 py-1.5 font-mono text-[12px] leading-4 text-ink outline-none focus:shadow-[0_0_0_1.5px_#0A0A0A] ${error?.field === "port" ? "shadow-[0_0_0_1px_#B42318]" : "shadow-[0_0_0_1px_#E2E2DF]"}`}
+          />
+          <span className="flex-1" />
+          <button type="submit" disabled={!!busy || !!app.hosting?.lost} className={DARK}>
+            {busy === "start" ? "Starting…" : up ? "Restart" : "Start"}
+          </button>
+        </label>
+        <span className={HINT}>A first start installs what it needs.</span>
+        {error && (
+          <span role="alert" className={`${PROBLEM} whitespace-normal`}>
+            {error.words}
+          </span>
+        )}
+      </form>
+      <Variables ws={ws} name={app.name} names={x?.env ?? []} onSaved={(names) => local && onLocal({ ...local, sites: { ...local.sites, ...(x ? { [own]: { ...x, env: names } } : {}) } })} />
+    </div>
+  );
+}

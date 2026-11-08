@@ -1,0 +1,400 @@
+import { APPS_LABEL, sameLabel } from "./skill-labels";
+
+/*
+ * Bops' own skills, which every bot has and nobody edits (lib/skill-labels.ts): each one a short, exact
+ * procedure a bot follows step by step, whether its brain is Bops agent, Claude Code or Codex. They're
+ * listed under labels of their own (BUILTIN_LABELS) and read like any other skill (read_skill, or as files
+ * on the computer at /workspace/capabilities/skills/<slug>/). Each body is a SKILL.md body: its first line
+ * is "# <name>". Every command and tool a body names is a real one: the `ingot` command and Ingot's MCP
+ * tools as ingot/docs/hosted-api.md says, the chat tools work_on_app and deploy_app (lib/hosted-apps.ts,
+ * lib/server/hosted-apps.ts), and what orgo-web's deploy runner does (orgo-web docs/deploys.md);
+ * scripts/test-builtin-skills.mjs holds them to that. Slugs start with bops-. Imported by the window and
+ * the Mac server.
+ */
+
+/** A label Bops ships, with one line on what its skills are for. */
+export type BuiltinLabel = { label: string; about: string };
+
+/**
+ * One of Bops' own skills. `description`: what it's for and when to read it, all a bot sees until it reads
+ * it. `about`: more on when it fits, when the description alone doesn't say. `files`: text files beside its
+ * SKILL.md (read_skill with file), never scripts.
+ */
+export type BuiltinSkill = {
+  slug: string;
+  name: string;
+  description: string;
+  label: string;
+  about?: string;
+  body: string;
+  files?: { path: string; content: string }[];
+};
+
+export const BUILTIN_LABELS: BuiltinLabel[] = [
+  {
+    label: APPS_LABEL,
+    about: "Building, versioning and deploying your workspace's apps with Ingot, Orgo's source control: read one before you change an app's code or put it live.",
+  },
+];
+
+const WORK_ON_AN_APP = [
+  "# Work on an app with Ingot",
+  "",
+  "Each app your workspace builds is an Ingot repo: Ingot is Orgo's own source control, not git. Its changes are changesets on main, and its working folder on your computer is /workspace/apps/<name>.",
+  "",
+  "When other bots work on the same app too, each works in a copy of its own beside it, /workspace/apps/<name>.<you>, its own clone with its own Local, and your task names yours: work only in it, never in another bot's. Copies meet only on main: you commit to it, and a pull brings in what the others committed.",
+  "",
+  "A repo's full name is <workspace>/<name>, and your task gives it: name it in full wherever a command takes a repo, as your computer may work for more than one workspace. The `ingot` command on your computer is already signed in (an agent token for each workspace, in its config): never paste or print a token, and never ask for one.",
+  "",
+  "## In chat",
+  "You don't edit an app from chat. Call work_on_app with app (its name as listed, or null for a new one), name (a new app's name, else null), change (what to build or change, complete on its own) and deploy (true when the user asked in the same message for it to go live too: Bops deploys it once the task has committed). A task on your computer does the work and follows this skill there.",
+  "",
+  "## Start",
+  "1. `cd /workspace/apps/<name>` (or your copy, as your task says). The task cloned it there, or pulled the newest main into it, as it started. Conflict markers from that pull are yours to fix first.",
+  "2. No folder? `ingot clone <workspace>/<name> /workspace/apps/<name>`. Never run git init there, and never copy the files somewhere else to work on them.",
+  "3. `ingot status` lists what changed since the folder's base. Changes you didn't make: ask before you touch them.",
+  "4. `ingot log -n 10` shows what changed lately, and who changed it.",
+  "",
+  "## Make the change",
+  "1. Change only what the job asks for.",
+  "2. Run it as its Local while you work: `bops-local start <name> <site>` (the site is <name> for the app's own; in a copy, `bops-local start <name>.<you> <site>`) runs it with hot reload at an address of its own, http://localhost:<its port>, and prints that port; check each change with `curl -i http://127.0.0.1:<that port>/`. Leave it running: the user watches it beside your chat.",
+  "3. `ingot diff` (or `ingot diff <path>`), and read every line you're about to commit.",
+  "",
+  "## Commit",
+  '1. `ingot commit -m "<what changed, in one clear line>"` commits every change in the folder that isn\'t ignored. There is no add step: whatever `ingot status` lists goes in.',
+  '2. One idea per commit, with a message that says it: "Add the signup form", never "updates". A second -m adds a paragraph on why.',
+  "3. `ingot show <id>` shows what a commit holds. `ingot log` prints the ids; the short ones work.",
+  '4. Refused because main moved on? Someone committed first: follow the skill "When several people push at once".',
+  "",
+  "## Never commit",
+  "1. Secrets: keys, passwords, tokens, .env files. They're the app's environment variables, which the user sets in Orgo as the app's Variables, and the code reads them from the environment.",
+  "2. What an install or a build makes. Ignored by default: .ingot/, .git/, node_modules/, .DS_Store, __pycache__/, *.pyc, .next/, dist/, build/ and .env*.",
+  "3. Anything else that shouldn't go in: add it to .ingotignore (gitignore's syntax) at the top of the folder. A line starting with ! there brings back one of the defaults (never .ingot/ or .git/).",
+  "",
+  "## Claude Code and Codex",
+  "On an app's task you also have Ingot's tools. In the working folder (dir): repo_status (dir), repo_diff (dir, path), repo_commit (dir, message) and repo_pull (dir). By the app's name: repo_log, repo_show, repo_file and repo_tree. They do what the commands do.",
+  'Plain git works too, with the same history, in a clone of its own beside the working folder, never inside it: `git clone "$(ingot git-url <workspace>/<name>)" /workspace/apps/<name>-git`, then the skill "When several people push at once" for pull and push. In the working folder, use Ingot\'s commands.',
+  "",
+  "## Done",
+  'Say in the chat what you changed and the commit\'s short id. Putting it live is separate: the skill "Deploy an app".',
+];
+
+const SEVERAL_PEOPLE = [
+  "# When several people push at once",
+  "",
+  "People and bots can work on one app at the same time. Every commit and push names the changeset it started from, and Ingot refuses one that didn't start from the newest main. Nothing was written and nothing is lost: it's normal, and the answer is to pull, merge and commit again.",
+  "",
+  "## What you'll see",
+  '`ingot commit` (and repo_commit): "main has moved on since this folder\'s base ... Nothing was committed. Run ingot pull to bring in the new changes, then ingot commit again."',
+  'A git push: "remote: ingot: main has new changesets since you fetched. Run git pull --no-rebase, then git push again."',
+  "",
+  "## What to do",
+  "1. `ingot pull` (or repo_pull) in the working folder. It brings in the newest main, merges your uncommitted changes into it file by file, and lists each file: updated, merged, conflict, kept or restored.",
+  "2. See what came in: `ingot log -n 5`, then `ingot show <id>` on each new one, so you know what the other person meant.",
+  "3. A file listed as conflict holds both sides where you both changed the same lines:",
+  "```",
+  "<<<<<<< yours",
+  "(your lines)",
+  "=======",
+  "(their lines, from main)",
+  ">>>>>>> theirs",
+  "```",
+  "4. Edit it so it does what both changes meant to do, and delete the three marker lines. When they truly clash, keep theirs working, fit yours around it, and say so.",
+  "5. A binary file you both changed (an image): yours stays, and main's is beside it as <path>.theirs. Keep one and delete the other.",
+  "6. Kept: main deleted a file you changed. Restored: you deleted a file main changed. Decide whether each should stay.",
+  "7. Run the app again and check that both changes work.",
+  '8. `ingot status`, then `ingot commit -m "<your change>, merged with <what came in>"`. Commit refuses while any marker or .theirs file is left.',
+  "9. Refused again? Someone committed meanwhile: go back to step 1.",
+  "10. Say in the chat what came in, whose it was, and how you merged it.",
+  "",
+  "Pull refuses when an ignored file of yours (such as .env) is where main now has one: move yours aside, pull, and put its values in the app's Variables, not the repo.",
+  "",
+  "## Plain git",
+  "`ingot setup-git` already set up git's credential helper on your computer, so git signs in on its own. Never put a token in a URL or a command. git asks for a password anyway: don't type one, stop and say so in the chat.",
+  'Clone it beside the working folder, never inside it (Ingot would commit the copy): `git clone "$(ingot git-url <workspace>/<name>)" /workspace/apps/<name>-git`. When a push is refused: `git pull --no-rebase`, resolve the conflicts the same way (git\'s markers say HEAD for yours), `git commit`, then `git push origin HEAD:main`.',
+  "",
+  "## Never",
+  "1. Never force: no forced push, and never clone again to copy your files over theirs.",
+  "2. Never drop someone else's change to make yours fit, and never delete a conflicted file to make the conflict go away.",
+  "3. Never commit with a marker left in a file.",
+];
+
+const DEPLOY_AN_APP = [
+  "# Deploy an app",
+  "",
+  "Deploying puts one changeset of an app on the web: first on its Preview, a fixed link of its own (https://<12 letters and digits>.orgo.dev), then, when the user says publish, on its own domain. That changeset comes from the app's Ingot repo, and it's built and run on the app's computer.",
+  "",
+  "## Only when asked",
+  'Deploy only when the user asked for it in their own words ("put it live", "deploy it", "roll it back"). A finished change is no reason to deploy: say it\'s ready and ask.',
+  "Publish (deploy_app where prod) only when the user's own words say publish; a site needs its domain connected first.",
+  "In a task on your computer you don't deploy: say what's committed. When your task says Bops puts it live once you've committed, it does, so don't tell the user to deploy it; otherwise they deploy it from the Apps page or ask for it in chat.",
+  "",
+  "## How",
+  "1. Commit first. A deploy builds a changeset on main, never what's in a working folder.",
+  "2. deploy_app with app (its name as listed) and at null deploys the newest commit on main.",
+  "3. To roll back, or put an older one live again: deploy_app with at set to that changeset's id (the short id from ingot log works). Say that main still has the newer commits, and the next plain deploy puts them back.",
+  "4. It answers with what it queued and the address: its preview link, the same for every preview, so a Google sign in set up for it keeps working.",
+  "",
+  "## Its password",
+  "A Preview asks for a password unless the user turned that off for the site, and it gets a new one each time a preview deploy goes live. The user sees it beside the Preview link in Bops. You never have it: never write a password in the chat or ask for it, and check your work on Local.",
+  "",
+  "## What a deploy does",
+  "1. Exports that changeset into a new folder (`ingot export`), checking every file.",
+  '2. Detects how to build it (the skill "Make a web app that deploys cleanly"), installs and builds. A build stops after 30 minutes.',
+  "3. Starts it with PORT set and HOST=0.0.0.0. Within 60 seconds, its / must answer on that port with any status below 500.",
+  "4. It answered: the new release is live. It didn't: the release that was live before (if there was one) is live again, and the deploy failed.",
+  "One build at a time per computer, and a newer deploy of an app replaces one still queued. A computer that's asleep builds once it runs.",
+  "",
+  "## How it went",
+  'The app\'s tab on the Apps page shows its state (Deploying, Live, or why it failed) and its Deploy log: each step ("==> Installing dependencies", "==> Building"), each command it ran ("$ npm ci") and the end ("Answered 200 on port 3100. Live."). Values of variables are masked there. When you can\'t see it, ask the user for the log\'s last lines.',
+  "",
+  "## When it fails",
+  "1. Say in plain words which step failed and why, from the log.",
+  '2. It couldn\'t tell how to run it: add a start script, a Procfile web: line or an orgo.json (the skill "Make a web app that deploys cleanly").',
+  "3. Install or build failed: in a task on its computer, export the same changeset into a new folder (`ingot export --repo <workspace>/<name> --at <id> /tmp/<name>-check`), run the same commands there, fix it in the working folder, commit.",
+  "4. It didn't answer within 60 seconds: it isn't listening on $PORT on 0.0.0.0, it crashed as it started (a missing variable, often), or its / is slow. Its own output is in /var/log/orgo/svc-<name>.log on its computer. The release before is still live, so nothing is down.",
+  "5. Fix it with work_on_app, then deploy again only when the user says so. Never deploy again and again hoping it passes.",
+];
+
+const WEB_APP_THAT_DEPLOYS = [
+  "# Make a web app that deploys cleanly",
+  "",
+  "Orgo builds an app from its Ingot repo, on the app's computer, and runs it at its preview link, then its domain. Make it so the first deploy works.",
+  "",
+  "## How Orgo knows what it is",
+  "The first of these at the top of the repo decides:",
+  "1. compose.yaml, compose.yml, docker-compose.yml or docker-compose.yaml: Docker Compose.",
+  "2. Dockerfile: docker build, then docker run, with PORT set to the port it EXPOSEs (else the app's port).",
+  "3. package.json: Node.js (from .nvmrc, .node-version or engines.node; 18 to 24, 22 by default). The lockfile picks npm, pnpm, yarn or bun. Its build script runs when it has one; a start script (or orgo.json's start) is required.",
+  "4. requirements.txt, pyproject.toml (with uv.lock, uv sync) or Pipfile: Python in a uv virtual environment, started by a Procfile web: line (or orgo.json's start).",
+  "5. index.html: a plain site, served with python3 -m http.server.",
+  "Pick the simplest that fits. A plain site needs only an index.html.",
+  "",
+  "## Run where Orgo looks",
+  "1. Listen on the port in $PORT, on 0.0.0.0 (HOST says 0.0.0.0 too). Never a fixed port, never 127.0.0.1 or localhost alone.",
+  "2. Its / must answer with any status below 500 within 60 seconds of starting. Start listening first; slow work (migrations, warming a cache) comes after, or in the build.",
+  "3. The start command stays in the foreground: it never goes to the background or exits.",
+  "",
+  "## orgo.json",
+  'When detection would guess wrong, put an orgo.json at the top of the repo: { "framework": "node", "install": "npm ci", "build": "npm run build", "start": "node server.js" }. framework is one of node, python, dockerfile, compose and static; leave out whatever detection gets right.',
+  "",
+  "## Secrets and settings",
+  "1. API keys, passwords and DATABASE_URL are the app's environment variables, never files in the repo (.env files are never committed). The user sets them in Orgo, as the app's Variables: ask for the name you need, never the value.",
+  "2. Read them from the environment (process.env.DATABASE_URL, os.environ[\"DATABASE_URL\"]), and stop with a clear message when one is missing.",
+  "3. They reach the build too, so NEXT_PUBLIC_ ones work.",
+  "",
+  "## Build",
+  "1. A build stops after 30 minutes: no huge downloads or model weights in it.",
+  "2. dist/, build/, .next/ and node_modules/ are never committed, so the build makes them from the source.",
+  "3. Commit the lockfile (package-lock.json, pnpm-lock.yaml, yarn.lock, uv.lock) so the deploy installs what you tested.",
+  "",
+  "## Check before you commit",
+  "Its Local (bops-local start) is the check while you work. Before a commit that changes how it builds or starts, run it as Orgo will on a spare port: install, build, then start it with PORT=3999 HOST=0.0.0.0 and check that `curl -i http://127.0.0.1:3999/` answers below 500 within seconds. Then stop that one, never its Local.",
+  "",
+  "## Sign in with Google",
+  "Its addresses are its Local's, http://localhost:<its port> (bops-local prints it), its preview link (Preview) and its domain (Published). The user adds each to Google once. Read the address from AUTH_URL, which Bops sets in each place; never write a host into the code.",
+  "",
+  "## A start to copy",
+  "examples/node-app/ in this skill (read_skill with file examples/node-app/server.js, and examples/node-app/package.json) is a small Node.js app that does all of this.",
+];
+
+const APP_HISTORY = [
+  "# Read an app's history",
+  "",
+  "Every change to an app is a changeset on main: who made it, when, its message and its files. Nothing is rewritten, so the history is the record.",
+  "",
+  "## The commands",
+  "In the working folder /workspace/apps/<name>, or anywhere with --repo <workspace>/<name>:",
+  '1. `ingot log` lists main\'s changesets, newest first: short id, time (UTC), author, the message\'s first line and the files it added, modified and deleted (+1 ~2 -0). "merge" marks a merge, and "(this folder)" the one your folder is on.',
+  "2. `ingot log -n 100` shows more (200 at most). For older ones, `ingot log --before <id>` with the id it prints at the end.",
+  "3. `ingot log <path>` lists only the changesets that touched that file or folder.",
+  "4. `ingot show <id>` shows one in full: author, time, message, files and the patch against the one before it. Short ids work.",
+  "Claude Code and Codex can use Ingot's tools instead: repo_log (name, path, limit, before), repo_show (name, id), repo_file (name, path, at) for a file as it was, and repo_tree (name, at) for the files.",
+  "",
+  "## When something changed, and who changed it",
+  "1. `ingot log <the file>` narrows it to the changesets that touched it.",
+  "2. `ingot show <id>` on each, newest first, until one changes the lines in question.",
+  '3. Answer with its author, when, its message and its short id, in plain words: "Sam raised the Pro price to $20 on Oct 3 (a1b2c3d)."',
+  '4. Who last changed a given line: in a plain git clone (the skill "When several people push at once"), `git blame <file>`. Its authors are the changesets\' authors.',
+  "",
+  "## Comparing two changesets",
+  "`ingot show` compares one with the one before it. For two far apart, export both into new folders and compare them:",
+  "```",
+  "ingot export --repo <workspace>/<name> --at <older id> /tmp/<name>-a",
+  "ingot export --repo <workspace>/<name> --at <newer id> /tmp/<name>-b",
+  "diff -ru /tmp/<name>-a /tmp/<name>-b",
+  "```",
+  "Delete both folders when you're done.",
+  "",
+  "## Looking at an older version",
+  "`ingot checkout <id>` moves a clean folder to that changeset, to read or run it; `ingot checkout main` brings it back. Never commit from an older one: commit refuses it anyway, since it didn't start from the newest main.",
+  "",
+  "## Putting an older one live",
+  "That's a deploy, not a commit. The user picks it in the app's History on the Apps page and presses Deploy this one, or asks in chat, and you call deploy_app with at set to its id. Main keeps the newer changesets, so the next plain deploy brings them back.",
+  "To undo a change on main itself, make a new commit that reverses it, and say so.",
+];
+
+/** A Node.js app that deploys cleanly: listens on $PORT on 0.0.0.0, answers / at once, stays in the foreground. */
+const NODE_SERVER = [
+  "// A small web app that deploys cleanly on Orgo: it listens on $PORT on 0.0.0.0 and answers / at once.",
+  'const http = require("node:http");',
+  "",
+  "const port = Number(process.env.PORT) || 3000;",
+  'const host = process.env.HOST || "0.0.0.0";',
+  "",
+  "http",
+  "  .createServer((req, res) => {",
+  '    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });',
+  '    res.end("<!doctype html><title>Hello</title><h1>Hello</h1>\\n");',
+  "  })",
+  "  .listen(port, host, () => console.log(`Listening on http://${host}:${port}`));",
+  "",
+];
+
+/** Its package.json: a start script, and nothing to install. */
+const NODE_PACKAGE = ["{", '  "name": "my-app",', '  "private": true,', '  "scripts": { "start": "node server.js" }', "}", ""];
+
+const LAUNCH_LOCALLY = [
+  "# Launch an app locally",
+  "",
+  "Run the app from its working folder on your computer so the user can try it on localhost while you change it. That address is where a Google login set up for localhost works, so it's how they test signing in before anything is public.",
+  "",
+  "## The four places",
+  "Use these words, here and with the user, and say the place with its address, like its Local at http://localhost:3001.",
+  "1. Screen 1 to 4: one of your computer's screens. A task works on one, with a Chrome of its own. Open pages only in your own screen's Chrome.",
+  "2. Local: a site's dev server on your computer, with hot reload, at http://localhost:<its port>: the same address on your computer's screens and in Bops beside your chat. Not on the web.",
+  "3. Preview: the site's fixed link, https://<12 letters and digits>.orgo.dev, to test and share. It asks for a password unless the user turned that off; they see it beside the Preview link in Bops, and you never write it in the chat.",
+  "4. Published: the site on its own domain.",
+  "",
+  "## An app of your workspace: always bops-local",
+  "For a workspace app, whose working folder is /workspace/apps/<name>, never start a server of your own, on 3000 or anywhere. Run `bops-local start <name> <site>` (the site is <name> for the app's own; in your own copy of it, /workspace/apps/<name>.<you>, `bops-local start <name>.<you> <site>`). It gives each site a port of its own on your computer that stays the same, installs what it needs, and starts it there with hot reload. Read its address from the BOPS_LOCAL line it prints: the fourth word is its port, so it's http://localhost:<that port>. It sets AUTH_URL (and NEXTAUTH_URL and BETTER_AUTH_URL) to that address itself. `bops-local status <name>` says how each site's Local is.",
+  "Its dev command has to listen on the port in $PORT, which bops-local sets: in its dev script, `vite --port $PORT --strictPort` for Vite and `next dev -p $PORT` for Next.js. One that opens a port of its own instead never comes up at its address, and `bops-local status <name>` says mismatch=<that port> on its BOPS_LOCAL_MORE line: make its dev script use $PORT, then start it again.",
+  "Never start, stop or restart another site's Local, and never kill a process on a port that isn't your site's.",
+  "Sites on one computer are all on localhost, so a screen's Chrome shares their cookies: sign out of one site before you sign in on another there.",
+  "",
+  "## Any other app",
+  "The steps below.",
+  "",
+  "## 1. The package manager",
+  "Go by the lockfile in the app's folder: pnpm-lock.yaml is pnpm, yarn.lock is yarn, bun.lockb or bun.lock is bun, and package-lock.json (or no lockfile) is npm. If pnpm or yarn isn't there, run `corepack enable` first. Never switch an app to another package manager.",
+  "",
+  "## 2. Install",
+  "Install when node_modules is missing, or package.json or the lockfile changed since you last installed. Use the lockfile as it is: `npm ci`, `pnpm install --frozen-lockfile`, `yarn install --frozen-lockfile` (Yarn 2 and up: `yarn install --immutable`) or `bun install --frozen-lockfile`. If that fails because the lockfile is out of date, run the plain install once and say so.",
+  "",
+  "## 3. Start it on port 3000",
+  "Check the port is free with `ss -ltn | grep ':3000 '`. If something else holds it, take the next free one (3001, 3002 and on) and tell the user a Google login needs that port's callback added too.",
+  "Run it in the background from the app's folder, its output in a log, with the dev command its framework takes:",
+  "1. Next.js: `npx next dev -p 3000 -H 0.0.0.0` (or the package manager's exec).",
+  "2. Vite: `npx vite --port 3000 --host 0.0.0.0 --strictPort`.",
+  "3. Create React App: `PORT=3000 npm start`.",
+  "4. Astro, Remix, SvelteKit or Nuxt: their dev script with their own port and host flags.",
+  "5. Anything else: `PORT=3000 HOST=0.0.0.0 npm run dev`, or with only a start script `PORT=3000 npm start`.",
+  "6. A plain index.html: `python3 -m http.server 3000`.",
+  "If its dev script already sets a port, use that one and say which. For example: `nohup npx next dev -p 3000 -H 0.0.0.0 > /tmp/<name>-dev.log 2>&1 &`.",
+  "",
+  "## 4. Signing in",
+  "An app using NextAuth or Auth.js (next-auth or @auth in package.json) signs in on AUTH_URL. Unless the app's own .env.local sets it, start it with `AUTH_URL=http://localhost:3000` (and NEXTAUTH_URL too for next-auth 4). Google's redirect for it is http://localhost:3000/api/auth/callback/google.",
+  "",
+  "## 5. Ready means it answers",
+  "Wait until `curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/` gives a status below 500. If it doesn't, read the last lines of the log, fix the cause, and start it again. Never say it's ready before it answers.",
+  "",
+  "## 6. Show it",
+  "Open its address (http://localhost:3000, or the port it's on) in your own screen's Chrome, in a new tab so your other tabs stay, and tell the user it's open on your screen at that address and they can sign in there. When you change the code the dev server picks it up: say what changed.",
+  "",
+  "## 7. Stop it",
+  "Stop it when the user is done or asks, and before you start another app on the same port. Never stop a workspace app's Local this way: bops-local stop <name> <site> does, and only for your own site.",
+];
+
+const PREVIEW_ON_A_PUBLIC_URL = [
+  "# Test on a public preview URL",
+  "",
+  "When the user wants to try the app from anywhere (their phone, someone else's computer, a link to share) before it's live, put it on its Preview: the app's own https address, apart from its live site. Deploying there never touches what's live. Preview is one of a site's four places (Screen, Local, Preview, Published: the skill \"Launch an app locally\" says each).",
+  "",
+  "## Before you deploy",
+  "1. It runs locally (Launch an app locally) and its build script passes.",
+  "2. It listens on $PORT and 0.0.0.0 (Make a web app that deploys cleanly).",
+  "3. Commit it. A deploy builds a committed changeset, never what's only in your folder.",
+  "",
+  "## Its commands",
+  "Make sure the site's settings say how to build and run it, from package.json and its lockfile. Set only the ones that aren't set, and never change ones the user set:",
+  "1. Install: `npm ci`, `pnpm install --frozen-lockfile`, `yarn install --frozen-lockfile` or `bun install --frozen-lockfile`.",
+  "2. Build: its build script, for example `npm run build`.",
+  "3. Start: its start script on the given port, for example `PORT=$PORT npm start` or `npx next start -p $PORT -H 0.0.0.0`.",
+  "",
+  "## Signing in on the preview",
+  "An app using NextAuth or Auth.js needs AUTH_URL set to the preview's own address in the Preview's variables, and its secrets as variables, never in the repo. For Google login that address has to be in the Google OAuth client, as an origin and with /api/auth/callback/google as a redirect: tell the user once, the first time a preview address is used, which two lines to add.",
+  "",
+  "## Its password",
+  "A Preview asks for a password unless the user turned that off for the site, and it gets a new one each time a preview deploy goes live. The user sees it beside the Preview link in Bops and gives it to whoever they share the link with. You never have it: never write a password in the chat or ask for it. Check your work on Local, where no password is asked.",
+  "",
+  "## Deploy and share",
+  "1. Check it on Local first (Launch an app locally): that's where you look at your work.",
+  "2. deploy_app with app: it goes to the Preview. It goes live only when the owner's or an Admin's own words ask for that.",
+  "3. Wait until the preview address answers: `curl -s -o /dev/null -w '%{http_code}' <preview address>` gives a status below 500 (its password page counts: it's up).",
+  "4. Give the user the link. Unless they turned its password off, say it asks for the one shown beside it in Bops.",
+  "5. If the deploy fails, read its log, fix the cause, commit and deploy again. Never share a link that doesn't answer.",
+];
+
+export const BUILTIN_SKILLS: BuiltinSkill[] = [
+  {
+    slug: "bops-work-on-an-app",
+    name: "Work on an app with Ingot",
+    description: "Read before you build or change an app: its working folder, ingot status, diff and commit, what never goes in a commit, and Ingot's tools for Claude Code and Codex.",
+    label: APPS_LABEL,
+    body: WORK_ON_AN_APP.join("\n"),
+  },
+  {
+    slug: "bops-several-people-pushing",
+    name: "When several people push at once",
+    description: "Read when ingot commit or a git push is refused because main moved on: pull, resolve the yours and theirs markers keeping both changes, run it, commit again. Never force.",
+    label: APPS_LABEL,
+    body: SEVERAL_PEOPLE.join("\n"),
+  },
+  {
+    slug: "bops-deploy-an-app",
+    name: "Deploy an app",
+    description: "Read before you put an app live with deploy_app: when to, what a deploy does, how it went, and what to do when it fails or an older changeset should be live again.",
+    label: APPS_LABEL,
+    body: DEPLOY_AN_APP.join("\n"),
+  },
+  {
+    slug: "bops-web-app-that-deploys",
+    name: "Make a web app that deploys cleanly",
+    description: "Read when you make a new web app or one won't deploy: how Orgo detects and builds it, listening on $PORT and 0.0.0.0, answering / quickly, orgo.json, and secrets as variables.",
+    label: APPS_LABEL,
+    body: WEB_APP_THAT_DEPLOYS.join("\n"),
+    files: [
+      { path: "examples/node-app/server.js", content: NODE_SERVER.join("\n") },
+      { path: "examples/node-app/package.json", content: NODE_PACKAGE.join("\n") },
+    ],
+  },
+  {
+    slug: "bops-app-history",
+    name: "Read an app's history",
+    description: "Read when someone asks what changed in an app, when, or who changed it: ingot log and show, comparing two changesets, an older version, and putting an older one live.",
+    label: APPS_LABEL,
+    body: APP_HISTORY.join("\n"),
+  },
+  {
+    slug: "bops-launch-app-locally",
+    name: "Launch an app locally",
+    description: "Read when someone asks to run, launch or try an app on your computer: Screen, Local, Preview and Published, bops-local for a workspace app at its own localhost address, signing in, and your screen.",
+    label: APPS_LABEL,
+    body: LAUNCH_LOCALLY.join("\n"),
+  },
+  {
+    slug: "bops-preview-on-a-public-url",
+    name: "Test on a public preview URL",
+    description: "Read when someone wants to test an app publicly or share a link before it's live: its build and start commands, signing in on the preview address, and deploying to the Preview.",
+    label: APPS_LABEL,
+    body: PREVIEW_ON_A_PUBLIC_URL.join("\n"),
+  },
+];
+
+/**
+ * Bops' own skills an account has, and their labels: those under APPS_LABEL only where apps are open
+ * (`apps`: lib/apps-access.ts appsOpen), so anyone else's bots never list, read or get them on a computer,
+ * and the Skills page doesn't show them.
+ */
+export const builtinSkills = (apps: boolean): BuiltinSkill[] => (apps ? BUILTIN_SKILLS : BUILTIN_SKILLS.filter((s) => !sameLabel(s.label, APPS_LABEL)));
+export const builtinLabels = (apps: boolean): BuiltinLabel[] => (apps ? BUILTIN_LABELS : BUILTIN_LABELS.filter((l) => !sameLabel(l.label, APPS_LABEL)));

@@ -1,0 +1,409 @@
+"use client";
+
+import { screenNo as screenNumber } from "@/lib/screens";
+import { askKind, needsYou } from "@/lib/asks";
+import { useEffect, useRef, useState } from "react";
+import { live, MAIN_WORKSPACE, WAITING_FOR_OK, waitingAsks, waitsForOk, workspaceOf, type AppState, type Bot, type Chat, type Logo, type Session } from "@/lib/types";
+import { Mascot, Spinner } from "./mascot";
+import { stateArrived } from "./state-arrival";
+import { answersAsk, readOnlyLine, writesThread } from "@/lib/shared";
+export { botBezel, botOnInk, botWash, DESKTOP_BG } from "@/lib/look";
+
+/* Shared helpers and small pieces used across the app. Values follow the Paper designs. */
+
+/** Every state fetcher on the page, so an action can pull fresh state the moment it lands. */
+const refreshers = new Set<() => Promise<void>>();
+export const refreshState = () => Promise.all([...refreshers].map((f) => f()));
+
+/** Sends an action, then refreshes state before resolving, so the UI never shows the old world. */
+export const post = async (url: string, body: unknown = {}, method = "POST") => {
+  const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  await refreshState();
+  return res;
+};
+
+export const screenNo = (display?: number) => (display === undefined ? undefined : screenNumber(display));
+
+/** A choice card in Settings (Where your bots work, Where routines run): picked, or not; and its radio. */
+export const option = (on: boolean) => (on ? "bg-[#FBFFE0] shadow-[0_0_0_1.5px_#0A0A0A]" : "shadow-[0_0_0_1px_#E6E6E3] hover:bg-[#FCFCFB]");
+export const radio = (on: boolean) =>
+  on ? (
+    <span className="flex size-4 items-center justify-center rounded-full bg-ink">
+      <span className="size-1.5 rounded-full bg-highlighter" />
+    </span>
+  ) : (
+    <span className="size-4 rounded-full shadow-[inset_0_0_0_1.5px_#C9C9C6]" />
+  );
+
+export function ago(t: number) {
+  const s = Math.max(0, Math.round((Date.now() - t) / 1000));
+  if (s < 60) return "now";
+  if (s < 3600) return `${Math.round(s / 60)}m`;
+  if (s < 86400) return `${Math.round(s / 3600)}h`;
+  return new Date(t).toLocaleDateString(undefined, { weekday: "short" });
+}
+
+export function duration(from: number, to = Date.now()) {
+  const s = Math.max(0, Math.round((to - from) / 1000));
+  if (s < 60) return `${s}s`;
+  if (s < 3600) return `${Math.round(s / 60)}m`;
+  return `${Math.floor(s / 3600)}h ${Math.round((s % 3600) / 60)}m`;
+}
+
+export const clockTime = (t: number) => new Date(t).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+
+/** A quiet routine's thread that found nothing (lib/types.ts, shared with the server): lists of threads leave it out. */
+export { quietNothing } from "@/lib/types";
+
+export { needsYou };
+
+export function useAppState() {
+  const [state, setState] = useState<AppState | null>(null);
+  const version = useRef(-1);
+  useEffect(() => {
+    let stop = false;
+    let sent = 0;
+    let applied = 0;
+    const fetchState = async () => {
+      const seq = ++sent;
+      try {
+        // The version we have: an unchanged state comes back as just the version (no 400 KB to parse).
+        const res = await fetch(`/api/state?v=${version.current}`, { cache: "no-store" });
+        const json = (await res.json()) as { version: number; state?: AppState };
+        if (seq < applied) return; // a newer fetch already landed
+        applied = seq;
+        if (json.state && json.version !== version.current) {
+          version.current = json.version;
+          stateArrived(Date.now());
+          setState(json.state);
+        }
+      } catch {
+        /* retry next tick */
+      }
+    };
+    // Every 0.9 seconds while the window is on show. Hidden (covered or minimized), nothing is drawn, so every
+    // 5 seconds is enough for a chime or a notification; read at once when it's back. A tick in flight
+    // as it comes back ends there: only the newest chain goes on.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let chain = 0;
+    const tick = async (mine: number) => {
+      await fetchState();
+      if (!stop && mine === chain) timer = setTimeout(() => void tick(mine), document.hidden ? 5000 : 900);
+    };
+    const back = () => {
+      if (document.hidden) return;
+      clearTimeout(timer);
+      void tick(++chain);
+    };
+    refreshers.add(fetchState);
+    document.addEventListener("visibilitychange", back);
+    void tick(chain);
+    return () => {
+      stop = true;
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", back);
+      refreshers.delete(fetchState);
+    };
+  }, []);
+  return state;
+}
+
+/** Re-render every second so relative times and timers stay current. */
+export function useNow(ms = 1000) {
+  const [, setNow] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), ms);
+    return () => clearInterval(t);
+  }, [ms]);
+}
+
+export function chatName(c: Chat, bots: Bot[]) {
+  if (c.title) return c.title;
+  const members = c.botIds.map((b) => bots.find((x) => x.id === b)?.name ?? b);
+  return c.kind === "bot" ? members[0] : members.join(", ");
+}
+
+/**
+ * In a workspace shared with the user, whether what thread `s` waits on is theirs to answer too (with Write on its
+ * bot): an answer or an OK they may give (lib/shared.ts writesThread, answersAsk), never a sign in at the owner's
+ * screen, where it runs, an OK on the owner's phone or a brain's sign in. False in the user's own workspace.
+ */
+export function memberAnswers(state: AppState, s: Session): boolean {
+  if (!state.shared || !writesThread(state, s) || s.blocker || (s.askWhere && live(s))) return false;
+  const kind = askKind(s);
+  if (kind === "elsewhere" || kind === "brain") return false;
+  return !waitsForOk(s, state) || waitingAsks(state, s.id).some((a) => answersAsk(state, a));
+}
+
+/**
+ * `owner`: a shared workspace's thread (lib/shared.ts), whose asks wait on its owner, never the viewer. `member`: one
+ * whose asks a member with Write answers too (memberAnswers): said as waiting on anyone, not on the owner or on them.
+ * `okWait`: a request of its for the user's OK is unanswered (lib/types.ts waitsForOk).
+ */
+export function StatusIcon({ session: s, size = 13, dark, owner, member, okWait }: { session: Session; size?: number; dark?: boolean; owner?: boolean; member?: boolean; okWait?: boolean }) {
+  // Each state says what it means on hover (the tooltip layer reads data-tip).
+  // Waiting on the user (where it runs, or their OK: lib/server/permission.ts) shows as needing them, not working.
+  const waits = (live(s) && needsYou(s) && !!s.askWhere) || (live(s) && !!okWait);
+  const tip =
+    s.askWhere && live(s)
+      ? owner
+        ? "Waiting for the owner: their Mac or the cloud?"
+        : "Waiting for you: your Mac or the cloud?"
+      : waits
+        ? owner
+          ? "Waiting for the owner's OK"
+          : member
+            ? "Waiting for an OK"
+            : WAITING_FOR_OK
+        : live(s)
+          ? "Working on it"
+          : needsYou(s)
+            ? owner
+              ? "Needs the owner"
+              : member
+                ? "Needs an answer"
+                : "Needs you"
+            : s.status === "done"
+              ? "Done"
+              : `Didn't finish${s.error ? `: ${s.error.slice(0, 80)}` : ""}`;
+  const icon = live(s) && !waits ? (
+    <Spinner size={size} color={dark ? "#0A0A0A" : "#3A3A38"} />
+  ) : needsYou(s) || waits ? (
+    <span className="block rounded-full bg-highlighter shadow-[0_0_0_1.5px_#0A0A0A]" style={{ width: size - 3, height: size - 3 }} />
+  ) : s.status === "done" ? (
+    <svg width={size} height={size} viewBox="0 0 14 14" className="block">
+      <path d="M3 7.5l2.5 2.5L11 4.5" fill="none" stroke="#2BB673" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ) : (
+    <svg width={size} height={size} viewBox="0 0 14 14" className="block">
+      <path d="M4 4l6 6M10 4l-6 6" fill="none" stroke="#9A9A98" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+  // The same words for a screen reader, so the state is never a glyph only.
+  return (
+    <span data-tip={tip} role="img" aria-label={tip} className="flex shrink-0 items-center justify-center">
+      {icon}
+    </span>
+  );
+}
+
+/**
+ * One avatar for a chat: the bot, or two stacked bots for a group (the sidebar's rows and the chat's
+ * header), each showing what it's doing as it does it, thinking over a reply in this chat. The chat's
+ * header passes `life` and `listening` (Mascot's): the sidebar's rows stay calm.
+ */
+export function ChatAvatar({ chat, bots, size = 44, life, listening }: { chat: Chat; bots: Bot[]; size?: number; life?: boolean; listening?: boolean }) {
+  const members = chat.botIds.map((b) => bots.find((x) => x.id === b)).filter(Boolean) as Bot[];
+  if (chat.kind === "bot" && members[0]) return <Mascot botId={members[0].id} color={members[0].color} size={size} live chatId={chat.id} life={life} listening={listening} />;
+  const small = Math.round(size * 0.68);
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      {members.slice(0, 2).map((m, i) => (
+        <div key={m.id} className="absolute" style={{ left: i * (size - small), top: i * (size - small) }}>
+          <Mascot botId={m.id} color={m.color} size={small} live chatId={chat.id} life={life} listening={listening} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function MonitorIcon({ size = 12, color = "#8A8A88" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" className="shrink-0">
+      <rect x="1.5" y="2" width="11" height="7.5" rx="1.5" fill="none" stroke={color} strokeWidth="1.3" />
+      <path d="M5 12h4" fill="none" stroke={color} strokeWidth="1.3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** A side's show/hide toggle: a window with that side's bar, filled while it's shown (the sidebar on the left, the panel on the right). */
+export function SideToggleIcon({ side, open }: { side: "left" | "right"; open: boolean }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+      <rect x="1.5" y="2.5" width="13" height="11" rx="2" fill="none" stroke="#3A3A38" strokeWidth="1.3" />
+      <path d={side === "left" ? "M6 2.5v11" : "M10 2.5v11"} stroke="#3A3A38" strokeWidth="1.3" />
+      {open && <rect x={side === "left" ? 2.1 : 10.6} y="3.1" width="3.3" height="9.8" fill="#3A3A38" opacity="0.25" />}
+    </svg>
+  );
+}
+
+export function RoundButton({ label, onClick, children, active }: { label: string; onClick: () => void; children: React.ReactNode; active?: boolean }) {
+  return (
+    <button
+      title={label}
+      aria-label={label}
+      onClick={onClick}
+      className={`flex size-[34px] shrink-0 items-center justify-center rounded-full shadow-[0_0_0_1px_#E6E6E3] ${active ? "bg-[#EEEEEC]" : "bg-white hover:bg-[#FCFCFB]"}`}
+    >
+      <svg width="15" height="15" viewBox="0 0 16 16">
+        {children}
+      </svg>
+    </button>
+  );
+}
+
+/**
+ * Something needs the user: a small amber dot with an exclamation mark. On their initials while this Mac
+ * still needs something (setup.tsx), and on Full access's one warning in the People sheet (members.tsx).
+ */
+export function NeedsYouDot({ className = "" }: { className?: string }) {
+  return (
+    <span className={`flex size-4 shrink-0 items-center justify-center rounded-full bg-[#E59A0B] ${className}`}>
+      <svg width="8" height="8" viewBox="0 0 8 8">
+        <path d="M4 1.3v3.1" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="4" cy="6.3" r="0.85" fill="#FFFFFF" />
+      </svg>
+    </span>
+  );
+}
+
+/** The round X the Account sheet closes with, for a tab on the right that reads as a page (the Vault, a bot's profile). */
+export function CloseButton({ onClick, className = "" }: { onClick: () => void; className?: string }) {
+  return (
+    <button onClick={onClick} aria-label="Close" className={`flex size-8 shrink-0 items-center justify-center rounded-full shadow-[0_0_0_1px_#E6E6E3] hover:bg-[#F7F7F6] ${className}`}>
+      <svg width="12" height="12" viewBox="0 0 12 12">
+        <path d="M2 2l8 8M10 2l-8 8" fill="none" stroke="#0A0A0A" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    </button>
+  );
+}
+
+
+/** A service's real logo on a white tile (or the logo's own tile), else its letter on its color. */
+export function BrandTile({ item, size }: { item: { name: string; color: string; glyph: string; logo?: Logo }; size: number }) {
+  const radius = Math.round(size * 0.26);
+  if (item.logo?.tile)
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={item.logo.src} alt={item.name} width={size} height={size} className="shrink-0" style={{ borderRadius: radius }} />;
+  if (item.logo)
+    return (
+      <span className="flex shrink-0 items-center justify-center bg-white shadow-[0_0_0_1px_#0000001A]" style={{ width: size, height: size, borderRadius: radius }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={item.logo.src} alt={item.name} width={Math.round(size * 0.66)} height={Math.round(size * 0.66)} className="object-contain" />
+      </span>
+    );
+  return (
+    <span className="flex shrink-0 items-center justify-center font-bold text-white" style={{ width: size, height: size, borderRadius: radius, background: item.color, fontSize: Math.round(size * 0.4) }}>
+      {item.glyph}
+    </span>
+  );
+}
+
+/** The workspace the user is looking at, and its team (the main bot first). */
+/**
+ * The one line in place of what the viewer can't do, while a workspace shared with the user is open
+ * (AppState.shared), for these bots (lib/shared.ts readOnlyLine): a bot at Read, a group with one, or (no
+ * bots) what's only ever the owner's to change there.
+ */
+export function ReadOnlyLine({ state, botIds = [], className = "" }: { state: AppState; botIds?: readonly string[]; className?: string }) {
+  if (!state.shared) return null;
+  return (
+    <div data-read-only className={`rounded-[14px] bg-[#F7F7F5] px-3.5 py-2.5 text-center text-[13px] leading-[18px] text-[#6B6B6B] ${className}`}>
+      {readOnlyLine(botIds, state.shared.levels)}
+    </div>
+  );
+}
+
+export const currentWorkspace = (state: AppState) => state.workspace ?? state.workspaces?.[0]?.id ?? MAIN_WORKSPACE;
+export const teamOf = (state: AppState) => state.bots.filter((b) => workspaceOf(b) === currentWorkspace(state));
+export const chatInWorkspace = (state: AppState, c: Chat) => (c.workspaceId ?? workspaceOf(state.bots.find((b) => b.id === c.botIds[0]))) === currentWorkspace(state);
+
+/**
+ * Whether this is a self-hosted install (/api/config): Bops runs every service for you otherwise, so
+ * Settings shows only what's yours to set, and there are no usage events to mention.
+ */
+export function useSelfHosted() {
+  const [selfHosted, setSelfHosted] = useState(false);
+  useEffect(() => {
+    void fetch("/api/config")
+      .then((r) => r.json())
+      .then((c: { selfHosted?: boolean }) => setSelfHosted(!!c.selfHosted));
+  }, []);
+  return selfHosted;
+}
+
+/**
+ * Asking first, in place: the button that asked turns into its question ("Remove Jamie? Remove, Cancel"), the way a
+ * bot's Delete asks (bot-panel.tsx DeleteBot), never a dialog over the app. `danger` reds the action. Esc is Cancel,
+ * and only Cancel (it's heard before anything behind it). `focus`: which button the keyboard starts on. `compact`:
+ * the smaller one, for a menu or a card's row. `children`: more under the line (what goes with it).
+ */
+export function AskInPlace({
+  title,
+  line,
+  action,
+  danger = false,
+  busy = false,
+  error,
+  focus = "action",
+  compact = false,
+  cancelLabel = "Cancel",
+  other,
+  children,
+  onConfirm,
+  onCancel,
+}: {
+  title: string;
+  line?: string;
+  action: string;
+  danger?: boolean;
+  busy?: boolean;
+  error?: string | null;
+  focus?: "action" | "cancel";
+  compact?: boolean;
+  cancelLabel?: string;
+  /** A third way, at the start of the row (Pay another way). */
+  other?: React.ReactNode;
+  children?: React.ReactNode;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const first = useRef<HTMLButtonElement>(null);
+  const cancel = useRef<HTMLButtonElement>(null);
+  useEffect(() => (focus === "cancel" ? cancel : first).current?.focus({ preventScroll: true }), [focus]);
+  const last = useRef({ busy, onCancel });
+  useEffect(() => {
+    last.current = { busy, onCancel };
+  });
+  useEffect(() => {
+    const esc = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (!last.current.busy) last.current.onCancel();
+    };
+    document.addEventListener("keydown", esc, true);
+    return () => document.removeEventListener("keydown", esc, true);
+  }, []);
+  const pill = `rounded-full font-medium leading-4 disabled:opacity-50 ${compact ? "px-3 py-1.5 text-[12.5px]" : "px-3.5 py-1.5 text-[13px]"}`;
+  return (
+    <div
+      role="group"
+      aria-label={title}
+      data-ask-in-place
+      onClick={(e) => e.stopPropagation()}
+      className={`motion-rise-in flex w-full flex-col ${compact ? "gap-2 rounded-[12px] px-3 py-2.5" : "gap-2.5 rounded-2xl px-4 py-3"} ${danger ? "bg-[#FEF3F2] shadow-[0_0_0_1px_#FECDCA]" : "bg-[#F7F7F6] shadow-[0_0_0_1px_#E6E6E3]"}`}
+    >
+      <div className="flex flex-col gap-0.5">
+        <span className={`font-semibold text-ink ${compact ? "text-[13px] leading-[18px]" : "text-[14px] leading-5"}`}>{title}</span>
+        {line && <span className={`text-[#3A3A38] ${compact ? "text-[12px] leading-4" : "text-[13px] leading-[18px]"}`}>{line}</span>}
+      </div>
+      {children}
+      {error && (
+        <span role="alert" className="text-[12px] leading-4 text-[#B42318]">
+          {error}
+        </span>
+      )}
+      <div className="flex flex-wrap items-center gap-2">
+        {other}
+        <span className="flex-1" />
+        <button ref={cancel} type="button" disabled={busy} onClick={onCancel} className={`${pill} bg-white shadow-[0_0_0_1px_#E6E6E3] hover:bg-[#FCFCFB]`}>
+          {cancelLabel}
+        </button>
+        <button ref={first} type="button" disabled={busy} onClick={onConfirm} className={`${pill} flex min-w-[72px] items-center justify-center text-white ${danger ? "bg-[#B42318]" : "bg-ink"}`}>
+          {busy ? <Spinner size={12} color="#FFFFFF" /> : action}
+        </button>
+      </div>
+    </div>
+  );
+}

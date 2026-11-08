@@ -1,0 +1,844 @@
+import type { IncomingMessage, ServerResponse } from "node:http";
+import { promisify } from "node:util";
+import { gunzip, gzip } from "node:zlib";
+import type pg from "pg";
+import type { CloudUser } from "./auth.ts";
+import { accountDeleted, query, sweepDeletedUsers, tx } from "./db.ts";
+import { HttpError, readBody, sendJson, type Route } from "./http.ts";
+import { afterStateUpload } from "./plans.ts";
+import { appVersionOf, olderThan } from "./app-version.ts";
+import { botIdsOn, carriesPasswords, chatsOn, cloudChatOn, computersMessage, forComputer, memberStampKept, runsBy, threadsOf, withHeldBack, writeDenials } from "./computer-scope.ts";
+import {
+  BOPS_DEVICE_HEADER,
+  COMPUTER_NOT_ALLOWED,
+  MEMBER_STAMP,
+  BOPS_PROTOCOL_HEADER,
+  BOPS_STATE_LEVEL_HEADER,
+  BOPS_USER_HEADER,
+  ROUTINES_STOP_LEVEL,
+  STATE_CONFLICT,
+  STATE_PROTOCOL,
+  STATE_TOO_NEW,
+  WRONG_USER,
+  type CloudMessageRow,
+  type CloudMessagesPage,
+  type CloudState,
+  type CloudStateBody,
+  type CloudStateConflict,
+  type CloudStateHead,
+} from "./protocol.ts";
+import { dropOlderMac, notifyMac } from "./tunnel.ts";
+import { messagesWritten, stateWritten } from "./live.ts";
+import { forgetTelemetryChoice } from "./analytics.ts";
+import { autoRoute, chatAutoFor, keepChatOn, nudgeRunners, recheckTurns, routedWorkspaces, turnRowsMayWrite } from "./turns.ts";
+
+/**
+ * The app's state, kept here for each user (protocol.ts, "The app's state in Bops Cloud"). Owner: edge builder.
+ *
+ * A signed-in Mac keeps no state of its own: it loads it from here at sign-in and writes each change
+ * back (lib/server/persist-cloud.ts). The chat messages are rows in bops.chat_messages, written one by
+ * one (POST /v1/messages); everything else is one blob in bops.app_state (PUT /v1/state), written only
+ * over the version it was read at, so two Macs of one user can't write over each other: the second
+ * gets 409 with what's there now, merges, and writes again. After every write the user's connected Mac
+ * hears of it (a "state" frame), every device watching one of the user's workspaces live hears of it
+ * when that workspace's part changed (live.ts), and the others look now and then (GET /v1/state/head).
+ *
+ * Builds from before upload the whole state, messages and all, as a backup (CloudStateBody). They're
+ * still taken until a newer build writes for the user (the row's protocol becomes 2); then they're
+ * refused (426), so an old build can't write over the newer one's work. Their GET gets the messages
+ * put back in.
+ *
+ * Each app also says which state it may be given (BOPS_STATE_LEVEL_HEADER, 3 or more from 0.0.29 on, 4
+ * once routines may run on a cloud runner; none is 2), and the row keeps the highest that wrote (its
+ * protocol). Once that's above an app's, every call of that app's for the user's state is refused
+ * (426 STATE_TOO_NEW), reads and merges as well as
+ * writes, but for its copy before Start over (postBackup), and so is its tunnel (tunnel.ts: one it
+ * holds when the row goes above it is closed), and its notices say to update (notices.ts): 0.0.28 runs a
+ * routine that runs every so often or before meetings over and over, a monthly one daily, and lists a
+ * bot with an app it has no access to as able to use it. What such a Mac changes meanwhile waits on it
+ * (persist-cloud.ts keeps it) and goes up once it's updated. A user whose Macs are all older is never
+ * marked, and nothing changes for them.
+ *
+ * Every call that's for a user's state names that user (X-Bops-User), and it must be the key's: a Mac
+ * that signed in as someone else since can't write into the wrong account (409 wrong_user).
+ *
+ * The cloud writes messages of its own too (writeMessages): one sent from the phone and the main
+ * bot's answer to it (cloud/agent.ts), read from here by the user's Macs like any other.
+ *
+ * A computer's runner (auth.ts CloudUser.computer) writes only what computer-scope.ts lets it: its own
+ * threads, its bots' routines' runs and how its bots are doing (a write that changes anything else is 403
+ * computer_not_allowed, with what it was), never a state its user hasn't got yet, and chat messages only
+ * in its bots' chats, the only ones it reads too.
+ */
+
+/** A state upload or a batch of messages, as sent and once unzipped. */
+const MAX_BODY = 20 * 1024 * 1024;
+/** One message, as JSON. */
+const MAX_MESSAGE = 256 * 1024;
+const PAGE = 2000;
+const MAX_PAGE = 5000;
+/** How long a removed message's row stays, so a Mac that was away hears it went. */
+export const REMOVED_KEEP_DAYS = 30;
+const SWEEP_MS = 3600_000;
+
+const unzip = promisify(gunzip);
+const zip = promisify(gzip);
+
+/** JSON for a JSONB column. Postgres can't keep NUL in JSONB text (screen text and pasted mail sometimes have one), so it's dropped, as lib/server/persist-pg.ts does. */
+export const toJson = (value: unknown) => JSON.stringify(value, (_key, v) => (typeof v === "string" && v.includes("\0") ? v.replaceAll("\0", "") : v));
+
+type Row = { version: number; protocol: number; writer: string | null; state: Record<string, unknown>; empty: boolean };
+
+async function readRow(userId: string): Promise<Row | null> {
+  const r = await query<{ state: Record<string, unknown>; version: string; protocol: number; writer: string | null }>(
+    "SELECT state, version, protocol, writer FROM bops.app_state WHERE user_id = $1",
+    [userId],
+  );
+  const row = r.rows[0];
+  if (!row) return null;
+  return { version: Number(row.version), protocol: row.protocol, writer: row.writer, state: row.state, empty: !row.state || Object.keys(row.state).length === 0 };
+}
+
+/**
+ * The user's state without its messages, or null. The empty row other tables need before the first
+ * upload (db.ts ensureUserRow) doesn't count. What the cloud reads to answer calls while the Mac is
+ * away (calls.ts, voice.ts, hooks.ts, provision.ts, handles.ts): none of them needs a message.
+ */
+export async function loadState(userId: string): Promise<{ version: number; state: unknown } | null> {
+  const row = await readRow(userId);
+  return row && !row.empty ? { version: row.version, state: row.state } : null;
+}
+
+/** The newest message write's seq for the user (0: none yet). */
+async function lastSeq(userId: string, c: pg.PoolClient | null = null): Promise<number> {
+  const sql = "SELECT COALESCE(max(seq), 0) AS seq FROM bops.chat_messages WHERE user_id = $1";
+  const r = c ? await c.query<{ seq: string }>(sql, [userId]) : await query<{ seq: string }>(sql, [userId]);
+  return Number(r.rows[0].seq);
+}
+
+/**
+ * Where a reader that has everything up to now goes on from: the user's newest message write's seq, or
+ * the highest seq swept for good when that's newer (its rows are gone), so a cursor from here never has
+ * to start over (sweptSeq). 0: none yet.
+ */
+export async function newestSeq(userId: string): Promise<number> {
+  const r = await query<{ seq: string }>(
+    `SELECT GREATEST((SELECT COALESCE(max(seq), 0) FROM bops.chat_messages WHERE user_id = $1),
+                     (SELECT COALESCE(max(swept_seq), 0) FROM bops.app_state WHERE user_id = $1)) AS seq`,
+    [userId],
+  );
+  return Number(r.rows[0].seq);
+}
+
+async function head(userId: string): Promise<CloudStateHead> {
+  const row = await readRow(userId);
+  return { version: row?.version ?? 0, seq: await lastSeq(userId), writer: row?.writer ?? null };
+}
+
+/** The user's live messages, oldest first: the order the app keeps them in. */
+async function liveMessages(userId: string): Promise<Record<string, unknown>[]> {
+  const r = await query<{ json: Record<string, unknown> }>("SELECT json FROM bops.chat_messages WHERE user_id = $1 AND json IS NOT NULL ORDER BY at, seq", [userId]);
+  return r.rows.map((x) => x.json);
+}
+
+/**
+ * The user's Mac hears that their state changed (it reads what did). Best effort, after the write. With
+ * `messages` (the chats written into, by whom), the workspaces watched live that hold them hear it too.
+ */
+export function announce(userId: string, messages?: { chats: string[]; by: string | null }) {
+  void head(userId)
+    .then((h) => {
+      notifyMac(userId, { t: "state", version: h.version, seq: h.seq });
+      if (messages) messagesWritten(userId, messages.chats, h.seq, messages.by);
+      // A runner listening for turns reads it now too (one waiting on an OK hears the answer: turns.ts).
+      nudgeRunners(userId);
+    })
+    .catch(() => {});
+}
+
+const headerOf = (req: IncomingMessage, name: string) => {
+  const v = req.headers[name];
+  return (Array.isArray(v) ? v[0] : v)?.trim() || "";
+};
+const newBuild = (req: IncomingMessage) => headerOf(req, BOPS_PROTOCOL_HEADER) === String(STATE_PROTOCOL);
+const deviceOf = (req: IncomingMessage) => headerOf(req, BOPS_DEVICE_HEADER).slice(0, 64) || null;
+
+/** Which state the call's app may be given: what it says (BOPS_STATE_LEVEL_HEADER), else 2 (every app before 0.0.29). */
+export function stateLevelOf(req: IncomingMessage): number {
+  const said = headerOf(req, BOPS_STATE_LEVEL_HEADER);
+  return /^\d{1,4}$/.test(said) ? Math.max(Number(said), STATE_PROTOCOL) : STATE_PROTOCOL;
+}
+
+const TOO_NEW = "Another of your Macs is on a newer Bops. Update Bops on this Mac to keep your chats in sync.";
+
+/** 426 when a newer app than the call's wrote the user's state (`protocol`, the row's). */
+function requireLevel(req: IncomingMessage, protocol: number) {
+  if (protocol > stateLevelOf(req)) throw new HttpError(426, TOO_NEW, { code: STATE_TOO_NEW });
+}
+
+/** Whether a newer app than the call's wrote the user's state: its state's calls and its tunnel are refused, and it's told to update. */
+export async function stateTooNew(req: IncomingMessage, userId: string): Promise<boolean> {
+  const r = await query<{ protocol: number }>("SELECT protocol FROM bops.app_state WHERE user_id = $1", [userId]);
+  return (r.rows[0]?.protocol ?? 0) > stateLevelOf(req);
+}
+
+/** Each user's state level (app_state.protocol) as last read for behindState. A level only goes up, so one read under a minute ago does. */
+const levels = new Map<string, { protocol: number; at: number }>();
+const LEVEL_FRESH_MS = 60_000;
+
+/** The first release at ROUTINES_STOP_LEVEL. */
+const ROUTINES_STOP_VERSION = "0.0.30";
+
+/**
+ * Whether the call is from a Mac app that goes on with its routines when it's refused the user's state
+ * (below ROUTINES_STOP_LEVEL). Its level when it says one; else its version, as 0.0.29's OpenAI and treg
+ * calls say only that. A call that says neither isn't taken for one (block_below keeps those out).
+ */
+function runsOnWhenRefused(req: IncomingMessage): boolean {
+  if (headerOf(req, BOPS_STATE_LEVEL_HEADER)) return stateLevelOf(req) < ROUTINES_STOP_LEVEL;
+  const version = appVersionOf(req);
+  return !!version && olderThan(version, ROUTINES_STOP_VERSION);
+}
+
+/**
+ * Whether the call is from an app that can't be given the user's state any more because an app at
+ * ROUTINES_STOP_LEVEL wrote it, and that doesn't stop its routines for that (it goes on from its copy in
+ * memory, running what the newer app or a computer's runner runs too). Such an app is refused the
+ * proxies (server.ts appCheck), so its runs fail instead of running a second time; its state's calls and
+ * its notices still answer, and those say to update. A user whose Macs are all older (state at level 3
+ * or below) is never refused here. A failed read refuses nothing.
+ */
+export async function behindState(req: IncomingMessage, userId: string): Promise<boolean> {
+  if (!runsOnWhenRefused(req)) return false;
+  const marked = (protocol: number) => protocol >= ROUTINES_STOP_LEVEL;
+  const known = levels.get(userId);
+  if (known && (marked(known.protocol) || Date.now() - known.at < LEVEL_FRESH_MS)) return marked(known.protocol);
+  const r = await query<{ protocol: number }>("SELECT protocol FROM bops.app_state WHERE user_id = $1", [userId]).catch(() => null);
+  if (!r) return false;
+  const protocol = r.rows[0]?.protocol ?? 0;
+  if (levels.size > 50_000) levels.clear();
+  levels.set(userId, { protocol, at: Date.now() });
+  return marked(protocol);
+}
+
+/** What an app behindState refuses is told: the same as its state's calls, as OpenAI's SDK reads it through /proxy/openai. */
+export function behindRefusal(path: string): HttpError {
+  const extra = path.startsWith("/proxy/openai/") ? { error: { message: TOO_NEW, code: STATE_TOO_NEW } } : {};
+  return new HttpError(426, TOO_NEW, { code: STATE_TOO_NEW, ...extra });
+}
+
+/** The same, refused: for the calls whose answer holds none of the blob, where a write landing just after the check doesn't matter. */
+async function requireLevelFor(req: IncomingMessage, userId: string) {
+  if (await stateTooNew(req, userId)) throw new HttpError(426, TOO_NEW, { code: STATE_TOO_NEW });
+}
+
+/** The user the call names must be the key's. `required`: calls only a newer build makes must name one (and the phone's, cloud/agent.ts). */
+export function checkUser(req: IncomingMessage, user: CloudUser, required: boolean) {
+  const named = headerOf(req, BOPS_USER_HEADER);
+  if (!named) {
+    if (required) throw new HttpError(400, `Name the user (${BOPS_USER_HEADER})`);
+    return;
+  }
+  if (named !== user.id) throw new HttpError(409, "This Orgo sign-in is another account's", { code: WRONG_USER });
+}
+
+/** The request body, unzipped when the Mac gzipped it. Past 20 MB, sent or unzipped, it's refused (413). */
+async function bodyOf(req: IncomingMessage): Promise<Buffer> {
+  const raw = await readBody(req, MAX_BODY);
+  const encoding = (req.headers["content-encoding"] ?? "identity").trim().toLowerCase();
+  if (encoding === "identity") return raw;
+  if (encoding !== "gzip") throw new HttpError(415, "Send the state as plain JSON or gzipped");
+  try {
+    return await unzip(raw, { maxOutputLength: MAX_BODY });
+  } catch (e) {
+    if ((e as { code?: string }).code === "ERR_BUFFER_TOO_LARGE") throw new HttpError(413, "Request too large");
+    throw new HttpError(400, "Body isn't valid gzip");
+  }
+}
+
+function jsonOf<T>(data: Buffer): T {
+  try {
+    return JSON.parse(data.toString("utf8")) as T;
+  } catch {
+    throw new HttpError(400, "Body isn't JSON");
+  }
+}
+
+const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
+const wholeNumber = (v: unknown): v is number => typeof v === "number" && Number.isSafeInteger(v) && v >= 0;
+
+/** JSON, gzipped for a client that asks: a whole state or a page of messages runs to megabytes, gzipped a tenth of that. */
+export async function sendZipped(req: IncomingMessage, res: ServerResponse, status: number, body: unknown) {
+  const json = Buffer.from(JSON.stringify(body));
+  const gzipped = /\bgzip\b/i.test(req.headers["accept-encoding"] ?? "");
+  const data = gzipped ? await zip(json) : json;
+  res.writeHead(status, {
+    "content-type": "application/json",
+    "content-length": String(data.length),
+    "cache-control": "no-store",
+    vary: "accept-encoding",
+    ...(gzipped ? { "content-encoding": "gzip" } : {}),
+  });
+  res.end(data);
+}
+
+/** The blob as it's kept: never with the messages, which have their own rows. */
+function blobOf(state: Record<string, unknown>) {
+  return Object.fromEntries(Object.entries(state).filter(([k]) => k !== "messages"));
+}
+
+/** A message as it's written: an object with an id, a chat and a time, small enough. */
+type Msg = { id: string; chatId: string; at: number; json: string };
+function messageOf(m: unknown): Msg {
+  if (!isObject(m) || typeof m.id !== "string" || !m.id || m.id.length > 200) throw new HttpError(400, "Each message needs an id");
+  const json = toJson(m);
+  if (Buffer.byteLength(json) > MAX_MESSAGE) throw new HttpError(413, `Message ${m.id} is too big`);
+  return { id: m.id, chatId: typeof m.chatId === "string" ? m.chatId : "", at: typeof m.at === "number" && Number.isFinite(m.at) ? Math.floor(m.at) : 0, json };
+}
+
+/** Last one wins when an id comes twice (Postgres can't update one row twice in a statement). */
+const lastOfEach = (msgs: Msg[]) => [...new Map(msgs.map((m) => [m.id, m])).values()];
+
+/**
+ * Write messages (each replacing its row) on the user's locked row. A row that's already the same
+ * keeps its seq, so no Mac reads it again for nothing.
+ */
+async function upsertMessages(c: pg.PoolClient, userId: string, msgs: Msg[]) {
+  if (!msgs.length) return;
+  const list = lastOfEach(msgs);
+  await c.query(
+    `INSERT INTO bops.chat_messages (user_id, id, chat_id, at, json)
+     SELECT $1, t.id, t.chat_id, t.at, t.json::jsonb
+     FROM unnest($2::text[], $3::text[], $4::bigint[], $5::text[]) WITH ORDINALITY AS t(id, chat_id, at, json, n)
+     ORDER BY t.n
+     ON CONFLICT (user_id, id) DO UPDATE
+       SET chat_id = EXCLUDED.chat_id, at = EXCLUDED.at, json = EXCLUDED.json, seq = EXCLUDED.seq, updated_at = now()
+       WHERE bops.chat_messages.json IS DISTINCT FROM EXCLUDED.json`,
+    [userId, list.map((m) => m.id), list.map((m) => m.chatId), list.map((m) => m.at), list.map((m) => m.json)],
+  );
+}
+
+/** Mark messages removed (their rows stay, empty, for REMOVED_KEEP_DAYS). */
+async function removeMessages(c: pg.PoolClient, userId: string, ids: string[]) {
+  if (!ids.length) return;
+  await c.query(
+    `UPDATE bops.chat_messages SET json = NULL, seq = nextval('bops.chat_seq'), updated_at = now()
+     WHERE user_id = $1 AND id = ANY($2::text[]) AND json IS NOT NULL`,
+    [userId, ids],
+  );
+}
+
+/**
+ * Lock the user's row (making the empty one if there's none), so their writes go one at a time and seqs
+ * land in order. A user deleted lately (bops.deleted_users, delete-user.ts) is refused (accountDeleted),
+ * whoever writes: a Mac's stale copy, a computer's runner, or the cloud's own answer to a phone message
+ * that finished after the delete. Read under the lock, which the delete takes too, so a write waiting on
+ * it while the delete runs finds the user gone once it gets it.
+ */
+export async function lockUser(c: pg.PoolClient, userId: string) {
+  await c.query(
+    `INSERT INTO bops.app_state (user_id, state, version) SELECT $1, '{}'::jsonb, 0
+     WHERE NOT EXISTS (SELECT 1 FROM bops.deleted_users WHERE user_id = $1)
+     ON CONFLICT (user_id) DO NOTHING`,
+    [userId],
+  );
+  const r = await c.query<{ version: string; protocol: number; gone: boolean }>(
+    "SELECT version, protocol, EXISTS (SELECT 1 FROM bops.deleted_users d WHERE d.user_id = $1) AS gone FROM bops.app_state WHERE user_id = $1 FOR UPDATE",
+    [userId],
+  );
+  if (!r.rows[0] || r.rows[0].gone) throw accountDeleted();
+  return { version: Number(r.rows[0].version), protocol: r.rows[0].protocol };
+}
+
+/** The blob on the user's locked row, as kept. */
+export async function lockedState(c: pg.PoolClient, userId: string): Promise<Record<string, unknown>> {
+  const r = await c.query<{ state: Record<string, unknown> | null }>("SELECT state FROM bops.app_state WHERE user_id = $1", [userId]);
+  return r.rows[0]?.state ?? {};
+}
+
+/** A computer's write refused: what it would have changed that it may not (the first 20). */
+const notForComputer = (paths: string[]) =>
+  new HttpError(403, "A computer's identity can't change that.", { code: COMPUTER_NOT_ALLOWED, paths: paths.slice(0, 20) });
+
+/** The chats a computer reads and writes in (computer-scope.ts chatsOn), from its user's state now. */
+async function computerChats(user: CloudUser): Promise<Set<string>> {
+  const row = await readRow(user.id);
+  return chatsOn(row?.state ?? {}, user.computer!.desktopId);
+}
+
+/* ---------------- The cloud's own messages, and one chat's (cloud/agent.ts) ---------------- */
+
+/**
+ * Write messages as the cloud's own (cloud/agent.ts: a message sent from the phone, and the main
+ * bot's answer to it), each replacing its row, on the user's locked row as POST /v1/messages writes
+ * them; then the user's connected Mac hears of it (a "state" frame) and reads them, as it reads
+ * another Mac's. Each needs an id, a chat and a time.
+ */
+export async function writeMessages(userId: string, messages: Record<string, unknown>[]): Promise<void> {
+  const msgs = messages.map(messageOf);
+  if (!msgs.length) return;
+  await tx(async (c) => {
+    await lockUser(c, userId);
+    await upsertMessages(c, userId, msgs);
+  });
+  announce(userId, { chats: msgs.map((m) => m.chatId), by: "cloud" });
+}
+
+/** A message's row as kept: its JSON, or null when it was removed (the chat it was in stays). */
+export type MessageRow = { id: string; seq: number; chatId: string; at: number; json: Record<string, unknown> | null };
+type RawRow = { id: string; seq: string; chat_id: string; at: string; json: Record<string, unknown> | null };
+const rowOf = (x: RawRow): MessageRow => ({ id: x.id, seq: Number(x.seq), chatId: x.chat_id, at: Number(x.at), json: x.json });
+const ROW = "id, seq, chat_id, at, json";
+
+/**
+ * Every chat's rows written after `after`, removed ones too, oldest first, as GET /v1/messages pages
+ * them: `seq` is the last row's (the next cursor, past other chats' rows too), `more` whether there
+ * are more than `limit`.
+ */
+export async function rowsAfter(userId: string, after: number, limit: number): Promise<{ rows: MessageRow[]; seq: number; more: boolean }> {
+  const r = await query<RawRow>(`SELECT ${ROW} FROM bops.chat_messages WHERE user_id = $1 AND seq > $2 ORDER BY seq LIMIT $3`, [userId, after, limit + 1]);
+  const rows = r.rows.slice(0, limit).map(rowOf);
+  return { rows, seq: rows.length ? rows[rows.length - 1].seq : after, more: r.rows.length > limit };
+}
+
+/**
+ * One chat's newest `limit` live messages, or the newest before `beforeAt`, oldest first; `more`: there are
+ * older ones. `beforeId`: the message of that chat at `beforeAt` the page comes before, in the order pages
+ * are cut in (at, then seq), so one in its millisecond that comes before it is in the page; without it (or
+ * when there's no such message), the ones before that millisecond.
+ */
+export async function chatPage(userId: string, chatId: string, beforeAt: number | null, limit: number, beforeId?: string): Promise<{ rows: MessageRow[]; more: boolean }> {
+  const r =
+    beforeAt === null
+      ? await query<RawRow>(`SELECT ${ROW} FROM bops.chat_messages WHERE user_id = $1 AND chat_id = $2 AND json IS NOT NULL ORDER BY at DESC, seq DESC LIMIT $3`, [userId, chatId, limit + 1])
+      : await query<RawRow>(
+          `SELECT ${ROW} FROM bops.chat_messages WHERE user_id = $1 AND chat_id = $2 AND json IS NOT NULL
+             AND (at < $3 OR (at = $3 AND seq < (SELECT seq FROM bops.chat_messages WHERE user_id = $1 AND chat_id = $2 AND id = $5 AND at = $3)))
+           ORDER BY at DESC, seq DESC LIMIT $4`,
+          [userId, chatId, beforeAt, limit + 1, beforeId ?? null],
+        );
+  return { rows: r.rows.slice(0, limit).map(rowOf).reverse(), more: r.rows.length > limit };
+}
+
+/**
+ * The newest `perChat` live messages of each of these chats, oldest first, and the chats that have older
+ * ones (a member reading a shared workspace: members.ts). One query, whatever the number of chats.
+ */
+export async function recentMessages(userId: string, chatIds: string[], perChat: number): Promise<{ rows: MessageRow[]; more: string[] }> {
+  if (!chatIds.length) return { rows: [], more: [] };
+  const r = await query<RawRow & { n: string; total: string }>(
+    `SELECT ${ROW}, n, total FROM (
+       SELECT ${ROW}, row_number() OVER w AS n, count(*) OVER (PARTITION BY chat_id) AS total
+       FROM bops.chat_messages WHERE user_id = $1 AND chat_id = ANY($2::text[]) AND json IS NOT NULL
+       WINDOW w AS (PARTITION BY chat_id ORDER BY at DESC, seq DESC)
+     ) t WHERE n <= $3 ORDER BY at, seq`,
+    [userId, chatIds, perChat],
+  );
+  const more = new Set(r.rows.filter((x) => Number(x.total) > perChat).map((x) => x.chat_id));
+  return { rows: r.rows.map(rowOf), more: [...more] };
+}
+
+/**
+ * The ids of these chats' messages removed after `afterSeq` (their rows kept, json NULL, for REMOVED_KEEP_DAYS),
+ * the newest `limit`: what a member's copy as new as that seq drops (members.ts, SharedWsState.gone).
+ */
+export async function removedAfter(userId: string, chatIds: string[], afterSeq: number, limit: number): Promise<string[]> {
+  if (!chatIds.length) return [];
+  const r = await query<{ id: string }>(
+    "SELECT id FROM bops.chat_messages WHERE user_id = $1 AND chat_id = ANY($2::text[]) AND json IS NULL AND seq > $3 ORDER BY seq DESC LIMIT $4",
+    [userId, chatIds, afterSeq, limit],
+  );
+  return r.rows.map((x) => x.id);
+}
+
+/** The newest message write (a removal too) in these chats' rows (0: none): what a member's copy of them is as new as. */
+export async function chatsSeq(userId: string, chatIds: string[]): Promise<number> {
+  if (!chatIds.length) return 0;
+  const r = await query<{ seq: string }>("SELECT COALESCE(max(seq), 0) AS seq FROM bops.chat_messages WHERE user_id = $1 AND chat_id = ANY($2::text[])", [userId, chatIds]);
+  return Number(r.rows[0].seq);
+}
+
+/**
+ * What a bot reads of a chat (lib/server/chat.ts history): its messages, without the system lines that
+ * aren't an email, a text or an app's answer. The newest `limit` of them, oldest first, and how many
+ * the chat has in all (where the bot's window of them starts depends on it).
+ */
+export async function chatSaid(userId: string, chatId: string, limit: number): Promise<{ rows: MessageRow[]; total: number }> {
+  const r = await query<RawRow & { total: string }>(
+    `SELECT ${ROW}, count(*) OVER () AS total FROM bops.chat_messages
+     WHERE user_id = $1 AND chat_id = $2 AND json IS NOT NULL
+       AND (json->>'role' IS DISTINCT FROM 'system' OR jsonb_typeof(json->'email') = 'object' OR jsonb_typeof(json->'sms') = 'object' OR jsonb_typeof(json->'appResult') = 'object')
+     ORDER BY at DESC, seq DESC LIMIT $3`,
+    [userId, chatId, limit],
+  );
+  return { rows: r.rows.map(rowOf).reverse(), total: Number(r.rows[0]?.total ?? 0) };
+}
+
+/** The user's live messages with these ids. */
+export async function messagesById(userId: string, ids: string[]): Promise<MessageRow[]> {
+  if (!ids.length) return [];
+  const r = await query<RawRow>(`SELECT ${ROW} FROM bops.chat_messages WHERE user_id = $1 AND id = ANY($2::text[]) AND json IS NOT NULL`, [userId, ids]);
+  return r.rows.map(rowOf);
+}
+
+/**
+ * The highest seq of the user's removals swept for good (sweepRemovedMessages; 0: none yet). A reader
+ * whose cursor is below it may have missed a removal: it starts over (cloud/agent.ts `reset`).
+ */
+export async function sweptSeq(userId: string): Promise<number> {
+  const r = await query<{ seq: string }>("SELECT swept_seq AS seq FROM bops.app_state WHERE user_id = $1", [userId]);
+  return Number(r.rows[0]?.seq ?? 0);
+}
+
+/** The live message that answers `messageId` (its `answers`: the main bot's answer to a phone message, cloud/agent.ts), the newest if several; null when none. */
+export async function answerTo(userId: string, messageId: string): Promise<MessageRow | null> {
+  const r = await query<RawRow>(
+    // `json ? 'answers'` is the index's own condition (chat_messages_answers, 0013), so the index serves it.
+    `SELECT ${ROW} FROM bops.chat_messages WHERE user_id = $1 AND json ? 'answers' AND json->>'answers' = $2 ORDER BY seq DESC LIMIT 1`,
+    [userId, messageId],
+  );
+  return r.rows[0] ? rowOf(r.rows[0]) : null;
+}
+
+/* ---------------- Routes ---------------- */
+
+const get: Route = {
+  method: "GET",
+  path: "/v1/state",
+  auth: "user",
+  computer: true,
+  handle: async (req, res, { user }) => {
+    const v2 = newBuild(req);
+    // A build from before gets every message with the state: never a computer.
+    if (user!.computer && !v2) throw notForComputer(["messages"]);
+    checkUser(req, user!, v2);
+    const row = await readRow(user!.id);
+    // Held to the row as read, so a newer app's write can't slip in between.
+    if (row) requireLevel(req, row.protocol);
+    if (!row || row.empty) throw new HttpError(404, "No state saved yet", v2 ? { version: row?.version ?? 0, seq: await lastSeq(user!.id) } : undefined);
+    if (v2) {
+      // A computer's runner reads only what its bots need, without what's kept for members alone (computer-scope.ts forComputer).
+      const body: CloudState = { version: row.version, seq: await lastSeq(user!.id), protocol: row.protocol, writer: row.writer, state: user!.computer ? forComputer(row.state, user!.computer) : row.state };
+      return sendZipped(req, res, 200, body);
+    }
+    // A build from before: the whole state, its messages back in.
+    const body: CloudStateBody = { version: row.version, state: { ...row.state, messages: await liveMessages(user!.id) } };
+    await sendZipped(req, res, 200, body);
+  },
+};
+
+const getHead: Route = {
+  method: "GET",
+  path: "/v1/state/head",
+  auth: "user",
+  computer: true,
+  handle: async (req, res, { user }) => {
+    checkUser(req, user!, true);
+    await requireLevelFor(req, user!.id);
+    sendJson(res, 200, await head(user!.id));
+  },
+};
+
+/** A newer build's write: the blob, over `base`. */
+async function putOver(req: IncomingMessage, res: ServerResponse, user: CloudUser, base: unknown, state: Record<string, unknown>) {
+  checkUser(req, user, true);
+  if (!wholeNumber(base)) throw new HttpError(400, "base must be a whole number, 0 or more");
+  let json = toJson(blobOf(state));
+  let written = state;
+  // A computer's runner writes as its own device, which Bops Cloud sets (server.ts computerCheck).
+  const writer = user.computer?.device || deviceOf(req);
+  const level = stateLevelOf(req);
+  let raised = false;
+  // The switch's mirror put back over what the Mac sent (keepChatOn): it reads it in a moment (one more version, below).
+  let mirrored = false;
+  const version = await tx(async (c) => {
+    const row = await lockUser(c, user.id);
+    // Before the version: an older app is never handed the newer one's state to merge (409).
+    requireLevel(req, row.protocol);
+    if (row.version !== base) return null;
+    // A computer's write: only what its runner's own work changes, over the blob it read (computer-scope.ts).
+    if (user.computer) {
+      const sent = JSON.parse(json) as Record<string, unknown>;
+      if (carriesPasswords(sent)) throw notForComputer(["workspaces"]);
+      const stored = await lockedState(c, user.id);
+      // What it read without (forComputer) is put back first: it sends what it read as it read it.
+      const next = withHeldBack(stored, sent, user.computer);
+      const denied = writeDenials(stored, next, user.computer);
+      if (denied.length) throw notForComputer(denied);
+      json = toJson(next);
+      written = next;
+    } else {
+      // The switch of each workspace's chat as Bops Cloud keeps it (turns.ts keepChatOn): a Bops from before drops it,
+      // and one that never heard of a change of it (Bops Cloud may move a workspace by itself) doesn't have it yet.
+      // An account with no row, that Bops Cloud doesn't move workspaces for, and with no mark of either left: nothing to put back.
+      const rows = await routedWorkspaces(c, user.id);
+      const on = chatAutoFor(user.id);
+      const kept = rows.size || on || (Array.isArray(written.workspaces) ? written.workspaces : []).some((w) => isObject(w) && (w.chatAuto !== undefined || w.chatAutoOff !== undefined)) ? keepChatOn(written, rows, on) : written;
+      if (kept !== written) {
+        written = kept;
+        json = toJson(blobOf(kept));
+        mirrored = true;
+      }
+    }
+    const r = await c.query<{ version: string }>(
+      `UPDATE bops.app_state SET state = $2::jsonb, version = version + 1, protocol = GREATEST(protocol, $3), writer = $4, updated_at = now() WHERE user_id = $1 RETURNING version`,
+      [user.id, json, level, writer],
+    );
+    raised = level > row.protocol;
+    // The Mac takes the version it's answered as what it sent: one more, Bops Cloud's, has it read what was put back.
+    if (mirrored) await c.query("UPDATE bops.app_state SET version = version + 1, writer = 'cloud', updated_at = now() WHERE user_id = $1", [user.id]);
+    return Number(r.rows[0].version);
+  });
+  if (version === null) {
+    const now = await readRow(user.id);
+    const body: CloudStateConflict = { error: "Your Bops changed on another Mac", code: STATE_CONFLICT, version: now?.version ?? 0, state: now && user.computer ? forComputer(now.state, user.computer) : (now?.state ?? {}) };
+    return sendZipped(req, res, 409, body);
+  }
+  sendJson(res, 200, { version });
+  // An older Mac of the user's on the tunnel now can't be given this state: off it, before it hears of it.
+  if (raised) dropOlderMac(user.id, level);
+  announce(user.id);
+  // Devices watching a workspace whose part of it changed read it now (live.ts): the blob as written.
+  stateWritten(user.id, written, writer);
+  // A paid plan that waited to know the main bot is set up now (plans.ts).
+  afterStateUpload(user.id);
+  forgetTelemetryChoice(user.id);
+  // Who may have their messages run on the bots' computers may have changed: turns of anyone who may not end now.
+  if (!user.computer) void recheckTurns(user.id).catch((e: Error) => console.warn(`[state] turns recheck: ${e.message}`));
+  // A runner set up, taken down or failed, a bot moved, a newer Mac: a workspace's chat may move (turns.ts autoRoute).
+  if (!user.computer) void autoRoute(user.id, written);
+}
+
+/** A build from before: its whole state, messages and all, the Mac's own `version` kept as given. */
+async function putBackup(req: IncomingMessage, res: ServerResponse, user: CloudUser, version: unknown, state: Record<string, unknown>) {
+  // The whole state, messages and all, from a build from before: never a computer.
+  if (user.computer) throw notForComputer(["state"]);
+  checkUser(req, user, false);
+  if (!wholeNumber(version)) throw new HttpError(400, "version must be a whole number, 0 or more");
+  const list = Array.isArray(state.messages) ? state.messages.filter((m) => isObject(m) && typeof m.id === "string" && m.id).map(messageOf) : [];
+  await tx(async (c) => {
+    const row = await lockUser(c, user.id);
+    if (row.protocol >= STATE_PROTOCOL) throw new HttpError(426, "Update Bops to keep your chats in sync");
+    await c.query(`UPDATE bops.app_state SET state = $2::jsonb, version = $3, writer = NULL, updated_at = now() WHERE user_id = $1`, [user.id, toJson(blobOf(state)), version]);
+    // The upload is the whole state: its messages are all there are.
+    await upsertMessages(c, user.id, list);
+    await c.query(
+      `UPDATE bops.chat_messages SET json = NULL, seq = nextval('bops.chat_seq'), updated_at = now()
+       WHERE user_id = $1 AND json IS NOT NULL AND NOT (id = ANY($2::text[]))`,
+      [user.id, list.map((m) => m.id)],
+    );
+  });
+  sendJson(res, 200, { ok: true, version });
+  announce(user.id, { chats: list.map((m) => m.chatId), by: null });
+  stateWritten(user.id, state, null);
+  afterStateUpload(user.id);
+  forgetTelemetryChoice(user.id);
+}
+
+const put: Route = {
+  method: "PUT",
+  path: "/v1/state",
+  auth: "user",
+  computer: true,
+  handle: async (req, res, { user }) => {
+    const body = jsonOf<Record<string, unknown> | null>(await bodyOf(req));
+    const state = body?.state;
+    if (!isObject(state)) throw new HttpError(400, "state must be the app's state, an object");
+    if (body && "base" in body) return putOver(req, res, user!, body.base, state);
+    return putBackup(req, res, user!, body?.version, state);
+  },
+};
+
+const getMessages: Route = {
+  method: "GET",
+  path: "/v1/messages",
+  auth: "user",
+  computer: true,
+  handle: async (req, res, { user, url }) => {
+    checkUser(req, user!, true);
+    await requireLevelFor(req, user!.id);
+    const after = Number(url.searchParams.get("after") ?? 0);
+    const limit = Number(url.searchParams.get("limit") ?? PAGE);
+    if (!wholeNumber(after)) throw new HttpError(400, "after must be a whole number, 0 or more");
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > MAX_PAGE) throw new HttpError(400, `limit must be 1 to ${MAX_PAGE}`);
+    const r = await query<{ id: string; seq: string; chat_id: string; json: Record<string, unknown> | null }>(
+      "SELECT id, seq, chat_id, json FROM bops.chat_messages WHERE user_id = $1 AND seq > $2 ORDER BY seq LIMIT $3",
+      [user!.id, after, limit + 1],
+    );
+    const more = r.rows.length > limit;
+    const rows = r.rows.slice(0, limit);
+    // A computer reads its bots' chats only; the cursor still goes past the rest.
+    const chats = user!.computer ? await computerChats(user!) : null;
+    // From the start, what was removed is of no use; from a seq on, it's how a Mac hears a message went.
+    const messages: CloudMessageRow[] = rows
+      .filter((x) => (after > 0 || x.json !== null) && (!chats || chats.has(x.chat_id)))
+      .map((x) => ({ id: x.id, seq: Number(x.seq), json: x.json }));
+    const body: CloudMessagesPage = { messages, seq: rows.length ? Number(rows[rows.length - 1].seq) : after, more };
+    await sendZipped(req, res, 200, body);
+  },
+};
+
+const postMessages: Route = {
+  method: "POST",
+  path: "/v1/messages",
+  auth: "user",
+  computer: true,
+  handle: async (req, res, { user }) => {
+    checkUser(req, user!, true);
+    const body = jsonOf<Record<string, unknown> | null>(await bodyOf(req));
+    const upsert = body?.upsert ?? [];
+    const remove = body?.remove ?? [];
+    if (!Array.isArray(upsert) || !Array.isArray(remove) || !remove.every((x) => typeof x === "string")) throw new HttpError(400, "Send { upsert: [messages], remove: [ids] }");
+    const msgs = upsert.map(messageOf);
+    const seq = await tx(async (c) => {
+      requireLevel(req, (await lockUser(c, user!.id)).protocol);
+      if (user!.computer) await computerMayWrite(c, user!, msgs, remove as string[]);
+      else await stampsMayWrite(c, user!, msgs);
+      await upsertMessages(c, user!.id, msgs);
+      await removeMessages(c, user!.id, remove as string[]);
+      return lastSeq(user!.id, c);
+    });
+    sendJson(res, 200, { seq });
+    // A removal's chat isn't known here (""): every watched workspace of the user's hears it.
+    if (msgs.length || remove.length) announce(user!.id, { chats: [...msgs.map((m) => m.chatId), ...(remove.length ? [""] : [])], by: deviceOf(req) });
+  },
+};
+
+/**
+ * A computer writes and removes only its bots' messages and Bops' notes, in its bots' chats, or about
+ * threads and routines' runs of its own in theirs (computer-scope.ts computersMessage: their bot may have
+ * moved off it since the run began, and a run's words may come after its end is recorded): each new one,
+ * and each it changes or removes as it's kept, must be one. Never the user's words or another bot's, so a
+ * key read off a computer can't speak for them. One that carries a turn's id (its answer to a message Bops Cloud
+ * took) only while its device holds or last held that turn (turns.ts turnRowsMayWrite). Else 403.
+ */
+async function computerMayWrite(c: pg.PoolClient, user: CloudUser, msgs: Msg[], remove: string[]) {
+  const state = await lockedState(c, user.id);
+  const desktopId = user.computer!.desktopId;
+  const chats = chatsOn(state, desktopId);
+  const bots = botIdsOn(state, desktopId);
+  const threads = threadsOf(state, user.computer!.device);
+  const runs = runsBy(state, user.computer!.device);
+  const ids = [...new Set([...msgs.map((m) => m.id), ...remove])];
+  const kept = ids.length
+    ? (await c.query<{ id: string; chat_id: string; json: Record<string, unknown> | null }>("SELECT id, chat_id, json FROM bops.chat_messages WHERE user_id = $1 AND id = ANY($2::text[])", [user.id, ids])).rows
+    : [];
+  const was = new Map(kept.map((k) => [k.id, k.json]));
+  const refused = [
+    ...msgs.filter((m) => !computersMessage({ ...(JSON.parse(m.json) as Record<string, unknown>), chatId: m.chatId }, bots, chats, threads, runs)).map((m) => m.id),
+    // Never a member's stamp it made or changed (computer-scope.ts memberStampKept): only Bops Cloud says a member said it.
+    ...msgs.filter((m) => !memberStampKept(JSON.parse(m.json) as Record<string, unknown>, was.get(m.id))).map((m) => m.id),
+    // One already taken out holds only its chat.
+    ...kept.filter((k) => (k.json ? !computersMessage({ ...k.json, chatId: k.chat_id }, bots, chats, threads, runs) : !chats.has(k.chat_id))).map((k) => k.id),
+    // A turn's answer only from the device that holds or held its claim, never before its message (turns.ts).
+    ...(await turnRowsMayWrite(c, user.id, user.computer!.device, msgs)),
+  ];
+  if (refused.length) throw notForComputer([...new Set(refused)].map((id) => `messages.${id}`));
+}
+
+/**
+ * The owner's own write (a Mac, the phone's Bops): in a chat of a workspace whose people's words go through Bops Cloud
+ * (computer-scope.ts cloudChatOn), never a member's stamp it made or changed (memberStampKept), as for a computer: Bops
+ * Cloud is the only one that says a member said it there. A row sent back with its stamp as kept (a tapback rewrites
+ * it whole) is fine, and so is anything in a workspace still on the owner's Mac. Else 403 MEMBER_STAMP.
+ */
+async function stampsMayWrite(c: pg.PoolClient, user: CloudUser, msgs: Msg[]) {
+  const stamped = msgs.map((m) => ({ m, json: JSON.parse(m.json) as Record<string, unknown> })).filter((x) => x.json.member !== undefined);
+  if (!stamped.length) return;
+  const state = await lockedState(c, user.id);
+  const there = stamped.filter((x) => cloudChatOn(state, x.m.chatId));
+  if (!there.length) return;
+  const kept = (await c.query<{ id: string; json: Record<string, unknown> | null }>("SELECT id, json FROM bops.chat_messages WHERE user_id = $1 AND id = ANY($2::text[])", [user.id, there.map((x) => x.m.id)])).rows;
+  const was = new Map(kept.map((k) => [k.id, k.json]));
+  const refused = there.filter((x) => !memberStampKept(x.json, was.get(x.m.id))).map((x) => `messages.${x.m.id}`);
+  if (refused.length) throw new HttpError(403, "Only Bops Cloud says someone you shared with said something here.", { code: MEMBER_STAMP, paths: refused.slice(0, 20) });
+}
+
+/**
+ * A copy of the whole state, messages and all, before the user starts over (Settings). A Mac kept out of
+ * the state (stateTooNew) makes one too: the copy stays here and none of it goes back to it, and its
+ * Start over goes up once it's updated (persist-cloud.ts keeps it), so the copy is all that's left of
+ * what it cleared.
+ */
+const postBackup: Route = {
+  method: "POST",
+  path: "/v1/state/backups",
+  auth: "user",
+  handle: async (req, res, { user }) => {
+    checkUser(req, user!, true);
+    const r = await query<{ id: string }>(
+      `INSERT INTO bops.app_state_backups (user_id, state)
+       SELECT s.user_id, s.state || jsonb_build_object('messages', COALESCE(
+         (SELECT jsonb_agg(m.json ORDER BY m.at, m.seq) FROM bops.chat_messages m WHERE m.user_id = s.user_id AND m.json IS NOT NULL), '[]'::jsonb))
+       FROM bops.app_state s WHERE s.user_id = $1 AND s.state <> '{}'::jsonb
+       RETURNING id`,
+      [user!.id],
+    );
+    if (!r.rows[0]) throw new HttpError(404, "No state saved yet");
+    sendJson(res, 200, { ok: true, id: Number(r.rows[0].id) });
+  },
+};
+
+export const routes: Route[] = [get, getHead, put, getMessages, postMessages, postBackup];
+
+/* ---------------- Sweeps ---------------- */
+
+/**
+ * Rows of messages removed more than `days` ago go for good. In the same statement, each user's highest
+ * seq swept goes into app_state.swept_seq, so a reader with an older cursor knows it can't hear of every
+ * removal any more (sweptSeq). A Mac knows by time instead (lib/server/persist-cloud.ts reads everything
+ * again after 25 days away). Returns how many rows went.
+ */
+export async function sweepRemovedMessages(days = REMOVED_KEEP_DAYS): Promise<number> {
+  const r = await query<{ n: string }>(
+    `WITH gone AS (
+       DELETE FROM bops.chat_messages WHERE json IS NULL AND updated_at < now() - make_interval(days => $1) RETURNING user_id, seq
+     ), marked AS (
+       UPDATE bops.app_state s SET swept_seq = g.seq
+       FROM (SELECT user_id, max(seq) AS seq FROM gone GROUP BY user_id) g
+       WHERE s.user_id = g.user_id AND s.swept_seq < g.seq
+     )
+     SELECT count(*) AS n FROM gone`,
+    [days],
+  );
+  return Number(r.rows[0]?.n ?? 0);
+}
+
+/**
+ * How long a copy taken before Start over (POST /v1/state/backups) is kept. It's the whole state with
+ * every message, so it's kept only as long as someone would come back for what they cleared: past it, a
+ * Start over is what the user meant.
+ */
+export const BACKUP_KEEP_DAYS = 30;
+/** The most of those copies kept per user, the newest: someone starting over again and again keeps the last few, not every one. */
+export const BACKUPS_PER_USER = 5;
+
+/**
+ * Copies taken before Start over go for good once they're older than `days`, or past the newest `keep`
+ * of their user's (newest by when they were taken). Returns how many went.
+ */
+export async function sweepBackups(days = BACKUP_KEEP_DAYS, keep = BACKUPS_PER_USER): Promise<number> {
+  const r = await query(
+    `DELETE FROM bops.app_state_backups
+     WHERE created_at < now() - make_interval(days => $1)
+        OR id IN (SELECT id FROM (SELECT id, row_number() OVER (PARTITION BY user_id ORDER BY created_at DESC, id DESC) AS n FROM bops.app_state_backups) t WHERE n > $2)`,
+    [days, keep],
+  );
+  return r.rowCount ?? 0;
+}
+
+/**
+ * Every hour: removed messages past REMOVED_KEEP_DAYS go for good, copies before Start over past
+ * BACKUP_KEEP_DAYS or BACKUPS_PER_USER, and users deleted more than db.ts DELETED_KEEP_DAYS ago leave
+ * bops.deleted_users. Returns the stop.
+ */
+export function startStateSweeps(): () => void {
+  const sweep = () => {
+    void sweepRemovedMessages().catch((e: Error) => console.warn(`[state] sweep: ${e.message}`));
+    void sweepBackups().catch((e: Error) => console.warn(`[state] backups sweep: ${e.message}`));
+    void sweepDeletedUsers().catch((e: Error) => console.warn(`[state] deleted users sweep: ${e.message}`));
+  };
+  const t = setInterval(sweep, SWEEP_MS);
+  t.unref?.();
+  return () => clearInterval(t);
+}

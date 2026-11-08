@@ -1,0 +1,681 @@
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { createHmac, randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { after, before, test } from "node:test";
+import pg from "pg";
+import * as calls from "../calls.ts";
+import { checkCreditAccess, creditLeft } from "../credit.ts";
+import { seal } from "../crypto.ts";
+import { closeDb, ownObject, query } from "../db.ts";
+import { tellAboutLine } from "../plans.ts";
+import { costOf, smsSegments } from "../pricing.ts";
+import { releaseAfterPause } from "../provision.ts";
+import { recordUsage, recordUsageFor } from "../usage.ts";
+import { LEDGER_IN_USE, TEST_DATABASE_URL, call, dropUsers, fakeOrgo, fakeProvider, keyOf, newNumber, prepareDb, seedUser, sse, startCloud, until, type Listening } from "./core-fakes.ts";
+
+/**
+ * AI credit (cloud/credit.ts, pricing.ts, usage.ts): each use priced at Orgo's cost and taken from the
+ * user's credit, the one-time $5, and the gate that stops a user with nothing left, against orgo-web's
+ * ledger as its migration makes it (fixtures/orgo-bops-credit.sql) and fake providers.
+ */
+
+const tag = randomUUID().slice(0, 8);
+const users: string[] = [];
+let orgo: Listening, cloud: Listening;
+let openai: Awaited<ReturnType<typeof fakeProvider>>, agentphone: Awaited<ReturnType<typeof fakeProvider>>, typesafe: Awaited<ReturnType<typeof fakeProvider>>;
+let treg: Awaited<ReturnType<typeof fakeProvider>>;
+/** treg's calls (not its catalog, which the cloud reads to check a call). */
+const tregCalls = () => treg.got.filter((g) => g.path.startsWith("/call/"));
+let n = 0;
+
+/** A user as Orgo has them (a profile; Orgo user ids are uuids) and as /v1/session leaves them. */
+async function newUser() {
+  const id = randomUUID();
+  users.push(id);
+  await query("INSERT INTO public.profiles (id) VALUES ($1)", [id]);
+  await seedUser(id, { subAccount: `sub_${id}` });
+  return id;
+}
+
+/** Set what the user has left: the one-time credit (after it's been given) and this month's plan credit. */
+async function setCredit(userId: string, credit: { free: number; plan?: number; planEnds?: Date }) {
+  await creditLeft(userId);
+  await query("UPDATE public.bops_ai_credit SET free_micros = $2, plan_micros = $3, plan_expires_at = $4 WHERE user_id = $1", [
+    userId,
+    credit.free,
+    credit.plan ?? 0,
+    credit.planEnds ?? null,
+  ]);
+}
+
+const row = async (userId: string) =>
+  (await query<{ plan: string; free: string }>("SELECT plan_micros AS plan, free_micros AS free FROM public.bops_ai_credit WHERE user_id = $1", [userId])).rows[0];
+const usageOf = async (userId: string, kind: string) =>
+  (
+    await query<{ units: number; cost: number; detail: Record<string, unknown> }>(
+      "SELECT units::float8 AS units, cost_micros::float8 AS cost, detail FROM bops.cloud_usage WHERE user_id = $1 AND kind = $2 ORDER BY id",
+      [userId, kind],
+    )
+  ).rows;
+const as = (userId: string, method: string, path: string, json?: unknown, headers?: Record<string, string>) => call(cloud.url, method, path, { key: keyOf(userId), json, headers });
+const inAMonth = () => new Date(Date.now() + 30 * 86_400_000);
+
+/** orgo-web's ledger, in this throwaway database (made by its owner, bops_app here), one test file at a time. */
+async function prepareLedger() {
+  const sql = await readFile(fileURLToPath(new URL("./fixtures/orgo-bops-credit.sql", import.meta.url)), "utf8");
+  const c = new pg.Client({ connectionString: TEST_DATABASE_URL });
+  await c.connect();
+  try {
+    await c.query("SELECT pg_advisory_lock(hashtext('bops-edge-tests'))");
+    await c.query(sql);
+  } finally {
+    await c.query("SELECT pg_advisory_unlock(hashtext('bops-edge-tests'))").catch(() => {});
+    await c.end();
+  }
+}
+
+before(async () => {
+  await prepareDb();
+  await prepareLedger();
+  process.env.BOPS_AI_CREDITS = "1";
+  orgo = await fakeOrgo();
+  openai = await fakeProvider(async (g, res) => {
+    if (g.method === "POST" && g.path === "/v1/responses") return { json: { id: `resp_${tag}_${++n}`, object: "response", model: "gpt-6.1-sol", output: [], usage: { input_tokens: 10, output_tokens: 5 } } };
+    if (g.method === "POST" && g.path === "/v1/agents/sessions") return { json: { id: `asess_${tag}_${++n}`, object: "agent.session" } };
+    if (g.method === "POST" && /^\/v1\/live\/sessions\/[^/]+\/(accept|reject|hangup)$/.test(g.path)) return { json: {} };
+    const s = /^\/v1\/agents\/sessions\/([^/]+)\/(.+)$/.exec(g.path);
+    if (s && g.method === "GET" && s[2] === "events")
+      return void sse(res, [
+        { type: "agent.session.turn.created", session_id: s[1], turn_id: `turn_${s[1]}_E`, turn: { id: `turn_${s[1]}_E` } },
+        { type: "agent.session.turn.completed", session_id: s[1], turn_id: `turn_${s[1]}_E`, usage: { input_tokens: 2000, output_tokens: 300 } },
+      ]);
+    if (s && g.method === "GET" && s[2].startsWith("turns/"))
+      return { json: { id: s[2].slice(6), object: "agent.session.turn", status: "completed", usage: { input_tokens: 1000, output_tokens: 100, input_tokens_details: { cached_tokens: 400 } } } };
+    if (s && g.method === "GET" && s[2] === "items") return { json: { data: [], has_more: false } };
+    return { status: 418, json: { error: "the fake doesn't know this" } };
+  });
+  agentphone = await fakeProvider((g) => {
+    if (g.method === "POST" && g.path === "/v1/numbers") return { json: { id: `num_${tag}_${++n}`, phoneNumber: newNumber(), type: g.json?.type ?? "sms" } };
+    if (g.method === "POST" && g.path === "/v1/messages") return { json: { id: `msg_${tag}_${++n}`, status: "queued" } };
+    if (g.method === "DELETE" && /^\/v1\/numbers\/[^/]+$/.test(g.path)) return { json: { ok: true } };
+    return { status: 418, json: { error: "the fake doesn't know this" } };
+  });
+  typesafe = await fakeProvider(() => ({ json: { answers: {} } }));
+  treg = await fakeProvider((g) => {
+    if (g.path === "/catalog/endpoints/treg.companies.search") return { json: { endpoint: { id: "treg.companies.search", method: "POST", scope: "", kind: "routed", async: null }, usd_per_call: 0 } };
+    if (g.path === "/catalog/endpoints/treg.companies.slow") return { json: { endpoint: { id: "treg.companies.slow", method: "POST", scope: "", kind: "routed", async: null }, usd_per_call: 0 } };
+    if (g.path === "/call/treg.companies.search") return { json: { output: { companies: [] } }, headers: { "x-treg-call-id": `call_${tag}_${++n}`, "x-treg-cost-micro": "0" } };
+    // "slow": answers after a moment, so calls overlap.
+    if (g.path === "/call/treg.companies.slow")
+      return new Promise((r) => setTimeout(() => r({ json: { output: { companies: [] } }, headers: { "x-treg-call-id": `call_${tag}_${++n}`, "x-treg-cost-micro": "0" } }), 300));
+    return { status: 418, json: { error: "the fake doesn't know this" } };
+  });
+  Object.assign(process.env, {
+    TREG_TOKEN: "treg-test-token",
+    BOPS_UPSTREAM_TREG: treg.url,
+    OPENAI_API_KEY: "sk-test-main",
+    BOPS_UPSTREAM_OPENAI: openai.url,
+    AGENTPHONE_API_KEY: "ap-test-key",
+    BOPS_UPSTREAM_AGENTPHONE: agentphone.url,
+    TYPESAFE_API_KEY: "typesafe-test-key",
+    BOPS_UPSTREAM_TYPESAFE: typesafe.url,
+  });
+  cloud = await startCloud();
+});
+
+after(async () => {
+  await dropUsers(users);
+  await query("DELETE FROM bops.cloud_agents WHERE user_id = ANY($1::text[])", [users]);
+  await query("DELETE FROM bops.owner_phones WHERE orgo_user_id = ANY($1::text[])", [users]);
+  await query("DELETE FROM public.profiles WHERE id = ANY($1::uuid[])", [users]);
+  await Promise.all([cloud?.close(), orgo?.close(), openai?.close(), agentphone?.close(), typesafe?.close(), treg?.close()]);
+  await closeDb();
+});
+
+/* ---------------- Prices ---------------- */
+
+test("each kind of use is priced at what it costs Orgo, rounded up to a whole micro-dollar", () => {
+  // gpt-6.1-sol: 2 per uncached input token, 0.1 per cached, 2.5 per one written to the cache, 10 per output.
+  assert.equal(costOf("openai.tokens", 1100, { model: "gpt-6.1-sol", input: 1000, cached: 400, output: 100 }), 600 * 2 + 40 + 1000);
+  assert.equal(costOf("openai.tokens", 1100, { model: "gpt-6.1-sol-2026-09-01", input: 1000, cached: 400, output: 100 }), 2240);
+  assert.equal(costOf("openai.tokens", 1100, { model: "gpt-6.1-sol", input: 1000, cached: 400, cacheWrite: 500, output: 100 }), 100 * 2 + 40 + 500 * 2.5 + 1000);
+  // gpt-6-astra: 10 / 1 / 12.5 / 50.
+  assert.equal(costOf("openai.tokens", 1100, { model: "gpt-6-astra", input: 1000, cached: 400, output: 100 }), 6000 + 400 + 5000);
+  assert.equal(costOf("openai.tokens", 1100, { model: "gpt-6-astra", input: 1000, cached: 400, cacheWrite: 600, output: 100 }), 400 + 600 * 12.5 + 5000);
+  // gpt-6-sol: 2 / 0.2 / 2.5 / 10; gpt-6-luna: 0.1 / 0.01 / 0.125 / 0.5 (a twentieth of 6.1 Sol's, but its cache reads).
+  assert.equal(costOf("openai.tokens", 1100, { model: "gpt-6-sol", input: 1000, cached: 400, cacheWrite: 500, output: 100 }), 100 * 2 + 400 * 0.2 + 500 * 2.5 + 1000);
+  assert.equal(costOf("openai.tokens", 110_000, { model: "gpt-6-luna", input: 100_000, cached: 40_000, cacheWrite: 50_000, output: 10_000 }), 10_000 * 0.1 + 40_000 * 0.01 + 50_000 * 0.125 + 10_000 * 0.5);
+  assert.equal(costOf("openai.tokens", 1100, { model: "gpt-6-luna-2026-09-22", input: 1000, output: 100 }), 100 + 50);
+  // The service tier the answer ran on multiplies all of it: Ultrafast 6x, Fast (once Priority) 2x, Flex and Batch half, standard 1x.
+  const sol = { model: "gpt-6.1-sol", input: 1000, cached: 400, cacheWrite: 500, output: 100 };
+  const solCost = 100 * 2 + 40 + 500 * 2.5 + 1000;
+  for (const [tier, times] of [["default", 1], ["auto", 1], ["scale", 1], ["ultrafast", 6], ["fast", 2], ["priority", 2], ["flex", 0.5], ["batch", 0.5]] as const)
+    assert.equal(costOf("openai.tokens", 1100, { ...sol, tier }), Math.ceil(solCost * times), tier);
+  assert.equal(costOf("openai.tokens", 1100, { ...sol, tier: "" }), solCost, "no tier said: standard");
+  assert.equal(costOf("openai.tokens", 1100, { ...sol, tier: "warp" }), solCost * 6, "a tier the cloud doesn't know: the dearest");
+  // Long context and the tier both apply.
+  assert.equal(costOf("openai.tokens", 301_000, { model: "gpt-6.1-sol", input: 300_000, cached: 0, output: 1000, tier: "ultrafast" }), (300_000 * 2 * 2 + 1000 * 10 * 1.5) * 6);
+  // A model with no price here, or none named, is priced as the dearest.
+  assert.equal(costOf("openai.tokens", 1100, { model: "gpt-9-turbo", input: 1000, cached: 400, output: 100 }), 11_400);
+  assert.equal(costOf("openai.tokens", 1100, { input: 1000, cached: 400, output: 100 }), 11_400);
+  assert.equal(costOf("openai.tokens", 1100, { model: "gpt-6.1-sol-mini", input: 1000, cached: 400, output: 100 }), 11_400);
+  // Past 272K input tokens in one response: input, cached and cache writes twice, output half again.
+  assert.equal(costOf("openai.tokens", 301_000, { model: "gpt-6.1-sol", input: 300_000, cached: 0, output: 1000 }), 300_000 * 2 * 2 + 1000 * 10 * 1.5);
+  assert.equal(costOf("openai.tokens", 301_000, { model: "gpt-6.1-sol", input: 300_000, cached: 200_000, cacheWrite: 50_000, output: 1000 }), (50_000 * 2 + 200_000 * 0.1 + 50_000 * 2.5) * 2 + 1000 * 10 * 1.5);
+  // An agent turn sums many model requests: the long-context rule is per request, so never applied to a turn.
+  assert.equal(costOf("openai.tokens", 606_000, { model: "gpt-6.1-sol", source: "agent", input: 600_000, cached: 540_000, output: 6_000 }), 60_000 * 2 + 540_000 * 0.1 + 6_000 * 10);
+  // A tenth of a micro-dollar is rounded up.
+  assert.equal(costOf("openai.tokens", 3, { model: "gpt-6.1-sol", input: 3, cached: 3, output: 0 }), 1);
+  // GPT-Live: $0.05 a minute of audio, by the second; over a SIP trunk, its leg too (a row from before says no transport: SIP).
+  assert.equal(costOf("openai.live_seconds", 60, { transport: "webrtc" }), 50_000);
+  assert.equal(costOf("openai.live_seconds", 42, { transport: "webrtc" }), 35_000);
+  assert.equal(costOf("openai.live_seconds", 42, { transport: "sip" }), Math.ceil(42 * (50_000 / 60 + 61.7)));
+  assert.equal(costOf("openai.live_seconds", 42), Math.ceil(42 * (50_000 / 60 + 61.7)));
+  // AgentPhone's webhook voice agent: 13 cents a minute, billed by the second.
+  assert.equal(costOf("agentphone.voice_seconds", 60), 130_000);
+  assert.equal(costOf("agentphone.voice_seconds", 61), Math.ceil((61 * 130_000) / 60));
+  // The estimate a call answered in the cloud used to be priced at is gone: its seconds and tokens are counted instead.
+  assert.equal(costOf("call.minutes", 2.5), 0);
+  // A web search: $10 per 1K calls; opening a page or finding in one isn't a call.
+  assert.equal(costOf("openai.web_search", 1, { action: "search" }), 10_000);
+  assert.equal(costOf("openai.web_search", 1, {}), 10_000);
+  assert.equal(costOf("openai.web_search", 1, { action: "open_page" }), 0);
+  assert.equal(costOf("openai.web_search", 1, { action: "find_in_page" }), 0);
+  assert.equal(costOf("agentphone.numbers", 1, { type: "sms" }), 3_000_000);
+  assert.equal(costOf("agentphone.numbers", 1, {}), 3_000_000);
+  assert.equal(costOf("agentphone.numbers", 1, { type: "imessage", imessageType: "inbound" }), 150_000_000);
+  assert.equal(costOf("agentphone.numbers", 1, { type: "imessage", imessageType: "outbound" }), 250_000_000);
+  assert.equal(costOf("agentphone.numbers", 1, { type: "imessage" }), 250_000_000);
+  assert.equal(costOf("agentphone.sms", 2), 40_000);
+  assert.equal(costOf("agentphone.sms", 1, { mms: true }), 30_000);
+  // Jev: $0.042 per 1M input tokens, output free; jev-latest is jev-1.13.0, and a Jev model with no price here is priced as it.
+  assert.equal(costOf("typesafe.tokens", 1_000, { model: "jev-1.13.0", input: 1_000, output: 0 }), 42);
+  assert.equal(costOf("typesafe.tokens", 1_000_000, { model: "jev-latest", input: 1_000_000, output: 3 }), 42_000);
+  assert.equal(costOf("typesafe.tokens", 100, { model: "jev-2.0.0", input: 100 }), 5);
+  assert.equal(costOf("typesafe.calls", 1), 0, "the old flat per-call estimate is gone");
+  assert.equal(costOf("verify.sms", 1), 58_300);
+  assert.equal(costOf("verify.email", 1), 50_000);
+  // Composio and Honcho: counted, at $0 for now.
+  assert.equal(costOf("composio.calls", 7, { tool: "GMAIL_SEND_EMAIL" }), 0);
+  assert.equal(costOf("honcho.calls", 7, { route: "chat" }), 0);
+  assert.equal(costOf("agentphone.plan_numbers", 1), 0);
+  assert.equal(costOf("something.new", 5), 0);
+});
+
+test("a text is counted in segments: 160 characters, 70 with an emoji, and parts of 153 or 67 past that", () => {
+  assert.equal(smsSegments(""), 1);
+  assert.equal(smsSegments("hi"), 1);
+  assert.equal(smsSegments("a".repeat(160)), 1);
+  assert.equal(smsSegments("a".repeat(161)), 2);
+  assert.equal(smsSegments("a".repeat(306)), 2);
+  assert.equal(smsSegments("a".repeat(307)), 3);
+  assert.equal(smsSegments(`${"a".repeat(69)}🙂`), 1);
+  assert.equal(smsSegments(`${"a".repeat(70)}🙂`), 2);
+  // GSM-7's extension characters take two places.
+  assert.equal(smsSegments("€".repeat(80)), 1);
+  assert.equal(smsSegments("€".repeat(81)), 2);
+});
+
+/* ---------------- The ledger ---------------- */
+
+test("the one-time $5 is given once, even when it's asked for at once", async () => {
+  const u = await newUser();
+  const left = await Promise.all(Array.from({ length: 6 }, () => creditLeft(u)));
+  assert.deepEqual(left, Array(6).fill(5_000_000));
+  const grants = (await query("SELECT kind, amount_micros::float8 AS amount FROM public.bops_ai_credit_grants WHERE user_id = $1", [u])).rows;
+  assert.deepEqual(grants, [{ kind: "free_signup", amount: 5_000_000 }]);
+  await recordUsage(u, "verify.sms", 1);
+  assert.equal(await creditLeft(u), 5_000_000 - 58_300);
+});
+
+test("a use is paid from this month's plan credit first, then the rest, which may go below 0", async () => {
+  const u = await newUser();
+  await setCredit(u, { free: 5_000_000, plan: 1_000_000, planEnds: inAMonth() });
+  await recordUsage(u, "agentphone.voice_seconds", 600);
+  assert.deepEqual(await row(u), { plan: "0", free: "4700000" });
+  assert.equal((await usageOf(u, "agentphone.voice_seconds"))[0].cost, 1_300_000);
+  // An overrun (a turn already under way) goes below 0; the next grant covers it.
+  await recordUsage(u, "agentphone.voice_seconds", 3_000);
+  assert.equal(await creditLeft(u), 4_700_000 - 6_500_000);
+  // A month that's over counts for nothing.
+  await setCredit(u, { free: 0, plan: 9_000_000, planEnds: new Date(Date.now() - 1000) });
+  assert.equal(await creditLeft(u), 0);
+});
+
+test("use seen more than once is paid once: only what it costs beyond what was paid is taken", async () => {
+  const u = await newUser();
+  await setCredit(u, { free: 1_000_000 });
+  const ref = `rtc_${tag}_seen`;
+  const webrtc = { transport: "webrtc" };
+  await recordUsageFor(u, "openai.live_seconds", ref, 12, webrtc);
+  assert.equal(await creditLeft(u), 1_000_000 - 10_000);
+  await recordUsageFor(u, "openai.live_seconds", ref, 30, webrtc);
+  assert.equal(await creditLeft(u), 1_000_000 - 25_000);
+  // An older, smaller sighting changes nothing.
+  await recordUsageFor(u, "openai.live_seconds", ref, 18, webrtc);
+  assert.equal(await creditLeft(u), 1_000_000 - 25_000);
+  // Sightings at once take turns: one row, paid for once.
+  await Promise.all([42, 60, 48].map((s) => recordUsageFor(u, "openai.live_seconds", ref, s, webrtc)));
+  const rows = await usageOf(u, "openai.live_seconds");
+  assert.equal(rows.length, 1);
+  assert.deepEqual([rows[0].units, rows[0].cost], [60, 50_000]);
+  assert.equal(await creditLeft(u), 1_000_000 - 50_000);
+});
+
+/* ---------------- Through the proxies ---------------- */
+
+test("an agent turn is priced at its session's model, from the turn's own read or its session's stream", async () => {
+  const u = await newUser();
+  await setCredit(u, { free: 5_000_000 });
+  const made = await as(u, "POST", "/proxy/openai/v1/agents/sessions", { agent: { model: "gpt-6.1-sol", instructions: "x" } });
+  assert.equal(made.status, 200, made.text);
+  const session = made.json.id as string;
+  assert.equal((await query("SELECT model FROM bops.cloud_objects WHERE provider = 'openai' AND object_id = $1", [session])).rows[0].model, "gpt-6.1-sol");
+  const turn = `turn_${tag}_read`;
+  await ownObject(u, "openai", "agent_turn", turn);
+  assert.equal((await as(u, "GET", `/proxy/openai/v1/agents/sessions/${session}/turns/${turn}`)).status, 200);
+  const read = await until(async () => (await usageOf(u, "openai.tokens")).find((r) => r.detail.ref === turn));
+  assert.equal(read.detail.model, "gpt-6.1-sol");
+  assert.equal(read.cost, 600 * 2 + 400 * 0.1 + 100 * 10);
+  // The stream of the same session.
+  assert.equal((await as(u, "GET", `/proxy/openai/v1/agents/sessions/${session}/events`)).status, 200);
+  const streamed = await until(async () => (await usageOf(u, "openai.tokens")).find((r) => r.detail.ref === `turn_${session}_E`));
+  assert.equal(streamed.cost, 2000 * 2 + 300 * 10);
+  // A session whose model the cloud never saw: the dearest model's price.
+  const unknown = `asess_${tag}_unknown`;
+  await ownObject(u, "openai", "agent_session", unknown);
+  assert.equal((await as(u, "GET", `/proxy/openai/v1/agents/sessions/${unknown}/events`)).status, 200);
+  const dear = await until(async () => (await usageOf(u, "openai.tokens")).find((r) => r.detail.ref === `turn_${unknown}_E`));
+  assert.equal(dear.cost, 2000 * 10 + 300 * 50);
+  assert.equal(await creditLeft(u), 5_000_000 - read.cost - streamed.cost - dear.cost);
+});
+
+test("with no credit left, calls that spend are refused with 402 before they're sent; reads and hanging up still go", async () => {
+  const u = await newUser();
+  const session = `asess_${tag}_gate`;
+  const live = `rtc_${tag}_gate`;
+  await ownObject(u, "openai", "agent_session", session);
+  await ownObject(u, "openai", "live_session", live);
+  for (const left of [0, -25_000]) {
+    await setCredit(u, { free: left });
+    const sent = openai.got.length + agentphone.got.length + typesafe.got.length + tregCalls().length;
+    for (const [path, body] of [
+      ["/proxy/openai/v1/responses", { model: "gpt-6.1-sol", input: "hi" }],
+      ["/proxy/openai/v1/agents/sessions", { agent: { model: "gpt-6.1-sol" } }],
+      [`/proxy/openai/v1/agents/sessions/${session}/events`, { type: "user.message" }],
+      [`/proxy/openai/v1/live/sessions/${live}/accept`, { type: "live" }],
+      ["/proxy/agentphone/v1/messages", { agent_id: "a", number_id: "n", to_number: "+14155550100", body: "hi" }],
+      ["/proxy/agentphone/v1/numbers", { country: "US", type: "sms" }],
+      ["/proxy/typesafe/v1/systemone", { questions: {} }],
+      ["/proxy/treg/call/treg.companies.search", { q: "fintech" }],
+    ] as const) {
+      const r = await as(u, "POST", path, body);
+      assert.equal(r.status, 402, `${path}: ${r.text}`);
+      assert.deepEqual(r.json, { error: "You're out of AI credit, so your bots have stopped. Upgrade in Settings to keep them going.", code: "ai_credit_empty", upgrade: true });
+    }
+    assert.equal(openai.got.length + agentphone.got.length + typesafe.got.length + tregCalls().length, sent, "nothing reached a provider");
+    assert.equal((await as(u, "GET", `/proxy/openai/v1/agents/sessions/${session}/items`)).status, 200);
+    assert.equal((await as(u, "POST", `/proxy/openai/v1/live/sessions/${live}/hangup`)).status, 200);
+    assert.equal((await as(u, "POST", `/proxy/openai/v1/live/sessions/${live}/reject`, { status_code: 486 })).status, 200);
+  }
+  // A call that isn't allowed at all is refused for that, not for the credit.
+  assert.equal((await as(u, "POST", "/proxy/openai/v1/files", {})).status, 403);
+  // An upgrade counts at once: nothing is kept between calls.
+  await query("SELECT public.bops_ai_credit_grant_plan($1, $2, 'pro_bops', 20000000, now(), $3)", [u, `in_${tag}_gate`, inAMonth()]);
+  const after = await as(u, "POST", "/proxy/openai/v1/responses", { model: "gpt-6.1-sol", input: "hi" });
+  assert.equal(after.status, 200, after.text);
+});
+
+/** orgo-web moved the user to billing by use (its plan notice, as cloud/plans.ts keeps it). */
+async function billedByUse(userId: string) {
+  await query(
+    `INSERT INTO bops.plans (user_id, tier, changed_at, source, billing) VALUES ($1, 'free_bops', now(), 'notice', 'usage')
+     ON CONFLICT (user_id) DO UPDATE SET billing = 'usage', changed_at = now()`,
+    [userId],
+  );
+}
+/** An app that knows billing by use (protocol.ts USAGE_MIN_APP_VERSION or later). */
+const NEW_APP = { "x-bops-version": "9.0.0" };
+
+test("billed by use, the 402 and the 403 say Orgo credit and Add credit, never Upgrade, and say how they're billed", async () => {
+  const u = await newUser();
+  await setCredit(u, { free: 0 });
+  await billedByUse(u);
+  const r = await as(u, "POST", "/proxy/openai/v1/responses", { model: "gpt-6.1-sol", input: "hi" }, NEW_APP);
+  assert.equal(r.status, 402, r.text);
+  assert.deepEqual(r.json, { error: "You're out of Orgo credit, so your bots have stopped. Add credit in Settings to keep them going.", code: "ai_credit_empty", upgrade: true, billing: "usage" });
+  // A number's month needs that much credit, as on any plan.
+  const n = await as(u, "POST", "/proxy/agentphone/v1/numbers", { country: "US", type: "sms" }, NEW_APP);
+  assert.equal(n.status, 402, n.text);
+  assert.equal(n.json.billing, "usage");
+  // Too little to start a task (the turn guard's 403) says the same way.
+  const { shortOfCredit, outOfCredit } = await import("../credit.ts");
+  assert.equal(shortOfCredit("usage").message, "There isn't enough Orgo credit left to start this task. Add credit in Settings to keep your bots going.");
+  assert.match(shortOfCredit().message, /AI credit.*Upgrade/);
+  assert.equal(outOfCredit().extra?.billing, undefined, "Bops' plans: as before");
+});
+
+test("POST /v1/session gives a user billed by use no Bops $5: Orgo's signup credit is their start", async () => {
+  const u = await newUser();
+  await billedByUse(u);
+  const r = await as(u, "POST", "/v1/session", undefined, NEW_APP);
+  assert.equal(r.status, 200, r.text);
+  assert.equal(r.json.plan.billing, "usage");
+  assert.equal((await query("SELECT 1 FROM public.bops_ai_credit_grants WHERE user_id = $1", [u])).rowCount, 0, "no free_signup grant asked for");
+});
+
+test("billed by use, a number is spent at cost (kind phone_number) and renewed a month at a time, the plan's number free", async () => {
+  const u = await newUser();
+  await setCredit(u, { free: 20_000_000 });
+  await billedByUse(u);
+  const kinds = async () => (await query<{ kind: string }>("SELECT kind FROM public.bops_test_spends WHERE user_id = $1 ORDER BY id", [u])).rows.map((r) => r.kind);
+  const bought = await as(u, "POST", "/proxy/agentphone/v1/numbers", { country: "US", type: "sms" }, NEW_APP);
+  assert.equal(bought.status, 200, bought.text);
+  await until(async () => (await kinds()).length === 1);
+  assert.deepEqual(await kinds(), ["phone_number"]);
+  // The plan's number they kept: free, never renewed.
+  const planDigits = newNumber().slice(-10);
+  await query("INSERT INTO bops.phone_lines (digits, user_id, e164, plan, status) VALUES ($1, $2, $3, true, 'ready')", [planDigits, u, `+1${planDigits}`]);
+  const { renewUsageNumbers } = await import("../numbers-renew.ts");
+  await renewUsageNumbers();
+  const lines = async () =>
+    (await query<{ plan: boolean; paid: Date | null }>("SELECT plan, paid_until AS paid FROM bops.phone_lines WHERE user_id = $1 ORDER BY plan", [u])).rows;
+  const [bought1, plan1] = await lines();
+  assert.ok(bought1.paid && bought1.paid.getTime() > Date.now() + 29 * 86_400_000, "its purchase paid the first month");
+  assert.equal(plan1.paid, null);
+  assert.equal((await kinds()).length, 1);
+  // The month runs out: one more month charged, once, at cost.
+  await query("UPDATE bops.phone_lines SET paid_until = now() - interval '1 minute' WHERE user_id = $1 AND NOT plan", [u]);
+  await renewUsageNumbers();
+  await renewUsageNumbers();
+  assert.deepEqual(await kinds(), ["phone_number", "phone_number"]);
+  assert.ok((await lines())[0].paid!.getTime() > Date.now() + 29 * 86_400_000);
+  assert.equal((await usageOf(u, "agentphone.numbers")).length, 2);
+});
+
+/* ---------------- A number's month, billed by use ---------------- */
+
+/** A user billed by use with a number bought through the proxy (its first month paid), on Sam in the main workspace, as the app says it. */
+async function usageNumber(credit = 20_000_000) {
+  const u = await newUser();
+  await setCredit(u, { free: credit });
+  await billedByUse(u);
+  const bought = await as(u, "POST", "/proxy/agentphone/v1/numbers", { country: "US", type: "sms" }, NEW_APP);
+  assert.equal(bought.status, 200, bought.text);
+  await until(async () => (await phoneSpends(u)) === 1);
+  await query("UPDATE bops.phone_lines SET bot_id = 'sam', workspace_id = 'ws_main' WHERE user_id = $1 AND number_id = $2", [u, bought.json.id]);
+  return { u, numberId: bought.json.id as string, e164: bought.json.phoneNumber as string, digits: (bought.json.phoneNumber as string).slice(-10) };
+}
+const phoneSpends = async (userId: string) => (await query<{ n: number }>("SELECT count(*)::int AS n FROM public.bops_test_spends WHERE user_id = $1 AND kind = 'phone_number'", [userId])).rows[0].n;
+const lineAt = async (digits: string) =>
+  (
+    await query<{ status: string; unpaid: boolean; paused_at: Date | null; paid_until: Date | null }>(
+      "SELECT status, unpaid, paused_at, paid_until FROM bops.phone_lines WHERE digits = $1",
+      [digits],
+    )
+  ).rows[0];
+const planEvents = async (userId: string) =>
+  (await query<{ payload: Record<string, unknown> }>("SELECT payload FROM bops.cloud_pending WHERE user_id = $1 AND kind = 'plan' ORDER BY id", [userId])).rows.map((r) => r.payload);
+/** The month runs out for the user's numbers (every line of theirs, the free one too). */
+const monthRunsOut = (userId: string) => query("UPDATE bops.phone_lines SET paid_until = now() - interval '1 minute' WHERE user_id = $1", [userId]);
+const renew = async () => (await import("../numbers-renew.ts")).renewUsageNumbers();
+/** An AgentPhone delivery to one of the user's numbers through its agent (signed with the secret the cloud keeps for it). */
+async function deliver(agentId: string, to: string, channel: "sms" | "voice") {
+  const body = JSON.stringify({ event: "agent.message", channel, agentId, data: { id: `m_${randomUUID().slice(0, 6)}`, body: "hi", transcript: "hello", fromNumber: "+14155550111", toNumber: to } });
+  const ts = String(Math.floor(Date.now() / 1000));
+  const headers = {
+    "content-type": "application/json",
+    "x-webhook-id": `whd_${randomUUID().slice(0, 8)}`,
+    "x-webhook-timestamp": ts,
+    "x-webhook-signature": `sha256=${createHmac("sha256", `whsec_${agentId}`).update(`${ts}.${body}`).digest("hex")}`,
+  };
+  return fetch(`${cloud.url}/hooks/agentphone`, { method: "POST", headers, body });
+}
+
+test("billed by use, a number whose month the credit can't pay is paused (calls and texts stop, the Mac told on its bot), asked again each pass, and back on at once when paid, billed monthly from then", async () => {
+  const { u, numberId, e164, digits } = await usageNumber();
+  const agentId = `ag_${tag}_${digits}`;
+  await query("INSERT INTO bops.cloud_agents (agent_id, user_id, secret_sealed) VALUES ($1, $2, $3)", [agentId, u, seal(`whsec_${agentId}`)]);
+  await renew();
+  assert.equal((await lineAt(digits)).status, "ready", "its purchase paid the first month");
+  // The month runs out with $1 left, less than a number's month: not charged, paused.
+  await setCredit(u, { free: 1_000_000 });
+  await monthRunsOut(u);
+  await renew();
+  const paused = await lineAt(digits);
+  assert.deepEqual([paused.status, paused.unpaid], ["paused", true]);
+  assert.ok(paused.paused_at && Math.abs(paused.paused_at.getTime() - Date.now()) < 60_000);
+  assert.equal(await phoneSpends(u), 1, "nothing charged");
+  assert.equal(await creditLeft(u), 1_000_000);
+  // The Mac is told, on the bot the number is for, with the day it's given back.
+  const told = await planEvents(u);
+  assert.equal(told.length, 1);
+  assert.deepEqual(told[0], {
+    tier: "free_bops",
+    billing: "usage",
+    botId: "sam",
+    workspaceId: "ws_main",
+    phone: { number: e164, numberId, agentId: "", status: "paused", renewal: { releaseAt: new Date(paused.paused_at!.getTime() + 30 * 86_400_000).toISOString() } },
+  });
+  // Calls and texts to it go unanswered (nothing kept for the Mac), and none go out from it.
+  assert.equal((await deliver(agentId, e164, "sms")).status, 200);
+  assert.equal((await query("SELECT count(*)::int AS n FROM bops.cloud_pending WHERE user_id = $1 AND kind = 'agentphone'", [u])).rows[0].n, 0);
+  assert.deepEqual(await (await deliver(agentId, e164, "voice")).json(), { text: "This number is paused right now. Goodbye.", hangup: true });
+  const text = () => as(u, "POST", "/proxy/agentphone/v1/messages", { agent_id: agentId, number_id: numberId, to_number: "+14155550100", body: "hi" }, NEW_APP);
+  const sent = agentphone.got.filter((g) => g.path === "/v1/messages").length;
+  const refused = await text();
+  assert.equal(refused.status, 402, refused.text);
+  assert.deepEqual(refused.json, { error: "This number is paused because your Orgo credit ran out. Add credit to text from it again.", code: "number_unpaid", billing: "usage" });
+  assert.equal(agentphone.got.filter((g) => g.path === "/v1/messages").length, sent, "nothing reached AgentPhone");
+  // Asked again each pass: still short, never charged, and told only once.
+  await renew();
+  await renew();
+  assert.deepEqual([(await lineAt(digits)).status, await phoneSpends(u), (await planEvents(u)).length], ["paused", 1, 1]);
+  // Credit added: the next pass pays it, it's back on at once, and paid a month from today.
+  await setCredit(u, { free: 10_000_000 });
+  assert.equal(await renew(), 1);
+  const back = await lineAt(digits);
+  assert.deepEqual([back.status, back.unpaid, back.paused_at], ["ready", false, null]);
+  assert.ok(Math.abs(back.paid_until!.getTime() - (Date.now() + 30 * 86_400_000)) < 60_000, "billed monthly from the day it was paid");
+  assert.equal(await phoneSpends(u), 2);
+  assert.equal(await creditLeft(u), 7_000_000);
+  const backOn = (await planEvents(u)).at(-1)!;
+  assert.deepEqual([backOn.botId, backOn.phone], ["sam", { number: e164, numberId, agentId: "", status: "ready", renewal: {} }]);
+  assert.equal((await text()).status, 200, "texts go out again");
+  // More passes in the same month charge nothing more.
+  await renew();
+  await renew();
+  assert.equal(await phoneSpends(u), 2);
+  assert.equal((await usageOf(u, "agentphone.numbers")).length, 2);
+});
+
+test("billed by use, a number still unpaid 30 days after its pause is given back, and the Mac told; the plan's free number is never paused", async () => {
+  const { u, numberId, e164, digits } = await usageNumber();
+  // The plan's number they kept: free, never charged, so never paused for its month.
+  const planDigits = newNumber().slice(-10);
+  await query("INSERT INTO bops.phone_lines (digits, user_id, number_id, e164, plan, status) VALUES ($1, $2, $3, $4, true, 'ready')", [planDigits, u, `num_plan_${planDigits}`, `+1${planDigits}`]);
+  await query("INSERT INTO bops.cloud_numbers (digits, user_id, number_id, e164) VALUES ($1, $2, $3, $4) ON CONFLICT (digits) DO NOTHING", [digits, u, numberId, e164]);
+  await renew();
+  await setCredit(u, { free: 0 });
+  await monthRunsOut(u);
+  await renew();
+  assert.deepEqual([(await lineAt(digits)).status, (await lineAt(planDigits)).status, (await lineAt(planDigits)).unpaid], ["paused", "ready", false]);
+  // Given back only by the release (sweep's, here for this user alone), and only 30 days after the pause.
+  const tellIt = (userId: string, item: { phone?: Parameters<typeof tellAboutLine>[1] }, on?: Parameters<typeof tellAboutLine>[2]) => tellAboutLine(userId, item.phone!, on);
+  const release = () => releaseAfterPause(tellIt, (userId, work) => (userId === u ? work() : Promise.resolve(false as never)));
+  await release();
+  assert.equal((await lineAt(digits)).status, "paused", "not before 30 days");
+  await renew();
+  await query("UPDATE bops.phone_lines SET paused_at = now() - interval '31 days' WHERE digits = $1", [digits]);
+  assert.equal(await release(), 1);
+  assert.equal((await lineAt(digits)).status, "released");
+  assert.ok(agentphone.got.some((g) => g.method === "DELETE" && g.path === `/v1/numbers/${numberId}` && g.headers["x-sub-account-id"] === `sub_${u}`), "given back to AgentPhone");
+  assert.equal((await query("SELECT count(*)::int AS n FROM bops.cloud_numbers WHERE digits = $1", [digits])).rows[0].n, 0);
+  const gone = (await planEvents(u)).at(-1)!;
+  assert.deepEqual([gone.botId, gone.workspaceId, gone.phone], ["sam", "ws_main", { number: e164, numberId, agentId: "", status: "released", renewal: {} }]);
+  // The free number: still on, never charged; given back numbers aren't charged either.
+  assert.deepEqual([(await lineAt(planDigits)).status, (await lineAt(planDigits)).unpaid], ["ready", false]);
+  await setCredit(u, { free: 10_000_000 });
+  await renew();
+  assert.equal(await phoneSpends(u), 1, "only the purchase");
+  assert.equal((await lineAt(digits)).status, "released");
+});
+
+test("billed by use, a month charged by a pass that stopped before moving on is never charged again, nor paused for the credit it took", async () => {
+  const { u, digits } = await usageNumber(6_500_000);
+  await renew();
+  await monthRunsOut(u);
+  const { paid_until } = (await query<{ paid_until: string }>("SELECT to_char(paid_until AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS paid_until FROM bops.phone_lines WHERE digits = $1", [digits])).rows[0];
+  // That pass charged the month, then stopped: $0.50 is left, less than a month.
+  await recordUsageFor(u, "agentphone.numbers", `renew:${digits}:${paid_until}`, 1, { type: "number", renewal: true });
+  assert.equal(await creditLeft(u), 500_000);
+  assert.equal(await renew(), 1);
+  const l = await lineAt(digits);
+  assert.deepEqual([l.status, l.unpaid], ["ready", false]);
+  assert.ok(l.paid_until!.getTime() > Date.now() + 29 * 86_400_000, "moved on a month");
+  assert.equal(await phoneSpends(u), 2, "the purchase and the one month");
+  assert.equal((await planEvents(u)).length, 0, "nothing to tell");
+});
+
+test("a number paused for its month comes back on when the user is moved back to Bops' plans: nothing bills it by the month there", async () => {
+  const { u, digits } = await usageNumber();
+  await renew();
+  await setCredit(u, { free: 0 });
+  await monthRunsOut(u);
+  await renew();
+  assert.equal((await lineAt(digits)).status, "paused");
+  await query("UPDATE bops.plans SET billing = 'plan', changed_at = now() WHERE user_id = $1", [u]);
+  await renew();
+  assert.deepEqual([(await lineAt(digits)).status, (await lineAt(digits)).unpaid], ["ready", false]);
+  const back = (await planEvents(u)).at(-1)!;
+  assert.deepEqual([back.billing, back.botId, (back.phone as { status: string }).status], [undefined, "sam", "ready"]);
+});
+
+test("a treg call may cost at most what's left of the credit", async () => {
+  const u = await newUser();
+  await setCredit(u, { free: 30_000 });
+  assert.equal((await as(u, "POST", "/proxy/treg/call/treg.companies.search", { q: "fintech" }, { "x-treg-route-max-cost": "1" })).status, 200);
+  assert.equal(tregCalls().at(-1)!.headers["x-treg-route-max-cost"], "0.030000");
+});
+
+test("treg calls at once share what's left: each holds its cap until it's counted, so together they never cost more", async () => {
+  const u = await newUser();
+  await setCredit(u, { free: 30_000 });
+  const before = tregCalls().length;
+  // Three at once, each asking for up to $1, with $0.03 left.
+  const three = await Promise.all([0, 1, 2].map(() => as(u, "POST", "/proxy/treg/call/treg.companies.slow", { q: "fintech" }, { "x-treg-route-max-cost": "1" })));
+  assert.deepEqual(three.map((r) => r.status).sort(), [200, 429, 429]);
+  assert.match(three.find((r) => r.status === 429)!.json.error, /using what's left of your credit/);
+  const caps = tregCalls().slice(before).map((g) => Number(g.headers["x-treg-route-max-cost"]));
+  assert.deepEqual(caps, [0.03], "one went, capped at what was left");
+  // Counted (at $0 here) and given back: the next one has the room again.
+  assert.equal((await as(u, "POST", "/proxy/treg/call/treg.companies.slow", { q: "fintech" }, { "x-treg-route-max-cost": "1" })).status, 200);
+  assert.equal(tregCalls().at(-1)!.headers["x-treg-route-max-cost"], "0.030000");
+});
+
+test("a number needs credit for its month: an iMessage line's is far more", async () => {
+  const u = await newUser();
+  await setCredit(u, { free: 4_000_000 });
+  const line = await as(u, "POST", "/proxy/agentphone/v1/numbers", { country: "US", type: "imessage", imessageType: "outbound" });
+  assert.equal(line.status, 402, line.text);
+  assert.equal(line.json.code, "ai_credit_empty");
+  const number = await as(u, "POST", "/proxy/agentphone/v1/numbers", { country: "US", areaCode: "415", type: "sms" });
+  assert.equal(number.status, 200, number.text);
+  const bought = await until(async () => (await usageOf(u, "agentphone.numbers"))[0]);
+  assert.equal(bought.cost, 3_000_000);
+  assert.equal(await creditLeft(u), 1_000_000);
+});
+
+test("texts are paid by segment, sent or received, and a received one once however often it's delivered", async () => {
+  const u = await newUser();
+  await setCredit(u, { free: 1_000_000 });
+  const sent = await as(u, "POST", "/proxy/agentphone/v1/messages", { agent_id: "a", number_id: "n", to_number: "+14155550100", body: "x".repeat(200) });
+  assert.equal(sent.status, 200, sent.text);
+  const out = await until(async () => (await usageOf(u, "agentphone.sms"))[0]);
+  assert.deepEqual([out.units, out.cost, out.detail.direction], [2, 40_000, "out"]);
+
+  const agentId = `ag_${tag}_in`;
+  await query("INSERT INTO bops.cloud_agents (agent_id, user_id, secret_sealed) VALUES ($1, $2, $3)", [agentId, u, seal("whsec_in")]);
+  const body = JSON.stringify({ event: "agent.message", channel: "sms", agentId, data: { id: "m1", body: "hello there", fromNumber: "+14155550111" } });
+  const ts = String(Math.floor(Date.now() / 1000));
+  const headers = { "content-type": "application/json", "x-webhook-id": `whd_${tag}`, "x-webhook-timestamp": ts, "x-webhook-signature": `sha256=${createHmac("sha256", "whsec_in").update(`${ts}.${body}`).digest("hex")}` };
+  for (let i = 0; i < 2; i++) assert.equal((await fetch(`${cloud.url}/hooks/agentphone`, { method: "POST", headers, body })).status, 200);
+  await until(async () => (await usageOf(u, "agentphone.sms")).length === 2);
+  const rows = await usageOf(u, "agentphone.sms");
+  assert.deepEqual([rows[1].units, rows[1].cost, rows[1].detail.direction], [1, 20_000, "in"]);
+  assert.equal(await creditLeft(u), 1_000_000 - 60_000);
+});
+
+test("POST /v1/session gives a new user their one-time $5", async () => {
+  const u = await newUser();
+  assert.equal((await query("SELECT 1 FROM public.bops_ai_credit_grants WHERE user_id = $1", [u])).rowCount, 0);
+  const r = await as(u, "POST", "/v1/session");
+  assert.equal(r.status, 200, r.text);
+  assert.deepEqual((await query("SELECT kind, amount_micros::float8 AS amount FROM public.bops_ai_credit_grants WHERE user_id = $1", [u])).rows, [{ kind: "free_signup", amount: 5_000_000 }]);
+  assert.equal((await as(u, "POST", "/v1/session")).status, 200);
+  assert.equal(await creditLeft(u), 5_000_000);
+});
+
+test("the cloud turns the owner's call away (402) when they're out of credit, instead of answering it", async () => {
+  const u = await newUser();
+  const line = { phone: newNumber(), numberId: `num_${tag}`, agentId: `agt_${tag}`, type: "sms", scope: "sub", at: 1 };
+  const mobile = newNumber();
+  const state = {
+    owner: { name: "Alex" },
+    bots: [{ id: "sam", name: "Sam", role: "Chief of Staff", isMain: true, computerStatus: "none" }],
+    workspaces: [{ id: "ws_main", name: "Main", createdAt: 1, line }],
+    ownerPhones: [{ number: mobile, consentAt: 1, verifiedAt: 2, userId: u }],
+  };
+  await query("UPDATE bops.app_state SET state = $2::jsonb WHERE user_id = $1", [u, JSON.stringify(state)]);
+  // The owner is who bops.owner_phones says (lines.ts), never the state.
+  await query("INSERT INTO bops.owner_phones (orgo_user_id, phone_e164, consent_at, verified_at) VALUES ($1, $2, now(), now()) ON CONFLICT DO NOTHING", [u, mobile]);
+  await setCredit(u, { free: 0 });
+  const sessionId = `rtc_${tag}_call`;
+  const event = {
+    type: "live.transport.incoming",
+    data: { type: "sip", session_id: sessionId, sip_headers: [{ name: "From", value: `<sip:${mobile}@sip.example.net>` }, { name: "To", value: `<sip:${line.phone}@sip.api.openai.com>` }] },
+  };
+  const before = openai.got.length;
+  await calls.answerInCloud(u, event);
+  const controls = openai.got.slice(before).filter((g) => g.path.startsWith(`/v1/live/sessions/${sessionId}/`));
+  assert.deepEqual(
+    controls.map((g) => [g.path.split("/").pop(), g.json]),
+    [["reject", { status_code: 402 }]],
+  );
+});
+
+test("with AI credit on, the cloud won't start without access to orgo-web's ledger", async () => {
+  await checkCreditAccess();
+  const run = () =>
+    new Promise<{ code: number | null; err: string }>((resolve) => {
+      const child = spawn(process.execPath, [fileURLToPath(new URL("../server.ts", import.meta.url))], {
+        env: { ...process.env, BOPS_AI_CREDITS: "1", BOPS_DATABASE_URL: TEST_DATABASE_URL, BOPS_CLOUD_PORT: "0" },
+        stdio: ["ignore", "ignore", "pipe"],
+      });
+      let err = "";
+      child.stderr.on("data", (d: Buffer) => (err += d.toString()));
+      const timer = setTimeout(() => child.kill(), 10_000);
+      child.on("exit", (code) => {
+        clearTimeout(timer);
+        resolve({ code, err });
+      });
+    });
+  // This test database's owner made the ledger, so it takes its own access away for a moment, once no
+  // other test file is using the ledger (they hold LEDGER_IN_USE shared while they run).
+  const lock = new pg.Client({ connectionString: TEST_DATABASE_URL });
+  await lock.connect();
+  await lock.query("SELECT pg_advisory_lock(hashtext($1))", [LEDGER_IN_USE]);
+  await query("REVOKE UPDATE ON public.bops_ai_credit FROM CURRENT_USER");
+  try {
+    await assert.rejects(checkCreditAccess(), /BOPS_AI_CREDITS=1/);
+    const r = await run();
+    assert.equal(r.code, 1);
+    assert.match(r.err, /failed to start: .*BOPS_AI_CREDITS=1, but this login can't use public\.bops_ai_credit/);
+  } finally {
+    await query("GRANT UPDATE ON public.bops_ai_credit TO CURRENT_USER");
+    await lock.end();
+  }
+  await checkCreditAccess();
+});

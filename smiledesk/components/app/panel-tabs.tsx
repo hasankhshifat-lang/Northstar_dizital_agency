@@ -1,0 +1,628 @@
+"use client";
+
+import { createContext, createElement, useEffect, useRef, useState } from "react";
+import { APPS_NAME, appsLine } from "@/lib/apps-access";
+import { GROUP_NAME } from "@/lib/memory-categories";
+import { live, type AppState, type Bot } from "@/lib/types";
+import { computerOf } from "@/lib/screens";
+import { AutopilotIcon, type AutopilotSection } from "./autopilot";
+import type { Section } from "./bot-panel";
+import { CrmFileIcon } from "./crm";
+import { Mascot } from "./mascot";
+import { MacIcon } from "./mac-tab";
+import { AppMark, AppsIcon } from "./made-apps";
+import { KnowledgeIcon, type OrbitSection } from "./memory-categories";
+import { KeyIcon } from "./screen-cards";
+import { MonitorIcon, teamOf } from "./ui";
+import { readOnly, seesBrowser } from "@/lib/shared";
+
+/*
+ * The right side is a row of tabs in the title bar, like a browser's. The first tab is always the
+ * computer of whoever you're chatting with, and follows the chat; the rest are what you opened:
+ * another bot's computer, a bot's profile, a web page (links in the chat open here).
+ */
+
+export type PanelTab =
+  | { id: string; kind: "computer"; botId: string }
+  | { id: string; kind: "bot"; botId: string; section: Section }
+  | { id: string; kind: "web"; url: string; title?: string }
+  | { id: string; kind: "new" }
+  | { id: string; kind: "vault"; keysFor?: string }
+  | { id: string; kind: "mac" }
+  /** A CRM file (crm.tsx), in the workspace it belongs to. */
+  | { id: string; kind: "crm"; ws: string; file: string }
+  /**
+   * What Bops knows, one section at a time (memory-categories.tsx; Issues, orbit-issues.tsx): one tab per workspace, at the item
+   * asked for (`focus`), or with a search filled in (`query`: Show all, from the sidebar's search; it's
+   * taken off once the page has filled it in). `focusAt` is when they were asked for, so asking again
+   * for the same one shows it again.
+   */
+  | { id: string; kind: "memory"; ws: string; category: OrbitSection; focus?: string; focusAt?: number; query?: string }
+  /**
+   * Autopilot (autopilot.tsx): what the workspace's bots do on their own, a section at a time. One tab per
+   * workspace, at the row asked for (`focus`) and the bot asked for (`bot`: only its, from its profile);
+   * `focusAt` is when they were asked for, so asking again shows them again.
+   */
+  | { id: string; kind: "autopilot"; ws: string; section: AutopilotSection; focus?: string; focusAt?: number; bot?: string }
+  /** An app a bot made (made-apps.tsx): built live here, then used. */
+  | { id: string; kind: "made-app"; appId: string }
+  /** Every app the bots made in a workspace, as tiles (made-apps.tsx). */
+  | { id: string; kind: "made-apps"; ws: string }
+  /** An app a workspace runs on the web, by its Ingot repo's name (hosted-apps.tsx): its address, history and deploys. */
+  | { id: string; kind: "hosted-app"; ws: string; name: string }
+  /**
+   * An app's Local, live beside its bot's chat (preview-tab.tsx): its dev server on its computer, seen at
+   * http://localhost:<its port> on this Mac (`url`), in a session of its own (previewPartition). `bot`: the bot whose
+   * copy of the app it's of (lib/hosted-apps.ts copyBotOf; none: the app's own folder's). Never saved.
+   */
+  | { id: string; kind: "preview"; ws: string; name: string; site?: string; bot?: string; url: string }
+  /** A bot's browser (bot-browser.tsx): the page in front on the screen its task holds, live, to watch and take over. Never saved. */
+  | { id: string; kind: "browser"; botId: string };
+
+/** The tab that follows the chat. */
+export const CHAT_TAB = "chat";
+/**
+ * The tab beside it, for the owner and an Admin: the chat's bot's browser (bot-browser.tsx), when that bot works on a
+ * computer (browserBeside). It follows the chat too, and doesn't close. A Member's has no second tab: their first tab
+ * is the browser.
+ */
+export const BROWSER_TAB = "browser";
+
+/**
+ * Whether the viewer has `bot`'s browser in a tab beside its computer's: the owner, for a bot on a computer that's up; an
+ * Admin of a shared workspace (whose computer tab is the live view, SharedScreen), for a bot whose computer Bops Cloud
+ * shows them (SharedOpen.screens).
+ */
+export const browserBeside = (state: AppState, bot: Bot | undefined): bot is Bot =>
+  !!bot && bot.runsOn !== "mac" && (state.shared ? state.shared.role === "admin" && !!state.shared.screens?.includes(bot.id) : computerOf(state, bot)?.computerStatus === "ready");
+
+/**
+ * Whether the viewer may use `bot`'s browser here: the owner and an Admin (beside the computer, browserBeside); a Member
+ * the owner gave Write on it and Use its computer (in place of the computer, seesBrowser). Bops Cloud checks again
+ * before it shows a frame (cloud/browser.ts mayUseBrowser, by Bops Cloud's roles).
+ */
+export const browsesHere = (state: AppState, bot: Bot | undefined): bot is Bot => browserBeside(state, bot) || (!!bot && seesBrowser(state, bot));
+
+/** The browser tab beside the chat's computer (BROWSER_TAB): the owner's and an Admin's, for a bot it's for (browserBeside); else null. */
+export function browserTabOf(state: AppState, chatBotId: string): PanelTab | null {
+  const b = state.bots.find((x) => x.id === chatBotId);
+  return browserBeside(state, b) ? { id: BROWSER_TAB, kind: "browser", botId: chatBotId } : null;
+}
+
+/**
+ * Links that open in a bot's browser (bops-app.tsx): `may`, whether a link in that bot's message does for this viewer
+ * (it's someone who may use its browser; the owner's localhost links keep Local, its preview), or with no link, whether
+ * they may use it at all; `open`, its browser
+ * shown with the page opened there in the viewer's control (or asked first, when a bot step is using it). Null where
+ * there's no panel.
+ */
+export const OpenInBrowser = createContext<{ may: (botId: string, url?: string) => boolean; open: (botId: string, url: string, here?: boolean) => void } | null>(null);
+
+/**
+ * A page to open in a bot's browser, asked for at `at`: the browser showing that bot takes it (bot-browser.tsx) and says
+ * so (`took`), and the ask is dropped, so a browser shown again later never opens it again. It opens in a new tab, the
+ * bot's own page left as it was, unless `here`: in the tab in front (a sign in the bot asked for, on its own page).
+ */
+export type BrowserGo = { botId: string; url: string; at: number; here?: boolean };
+export const BrowserGoTo = createContext<{ go: BrowserGo | null; took: (at: number) => void } | null>(null);
+
+/** A tab you're reading (a page, Logins, a CRM file, Knowledge and Skills in it, a profile, Routines, an app a bot made, an app on the web or the Apps home): a new "Needs you" doesn't take the panel from it. */
+export const isReading = (t?: PanelTab) =>
+  !!t &&
+  (t.kind === "web" ||
+    t.kind === "vault" ||
+    t.kind === "crm" ||
+    t.kind === "memory" ||
+    t.kind === "bot" ||
+    t.kind === "autopilot" ||
+    t.kind === "made-app" ||
+    t.kind === "hosted-app" ||
+    t.kind === "preview" ||
+    t.kind === "browser" ||
+    t.kind === "made-apps");
+
+/**
+ * The Knowledge tab, opened again for a kind, an item or a search: on the kind asked for, else where it
+ * was, except that a search asked for on Issues (whose page doesn't search) goes to All.
+ */
+export function memoryAgain(t: Extract<PanelTab, { kind: "memory" }>, { category, focus, query }: { category?: OrbitSection; focus?: string; query?: string }, focusAt: number): PanelTab {
+  const to = category ?? (query && t.category === "issues" ? "all" : t.category);
+  return { ...t, category: to, focus, focusAt, query };
+}
+
+/** Open a link as a tab on the right; null outside the app (links then open in the browser). */
+export const OpenLink = createContext<((url: string, title?: string) => void) | null>(null);
+
+/** What Open preview said when it couldn't show Local beside the chat: why, and whether it opened on the bot's screen instead. */
+export type PreviewOpened = { error?: string; screen?: true; said?: string };
+
+/**
+ * Open an app's Local beside its bot's chat (bops-app.tsx openPreview): its chat, its Local started when it isn't,
+ * and its Preview tab, or its bot's screen when this Mac can't reach it; `bot`: of that bot's copy of the app, in its
+ * chat (none: the app's own folder's, beside its own bot's). Null where there's no panel.
+ */
+export const OpenPreview = createContext<((ws: string, name: string, site?: string, bot?: string) => Promise<PreviewOpened>) | null>(null);
+
+/** A localhost link a bot gave in its chat, opened as its app's preview (else on its screen); null where there's no panel. */
+export const OpenBotLocal = createContext<((botId: string, url: string) => void) | null>(null);
+/**
+ * In a workspace shared with the user: its bots, for what a localhost link of theirs says instead of opening (it
+ * opens only on that bot's computer, never on this Mac: lib/plain-words.ts localOnlyLine). Null in their own.
+ */
+export const LocalOnly = createContext<readonly { id: string; name: string }[] | null>(null);
+
+/**
+ * The session an app's preview loads in: its own, per Bops user, workspace, app, site and copy (`bot`: a bot's copy
+ * of the app), so its cookies, storage and service workers never mix with another app's, another site's of it or
+ * another copy's (each on its own localhost port, and cookies don't go by port), a web tab's, or the window's (whose
+ * cookie is on localhost too). The app's own site of its own folder keeps the name it always had, so a sign in there
+ * stays.
+ */
+export const previewPartition = (user: string | undefined, ws: string, app: string, site?: string, bot?: string) =>
+  `persist:bops-preview-${[user || "me", ws, app, ...(site && site !== app ? [site] : []), ...(bot ? [`by_${bot}`] : [])].map((x) => x.replace(/[^A-Za-z0-9_]/g, "_").slice(0, 40)).join("-")}`;
+
+/** Whether this is the Mac app (Electron): web pages open in webviews, and apps the bots made run in one of their own (made-apps.tsx). */
+export const electron = () => typeof navigator !== "undefined" && navigator.userAgent.includes("Electron");
+
+export const hostOf = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+};
+
+/**
+ * The tabs the bar has shown, kept while it's away (it's unmounted while the side panel is hidden). A
+ * tab that opens later slides in; the ones there when Bops opened, or back as the panel shows again,
+ * are simply there.
+ */
+const shownTabs = new Set<string>();
+let barShown = false;
+
+/** A tab closed (not just out of sight): opened again, it slides in again. */
+export const forgetTab = (id: string) => void shownTabs.delete(id);
+
+export function TabBar({
+  state,
+  tabs,
+  active,
+  chatBotId,
+  onPick,
+  onClose,
+  onNew,
+}: {
+  state: AppState;
+  tabs: PanelTab[];
+  active: string;
+  chatBotId: string;
+  onPick: (id: string) => void;
+  onClose: (id: string) => void;
+  onNew: () => void;
+}) {
+  useEffect(() => {
+    barShown = true;
+  }, []);
+  const browser = browserTabOf(state, chatBotId);
+  const all: PanelTab[] = [{ id: CHAT_TAB, kind: "computer", botId: chatBotId }, ...(browser ? [browser] : []), ...tabs];
+  return (
+    <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
+      {all.map((t) => (
+        <Tab key={t.id} state={state} tab={t} on={t.id === active} closable={t.id !== CHAT_TAB && t.id !== BROWSER_TAB} onPick={() => onPick(t.id)} onClose={() => onClose(t.id)} />
+      ))}
+      {/* A workspace shared with the user: its New tab page lists the owner's things to open as if they were the viewer's (no new tab there). */}
+      {!readOnly(state) && (
+        <button
+          onClick={onNew}
+          title="New tab"
+          aria-label="New tab"
+          className="flex size-7 shrink-0 items-center justify-center rounded-lg text-[#6B6B6B] hover:bg-[#EEEEEC] hover:text-ink [-webkit-app-region:no-drag]"
+        >
+          <svg width="13" height="13" viewBox="0 0 14 14">
+            <path d="M7 2v10M2 7h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}
+
+function Tab({ state, tab: t, on, closable, onPick, onClose }: { state: AppState; tab: PanelTab; on: boolean; closable: boolean; onPick: () => void; onClose: () => void }) {
+  // New since the bar first showed, decided once as it mounts (see shownTabs).
+  const [opening] = useState(() => barShown && !shownTabs.has(t.id));
+  useEffect(() => {
+    shownTabs.add(t.id);
+  }, [t.id]);
+  const b = "botId" in t ? state.bots.find((x) => x.id === t.botId) : undefined;
+  // An app on the web is named as its Ingot repo is.
+  const hosted = t.kind === "hosted-app" || t.kind === "preview" ? { id: `${t.ws}/${t.name}`, title: t.name } : undefined;
+  // A computer tab says when its bot is working, or when something there needs you. Your Mac's never for
+  // the owner's work in a workspace shared with the user: that's the owner's Mac, not the viewer's.
+  const working =
+    (t.kind === "computer" && state.sessions.some((s) => s.botId === t.botId && live(s) && s.runsOn !== "mac")) ||
+    (t.kind === "mac" && !state.shared && state.sessions.some((s) => s.runsOn === "mac" && live(s)));
+  const needsYou =
+    // (A watched web page has no screen there: its news shows on Autopilot instead.) Never in a shared
+    // workspace: what waits there waits on its owner, never the viewer.
+    !state.shared &&
+    t.kind === "computer" &&
+    (state.watches?.some((w) => w.botId === t.botId && !w.page && w.alert) || state.sessions.some((s) => s.botId === t.botId && live(s) && s.blocker));
+  // The computer it works on: its own, or the main bot's it shares (lib/screens.ts), named for whose it is.
+  const host = b ? computerOf(state, b) : undefined;
+  const label =
+    t.kind === "browser"
+      ? `${b?.name ?? "Bot"}'s browser`
+      : t.kind === "computer"
+      ? // A shared workspace's computers are its owner's, whichever bot's name the owner's Bops gives them; a bot whose
+        // browser the viewer sees there (seesBrowser) shows it in this tab.
+        state.shared
+        ? b && seesBrowser(state, b)
+          ? `${b.name}'s browser`
+          : b?.runsOn === "mac"
+          ? "Owner's Mac"
+          : "Owner's computer"
+        : host && host.id !== b?.id
+        ? `${host.name}'s computer`
+        : `${b?.name ?? "Bot"}'s computer`
+      : t.kind === "bot"
+        ? (b?.name ?? "Bot")
+        : t.kind === "web"
+          ? t.title || hostOf(t.url)
+          : t.kind === "vault"
+            ? "Logins"
+            : t.kind === "made-app"
+              ? (state.madeApps?.find((a) => a.id === t.appId)?.title ?? "App")
+              : t.kind === "made-apps"
+                ? APPS_NAME
+                : hosted
+                  ? hosted.title
+                : t.kind === "mac"
+              ? "Your Mac"
+              : t.kind === "crm"
+                ? t.file
+                : t.kind === "memory"
+                  ? GROUP_NAME
+                  : t.kind === "autopilot"
+                    ? "Routines"
+                    : "New tab";
+  return (
+    <div
+      onClick={onPick}
+      onAuxClick={(e) => e.button === 1 && closable && onClose()}
+      title={t.kind === "web" ? t.url : t.kind === "preview" ? `${label}, ${t.url.replace(/^http:\/\//, "").replace(/\/$/, "")}` : label}
+      // Clipped, so what's in a tab stays inside it while it opens up.
+      className={`group/tab flex h-[30px] min-w-0 max-w-[220px] shrink cursor-pointer items-center gap-1.5 overflow-hidden rounded-[10px] pl-2.5 ${closable ? "pr-1" : "pr-3"} text-[13px] leading-4 transition-[background-color,box-shadow,color] duration-150 ease-out motion-reduce:transition-none [-webkit-app-region:no-drag] ${
+        opening ? "motion-tab-in" : ""
+      } ${on ? "bg-white text-ink shadow-[0_0_0_1px_#0000000F,0_2px_6px_-3px_#00000026]" : "text-[#6B6B6B] hover:bg-[#EEEEEC]"}`}
+    >
+      {t.kind === "computer" && !(b && seesBrowser(state, b)) ? (
+        <MonitorIcon size={14} color={on ? "#0A0A0A" : "#6B6B6B"} />
+      ) : t.kind === "bot" && b ? (
+        <Mascot botId={b.id} color={b.color} size={15} antenna={false} />
+      ) : t.kind === "vault" ? (
+        <KeyIcon />
+      ) : t.kind === "mac" ? (
+        <MacIcon />
+      ) : t.kind === "crm" ? (
+        <CrmFileIcon />
+      ) : t.kind === "memory" ? (
+        <KnowledgeIcon />
+      ) : t.kind === "autopilot" ? (
+        <AutopilotIcon />
+      ) : t.kind === "made-app" ? (
+        <AppMark app={state.madeApps?.find((a) => a.id === t.appId) ?? { id: t.appId, title: "App" }} size={15} />
+      ) : hosted ? (
+        <AppMark app={hosted} size={15} />
+      ) : t.kind === "made-apps" ? (
+        <AppsIcon />
+      ) : (
+        <GlobeIcon />
+      )}
+      <span className={`truncate ${on ? "font-medium" : ""}`}>{label}</span>
+      {needsYou ? (
+        <span className="size-[7px] shrink-0 rounded-full bg-highlighter shadow-[0_0_0_1.5px_#0A0A0A]" title="Needs you" />
+      ) : t.kind === "made-app" && state.madeApps?.find((a) => a.id === t.appId)?.building ? (
+        <span className="size-[7px] shrink-0 animate-pulse rounded-full bg-highlighter shadow-[0_0_0_1.5px_#0A0A0A]" title="Building" />
+      ) : working ? (
+        <span className="size-[6px] shrink-0 animate-pulse rounded-full bg-[#2BB673]" title="Working" />
+      ) : null}
+      {closable && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          aria-label={`Close ${label}`}
+          className={`flex size-5 shrink-0 items-center justify-center rounded-md hover:bg-black/[0.06] ${on ? "" : "opacity-0 group-hover/tab:opacity-100"}`}
+        >
+          <svg width="9" height="9" viewBox="0 0 12 12">
+            <path d="M2 2l8 8M10 2l-8 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}
+
+function GlobeIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" className="shrink-0">
+      <circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M1.8 8h12.4M8 1.8c1.8 1.7 2.6 3.8 2.6 6.2s-.8 4.5-2.6 6.2M8 1.8C6.2 3.5 5.4 5.6 5.4 8s.8 4.5 2.6 6.2" fill="none" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
+type WebviewElement = HTMLElement & { goBack: () => void; goForward: () => void; reload: () => void; getURL: () => string; canGoBack: () => boolean; loadURL: (url: string) => Promise<void> };
+
+/** What was typed in an address bar, as a URL: an address as is (https:// added), anything else a Google search. */
+export const toAddress = (typed: string) => {
+  const a = typed.trim();
+  return /^[a-z]+:\/\//i.test(a) ? a : /\s/.test(a) || !a.includes(".") ? `https://www.google.com/search?q=${encodeURIComponent(a)}` : `https://${a}`;
+};
+
+/**
+ * A web page in a tab. In the Mac app it's a real browser view (its own signed-in session, kept
+ * across launches); in a plain browser tab it's a frame, which some sites refuse, hence the
+ * "Open in browser" button.
+ */
+const webPartition = (user?: string) => (user ? `persist:bops-web-${user.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 80)}` : "persist:bops-web");
+
+/**
+ * A web page in a tab. In the Mac app its cookies and storage are the signed-in Orgo user's own
+ * (`user`: a partition each), so another account signed in on this Mac never sees their sign-ins.
+ */
+export function WebTab({ url, hidden, user, onPage, botBrowser }: { url: string; hidden: boolean; user?: string; onPage: (url: string, title: string) => void; botBrowser?: { name: string; open: (url: string) => void } }) {
+  // The tab loads its first address once; navigating inside it doesn't reload it from here.
+  const [src, setSrc] = useState(url);
+  const [at, setAt] = useState(url);
+  // What's in the address bar while the user edits it (null: it shows the page's address).
+  const [typing, setTyping] = useState<string | null>(null);
+  const go = (typed: string) => {
+    if (!typed.trim()) return;
+    const next = toAddress(typed);
+    setTyping(null);
+    setAt(next);
+    if (native && view) void view.loadURL(next).catch(() => {});
+    else setSrc(next);
+  };
+  const [view, setView] = useState<WebviewElement | null>(null);
+  const report = useRef(onPage);
+  useEffect(() => {
+    report.current = onPage;
+  });
+  const native = electron();
+
+  useEffect(() => {
+    const el = view;
+    if (!el || !native) return;
+    const page = () => {
+      setAt(el.getURL());
+      report.current(el.getURL(), (el as unknown as { getTitle: () => string }).getTitle());
+    };
+    for (const ev of ["did-navigate", "did-navigate-in-page", "page-title-updated"]) el.addEventListener(ev, page);
+    return () => {
+      for (const ev of ["did-navigate", "did-navigate-in-page", "page-title-updated"]) el.removeEventListener(ev, page);
+    };
+  }, [view, native]);
+
+  const button = "flex size-7 items-center justify-center rounded-lg text-[#3A3A38] hover:bg-[#F2F2F0] disabled:opacity-30";
+  return (
+    <div className={`min-h-0 flex-1 flex-col ${hidden ? "hidden" : "flex"}`}>
+      <div className="flex h-10 shrink-0 items-center gap-1 border-b border-[#F0F0EE] px-2.5">
+        {native && (
+          <>
+            <button className={button} aria-label="Back" onClick={() => view?.goBack()}>
+              <svg width="12" height="12" viewBox="0 0 14 14">
+                <path d="M9 2.5L4.5 7 9 11.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button className={button} aria-label="Forward" onClick={() => view?.goForward()}>
+              <svg width="12" height="12" viewBox="0 0 14 14">
+                <path d="M5 2.5L9.5 7 5 11.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button className={button} aria-label="Reload" onClick={() => view?.reload()}>
+              <svg width="12" height="12" viewBox="0 0 14 14">
+                <path d="M11.5 7A4.5 4.5 0 1 1 10 3.6M10.5 1.5v2.6H7.9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </>
+        )}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            go(typing ?? at);
+            (document.activeElement as HTMLElement | null)?.blur();
+          }}
+          className="mx-1.5 flex min-w-0 flex-1"
+        >
+          <input
+            value={typing ?? at}
+            onChange={(e) => setTyping(e.target.value)}
+            onFocus={(e) => e.currentTarget.select()}
+            onBlur={() => setTyping(null)}
+            onKeyDown={(e) => {
+              if (e.key !== "Escape") return;
+              setTyping(null);
+              e.currentTarget.blur();
+            }}
+            spellCheck={false}
+            aria-label="Address"
+            className="min-w-0 flex-1 truncate rounded-full bg-[#F2F2F0] px-3 py-1 font-mono text-[11.5px] leading-4 text-[#6B6B6B] outline-none focus:bg-white focus:text-ink focus:shadow-[0_0_0_1.5px_#0A0A0A]"
+          />
+        </form>
+        {/* For a page the bot needs its own session on (a sign-in): the same page in its browser, in your control. */}
+        {botBrowser && (
+          <button onClick={() => botBrowser.open(at)} className="shrink-0 rounded-full px-2.5 py-1 text-[12px] font-medium text-[#3A3A38] hover:bg-[#F2F2F0]">
+            {`Open in ${botBrowser.name}'s browser`}
+          </button>
+        )}
+        <button onClick={() => window.open(at, "_blank")} className="shrink-0 rounded-full px-2.5 py-1 text-[12px] font-medium text-[#3A3A38] hover:bg-[#F2F2F0]">
+          Open in browser
+        </button>
+      </div>
+      {native ? (
+        createElement("webview", { ref: setView, src, partition: webPartition(user), allowpopups: "true", className: "min-h-0 flex-1" })
+      ) : (
+        <iframe src={src} className="min-h-0 w-full flex-1 border-0" title={hostOf(src)} />
+      )}
+    </div>
+  );
+}
+
+/** A new tab: go to an address, or open one of the bots' computers or profiles. */
+export function NewTab({
+  state,
+  onWeb,
+  onComputer,
+  onProfile,
+  onVault,
+  onKnowledge,
+  onApps,
+  onMac,
+  onBrowser,
+}: {
+  state: AppState;
+  onWeb: (url: string) => void;
+  onComputer: (botId: string) => void;
+  /** A bot's browser (bot-browser.tsx), for a bot that works on a computer. */
+  onBrowser?: (botId: string) => void;
+  onProfile: (botId: string) => void;
+  onVault: () => void;
+  /** Knowledge, what the bots know (memory-categories.tsx); none where it isn't open to this account. */
+  onKnowledge?: () => void;
+  /** The apps the bots made (made-apps.tsx); none where apps aren't open to this account (lib/apps-access.ts). */
+  onApps?: () => void;
+  onMac: () => void;
+}) {
+  const [address, setAddress] = useState("");
+  const go = () => {
+    if (address.trim()) onWeb(toAddress(address));
+  };
+  const typed = address.trim();
+  // The site it'll open, when what's typed is an address rather than a search.
+  const target = typed ? toAddress(typed) : "";
+  const site = target && !target.startsWith("https://www.google.com/search?") ? hostOf(target).replace(/^www\./, "") : null;
+  return (
+    <div className="motion-fade-in flex min-h-0 flex-1 flex-col items-center gap-6 overflow-y-auto px-8 pt-[12vh]">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          go();
+        }}
+        className="flex w-full max-w-[520px] flex-col gap-1.5"
+      >
+        <div className="flex items-center gap-2.5 rounded-full bg-white px-4 shadow-[0_0_0_1px_#E2E2DF,0_8px_24px_-14px_#00000040] focus-within:shadow-[0_0_0_1.5px_#0A0A0A,0_8px_24px_-14px_#00000040]">
+          {/* A magnifier for a search, a globe once it reads as an address. */}
+          <span className="flex size-5 shrink-0 items-center justify-center text-[#9A9A98]">
+            {typed && site ? (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+                <circle cx="8" cy="8" r="6" />
+                <path d="M2 8h12M8 2c1.8 1.7 2.6 3.7 2.6 6S9.8 12.3 8 14M8 2C6.2 3.7 5.4 5.7 5.4 8s.8 4.3 2.6 6" />
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden>
+                <circle cx="7" cy="7" r="4.6" />
+                <path d="M10.5 10.5L14 14" />
+              </svg>
+            )}
+          </span>
+          <input
+            autoFocus
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="Search Google or type a URL"
+            spellCheck={false}
+            className="min-w-0 flex-1 bg-transparent py-3 text-[15px] leading-5 outline-none placeholder:text-[#9A9A98]"
+          />
+        </div>
+        {/* What Enter will do, before you press it. */}
+        {typed && (
+          <button type="submit" className="flex items-center gap-2.5 rounded-[14px] px-4 py-2 text-left text-[13.5px] leading-5 hover:bg-[#F7F7F6]">
+            <span className="flex size-5 shrink-0 items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element -- a site's own icon, any domain */}
+              <img src={`https://www.google.com/s2/favicons?sz=32&domain=${encodeURIComponent(site ?? "google.com")}`} alt="" width={16} height={16} className="rounded-[3px]" />
+            </span>
+            <span className="min-w-0 flex-1 truncate text-[#6B6B6B]">
+              {site ? (
+                <>
+                  Go to <span className="font-medium text-ink">{site}</span>
+                </>
+              ) : (
+                <>
+                  Search Google for <span className="font-medium text-ink">{typed}</span>
+                </>
+              )}
+            </span>
+            <kbd className="shrink-0 rounded-[6px] bg-[#F2F2F0] px-1.5 py-0.5 font-sans text-[11.5px] leading-4 text-[#6B6B6B]">↵</kbd>
+          </button>
+        )}
+      </form>
+      <div className="flex w-full max-w-[520px] flex-col gap-2">
+        {onApps && (
+          <button onClick={onApps} className="mb-2 flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left shadow-[0_0_0_1px_#ECECEA] hover:bg-[#FCFCFB]">
+            <span className="flex size-7 items-center justify-center rounded-full bg-ink text-highlighter">
+              <AppsIcon size={13} />
+            </span>
+            <span className="flex flex-col">
+              <span className="text-[14px] font-medium leading-[18px]">{APPS_NAME}</span>
+              <span className="text-[12px] leading-4 text-[#6B6B6B]">{state.shared ? appsLine(state) : "Tools your bots made for you"}</span>
+            </span>
+          </button>
+        )}
+        <button onClick={onVault} className="mb-2 flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left shadow-[0_0_0_1px_#ECECEA] hover:bg-[#FCFCFB]">
+          <span className="flex size-7 items-center justify-center rounded-full bg-ink text-highlighter">
+            <KeyIcon />
+          </span>
+          <span className="flex flex-col">
+            <span className="text-[14px] font-medium leading-[18px]">Logins</span>
+            <span className="text-[12px] leading-4 text-[#6B6B6B]">
+              Your accounts and logins, and which bots can use them
+            </span>
+          </span>
+        </button>
+        {onKnowledge && (
+          <button onClick={onKnowledge} className="mb-2 flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left shadow-[0_0_0_1px_#ECECEA] hover:bg-[#FCFCFB]">
+            <span className="flex size-7 items-center justify-center rounded-full bg-ink text-highlighter">
+              <KnowledgeIcon size={14} />
+            </span>
+            <span className="flex flex-col">
+              <span className="text-[14px] font-medium leading-[18px]">Knowledge</span>
+              <span className="text-[12px] leading-4 text-[#6B6B6B]">What your bots know: people, plans, promises and more</span>
+            </span>
+          </button>
+        )}
+        <button onClick={onMac} className="mb-2 flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left shadow-[0_0_0_1px_#ECECEA] hover:bg-[#FCFCFB]">
+          <span className="flex size-7 items-center justify-center rounded-full bg-ink text-highlighter">
+            <MacIcon />
+          </span>
+          <span className="flex flex-col">
+            <span className="text-[14px] font-medium leading-[18px]">Your Mac</span>
+            <span className="text-[12px] leading-4 text-[#6B6B6B]">{state.mac?.ready ? "Where bots work when a task needs your Mac" : (state.mac?.reason ?? "Checking…")}</span>
+          </span>
+        </button>
+        <span className="px-1 text-[12px] font-medium leading-4 text-[#9A9A98]">Your bots</span>
+        <div className="grid grid-cols-2 gap-2">
+          {teamOf(state).map((b) => (
+            <div key={b.id} className="flex items-center gap-2.5 rounded-2xl px-3 py-2.5 shadow-[0_0_0_1px_#ECECEA]">
+              <Mascot botId={b.id} color={b.color} size={28} />
+              <span className="min-w-0 flex-1 truncate text-[14px] font-medium leading-[18px]">{b.name}</span>
+              <button onClick={() => onComputer(b.id)} title={`${b.name}'s computer`} className="flex size-7 items-center justify-center rounded-lg hover:bg-[#F2F2F0]">
+                <MonitorIcon size={14} color="#3A3A38" />
+              </button>
+              {onBrowser && browsesHere(state, b) && (
+                <button onClick={() => onBrowser(b.id)} title={`${b.name}'s browser`} aria-label={`${b.name}'s browser`} className="flex size-7 items-center justify-center rounded-lg text-[#3A3A38] hover:bg-[#F2F2F0]">
+                  <GlobeIcon />
+                </button>
+              )}
+              <button onClick={() => onProfile(b.id)} className="rounded-full px-2 py-1 text-[12px] font-medium text-[#3A3A38] hover:bg-[#F2F2F0]">
+                Profile
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

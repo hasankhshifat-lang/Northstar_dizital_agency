@@ -1,0 +1,1161 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { agentLabel, defaultAgent, isCli, paysLabel } from "@/lib/agents";
+import { appsStayLine, botChatId, brainRuns, keptPersona, live, MAIN_WORKSPACE, MAX_PERSONA_CHARS, settingsOf, sharesComputer, workBot, workspaceOf, type AgentKind, type AppState, type Bot, type BotSettings, type Session } from "@/lib/types";
+import { mainOwnShort, ownComputerShort, ownIsBops } from "@/lib/orgo-plans";
+import { emailShort, numberShort, upgradeLabel, type PlanRoomShort } from "@/lib/plan-includes";
+import { PERSONA_CHANGED, type BopsTier } from "@/cloud/protocol";
+import { BotMemory } from "./bot-memory";
+import { BotSkills } from "./bot-skills";
+import { chartLine, ChartIcon } from "./team-chart";
+import type { AutopilotSection } from "./autopilot";
+import { AppRoutinesButton, BotRoutines, hasTemplates, routineCount, routinesFrom, RoutineSuggest, usePendingSuggest } from "./routines";
+import { BotKeys } from "./keys";
+import { AgentChip, AgentMark } from "./agent-marks";
+import { BotAiSection } from "./bot-ai";
+import { ComputerSummary } from "./computer";
+import { Mascot } from "./mascot";
+import { PlanNote, usePlan } from "./plan-note";
+import { KeyIcon } from "./screen-cards";
+import { LineLink } from "./line-link";
+import { botWash, CloseButton, post } from "./ui";
+import { accountTitle, AppLogo, botApps } from "./apps";
+import { WhereToFind } from "./channels";
+import { undash } from "./side-group";
+import { mayChange, numberPausedUntil, readOnly, REPLY_WAITS_LINE, you, your, Your, yourMac, type SharedOpen } from "@/lib/shared";
+import { memberAct } from "./shared-act";
+import { BOOK_A_CALL } from "@/lib/links";
+import { aiKinds, aiLine, SETTINGS_WORDS, teamLine, type SettingsSection } from "@/lib/bot-settings";
+import { onCount } from "@/lib/sequences";
+
+/** The parts of a bot's profile. Its computer has a tab of its own (see panel-tabs.tsx). */
+export type Section = "details" | "skills" | "routines" | "memory";
+const SECTIONS: Section[] = ["details", "skills", "routines", "memory"];
+
+export function BotPanel({
+  state,
+  bot: b,
+  section: tab,
+  onSection: onTab,
+  onOpenChat,
+  onOpenThread,
+  onOpenVault,
+  onOpenComputer,
+  onOpenKeys,
+  onShowScreen,
+  onOpenAutopilot,
+  onOpenSkills,
+  onAsk,
+  onUpgrade,
+  onClose,
+  onOpenChart,
+  onExpand,
+}: {
+  state: AppState;
+  bot: Bot;
+  section: Section;
+  onSection: (t: Section) => void;
+  onOpenChat: (chatId: string) => void;
+  onOpenThread: (s: Session) => void;
+  onOpenVault: () => void;
+  /** Open this bot's computer tab. */
+  onOpenComputer: (botId: string) => void;
+  /** Open Settings at Keys, to add a key for this bot. */
+  onOpenKeys: (botId: string) => void;
+  /** Show one of a bot's screens up close: where its brain's sign-in opened (brains.tsx BotBrain). */
+  onShowScreen?: (botId: string, display: number) => void;
+  /** Open the workspace's Routines page at a section, at one of its rows (a schedule or monitor), and at one bot's. */
+  onOpenAutopilot: (section: AutopilotSection, item?: string, bot?: string) => void;
+  /** Open Skills, in Knowledge, at one of them ("skill:<slug>"). */
+  onOpenSkills: (focus?: string) => void;
+  /** Ask a bot: its chat, with `text` in the message box to change and send (bops-app.tsx askBot). */
+  onAsk: (botId: string, text?: string) => void;
+  /** Open the plans (Account), where Pro and Max are bought. */
+  onUpgrade: () => void;
+  /** Leave the profile, back to where you were (its X; Esc does it too, see bops-app.tsx). */
+  onClose: () => void;
+  /** The team chart (team-chart.tsx), with this bot's sheet open. */
+  onOpenChart?: (botId: string) => void;
+  /** Its full settings page (bot-settings.tsx), at a section or at the top. Not in a workspace shared with the user. */
+  onExpand?: (at?: SettingsSection) => void;
+}) {
+  // The Connected App the Routines tab shows only, when it was opened from one (Details, Uses); per bot.
+  const [only, setOnly] = useState<{ bot: string; app: string | null }>({ bot: b.id, app: null });
+  const app = only.bot === b.id ? only.app : null;
+  const openRoutines = (forApp: string | null) => {
+    setOnly({ bot: b.id, app: forApp });
+    onTab("routines");
+  };
+  // The way out, top right, as on the Vault and the Account sheet.
+  const close = <CloseButton onClick={onClose} className="absolute right-4 top-4 bg-white/60" />;
+  // Its full settings page, top left across from the X, at the section of the tab it's on.
+  const expandTo = onExpand && !state.shared ? onExpand : undefined;
+  const expand = expandTo && <ExpandButton onClick={() => expandTo(PANEL_TO_PAGE[tab])} />;
+  const tabs = (
+    <div className="flex gap-1">
+      {SECTIONS.map((t) => (
+        <button
+          key={t}
+          onClick={() => (t === "routines" ? openRoutines(null) : onTab(t))}
+          className={`rounded-[10px] px-3 py-1.5 text-[14px] capitalize leading-[18px] ${
+            tab === t ? (t === "details" ? "bg-white/70 font-medium text-ink shadow-[0_0_0_1px_#0000000F]" : "bg-[#EEEEEC] font-medium text-ink") : "text-[#6B6B6B] hover:text-ink"
+          }`}
+        >
+          {t}
+        </button>
+      ))}
+    </div>
+  );
+
+  // Each part fades in as it opens (motion-fade-in, opacity only); another bot's profile in the same tab just changes in place.
+  if (tab === "details")
+    return (
+      <Details
+        state={state}
+        bot={b}
+        tabs={tabs}
+        close={close}
+        onOpenChat={onOpenChat}
+        onOpenVault={onOpenVault}
+        onOpenComputer={onOpenComputer}
+        onOpenKeys={onOpenKeys}
+        onShowScreen={onShowScreen}
+        onOpenThread={onOpenThread}
+        onOpenRoutines={openRoutines}
+        onUpgrade={onUpgrade}
+        onOpenChart={onOpenChart}
+        expand={expand}
+        onExpand={expandTo}
+      />
+    );
+
+  return (
+    <section className="motion-fade-in relative flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto bg-white px-5 py-4">
+      {expand}
+      {close}
+      <div className="flex flex-col items-center gap-2">
+        <Mascot botId={b.id} color={b.color} size={52} />
+        <div className="flex flex-col items-center gap-px">
+          <div className="text-[20px] font-semibold leading-6 tracking-[-0.01em]">{b.name}</div>
+          <div className="flex items-center gap-1.5 text-[13px] leading-4 text-[#6B6B6B]">
+            {b.isMain ? "Chief of Staff · runs the team" : `${b.role} · Bops team`}
+            <BotBrainBadge state={state} bot={b} />
+          </div>
+        </div>
+        {tabs}
+      </div>
+      {tab === "skills" && <BotSkills state={state} bot={b} onOpenChat={onOpenChat} onOpenVault={onOpenVault} onOpenKeys={onOpenKeys} onOpenSkills={onOpenSkills} />}
+      {tab === "routines" && (
+        <BotRoutines state={state} bot={b} app={app} onApp={(a) => setOnly({ bot: b.id, app: a })} onOpenAutopilot={onOpenAutopilot} onAsk={onAsk} />
+      )}
+      {tab === "memory" && <BotMemory state={state} bot={b} onOpenThread={onOpenThread} />}
+    </section>
+  );
+}
+
+/** Each panel tab's section on the full page: Details opens it at the top. */
+const PANEL_TO_PAGE: Record<Section, SettingsSection | undefined> = { details: undefined, skills: "skills", routines: "routines", memory: "memory" };
+
+/** The panel's way to its full settings page: the X's size and look, arrows out, with its tip. */
+function ExpandButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={SETTINGS_WORDS.openFull}
+      data-tip={SETTINGS_WORDS.openFull}
+      data-open-full
+      className="absolute left-4 top-4 flex size-8 shrink-0 items-center justify-center rounded-full bg-white/60 shadow-[0_0_0_1px_#E6E6E3] hover:bg-[#F7F7F6]"
+    >
+      <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden>
+        <path d="M8.5 1.5h4v4M12.5 1.5L8 6M5.5 12.5h-4v-4M1.5 12.5L6 8" fill="none" stroke="#0A0A0A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+  );
+}
+
+/**
+ * By the bot's role: the agent its new threads start on (its AI profile's Default, lib/agents.ts), when that's a
+ * CLI the user brought. Nothing for Bops agent (every bot, in a build without brains), or where its tasks all run
+ * on this Mac (brainRuns).
+ */
+export function BotBrainBadge({ state, bot: b, className }: { state: AppState; bot: Bot; className?: string }) {
+  const x = defaultAgent(b, state);
+  if (brainRuns(b, state) === "none" || !isCli(x.kind)) return null;
+  const label = agentLabel(x, { bot: b, state });
+  return <AgentChip agent={x} label={label} title={`${b.name}'s new threads run on ${label}, on ${paysLabel(x, state, workBot(b, state.bots).computerId)}`} className={className} />;
+}
+
+/* ---------------- Details: the bot's contact card ---------------- */
+
+export const EFFORT_HINT: Record<string, string> = {
+  auto: "Thinks hard on tough tasks, quick on simple ones",
+  low: "Fastest; fine for quick lookups",
+  medium: "Balanced for most work",
+  high: "Slower and more careful on every task",
+};
+
+function Details({
+  state,
+  bot: b,
+  tabs,
+  close,
+  onOpenChat,
+  onOpenVault,
+  onOpenComputer,
+  onOpenKeys,
+  onShowScreen,
+  onOpenThread,
+  onOpenRoutines,
+  onUpgrade,
+  onOpenChart,
+  expand,
+  onExpand,
+}: {
+  state: AppState;
+  bot: Bot;
+  tabs: React.ReactNode;
+  close: React.ReactNode;
+  onOpenChat: (chatId: string) => void;
+  onOpenVault: () => void;
+  onOpenComputer: (botId: string) => void;
+  onOpenKeys: (botId: string) => void;
+  onShowScreen?: (botId: string, display: number) => void;
+  onOpenThread?: (s: Session) => void;
+  /** This bot's Routines tab, showing one Connected App's only, or all. */
+  onOpenRoutines: (app: string | null) => void;
+  onUpgrade: () => void;
+  onOpenChart?: (botId: string) => void;
+  /** Its full settings page's button (BotPanel's), top left. */
+  expand?: React.ReactNode;
+  /** Its full settings page, at a section: the AI, Team and Sequences rows. */
+  onExpand?: (at?: SettingsSection) => void;
+}) {
+  const plan = usePhonePlan();
+  const { line, main, reach, numberRoom, emailRoom, emailOnAsk } = contactOf(state, b, plan);
+  const glass = GLASS;
+  const running = state.sessions.filter((s) => s.botId === b.id && live(s)).length;
+  const [copied, setCopied] = useState(false);
+  const share = async () => {
+    await navigator.clipboard.writeText([`${b.name} (${b.role}, Bops)`, b.phone, b.email].filter(Boolean).join("\n"));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  return (
+    <section className="motion-fade-in relative flex min-h-0 min-w-0 flex-col items-center gap-3.5 overflow-y-auto px-6 pb-5 pt-6" style={{ backgroundImage: `linear-gradient(180deg, transparent 40%, #FFFFFF 100%), ${botWash(b)}`, backgroundSize: "100% 520px", backgroundRepeat: "no-repeat", backgroundColor: "#FFFFFF" }}>
+      {expand}
+      {close}
+      <div className={`flex size-[104px] items-center justify-center rounded-full ${glass} shadow-[inset_0_0_0_2px_#FFFFFF,0_14px_30px_-12px_#2832002E,0_0_0_1px_#0000000F]`}>
+        <Mascot botId={b.id} color={b.color} size={70} live life />
+      </div>
+      <div className="flex flex-col items-center gap-0.5">
+        <div className="text-[26px] font-bold leading-[30px] tracking-[-0.02em]">{b.name}</div>
+        <div className="flex items-center gap-1.5 text-[13px] font-medium leading-4 text-[#3A3A38]">
+          {b.isMain ? "Chief of Staff · runs the team" : `${b.role} · Bops team`}
+          <BotBrainBadge state={state} bot={b} className="bg-white/60 shadow-[0_0_0_1px_#0000000F]" />
+        </div>
+        {/* Its place on the team chart: who it answers to and how many it may ask, opening the chart at its sheet. */}
+        {onOpenChart && chartLine(state, b.id) && (
+          <button type="button" data-chart-line onClick={() => onOpenChart(b.id)} className="mt-1 flex items-center gap-1 text-[12.5px] leading-4 text-[#6B6B6B] hover:text-ink hover:underline">
+            <ChartIcon size={12} />
+            {chartLine(state, b.id)}
+          </button>
+        )}
+      </div>
+      <ContactActions state={state} bot={b} plan={plan} onOpenChat={onOpenChat} />
+      {tabs}
+
+      <div className={`flex w-full flex-col rounded-2xl ${glass}`}>
+        <Field
+          label={
+            line && b.isMain ? `mobile · ${line.type === "imessage" ? "iMessage" : "texts"} · the team's number` : b.phoneLine?.paused ? `mobile · ${numberPausedUntil(state, b.phoneLine.unpaid)}` : "mobile · texts and calls"
+          }
+          value={reach ? prettyPhone(reach) : undefined}
+          empty={line && main ? `Text ${main.name} at ${prettyPhone(line.phone)}: ${main.name} passes work to ${b.name}.` : "No number yet."}
+        />
+        {!line && !b.phone && <GetNumber bot={b} plan={plan} room={numberRoom} onUpgrade={onUpgrade} />}
+        {/* Whose phone the number is linked to: the first to call or text it, then calls and texts from it count as the user. */}
+        {reach && <LineLink key={reach} phone={reach} className="px-4 pb-[11px]" />}
+        <div className="h-px bg-black/[0.05]" />
+        <Field label={b.mail?.paused ? `email · paused until ${you(state)} upgrade${state.shared ? "s" : ""} again` : "email"} value={b.email} empty="No inbox yet." />
+        {!b.email && emailRoom && <PlanRoom short={emailRoom} onUpgrade={onUpgrade} />}
+        {!b.email && !emailRoom && !plan.room && plan.planNeeded && <PlanNeeded what="An email address" bot={b} onUpgrade={onUpgrade} />}
+        {emailOnAsk && <GetEmail bot={b} />}
+      </div>
+
+      {/* Its full settings page at AI, Team and Sequences: what each holds, in a line. */}
+      {onExpand && (
+        <>
+          <PageRow title={SETTINGS_WORDS.sections.ai} line={aiLine(state, b)} marks={aiKinds(state, b)} icon={<AiIcon />} onClick={() => onExpand("ai")} />
+          <PageRow title={SETTINGS_WORDS.sections.team} line={teamLine(state, b)} icon={<ChartIcon size={18} />} onClick={() => onExpand("team")} />
+          <PageRow title={SETTINGS_WORDS.sequencesRow} line={seqLine(b, settingsOf(state, b), !!reach)} icon={<SequencesIcon />} onClick={() => onExpand(!b.email && reach ? "phone" : "email")} />
+        </>
+      )}
+
+      <ComputerSummary state={state} bot={b} className={`w-full ${glass}`} onOpen={() => onOpenComputer(b.id)} />
+      {/* The apps and logins Uses lists are the viewer's own (their vault, their Connected Apps), never the owner's bot's: not in a shared workspace (nor are Keys: BotKeys). */}
+      {!state.shared && <Uses state={state} bot={b} onOpenVault={onOpenVault} onOpenRoutines={onOpenRoutines} className={glass} />}
+      <BotKeys state={state} bot={b} onAdd={() => onOpenKeys(b.id)} className={glass} />
+
+      {/* Its AI: the agents its threads run on, how hard it thinks, its threads now (bot-ai.tsx). */}
+      <BotAiSection state={state} bot={b} onShowScreen={onShowScreen} onOpenThread={onOpenThread} onOpenChat={() => onOpenChat(botChatId(b.id))} onAddKey={() => onOpenKeys(b.id)} className={glass} />
+
+      <div className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 ${glass}`}>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="text-[13px] font-semibold leading-4">Works on</span>
+          <span className="text-[12px] leading-4 text-[#6B6B6B]">
+            {(b.runsOn ?? "auto") === "auto" ? `Its cloud computer, or ${yourMac(state)} when a task needs it` : b.runsOn === "mac" ? `${Your(state)} Mac, always` : "Its cloud computer, always"}
+          </span>
+        </div>
+        <div className="flex shrink-0 gap-0.5 rounded-full bg-black/[0.05] p-[3px]">
+          {([["auto", "Auto"], ["cloud", "Cloud"], ["mac", `${Your(state)} Mac`]] as const).map(([v, label]) => (
+            <button
+              key={v}
+              onClick={() => void post("/api/bots", { botId: b.id, runsOn: v }, "PATCH")}
+              className={`rounded-full px-2.5 py-1 text-[12px] leading-4 ${(b.runsOn ?? "auto") === v ? "bg-white text-ink shadow-[0_0_0_1px_#0000000F]" : "text-[#6B6B6B] hover:text-ink"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 ${glass}`}>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="text-[13px] font-semibold leading-4">Approvals</span>
+          <span className="text-[12px] leading-4 text-[#6B6B6B]">
+            {b.autoApprove ? "Sends, posts and changes things without asking. Still asks before paying" : `Asks ${you(state)} before it sends, posts, deletes or pays`}
+          </span>
+        </div>
+        <div className="flex shrink-0 gap-0.5 rounded-full bg-black/[0.05] p-[3px]">
+          {([[false, "Ask first"], [true, "Just do it"]] as const).map(([v, label]) => (
+            <button
+              key={label}
+              onClick={() => void post("/api/bots", { botId: b.id, autoApprove: v }, "PATCH")}
+              className={`rounded-full px-2.5 py-1 text-[12px] leading-4 ${!!b.autoApprove === v ? "bg-white text-ink shadow-[0_0_0_1px_#0000000F]" : "text-[#6B6B6B] hover:text-ink"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {state.businessData && (
+        <div className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 ${glass}`}>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="text-[13px] font-semibold leading-4">Business data</span>
+            <span className="text-[12px] leading-4 text-[#6B6B6B]">
+              {b.dataOff ? "No lookups of companies, people or contacts" : "Looks up companies, people, work emails and company news. Cents a lookup, from your credit"}
+            </span>
+          </div>
+          <div className="flex shrink-0 gap-0.5 rounded-full bg-black/[0.05] p-[3px]">
+            {([[false, "On"], [true, "Off"]] as const).map(([v, label]) => (
+              <button
+                key={label}
+                onClick={() => void post("/api/bots", { botId: b.id, dataOff: v }, "PATCH")}
+                className={`rounded-full px-2.5 py-1 text-[12px] leading-4 ${!!b.dataOff === v ? "bg-white text-ink shadow-[0_0_0_1px_#0000000F]" : "text-[#6B6B6B] hover:text-ink"}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Keyed by bot: another bot's profile in this tab starts from that bot's own words. A Member is never sent them. */}
+      {(!state.shared || state.shared.role === "admin" || mayChange(state, "bots")) && <HowIWork key={b.id} bot={b} className={glass} shared={state.shared} />}
+
+      {/* Never in a workspace shared with the user: it changes the owner's bot, and the viewer's own host and plan aren't the owner's. */}
+      {(!b.isMain || sharesComputer(b)) && state.host !== "mac" && !readOnly(state) && <ComputerChoice state={state} bot={b} className={glass} onUpgrade={onUpgrade} />}
+
+      <WhereToFind state={state} bot={b} />
+
+      <div className="flex w-full gap-2">
+        <button onClick={() => void share()} className={`flex-1 rounded-[14px] px-4 py-[11px] text-left text-[14px] leading-[18px] ${glass}`}>
+          {copied ? "Copied" : "Share contact"}
+        </button>
+        <button
+          onClick={() => void post("/api/sessions", { botId: b.id }, "DELETE")}
+          disabled={!running}
+          className={`flex-1 rounded-[14px] px-4 py-[11px] text-left text-[14px] leading-[18px] text-[#B42318] disabled:text-[#C9C9C6] ${glass}`}
+        >
+          {running ? `Pause ${b.name} · ${running} running` : `${b.name} is idle`}
+        </button>
+      </div>
+
+      {!b.isMain && <DeleteBot bot={b} apps={appsStayLine(state, b)} />}
+    </section>
+  );
+}
+
+/** The panel's card look, which its full settings page uses too. */
+export const GLASS = "bg-white/60 shadow-[inset_0_0_0_1px_#FFFFFF,0_0_0_1px_#0000000F]";
+
+/**
+ * How a bot is reached, and what the plan says about a number or an email for it: the workspace's line (its main bot's
+ * number; the others are reached through it), its main bot, the number that reaches it, and why the plan has no room.
+ */
+export function contactOf(state: AppState, b: Bot, plan: PhonePlan) {
+  // What the Bops plan includes for this bot (lib/plan-includes.ts), when Bops Cloud holds plans to it.
+  const planBot = !!b.isMain && workspaceOf(b) === MAIN_WORKSPACE;
+  const numberRoom = plan.room ? numberShort(plan.room.tier, plan.room.numbers, { isPlanBot: planBot }) : null;
+  const emailRoom = plan.room && !b.email ? emailShort(plan.room.tier, plan.room.emails, { isPlanBot: planBot }) : null;
+  // Max has room for this bot's email, which it gets when the user asks (Get an email).
+  const emailOnAsk = !!plan.room && plan.room.tier === "max_bops" && !planBot && !b.email && !emailRoom;
+  // The workspace's number belongs to its main bot; the other bots are reached through it.
+  const line = state.workspaces?.find((w) => w.id === workspaceOf(b))?.line;
+  const main = state.bots.find((x) => x.isMain && workspaceOf(x) === workspaceOf(b));
+  const reach = line ? (b.isMain ? line.phone : undefined) : b.phone;
+  return { line, main, reach, numberRoom, emailRoom, emailOnAsk };
+}
+
+/** Text or message it, call its number, book a video call, email it: the panel's four round buttons (`size` 44 on the page). */
+export function ContactActions({ state, bot: b, plan, onOpenChat, size }: { state: AppState; bot: Bot; plan: PhonePlan; onOpenChat: (chatId: string) => void; size?: number }) {
+  const { reach, emailRoom, emailOnAsk } = contactOf(state, b, plan);
+  return (
+      <div className={`flex ${size ? "gap-2.5" : "gap-3"}`} data-contact-actions>
+        {/* With a number, it texts the bot from Messages (it answers by text, as it would anyone); without one, its chat here. */}
+        <ActionButton size={size}
+          label={reach ? `Text ${prettyPhone(reach)}` : `Message ${b.name}`}
+          onClick={() => (reach ? window.open(`sms:${reach}`) : onOpenChat(botChatId(b.id)))}
+        >
+          <path d="M2 6.5C2 4 4.2 2 7 2s5 2 5 4.5S9.8 11 7 11c-.6 0-1.2-.1-1.7-.2L2.5 12l.7-2.3C2.4 8.8 2 7.7 2 6.5z" fill="#0A0A0A" />
+        </ActionButton>
+        {/* Every number takes calls: the workspace's (the main bot's), or the bot's own. */}
+        <ActionButton size={size} label={reach ? `Call ${prettyPhone(reach)}` : "Calling arrives with its phone"} disabled={!reach} onClick={() => reach && window.open(`tel:${reach}`)}>
+          <path d="M3 2.2h2.6l1 2.6-1.6 1a7 7 0 003 3l1-1.6 2.6 1V11a.9.9 0 01-.9.9A9.6 9.6 0 012.1 3.1.9.9 0 013 2.2z" fill="#0A0A0A" />
+        </ActionButton>
+        {/* Video calls with bots aren't here yet; meanwhile it books a video call with the Bops team. */}
+        <ActionButton size={size} label="Book a 20 minute video call with the Bops team" onClick={() => window.open(BOOK_A_CALL)}>
+          <rect x="1.2" y="3.5" width="8" height="7" rx="1.5" fill="#0A0A0A" />
+          <path d="M9.6 6.2l3.2-2v5.6L9.6 7.8z" fill="#0A0A0A" />
+        </ActionButton>
+        <ActionButton size={size} label={b.email ? `Email ${b.email}` : emailRoom ? emailRoom.text : emailOnAsk ? `${b.name} has no email yet` : plan.planNeeded ? "An email comes with Pro and Max" : "Its inbox is coming"} disabled={!b.email} onClick={() => b.email && window.open(`mailto:${b.email}`)}>
+          <rect x="1.5" y="3" width="11" height="8.5" rx="1.5" fill="none" stroke="#0A0A0A" strokeWidth="1.3" />
+          <path d="M2 4l5 4 5-4" fill="none" stroke="#0A0A0A" strokeWidth="1.3" strokeLinejoin="round" />
+        </ActionButton>
+      </div>
+  );
+}
+
+/** The Sequences row's line: how many are on for its email and its phone. */
+export function seqLine(b: Bot, set: BotSettings, phone: boolean) {
+  if (b.email && phone) return SETTINGS_WORDS.seqBoth(onCount(set, "email"), onCount(set, "phone"));
+  if (b.email) return SETTINGS_WORDS.seqNoPhone(onCount(set, "email"));
+  if (phone) return SETTINGS_WORDS.seqNoEmail(onCount(set, "phone"));
+  return SETTINGS_WORDS.seqNone;
+}
+
+/** One of Details' rows to its full settings page: an icon, a title and its line, and a chevron. */
+function PageRow({ title, line, icon, marks, onClick }: { title: string; line: string; icon: React.ReactNode; marks?: AgentKind[]; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} data-page-row={title} className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left hover:bg-white/80 ${GLASS}`}>
+      <span className="flex size-5 shrink-0 items-center justify-center text-ink">{icon}</span>
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="text-[13px] font-semibold leading-4">{title}</span>
+        <span className="text-[12px] leading-4 text-[#6B6B6B]">{line}</span>
+        {marks && marks.length > 1 && (
+          <span className="mt-1 flex items-center gap-1.5" data-agent-marks>
+            {marks.map((k) => (
+              <AgentMark key={k} kind={k} size={14} />
+            ))}
+          </span>
+        )}
+      </span>
+      <svg width="8" height="12" viewBox="0 0 8 12" aria-hidden className="shrink-0 text-[#9A9A98]">
+        <path d="M2 1.5L6.5 6 2 10.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+  );
+}
+
+/** AI: a small spark. */
+export function AiIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 18 18" aria-hidden>
+      <path d="M9 1.8l1.6 4.4 4.6 1.6-4.6 1.6L9 13.8l-1.6-4.4L2.8 7.8l4.6-1.6z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M14 12.2l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Sequences: steps joined in a line. */
+export function SequencesIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 18 18" aria-hidden>
+      <rect x="1.8" y="2.5" width="6" height="4.2" rx="1.2" fill="none" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="10.2" y="6.9" width="6" height="4.2" rx="1.2" fill="none" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="1.8" y="11.3" width="6" height="4.2" rx="1.2" fill="none" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M7.8 4.6h1.4a1 1 0 011 1V9M7.8 13.4h1.4a1 1 0 001-1V11" fill="none" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
+
+/**
+ * Which computer a bot works on: the main bot's (the default; it uses free screens there) or its own,
+ * made on its first task: a copy of the main bot's, or where the Bops plan decides, a Bops computer (on
+ * Max, once those are all taken, one on the Orgo plan). Its own is offered only when there's room for
+ * it; else this says why, with the numbers and the plan that has room. Leaving its own
+ * computer deletes it, so that asks once more. The server refuses while the bot has cloud work going
+ * and says why. A main bot shows this only while it works on the free Bops computer another
+ * workspace's main bot has: it can move to its own on the plan (with its team), never back.
+ */
+export function ComputerChoice({ state, bot: b, className, onUpgrade }: { state: AppState; bot: Bot; className: string; onUpgrade: () => void }) {
+  const [sure, setSure] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const shared = sharesComputer(b);
+  const main = workBot({ ...b, computer: "shared" }, state.bots);
+  const plan = usePlan(state);
+  // A bot that has its own computer already isn't asking the plan for one.
+  const noRoom = plan && !b.computerId ? (b.isMain ? mainOwnShort(plan.plan, state.bots, b) : ownComputerShort(plan.plan, state.bots, workspaceOf(b))) : null;
+  const pick = async (mode: "shared" | "own") => {
+    if ((mode === "shared") === shared) return;
+    // Its own computer goes away when it moves to the main bot's: say so first.
+    if (mode === "shared" && b.computerId && !sure) return setSure(true);
+    setBusy(true);
+    setError(null);
+    const res = await post("/api/bots", { botId: b.id, computer: mode }, "PATCH");
+    if (!res.ok) setError(((await res.json()) as { error?: string }).error ?? "Couldn't change it");
+    setBusy(false);
+    setSure(false);
+  };
+  return (
+    <div className={`flex w-full flex-col gap-2.5 rounded-2xl px-4 py-3 ${className}`}>
+      <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="text-[13px] font-semibold leading-4">Computer</span>
+          <span className="text-[12px] leading-4 text-[#6B6B6B]">
+            {b.isMain
+              ? `Works on ${your(state)} free Bops computer, which ${main.name} has, with ${b.name}'s team`
+              : shared
+                ? `Works on ${main.name}'s computer, on screens no one else is using`
+                : plan?.plan?.bops
+                  ? ownIsBops(plan.plan, b)
+                    ? "Its own Bops computer"
+                    : "Its own cloud computer, on your Orgo plan"
+                  : "Its own cloud computer, a copy of the main bot's"}
+          </span>
+        </div>
+        <div className="flex shrink-0 gap-0.5 rounded-full bg-black/[0.05] p-[3px]">
+          {([["shared", "Shared"], ["own", "Its own"]] as const).map(([v, label]) => (
+            <button
+              key={v}
+              disabled={busy || (v === "own" && shared && !!noRoom)}
+              onClick={() => void pick(v)}
+              className={`rounded-full px-2.5 py-1 text-[12px] leading-4 disabled:opacity-60 ${(v === "shared") === shared ? "bg-white text-ink shadow-[0_0_0_1px_#0000000F]" : "text-[#6B6B6B] hover:text-ink"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      {sure && (
+        <div className="motion-rise-in flex flex-col gap-2 rounded-xl bg-[#FEF3F2] px-3 py-2.5 shadow-[0_0_0_1px_#FECDCA]">
+          <span className="text-[12.5px] leading-[17px] text-[#3A3A38]">
+            {`Move ${b.name} to ${main.name}'s computer? Its own computer is deleted, with anything saved on it that ${main.name}'s doesn't have.`}
+          </span>
+          <div className="flex gap-2">
+            <button onClick={() => void pick("shared")} disabled={busy} className="rounded-full bg-[#B42318] px-3 py-1 text-[12.5px] font-semibold text-white disabled:opacity-60">
+              {busy ? "Moving…" : "Move and delete"}
+            </button>
+            <button onClick={() => setSure(false)} disabled={busy} className="rounded-full px-3 py-1 text-[12.5px] font-medium shadow-[0_0_0_1px_#E6E6E3]">
+              Keep its own
+            </button>
+          </div>
+        </div>
+      )}
+      {plan && noRoom && (
+        <PlanNote
+          info={plan}
+          short={noRoom.short}
+          text={shared ? noRoom.text : `It will work on ${main.name}'s computer instead. ${noRoom.text}`}
+          onUpgrade={"upgrade" in noRoom && noRoom.upgrade ? onUpgrade : undefined}
+        />
+      )}
+      {error && error !== noRoom?.text && <span className="text-[12px] leading-4 text-[#B42318]">{error}</span>}
+    </div>
+  );
+}
+
+/** Deleting a bot takes its computer with it, so it asks once more, saying exactly that (and that the apps it made stay, `apps`). */
+export function DeleteBot({ bot: b, apps }: { bot: Bot; apps: string | null }) {
+  const [sure, setSure] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const remove = async () => {
+    setBusy(true);
+    const res = await post("/api/bots", { botId: b.id }, "DELETE");
+    if (!res.ok) {
+      setError(((await res.json()) as { error?: string }).error ?? "Couldn't delete it");
+      setBusy(false);
+    }
+  };
+  if (!sure)
+    return (
+      <button onClick={() => setSure(true)} className="self-center py-1 text-[13px] text-[#9A9A98] hover:text-[#B42318]">
+        Delete {b.name}
+      </button>
+    );
+  return (
+    <div className="motion-rise-in flex w-full flex-col gap-2.5 rounded-2xl bg-[#FEF3F2] px-4 py-3 shadow-[0_0_0_1px_#FECDCA]">
+      <span className="text-[13px] leading-[18px] text-[#3A3A38]">
+        {sharesComputer(b)
+          ? `Delete ${b.name}? Its chat, threads and routines go with it; the computer it works on stays.${apps ? ` ${apps}` : ""} This can't be undone.`
+          : `Delete ${b.name}? Its computer, chat, threads and routines go with it.${apps ? ` ${apps}` : ""} This can't be undone.`}
+      </span>
+      {error && <span className="text-[12px] text-[#B42318]">{error}</span>}
+      <div className="flex gap-2">
+        <button onClick={() => void remove()} disabled={busy} className="rounded-full bg-[#B42318] px-3.5 py-1.5 text-[13px] font-semibold text-white disabled:opacity-60">
+          {busy ? "Deleting…" : `Delete ${b.name}`}
+        </button>
+        <button onClick={() => setSure(false)} disabled={busy} className="rounded-full px-3.5 py-1.5 text-[13px] font-medium shadow-[0_0_0_1px_#E6E6E3]">
+          Keep
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function ActionButton({ label, onClick, disabled, children, size }: { label: string; onClick: () => void; disabled?: boolean; children: React.ReactNode; size?: number }) {
+  return (
+    <button
+      title={label}
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      style={size ? { width: size, height: size } : undefined}
+      className="flex size-[50px] items-center justify-center rounded-full bg-white/60 shadow-[inset_0_0_0_1px_#FFFFFF,0_0_0_1px_#0000000F] hover:bg-white/80 disabled:opacity-40"
+    >
+      <svg width="20" height="20" viewBox="0 0 14 14">
+        {children}
+      </svg>
+    </button>
+  );
+}
+
+/** "+15551234567" → "+1 (555) 123-4567". */
+const prettyPhone = (n: string) => {
+  const d = n.replace(/\D/g, "");
+  return d.length === 11 && d.startsWith("1") ? `+1 (${d.slice(1, 4)}) ${d.slice(4, 7)}-${d.slice(7)}` : n;
+};
+
+/** Numbers for sale in one area code and city (/api/phone/numbers). */
+type NumberOption = { areaCode: string; city: string; state: string; count: number };
+type Found = { areaCode: string; options: NumberOption[]; anywhere?: boolean };
+
+/** What the Bops plan holds now (lib/server/plan-room.ts): null where Bops Cloud doesn't hold plans to what they include. */
+type Room = { tier: BopsTier; numbers: number; emails: number } | null;
+export type PhonePlan = { on: boolean | null; planNeeded: boolean; room: Room };
+
+/**
+ * Phones on here (AgentPhone through Bops Cloud), and whether a number or an inbox needs Pro or Max:
+ * Bops Cloud holds Free to its plan (BOPS_PLAN_LIMITS). Asked again with the plan read fresh when
+ * Bops comes back to the front while it still says Free: the user may have just paid in the browser.
+ */
+export function usePhonePlan(): PhonePlan {
+  const [plan, setPlan] = useState<PhonePlan>({ on: null, planNeeded: false, room: null });
+  const needed = useRef(false);
+  useEffect(() => {
+    const ask = (fresh: boolean) =>
+      void fetch(`/api/phone${fresh ? "?fresh=1" : ""}`, { cache: "no-store" })
+        .then((r) => r.json())
+        .then((j: { on?: boolean; planNeeded?: boolean; room?: Room }) => {
+          // Asked again on focus while the plan has less than Max: the user may have just upgraded.
+          needed.current = !!j.planNeeded || (!!j.room && j.room.tier !== "max_bops");
+          setPlan({ on: !!j.on, planNeeded: !!j.planNeeded, room: j.room ?? null });
+        })
+        .catch(() => {});
+    ask(false);
+    const back = () => {
+      if (needed.current) ask(true);
+    };
+    window.addEventListener("focus", back);
+    return () => window.removeEventListener("focus", back);
+  }, []);
+  return plan;
+}
+
+/** On Free: a number or an email comes with a plan. "Purchase a plan" opens the plans (Account). */
+export function PlanNeeded({ what, bot: b, onUpgrade, onCancel }: { what: string; bot: Bot; onUpgrade: () => void; onCancel?: () => void }) {
+  return (
+    <div className="flex flex-col gap-2 px-4 pb-[11px] text-[12px] leading-4">
+      <span className="text-[#3A3A38]">
+        {what} comes with a plan. Pro and Max include a phone number and an email for {b.name}.
+      </span>
+      <div className="flex items-center gap-3">
+        <button onClick={onUpgrade} className="rounded-full bg-ink px-3 py-1.5 text-[12.5px] font-medium leading-4 text-white">
+          Purchase a plan
+        </button>
+        {onCancel && (
+          <button onClick={onCancel} className="text-[12px] font-medium text-[#6B6B6B] hover:text-ink">
+            Not now
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Why the plan has no room for one more number or email (lib/plan-includes.ts), with the upgrade that
+ * has room: "Purchase a plan" from Free, "Upgrade to Max" from Pro. Both open the plans (Account).
+ */
+export function PlanRoom({ short, onUpgrade, onCancel }: { short: PlanRoomShort; onUpgrade: () => void; onCancel?: () => void }) {
+  return (
+    <div className="flex flex-col gap-2 px-4 pb-[11px] text-[12px] leading-4">
+      <span className="text-[#3A3A38]">{short.text}</span>
+      {(short.upgrade || onCancel) && (
+        <div className="flex items-center gap-3">
+          {short.upgrade && (
+            <button onClick={onUpgrade} className="rounded-full bg-ink px-3 py-1.5 text-[12.5px] font-medium leading-4 text-white">
+              {upgradeLabel(short.upgrade)}
+            </button>
+          )}
+          {onCancel && (
+            <button onClick={onCancel} className="text-[12px] font-medium text-[#6B6B6B] hover:text-ink">
+              Not now
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** On Max, an email for a bot besides the main one comes when the user asks: up to 5 in all. */
+export function GetEmail({ bot: b }: { bot: Bot }) {
+  const [busy, setBusy] = useState(false);
+  const [said, setSaid] = useState<string | null>(null);
+  const get = async () => {
+    setBusy(true);
+    setSaid(null);
+    const res = await post("/api/bots", { botId: b.id, email: true }, "PATCH");
+    const j = (await res.json().catch(() => ({}))) as { email?: string; error?: string };
+    if (!j.email) setSaid(j.error ?? "Couldn't get an email. Try again.");
+    setBusy(false);
+  };
+  return (
+    <div className="flex flex-col gap-2 px-4 pb-[11px] text-[12px] leading-4">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => void get()}
+          disabled={busy}
+          data-tip="An address anyone can email. Max includes up to 5."
+          className="rounded-full bg-ink px-3 py-1.5 text-[12.5px] font-medium leading-4 text-white disabled:opacity-50"
+        >
+          {busy ? "Getting the email…" : `Get ${b.name} an email`}
+        </button>
+      </div>
+      {said && (
+        <span role="alert" className="text-[#6B6B6B]">
+          {said}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** "628 · San Francisco, CA". */
+const placeOf = (o: NumberOption) => [o.city, o.state].filter(Boolean).join(", ");
+const optionLabel = (o: NumberOption) => (placeOf(o) ? `${o.areaCode} · ${placeOf(o)}` : o.areaCode);
+
+/**
+ * Give the bot its own phone number (AgentPhone, about $3 a month), when phones are set up. It asks
+ * where first: an area code (the user's own mobile's, else 415), searched as it's typed, with the
+ * places that have numbers as pills (nearby ones when that code has none left). The number is bought
+ * in the area code picked; then the card shows it, and how to make it yours (LineLink).
+ */
+export function GetNumber({ bot: b, plan, room, onUpgrade }: { bot: Bot; plan: PhonePlan; room: PlanRoomShort | null; onUpgrade: () => void }) {
+  const { on } = plan;
+  // No number on the plan for this bot (lib/plan-includes.ts), or, from a cloud that doesn't say what's held, none on Free.
+  const planNeeded = !!room || (!plan.room && plan.planNeeded);
+  const [picking, setPicking] = useState(false);
+  /** The area code typed; null until the first search says which one to start from. */
+  const [code, setCode] = useState<string | null>(null);
+  const [found, setFound] = useState<Found | null>(null);
+  const [picked, setPicked] = useState<NumberOption | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // A search once the picker opens (no area code: the server starts from the user's own), then each
+  // full area code typed, a moment after the last key. A newer one cancels the one before.
+  const answered = found?.areaCode;
+  useEffect(() => {
+    if (!picking || planNeeded || (code !== null && (code.length !== 3 || code === answered))) return;
+    const stop = new AbortController();
+    const t = setTimeout(
+      async () => {
+        setSearching(true);
+        const res = await fetch(`/api/phone/numbers${code ? `?areaCode=${code}` : ""}`, { cache: "no-store", signal: stop.signal }).catch(() => null);
+        const j = (await res?.json().catch(() => null)) as (Found & { error?: string }) | null;
+        if (stop.signal.aborted) return;
+        setSearching(false);
+        if (!res?.ok || !j || j.error || !Array.isArray(j.options)) {
+          setError(j?.error ?? "Couldn't look for numbers. Try again.");
+          if (code === null) setCode("");
+          return;
+        }
+        setError(null);
+        setFound(j);
+        setCode(j.areaCode);
+        setPicked(j.options[0] ?? null);
+      },
+      code === null ? 0 : 350,
+    );
+    return () => {
+      clearTimeout(t);
+      stop.abort();
+    };
+  }, [picking, planNeeded, code, answered]);
+  if (!on) return null;
+
+  const type = (v: string) => {
+    const next = v.replace(/\D/g, "").slice(0, 3);
+    setCode(next);
+    setError(null);
+    if (next === answered) return;
+    setFound(null);
+    setPicked(null);
+    setSearching(next.length === 3);
+  };
+  const get = async () => {
+    if (!picked) return;
+    setBusy(true);
+    setError(null);
+    const res = await post("/api/phone", { action: "provision", botId: b.id, areaCode: picked.areaCode });
+    const j = (await res.json().catch(() => ({}))) as { error?: string };
+    if (!res.ok || j.error) setError(j.error ?? "Couldn't get a number. Try again.");
+    setBusy(false);
+  };
+
+  if (!picking)
+    return (
+      <div className="flex items-center gap-2 px-4 pb-[11px]">
+        <button
+          onClick={() => setPicking(true)}
+          data-tip="A real number anyone can text or call."
+          className="rounded-full bg-ink px-3 py-1.5 text-[12.5px] font-medium leading-4 text-white disabled:opacity-50"
+        >
+          {`Get ${b.name} a number`}
+        </button>
+      </div>
+    );
+  // A number the plan doesn't include: "Get a number" says why, with the upgrade that has room, instead of opening the picker.
+  if (room) return <PlanRoom short={room} onUpgrade={onUpgrade} onCancel={() => setPicking(false)} />;
+  if (planNeeded) return <PlanNeeded what="A phone number" bot={b} onUpgrade={onUpgrade} onCancel={() => setPicking(false)} />;
+
+  const asked = found?.areaCode;
+  const nearby = found && !found.anywhere && found.options.length > 0 && !found.options.some((o) => o.areaCode === asked) ? found.options[0] : undefined;
+  return (
+    <div className="flex flex-col gap-2 px-4 pb-[11px] text-[12px] leading-4">
+      <label className="flex items-center gap-2">
+        <span className="text-[#6B6B6B]">Area code</span>
+        <input
+          value={code ?? ""}
+          onChange={(e) => type(e.target.value)}
+          disabled={busy || code === null}
+          autoFocus
+          placeholder="415"
+          aria-label="Area code"
+          inputMode="numeric"
+          maxLength={3}
+          className="h-7 w-[64px] rounded-full bg-[#F7F7F6] px-3 text-[13px] tabular-nums outline-none shadow-[0_0_0_1px_#E6E6E3] focus:shadow-[0_0_0_1.5px_#0A0A0A] disabled:opacity-50"
+        />
+        {(searching || code === null) && <span className="text-[#9A9A98]">Looking for numbers…</span>}
+      </label>
+      {!searching && found && (
+        <>
+          {nearby && (
+            <span className="text-[#6B6B6B]">
+              No {asked} numbers left. Nearby: {nearby.areaCode} {nearby.city || placeOf(nearby)}
+            </span>
+          )}
+          {found.anywhere && found.options.length > 0 && <span className="text-[#6B6B6B]">No {asked} numbers left, or nearby. These are from elsewhere in the US.</span>}
+          {found.options.length === 0 ? (
+            <span className="text-[#6B6B6B]">No numbers for sale right now. Try another area code.</span>
+          ) : (
+            <div role="radiogroup" aria-label="Where the number is from" className="flex flex-wrap gap-1.5">
+              {found.options.map((o) => {
+                const chosen = picked?.areaCode === o.areaCode && picked.city === o.city && picked.state === o.state;
+                return (
+                  <button
+                    key={`${o.areaCode}|${o.city}|${o.state}`}
+                    role="radio"
+                    aria-checked={chosen}
+                    disabled={busy}
+                    onClick={() => setPicked(o)}
+                    className={`rounded-full px-2.5 py-1 text-[12.5px] font-medium leading-4 disabled:opacity-50 ${chosen ? "bg-ink text-white" : "text-[#3A3A38] shadow-[0_0_0_1px_#E6E6E3] hover:bg-black/[0.04]"}`}
+                  >
+                    {optionLabel(o)}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+      {code !== null && code.length > 0 && code.length < 3 && <span className="text-[#9A9A98]">An area code is 3 digits.</span>}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => void get()}
+          disabled={busy || searching || !picked}
+          className="rounded-full bg-ink px-3 py-1.5 text-[12.5px] font-medium leading-4 text-white disabled:opacity-40"
+        >
+          {busy ? "Getting the number…" : "Get this number"}
+        </button>
+        <button disabled={busy} onClick={() => setPicking(false)} className="text-[12px] font-medium text-[#6B6B6B] hover:text-ink disabled:opacity-40">
+          Cancel
+        </button>
+      </div>
+      {error && (
+        <span role="alert" className="text-[#B42318]">
+          {error}
+        </span>
+      )}
+    </div>
+  );
+}
+
+export function Field({ label, value, empty }: { label: string; value?: string; empty: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    if (!value) return;
+    void navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <div className="flex items-center gap-2 px-4 py-[11px]">
+      <div className="flex min-w-0 flex-1 flex-col gap-px">
+        <span className="text-[12px] leading-[15px] text-[#6B6B6B]">{label}</span>
+        <span className={`select-text truncate text-[16px] leading-[21px] ${value ? "text-ink" : "text-[14px] text-[#9A9A98]"}`}>{value ?? empty}</span>
+      </div>
+      {value && (
+        <button
+          onClick={copy}
+          aria-label={copied ? "Copied" : `Copy ${label.split(" ")[0]}`}
+          className={`flex h-7 shrink-0 items-center gap-1 rounded-full px-2.5 text-[12px] font-medium leading-4 transition-colors ${copied ? "bg-[#2BB673]/15 text-[#1E8A55]" : "text-[#6B6B6B] hover:bg-black/[0.05] hover:text-ink"}`}
+        >
+          {copied ? (
+            <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden>
+              <path d="M3 8.5l3 3L13 4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ) : (
+            <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden>
+              <rect x="5" y="5" width="8.5" height="8.5" rx="1.6" fill="none" stroke="currentColor" strokeWidth="1.4" />
+              <path d="M10.5 3.2A1.6 1.6 0 0 0 9 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1V9a1.6 1.6 0 0 0 .7 1.4" fill="none" stroke="currentColor" strokeWidth="1.4" />
+            </svg>
+          )}
+          {copied ? "Copied" : "Copy"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/**
+ * "How I work": what the user wants this bot to keep in mind as it works (Bot.persona), in their own
+ * words. It gets it in its chat, tasks and calls as their preferences, under Bops' own rules. Saving it
+ * empty clears it. Esc with unsaved words puts back what's saved. Save names the words the edit began from (`base`):
+ * saved by someone else meanwhile, it's refused and the box shows theirs. Words saved elsewhere show while the box is
+ * unedited. In a workspace shared with the user as an Admin, Save goes to the owner's Bops (the "persona" act,
+ * shared-act.ts memberAct): Saved once the owner's copy has it (SharedOpen.personaActs), else why it didn't go.
+ */
+export function HowIWork({ bot: b, className, shared }: { bot: Bot; className: string; shared?: SharedOpen }) {
+  const stored = b.persona ?? "";
+  const [base, setBase] = useState(stored);
+  const [text, setText] = useState(stored);
+  // The saved words as last seen, and `stale`: refused as changed by someone else, so the box takes the latest.
+  const [seen, setSeen] = useState(stored);
+  const [stale, setStale] = useState(false);
+  if (stale || stored !== seen) {
+    // Saved elsewhere, or this box's save landing: shown while the box holds what its edit began from.
+    if (stale || text === base || text.trim() === stored) {
+      setBase(stored);
+      setText(stored);
+    }
+    setStale(false);
+    setSeen(stored);
+  }
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState<{ key: string; words: string } | null>(null);
+  const pending = sent ? shared?.personaActs?.find((p) => p.key === sent.key) : undefined;
+  // (A save that lands moves `base` to what it saved, words typed meanwhile kept.)
+  if (sent && !pending && stored === sent.words) {
+    setSent(null);
+    setBase(stored);
+    setSaved(true);
+  } else if (sent && pending?.state === "failed") {
+    setSent(null);
+    setError(pending.error ?? "That didn't save. Try again.");
+    // Someone else's words now: shown in place of these.
+    if (pending.error === PERSONA_CHANGED) setStale(true);
+  }
+  useEffect(() => {
+    if (!saved) return;
+    const t = setTimeout(() => setSaved(false), 1500);
+    return () => clearTimeout(t);
+  }, [saved]);
+  const changed = text.trim() !== stored;
+  const left = MAX_PERSONA_CHARS - text.length;
+  const save = async () => {
+    if (!changed || busy || sent) return;
+    setBusy(true);
+    setError(null);
+    // What was sent: words typed while it saves stay (only the sent text is tidied).
+    const words = text;
+    try {
+      if (shared?.role === "admin") {
+        const key = crypto.randomUUID().replace(/-/g, "");
+        const r = await memberAct({ act: "persona", botId: b.id, text: words.trim(), was: base }, key);
+        if (r.ok) return setSent({ key, words: keptPersona(words) ?? "" });
+        if (r.error === PERSONA_CHANGED) setStale(true);
+        return setError(undash(r.error ?? "That didn't save. Try again."));
+      }
+      const res = await post("/api/bots", { botId: b.id, persona: words, was: base }, "PATCH");
+      const r = (await res.json().catch(() => ({}))) as { error?: string };
+      if (r.error === PERSONA_CHANGED) setStale(true);
+      if (!res.ok || r.error) return setError(r.error ? undash(r.error) : "That didn't save. Try again.");
+      setBase(keptPersona(words) ?? "");
+      setText((now) => (now === words ? words.trim() : now));
+      setSaved(true);
+    } catch {
+      setError("Couldn't reach Bops. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className={`flex w-full flex-col gap-2 rounded-2xl px-4 py-3 ${className}`}>
+      <div className="flex flex-col">
+        <span className="text-[13px] font-semibold leading-4">How I work</span>
+        <span className="text-[12px] leading-4 text-[#6B6B6B]">{b.name} keeps this in mind in chats, tasks and calls</span>
+      </div>
+      <textarea
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value);
+          setSaved(false);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            void save();
+          } else if (e.key === "Escape" && changed) {
+            // Puts back what's saved, and keeps the profile open (the app's Esc would leave it).
+            e.preventDefault();
+            setText(stored);
+            setError(null);
+          }
+        }}
+        rows={3}
+        maxLength={MAX_PERSONA_CHARS}
+        aria-label={`How ${b.name} works`}
+        placeholder={`How should ${b.name} work? For example: keep replies short, check my calendar before suggesting times, never email clients before 9 AM.`}
+        className="w-full resize-none rounded-[12px] bg-white/70 px-3 py-2 text-[13px] leading-[18px] outline-none shadow-[0_0_0_1px_#E6E6E3] placeholder:text-[#9A9A98] focus:shadow-[0_0_0_1.5px_#0A0A0A]"
+      />
+      <div className="flex items-center gap-2">
+        <button disabled={!changed || busy || !!sent} onClick={() => void save()} className="rounded-full bg-ink px-3 py-1.5 text-[12.5px] font-medium leading-4 text-white disabled:opacity-40">
+          {busy || sent ? "Saving…" : "Save"}
+        </button>
+        {(saved || pending?.state === "waiting") && <span className="motion-fade-in text-[12px] leading-4 text-[#6B6B6B]">{saved ? "Saved" : REPLY_WAITS_LINE}</span>}
+        {error && (
+          <span role="alert" className="min-w-0 text-[12px] leading-4 text-[#B42318]">
+            {error}
+          </span>
+        )}
+        {left <= MAX_PERSONA_CHARS / 10 && <span className="ml-auto shrink-0 text-[12px] tabular-nums leading-4 text-[#9A9A98]">{left === 1 ? "1 character left" : `${left} characters left`}</span>}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- What the bot uses, and where to find it ---------------- */
+
+/**
+ * The apps and logins this bot can use, at a glance; they're managed together in the Vault. A Connected
+ * App with routines to offer opens them on its icon (routines.tsx), and one the bot runs routines from
+ * says how many: that opens its Routines tab at that app. A connect that just finished for this bot
+ * opens its routines here by itself.
+ */
+export function Uses({ state, bot: b, onOpenVault, onOpenRoutines, className }: { state: AppState; bot: Bot; onOpenVault: () => void; onOpenRoutines: (app: string | null) => void; className: string }) {
+  const apps = botApps(state, b);
+  const logins = (state.vault ?? []).filter((l) => l.bots === "all" || l.bots.includes(b.id));
+  const anchors = useRef(new Map<string, HTMLElement>());
+  const [asked, setAsked] = useState<string | null>(null);
+  const suggest = usePendingSuggest(state, (s) => s.botId === b.id && apps.some((x) => x.app === s.app));
+  const popover = asked ?? suggest.pending?.app ?? null;
+  const tip = (x: (typeof apps)[number]) => `${x.appName}: ${x.accounts.map((a) => `${accountTitle(a.account)} (${a.level === "read" ? "read only" : "read & act"})`).join(", ")}`;
+  return (
+    <div className={`flex w-full items-start gap-3 rounded-2xl px-4 py-3 ${className}`}>
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <span className="text-[13px] font-semibold leading-4">Uses</span>
+        {apps.length || logins.length ? (
+          <span className="flex flex-wrap items-center gap-1.5">
+            {apps.map((x) => {
+              const n = routinesFrom(state, b.id, x.app);
+              return (
+                <span key={x.app} className="flex items-center gap-1">
+                  {hasTemplates(x.app) ? (
+                    <AppRoutinesButton
+                      app={x.app}
+                      name={x.appName}
+                      size={22}
+                      label={`${tip(x)}. Add routines`}
+                      onClick={() => setAsked(x.app)}
+                      anchorRef={(el) => void (el ? anchors.current.set(x.app, el) : anchors.current.delete(x.app))}
+                    />
+                  ) : (
+                    <span title={tip(x)} className="flex">
+                      <AppLogo app={x.app} name={x.appName} size={22} />
+                    </span>
+                  )}
+                  {n > 0 && (
+                    <button
+                      onClick={() => onOpenRoutines(x.app)}
+                      aria-label={`${routineCount(n)} from ${x.appName}`}
+                      className="h-[22px] rounded-full bg-black/[0.05] px-2 text-[11.5px] tabular-nums leading-4 text-[#3A3A38] outline-none hover:bg-black/[0.08] focus-visible:shadow-[0_0_0_1.5px_#0A0A0A]"
+                    >
+                      {routineCount(n)}
+                    </button>
+                  )}
+                </span>
+              );
+            })}
+            {logins.map((l) => (
+              <span key={l.id} title={`${l.username} on ${l.site}`} className="flex h-[22px] items-center gap-1 rounded-full bg-black/[0.05] px-2 text-[11.5px] leading-4">
+                <KeyIcon />
+                {l.site}
+              </span>
+            ))}
+          </span>
+        ) : (
+          <span className="text-[12px] leading-4 text-[#6B6B6B]">No apps or logins yet</span>
+        )}
+      </div>
+      <button onClick={onOpenVault} className="shrink-0 text-[12px] font-medium leading-4 text-ink">
+        Manage in Logins ›
+      </button>
+      {popover && (
+        <RoutineSuggest
+          key={popover}
+          state={state}
+          app={popover}
+          botId={b.id}
+          anchor={() => anchors.current.get(popover) ?? null}
+          onClose={() => {
+            setAsked(null);
+            suggest.handled();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+/** Not built yet: a label that says so, wherever a feature is shown ahead of time. */
