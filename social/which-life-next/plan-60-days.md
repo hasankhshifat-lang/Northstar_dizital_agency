@@ -33,6 +33,7 @@ it is not a guarantee, and on today's numbers it is unlikely without a breakout 
    (*How Roman Sailors Made Seawater Drinkable*: 23 s, 12.4M views, 46K-sub channel, 99× its average;
    *The Oldest Wine In The World*: 8 s, 10.5M, 13K subs, 138×). Ours run **~2 minutes**.
    Shorts are pushed on % watched and replays; a 2-minute Short has to hold people 4× longer than a 30 s one.
+   **Owner decision (2026-11-08): every Short from now on is 45–60 seconds.**
 2. **One clear question or claim in the first second**, readable without sound:
    "How did X do Y?", "The REAL story of…", "Why there are two…", "He survived the Titanic drunk".
 3. **Topics that travel:** Titanic (23 of the 1M+ hits), Wild West / gunfighters, WW2 inventions and
@@ -50,7 +51,7 @@ it is not a guarantee, and on today's numbers it is unlikely without a breakout 
   punishments & jobs / maps & borders / mysteries / survival feats. Never the same bucket 2 days running.
 - Prefer US stories (our audience) but take the best story in a winning bucket.
 
-### Script: 45–60 seconds, 110–150 words (recommended; the owner decides, see below)
+### Script: 45–60 seconds, 110–150 words (owner decision, 2026-11-08)
 1. **0–1 s:** the most shocking true fact as on-screen text + voice, mid-action. No date card, no "rewind".
 2. **1–5 s:** the question that makes them stay ("…so how did he get out?").
 3. **5–45 s:** 4–6 beats, each a new image every 2–4 s; one number or name per beat.
@@ -88,4 +89,3 @@ but cut harder: a new shot every 2–4 s, and the first frame must already show 
 3. **Claude usage:** the daily Shorts task failed on 2026-11-07 and 11-08 with "usage limit reached",
    so nothing has been posted since 2026-11-05. Moving to 1 Short a day cuts the work by ~75%, but the
    task still needs plan usage left when it fires.
-4. **Decide the length:** 45–60 s (what the data supports) vs the approved ~2-minute format.
