@@ -6,6 +6,7 @@ import { lastWorkOf, live, pausedForOk, workspaceOf, MAIN_WORKSPACE, botChatId, 
 import { fileStore, onPostgres, onRunner, selfHosted, type Persistence, type StateAccess, type Went } from "./persist";
 import { cloudStore } from "./persist-cloud";
 import { pgStore } from "./persist-pg";
+import { DENTAL_TEAM } from "@/lib/dental-clinic";
 import { userBopsHome, userChromeDir, userDataDir } from "./user-paths";
 
 /**
@@ -14,15 +15,10 @@ import { userBopsHome, userChromeDir, userDataDir } from "./user-paths";
  * user (BOPS_DATABASE_URL); lib/server/persist.ts.
  */
 
-const seedBots: Bot[] = [
-  { id: "boppy", name: "Boppy", role: "Chief of Staff", color: "#0A0A0A", isMain: true, computerStatus: "none" },
-  { id: "otto", name: "Otto", role: "Outbound", color: "#E9FF3B", isMain: false, computerStatus: "none" },
-  { id: "rook", name: "Rook", role: "Recruiting", color: "#47C46B", isMain: false, computerStatus: "none" },
-  { id: "iris", name: "Iris", role: "Inbox", color: "#5B8CFF", isMain: false, computerStatus: "none" },
-  { id: "penny", name: "Penny", role: "Finance", color: "#FF6FB5", isMain: false, computerStatus: "none" },
-];
+/** SmileDesk: the dental team (lib/dental-clinic.ts), the practice manager first. */
+const seedBots: Bot[] = DENTAL_TEAM;
 
-/** The main bot as on day one: no computer yet (one launches from the Bops template on its first task), nothing connected. */
+/** The main bot as on day one: no computer yet (one launches from the template on its first task), nothing connected. */
 const freshMain = (): Bot => ({ ...seedBots.find((b) => b.isMain)!, computerId: undefined, computerStatus: "none" });
 
 const botChat = (botId: string, at = Date.now()): Chat => ({ id: botChatId(botId), kind: "bot", botIds: [botId], createdAt: at, typing: [] });
@@ -33,8 +29,8 @@ export const RESTARTED = "Bops restarted while this was running";
 /** Bring older saved state up to the current shape: every bot has a chat, sessions are threads. */
 function migrate(raw: Record<string, unknown>): AppState {
   const state = raw as unknown as AppState & { samThinking?: boolean };
-  // A fresh start is the main bot (Boppy) alone; it (or you) adds the rest of the team. It can't be removed.
-  state.bots ??= [freshMain()];
+  // SmileDesk: a fresh start is the dental team, the practice manager (main bot, which can't be removed) first.
+  state.bots ??= seedBots.map((b) => (b.isMain ? freshMain() : { ...b }));
   if (!state.bots.some((x) => x.isMain)) state.bots.unshift(freshMain());
   state.chats ??= [];
   for (const b of state.bots) if (!state.chats.some((c) => c.id === botChatId(b.id))) state.chats.push({ ...botChat(b.id, 0), workspaceId: b.workspaceId });

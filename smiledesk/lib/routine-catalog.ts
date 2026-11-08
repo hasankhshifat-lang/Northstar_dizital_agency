@@ -175,7 +175,199 @@ const chatApp = (app: "slack" | "discord", name: string): RoutineTemplate[] => [
   },
 ];
 
+
+/* ---------------- SmileDesk: the dental team's starters (lib/dental-clinic.ts) ---------------- */
+/** What a dental starter never does without asking: message a patient, or change the books. */
+const PATIENT_NEVER = ["Message a patient", "Create, move or cancel an appointment"];
+/** No health details in what goes to a patient (HIPAA and the like): first name, time and service only. */
+const PRIVATE = "In anything for a patient use only their first name, the time and the service: no diagnosis, treatment or other patient's details.";
+
+const DENTAL_ROUTINES: RoutineTemplate[] = [
+  {
+    id: "dental-appointment-reminders",
+    app: "googlecalendar",
+    title: "Tomorrow's appointment reminders",
+    summary: "Each afternoon, a reminder drafted for every patient booked tomorrow, for you to send.",
+    when: "Every day at 4 PM",
+    kind: "schedule",
+    defaultOn: true,
+    schedule: at("16:00"),
+    suggested: [
+      { label: "4 PM", schedule: at("16:00") },
+      { label: "Weekdays 3 PM", schedule: { kind: "weekdays", time: "15:00" } },
+      { label: "10 AM and 4 PM", schedule: { kind: "daily", time: "10:00", times: ["10:00", "16:00"] } },
+    ],
+    goal: [
+      "List tomorrow's patient appointments on the clinic's Google Calendar (find_app_actions, then use_app). Skip blocked time, staff meetings and events already marked Confirmed.",
+      "For each one, offer a short reminder with draft_reply: the patient's first name, the time, the service, the clinic's address, and \"Reply C to confirm or R to reschedule\". Use the patient's email or phone from the event's notes.",
+      PRIVATE,
+      "Answer with how many appointments tomorrow, how many are confirmed already, and any with no way to reach the patient.",
+      `Read only in Google Calendar. ${READS_ONLY}`,
+    ].join(" "),
+    neverWithoutAsking: PATIENT_NEVER,
+  },
+  {
+    id: "dental-same-day-reminders",
+    app: "googlecalendar",
+    title: "Same day reminders",
+    summary: "A short nudge drafted 2 hours before each appointment.",
+    when: "2 hours before each appointment",
+    kind: "monitor",
+    defaultOn: false,
+    schedule: { kind: "before_event", minutes: 120, source: "googlecalendar" },
+    suggested: [
+      { label: "1 hour before", schedule: beforeMeeting(60) },
+      { label: "2 hours before", schedule: beforeMeeting(120) },
+      { label: "3 hours before", schedule: beforeMeeting(180) },
+    ],
+    goal: [
+      "Check the clinic's Google Calendar for patient appointments that start in this run's window, given below (find_app_actions, then use_app).",
+      "For each one, offer a one line reminder with draft_reply: first name, time, and the clinic's address.",
+      PRIVATE,
+      `Read only in Google Calendar. ${READS_ONLY}`,
+      "If there's no such appointment, answer NOTHING.",
+    ].join(" "),
+    neverWithoutAsking: PATIENT_NEVER,
+  },
+  {
+    id: "dental-no-shows",
+    app: "googlecalendar",
+    title: "No shows and late cancels",
+    summary: "Each morning, yesterday's missed appointments, with a kind rebooking message drafted for each.",
+    when: "Weekdays at 9 AM",
+    kind: "schedule",
+    defaultOn: true,
+    schedule: { kind: "weekdays", time: "09:00" },
+    suggested: [
+      { label: "Weekdays 9 AM", schedule: { kind: "weekdays", time: "09:00" } },
+      { label: "Weekdays 12 PM", schedule: { kind: "weekdays", time: "12:00" } },
+    ],
+    goal: [
+      "Read yesterday's patient appointments on the clinic's Google Calendar (find_app_actions, then use_app), and find the ones marked no show, cancelled less than 24 hours before, or never confirmed and not checked in.",
+      "For each, offer a kind, short message with draft_reply offering two free times this week that fit the service's length and the clinic's hours.",
+      PRIVATE,
+      "Answer with the list, then the free times you offered.",
+      `Read only in Google Calendar: don't book anything. ${READS_ONLY}`,
+      "If nobody missed an appointment, answer NOTHING.",
+    ].join(" "),
+    neverWithoutAsking: PATIENT_NEVER,
+  },
+  {
+    id: "dental-recall",
+    app: "googlecalendar",
+    title: "Check up and cleaning recall",
+    summary: "Weekly, the patients due for a check up with nothing booked, and a recall message for each.",
+    when: "Mondays at 10 AM",
+    kind: "schedule",
+    defaultOn: true,
+    schedule: { kind: "weekly", day: 1, time: "10:00" },
+    suggested: [
+      { label: "Monday 10 AM", schedule: { kind: "weekly", day: 1, time: "10:00" } },
+      ...WEEKLY_TIMES,
+    ],
+    goal: [
+      "Look back through the clinic's Google Calendar (find_app_actions, then use_app) for patients whose last check up or cleaning was 6 months ago or more, with no appointment booked since or ahead. Check memory (recall) for anyone who asked not to be contacted, and skip them.",
+      "List them, longest overdue first, at most 25. For each, offer a friendly recall message with draft_reply inviting them to book, with a link or the clinic's phone.",
+      PRIVATE,
+      `Read only in Google Calendar. ${READS_ONLY}`,
+    ].join(" "),
+    neverWithoutAsking: PATIENT_NEVER,
+  },
+  {
+    id: "dental-review-requests",
+    app: "googlecalendar",
+    title: "Ask for reviews after visits",
+    summary: "The day after, a thank you with your Google review link drafted for each patient seen.",
+    when: "Weekdays at 11 AM",
+    kind: "schedule",
+    defaultOn: true,
+    schedule: { kind: "weekdays", time: "11:00" },
+    suggested: [
+      { label: "Weekdays 11 AM", schedule: { kind: "weekdays", time: "11:00" } },
+      { label: "Weekdays 6 PM", schedule: { kind: "weekdays", time: "18:00" } },
+    ],
+    goal: [
+      "List the patient appointments that took place on the clinic's Google Calendar on the last working day (find_app_actions, then use_app).",
+      "Skip emergency visits, anyone whose event or memory (recall) notes a complaint or a bad visit, and anyone asked for a review in the last 6 months.",
+      "For each of the rest, offer a short, warm thank you with draft_reply that asks, without pressure, for a Google review, with the clinic's review link from your How I work.",
+      "Never offer a discount, gift or anything in return for a review. List who you asked in your answer, so memory keeps who was asked and when.",
+      PRIVATE,
+      `Read only in Google Calendar. ${READS_ONLY}`,
+      "If nobody was seen, answer NOTHING.",
+    ].join(" "),
+    neverWithoutAsking: ["Message a patient"],
+  },
+  {
+    id: "dental-review-replies",
+    app: "google_business_profile",
+    title: "New Google reviews",
+    summary: "Watches your Google Business Profile, drafts a reply to each new review, and tells you at once about a bad one.",
+    when: "Every 2 hours, 8 AM to 8 PM",
+    kind: "monitor",
+    defaultOn: true,
+    schedule: { kind: "every", minutes: 120, hours: { from: "08:00", to: "20:00" } },
+    suggested: [
+      { label: "Every hour", schedule: every(60) },
+      { label: "Every 2 hours, 8 AM to 8 PM", schedule: { kind: "every", minutes: 120, hours: { from: "08:00", to: "20:00" } } },
+      { label: "9 AM and 5 PM", schedule: { kind: "daily", time: "09:00", times: ["09:00", "17:00"] } },
+    ],
+    goal: [
+      "Read the reviews on the clinic's Google Business Profile that are new since the last run, or have no reply yet (find_app_actions, then use_app).",
+      "For each, offer a reply with draft_reply. 4 or 5 stars: thank them by first name and mention one thing they liked. 1 to 3 stars: apologise without excuses and invite them to call the practice manager at the clinic's phone.",
+      "In a public reply, never confirm the person is a patient or mention any treatment, visit date or health detail.",
+      "Put any 1 or 2 star review first, with what went wrong in a line.",
+      `Read only in Google Business Profile: don't post or delete a reply. ${READS_ONLY}`,
+      "If there's no new review, answer NOTHING.",
+    ].join(" "),
+    neverWithoutAsking: ["Post a reply to a review", "Delete a reply"],
+  },
+  {
+    id: "dental-review-summary",
+    app: "google_business_profile",
+    title: "Weekly reviews summary",
+    summary: "Your rating, new reviews and what patients mention most, once a week.",
+    when: "Fridays at 4 PM",
+    kind: "schedule",
+    defaultOn: false,
+    schedule: { kind: "weekly", day: 5, time: "16:00" },
+    suggested: WEEKLY_TIMES,
+    goal: [
+      "Read the clinic's Google Business Profile reviews from the last 7 days and its average rating (find_app_actions, then use_app).",
+      "Answer with: the rating and review count now and a week ago, the new reviews by stars, the themes patients praise and the ones they complain about, and any review still waiting for a reply.",
+      `Read only. ${READS_ONLY}`,
+    ].join(" "),
+    neverWithoutAsking: ["Post a reply to a review"],
+  },
+  {
+    id: "dental-booking-inbox",
+    app: "gmail",
+    title: "Patient booking requests",
+    summary: "Watches the clinic inbox for booking, reschedule and cancel requests, and drafts an answer with free times.",
+    when: "Every 15 minutes, 8 AM to 6 PM weekdays",
+    kind: "monitor",
+    defaultOn: true,
+    schedule: { kind: "every", minutes: 15, hours: { from: "08:00", to: "18:00" }, days: WEEKDAYS },
+    suggested: [
+      { label: "Every 15 minutes, 8 AM to 6 PM weekdays", schedule: { kind: "every", minutes: 15, hours: { from: "08:00", to: "18:00" }, days: WEEKDAYS } },
+      { label: "Every 15 minutes", schedule: every(15) },
+      { label: "Every 30 minutes", schedule: every(30) },
+    ],
+    goal: [
+      "Check the clinic's Gmail for new mail since the last run from patients asking to book, move or cancel an appointment, or with a question for the front desk (find_app_actions, then use_app).",
+      "For a booking or a move, look up free times on the clinic's Google Calendar that fit the service's length and the clinic's hours, and offer a reply with draft_reply giving two of them.",
+      "For pain, swelling, bleeding or a broken tooth, put it first and draft a reply with the emergency line and today's first free slot.",
+      "Never give a diagnosis, medical advice or a price you weren't given.",
+      `Read only: don't send, book, move or cancel anything. ${READS_ONLY}`,
+      "If nothing new needs the front desk, answer NOTHING.",
+    ].join(" "),
+    tags: ["Customer", "FYI"],
+    neverWithoutAsking: [...MAIL_NEVER, "Create, move or cancel an appointment"],
+  },
+];
+
 export const ROUTINE_TEMPLATES: RoutineTemplate[] = [
+  ...DENTAL_ROUTINES,
+
   /* ---------------- Gmail ---------------- */
   {
     id: "gmail-morning-inbox",
@@ -422,6 +614,7 @@ const APP_NAMES: Record<string, string> = {
   attio: "Attio",
   STRIPE_SECRET_KEY: "Stripe",
   PLAIN_API_KEY: "Plain",
+  google_business_profile: "Google Business Profile",
 };
 
 /** A Connected App's or a key's name as the user knows it ("Stripe" for STRIPE_API_KEY), or undefined. */

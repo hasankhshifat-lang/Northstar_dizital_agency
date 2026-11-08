@@ -2,9 +2,10 @@ import "server-only";
 import { appsOpen } from "@/lib/apps-access";
 import { isAccessLevel, showsAny, withEntry, type MemberAccess, type MemberAccessMap } from "@/lib/member-access";
 import { chainWithout, cleanChain, leadOf, type Chain, type ChainBot } from "@/lib/chain";
-import { botChatId, freeComputerOnDelete, MAIN_WORKSPACE, sharesComputer, workspaceOf, type AppState, type Bot, type OrgoMigration, type Workspace } from "@/lib/types";
+import { botChatId, freeComputerOnDelete, MAIN_WORKSPACE, sharesComputer, workspaceOf, type AppState, type OrgoMigration, type Workspace } from "@/lib/types";
 import { cleanFavorites } from "@/lib/favorites";
 import { freeBotId } from "./bots";
+import { dentalTeamFor } from "@/lib/dental-clinic";
 import { getState, id, stateEpoch, stateReady, stateTooNew, update } from "./store";
 import { onRunner } from "./persist";
 import { ensureInbox } from "./mail";
@@ -59,7 +60,7 @@ function freeLocalName(name: string, except?: string) {
 export type CreateResult = { id: string; chatId: string; orgoProjectId?: string } | { error: string; code: "name_taken"; suggestion: string } | { error: string; code: "orgo"; status: number };
 
 /**
- * A new workspace: its own team, starting with its own Boppy, and the current one from now on. On an
+ * A new workspace: its own team, starting with its own dental team (Molly, Rosa, Remi and Ruby), and the current one from now on. On an
  * orgo-web with per workspace projects its Orgo workspace is made first, under the same name: when the
  * user's Orgo already has a workspace by that name, nothing is made and they're asked for another
  * (`name_taken`, with "<name> (Bops)" to start from). Orgo not answering doesn't stop it: the project is
@@ -82,16 +83,9 @@ export async function createWorkspace(name: string): Promise<CreateResult> {
       bindLater();
     }
   }
-  const mainId = freeBotId("Boppy");
-  const main: Bot = {
-    id: mainId,
-    name: "Boppy",
-    role: "Chief of Staff",
-    color: "#0A0A0A",
-    isMain: true,
-    computerStatus: "none",
-    workspaceId: ws,
-  };
+  // SmileDesk: every workspace starts with the dental team (lib/dental-clinic.ts), its practice manager first.
+  const team = dentalTeamFor(ws, freeBotId);
+  const mainId = team[0].id;
   update((s) => {
     (s.workspaces ??= [{ id: MAIN_WORKSPACE, name: "Main", createdAt: Date.now() }]).push({
       id: ws,
@@ -99,8 +93,10 @@ export async function createWorkspace(name: string): Promise<CreateResult> {
       createdAt: Date.now(),
       ...(made ? { orgoProjectId: made.id, orgoName: made.name, ...(made.updatedAt ? { orgoUpdatedAt: made.updatedAt } : {}) } : {}),
     });
-    s.bots.push(main);
-    s.chats.push({ id: botChatId(mainId), kind: "bot", botIds: [mainId], createdAt: Date.now(), typing: [], workspaceId: ws });
+    for (const b of team) {
+      s.bots.push(b);
+      s.chats.push({ id: botChatId(b.id), kind: "bot", botIds: [b.id], createdAt: Date.now(), typing: [], workspaceId: ws });
+    }
     s.workspace = ws;
   });
   void ensureInbox(mainId).catch((e: Error) => console.warn(`[mail] inbox for ${mainId}: ${e.message}`));

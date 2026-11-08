@@ -185,9 +185,10 @@ await check("the catalog covers each app the task names, and alerts and monitors
   for (const app of ["gmail", "googlecalendar", "slack", "discord", "STRIPE_SECRET_KEY", "PLAIN_API_KEY", "hubspot", "attio"]) assert.ok(C.templatesFor(app).length, `nothing for ${app}`);
   assert.deepEqual(
     C.templatesFor("gmail").map((t) => t.id),
-    ["gmail-morning-inbox", "gmail-alerts", "gmail-draft-replies", "gmail-weekly-follow-ups"],
+    // SmileDesk: the dental front desk's booking inbox comes first (routine-catalog.ts DENTAL_ROUTINES).
+    ["dental-booking-inbox", "gmail-morning-inbox", "gmail-alerts", "gmail-draft-replies", "gmail-weekly-follow-ups"],
   );
-  assert.equal(C.templatesFor("Gmail").length, 4);
+  assert.equal(C.templatesFor("Gmail").length, 5);
   assert.equal(C.templatesFor("STRIPE_API_KEY")[0].id, "stripe-daily-money");
   assert.deepEqual(C.templatesFor("notion"), []);
   for (const t of C.ROUTINE_TEMPLATES) if (t.kind === "monitor" || /alert/i.test(t.id)) assert.equal(C.quietOf(t), true, `${t.id} isn't quiet`);
@@ -246,11 +247,11 @@ await check("turning starters on: routines owned by the bot, with source, tags, 
 
 await check("idempotent: a starter the bot runs already is offered as already and never made twice", () => {
   const before = state.routines.length;
-  const again = S.acceptStarters("gmail", "bot_main", [{ id: "gmail-morning-inbox" }, { id: "gmail-weekly-follow-ups" }, { id: "gmail-weekly-follow-ups" }]);
-  assert.equal(again.created.length, 1);
-  assert.equal(state.routines.length, before + 1);
+  const again = S.acceptStarters("gmail", "bot_main", [{ id: "dental-booking-inbox" }, { id: "gmail-morning-inbox" }, { id: "gmail-weekly-follow-ups" }, { id: "gmail-weekly-follow-ups" }]);
+  assert.equal(again.created.length, 2);
+  assert.equal(state.routines.length, before + 2);
   const offers = S.offersFor("gmail", "bot_main");
-  assert.deepEqual(offers.templates.map((t) => t.already), [true, true, true, true]);
+  assert.deepEqual(offers.templates.map((t) => t.already), [true, true, true, true, true]);
   // Another bot runs none of them.
   assert.ok(S.offersFor("gmail", "bot_max").templates.every((t) => !t.already));
   // Everything already: nothing is offered after a connect again.
@@ -479,12 +480,13 @@ await check("no How often, no bot that can use it: nothing is made; connecting t
 await check("starters after a check: the same job isn't offered (a check through the day covers the watches and alerts, a morning check the once a day reads), the rest are", () => {
   // Otto checks Gmail every 15 minutes (above): the alerts and the draft replies are its job already.
   assert.deepEqual(S.offersFor("gmail", "bot_otto").templates.map((t) => t.id), ["gmail-morning-inbox", "gmail-weekly-follow-ups"]);
-  // Iris has none: all four.
-  assert.equal(S.offersFor("gmail", "bot_iris").templates.length, 4);
+  // Iris has none: all five (the four Gmail ones and the dental booking inbox).
+  assert.equal(S.offersFor("gmail", "bot_iris").templates.length, 5);
   // A morning check of Google Calendar: today's meetings is its job, the meeting prep isn't.
   state.accounts.push({ id: "ca_cal", app: "googlecalendar", appName: "Google Calendar", status: "active", at: 1, workspaceId: "ws_main" });
   S.makeCheck("ca_cal", { bots: ["bot_otto"], level: "read", check: morning });
-  assert.deepEqual(S.offersFor("googlecalendar", "bot_otto").templates.map((t) => t.id), ["googlecalendar-meeting-prep"]);
+  // SmileDesk: the morning check covers the daily dental reads too; the before-appointment nudge and the weekly recall are left.
+  assert.deepEqual(S.offersFor("googlecalendar", "bot_otto").templates.map((t) => t.id), ["dental-same-day-reminders", "dental-recall", "googlecalendar-meeting-prep"]);
   S.offerStarters("googlecalendar", ["bot_otto"]);
   assert.deepEqual([state.suggest.app, state.suggest.botId], ["googlecalendar", "bot_otto"], "what's left is still offered after the connect");
   S.clearSuggest();
@@ -565,7 +567,11 @@ await check("GET lists a bot's starters for an app, with already", async () => {
   const j = await res.json();
   assert.equal(j.botId, "bot_main");
   assert.equal(j.app, "googlecalendar");
-  assert.deepEqual(j.templates.map((t) => [t.id, t.already]), [["googlecalendar-todays-meetings", false], ["googlecalendar-meeting-prep", false]]);
+  assert.deepEqual(j.templates.map((t) => [t.id, t.already]), [
+    ...["dental-appointment-reminders", "dental-same-day-reminders", "dental-no-shows", "dental-recall", "dental-review-requests"].map((id) => [id, false]),
+    ["googlecalendar-todays-meetings", false],
+    ["googlecalendar-meeting-prep", false],
+  ]);
   assert.ok(j.templates[0].goal && j.templates[0].when);
   assert.equal((await route.GET(get("app=gmail"))).status, 400);
   assert.equal((await route.GET(get("app=gmail&botId=bot_none"))).status, 404);
@@ -626,7 +632,7 @@ await check("a check deleted in the app (DELETE /api/routines) is its account ba
   }
   assert.deepEqual(checksOf("ca_work"), [], "Only when asked: nothing checks it");
   assert.doesNotMatch(R.routinesNote(["bot_iris"]), /Check Gmail/, "the bot isn't told of it anymore");
-  assert.equal(S.offersFor("gmail", "bot_iris").templates.length, 4, "what the check did is offered again");
+  assert.equal(S.offersFor("gmail", "bot_iris").templates.length, 5, "what the check did is offered again");
   // Deleted again, or one that's gone: still fine.
   assert.equal((await routinesRoute.DELETE(del(r.id))).status, 200);
 });
