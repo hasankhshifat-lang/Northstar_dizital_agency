@@ -59,3 +59,12 @@
 
 ### v9 changes
 - Channel name banner "সাইন্টিফিক বিথী" (Scientific Bithi) above the wheel on the channel sting (0:07–0:08) and on the end card.
+
+## Cartoon puppet style (v3 characters): `pilot1_v3style.mp4`
+The full Pilot 1 with the new semi-realistic characters (see `../../characters-v3/`) and the painted ghat background.
+Everything else is the same as v9: story props, science boards, hook, sting, Scientific Bithi banner and name plates, and the voice track.
+- Engine: `engine-v3style/`. The free LLM router wrote the character layer in `episode3_template.html`:
+  lip-sync with A/E/O/rest mouths, blinks, worried/happy brows, elbows, open hands on raised arms, heads turning toward the speaker.
+  Mama's life-jacket bundle and clay pot are a layer inside his drawing.
+- Build: `python3 episode3.py <scratchpad>` then `python3 make_video.py --html episode3.html --out pilot1_v3style.mp4 --total 2788`.
+- The rickshaw-art version (`pilot1_rickshaw_v9.mp4`) is kept for comparison.

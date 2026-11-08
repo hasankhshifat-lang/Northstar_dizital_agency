@@ -24,7 +24,7 @@ backgrounds), keeping the science boards and the Scientific Bithi banner/name pl
 - **Painted background:** `ghat_painted.py` uses the same ghat layout with soft gradient light, a hazy and blurred distance,
   water reflections, soft outlines, a shaded deck, warm light, vignette and paper grain (see `background_flat_vs_painted.jpg`).
 - The free LLM router wrote the engine changes; Claude drew the art, reviewed the code and fixed Bithi's gesture angle.
-- The Figma components still have the older layer structure (no separate forearm/face layers); they look the same.
+- Figma: Mama and Bithi components updated with the new drawing (fingers, feet, elbow and face layers). Boltu is pending (the Figma MCP tool-call limit for the seat was reached); import `Boltu_v3_figma_import.svg` into component "Boltu / v3 cartoon" to finish.
 
 ## Test 3 changes (hands and feet)
 - **Hands:** two poses per hand, both with four separate fingers and a thumb:

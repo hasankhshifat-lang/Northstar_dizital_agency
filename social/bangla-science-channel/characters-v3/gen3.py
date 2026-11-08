@@ -261,6 +261,7 @@ def mama():
     b += P(f"M{cx-104} 268 L{cx-58} 256 L{cx-30} 520 L{cx-70} 530Z", "#D7263D", SW)
     b += "".join(L(f"M{cx-96+(y-268)*0.13} {y} L{cx-58+(y-268)*0.11} {y-8}", 4, "#fff") for y in (300, 350, 400, 450, 500))
     b += L(f"M{cx-86} 270 L{cx-52} 524", 3, "#fff")
+    b += jackets_v3()
     b += arm(cx-122, 296, 270, "#F2B705", "#C98F00", 90, -1, 42, "armL") + arm(cx+122, 296, 270, "#F2B705", "#C98F00", 90, 1, 42, "armR")
     hd = ""
     hd += P(f"M{cx-22} 210 L{cx-26} 268 Q{cx} 280 {cx+26} 268 L{cx+22} 210Z", SKIN, SW)
@@ -283,6 +284,26 @@ def mama():
     hd += '</g>'
     b += f'<g class="head" data-p="{cx},{262}"><g transform="translate({cx} 262) scale(1.15) translate({-cx} -262)">{hd}</g></g>'
     return svg(W, H, b)
+
+def jackets_v3():
+    """Mama's life-jacket bundle over the belly + clay pot (kolshi), as an SVG group in Mama's coordinates (520 wide)."""
+    cx, cy, r = 260, 440, 172
+    g = P(f"M{cx-r} {cy} A{r} {r*0.98} 0 1 1 {cx+r} {cy} A{r} {r*0.98} 0 1 1 {cx-r} {cy}Z", "#F57A14", SW)
+    g += S(f"M{cx+40} {cy-r+12} A{r} {r} 0 0 1 {cx+r-6} {cy+20} A{r} {r} 0 0 1 {cx+60} {cy+r-10} Q{cx+150} {cy} {cx+40} {cy-r+12}Z", "#C85A06", .6)
+    g += S(f"M{cx-110} {cy-110} Q{cx-60} {cy-150} {cx} {cy-158} Q{cx-70} {cy-120} {cx-120} {cy-60}Z", "#FFC07A", .55)
+    for k, y in enumerate((cy-95, cy-5, cy+85)):
+        w = (r**2 - (y-cy)**2) ** 0.5
+        g += L(f"M{cx-w+6} {y-18} Q{cx} {y-42} {cx+w-6} {y-18}", 3, "#A84A04")
+        g += P(f"M{cx-w+10} {y-8} Q{cx} {y-30} {cx+w-10} {y-8} L{cx+w-12} {y+10} Q{cx} {y-12} {cx-w+12} {y+10}Z", "#FFC300", 3.5)
+        g += f'<rect x="{cx-13}" y="{y-26}" width="26" height="30" rx="5" fill="#E8ECF2" stroke="{O}" stroke-width="3.5"/><rect x="{cx-6}" y="{y-19}" width="12" height="16" rx="2" fill="none" stroke="{O}" stroke-width="2.5"/>'
+    # clay pot (kolshi) on Mama's left side (screen right), at hand height
+    px, py = 448, 560
+    g += P(f"M{px-30} {py-78} L{px+30} {py-78} L{px+24} {py-60} Q{px+70} {py-40} {px+66} {py+8} Q{px+60} {py+62} {px} {py+66} Q{px-60} {py+62} {px-66} {py+8} Q{px-70} {py-40} {px-24} {py-60}Z", "#C1501E", SW)
+    g += S(f"M{px+20} {py-50} Q{px+66} {py-30} {px+62} {py+10} Q{px+56} {py+56} {px+10} {py+64} Q{px+44} {py+20} {px+20} {py-50}Z", "#8A3410", .6)
+    g += S(f"M{px-40} {py-30} Q{px-56} {py} {px-44} {py+30} Q{px-50} {py} {px-34} {py-28}Z", "#F08A5A", .6)
+    g += f'<ellipse cx="{px}" cy="{py-78}" rx="31" ry="9" fill="#6E260A" stroke="{O}" stroke-width="3.5"/>'
+    g += L(f"M{px-60} {py-4} Q{px} {py+14} {px+60} {py-4}", 3, "#7A2A0C")
+    return f'<g class="jackets" style="display:none">{g}</g>'
 
 if __name__ == "__main__":
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")

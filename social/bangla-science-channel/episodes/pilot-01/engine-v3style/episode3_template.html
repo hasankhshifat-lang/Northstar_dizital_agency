@@ -1,0 +1,690 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+__FONTS__
+:root{--red:#D7263D;--pink:#F72585;--teal:#00A6A6;--yel:#FFC300;--ink:#1A1A1A;--paper:#FFF6E5;--kraft:#DCC08F}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#E9DCC0}
+#stage{position:absolute;inset:0;overflow:hidden;font-family:Hind;background:#F4B942}
+#world{position:absolute;inset:0}
+#inner{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0}
+#bgLayer{position:absolute;left:0;top:0}
+.ch,.prop{position:absolute;transform-origin:50% 100%}
+.ch svg,.prop svg{display:block;width:100%;height:100%;overflow:visible}
+.cut{filter:url(#cut)}
+#fx{position:absolute;left:0;top:0;overflow:visible}
+#board{position:absolute;inset:0;display:none;background:var(--paper)}
+#inset{position:absolute;width:640px;height:640px;left:220px;top:470px;border-radius:50%;overflow:hidden;display:none;z-index:20}
+#board svg{position:absolute;inset:0}
+.mini{position:absolute;transform-origin:50% 100%;display:none}
+.mini svg{display:block;width:100%;height:100%;overflow:visible}
+#ttl{display:none!important;position:absolute;top:56px;left:50%;transform:translateX(-50%) rotate(-2deg);background:#fff;padding:8px 34px 0;font-family:Baloo;font-size:58px;color:var(--red);
+ box-shadow:6px 9px 0 rgba(0,0,0,.28);z-index:30;white-space:nowrap}
+#cap{display:none!important;position:absolute;top:1508px;left:40px;right:40px;text-align:center;z-index:40;font-family:Hind;font-weight:700;font-size:46px;line-height:1.25;color:#fff;
+ -webkit-text-stroke:9px #1A1A1A;paint-order:stroke fill;text-shadow:0 5px 0 rgba(0,0,0,.35)}
+.sfx{display:none!important;position:absolute;z-index:35;background:#fff;color:var(--red);font-family:Baloo;font-size:92px;padding:6px 30px 0;box-shadow:7px 10px 0 rgba(0,0,0,.3);opacity:0;white-space:nowrap}
+#grain{display:none}
+#vign{display:none}
+</style></head><body><div id="stage">
+<svg width="0" height="0" style="position:absolute"><defs>
+ <filter id="rough"><feMerge><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <filter id="cut" x="-10%" y="-10%" width="125%" height="125%"><feOffset in="SourceAlpha" dx="7" dy="9" result="o"/><feFlood flood-color="#1A1A1A" flood-opacity=".85"/><feComposite in2="o" operator="in" result="s"/><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <pattern id="hatch" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="16" height="16" fill="#00A6A6" opacity=".25"/><path d="M0 0 V16" stroke="#00A6A6" stroke-width="5"/></pattern>
+ <pattern id="hatchG" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="14" height="14" fill="#9AA7B0"/><path d="M0 0 V14" stroke="#6E7A82" stroke-width="5"/></pattern>
+</defs></svg>
+<div id="world"><div id="inner">
+ <div id="bgLayer"></div>
+ <svg id="fx" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+ <div class="prop" id="trunk"></div>
+ <div class="ch" id="mama"></div><div class="ch" id="boltu"></div><div class="ch" id="tuni"></div>
+ <div class="prop" id="bucket"></div>
+ <div class="prop" id="tiffinBucket"></div>
+</div></div>
+<div id="inset" class="cut"><svg viewBox="0 0 640 640" width="640" height="640" style="position:absolute;inset:0"><rect width="640" height="640" fill="#1F8FD1"/><g fill="none" stroke="#fff" stroke-width="7" opacity=".8"><path d="M60 140 q30 -18 60 0 t60 0"/><path d="M380 260 q30 -18 60 0 t60 0"/><path d="M160 460 q30 -18 60 0 t60 0"/></g><g id="inBub" fill="#fff" stroke="#1A1A1A" stroke-width="3"></g></svg><div id="inNail" style="position:absolute;left:290px;width:60px;height:200px"></div></div>
+<div id="board"><svg id="bsvg" viewBox="0 0 1080 1920" width="1080" height="1920"></svg></div>
+<div class="mini" id="tuniMini"></div><div class="mini" id="boltuMini"></div><div class="mini" id="mamaMini"></div>
+<div id="ttl">লঞ্চ ডুববে?</div>
+<div class="sfx" id="s1" style="left:600px;top:420px">ভোঁ-ও-ও!</div>
+<div class="sfx" id="s2" style="left:650px;top:1150px">টুপ!</div>
+<div class="sfx" id="s3" style="left:80px;top:1000px">ধপাস!</div>
+<div class="sfx" id="s4" style="left:90px;top:700px">গুড়ুক!</div>
+<div class="sfx" id="s5" style="left:640px;top:820px">হা হা!</div>
+<div id="cap"></div>
+<div id="vign"></div>
+<svg id="grain" viewBox="0 0 1080 1920"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .45  0 0 0 0 .36  0 0 0 0 .25  0 0 0 .9 0"/></filter><rect width="1080" height="1920" filter="url(#n)"/></svg>
+</div>
+<script>
+const D = __DATA__;
+const $ = id => document.getElementById(id);
+const FPS = 24; let FR = 0;
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease=x=>{x=clamp(x);return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2};
+const back=x=>{x=clamp(x);const c1=1.7,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const lerp=(a,b,x)=>a+(b-a)*x;
+const stp=(x,n)=>ease(clamp(x));
+function rnd(s){const x=Math.sin(s*12.9898)*43758.5453;return x-Math.floor(x);}
+const J=(k,a)=>0;
+const INK="#1A1A1A";
+// ---------- characters ----------
+const SIZE={mama:[520,1060],tuni:[420,1060],boltu:[360,920]}, KEY={mama:"Montu Mama",tuni:"Bithi",boltu:"Boltu"}, FIT={mama:0.74,tuni:0.72,boltu:0.72};
+const LIPENV=D.mouth;
+
+function buildChar(el,c){
+  el.style.width=SIZE[c][0]+"px"; el.style.height=SIZE[c][1]+"px";
+  el.innerHTML = D.chars[KEY[c]];
+  el.dataset.c = c; el.dataset.mood = "Default";
+}
+
+function getRig(el){
+  if(el._rig) return el._rig;
+  const q = s => el.querySelector(s);
+  const getPivot = node => node && node.dataset.p ? node.dataset.p.split(",").map(Number) : [0,0];
+  const getCenter = node => {
+    if(!node) return [0,0];
+    try { const b = node.getBBox(); return [b.x + b.width/2, b.y + b.height/2]; }
+    catch(e){ return [0,0]; }
+  };
+  const r = {
+    head: q("g.head"), headP: getPivot(q("g.head")),
+    armL: q("g.armL"), armLP: getPivot(q("g.armL")),
+    armR: q("g.armR"), armRP: getPivot(q("g.armR")),
+    foreL: q("g.foreL"), foreLP: getPivot(q("g.foreL")),
+    foreR: q("g.foreR"), foreRP: getPivot(q("g.foreR")),
+    handLRelax: q("g.armL g.handRelax"), handLOpen: q("g.armL g.handOpen"),
+    handRRelax: q("g.armR g.handRelax"), handROpen: q("g.armR g.handOpen"),
+    eyesOpen: q("g.eyes-open"), eyesClosed: q("g.eyes-closed"),
+    brows: q("g.brows"), browL: q("g.browL"), browR: q("g.browR"),
+    browLCenter: null, browRCenter: null,
+    face: q("g.face"), hairF: q("g.hairF"), earL: q("g.earL"), earR: q("g.earR"),
+    mouths: {
+      rest: q("g.mouths > g.m-rest"),
+      a: q("g.mouths > g.m-a"),
+      e: q("g.mouths > g.m-e"),
+      o: q("g.mouths > g.m-o"),
+      smile: q("g.mouths > g.m-smile")
+    }
+  };
+  el._rig = r;
+  return r;
+}
+
+for(const c of ["mama","tuni","boltu"]) buildChar($(c),c);
+buildChar($("tuniMini"),"tuni"); buildChar($("boltuMini"),"boltu"); buildChar($("mamaMini"),"mama");
+
+function setExpr(el,e){ el.dataset.mood = e; }
+
+function place(id,c,x,y,s,r=0){
+  const el=$(id); el.style.display="block";
+  el.dataset.x = x;
+  el.style.left=(x-SIZE[c][0]/2)+"px"; el.style.top=(y-SIZE[c][1])+"px";
+  el.style.transform=`scale(${s*FIT[c]}) rotate(${r}deg)`;
+}
+
+function rig(id,aL,aR,hd){
+  const el=$(id), r=getRig(el);
+  if(r.head) r.head.setAttribute("transform",`rotate(${hd.toFixed(1)} ${r.headP[0]} ${r.headP[1]})`);
+  if(r.armL) r.armL.setAttribute("transform",`rotate(${aL.toFixed(1)} ${r.armLP[0]} ${r.armLP[1]})`);
+  if(r.armR) r.armR.setAttribute("transform",`rotate(${aR.toFixed(1)} ${r.armRP[0]} ${r.armRP[1]})`);
+
+  const fL = -(8 + 0.18*Math.abs(aL)), fR = 8 + 0.18*Math.abs(aR);
+  if(r.foreL) r.foreL.setAttribute("transform",`rotate(${fL.toFixed(1)} ${r.foreLP[0]} ${r.foreLP[1]})`);
+  if(r.foreR) r.foreR.setAttribute("transform",`rotate(${fR.toFixed(1)} ${r.foreRP[0]} ${r.foreRP[1]})`);
+
+  if(r.handLOpen && r.handLRelax){
+    const openL = Math.abs(aL) > 55;
+    r.handLOpen.style.display = openL ? "" : "none";
+    r.handLRelax.style.display = openL ? "none" : "";
+  }
+  if(r.handROpen && r.handRRelax){
+    const openR = Math.abs(aR) > 55;
+    r.handROpen.style.display = openR ? "" : "none";
+    r.handRRelax.style.display = openR ? "none" : "";
+  }
+}
+
+const BLINKS = {};
+function getBlinkTimes(id){
+  if(BLINKS[id]) return BLINKS[id];
+  const list = [];
+  let idx = 0, t = 1.0;
+  while(t < 130){
+    const gap = 2.6 + rnd(id.length * 100 + idx) * 1.6;
+    t += gap;
+    list.push(t);
+    idx++;
+  }
+  BLINKS[id] = list;
+  return list;
+}
+
+function applyLips(tm){
+  const groups = [
+    [["mama","mama"],["tuni","tuni"],["boltu","boltu"]],
+    [["mamaMini","mama"],["tuniMini","tuni"],["boltuMini","boltu"]]
+  ];
+
+  for(const group of groups){
+    for(const [id,who] of group){
+      const el=$(id);
+      if(!el || el.style.display==="none") continue;
+      const r = getRig(el);
+      const mood = el.dataset.mood || "Default";
+      const sp = speaking(who,tm);
+      const lv = sp ? Number(LIPENV[Math.round(tm*24)]||0) : -1;
+
+      // Mouth selection
+      let mKey = "rest";
+      if(lv === 0) mKey = "rest";
+      else if(lv === 1) mKey = "e";
+      else if(lv === 2){
+        const h = rnd(Math.floor(Math.round(tm*24)/3));
+        mKey = h < 0.2 ? "o" : "a";
+      } else if(lv === -1){
+        mKey = mood === "Happy" ? "smile" : "rest";
+      }
+
+      for(const k in r.mouths){
+        if(r.mouths[k]) r.mouths[k].style.display = (k === mKey) ? "" : "none";
+      }
+
+      // Brows
+      if(r.brows){
+        if(!r.browLCenter && r.browL){
+          try { const b = r.browL.getBBox(); r.browLCenter = [b.x + b.width/2, b.y + b.height/2]; } catch(e){ r.browLCenter=[0,0]; }
+        }
+        if(!r.browRCenter && r.browR){
+          try { const b = r.browR.getBBox(); r.browRCenter = [b.x + b.width/2, b.y + b.height/2]; } catch(e){ r.browRCenter=[0,0]; }
+        }
+
+        if(mood === "Worried"){
+          if(r.browL) r.browL.setAttribute("transform", `rotate(10 ${r.browLCenter[0]} ${r.browLCenter[1]})`);
+          if(r.browR) r.browR.setAttribute("transform", `rotate(-10 ${r.browRCenter[0]} ${r.browRCenter[1]})`);
+          r.brows.setAttribute("transform", lv === 2 ? "translate(0,-4)" : "");
+        } else if(mood === "Happy"){
+          if(r.browL) r.browL.removeAttribute("transform");
+          if(r.browR) r.browR.removeAttribute("transform");
+          r.brows.setAttribute("transform", "translate(0,-3)");
+        } else {
+          if(r.browL) r.browL.removeAttribute("transform");
+          if(r.browR) r.browR.removeAttribute("transform");
+          r.brows.removeAttribute("transform");
+        }
+      }
+
+      // Blink
+      if(r.eyesOpen && r.eyesClosed){
+        const blinks = getBlinkTimes(id);
+        const frameT = Math.round(tm*24)/24;
+        let closed = false;
+        for(const bt of blinks){
+          if(frameT >= bt && frameT < bt + 3/24){ closed = true; break; }
+        }
+        r.eyesClosed.style.display = closed ? "" : "none";
+        r.eyesOpen.style.display = closed ? "none" : "";
+      }
+
+      // Head turn
+      const myX = Number(el.dataset.x || 0);
+      let turnSum = 0;
+      const times = [tm, tm-0.1, tm-0.2, tm-0.3];
+      for(const tSample of times){
+        let otherX = null;
+        for(const [otherId, otherWho] of group){
+          if(otherId === id) continue;
+          const oEl = $(otherId);
+          if(oEl && oEl.style.display !== "none" && speaking(otherWho, tSample)){
+            otherX = Number(oEl.dataset.x || 0);
+            break;
+          }
+        }
+        if(otherX !== null){
+          turnSum += 0.6 * Math.sign(otherX - myX);
+        }
+      }
+      const turn = turnSum / 4;
+      if(r.face) r.face.setAttribute("transform", `translate(${(turn*11).toFixed(1)},0)`);
+      if(r.hairF) r.hairF.setAttribute("transform", `translate(${(turn*4).toFixed(1)},0)`);
+      if(r.earR) r.earR.style.display = turn > 0.45 ? "none" : "";
+      if(r.earL) r.earL.style.display = turn < -0.45 ? "none" : "";
+    }
+  }
+}
+
+function gest(id,who,t,base){ // base: {aL,aR,hd}; talking adds lively gestures
+  const sp=speaking(who,t); let {aL,aR,hd}=base; const w=Math.sin(t*2.6), w2=Math.sin(t*1.8+1);
+  if(sp){ aR += -16 - 14*w; aL += 6 + 6*w2; hd += 3*Math.sin(t*2.1); } else { aL += 2*Math.sin(t*1.7); aR += -2*Math.sin(t*1.9+1); hd += 1.2*Math.sin(t*1.3); }
+  rig(id,aL,aR,hd); }
+function hide(id){$(id).style.display="none";}
+function speaking(who,t){return D.lines.find(l=>l.speaker===who&&t>=l.start&&t<=l.end);}
+function talkExpr(who,t,open,closed){return speaking(who,t)?open:closed;}
+// ---------- world props ----------
+$("bgLayer").innerHTML=D.bg; $("bucket").innerHTML=D.props.bucket; $("inNail").innerHTML=D.props.nail;
+$("trunk").innerHTML=`<svg viewBox="0 0 360 220" width="360" height="220"><g stroke="${INK}" stroke-width="7" stroke-linejoin="round"><rect x="10" y="40" width="340" height="170" rx="14" fill="#2E6FB5"/><rect x="10" y="40" width="340" height="50" rx="14" fill="#3D86D1"/><g fill="#FFC300"><rect x="70" y="40" width="26" height="170"/><rect x="264" y="40" width="26" height="170"/></g><rect x="150" y="70" width="60" height="40" rx="6" fill="#C9D1D6"/><path d="M130 40 Q180 0 230 40" fill="none" stroke-width="9"/><g fill="#F72585" stroke-width="3"><circle cx="180" cy="160" r="16"/></g></g></svg>`;
+$("trunk").style.width="360px";$("trunk").style.height="220px";
+$("bucket").style.width="220px";$("bucket").style.height="260px";
+// tiffin bucket (big, with science arrows)
+$("tiffinBucket").style.width="340px";$("tiffinBucket").style.height="420px";
+$("tiffinBucket").innerHTML=`<svg viewBox="0 0 340 420" width="340" height="420"><g stroke="${INK}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+ <g filter="url(#cut)"><path d="M40 170 L300 170 L276 410 L64 410 Z" fill="#7E8B94"/><ellipse cx="170" cy="172" rx="130" ry="26" fill="#4CC9F0"/></g>
+ <g id="tif"><g filter="url(#cut)"><rect x="-58" y="-96" width="116" height="32" rx="10" fill="#C9D1D6"/><rect x="-58" y="-64" width="116" height="32" rx="10" fill="#DCE2E6"/><rect x="-58" y="-32" width="116" height="32" rx="10" fill="#C9D1D6"/><path d="M-40 -96 Q0 -140 40 -96" fill="none" stroke-width="7"/></g></g>
+ <g id="foods"></g>
+ <g filter="url(#cut)"><path d="M48 190 L292 190 L276 410 L64 410 Z" fill="#9AA7B0"/><path d="M54 250 H286 M60 320 H280" stroke-width="5"/></g>
+ <g id="tifW"><path id="tifWp" fill="#D7263D"/><text id="tifWt" x="44" y="0" font-family="Hind" font-weight="700" font-size="34" fill="#A3122A" stroke="#fff" stroke-width="9" paint-order="stroke" text-anchor="middle">ওজন</text></g>
+ <g id="tifB"><path id="tifBp" fill="#00A6A6"/><text x="300" y="0" id="tifBt" font-family="Hind" font-weight="700" font-size="34" fill="#006B6B" stroke="#fff" stroke-width="9" paint-order="stroke" text-anchor="middle">প্লবতা</text></g>
+ <g id="tifTag"></g></g></svg>`;
+// world fx (gulls, smoke, waves)
+$("fx").innerHTML=`<g id="smoke"></g><g id="gulls"></g><g id="waves" stroke="#fff" stroke-width="6" fill="none" opacity=".8"></g>`;
+// ---------- svg helpers ----------
+const svgNS="http://www.w3.org/2000/svg";
+function tag(text,fs=40,fill="#fff",color=INK,font="Hind"){ const w=text.length*fs*0.56+48, h=fs*1.55;
+  return `<g filter="url(#cut)"><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="8" fill="${fill}"/></g><text x="0" y="${fs*0.08}" text-anchor="middle" dominant-baseline="middle" font-family="${font}" font-weight="700" font-size="${fs}" fill="${color}" stroke="none">${text}</text>`; }
+function g(id,inner,extra=""){return `<g id="${id}" ${extra}>${inner}</g>`;}
+function setT(id,x,y,s=1,r=0,k=0){const e=$(id); if(!e)return; e.setAttribute("transform",`translate(${(x+J(k||id.length,5)).toFixed(1)} ${(y+J((k||id.length)+3,5)).toFixed(1)}) rotate(${(r+J((k||id.length)+5,1.8)).toFixed(2)}) scale(${s})`);}
+function vis(id,on){const e=$(id); if(e) e.style.display=on?"":"none";}
+function arrowPath(x,y0,y1,w=22){ // vertical arrow from y0 to y1 (tip at y1)
+  const dir=y1<y0?-1:1, L=Math.abs(y1-y0), hw=w*1.6, hl=Math.min(46,L*0.5);
+  const yb=y1-dir*hl; return `M${x-w/2} ${y0} L${x+w/2} ${y0} L${x+w/2} ${yb} L${x+hw} ${yb} L${x} ${y1} L${x-hw} ${yb} L${x-w/2} ${yb} Z`; }
+function pop(t,t0){return 0.25+0.75*back(stp((t-t0)/0.35,4));}
+// launch shape (local coords, waterline y=0)
+const HULL="M-400 -150 L400 -150 L360 60 Q0 150 -360 60 Z", INNER="M-372 -134 L372 -134 L338 48 Q0 128 -338 48 Z", UNDER="M-388 0 L388 0 L360 60 Q0 150 -360 60 Z";
+const CABIN=`<rect x="-250" y="-262" width="500" height="112" fill="#00A6A6"/>${[...Array(6).keys()].map(i=>`<rect x="${-220+i*76}" y="-236" width="48" height="48" rx="8" fill="#4CC9F0"/>`).join("")}<rect x="140" y="-340" width="50" height="78" fill="#D7263D"/><rect x="140" y="-340" width="50" height="18" fill="${INK}"/>`;
+function launchSolid(scale=1){return `<g transform="scale(${scale})" stroke="${INK}" stroke-width="7" stroke-linejoin="round"><g filter="url(#cut)">${CABIN}<path d="${HULL}" fill="#D7263D"/><rect x="-380" y="-110" width="760" height="18" fill="#FFC300"/></g></g>`;}
+function nailShape(){return `<g stroke="${INK}" stroke-width="6" stroke-linejoin="round" filter="url(#cut)"><rect x="-34" y="-150" width="68" height="22" rx="6" fill="#8E9AA3"/><path d="M-14 -128 L14 -128 L10 90 L0 130 L-10 90 Z" fill="url(#hatchG)"/></g>`;}
+// ---------- BOARDS (all in one svg, groups toggled) ----------
+const B = $("bsvg");
+const tape=(x,y,r)=>`<rect x="${x-60}" y="${y-18}" width="120" height="36" fill="#F3E6B3" opacity=".85" transform="rotate(${r} ${x} ${y})"/>`;
+B.innerHTML = `<g id="bcam"><g id="backdrops"></g>
+<g id="kraftDeco"><g opacity=".18" stroke="#6b4a1f" stroke-width="2" fill="none">${[...Array(40).keys()].map(i=>`<path d="M0 ${i*48+10} q270 ${(i%3-1)*8} 540 0 t540 0"/>`).join("")}</g></g>
+<g id="bQ" stroke="${INK}" stroke-linejoin="round">
+ <g id="qc1"><g filter="url(#cut)"><rect x="-220" y="-120" width="440" height="240" rx="10" fill="#FFF9EC" stroke-width="5"/></g><g transform="translate(-130 30) scale(.55)">${nailShape()}</g>
+  <text x="50" y="-30" text-anchor="middle" font-family="Baloo" font-size="44" fill="${INK}" stroke="none">লোহার পেরেক</text><path d="M50 10 V70" stroke="#D7263D" stroke-width="14"/><path d="M20 50 L50 90 L80 50" fill="none" stroke="#D7263D" stroke-width="14"/>
+  <text x="140" y="70" text-anchor="middle" font-family="Baloo" font-size="40" fill="#D7263D" stroke="none">ডোবে</text></g>
+ <g id="qc2"><g filter="url(#cut)"><rect x="-220" y="-120" width="440" height="240" rx="10" fill="#FFF9EC" stroke-width="5"/></g><g transform="translate(-110 40)">${launchSolid(0.2)}</g>
+  <text x="60" y="-30" text-anchor="middle" font-family="Baloo" font-size="44" fill="${INK}" stroke="none">লোহার লঞ্চ</text>
+  <text x="110" y="80" text-anchor="middle" font-family="Baloo" font-size="40" fill="#1F5FA8" stroke="none">ভাসে?</text></g>
+ ${g("qMark",`<text x="0" y="0" text-anchor="middle" font-family="Baloo" font-size="260" fill="#A3122A" stroke="#fff" stroke-width="12" paint-order="stroke">?</text>`)}
+</g>
+<!-- material card (overlay on story) -->
+<g id="bMat" stroke="${INK}" stroke-linejoin="round">
+ <g id="matCard"><g filter="url(#cut)"><rect x="-470" y="-270" width="940" height="540" rx="10" fill="#FFF9EC" stroke-width="5"/></g>${tape(-400,-268,-8)}${tape(400,-268,7)}
+  <text x="0" y="-205" text-anchor="middle" font-family="Hind" font-weight="700" font-size="42" fill="${INK}" stroke="none">ডুববে কি না, তা নির্ভর করে কিসের ওপর?</text>
+  <g id="matL"><g filter="url(#cut)"><rect x="-330" y="-140" width="200" height="130" fill="#8E9AA3" stroke-width="6"/></g><text x="-230" y="-70" text-anchor="middle" font-family="Baloo" font-size="48" fill="#fff" stroke="#1A1A1A" stroke-width="8" paint-order="stroke">লোহা</text>
+   <text x="-230" y="70" text-anchor="middle" font-family="Baloo" font-size="56" fill="${INK}" stroke="none">শুধু উপাদান?</text></g>
+  <g id="matX" stroke="#D7263D" stroke-width="22" stroke-linecap="round"><path d="M-320 -150 L-140 20 M-140 -150 L-320 20"/></g>
+  <g id="matR"><g filter="url(#cut)"><path d="M110 -110 L250 -110 L225 -55 L135 -55 Z" fill="#E4E9ED" stroke-width="6"/><circle cx="320" cy="-82" r="38" fill="#C9D1D6" stroke-width="6"/></g>
+   <text x="230" y="70" text-anchor="middle" font-family="Baloo" font-size="56" fill="${INK}" stroke="none">আকৃতিও!</text>
+   <text x="230" y="140" text-anchor="middle" font-family="Hind" font-weight="700" font-size="30" fill="#5a4a30" stroke="none">একই রাংতা, আলাদা আকৃতি</text></g>
+  <g id="matOK" stroke="#2BA84A" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M150 -20 L210 40 L330 -120"/></g>
+ </g></g>
+<!-- foil experiment -->
+<g id="bFoil" stroke="${INK}" stroke-linejoin="round" stroke-linecap="round">
+ ${g("fHead",tag("বিথীর পরীক্ষা: একই রাংতা, দুই আকৃতি",40,"#FFC300"))}
+ <g id="fScale"><g filter="url(#cut)"><rect x="-90" y="190" width="180" height="26" fill="#8B4A1F" stroke-width="6"/><rect x="-12" y="0" width="24" height="200" fill="#B5793A" stroke-width="6"/></g>
+  <g id="fBeam"><g filter="url(#cut)"><rect x="-250" y="-10" width="500" height="20" rx="8" fill="#B5793A" stroke-width="6"/></g></g>
+  <g id="fPanL"><path d="M-70 0 Q0 50 70 0 Z" fill="#E4C27A" stroke-width="6"/><rect x="-55" y="-14" width="110" height="12" fill="#E4E9ED" stroke-width="4"/></g>
+  <g id="fPanR"><path d="M-70 0 Q0 50 70 0 Z" fill="#E4C27A" stroke-width="6"/><rect x="-55" y="-14" width="110" height="12" fill="#E4E9ED" stroke-width="4"/></g>
+  ${g("fSame",tag("একই ওজন",44,"#fff","#D7263D"))}</g>
+ <g id="tanks">
+  <g id="tankL"><rect x="0" y="0" width="350" height="500" fill="#EAF7FC" opacity=".75" stroke-width="7"/><rect id="wL" x="4" width="342" fill="#4CC9F0" opacity=".85" stroke="none"/><path id="oldL" stroke="#1F5FA8" stroke-width="4" stroke-dasharray="12 10" fill="none"/></g>
+  <g id="tankR"><rect x="0" y="0" width="350" height="500" fill="#EAF7FC" opacity=".75" stroke-width="7"/><rect id="wR" x="4" width="342" fill="#4CC9F0" opacity=".85" stroke="none"/><path id="oldR" stroke="#1F5FA8" stroke-width="4" stroke-dasharray="12 10" fill="none"/></g>
+  ${g("lblL",tag("রাংতার নৌকা",36,"#fff"))}${g("lblR",tag("চাপা রাংতার গুলি",36,"#fff"))}</g>
+ <g id="fBoat"><path id="fBoatP" fill="#E4E9ED" stroke-width="6"/></g>
+ <path id="fDisp" fill="url(#hatch)" stroke="#00A6A6" stroke-width="4" stroke-dasharray="10 8"/>
+ <g id="fBall"><rect id="fBallP" fill="#C9D1D6" stroke-width="6"/></g>
+ <g id="fBub" fill="#fff" stroke="#1F5FA8" stroke-width="3"></g>
+ ${g("tMore",tag("বেশি পানি সরায়",34,"#fff","#1F5FA8"))}${g("tLess",tag("অল্প পানি সরায়",34,"#fff","#1F5FA8"))}
+ <path id="aUpL" fill="#00A6A6" stroke-width="5"/><path id="aDnL" fill="#D7263D" stroke-width="5"/><path id="aUpR" fill="#00A6A6" stroke-width="5"/><path id="aDnR" fill="#D7263D" stroke-width="5"/>
+ ${g("tPush",tag("পানির ধাক্কা",32,"#fff","#006B6B"))}${g("tW",tag("ওজন",32,"#fff","#D7263D"))}
+ <g id="fStamp">${tag("প্লবতা",110,"#fff","#D7263D","Baloo")}<g transform="translate(0 115)">${tag("পানির উপরের দিকে ধাক্কা (Buoyancy)",34,"#FFC300")}</g></g>
+</g>
+<!-- launch cut-away -->
+<g id="bLaunch" stroke="${INK}" stroke-linejoin="round" stroke-linecap="round">
+ ${g("lHead",tag("লঞ্চ কেন ভাসে?",46,"#FFC300"))}
+ ${g("lArch",tag("আর্কিমিডিসের নীতি: প্লবতা = সরানো পানির ওজন",32,"#FFC300"))}
+ <g filter="url(#rough)"><rect x="0" y="760" width="1080" height="740" fill="#1F8FD1" stroke="none"/></g>
+ <g id="lWaves" stroke="#fff" stroke-width="6" fill="none" opacity=".75"></g>
+ <g id="lShip"><g filter="url(#cut)">${CABIN}<path d="${HULL}" fill="#D7263D" stroke-width="8"/></g>
+  <path id="lInner" d="${INNER}" fill="#BFC5C9" stroke-width="5"/>
+  <g id="lAir" stroke="#4CC9F0" stroke-width="6" fill="none"><path d="M-250 -40 q30 -30 60 0 t60 0"/><path d="M60 -70 q30 -30 60 0 t60 0"/><path d="M-80 30 q30 -30 60 0 t60 0"/>
+   <text x="-20" y="-20" text-anchor="middle" font-family="Baloo" font-size="64" fill="#1F5FA8" stroke="none">বাতাস</text></g>
+  <path id="lDisp" d="${UNDER}" fill="url(#hatch)" stroke="#00A6A6" stroke-width="6" stroke-dasharray="14 10"/>
+  <g id="lMark"><path d="M395 0 H470" stroke="#D7263D" stroke-width="8"/></g></g>
+ <g id="lCard"><g filter="url(#cut)"><rect x="110" y="1170" width="900" height="300" rx="10" fill="#FFF9EC" stroke-width="5"/></g>
+  <g filter="url(#cut)"><rect x="530" y="1430" width="120" height="22" fill="#8B4A1F" stroke-width="5"/><rect x="580" y="1270" width="20" height="165" fill="#B5793A" stroke-width="5"/></g>
+  <g id="lBeam"><g filter="url(#cut)"><rect x="-280" y="-9" width="560" height="18" rx="7" fill="#B5793A" stroke-width="5"/></g></g>
+  <g id="lPanL"><path d="M-80 0 Q0 46 80 0 Z" fill="#E4C27A" stroke-width="5"/></g><g id="lPanR"><path d="M-80 0 Q0 46 80 0 Z" fill="#E4C27A" stroke-width="5"/></g></g>
+ <g id="lWater"><rect x="-60" y="-50" width="120" height="50" fill="#4CC9F0" stroke-width="5" filter="url(#cut)"/></g>
+ ${g("tDispL",tag("সরানো পানি",36,"#fff","#123E7A"))}${g("tSinkL",tag("এতটুকু ডোবে",32,"#fff","#D7263D"))}${g("tAirL",tag("ভেতরটা ফাঁপা",36,"#fff"))}
+ <g id="lWaterS"><rect x="-18" y="-16" width="36" height="16" fill="#4CC9F0" stroke-width="4"/></g>
+ <g id="lMiniShip">${launchSolid(0.17)}</g>
+ <g id="lMiniNail" transform="scale(.42)">${nailShape()}</g>
+ ${g("lEq",tag("=",60,"#fff","#1B7A35","Baloo"))}${g("lLt",tag("সরানো পানির ওজন  <  পেরেকের ওজন",30,"#fff","#D7263D"))}
+ ${g("lLblW",tag("সরানো পানি",26,"#fff","#123E7A"))}${g("lLblS",tag("লঞ্চের ওজন",26,"#fff","#D7263D"))}
+ ${g("lOK",tag("তাই লঞ্চ ভাসে",46,"#fff","#1B7A35"))}
+ <g id="lNail">${nailShape()}</g>${g("tNail",tag("নিরেট আর ছোট",36,"#fff"))}
+ <g id="lBub" fill="#fff" stroke="#1F5FA8" stroke-width="3"></g>
+ ${g("lNO",tag("তাই ডোবে",46,"#fff","#D7263D"))}
+</g>
+<!-- morph -->
+<g id="bMorph" stroke="${INK}" stroke-linejoin="round">
+ <g id="mBoat"><path d="M-110 -40 L110 -40 L80 30 L-80 30 Z" fill="#E4E9ED" stroke-width="6" filter="url(#cut)"/></g>
+ ${g("mEq",tag("=",90,"#fff","#1B7A35","Baloo"))}
+ <g id="mShip">${launchSolid(0.42)}</g>
+ ${g("mLb",tag("রাংতার নৌকা",36,"#fff"))}${g("mLs",tag("বিশাল লঞ্চ",36,"#fff"))}
+ ${g("mOK",tag("একদম ঠিক!",70,"#FFC300","#1A1A1A","Baloo"))}
+</g>
+<!-- safety -->
+<g id="bSafe" stroke="${INK}" stroke-linejoin="round" stroke-linecap="round">
+ ${g("sHead",tag("বেশি যাত্রী আর মাল = বিপদ",44,"#FFC300"))}
+ <g filter="url(#rough)"><rect x="0" y="980" width="1080" height="520" fill="#1F8FD1" stroke="none"/></g>
+ <g id="sWaves" stroke="#fff" stroke-width="6" fill="none" opacity=".75"></g>
+ <g id="sShip"><g filter="url(#cut)">${CABIN}<path d="${HULL}" fill="#D7263D" stroke-width="8"/><rect x="-380" y="-110" width="760" height="18" fill="#FFC300"/></g><g id="sLoad"></g></g>
+ <g id="sSign"><g filter="url(#cut)"><rect x="-8" y="0" width="16" height="200" fill="#8B4A1F" stroke-width="5"/><rect x="-170" y="-110" width="340" height="120" rx="8" fill="#fff" stroke-width="6"/></g>
+  <text x="0" y="-72" text-anchor="middle" font-family="Hind" font-weight="700" font-size="34" fill="${INK}" stroke="none">অনুমোদিত যাত্রী</text><text x="0" y="-26" text-anchor="middle" font-family="Hind" font-weight="700" font-size="34" fill="${INK}" stroke="none">ধারণক্ষমতা</text></g>
+ <g id="sGauge"><g filter="url(#cut)"><rect x="-150" y="-140" width="300" height="190" rx="10" fill="#fff" stroke-width="5"/></g>
+  <path d="M-110 20 A110 110 0 0 1 -55 -75" stroke="#2BA84A" stroke-width="26" fill="none"/><path d="M-55 -75 A110 110 0 0 1 55 -75" stroke="#FFC300" stroke-width="26" fill="none"/><path d="M55 -75 A110 110 0 0 1 110 20" stroke="#D7263D" stroke-width="26" fill="none"/>
+  <g id="sNeedle"><path d="M-6 0 L0 -100 L6 0 Z" fill="${INK}" stroke-width="3"/></g><circle r="12" fill="${INK}"/>
+  <text x="0" y="40" text-anchor="middle" font-family="Hind" font-weight="700" font-size="30" fill="${INK}" stroke="none">ওজন</text></g>
+ <path id="sDown" fill="#D7263D" stroke-width="5"/>
+ ${g("sNear",tag("পানি ডেকের কাছে চলে আসছে!",32,"#fff","#D7263D"))}
+ ${g("sMore",tag("ওজন বাড়লে আরো ডোবে",34,"#fff","#D7263D"))}
+ ${g("sWarn",tag("⚠ সীমা ছাড়ালে বিপদ!",62,"#D7263D","#fff","Baloo"))}
+</g>
+<!-- puzzle -->
+<g id="bPuz" stroke="${INK}" stroke-linejoin="round" stroke-linecap="round">
+ ${g("pHead",tag("ধাঁধা!",110,"#FFC300",INK,"Baloo"))}
+ <g id="pMap"><g filter="url(#rough)"><path d="M0 1060 Q300 1000 540 1080 T1080 1040 L1080 1470 L0 1470 Z" fill="#1F4F94" stroke="none"/>
+   <path id="river" d="M120 520 C320 560 220 700 420 760 S640 860 560 1000 S700 1080 760 1180" stroke="#8FD3F4" stroke-width="90" fill="none"/></g>
+  <path id="riverC" d="M120 520 C320 560 220 700 420 760 S640 860 560 1000 S700 1080 760 1180" stroke="none" fill="none"/>
+  ${g("pRiverT",tag("নদী: মিঠা পানি",36,"#fff","#1F5FA8"))}${g("pSeaT",tag("সাগর: লোনা পানি",36,"#fff","#1F4F94"))}
+  <g id="pBoat">${launchSolid(0.16)}</g></g>
+ <g id="pClose"><g filter="url(#rough)"><rect x="0" y="900" width="1080" height="600" fill="#1F4F94" stroke="none"/></g><g id="pShip">${launchSolid(0.8)}</g>
+  ${g("pUp",tag("⬆ একটু উপরে উঠবে?",48,"#fff","#1B7A35"))}${g("pDn",tag("⬇ নাকি আরো ডুবে যাবে?",48,"#fff","#D7263D"))}
+  ${g("pQ",`<text x="0" y="0" text-anchor="middle" font-family="Baloo" font-size="220" fill="#A3122A" stroke="#fff" stroke-width="10" paint-order="stroke">?</text>`)}
+  ${g("pCom",tag("কমেন্টে লেখো!",64,"#FFC300",INK,"Baloo"))}</g>
+</g>
+<!-- end -->
+<g id="bEnd" stroke="${INK}" stroke-linejoin="round">
+ ${g("eTitle",tag("লঞ্চ ডুববে?",110,"#D7263D","#FFC300","Baloo"))}${g("eCh",tag("গল্পে বিজ্ঞান",56,"#fff",INK,"Baloo"))}<g id="eBrand"><g filter="url(#cut)"><rect x="-430" y="-95" width="860" height="190" rx="26" fill="#1A1A1A" stroke-width="6"/></g>
+   <rect x="-410" y="-75" width="820" height="150" rx="18" fill="none" stroke="#FFC300" stroke-width="6" stroke-dasharray="22 12"/>
+   <g stroke="none"><circle cx="-372" cy="0" r="14" fill="#F72585"/><circle cx="372" cy="0" r="14" fill="#F72585"/><circle cx="-372" cy="0" r="6" fill="#FFC300"/><circle cx="372" cy="0" r="6" fill="#FFC300"/></g>
+   <text x="0" y="8" text-anchor="middle" dominant-baseline="middle" font-family="Baloo" font-weight="700" font-size="104" fill="#FFC300" stroke="#D7263D" stroke-width="10" paint-order="stroke">সাইন্টিফিক বিথী</text></g>
+ <g id="eWheel"><g filter="url(#cut)"><circle r="170" fill="none" stroke-width="22"/><circle r="150" fill="none" stroke="#F72585" stroke-width="10"/>${[...Array(12).keys()].map(i=>`<path d="M0 0 L${(150*Math.cos(i*Math.PI/6)).toFixed(1)} ${(150*Math.sin(i*Math.PI/6)).toFixed(1)}" stroke-width="7"/>`).join("")}<circle r="30" fill="#FFC300" stroke-width="7"/></g></g>
+ ${g("eNext",tag("পরের পর্বে আবার দেখা হবে!",40,"#fff"))}
+ <g id="eNames">${g("nMama",tag("মন্টু মামা",46,"#FFC300"))}${g("nTuni",tag("বিথী",46,"#FFFFFF"))}${g("nBoltu",tag("বল্টু",46,"#F72585","#1A1A1A"))}</g>
+</g><g id="ripples" fill="none" stroke="#fff" stroke-width="6"></g></g>`;
+B.insertAdjacentHTML("beforeend", (()=>{ let s=`<g id="rFrame"><rect x="28" y="28" width="1024" height="1864" fill="none" stroke="#00A6A6" stroke-width="14"/><rect x="50" y="50" width="980" height="1820" fill="none" stroke="#D7263D" stroke-width="6"/>`;
+  const fl=(x,y,c)=>`<g transform="translate(${x} ${y})" stroke="#1A1A1A" stroke-width="3"><ellipse cx="0" cy="-12" rx="8" ry="12" fill="${c}"/><ellipse cx="0" cy="12" rx="8" ry="12" fill="${c}"/><ellipse cx="-12" cy="0" rx="12" ry="8" fill="${c}"/><ellipse cx="12" cy="0" rx="12" ry="8" fill="${c}"/><circle r="7" fill="${c==="#FFC300"?"#D7263D":"#FFC300"}"/></g>`;
+  let i=0; for(let x=60;x<=1020;x+=80){ s+=fl(x,28,i%2?"#F72585":"#FFC300")+fl(x,1892,i%2?"#FFC300":"#F72585"); i++; }
+  for(let y=110;y<=1820;y+=80){ s+=fl(28,y,i%2?"#F72585":"#FFC300")+fl(1052,y,i%2?"#FFC300":"#F72585"); i++; } return s+"</g>"; })());
+$("backdrops").innerHTML = `
+<g id="bdLab"><rect width="1080" height="1385" fill="#FFE3B3"/>${[...Array(9).keys()].map(r=>[...Array(7).keys()].map(c=>`<g transform="translate(${80+c*155+(r%2)*77} ${110+r*140})" opacity=".35" stroke="#1A1A1A" stroke-width="2"><ellipse cx="0" cy="-10" rx="7" ry="10" fill="#F72585"/><ellipse cx="0" cy="10" rx="7" ry="10" fill="#F72585"/><ellipse cx="-10" cy="0" rx="10" ry="7" fill="#F72585"/><ellipse cx="10" cy="0" rx="10" ry="7" fill="#F72585"/><circle r="5" fill="#FFC300"/></g>`).join("")).join("")}
+ <rect y="1290" width="1080" height="40" fill="#00A6A6" stroke="#1A1A1A" stroke-width="5"/><rect y="1385" width="1080" height="535" fill="#C98B4A" stroke="#1A1A1A" stroke-width="6"/><path d="M0 1500 H1080 M0 1640 H1080 M0 1790 H1080 M260 1385 V1500 M760 1500 V1640 M420 1640 V1790" stroke="#8B5A2B" stroke-width="5"/></g>
+<g id="bdSky"><rect width="1080" height="1000" fill="#BFE9F7"/><circle cx="900" cy="200" r="80" fill="#FFC300" stroke="#1A1A1A" stroke-width="5"/>
+ <g fill="#fff" stroke="#1A1A1A" stroke-width="5"><path d="M110 330 q12 -60 72 -48 q24 -48 84 -18 q60 -12 66 42 q48 12 24 54 h-240 q-48 -6 -6 -30z"/><path d="M560 230 q10 -46 58 -36 q22 -36 66 -12 q48 -8 50 34 q36 10 17 41 h-192 q-36 -5 1 -27z"/></g>
+ <rect y="1480" width="1080" height="440" fill="#1A6FA8"/></g>
+<g id="bdLand"><rect width="1080" height="1920" fill="#A8D58A"/>${[...Array(18).keys()].map(i=>`<g transform="translate(${(i*173)%1000+40} ${(i*311)%1350+300})" stroke="#1A1A1A" stroke-width="3"><circle r="22" fill="#2BA84A"/><rect x="-4" y="18" width="8" height="18" fill="#8B5A2B"/></g>`).join("")}</g>
+<g id="bdPaper"><rect width="1080" height="1920" fill="#FFF6E5"/></g>`;
+// ---- single-take board camera: each key = [time, x0,y0,x1,y1] box that must be fully visible (objects + labels).
+// The camera fits the box inside the safe area (edges, presenter, YouTube overlay) and glides 0.9 s between keys.
+const SAFE={x0:70,y0:150,x1:1010,y1:1270};
+const CAM = {
+ 6: [[34.6,290,480,890,870],[37.55,200,760,990,1465],[39.45,195,870,575,1465],[40.85,600,870,990,1465],[42.55,10,880,1000,1470],[44.95,10,440,1000,1470]],
+ 7: [[47.3,140,330,980,880],[50.7,140,330,980,1045],[53.4,140,380,1000,1045],[55.15,100,820,1020,1480],[59.55,60,240,1035,1480],[60.9,60,460,1000,965],[62.95,100,620,1020,1480],[65.6,500,540,1010,1330]],
+ 8: [[67.2,90,420,1000,770]],
+ 10:[[80.7,40,410,1040,1260],[81.4,170,540,950,1010],[83.4,680,430,1035,680],[84.9,40,520,1040,1265],[87.2,40,400,1040,1260]],
+ 12:[[95.8,40,450,1040,1360],[101.7,210,490,1000,1250]],
+};
+function boxPose(b){ const w=b[3]-b[1], h=b[4]-b[2]; let z=Math.min((SAFE.x1-SAFE.x0)/w,(SAFE.y1-SAFE.y0)/h); z=clamp(z,1,1.8);
+  return [(b[1]+b[3])/2,(b[2]+b[4])/2,z]; }
+function camPose(keys,t){ let i=0; while(i<keys.length-1 && t>=keys[i+1][0]) i++;
+  const cur=boxPose(keys[i]), prev=boxPose(keys[Math.max(0,i-1)]), k=i===0?1:ease((t-keys[i][0])/0.9);
+  return [lerp(prev[0],cur[0],k), lerp(prev[1],cur[1],k), lerp(prev[2],cur[2],k)]; }
+function setCam(cx,cy,z){ const Sx=(SAFE.x0+SAFE.x1)/2, Sy=(SAFE.y0+SAFE.y1)/2;
+  cx=clamp(cx, Sx/z, 1080-(1080-Sx)/z); cy=clamp(cy, Sy/z, 1920-(1920-Sy)/z);
+  $("bcam").setAttribute("transform",`translate(${Sx} ${Sy}) scale(${z.toFixed(4)}) translate(${(-cx).toFixed(1)} ${(-cy).toFixed(1)})`); }
+function ripples(list,t){ $("ripples").innerHTML = list.filter(([t0])=>t>=t0&&t<t0+1.0).map(([t0,x,y])=>{const k=(t-t0)/1.0; return [0,0.25].map(d=>{const kk=clamp(k-d); return `<ellipse cx="${x}" cy="${y}" rx="${20+kk*150}" ry="${6+kk*30}" opacity="${(1-kk).toFixed(2)}"/>`;}).join("");}).join(""); }
+$("rFrame").remove();   // no decorative border
+const BOARDS=["bQ","bMat","bFoil","bLaunch","bMorph","bSafe","bPuz","bEnd"];
+// waves for boards
+$("lWaves").innerHTML=[...Array(7).keys()].map(i=>`<path data-y="${820+i*90}" d=""/>`).join("");
+$("sWaves").innerHTML=[...Array(5).keys()].map(i=>`<path data-y="${1040+i*90}" d=""/>`).join("");
+function waves(id,t){ $(id).querySelectorAll("path").forEach((p,i)=>{const y=+p.dataset.y, off=((stp(t/4%1,48)*240)+i*70)%240; let d=""; for(let x=-240+off;x<1080;x+=240) d+=`M${x} ${y} q30 -18 60 0 t60 0 `; p.setAttribute("d",d);}); }
+// food items for tiffin
+const FOODS=[["ইলিশ",`<path d="M-70 0 Q-20 -34 40 -10 L70 -30 L64 0 L70 30 L40 10 Q-20 34 -70 0Z" fill="#C9D1D6"/>`],["ভাত",`<path d="M-50 10 Q-40 -40 0 -40 Q40 -40 50 10 Z" fill="#fff"/>`],["ডিম",`<ellipse rx="22" ry="28" fill="#fff"/><ellipse cx="40" rx="22" ry="28" fill="#fff"/><ellipse cx="-40" rx="22" ry="28" fill="#fff"/>`],["পিঠা",`<path d="M-48 10 Q0 -50 48 10 Z" fill="#E4C27A"/>`]];
+$("foods").innerHTML=FOODS.map((f,i)=>`<g id="food${i}" filter="url(#cut)" stroke-width="5">${f[1]}</g>`).join("");
+// deck load for safety board
+$("sLoad").innerHTML=[...Array(16).keys()].map(i=>{const row=i<8?0:1, x=-330+(i%8)*92, y=row? -262-8 : -150; const c=["#F72585","#FFC300","#2BA84A","#4CC9F0","#B58B4C"][i%5];
+  return `<g id="pp${i}" transform="translate(${x} ${y})" filter="url(#cut)" stroke-width="5"><rect x="-18" y="-62" width="36" height="46" rx="10" fill="${c}"/><circle cy="-80" r="17" fill="#C98B5A"/></g>`;}).join("")+
+  [...Array(8).keys()].map(i=>`<g id="bx${i}" filter="url(#cut)" stroke-width="5"><rect x="${-300+(i%4)*130}" y="${-150-46-(i>3?46:0)}" width="80" height="46" fill="#B5793A"/></g>`).join("");
+// ---------- per-frame render ----------
+function mainRender(t){
+  FR = Math.floor(t*FPS); t = FR/FPS;
+  const sc = t<4.6?1: t<7.3?2: t<15.2?3: t<22.9?4: t<34.6?5: t<47.3?6: t<67.2?7: t<73.6?8: t<80.7?9: t<89.9?10: t<95.8?11: t<106.2?12: 13;
+  const story = [1,2,3,4,5,9,11].includes(sc);
+  $("world").style.display = story?"block":"none";
+  $("board").style.display = story && sc!==5 && sc!==3 ? "none":"block";
+  $("board").style.background = (sc===5||sc===3) ? "transparent" : "var(--paper)";
+  vis("kraftDeco", false); vis("rFrame", !(sc===5||sc===3)); hide("mamaMini");
+  $("inset").style.display = sc===2 ? "block":"none";
+  BOARDS.forEach(b=>vis(b,false));
+  ["mama","tuni","boltu","bucket","trunk","tiffinBucket","tuniMini","boltuMini"].forEach(hide);
+  $("ttl").style.display = sc===13?"none":"block";
+  // ---------------- story scenes ----------------
+  if (story){
+    let cam={s:1.3,x:-162,y:-729};
+    if (sc===1) cam={s:1.3+0.05*ease(t/4.6),x:-162-27*ease(t/4.6),y:-729-60*ease(t/4.6)};
+    if (sc===2) cam={s:1.36,x:-195,y:-800};
+    if (sc===3){const k=ease((t-7.3)/1.6),k2=ease((t-11)/1.4); const s0=lerp(1.36,1.15,k),x0=lerp(-195,-81,k),y0=lerp(-800,-292,k); cam={s:lerp(s0,1.7,k2),x:lerp(x0,-21,k2),y:lerp(y0,-1072,k2)};}
+    if (sc===9){ const k=ease((t-76.3)/0.8)*(1-ease((t-80.0)/0.5)); const C={s:1.16,x:540-1.16*495,y:900-1.16*1420}; cam={s:lerp(1.3,C.s,k),x:lerp(-162,C.x,k),y:lerp(-729,C.y,k)}; }
+    $("inner").style.transform=`translate(${cam.x+J(1,7)}px,${cam.y+J(2,7)}px) scale(${cam.s})`;
+    // fx: gulls + smoke + waves
+    let gl=""; for(let i=0;i<3;i++){ const x=((t*55+i*360)%1300)-100, y=520+i*70+Math.sin(t+i)*14, up=(FR+i)%4<2;
+      gl+=`<path transform="translate(${x.toFixed(0)} ${y.toFixed(0)})" d="${up?"M-34 0 Q-17 -22 0 0 Q17 -22 34 0":"M-34 -6 Q-17 4 0 0 Q17 4 34 -6"}" fill="none" stroke="#1A1A1A" stroke-width="6" stroke-linecap="round"/>`; }
+    $("gulls").innerHTML=gl;
+    let sm=""; for(let i=0;i<4;i++){const ph=((t*0.6+i/4)%1); sm+=`<circle cx="${554+ph*40}" cy="${720-ph*260}" r="${18+ph*30}" fill="#E9E4DA" stroke="#1A1A1A" stroke-width="4" opacity="${(1-ph).toFixed(2)}" filter="url(#cut)"/>`;} $("smoke").innerHTML=sm;
+    let wv=""; for(let i=0;i<3;i++){const y=1110+i*70, off=(stp(t/3%1,36)*240+i*80)%240; for(let x=-240+off;x<1080;x+=240) wv+=`<path d="M${x} ${y} q30 -16 60 0 t60 0"/>`;} $("waves").innerHTML=wv;
+    const bob=k=>Math.sin(t*2.4+k)*2.5;
+    if (sc<=4){
+      let mx=330, mExpr="Default", jackets=false, rot=0, ms=1;
+      if (sc===1){ const k=stp(t/2.4,14); mx=lerp(-260,330,k); rot = (FR%4<2?-3:3)*(k<1?1:0); mExpr=talkExpr("mama",t,"Happy","Happy");
+        $("trunk").style.display="block"; $("trunk").style.left=(mx+120-180)+"px"; $("trunk").style.top=(1720-220)+"px"; $("trunk").style.transform=`scale(.7) rotate(${J(9,3)}deg)`; }
+      if (sc===2||sc===3) mExpr=talkExpr("mama",t,"Worried","Default");
+      if (sc===4){ jackets=true; mx=300; mExpr=talkExpr("mama",t,"Worried","Worried"); if(t>21.3&&t<22.6) rot=-14*Math.sin(clamp((t-21.3)/1.3)*Math.PI); }
+      setExpr($("mama"),mExpr); $("mama").querySelector(".jackets").style.display=jackets?"block":"none";
+      place("mama","mama",mx+J(3,8),1720+bob(0)+J(4,6),ms,rot+J(5,2.5));
+      { let b={aL:0,aR:0,hd:0}; if(sc===1&&t>0.5&&t<3.6) b={aL:125+25*Math.sin(t*3.8),aR:0,hd:4*Math.sin(t*6)}; if(sc===3&&t>7.7&&t<10.4) b={aL:0,aR:-150,hd:-8}; if(sc===3&&t>12.5) b={aL:152+12*Math.sin(t*4.9),aR:-152-12*Math.sin(t*4.9),hd:8*Math.sin(t*5.2)}; if(sc===2) b={aL:20,aR:-30,hd:-10}; gest("mama","mama",t,b); }
+      if (sc===4){ const bx=lerp(1300,820,stp((t-16.2)/1.4,8)); setExpr($("boltu"), t>18.4?talkExpr("boltu",t,"Happy","Happy"):"Default");
+        place("boltu","boltu",bx+J(6,8),1730+bob(2)+J(7,6),0.82,J(8,2.5)+(speaking("boltu",t)?Math.sin(t*3.2)*2:0));
+        gest("boltu","boltu",t, t>18.4?{aL:100+12*Math.sin(t*4.2),aR:-30-20*Math.abs(Math.sin(t*3.5)),hd:6*Math.sin(t*3.5)}:{aL:0,aR:0,hd:0}); }
+    }
+    if (sc===2){ const k=stp((t-5.1)/2.0,12); $("inNail").style.top=lerp(-60,500,k)+"px"; $("inset").style.transform=`scale(${pop(t,4.6)}) rotate(${J(30,2)}deg)`;
+      let bb=""; if(t>5.6){ for(let i=0;i<5;i++){const ph=((t*1.3+i/5)%1); bb+=`<circle cx="${320+Math.sin(i*2.3+t*3)*30}" cy="${lerp(-60,500,k)+40-ph*260}" r="${6+i*2}"/>`;} } $("inBub").innerHTML=bb; }
+    if (sc===3){ vis("bQ",true); vis("qc1",t>=9.0); setT("qc1",300,470,pop(t,9.0),-3,27); vis("qc2",t>=10.4); setT("qc2",790,470,pop(t,10.4),3,28);
+      vis("qMark",t>=11.5); setT("qMark",790,820+Math.abs(Math.sin(t*4))*-25,pop(t,11.5),10,29); }
+    if (sc===5){
+      setExpr($("mama"),"Worried"); $("mama").querySelector(".jackets").style.display="block";
+      place("mama","mama",150+J(3,8),1720+J(4,6),0.9,J(5,2.5)); gest("mama","mama",t,{aL:0,aR:0,hd:-4});
+      setExpr($("boltu"), talkExpr("boltu",t,"Happy","Default")); place("boltu","boltu",370+J(6,8),1730+bob(2)+J(7,6),0.82,J(8,2.5)+(speaking("boltu",t)?-6:0)); gest("boltu","boltu",t, speaking("boltu",t)?{aL:62,aR:-62,hd:-8}:{aL:0,aR:0,hd:0});
+      const tx=lerp(1300,600,stp((t-23)/1.2,10)); setExpr($("tuni"),talkExpr("tuni",t,"Happy","Default")); place("tuni","tuni",tx+J(9,8),1725+bob(4)+J(10,6),0.86,J(11,2.5)); gest("tuni","tuni",t, t>24.6?{aL:0,aR:-95,hd:0}:{aL:0,aR:0,hd:0});
+      $("bucket").style.display="block"; $("bucket").style.left=(740+J(12,6))+"px"; $("bucket").style.top=(1470+J(13,6))+"px";
+      // material card overlay (screen coords)
+      vis("bMat", t>=24.9); setT("matCard",540,575,pop(t,24.9),-1.2);
+      vis("matL", t>=26.7); vis("matX", t>=28.5); setT("matX",0,0,pop(t,28.5),0,41);
+      vis("matR", t>=29.1); vis("matOK", t>=30.4); setT("matOK",0,0,pop(t,30.4),0,43);
+    }
+    if (sc===9){
+      setExpr($("mama"), t>=79.2 ? talkExpr("mama",t,"Worried","Worried") : talkExpr("mama",t,"Happy","Happy"));
+      place("mama","mama",250+J(3,8),1720+bob(0)+J(4,6),1,J(5,2.5)+(t>=79.2?Math.sin(t*8.8)*2:0));
+      gest("mama","mama",t, t>=79.2?{aL:150+14*Math.sin(t*5.6),aR:-150-14*Math.sin(t*5.6),hd:7*Math.sin(t*4.9)} : (t>74.5&&t<76.9?{aL:0,aR:-110,hd:6}:{aL:0,aR:-60,hd:0}));
+      const tb=$("tiffinBucket"); tb.style.display="block"; tb.style.left=(560+J(12,6))+"px"; tb.style.top=(1720-420+J(13,6))+"px"; tb.style.transform="scale(1.15)"; tb.style.transformOrigin="50% 100%";
+      const nfood = t<76.9?0: t<77.4?1: t<77.9?2: t<78.4?3: 4;
+      const sink = clamp((t-78.6)/0.9); const ty = 172 + 4 + stp(sink,6)*240 + Math.sin(t*3)*3*(1-sink);
+      $("tif").setAttribute("transform",`translate(170 ${ty.toFixed(1)})`);
+      FOODS.forEach((f,i)=>{ const t0=76.9+i*0.5, e=$("food"+i); const k=clamp((t-t0)/0.4); e.style.display=(t>=t0&&k<1)?"":"none"; e.setAttribute("transform",`translate(170 ${(-40+k*(ty-110)).toFixed(0)})`); });
+      const wl = 50 + nfood*28 + (sink>0?40:0); const top=ty-100;
+      vis("tifW", t>=75.3); $("tifWp").setAttribute("d",arrowPath(44,top-70,top-70+wl)); $("tifWt").setAttribute("y",top-84);
+      vis("tifB", t>=75.3); $("tifBp").setAttribute("d",arrowPath(300,ty+60,ty+60-95)); $("tifBt").setAttribute("y",ty-50);
+      $("tifTag").innerHTML = t>=79.3 ? `<g transform="translate(170 40)">${tag("ওজন > প্লবতা, তাই ডুবল!",32,"#fff","#D7263D")}</g>` : "";
+    }
+    if (sc===11){
+      $("trunk").style.display="block"; $("trunk").style.left=(300-180+J(14,6))+"px"; $("trunk").style.top=(1720-220)+"px"; $("trunk").style.transform=`scale(1.05)`;
+      setExpr($("mama"), t>95.0?"Worried":"Default"); place("mama","mama",300+J(3,6),1600+J(4,5),0.95,J(5,2)); gest("mama","mama",t,{aL:0,aR:0,hd:t>95?-8:0});
+      setExpr($("boltu"), talkExpr("boltu",t,"Happy","Happy")); place("boltu","boltu",620+J(6,6),1730+J(7,5),0.82,-8+J(8,2)); gest("boltu","boltu",t,{aL:150,aR:0,hd:-10});
+      $("trunk").style.zIndex=5; $("mama").style.zIndex=4;
+    } else { $("trunk").style.zIndex=""; $("mama").style.zIndex=""; }
+  }
+  // ---------------- boards ----------------
+  const tuniMini=(on)=>{ if(!on) return; setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",130+J(21,6),1655+J(22,5),0.66,J(23,2)); gest("tuniMini","tuni",t,{aL:0,aR:-128,hd:0}); };
+  if (sc===6){ vis("bFoil",true); tuniMini(true);
+    setT("fHead",590,290,1,-1.5);
+    vis("fScale", t<38.6); { const k=stp((t-35.0)/0.5,4); setT("fScale",590,520+(1-k)*-500+(t>38.0?stp((t-38)/0.6,4)*-700:0),1,0,31);
+      const a=0; setT("fBeam",0,0,1,a,32); setT("fPanL",-220,95,1,0,33); setT("fPanR",220,95,1,0,34); vis("fSame",t>=36.6); setT("fSame",0,300,pop(t,36.6),-3,35); }
+    const tk=stp((t-37.7)/0.6,5); vis("tanks", t>=37.7); setT("tanks",0,(1-tk)*600,1,0,36);
+    $("tankL").setAttribute("transform","translate(210 880)"); $("tankR").setAttribute("transform","translate(620 880)");
+    setT("lblL",385,1430,1,-2,37); setT("lblR",795,1430,1,2,38);
+    // boat forming + dropping
+    const fk=stp((t-37.7)/1.5,4), top=lerp(160,190,fk), bot=lerp(160,110,fk), h=lerp(12,58,fk);
+    const LW = t<39.6?1120: lerp(1120,1098,stp((t-39.6)/0.7,4)), RW = t<41.2?1120: lerp(1120,1115,stp((t-41.2)/0.8,4));
+    $("wL").setAttribute("y",LW-880); $("wL").setAttribute("height",1375-LW); $("wR").setAttribute("y",RW-880); $("wR").setAttribute("height",1375-RW);
+    $("oldL").setAttribute("d", t>=40.3?"M0 240 H350":""); $("oldR").setAttribute("d", t>=41.9?"M0 240 H350":"");
+    vis("fBoat", t>=37.7); $("fBoatP").setAttribute("d",`M${-top/2} ${-h} L${top/2} ${-h} L${bot/2} 0 L${-bot/2} 0 Z`);
+    const by = t<39.6? 840 : lerp(840, LW+30, stp((t-39.6)/0.6,4)); setT("fBoat",385,by+Math.sin(t*3)*3*(t>40.3?1:0),1,0,39);
+    vis("fDisp", t>=40.4); $("fDisp").setAttribute("d",`M${385-top/2+6} ${LW} L${385+top/2-6} ${LW} L${385+bot/2} ${by} L${385-bot/2} ${by} Z`);
+    // ball forming + sinking
+    const bk=stp((t-37.7)/1.5,4), bw=lerp(160,72,bk), bh=lerp(12,72,bk);
+    vis("fBall", t>=37.7); const r=$("fBallP"); r.setAttribute("x",-bw/2); r.setAttribute("y",-bh/2); r.setAttribute("width",bw); r.setAttribute("height",bh); r.setAttribute("rx",lerp(2,36,bk));
+    const yb = t<41.0? 840 : lerp(840, 1336, stp((t-41.0)/1.2,10)); setT("fBall",795,yb,1,0,40);
+    let bub=""; if(t>41.5&&t<44){ for(let i=0;i<4;i++){const ph=((t*1.4+i/4)%1); bub+=`<circle cx="${795+Math.sin(i*2+t*3)*20}" cy="${yb-20-ph*200}" r="${6+i*2}"/>`;} } $("fBub").innerHTML=bub;
+    const focL = t>=39.45 && t<40.85, focR = t>=40.85 && t<42.55;
+    vis("tMore", t>=40.6 && !focR); setT("tMore",385,1330,pop(t,40.6),-2,41); vis("tLess", t>=42.0 && !focL); setT("tLess",795,1040,pop(t,42.0),2,42);
+    vis("lblL", !focR); vis("lblR", !focL);
+    // force arrows
+    const ak=stp((t-42.6)/0.8,4), on=t>=42.6;
+    $("aUpL").setAttribute("d", on?arrowPath(385,LW+170,LW+170-150*ak):""); $("aDnL").setAttribute("d", on?arrowPath(470,by-150,by-150+100*ak):"");
+    $("aUpR").setAttribute("d", on?arrowPath(880,1360,1360-45*ak,16):""); $("aDnR").setAttribute("d", on?arrowPath(795,1180,1180+100*ak):"");
+    vis("tPush", t>=43.3); setT("tPush",150,1170,pop(t,43.3),-6,43); vis("tW", t>=43.6); setT("tW",560,by-160,pop(t,43.6),3,44);
+    vis("fStamp", t>=45.0); setT("fStamp",590,560,pop(t,45.0)*1,-4,45);
+  }
+  if (sc===7){ vis("bLaunch",true); tuniMini(true); waves("lWaves",t);
+    vis("lHead", t<55.2); setT("lHead",590,280,1,-1.5); vis("lArch", t>=55.2); setT("lArch",590,280,pop(t,55.2),-1.5);
+    const sinkY = t<53.5? -60 : lerp(-60,0,stp((t-53.5)/1.0,6));
+    const shrink = stp((t-60.94)/0.9,6), sx=lerp(560,300,shrink), ss=lerp(1,0.55,shrink);
+    setT("lShip", sx, 760+sinkY*ss+Math.sin(t*2)*3, ss, 0, 51);
+    $("lInner").setAttribute("fill", t>=48.4?"#D6F1FF":"#BFC5C9"); vis("lAir", t>=48.6);
+    vis("lDisp", t>=51.2); vis("lMark", t>=54.4);
+    vis("tAirL", t>=48.8 && t<51.2); setT("tAirL",300,390,pop(t,48.8),-4,52);
+    vis("tDispL", t>=51.4 && t<60.9); setT("tDispL",560,1000,pop(t,51.4),2,53);
+    vis("tSinkL", t>=54.6 && t<60.9); setT("tSinkL",850,700,pop(t,54.6),3,54);
+    // balance card
+    const cardOn=t>=55.2; vis("lCard",cardOn); vis("lBeam",cardOn); vis("lPanL",cardOn); vis("lPanR",cardOn);
+    const tilt = t<63.6?0: 12*stp((t-63.6)/0.6,4), ang=tilt*Math.PI/180;
+    $("lBeam").setAttribute("transform",`translate(590 1262) rotate(${tilt})`);
+    const pl=[590-260*Math.cos(ang), 1262-260*Math.sin(ang)+60], pr=[590+260*Math.cos(ang), 1262+260*Math.sin(ang)+60];
+    setT("lPanL",pl[0],pl[1],1,0,55); setT("lPanR",pr[0],pr[1],1,0,56);
+    const big = t<63.0, wk=stp((t-55.4)/1.1,6);
+    vis("lWater", cardOn && big); setT("lWater", lerp(560,pl[0],wk), lerp(860,pl[1]-6,wk), 1, 0, 57);
+    vis("lMiniShip", cardOn && big); setT("lMiniShip", pr[0], pr[1]-10, 1, 0, 58);
+    vis("lWaterS", !big); setT("lWaterS", pl[0], pl[1]-6, 1, 0, 59);
+    vis("lMiniNail", !big); setT("lMiniNail", pr[0], pr[1]-60, 0.42, -90, 60);
+    vis("lLblW", cardOn); setT("lLblW", pl[0], pl[1]+70, 1, 0, 61); vis("lLblS", cardOn); setT("lLblS", pr[0], pr[1]+70, 1, 0, 62);
+    $("lLblS").innerHTML = tag(big?"লঞ্চের ওজন":"পেরেকের ওজন",26,"#fff","#D7263D");
+    vis("lEq", t>=58.0 && big); setT("lEq",590,1205,pop(t,58.0),0,63);
+    vis("lLt", t>=64.2); setT("lLt",590,1205,pop(t,64.2),0,64);
+    vis("lOK", t>=59.62 && t<63.0); setT("lOK",560,410,pop(t,59.62),-4,65);
+    // nail
+    vis("lNail", t>=60.94); const ny = t<61.3? lerp(560,760,stp((t-60.94)/0.36,3)) : (t<65.78? 760+Math.sin(t*2)*2 : lerp(760,1120,stp((t-65.78)/1.0,8)));
+    setT("lNail",830,ny,1.3,0,66); vis("tNail", t>=61.6 && t<65.8); setT("tNail",830,520,pop(t,61.6),3,67);
+    let bub=""; if(t>65.9){ for(let i=0;i<4;i++){const ph=((t*1.6+i/4)%1); bub+=`<circle cx="${830+Math.sin(i*2+t*3)*24}" cy="${ny-150-ph*220}" r="${7+i*2}"/>`;} } $("lBub").innerHTML=bub;
+    vis("lNO", t>=66.2); setT("lNO",860,1080,pop(t,66.2),4,68);
+  }
+  if (sc===8){ vis("bMorph",true);
+    const gk=stp((t-67.7)/1.4,6); setT("mBoat",300,560,lerp(1,1.6,gk),-3,71); setT("mLb",300,700,1,-2,72);
+    vis("mEq", t>=69.0); setT("mEq",540,560,pop(t,69.0),0,73);
+    vis("mShip", t>=69.6); setT("mShip",800,600,pop(t,69.6),0,74); vis("mLs", t>=69.6); setT("mLs",800,700,1,2,75);
+    vis("mOK", t>=71.9); setT("mOK",540,880,pop(t,71.9),-5,76);
+    setExpr($("boltuMini"),talkExpr("boltu",t,"Happy","Happy")); place("boltuMini","boltu",400+J(24,6),1600+J(25,5),0.8,J(26,2)); gest("boltuMini","boltu",t, speaking("boltu",t)?{aL:120,aR:-120,hd:0}:{aL:0,aR:0,hd:0});
+    setExpr($("tuniMini"),talkExpr("tuni",t,"Happy","Default")); place("tuniMini","tuni",700+J(21,6),1600+J(22,5),0.86,J(23,2)); gest("tuniMini","tuni",t, t>71.9?{aL:0,aR:-150,hd:4}:{aL:0,aR:-90,hd:0});
+  }
+  if (sc===10){ vis("bSafe",true); tuniMini(true); waves("sWaves",t);
+    setT("sHead",590,290,pop(t,80.8),-1.5);
+    const load = stp((t-81.4)/3.6,16), sink = lerp(0,95,stp((t-81.4)/6.0,10));
+    setT("sShip",560,980+sink+Math.sin(t*2)*3,0.95,0,81);
+    for(let i=0;i<16;i++) vis("pp"+i, i < 3+load*13); for(let i=0;i<8;i++) vis("bx"+i, i < load*9-1);
+    vis("sSign", t>=82.2); setT("sSign",230,640,pop(t,82.2),-3,82);
+    vis("sGauge", t>=81.2); setT("sGauge",860,600,pop(t,81.2),2,83); $("sNeedle").setAttribute("transform",`rotate(${lerp(-80,72,clamp((t-81.4)/6.0))})`);
+    $("sDown").setAttribute("d", t>=85.1? arrowPath(560,760+sink,760+sink+100*stp((t-85.1)/0.5,4)) : "");
+    vis("sMore", t>=85.3 && t<87.3); setT("sMore",560,700,pop(t,85.3),-2,84);
+    vis("sNear", t>=86.0); setT("sNear",700,850+sink*0.4,pop(t,86.0),3,85);
+    vis("sWarn", t>=87.3 && (FR%6<4)); setT("sWarn",560,470,pop(t,87.3),-4,86);
+  }
+  if (sc===12){ vis("bPuz",true); tuniMini(true);
+    setT("pHead",590,330,pop(t,96.5),-4,91);
+    const mapOn = t<101.7; vis("pMap",mapOn); vis("pClose",!mapOn);
+    if (mapOn){ setT("pRiverT",330,600,pop(t,97.8),-3,92); vis("pSeaT",t>=99.0); setT("pSeaT",720,1300,pop(t,99.0),2,93);
+      const path=$("riverC"), L=path.getTotalLength(), k=stp((t-97.9)/3.6,24), pt=path.getPointAtLength(L*k);
+      setT("pBoat",pt.x,pt.y-10,1,0,94); }
+    else { setT("pShip",560,900+Math.sin(t*3)*14,1,0,95);
+      vis("pUp",t>=101.8); setT("pUp",560,560,pop(t,101.8),-2,96); vis("pDn",t>=103.4); setT("pDn",560,1180,pop(t,103.4),2,97);
+      setT("pQ",900,860+Math.abs(Math.sin(t*4))*-30,1,8,98); vis("pCom",t>=105.0); setT("pCom",560,1360,pop(t,105.0),-3,99); }
+  }
+  if (sc===13){ vis("bEnd",true);
+    setT("eTitle",540,560,pop(t,106.2),-3,101); setT("eCh",540,730,pop(t,106.4),2,102);
+    setT("eWheel",540,820,1,(t-106.2)*120,103);
+    vis("eBrand",true); setT("eBrand",540,430,1,-1.5,104);
+    vis("eNames",true); [["nMama",250,106.5],["nTuni",540,106.7],["nBoltu",830,106.9]].forEach(([id,x,t0])=>{ vis(id,t>=t0); setT(id,x,1128,pop(t,t0),id==="nTuni"?2:-2); });
+    for(const [id,c,x] of [["mamaMini","mama",250],["tuniMini","tuni",540],["boltuMini","boltu",830]]){ setExpr($(id),"Happy"); place(id,c,x,1650,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*3.5), id==="mamaMini"?-130-25*Math.sin(t*3.5):-20, 4*Math.sin(t*5)); }
+  }
+  ["fHead","lHead","sHead","mOK","pHead","pCom","eTitle","eCh","eNext"].forEach(id=>vis(id,false));
+  vis("bdLab", sc===6); vis("bdSky", sc===7||sc===10); vis("bdLand", sc===12 && t<101.7); vis("bdPaper", sc===8||sc===13); vis("backdrops", !(sc===3||sc===5));
+  if (CAM[sc]) { const [cx,cy,z]=camPose(CAM[sc],t); setCam(cx,cy,z); } else $("bcam").setAttribute("transform","");
+  ripples(sc===6?[[39.95,385,1100],[41.15,795,1115]]: sc===7?[[54.3,560,760],[61.2,830,760],[65.85,830,760]]: [], t);
+  // ---------------- sfx & captions ----------------
+  const sfx=(id,a,b)=>{const e=$(id), on=t>=a&&t<=b; e.style.opacity=on?1:0; if(on) e.style.transform=`rotate(${-6+J(id.length,3)}deg) scale(${pop(t,a)})`;};
+  sfx("s1",0.2,1.8); sfx("s2",6.3,7.3); sfx("s3",21.5,22.6); sfx("s4",79.0,80.0); sfx("s5",95.0,95.8);
+  const c = D.caps.find(c=>t>=c.s && t<c.e+0.12);
+  $("cap").textContent = c ? c.t : "";
+  const boardWithMini = [6,7,10,12].includes(sc);
+  $("cap").style.left = boardWithMini? "250px":"40px";
+};
+
+const OFF = __OFF__;
+const HP = [[0.3,1.88],[1.88,3.37],[3.37,5.69],[5.69,7.02]];   // hook phrase windows (Mama, script line 3)
+window.render = function(T){
+  if (T >= OFF) { mainRender(T - OFF); applyLips(T - OFF); return; }
+  FR = Math.floor(T*FPS); const t = FR/FPS;
+  BOARDS.forEach(b=>vis(b,false)); ["mama","tuni","boltu","bucket","trunk","tiffinBucket","tuniMini","boltuMini","mamaMini"].forEach(hide);
+  $("inset").style.display="none"; vis("rFrame",false); vis("kraftDeco",false);
+  if (t < 7.1){
+    $("world").style.display="block";
+    const inNail = t>=HP[1][0] && t<HP[1][1];
+    const cards = t>=HP[2][0] && t<HP[2][1];
+    $("board").style.display = cards? "block":"none"; $("board").style.background="transparent";
+    // camera: launch (phrase 1 & 3), Mama close-up (phrase 4)
+    let cam = {s:1.15+0.05*clamp(t/1.9),x:-81,y:-292};
+    if (t>=HP[1][0]) cam={s:1.36,x:-195,y:-800};
+    if (t>=HP[2][0]) cam={s:1.15,x:-81,y:-292};
+    if (t>=HP[3][0]) { const k=ease((t-HP[3][0])/0.5); cam={s:lerp(1.15,1.75,k),x:lerp(-81,-30,k),y:lerp(-292,-1110,k)}; }
+    $("inner").style.transform=`translate(${cam.x}px,${cam.y}px) scale(${cam.s})`;
+    $("gulls").innerHTML=""; 
+    setExpr($("mama"), talkExpr("mama",t+7.68-0.3,"Worried","Default"));
+    $("mama").querySelector(".jackets").style.display="none";
+    place("mama","mama",330,1720,1, t>=HP[3][0]? Math.sin(t*7.0)*3:0);
+    let b = t<HP[1][0]? {aL:0,aR:-150,hd:-8} : t<HP[3][0]? {aL:20,aR:-40,hd:-6} : {aL:152+12*Math.sin(t*4.9),aR:-152-12*Math.sin(t*4.9),hd:8*Math.sin(t*5.2)};
+    rig("mama", b.aL+(t%1<0.5?2:0), b.aR, b.hd);
+    if (inNail){ $("inset").style.display="block"; const k=ease((t-HP[1][0])/1.3); $("inNail").style.top=lerp(-60,500,k)+"px"; $("inset").style.transform=`scale(${pop(t,HP[1][0])})`;
+      let bb=""; for(let i=0;i<5;i++){const ph=((t*1.3+i/5)%1); bb+=`<circle cx="${320+Math.sin(i*2.3+t*3)*30}" cy="${lerp(-60,500,k)+40-ph*260}" r="${6+i*2}"/>`;} $("inBub").innerHTML=bb; }
+    if (cards){ vis("bQ",true); vis("qc1",true); setT("qc1",300,470,pop(t,HP[2][0]),-3,27); vis("qc2",t>=HP[2][0]+0.7); setT("qc2",790,470,pop(t,HP[2][0]+0.7),3,28);
+      vis("qMark",t>=HP[2][0]+1.4); setT("qMark",790,820+Math.abs(Math.sin(t*4))*-25,pop(t,HP[2][0]+1.4),10,29); }
+  } else {
+    // channel sting: rickshaw wheel + the three friends waving (no text)
+    $("world").style.display="none"; $("board").style.display="block"; $("board").style.background="var(--paper)";
+    vis("rFrame",true); vis("bEnd",true); ["eTitle","eCh","eNext"].forEach(id=>vis(id,false)); vis("eNames",true);
+    [["nMama",250,7.4],["nTuni",540,7.55],["nBoltu",830,7.7]].forEach(([id,x,t0])=>{ vis(id,t>=t0); setT(id,x,1128,pop(t,t0),id==="nTuni"?2:-2); });
+    setT("eWheel",540,820,pop(t,7.1),(t-7.1)*220,103);
+    vis("eBrand",true); setT("eBrand",540,430,pop(t,7.15),-1.5,104);
+    [["mamaMini","mama",250,7.25],["tuniMini","tuni",540,7.4],["boltuMini","boltu",830,7.55]].forEach(([id,c,x,t0])=>{ if(t<t0) return; setExpr($(id),"Happy");
+      place(id,c,x,1650+ (1-back(clamp((t-t0)/0.35)))*400,0.62,0); rig(id, id==="mamaMini"?0:130+25*Math.sin(t*4.2), id==="mamaMini"?-130-25*Math.sin(t*4.2):-20, 4*Math.sin(t*6)); });
+  }
+  applyLips(T < 7.1 ? T+7.68-0.3 : -1);
+};
+window.render(0);
+</script></body></html>
