@@ -1,4 +1,10 @@
-# YouTube thumbnails (map view + hook heading)
+# YouTube + Facebook thumbnails (map view + hook heading)
+
+**From 2026-11-09 all new thumbnails (YouTube and Facebook) are designed in Figma only**, in the same map style
+as the JPGs below, and exported from Figma into this folder. See `.claude/skills/youtube-thumbnail-creator/SKILL.md`
+("Figma workflow"). The thumbnails listed below were made earlier with `make_thumbnails.py`; they stay as the style reference.
+
+Figma file "NorthStar Thumbnails": not created yet (the first Figma thumbnail run creates it and records the key + URL here).
 
 1280×720 JPGs for every Which Life Next video, built by `make_thumbnails.py`. Each one uses the same
 illustrated map style as the channel's Shorts (parchment land, teal water, thin state lines, the story's

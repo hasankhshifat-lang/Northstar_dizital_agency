@@ -77,6 +77,17 @@ curl -sS "https://graph.facebook.com/v21.0/OBJECT_ID?fields=id"
 whether the video had finished processing before it was removed (if it was still
 processing, it was most likely never visible to the public).
 
+### Thumbnail (always a Figma-made map-style thumbnail)
+Every video/Reel gets a custom thumbnail designed in Figma with the youtube-thumbnail-creator skill
+(16:9 1280×720 for feed videos, 9:16 1080×1920 for Reels; files `social/thumbnails/fb_<VIDEO_ID>[_9x16].jpg`).
+Don't make it with any other tool. Attach it at upload with `-F "thumb=@social/thumbnails/FILE.jpg;type=image/jpeg"`,
+or set it on an existing video:
+```bash
+curl -sS -X POST "https://graph-video.facebook.com/v21.0/VIDEO_ID/thumbnails" \
+  -F "source=@social/thumbnails/FILE.jpg;type=image/jpeg" -F "is_preferred=true"
+```
+Check with `GET /VIDEO_ID/thumbnails?fields=id,uri,is_preferred` and log it in `social/facebook-page-log.md`.
+
 ### Status and insights
 - `GET /OBJECT_ID?fields=id,permalink_url,status,created_time`
 - `GET /$PAGE/videos?fields=id,title,created_time,permalink_url`

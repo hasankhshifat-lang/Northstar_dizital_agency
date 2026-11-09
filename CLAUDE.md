@@ -14,22 +14,29 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
 - Log uploads/schedules/edits in `social/youtube-schedule-log.md` and comment replies in
   `social/youtube-comments-log.md`, then commit and push.
 
-## YouTube thumbnails: always the map-style thumbnail
+## YouTube + Facebook thumbnails: always made in Figma, map style
 
-Every new video gets a custom thumbnail. Follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
+Every new YouTube video **and every Facebook Page video/Reel** gets a custom thumbnail, and it is **designed in
+Figma only** (Figma connector: `use_figma`, `get_screenshot`, `download_assets`). Don't use other design or
+image tools for thumbnails: no `make_thumbnails.py`/PIL rendering, Canva, Higgsfield, vidIQ thumbnail generator,
+AI image generators, Spline etc. If Figma is not connected or fails, say so and stop.
+Follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
 read the full script first (`social/scripts/<VIDEO_ID>.md`, or ask for it), pick one story angle, write three
-heading options and choose the clearest. Render it with `social/thumbnails/make_thumbnails.py` in the
-channel's illustrated map style (the same look as the maps inside the Shorts):
+heading options and choose the clearest. Build it in the Figma file "NorthStar Thumbnails" (one frame per video,
+named `<VIDEO_ID>` / `<VIDEO_ID>_9x16` / `fb_<FB_VIDEO_ID>`) in the same illustrated map style as last time
+(the existing thumbnails in `social/thumbnails/` are the reference):
 - Parchment/cream land, teal water and rivers, thin state lines, the story's state filled in tan,
   rust-red route with white waypoint dots, red teardrop pins, dark label tags, dark date tag with gold text.
 - A clear, specific heading (2–6 words, Anton font, white + gold) that adds to the title and never repeats it.
   Don't force dramatic words; curiosity about the actual story, never a misleading claim.
-- **Shorts: 9:16, 1080×1920** (`--vertical`, file `<VIDEO_ID>_9x16.jpg`): date tag and hook at the top,
-  map focus in the middle, bottom ~400 px kept clear for YouTube's title overlay.
-- Long-form videos: 16:9, 1280×720 (`<VIDEO_ID>.jpg`), hook on the left, map on the right.
-- Add a function for the new video in `make_thumbnails.py` (`VERTICAL` for Shorts, `VIDEOS` for long-form),
-  render it, look at the result, then set it with `yt.py thumbnail VIDEO_ID FILE` and log it in
-  `social/youtube-schedule-log.md`. Update `social/thumbnails/README.md`, then commit and push.
+- **Shorts / Facebook Reels: 9:16, 1080×1920** (file `<VIDEO_ID>_9x16.jpg`): date tag and hook at the top,
+  map focus in the middle, bottom ~400 px kept clear for the title/caption overlay.
+- Long-form YouTube and Facebook feed videos: 16:9, 1280×720 (`<VIDEO_ID>.jpg`), hook on the left, map on the right.
+- Look at the Figma screenshot, fix anything off, then export the frame from Figma (`download_assets`,
+  JPG/PNG at scale 1) into `social/thumbnails/` (Facebook: `fb_<FB_VIDEO_ID>.jpg` / `fb_<FB_VIDEO_ID>_9x16.jpg`).
+- YouTube: set it with `yt.py thumbnail VIDEO_ID FILE` and log it in `social/youtube-schedule-log.md`.
+  Facebook: set it through the Graph API (facebook-page-automation skill, "Thumbnail") and log it in
+  `social/facebook-page-log.md`. Add the row (with the Figma frame link) to `social/thumbnails/README.md`, then commit and push.
 
 ## YouTube analysis: use vidIQ
 

@@ -1,6 +1,6 @@
 ---
 name: youtube-thumbnail-creator
-description: "Story-driven YouTube thumbnail creator for the Which Life Next channel. Use for ANY thumbnail task (new video, Short, redesign, heading change). Read the full video script first, pick one story angle, write three heading options, choose the clearest one, then render the channel's illustrated map-style thumbnail (9:16 for Shorts, 16:9 for long-form) with social/thumbnails/make_thumbnails.py."
+description: "Story-driven thumbnail creator for the Which Life Next YouTube channel and the NorthStar Dizital Facebook Page. Use for ANY thumbnail task (YouTube video or Short, Facebook video or Reel, redesign, heading change). Read the full video script first, pick one story angle, write three heading options, choose the clearest one, then design the channel's illustrated map-style thumbnail in Figma (9:16 for Shorts/Reels, 16:9 for long-form/feed videos) and export it from Figma."
 ---
 
 # Story-driven YouTube thumbnail creator
@@ -10,13 +10,16 @@ description: "Story-driven YouTube thumbnail creator for the Which Life Next cha
 - **Style:** every thumbnail uses the channel's illustrated map style, the same look as the maps inside
   the Shorts: parchment/cream land, teal water and rivers, thin state lines, the story's state filled in
   tan, rust-red route with white waypoint dots, red teardrop pins, dark label tags, and a dark date tag with
-  gold text. Heading in Anton, white with a gold accent word. Rendered by `social/thumbnails/make_thumbnails.py`.
+  gold text. Heading in Anton, white with a gold accent word. **Designed in Figma only** (see "Figma
+  workflow" below); the existing JPGs in `social/thumbnails/` are the style reference. Don't use
+  `make_thumbnails.py`, PIL, Canva, Higgsfield, vidIQ's thumbnail generator or any AI image tool.
   In sections 5–7, "visual" means the map: the location, route, pins, highlighted state and the one or two
   overlays (snow, swarm, flood path) that show the chosen story angle. Don't add AI-generated faces or
   people unless the user asks for that.
-- **Canvas:** Shorts are **9:16, 1080×1920** (`--vertical`, `<VIDEO_ID>_9x16.jpg`): date tag and heading
-  at the top, map focus in the middle, bottom ~400 px clear for YouTube's title overlay. Long-form videos
-  are 16:9, 1280×720 (`<VIDEO_ID>.jpg`): heading on the left, map on the right.
+- **Canvas:** Shorts and Facebook Reels are **9:16, 1080×1920** (`<VIDEO_ID>_9x16.jpg`): date tag and heading
+  at the top, map focus in the middle, bottom ~400 px clear for the title/caption overlay. Long-form YouTube
+  videos and Facebook feed videos are 16:9, 1280×720 (`<VIDEO_ID>.jpg`): heading on the left, map on the right.
+  Facebook files are named `fb_<FB_VIDEO_ID>.jpg` / `fb_<FB_VIDEO_ID>_9x16.jpg`.
 - **Where the script is:** look in this order and use the first that has the full script:
   1. `social/scripts/<VIDEO_ID>.md` (or the script file the user names / attaches),
   2. the script the user pasted in chat,
@@ -24,9 +27,31 @@ description: "Story-driven YouTube thumbnail creator for the Which Life Next cha
      transcript tool, for videos already uploaded.
   If none gives the complete script, ask the user for it. Don't write a heading from the title alone.
   Save any script you found to `social/scripts/<VIDEO_ID>.md` so the next run has it.
-- **Output:** save to `social/thumbnails/`, add the video's row (heading + map) to
-  `social/thumbnails/README.md`. Setting it on YouTube follows the youtube-channel-automation skill
-  (`yt.py thumbnail`), is logged in `social/youtube-schedule-log.md`, then commit and push.
+- **Output:** export from Figma to `social/thumbnails/`, add the video's row (heading + map + Figma frame
+  link) to `social/thumbnails/README.md`. YouTube: set it with the youtube-channel-automation skill
+  (`yt.py thumbnail`), log it in `social/youtube-schedule-log.md`. Facebook: set it with the
+  facebook-page-automation skill ("Thumbnail"), log it in `social/facebook-page-log.md`. Then commit and push.
+
+### Figma workflow
+
+1. Load the `figma-use` skill (mandatory before `use_figma`).
+2. Open the Figma file **"NorthStar Thumbnails"** (its file key is in `social/thumbnails/README.md`). If it
+   doesn't exist yet, create it once with `create_new_file` (plan "KH Touhidul Islam's team", editor
+   `design`), and write its key and URL into the README. Call `create_session` with the file key first.
+3. With `use_figma`, add one frame per thumbnail on the page "YouTube" or "Facebook", named `<VIDEO_ID>`,
+   `<VIDEO_ID>_9x16` or `fb_<FB_VIDEO_ID>[_9x16]`, at the exact canvas size. Build it in layers:
+   parchment background and land shapes, teal water/rivers, thin state lines, the story's state in tan,
+   rust-red route (vector path) with white waypoint dots, red teardrop pins, dark label tags, the dark date
+   tag with gold text, and the Anton heading (white + gold accent word, subtle dark shadow). Keep map
+   geography and place positions accurate to the story. Reuse earlier frames as the starting point
+   (duplicate and edit) so every thumbnail keeps the same look.
+4. Check it with `get_screenshot` (full size and a small phone-size view); fix and re-check until it passes
+   section 8.
+5. Export with `download_assets` on the frame (`defaultFormat: "jpg"`, scale 1) and save the file in
+   `social/thumbnails/`. Make sure it is exactly 1280×720 or 1080×1920 and under 2 MB (YouTube's limit).
+
+If the Figma connector is not connected, out of quota or the seat can't edit the file, say so and stop:
+don't fall back to another tool.
 - **Report:** when delivering, show the story beats with their share of the script and thumbnail direction, the
   three heading options, which one won and why (one line), and the image.
 
@@ -224,10 +249,11 @@ Follow this workflow every time:
    script spends the most attention on (section 4).
 4. **Create heading options:** develop three possible thumbnail headings.
 5. **Select the winner:** choose the strongest heading based on clarity, curiosity, relevance, and visual potential.
-6. **Design:** add the video's function to `make_thumbnails.py` (`VERTICAL` for Shorts, `VIDEOS` for
-   long-form) with the selected heading and a map concept that accurately represents the story, and render it.
+6. **Design:** build the frame in Figma (see "Figma workflow" in section 0) with the selected heading and a
+   map concept that accurately represents the story, then export it from Figma.
 7. **Review:** check spelling, composition, readability, accuracy, and overall quality.
-8. **Deliver:** save the final thumbnail in `social/thumbnails/`, update the README, commit and push.
+8. **Deliver:** save the Figma export in `social/thumbnails/`, set it on YouTube / Facebook, log it,
+   update the README, commit and push.
 
 ## 10. Final operating principle
 
