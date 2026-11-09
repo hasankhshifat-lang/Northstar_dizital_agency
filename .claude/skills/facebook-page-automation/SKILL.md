@@ -12,8 +12,11 @@ Metricool or any other posting tool for the Page.
 
 - The agent proxy injects the credential for `graph.facebook.com`, `graph-video.facebook.com`
   and `rupload.facebook.com`. Never put an `access_token` in the request and never ask the user for one.
-- The injected token is a **Page token** for **NorthStar Dizital**, Page ID `1390585830800081`.
-  `/me/accounts` does not work with it (there is no user behind it); use `/me` or the Page ID.
+- Since 2026-11-09 the injected token is a **user token** (Hasan KH Shifat). Get a page's own token with
+  `PT=$(curl -sS "https://graph.facebook.com/v21.0/<PAGE_ID>?fields=access_token" | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')`
+  and pass `access_token=$PT` on page calls. Never print, log or commit it.
+  Pages: NorthStar Dizital `1390585830800081`, Which Life Next `1342776542260801`, Scientific Bithi `1497857623404891`.
+  (Scientific Bithi doesn't appear in `/me/accounts`, but the direct query above works.)
 - Check the connection first if anything looks off:
   `curl -sS "https://graph.facebook.com/v21.0/me?fields=id,name"`
 - API version: `v21.0`.
