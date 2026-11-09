@@ -14,7 +14,7 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
 - Log uploads/schedules/edits in `social/youtube-schedule-log.md` and comment replies in
   `social/youtube-comments-log.md`, then commit and push.
 
-## YouTube thumbnails: always the map-style thumbnail
+## YouTube thumbnails: story picture first, map as the channel signature
 
 Every new video gets a custom thumbnail. Follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
 read the full script first (`social/scripts/<VIDEO_ID>.md`, or ask for it), pick one story angle, write three
@@ -24,8 +24,12 @@ channel's illustrated map style (the same look as the maps inside the Shorts):
   rust-red route with white waypoint dots, red teardrop pins, dark label tags, dark date tag with gold text.
 - A clear, specific heading (2–6 words, Anton font, white + gold) that adds to the title and never repeats it.
   Don't force dramatic words; curiosity about the actual story, never a misleading claim.
-- **Shorts: 9:16, 1080×1920** (`--vertical`, file `<VIDEO_ID>_9x16.jpg`): date tag and hook at the top,
-  map focus in the middle, bottom ~400 px kept clear for YouTube's title overlay.
+- **Shorts: 9:16, 1080×1920** (`--vertical`, file `<VIDEO_ID>_9x16.jpg`), hero style (user's request, 2026-11-09:
+  a map alone didn't show what the video is about): a painted story illustration fills the frame
+  (`social/thumbnails/art/<VIDEO_ID>.png`, prompt in `gen_art.py`, generated with Figma's image AI), the heading
+  says in plain words what happened (e.g. THESE TANKS ARE FAKE), plus a date tag and a small map card with pin and
+  place tag. Use a ring/arrow when the key detail is small. Bottom ~400 px kept clear for YouTube's title overlay.
+  No close-up faces; people small or from behind.
 - Long-form videos: 16:9, 1280×720 (`<VIDEO_ID>.jpg`), hook on the left, map on the right.
 - Add a function for the new video in `make_thumbnails.py` (`VERTICAL` for Shorts, `VIDEOS` for long-form),
   render it, look at the result, then set it with `yt.py thumbnail VIDEO_ID FILE` and log it in

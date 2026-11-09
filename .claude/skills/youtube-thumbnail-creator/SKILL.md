@@ -14,8 +14,14 @@ description: "Story-driven YouTube thumbnail creator for the Which Life Next cha
   In sections 5–7, "visual" means the map: the location, route, pins, highlighted state and the one or two
   overlays (snow, swarm, flood path) that show the chosen story angle. Don't add AI-generated faces or
   people unless the user asks for that.
+- **Shorts use the hero style (user's request, 2026-11-09):** the map alone didn't tell viewers what the video
+  was about. A Short's thumbnail is a painted story illustration of the one moment the angle is about (prompt in
+  `social/thumbnails/gen_art.py`, image generated with Figma's image AI and saved to `social/thumbnails/art/`),
+  a plain-English heading that names what happened, the date tag, and a small map card (pin + place tag) as the
+  channel signature. A viewer must be able to say what the video is about from the thumbnail alone. People
+  only small or from behind, no close-up faces.
 - **Canvas:** Shorts are **9:16, 1080×1920** (`--vertical`, `<VIDEO_ID>_9x16.jpg`): date tag and heading
-  at the top, map focus in the middle, bottom ~400 px clear for YouTube's title overlay. Long-form videos
+  at the top, the illustrated subject in the middle (map card in a free corner), bottom ~400 px clear for YouTube's title overlay. Long-form videos
   are 16:9, 1280×720 (`<VIDEO_ID>.jpg`): heading on the left, map on the right.
 - **Where the script is:** look in this order and use the first that has the full script:
   1. `social/scripts/<VIDEO_ID>.md` (or the script file the user names / attaches),

@@ -29,3 +29,7 @@ From 2026-11-03 every YouTube action goes through the YouTube API with the agenc
 | 2026-11-09 | (no change, scheduled 2026-11-10 13:00 UTC) | The US Army Fooled Hitler With Rubber Tanks | YouTube API · thumbnail set: social/thumbnails/vy-qRhRjnN0_9x16.jpg (9:16) | video vy-qRhRjnN0 |
 | 2026-11-09 | (no change) | He Mailed Himself to Freedom in a Wooden Box (1849) | YouTube API · thumbnail set: social/thumbnails/ahJknPq0Z_g_9x16.jpg (9:16) | video ahJknPq0Z_g |
 | 2026-11-09 | (no change) | 20 Mushers. 150 Dogs. 674 Miles to Save Nome (1925) | YouTube API · thumbnail set: social/thumbnails/5cj7cAPSqw0_9x16.jpg (9:16) | video 5cj7cAPSqw0 |
+| 2026-11-09 | (no change) | The Titanic's Baker Was Having a Drink While It Sank | YouTube API · thumbnail replaced (hero style, "THE BAKER WHO SURVIVED"): social/thumbnails/ctx0tm_C56c_9x16.jpg | video ctx0tm_C56c |
+| 2026-11-09 | (no change, scheduled 2026-11-10 13:00 UTC) | The US Army Fooled Hitler With Rubber Tanks | YouTube API · thumbnail replaced (hero style, "THESE TANKS ARE FAKE"): social/thumbnails/vy-qRhRjnN0_9x16.jpg | video vy-qRhRjnN0 |
+| 2026-11-09 | (no change) | He Mailed Himself to Freedom in a Wooden Box (1849) | YouTube API · thumbnail replaced (hero style, "27 HOURS IN THIS BOX"): social/thumbnails/ahJknPq0Z_g_9x16.jpg | video ahJknPq0Z_g |
+| 2026-11-09 | (no change) | 20 Mushers. 150 Dogs. 674 Miles to Save Nome (1925) | YouTube API · thumbnail replaced (hero style, "THE DOGS THAT SAVED A TOWN"): social/thumbnails/5cj7cAPSqw0_9x16.jpg | video 5cj7cAPSqw0 |

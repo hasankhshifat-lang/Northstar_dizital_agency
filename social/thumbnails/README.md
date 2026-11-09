@@ -53,13 +53,13 @@ the bottom ~400 px is kept clear for YouTube's title overlay.
 | ahJknPq0Z_g | 1:31 | ahJknPq0Z_g_9x16.jpg |
 | 5cj7cAPSqw0 | 1:41 | 5cj7cAPSqw0_9x16.jpg |
 
-Shorts-only (9:16, no 16:9 version):
+Shorts-only (9:16, no 16:9 version), hero style: a story illustration fills the frame
+(`art/<VIDEO_ID>.png`, prompts in `gen_art.py`), a plain-English heading names what happened, and a small map card
+shows where. Built by the `v_*` hero functions in `make_thumbnails.py`.
 
-| Video ID | Title | Hook | Map |
-|---|---|---|---|
-| ctx0tm_C56c | The Titanic's Baker Was Having a Drink While It Sank | HE RODE IT DOWN | North Atlantic, Southampton route → wreck site, iceberg, dashed line to New York |
-| vy-qRhRjnN0 | The US Army Fooled Hitler With Rubber Tanks | AN ARMY OF ARTISTS | Lower Rhine, March 1945: rubber-tank decoy south of the real crossing |
-| ahJknPq0Z_g | He Mailed Himself to Freedom in a Wooden Box (1849) | THIS SIDE UP | Richmond, VA (Virginia in tan) → Philadelphia by wagon, rail and steamboat |
-| 5cj7cAPSqw0 | 20 Mushers. 150 Dogs. 674 Miles to Save Nome (1925) | THE SERUM VANISHED | Alaska relay Nenana → Nome, Norton Sound ice, Balto's blizzard leg |
-
-Not included: Dd6icXr-dW0 (3:09), NtC-QGdCfG0 and kQzq9g26F6Q (8:39) are long-form; the other 7 videos are private.
+| Video ID | Title | Heading | Picture | Map card |
+|---|---|---|---|---|
+| ctx0tm_C56c | The Titanic's Baker Was Having a Drink While It Sank | THE BAKER WHO SURVIVED | Titanic stern rising, ring + arrow on the lone figure at the rail | North Atlantic route to the wreck |
+| vy-qRhRjnN0 | The US Army Fooled Hitler With Rubber Tanks | THESE TANKS ARE FAKE | Four soldiers lifting an inflatable Sherman | Rhine, 1945 |
+| ahJknPq0Z_g | He Mailed Himself to Freedom in a Wooden Box (1849) | 27 HOURS IN THIS BOX | Man folded inside a crate on a steamboat dock, arrow to the box | Richmond, VA to Philadelphia |
+| 5cj7cAPSqw0 | 20 Mushers. 150 Dogs. 674 Miles to Save Nome (1925) | THE DOGS THAT SAVED A TOWN | Husky team charging through a blizzard | Nenana to Nome |
