@@ -15,6 +15,13 @@ Hyperrealistic portraits of famous scientists, generated in Figma (file "Scienti
 
 Files: `raw/<key>.png` is the Figma output; `<key>.png` is the transparent cut-out (`python3 cutout.py raw/x.png x.png 24`); `cameo.py` makes the engine prop (portrait + name plate with the field and "নাট্যরূপ"). `preview_jc_bose.jpg` shows how it looks in a scene.
 
+## When and how a scientist appears (owner, 2026-11-09)
+- **At most twice a week.** Count the scientist Shorts in the last 7 days from the "Scientist" column of `../../shorts/queue.md` before using one. Most Shorts have no scientist.
+- **The story beat:** বিথী herself doesn't know the science behind the topic. She says so honestly, then **summons the scientist by name**, for example "এটা তো আমিও জানি না… জগদীশ চন্দ্র বসু! আপনি কি একটু বুঝিয়ে বলবেন?"
+- **The scientist appears** with a short sparkle/whoosh at the edge of the scene, walks in, and explains the key point in 1–2 short, correct lines.
+- Then the cast reacts. The usual ending (puzzle, end card) follows.
+- Use it only when the topic really came from that scientist's discovery or work.
+
 ## Rules
 - Only for discoveries that really belong to that scientist (check the NCTB book and a second source). At most one cameo per Short, about 5–10 s, and the explanation stays short and correct.
 - Long-dead historical scientists only. Never make cameos of living people.
