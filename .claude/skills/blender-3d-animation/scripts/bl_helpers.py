@@ -264,8 +264,9 @@ def orbit_camera(cam, target=(0, 0, 0), radius=10, height=4, start_deg=-90, end_
 # ---------------------------------------------------------------- render
 def render(args):
     scene = bpy.context.scene
-    out = os.path.abspath(args.out)
-    os.makedirs(os.path.dirname(out) if not out.endswith("/") else out, exist_ok=True)
+    is_seq = args.out.endswith(("/", os.sep))
+    out = os.path.abspath(args.out) + ("/" if is_seq else "")  # abspath drops the trailing slash
+    os.makedirs(out if is_seq else os.path.dirname(out), exist_ok=True)
     if args.save_blend:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(args.save_blend))
 
