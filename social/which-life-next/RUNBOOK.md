@@ -3,7 +3,7 @@
 > instructions below (scheduling, Drive relay, view counts, analytics) are retired; use `yt.py` instead.
 
 > **CURRENT MODE (user, 2026-10-31): SHORTS ONLY.** Long videos are paused until the 10M Shorts-views target is
-> **FORMAT (user, 2026-11-01, latest): ALL Shorts are map Shorts WITH a voiceover. About 2 minutes, opening on a hook of the main story.**
+> **FORMAT (user, 2026-11-01, latest): ALL Shorts are map Shorts WITH a voiceover. 45–60 seconds (owner, 2026-11-08; 110–150 words), opening on a hook of the main story.**
 > - Visuals: the "Map Shorts" section below (continuous camera over a real map, Kit v2 on the map).
 > - Narration: Jesse (`4N8zjn9tVNuDEBFWVHAq`, eleven_v4), as in the voiceover sections.
 > - Sound effects must NEVER cover the voice. `pony_mix.py` with `VOICE=` ducks effects to −14 dB and music to −20 dB under speech; they come back up between lines.
@@ -416,7 +416,7 @@ Full breakdown: `research/geoglobetales-breakdown-2026-11-01.md`.
 6. YouTube description must end with: "Sound effects generated with AI. Animation made by the channel."
 
 ### Voiced map Shorts (user rule, 2026-11-01, latest)
-1. **Length** about 2 minutes (110–125 s). The script is about 280–320 words of interesting real history, with 2+ sources.
+1. **Length** 45–60 s (owner, 2026-11-08). The script is 110–150 words of interesting real history, with 2+ sources.
 2. **Hook** (the first 5–8 s): tell the main story's most surprising outcome and ask a question, over flashes of the climax on the map. Then rewind (◀◀◀) to the start and show a big date.
 3. **Narration:** generate it per segment with ElevenLabs (Jesse, eleven_v4, tense tags). Get word timestamps with faster-whisper; pass it a numpy array, because the `av` decoder is broken here. Set the timeline `T`, the camera keys and the on-screen pops from those timestamps, so every spoken place, number and action appears on screen when it is said (MUTE TEST).
 4. **Captions:** 1–4-word chunks in sync with the voice, around y 1300 (white with a black stroke), plus big serif dates and yellow keyword pops.
@@ -439,3 +439,11 @@ Start on the map, then **dive into the place** and show what the narration descr
   - `src/sets/ponyScenes.tsx` holds the reusable vertical pieces: Sky, Hills (parallax), Ground, Cabin, Fence, Storefront, Pole, Bunting, Wall, Person (recoloured Kit rig with top-hat option; SUIT/KEEPER/CLERK/WORKER/TOWN palettes) and Horse. It also has example scenes (gallop, town and railroad end, office, relay swap, scale, desert, blizzard, night, arrival, counter, newsboy, dusk, crew, telegraph office, CLOSED).
   - `src/stories/ponyVoiced.tsx` has the `SCENES` schedule, `diveFactor` and `SceneLayer`. Each scene's internal beats use its local time, matched to word timestamps.
 - **Layout:** draw scenes on GY=1240 and shift them up 130 px in the SceneLayer. Captions sit at y 1420, below the action.
+
+
+### Learned 2026-11-09 (Ghost Army Short)
+- Non-US topics: copy `src/stories/ghostArmy.tsx` (Europe Albers projection, scene schedule, Big/Tag pops) + `src/sets/ghostScenes.tsx` (Tank, Soldier, Label); mix script in `shorts/<slug>/mix.py` (synth hiss/rumble/steps added).
+- Use `/usr/bin/python3 -I` for faster-whisper, numpy and Pillow (the default `python3` has none of them). Whisper `small` takes ~2 min on first run.
+- `yt.py thumbnail` only exists in main's helper (`/tmp/ytmain/yt.py`); the working-branch helper lacks it.
+- Facebook `scheduled_publish_time` is unix seconds: `date -u -d <ISO> +%s`.
+- Keep ground-scene actors above y≈1400 (after the −130 shift); the bottom 400 px is covered by the YouTube UI.

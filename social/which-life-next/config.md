@@ -29,3 +29,5 @@ Check with `python3 .claude/skills/youtube-automation/yt.py scheduled` and `soci
   in the first 24h than the current slot, over at least 7 posts).
 - Keep the long video in the slot with the most US views. Keep shorts at least 1 hour apart.
 - Record every change in `timing-log.md` with the data behind it.
+
+Short length (owner, 2026-11-08): 45–60 seconds, 110–150 words.

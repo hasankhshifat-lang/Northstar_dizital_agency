@@ -924,7 +924,7 @@ def v_ghost():
 
 
 VERTICAL = {
-    "GHOSTARMY": v_ghost,
+    "vy-qRhRjnN0": v_ghost,
     "A7IMwfCRwjg": v_booth, "bwhHw3tLIDQ": v_donner, "ctoVTthJ_2w": v_pony, "pXOy92KjJt4": v_vanished,
     "qbtwhG8IDL8": v_rope, "J5rJThy08hk": v_minnie, "HyqmpcvzHKI": v_drop, "7kxCubu2UdI": v_cholera,
 }

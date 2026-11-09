@@ -50,3 +50,5 @@ the bottom ~400 px is kept clear for YouTube's title overlay.
 | 7kxCubu2UdI | 0:40 | 7kxCubu2UdI_9x16.jpg |
 
 Not included: Dd6icXr-dW0 (3:09), NtC-QGdCfG0 and kQzq9g26F6Q (8:39) are long-form; the other 7 videos are private.
+
+| vy-qRhRjnN0 | THE GHOST ARMY (options: "1,100 ARTISTS", "FAKE ARMY, REAL WAR") | Normandy → Rhine route, 1944-45 | 9:16 |

@@ -45,3 +45,5 @@ A slow-moving threat (insects eating crops) seems weaker than a person facing su
 | The Fever That Emptied America's Capital (1793) | Deadly disease | 11-02 11:00 | #412839608 |
 | ~~Trapped Underground for 14 Days (1925)~~ CANCELLED by user | Lost / stranded (test) | — | draft #413496816 |
 | They Carried Mail 1,900 Miles in 10 Days… on Horseback (FIRST voiced map Short) | Journey / race against time | 11-03 06:00 | #413119675 |
+
+- 2026-11-09 vy-qRhRjnN0: WR (war stories & inventions) — Ghost Army inflatable tanks. Track 24 h views and engagedViews ÷ views.
