@@ -11,7 +11,7 @@ def cam(wx, wy, s, sx=540, sy=900):
     return [round(sx - s * wx), round(sy - s * wy), s]
 F = 1820
 T, B, JB = [230, F, .8], [420, F, .8], [650, F, .82]
-LABEL = {"svg": A.tag("জগদীশ চন্দ্র বসু · নাট্যরূপ", 640, 44, "#1A1A1A", "#FFC300"), "layer": "screen", "z": 50,
+LABEL = {"svg": A.tag("জগদীশ চন্দ্র বসু (১৮৫৮–১৯৩৭)", 640, 44, "#1A1A1A", "#FFC300"), "layer": "screen", "z": 50,
          "keys": [[2.4, 540, 300, .3, 0, 0], [2.41, 540, 300, .3, 0, 1], [2.65, 540, 300, 1, 0, 1]]}
 shots = [
   # wide: Bose walks in from the right, the kids turn to look

@@ -14,7 +14,7 @@ Hyperrealistic portraits of famous scientists, generated in Figma (file "Scienti
 | `marie_curie` | মেরি কুরি | radioactivity |
 | `archimedes` | আর্কিমিডিস | buoyancy, floating and sinking, levers |
 
-Files: `raw/<key>.png` is the Figma output; `<key>.png` is the transparent cut-out (`python3 cutout.py raw/x.png x.png 24`); `cameo.py` makes the engine prop (portrait + name plate with the field and "নাট্যরূপ"). `preview_jc_bose.jpg` shows how it looks in a scene.
+Files: `raw/<key>.png` is the Figma output; `<key>.png` is the transparent cut-out (`python3 cutout.py raw/x.png x.png 24`); `cameo.py` has the names and life years (`label()` makes the on-screen label) and the optional portrait prop. `preview_jc_bose.jpg` shows how it looks in a scene.
 
 ## When and how a scientist appears (owner, 2026-11-09)
 - **At most twice a week.** Count the scientist Shorts in the last 7 days from the "Scientist" column of `../../shorts/queue.md` before using one. Most Shorts have no scientist.
@@ -34,6 +34,6 @@ Files: `raw/<key>.png` is the Figma output; `<key>.png` is the transparent cut-o
 - Only for discoveries that really belong to that scientist (check the NCTB book and a second source). At most one cameo per Short, about 5–10 s, and the explanation stays short and correct.
 - Long-dead historical scientists only. Never make cameos of living people.
 - The cameo's voice is a fixed ElevenLabs library voice that fits the person's age and sex, never a clone of the real voice. Save the voice chosen for each scientist in `voices.json` and always reuse it.
-- The plate always says "নাট্যরূপ" (dramatization). No made-up quotes presented as real quotes: the cameo explains the science in plain words.
+- **Label (owner, 2026-11-09):** when the scientist appears, show a small label with ONLY their name and birth and death years, e.g. "জগদীশ চন্দ্র বসু (১৮৫৮–১৯৩৭)" or "আর্কিমিডিস (খ্রিস্টপূর্ব ২৮৭–২১২)". Use `label(key)` from `cameo.py`. Never add "নাট্যরূপ" or any similar word. No made-up quotes presented as real quotes: the scientist explains the science in plain words.
 - To add a scientist: add a function to `../chars/gen_sci.py` (copy the nearest one and change the hair, facial hair, skin and clothes to match their best-known portraits), regenerate `scientists.json`, check it on a sheet next to the cast, and pick a fixed voice in `voices.json`. A Figma portrait helps as a reference: generate a waist-up portrait in that Figma file (same prompt style: plain light warm-grey background, slight three-quarter angle, one hand raised as if explaining, based on their best-known portraits), download it to `raw/`, run `cutout.py`, check it on a coloured background, then add a row to `SCIENTISTS` in `cameo.py`.
 - Placement: on the screen layer, lower half of the frame, popping in with `pop()`. Keep the bottom ~150 px clear and the plate inside the frame.
