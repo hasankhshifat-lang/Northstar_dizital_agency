@@ -2,7 +2,14 @@
 
 Every Short gets a 9:16 cover (1080×1920) that tells viewers at a glance what the video is about and hooks them. Facebook uses it as the Reel cover.
 
-## Design
+## Design: style B is the default (owner chose it on 2026-11-09)
+See `../../episodes/short-03/thumbnail/option_B.png` (the লজ্জাবতী cover):
+- A short, punchy hook question on top in big Bangla, e.g. "গাছও কি লজ্জা পায়?!" (one key word in white, the rest yellow).
+- **One big story object** filling the middle-right, showing the surprising moment (e.g. the folded লজ্জাবতী), with a small red tag that says what happened ("ছুঁতেই গুটিয়ে গেল!").
+- **বিথী on the left, amazed** (both arms up, mouth open). On scientist days the scientist stands beside her.
+- **Everyone stands on the ground** (feet on the same ground line, about y 1480). Never floating in the air.
+
+General rules:
 - **Hook question** at the top in big Bangla (Baloo Da 2 / Hind Siliguri, white + yellow with a thick dark outline). 2–5 words, about the actual mystery of the video, e.g. "ছুঁলেই গুটিয়ে যায় কেন?". It never just repeats the title, and never makes a misleading claim.
 - A small "সাইন্টিফিক বিথী" badge above it.
 - **The picture tells the story:** the key object large (before → after with "আগে" / "পরে" tags and a red arrow when there is a change).
