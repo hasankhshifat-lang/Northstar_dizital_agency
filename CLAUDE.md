@@ -29,6 +29,21 @@ every scheduled task, read and follow `docs/content/animation-direction-rules.md
 - When views are low, check in this order: topic, first 1–3 s, story/retention, packaging, animation, sound.
 - A weekly scheduled task reviews both channels and updates the databases.
 
+## Video generation: always use the lemo-opuscar skill
+
+For any request to generate or produce a video (film, Short, Reel, promo, explainer, animation,
+documentary cut), use `.claude/skills/lemo-opuscar/SKILL.md` (library: github.com/lemomo-ai/lemo-opuscar).
+- Use it before the generic `video` skill, Remotion, Higgsfield, vidIQ video generation or other
+  AI-video tools. Those are only for things lemo-opuscar doesn't do (plain editing, trimming or
+  converting existing video files), or when the user explicitly asks for a different tool.
+- Run its `scripts/setup.sh` first (it downloads the library to `~/lemo-opuscar`), start
+  `setup.sh deps` early, then follow `$LIB/AGENTS.md`: style choice, one round of questions,
+  treatment, production, delivery.
+- Put each film's project folder under `videos/<name>/` in this repo. Commit the source and the
+  final video (keep files under GitHub's 100 MB limit), then push.
+- The renderer wants ffmpeg 7+. If the container only has an older ffmpeg, say so before rendering.
+- Uploading or posting the finished video still follows the YouTube and Facebook sections below.
+
 ## YouTube: always use the youtube-channel-automation skill (own Google Cloud client)
 
 For any YouTube channel task (uploading, scheduling, editing titles/descriptions/tags/privacy/
