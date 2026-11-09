@@ -97,7 +97,9 @@ shot(33.0, 39.6, blur=0, cam={"from": cam(PX, PY, 2.3, 540, 960), "to": cam(PX, 
                        [36.5, PX + 70, PY + 10, .9, 120, 1], [36.9, PX + 90, PY + 120, .9, 200, 1], [37.1, PX + 90, PY + 130, .9, 200, 0]], z=30),
             prop(A.tag("আত্মরক্ষা", 380, 54, "#D7263D"), pop(33.3, 540, 300, 1), layer="screen", z=50)])
 # 8 · wide: the goat is chewing Mama's gamchha
-goat_r = X.goat().replace('style="overflow:visible">', 'style="overflow:visible"><g transform="translate(310 0) scale(-1 1)">', 1).replace("</svg>", "</g></svg>")
+_g = X.goat(); _i = _g.index(">") + 1
+goat_r = _g[:_i] + '<g transform="translate(310 0) scale(-1 1)">' + _g[_i:-6] + '</g></svg>'   # mirrored: faces right, toward Mama
+assert _g.endswith("</svg>")
 M8, T8, B8 = [480, F, .8], [700, F, .8], [890, F, .8]
 GX, GY, GS = 150, 1720, .9
 mouth = (GX + (296 - 155) * GS, GY + (100 - 125) * GS)
