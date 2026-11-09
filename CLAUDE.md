@@ -49,3 +49,17 @@ deleting, timed takedowns, checking status), use `.claude/skills/facebook-page-a
   injected by the proxy). Do not use Clawlink or Metricool for the Facebook Page.
 - Never delete an uploaded video or post unless the user explicitly asks for that deletion.
 - Log every action in `social/facebook-page-log.md`, then commit and push.
+
+## Web research: always use the Agent Reach skill
+
+For research on any website (search, reading pages/posts, comments, transcripts, social platforms
+such as X/Twitter, Reddit, YouTube, GitHub, LinkedIn, Instagram, Facebook), use the **Agent Reach**
+skill (`agent-reach`, https://github.com/Panniantong/Agent-Reach). Say "Using agent-reach skill" first.
+- If `agent-reach` is not installed, install it only from GitHub, never from PyPI (the PyPI package
+  named `agent-reach` is a different project):
+  `uv tool install https://github.com/Panniantong/Agent-Reach/releases/latest/download/agent-reach.zip`
+  then `agent-reach setup`. This needs the user's permission to run downloaded code.
+- Usage: `agent-reach channels`, `agent-reach read <url>`, `agent-reach <channel> <action> [args]`.
+- Read-only: never post, comment, like or message through it; never log in for the user or ask for passwords.
+- If it cannot be installed or a channel fails, say so, then fall back to the built-in web search/fetch tools
+  and say which source was used.
