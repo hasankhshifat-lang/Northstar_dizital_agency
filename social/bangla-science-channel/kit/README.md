@@ -33,3 +33,6 @@ This is everything needed to make a Short with মন্টু মামা, ব
 6. **Render:** `cd kit/anim && python3 make_video.py --html ../s4/s4.html --frames ../s4/frames --audio ../s4/mix.wav --out ../s4/out.mp4 --total <DUR*24> --workers 4`.
    - Spot-check frames from the mp4. For a fix, re-render only the affected frames with `--range`.
 7. **Save:** put the mp4 and the `s4/` code in `../episodes/short-NN/`, and the voice in `../voiceover/short-NN/`. Don't commit `frames/`, `.wav` files or `lines/` splits.
+
+## Scientist cameos
+When the science in a Short was discovered by a famous scientist, a hyperrealistic cameo of them can appear and explain it for 5–10 s. See `cameos/README.md`; `from cameo import cameo` gives the prop.
