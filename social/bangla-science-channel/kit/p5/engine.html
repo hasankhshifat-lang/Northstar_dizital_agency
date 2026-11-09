@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; overflow: hidden; width: 1080px; height: 1920px; }
+  svg { overflow: visible; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+  #world { position: absolute; width: 1080px; height: 1920px; transform-origin: 0 0; }
+  #bg { position: absolute; width: 1080px; height: 1920px; transform-origin: center center; transform: scale(1.04); }
+  .char-wrap { position: absolute; transform-origin: bottom center; }
+  .char-inner { width: 100%; height: 100%; transform-origin: bottom center; }
+  #fade { position: absolute; inset: 0; background: #000; pointer-events: none; z-index: 9999; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="bg"></div>
+    <div id="chars"></div>
+  </div>
+  <div id="fade"></div>
+</div>
+
+<script>
+const D = __DATA__;
+
+// Hash helper for deterministic randomness
+function hash(n) {
+  let h = Math.sin(n * 12.9898 + 78.233) * 43758.5453;
+  return h - Math.floor(h);
+}
+
+// Character phases & index mapping
+const CHAR_NAMES = ['mama', 'bithi', 'boltu'];
+const PHASES = { mama: 0.5, bithi: 2.1, boltu: 4.3 };
+
+// Pre-compute blink timestamps per character up to max duration
+const blinks = {};
+CHAR_NAMES.forEach((name, cIdx) => {
+  blinks[name] = [];
+  let t = 1.0 + hash(cIdx * 10) * 2.0;
+  let bCount = 0;
+  while (t < (D.dur || 100) + 10) {
+    blinks[name].push(t);
+    bCount++;
+    const gap = 2.6 + hash(cIdx * 1000 + bCount) * 1.6;
+    t += gap;
+  }
+});
+
+// Setup DOM elements for BG and Chars
+const bgEl = document.getElementById('bg');
+const charsEl = document.getElementById('chars');
+if (D.bg) bgEl.innerHTML = D.bg;
+
+const charNodes = {};
+CHAR_NAMES.forEach(name => {
+  if (!D.chars || !D.chars[name]) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'char-wrap';
+  wrap.id = 'char-' + name;
+  const inner = document.createElement('div');
+  inner.className = 'char-inner';
+  inner.innerHTML = D.chars[name];
+  wrap.appendChild(inner);
+  charsEl.appendChild(wrap);
+
+  const svg = inner.querySelector('svg');
+  if (svg) {
+    const w = parseFloat(svg.getAttribute('width')) || 300;
+    const h = parseFloat(svg.getAttribute('height')) || 600;
+    wrap.style.width = w + 'px';
+    wrap.style.height = h + 'px';
+  }
+
+  // Helper to parse data-p="x,y" pivot
+  const getP = (el) => {
+    if (!el) return [0, 0];
+    const p = el.getAttribute('data-p');
+    return p ? p.split(',').map(Number) : [0, 0];
+  };
+
+  const head = inner.querySelector('.head');
+  const armL = inner.querySelector('.armL');
+  const armR = inner.querySelector('.armR');
+  const foreL = inner.querySelector('.foreL');
+  const foreR = inner.querySelector('.foreR');
+  const face = inner.querySelector('.face');
+  const hairF = inner.querySelector('.hairF');
+  const earL = inner.querySelector('.earL');
+  const earR = inner.querySelector('.earR');
+  const browL = inner.querySelector('.browL');
+  const browR = inner.querySelector('.browR');
+  const brows = inner.querySelector('.brows');
+
+  // Find centers for brows rotation if needed
+  const getCenter = (el) => {
+    if (!el) return [0, 0];
+    try {
+      const b = el.getBBox();
+      return [b.x + b.width / 2, b.y + b.height / 2];
+    } catch (e) { return [0, 0]; }
+  };
+
+  charNodes[name] = {
+    wrap, inner, svg, head, armL, armR, foreL, foreR, face, hairF, earL, earR, browL, browR, brows,
+    headP: getP(head), armLP: getP(armL), armRP: getP(armR), foreLP: getP(foreL), foreRP: getP(foreR),
+    browLC: getCenter(browL), browRC: getCenter(browR),
+    handL: foreL ? { relax: foreL.querySelector('.handRelax'), open: foreL.querySelector('.handOpen') } : { relax: null, open: null },
+    handR: foreR ? { relax: foreR.querySelector('.handRelax'), open: foreR.querySelector('.handOpen') } : { relax: null, open: null },
+    eyesOpen: inner.querySelector('.eyes-open'),
+    eyesClosed: inner.querySelector('.eyes-closed'),
+    mouths: {
+      rest: inner.querySelector('.m-rest'),
+      a: inner.querySelector('.m-a'),
+      e: inner.querySelector('.m-e'),
+      o: inner.querySelector('.m-o'),
+      smile: inner.querySelector('.m-smile')
+    }
+  };
+});
+
+const propCache = {};
+let screenEl = document.getElementById('screen');
+if (!screenEl) {
+  screenEl = document.createElement('div');
+  screenEl.id = 'screen';
+  screenEl.style.position = 'absolute';
+  screenEl.style.inset = '0';
+  screenEl.style.pointerEvents = 'none';
+  const stage = document.getElementById('stage');
+  const fade = document.getElementById('fade');
+  stage.insertBefore(screenEl, fade);
+}
+function interpKeyframes(keys, t) {
+  if (!keys || keys.length === 0) return null;
+  if (t <= keys[0][0]) return keys[0];
+  if (t >= keys[keys.length - 1][0]) return keys[keys.length - 1];
+  for (let i = 1; i < keys.length; i++) {
+    if (t < keys[i][0]) {
+      const k0 = keys[i - 1];
+      const k1 = keys[i];
+      const t0 = k0[0];
+      const t1 = k1[0];
+      const u = (t - t0) / (t1 - t0);
+      const s = u * u * (3 - 2 * u);
+      const out = [t];
+      for (let j = 1; j < k0.length; j++) {
+        out.push(k0[j] + (k1[j] - k0[j]) * s);
+      }
+      return out;
+    }
+  }
+  return keys[keys.length - 1];
+}
+function render(t) {
+  // 1. Find active shot
+  const shot = (D.shots || []).find(s => t >= s.start && t < s.end) || D.shots[0];
+  if (!shot) return;
+
+  // Camera ease-in-out
+  const shotDur = Math.max(0.001, shot.end - shot.start);
+  const st = Math.max(0, Math.min(1, (t - shot.start) / shotDur));
+  const ease = st * st * (3 - 2 * st);
+  const cx = shot.cam.from[0] + (shot.cam.to[0] - shot.cam.from[0]) * ease;
+  const cy = shot.cam.from[1] + (shot.cam.to[1] - shot.cam.from[1]) * ease;
+  const cs = shot.cam.from[2] + (shot.cam.to[2] - shot.cam.from[2]) * ease;
+  document.getElementById('world').style.transform = `translate(${cx}px, ${cy}px) scale(${cs})`;
+
+  // Background handling
+  if (shot.bg === 'paper') {
+    bgEl.style.display = 'none';
+    const worldEl = document.getElementById('world');
+    worldEl.style.backgroundColor = '#FFF6E5';
+    worldEl.style.backgroundImage = 'repeating-linear-gradient(#FFF6E5 0 58px, #C9DDF0 58px 60px)';
+    bgEl.style.filter = 'none';
+  } else {
+    bgEl.style.display = '';
+    const worldEl = document.getElementById('world');
+    worldEl.style.background = '';
+    bgEl.style.filter = shot.blur ? `blur(${shot.blur}px)` : 'none';
+  }
+
+  // Props handling
+  const shotIdx = (D.shots || []).findIndex(s => s === shot);
+  const worldEl = document.getElementById('world');
+  // Hide all cached props first
+  Object.values(propCache).forEach(el => { el.style.display = 'none'; });
+  if (shot.props) {
+    shot.props.forEach((p, pIdx) => {
+      const cacheKey = `${shotIdx}-${pIdx}`;
+      let el = propCache[cacheKey];
+      if (!el) {
+        el = document.createElement('div');
+        el.style.position = 'absolute';
+        el.style.pointerEvents = 'none';
+        el.innerHTML = p.svg;
+        const parent = p.layer === 'world' ? worldEl : screenEl;
+        parent.appendChild(el);
+        propCache[cacheKey] = el;
+      }
+      const vals = interpKeyframes(p.keys, t);
+      if (!vals) return;
+      const [, x, y, s, rot, op] = vals;
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      el.style.transform = `translate(-50%,-50%) scale(${s}) rotate(${rot}deg)`;
+      el.style.opacity = op;
+      el.style.display = op <= 0.001 ? 'none' : '';
+      el.style.zIndex = p.z;
+    });
+  }
+
+  // 2. Fade opacity
+  let fadeOp = 0;
+  if (t < 0.25) fadeOp = 1 - (t / 0.25);
+  else if (t > D.dur - 0.3) fadeOp = (t - (D.dur - 0.3)) / 0.3;
+  document.getElementById('fade').style.opacity = Math.max(0, Math.min(1, fadeOp));
+
+  // 3. Characters setup & sort z-order
+  const visNames = Object.keys(shot.chars || {});
+  CHAR_NAMES.forEach(name => {
+    if (charNodes[name]) {
+      charNodes[name].wrap.style.display = visNames.includes(name) ? 'block' : 'none';
+    }
+  });
+
+  visNames.sort((a, b) => (shot.chars[a][1] || 0) - (shot.chars[b][1] || 0));
+  visNames.forEach((name, idx) => {
+    if (charNodes[name]) charNodes[name].wrap.style.zIndex = 10 + idx;
+  });
+
+  // Active speaking line check
+  const activeLine = (D.lines || []).find(l => t >= l.start && t <= l.end);
+
+  // Helper to compute un-smoothed target turn for character 'name' at sample time 'st'
+  function getTurnTarget(name, st) {
+    if (shot.turn && typeof shot.turn[name] === 'number') {
+      return shot.turn[name];
+    }
+    const sampleLine = (D.lines || []).find(l => st >= l.start && st <= l.end);
+    const myX = shot.chars[name][0];
+    if (sampleLine && sampleLine.speaker && visNames.includes(sampleLine.speaker)) {
+      if (sampleLine.speaker !== name) {
+        const speakerX = shot.chars[sampleLine.speaker][0];
+        return 0.7 * Math.sign(speakerX - myX);
+      } else {
+        const other = visNames.find(n => n !== name);
+        if (other) {
+          const otherX = shot.chars[other][0];
+          return 0.35 * Math.sign(otherX - myX);
+        }
+      }
+    }
+    return 0;
+  }
+
+  // 4. Update each visible character
+  visNames.forEach(name => {
+    const node = charNodes[name];
+    if (!node) return;
+    const cPos = shot.chars[name];
+    const isFlipped = !!cPos[3];
+    const mood = (shot.mood && shot.mood[name]) || 'neutral';
+    const isSpeaking = activeLine && activeLine.speaker === name;
+    const phase = PHASES[name] || 0;
+
+    // Head turn computation with 5-sample smoothing
+    let sumTurn = 0;
+    const offsets = [0, 0.08, 0.16, 0.24, 0.32];
+    offsets.forEach(off => {
+      sumTurn += getTurnTarget(name, t - off);
+    });
+    const turn = sumTurn / offsets.length;
+    const svgTurn = isFlipped ? -turn : turn;
+
+    // Apply face/hair/ears transform & visibility
+    if (node.face) node.face.setAttribute('transform', `translate(${svgTurn * 11}, 0)`);
+    if (node.hairF) node.hairF.setAttribute('transform', `translate(${svgTurn * 4}, 0)`);
+    if (node.earR) node.earR.style.display = svgTurn > 0.45 ? 'none' : '';
+    if (node.earL) node.earL.style.display = svgTurn < -0.45 ? 'none' : '';
+
+    // Position feet at (x,y)
+    const w = parseFloat(node.wrap.style.width) || 300;
+    const h = parseFloat(node.wrap.style.height) || 600;
+    node.wrap.style.left = (cPos[0] - w / 2) + 'px';
+    node.wrap.style.top = (cPos[1] - h) + 'px';
+    // Apply lean rotation if present
+    let leanDeg = 0;
+    if (shot.lean && shot.lean[name]) {
+      const leanVals = interpKeyframes(shot.lean[name], t);
+      if (leanVals) leanDeg = leanVals[1];
+    }
+    node.wrap.style.transform = `scale(${cPos[2]})` + (isFlipped ? ' scaleX(-1)' : '') + (leanDeg ? ` rotate(${leanDeg}deg)` : '');
+
+    // Breathing
+    const breath = 1 + 0.012 * Math.sin(2 * Math.PI * t / 3.2 + phase);
+    node.inner.style.transform = `scaleY(${breath})`;
+
+    // Head rotation
+    let hRot = 1.5 * Math.sin(2 * Math.PI * t / 4.1 + phase) + svgTurn * 2.5;
+    if (isSpeaking) {
+      hRot += 3 * Math.sin(2 * Math.PI * t / 1.7 + phase) + 2 * Math.sin(2 * Math.PI * t / 0.9);
+    }
+    { const pv = (shot.poses && shot.poses[name]) ? interpKeyframes(shot.poses[name], t) : null;
+      if (pv && pv[5]) hRot += pv[5];
+    }
+    if (node.head) {
+      node.head.setAttribute('transform', `rotate(${hRot} ${node.headP[0]} ${node.headP[1]})`);
+    }
+
+    // Arms rotation (elbows & upper arms)
+    // Base idle sway
+    const idleSway = 1.5 * Math.sin(2 * Math.PI * t / 3.7 + phase);
+    let aLRot = idleSway;
+    let aRRot = idleSway;
+    let foreLRot = -6 - 3 * Math.sin(2 * Math.PI * t / 2.9 + phase);
+    let foreRRot = 6 + 3 * Math.sin(2 * Math.PI * t / 2.9 + phase);
+    let talkArm = 'R';
+    let easeArm = 0;
+
+    // Pose tracks
+    if (shot.poses && shot.poses[name]) {
+      const poseVals = interpKeyframes(shot.poses[name], t);
+      if (poseVals) {
+        const [, upperL, upperR, foreL, foreR, headAdd] = poseVals;
+        aLRot = upperL + idleSway;
+        aRRot = upperR + idleSway;
+        foreLRot = foreL;
+        foreRRot = foreR;
+      }
+    }
+
+    // Talking gesture (opt-in)
+    if (isSpeaking && activeLine && activeLine.g) {
+      const lDur = Math.max(0.001, activeLine.end - activeLine.start);
+      const lTime = t - activeLine.start;
+      easeArm = 1;
+      if (lTime < 0.35) easeArm = lTime / 0.35;
+      else if (lTime > lDur - 0.35) easeArm = (lDur - lTime) / 0.35;
+      easeArm = Math.max(0, Math.min(1, easeArm));
+
+      let tUpper = 0, tFore = 0;
+      if (name === 'mama') { talkArm = 'R'; tUpper = -18; tFore = 75; }
+      else if (name === 'boltu') { talkArm = 'R'; tUpper = -70; tFore = -25; }
+      else if (name === 'bithi') { talkArm = 'L'; tUpper = 2; tFore = 142; }
+
+      const wobbleUpper = 4 * Math.sin(2 * Math.PI * t / 1.6 + phase);
+      const wobbleFore = 8 * Math.sin(2 * Math.PI * t / 1.1 + phase);
+
+      if (talkArm === 'L') {
+        aLRot = aLRot + (tUpper - aLRot) * easeArm + wobbleUpper;
+        foreLRot = foreLRot + (tFore - foreLRot) * easeArm + wobbleFore;
+      } else {
+        aRRot = aRRot + (tUpper - aRRot) * easeArm + wobbleUpper;
+        foreRRot = foreRRot + (tFore - foreRRot) * easeArm + wobbleFore;
+      }
+    }
+
+    if (node.armL) node.armL.setAttribute('transform', `rotate(${aLRot} ${node.armLP[0]} ${node.armLP[1]})`);
+    if (node.armR) node.armR.setAttribute('transform', `rotate(${aRRot} ${node.armRP[0]} ${node.armRP[1]})`);
+    if (node.foreL) node.foreL.setAttribute('transform', `rotate(${foreLRot} ${node.foreLP[0]} ${node.foreLP[1]})`);
+    if (node.foreR) node.foreR.setAttribute('transform', `rotate(${foreRRot} ${node.foreRP[0]} ${node.foreRP[1]})`);
+
+    const openL = Math.abs(aLRot) > 55;
+    const openR = Math.abs(aRRot) > 55;
+
+    if (node.handL.relax && node.handL.open) {
+      node.handL.open.style.display = openL ? '' : 'none';
+      node.handL.relax.style.display = openL ? 'none' : '';
+    }
+    if (node.handR.relax && node.handR.open) {
+      node.handR.open.style.display = openR ? '' : 'none';
+      node.handR.relax.style.display = openR ? 'none' : '';
+    }
+
+    // Blinking
+    const isBlinking = blinks[name].some(bt => t >= bt && t < bt + 0.125);
+    if (node.eyesOpen && node.eyesClosed) {
+      node.eyesOpen.style.display = isBlinking ? 'none' : '';
+      node.eyesClosed.style.display = isBlinking ? '' : 'none';
+    }
+
+    // Mouth selection
+    let mLevel = 0;
+    let mouthKey = 'rest';
+    const frameIdx = Math.round(t * 24);
+
+    if (isSpeaking) {
+      mLevel = Number((D.mouth && D.mouth[frameIdx]) || 0);
+      if (mLevel === 1) mouthKey = 'e';
+      else if (mLevel === 2) {
+        // Every 5th level 2 uses 'o'
+        const useO = Math.floor(hash(Math.floor(frameIdx / 3)) * 100) % 5 === 0; // hold 3 frames
+        mouthKey = useO ? 'o' : 'a';
+      }
+    } else {
+      if (mood === 'happy') mouthKey = 'smile';
+    }
+
+    Object.keys(node.mouths).forEach(k => {
+      if (node.mouths[k]) node.mouths[k].style.display = (k === mouthKey) ? '' : 'none';
+    });
+
+    // Eyebrows styling
+    if (node.brows) {
+      let bY = 0;
+      if (mood === 'happy') bY = -3;
+      if (isSpeaking && mLevel === 2) bY = -4;
+      node.brows.setAttribute('transform', `translate(0, ${bY})`);
+    }
+
+    if (node.browL && node.browR) {
+      if (mood === 'worried') {
+        node.browL.setAttribute('transform', `rotate(10 ${node.browLC[0]} ${node.browLC[1]})`);
+        node.browR.setAttribute('transform', `rotate(-10 ${node.browRC[0]} ${node.browRC[1]})`);
+      } else {
+        node.browL.removeAttribute('transform');
+        node.browR.removeAttribute('transform');
+      }
+    }
+  });
+}
+
+window.render = render;
+window.onload = () => render(0);
+</script>
+</body>
+</html>
