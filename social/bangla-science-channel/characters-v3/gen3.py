@@ -158,9 +158,10 @@ def bithi():
     # legs, socks, shoes
     for sx in (-1, 1):
         x = cx + sx * 34
-        b += P(f"M{x-17} 690 L{x-14} 905 L{x+14} 905 L{x+17} 690Z", SKIN, SW) + S(f"M{x+4} 692 L{x+6} 900 L{x+14} 900 L{x+16} 692Z", SKIN_S, .5)
+        b += f'<g class="{"legL" if sx<0 else "legR"}" data-p="{x},590">'
+        b += P(f"M{x-18} 600 L{x-14} 905 L{x+14} 905 L{x+18} 600Z", SKIN, SW) + S(f"M{x+4} 602 L{x+6} 900 L{x+14} 900 L{x+17} 602Z", SKIN_S, .5)
         b += P(f"M{x-15} 858 L{x-15} 925 L{x+15} 925 L{x+15} 858Z", WHITE, SW) + P(f"M{x-17} 856 L{x+17} 856 L{x+16} 872 L{x-16} 872Z", WHITE, 3) + S(f"M{x+5} 874 L{x+15} 874 L{x+15} 922 L{x+5} 922Z", WHITE_S, .8)
-        b += shoe(x, 916, sx)
+        b += shoe(x, 916, sx) + "</g>"
     # skirt (navy, pleats)
     b += P(f"M{cx-92} 500 L{cx+92} 500 L{cx+122} 712 Q{cx} 728 {cx-122} 712Z", "#1F3F7A", SW)
     for k in (-80, -40, 0, 40, 80): b += L(f"M{cx+k*0.75} 512 L{cx+k*1.05} 716", 2.5, "#132A55")
@@ -207,8 +208,9 @@ def boltu():
     b = ""
     for sx in (-1, 1):
         x = cx + sx * 30
-        b += P(f"M{x-15} 610 L{x-13} 790 L{x+13} 790 L{x+15} 610Z", SKIN, SW) + S(f"M{x+3} 612 L{x+4} 786 L{x+13} 786 L{x+14} 612Z", SKIN_S, .5)
-        b += bare_foot(x, 782, sx, 0.88, "#2F6FB5")
+        b += f'<g class="{"legL" if sx<0 else "legR"}" data-p="{x},540">'
+        b += P(f"M{x-16} 550 L{x-13} 790 L{x+13} 790 L{x+16} 550Z", SKIN, SW) + S(f"M{x+3} 552 L{x+4} 786 L{x+13} 786 L{x+15} 552Z", SKIN_S, .5)
+        b += bare_foot(x, 782, sx, 0.88, "#2F6FB5") + "</g>"
     b += P(f"M{cx-78} 470 L{cx+78} 470 L{cx+86} 640 L{cx+6} 640 L{cx} 590 L{cx-6} 640 L{cx-86} 640Z", "#B58B4C", SW)  # khaki shorts
     b += S(f"M{cx+30} 474 L{cx+78} 474 L{cx+86} 636 L{cx+46} 636Z", "#8C6A36", .6)
     # striped t-shirt
@@ -243,8 +245,9 @@ def mama():
     b = ""
     for sx in (-1, 1):   # feet in sandals
         x = cx + sx * 40
-        b += P(f"M{x-16} 900 L{x-15} 922 L{x+15} 922 L{x+16} 900Z", SKIN, SW)
-        b += bare_foot(x, 918, sx, 1.12)
+        b += f'<g class="{"legL" if sx<0 else "legR"}" data-p="{x},720">'
+        b += P(f"M{x-17} 820 L{x-15} 922 L{x+15} 922 L{x+17} 820Z", SKIN, SW)
+        b += bare_foot(x, 918, sx, 1.12) + "</g>"
     # lungi: red with green checks
     lungi = f"M{cx-118} 600 L{cx+118} 600 L{cx+124} 912 Q{cx} 924 {cx-124} 912Z"
     checks = "".join(S(f"M{x} 600 L{x+16} 600 L{x+16} 925 L{x} 925Z", "#2BA84A", .9) for x in range(cx-110, cx+120, 46))
