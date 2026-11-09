@@ -12,6 +12,7 @@ Hyperrealistic portraits of famous scientists, generated in Figma (file "Scienti
 | `newton` | আইজ্যাক নিউটন | laws of motion, gravity, splitting white light into colours |
 | `einstein` | আলবার্ট আইনস্টাইন | relativity, the photoelectric effect |
 | `marie_curie` | মেরি কুরি | radioactivity |
+| `archimedes` | আর্কিমিডিস | buoyancy, floating and sinking, levers |
 
 Files: `raw/<key>.png` is the Figma output; `<key>.png` is the transparent cut-out (`python3 cutout.py raw/x.png x.png 24`); `cameo.py` makes the engine prop (portrait + name plate with the field and "নাট্যরূপ"). `preview_jc_bose.jpg` shows how it looks in a scene.
 

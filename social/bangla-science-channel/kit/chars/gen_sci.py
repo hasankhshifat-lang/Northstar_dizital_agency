@@ -171,8 +171,47 @@ def marie_curie():
     b += head(cx, back, front, HC, "#5E4A3A", female=True)
     return svg(W, H, b)
 
+# --------------------------------------------------------------------- Archimedes
+def archimedes():
+    skin("#D9A47A", "#BC845A")
+    W, H, cx = 440, 1000, 220
+    HC, HS = "#EEEBE4", "#C2BDB2"
+    b = ""
+    for sx in (-1, 1):                       # bare legs in leather sandals under the chiton
+        x = cx + sx * 34
+        b += f'<g class="{"legL" if sx<0 else "legR"}" data-p="{x},760">'
+        b += P(f"M{x-17} 780 L{x-15} 922 L{x+15} 922 L{x+17} 780Z", G.SKIN, SW)
+        b += G.bare_foot(x, 918, sx, 1.08, "#8A5A2E") + "</g>"
+    chiton = f"M{cx-100} 272 Q{cx-116} 520 {cx-112} 800 Q{cx} 816 {cx+112} 800 Q{cx+116} 520 {cx+100} 272 Q{cx} 254 {cx-100} 272Z"
+    b += P(chiton, "#F4F1EA", SW) + S(f"M{cx+40} 264 Q{cx+102} 272 {cx+104} 300 Q{cx+114} 520 {cx+110} 798 Q{cx+80} 806 {cx+62} 808 Q{cx+76} 520 {cx+40} 264Z", "#D8D2C6", .8)
+    b += "".join(L(f"M{cx+dx} 560 Q{cx+dx*1.1} 680 {cx+dx*1.15} 800", 2, "#CFC8BA") for dx in (-60, -20, 20, 60))
+    b += P(f"M{cx-104} 540 Q{cx} 556 {cx+104} 540 L{cx+104} 556 Q{cx} 572 {cx-104} 556Z", "#B8862E", 3)   # belt
+    # terracotta himation draped over the left shoulder and across the body
+    b += P(f"M{cx-104} 270 Q{cx-60} 262 {cx-30} 280 Q{cx+40} 420 {cx+108} 600 L{cx+112} 700 Q{cx+40} 560 {cx-40} 470 Q{cx-90} 420 {cx-110} 330Z", "#B5482E", SW)
+    b += L(f"M{cx-70} 300 Q{cx} 420 {cx+90} 600 M{cx-86} 340 Q{cx-10} 460 {cx+96} 660", 2.5, "#8E3420")
+    b += arm(cx-110, 296, 290, "#F4F1EA", "#D8D2C6", 70, -1, 40, "armL") if False else ""
+    b += G.arm(cx-110, 296, 286, "#B5482E", "#8E3420", 80, -1, 40, "armL") + G.arm(cx+110, 296, 286, "#F4F1EA", "#D8D2C6", 80, 1, 40, "armR")
+    # balding head: curly white hair at the sides and back
+    curls = [(-80, 150, 20), (-86, 120, 18), (-74, 96, 16), (-84, 180, 18), (80, 150, 20), (86, 120, 18), (74, 96, 16), (84, 180, 18), (-56, 80, 14), (56, 80, 14)]
+    back = "".join(f'<circle cx="{cx+dx}" cy="{dy}" r="{r}" fill="{HC}" stroke="{O}" stroke-width="3"/>' for dx, dy, r in curls)
+    back += "".join(f'<circle cx="{cx+dx}" cy="{dy}" r="{r-4}" fill="{HC}"/>' for dx, dy, r in curls)
+    front = L(f"M{cx-30} 84 Q{cx} 76 {cx+30} 84", 2, G.SKIN_S) + S(f"M{cx-24} 90 Q{cx} 82 {cx+20} 88 Q{cx} 92 {cx-24} 94Z", "#fff", .35)
+    # full curly beard around the jaw (drawn under the mouth), moustache above the mouth
+    beard = P(f"M{cx-72} 180 Q{cx-80} 250 {cx-44} 288 Q{cx} 316 {cx+44} 288 Q{cx+80} 250 {cx+72} 180 Q{cx+64} 226 {cx+34} 242 Q{cx} 252 {cx-34} 242 Q{cx-64} 226 {cx-72} 180Z", HC, 3)
+    bc = ((-62, 236, 20), (-52, 266, 22), (-28, 286, 23), (0, 294, 24), (28, 286, 23), (52, 266, 22), (62, 236, 20))
+    beard += "".join(f'<circle cx="{cx+dx}" cy="{dy}" r="{r}" fill="{HC}" stroke="{O}" stroke-width="2.5"/>' for dx, dy, r in bc)
+    beard += "".join(f'<circle cx="{cx+dx}" cy="{dy}" r="{r-3}" fill="{HC}"/>' for dx, dy, r in bc)
+    beard += S(f"M{cx-60} 230 Q{cx} 300 {cx+60} 230 Q{cx} 262 {cx-60} 230Z", HC)
+    beard += L(f"M{cx-40} 258 q6 8 0 16 M{cx-14} 268 q6 8 0 16 M{cx+14} 268 q6 8 0 16 M{cx+40} 258 q6 8 0 16", 1.6, HS)
+    mous = P(f"M{cx} 214 Q{cx-26} 206 {cx-46} 222 Q{cx-48} 232 {cx-34} 228 Q{cx-18} 220 {cx} 224 Q{cx+18} 220 {cx+34} 228 Q{cx+48} 232 {cx+46} 222 Q{cx+26} 206 {cx} 214Z", HC, 3)
+    hd = head(cx, back, front, HC, "#DAD6CC", mous, extra_face=beard, mouth_y=238)
+    hd = hd.replace(beard, "")                                  # re-insert the beard under the mouth
+    hd = hd.replace('<g class="mouths">', beard + '<g class="mouths">', 1)
+    b += hd
+    return svg(W, H, b)
+
 if __name__ == "__main__":
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
-    chars = {"jc_bose": jc_bose(), "newton": newton(), "einstein": einstein(), "marie_curie": marie_curie()}
+    chars = {"jc_bose": jc_bose(), "newton": newton(), "einstein": einstein(), "marie_curie": marie_curie(), "archimedes": archimedes()}
     (out / "scientists.json").write_text(json.dumps(chars), encoding="utf-8")
     print("wrote", list(chars))

@@ -1,1 +1,12 @@
-{"jc_bose": {"voice_id": "6fKdJFZHa5oCXNSVGieE", "name": "Dr Mahmood - Calm & Telecasting Host (ElevenLabs library)", "tags": "[calm] [warm]"}}
+{
+ "jc_bose": {
+  "voice_id": "6fKdJFZHa5oCXNSVGieE",
+  "name": "Dr Mahmood - Calm & Telecasting Host (ElevenLabs library)",
+  "tags": "[calm] [warm]"
+ },
+ "archimedes": {
+  "voice_id": "N8jsIhEtPnj3PWFmH8hZ",
+  "name": "Elder Rowan (ElevenLabs library; deep, slow, wise; light foreign accent in Bangla suits a Greek scientist)",
+  "tags": "[calm] [wise]"
+ }
+}
