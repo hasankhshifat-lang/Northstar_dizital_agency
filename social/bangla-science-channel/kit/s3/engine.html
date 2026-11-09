@@ -33,8 +33,33 @@ function hash(n) {
 }
 
 // Character phases & index mapping
-const CHAR_NAMES = ['mama', 'bithi', 'boltu'];
+const CHAR_NAMES = Object.keys(D.chars || {});
 const PHASES = { mama: 0.5, bithi: 2.1, boltu: 4.3 };
+CHAR_NAMES.forEach((n, i) => { if (PHASES[n] === undefined) PHASES[n] = 1.3 + 1.7 * i; });
+// ---- natural walk (ported from the Pilot 1 engine): front-view steps, feet never cross
+function walkPose(dist, dir, w, stride) {
+  const ph = dist / stride * 2 * Math.PI, c = Math.cos(ph);
+  const upL = Math.pow(Math.max(0, c), 1.6), upR = Math.pow(Math.max(0, -c), 1.6);
+  return { legL: 4 * upL * w, legR: -4 * upR * w, liftL: 16 * upL * w, liftR: 16 * upR * w,
+           armL: -3 * c * w, armR: -3 * c * w, foreL: -6 * Math.max(0, -c) * w, foreR: 6 * Math.max(0, c) * w,
+           shift: 5 * c * w, bob: -5 * (1 - Math.abs(c)) * w, sway: (0.8 * c + 1.5 * dir) * w, dir: w > 0.05 ? dir : 0 };
+}
+function easeIO(k) { k = Math.max(0, Math.min(1, k)); return k * k * (3 - 2 * k); }
+function walkW(k) { return k <= 0 || k >= 1 ? 0 : Math.min(1, (1 - k) * 6, k * 6); }
+// shot.walk = {name: [[t, x], [t, x], ...]}: the character walks between the keyed x positions (slow, eased).
+function walkState(shot, name, t, scale) {
+  const ks = shot.walk && shot.walk[name]; if (!ks || !ks.length) return null;
+  if (t <= ks[0][0]) return { x: ks[0][1], wp: null };
+  for (let i = 0; i < ks.length - 1; i++) {
+    const [ta, xa] = ks[i], [tb, xb] = ks[i + 1];
+    if (t >= ta && t <= tb) {
+      if (xa === xb) return { x: xa, wp: null };
+      const k = (t - ta) / Math.max(0.001, tb - ta), x = xa + (xb - xa) * easeIO(k);
+      return { x, wp: walkPose(Math.abs(x - xa), Math.sign(xb - xa), walkW(k), 210 * scale / 0.8) };
+    }
+  }
+  return { x: ks[ks.length - 1][1], wp: null };
+}
 
 // Pre-compute blink timestamps per character up to max duration
 const blinks = {};
@@ -94,6 +119,8 @@ CHAR_NAMES.forEach(name => {
   const browL = inner.querySelector('.browL');
   const browR = inner.querySelector('.browR');
   const brows = inner.querySelector('.brows');
+  const legL = inner.querySelector('.legL');
+  const legR = inner.querySelector('.legR');
 
   // Find centers for brows rotation if needed
   const getCenter = (el) => {
@@ -106,7 +133,7 @@ CHAR_NAMES.forEach(name => {
 
   charNodes[name] = {
     wrap, inner, svg, head, armL, armR, foreL, foreR, face, hairF, earL, earR, browL, browR, brows,
-    headP: getP(head), armLP: getP(armL), armRP: getP(armR), foreLP: getP(foreL), foreRP: getP(foreR),
+    legL, legR, legLP: getP(legL), legRP: getP(legR), headP: getP(head), armLP: getP(armL), armRP: getP(armR), foreLP: getP(foreL), foreRP: getP(foreR),
     browLC: getCenter(browL), browRC: getCenter(browR),
     handL: foreL ? { relax: foreL.querySelector('.handRelax'), open: foreL.querySelector('.handOpen') } : { relax: null, open: null },
     handR: foreR ? { relax: foreR.querySelector('.handRelax'), open: foreR.querySelector('.handOpen') } : { relax: null, open: null },
@@ -263,6 +290,9 @@ function render(t) {
     if (!node) return;
     const cPos = shot.chars[name];
     const isFlipped = !!cPos[3];
+    const ws = walkState(shot, name, t, cPos[2]);
+    const wp = ws ? ws.wp : null;
+    const baseX = ws ? ws.x : cPos[0];
     const mood = (shot.mood && shot.mood[name]) || 'neutral';
     const isSpeaking = activeLine && (activeLine.speaker === name || activeLine.also === name);
     const phase = PHASES[name] || 0;
@@ -273,7 +303,7 @@ function render(t) {
     offsets.forEach(off => {
       sumTurn += getTurnTarget(name, t - off);
     });
-    const turn = sumTurn / offsets.length;
+    const turn = (wp && wp.dir) ? 0.6 * wp.dir : sumTurn / offsets.length;   // walkers look where they go
     const svgTurn = isFlipped ? -turn : turn;
 
     // Apply face/hair/ears transform & visibility
@@ -285,14 +315,17 @@ function render(t) {
     // Position feet at (x,y)
     const w = parseFloat(node.wrap.style.width) || 300;
     const h = parseFloat(node.wrap.style.height) || 600;
-    node.wrap.style.left = (cPos[0] - w / 2) + 'px';
-    node.wrap.style.top = (cPos[1] - h) + 'px';
+    node.wrap.style.left = (baseX + (wp ? wp.shift : 0) - w / 2) + 'px';
+    node.wrap.style.top = (cPos[1] + (wp ? wp.bob : 0) - h) + 'px';
     // Apply lean rotation if present
     let leanDeg = 0;
     if (shot.lean && shot.lean[name]) {
       const leanVals = interpKeyframes(shot.lean[name], t);
       if (leanVals) leanDeg = leanVals[1];
     }
+    if (wp) leanDeg += wp.sway;
+    for (const [g, pv, a, l] of [[node.legL, node.legLP, wp ? wp.legL : 0, wp ? wp.liftL : 0], [node.legR, node.legRP, wp ? wp.legR : 0, wp ? wp.liftR : 0]])
+      if (g) { if (wp) g.setAttribute('transform', `translate(0 ${(-l).toFixed(1)}) rotate(${a.toFixed(1)} ${pv[0]} ${pv[1]})`); else g.removeAttribute('transform'); }
     node.wrap.style.transform = `scale(${cPos[2]})` + (isFlipped ? ' scaleX(-1)' : '') + (leanDeg ? ` rotate(${leanDeg}deg)` : '');
 
     // Breathing
@@ -333,6 +366,8 @@ function render(t) {
       }
     }
 
+    if (wp) { aLRot += wp.armL; aRRot += wp.armR; foreLRot += wp.foreL; foreRRot += wp.foreR; }
+
     // Talking gesture (opt-in)
     if (isSpeaking && activeLine && activeLine.g) {
       const lDur = Math.max(0.001, activeLine.end - activeLine.start);
@@ -346,6 +381,7 @@ function render(t) {
       if (name === 'mama') { talkArm = 'R'; tUpper = -18; tFore = 75; }
       else if (name === 'boltu') { talkArm = 'R'; tUpper = -70; tFore = -25; }
       else if (name === 'bithi') { talkArm = 'L'; tUpper = 2; tFore = 142; }
+      else { talkArm = 'R'; tUpper = -20; tFore = 80; }   // scientists and other guests: explaining hand
 
       const wobbleUpper = 4 * Math.sin(2 * Math.PI * t / 1.6 + phase);
       const wobbleFore = 8 * Math.sin(2 * Math.PI * t / 1.1 + phase);

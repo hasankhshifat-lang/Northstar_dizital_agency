@@ -1,5 +1,9 @@
 # Scientist cameos
 
+**Since 2026-11-09 the scientists are full rigged characters** (`../chars/scientists.json`, made by `../chars/gen_sci.py`). They use the same rig and drawing style as মামা, বিথী and বল্টু, so they walk, talk (lip-sync), blink, gesture and turn their heads in the engine like the cast. Use them by key in a shot's `chars`, e.g. `"jc_bose": [800, 1820, .82]`, and make them walk in with `"walk": {"jc_bose": [[t0, 1260], [t1, 800]]}`. Head height above the feet is about 830 × scale. `scientists_sheet.png` shows them next to the cast. The test clip is `../../episodes/tests/scientist_walk_talk_test.mp4`, built by `build_scientist_test.py`.
+
+The Figma portraits below are now the **look reference** for drawing each scientist (hair, face, clothes). The `cameo()` photo cut-out prop is kept only as an option; normally use the character.
+
 Hyperrealistic portraits of famous scientists, generated in Figma (file "Scientific Bithi — Scientist Cameos", https://www.figma.com/design/p7WBHQcFJpfyTNbWtS8Nsd). They appear in a Short when the science in it was discovered by that scientist, who then explains it in a few lines.
 
 | Key | Scientist | Use for |
@@ -16,5 +20,5 @@ Files: `raw/<key>.png` is the Figma output; `<key>.png` is the transparent cut-o
 - Long-dead historical scientists only. Never make cameos of living people.
 - The cameo's voice is a fixed ElevenLabs library voice that fits the person's age and sex, never a clone of the real voice. Save the voice chosen for each scientist in `voices.json` and always reuse it.
 - The plate always says "নাট্যরূপ" (dramatization). No made-up quotes presented as real quotes: the cameo explains the science in plain words.
-- To add a scientist: generate a waist-up portrait in that Figma file (same prompt style: plain light warm-grey background, slight three-quarter angle, one hand raised as if explaining, based on their best-known portraits), download it to `raw/`, run `cutout.py`, check it on a coloured background, then add a row to `SCIENTISTS` in `cameo.py`.
+- To add a scientist: add a function to `../chars/gen_sci.py` (copy the nearest one and change the hair, facial hair, skin and clothes to match their best-known portraits), regenerate `scientists.json`, check it on a sheet next to the cast, and pick a fixed voice in `voices.json`. A Figma portrait helps as a reference: generate a waist-up portrait in that Figma file (same prompt style: plain light warm-grey background, slight three-quarter angle, one hand raised as if explaining, based on their best-known portraits), download it to `raw/`, run `cutout.py`, check it on a coloured background, then add a row to `SCIENTISTS` in `cameo.py`.
 - Placement: on the screen layer, lower half of the frame, popping in with `pop()`. Keep the bottom ~150 px clear and the plate inside the frame.
