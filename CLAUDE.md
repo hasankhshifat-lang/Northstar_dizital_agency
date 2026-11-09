@@ -59,6 +59,13 @@ skill (`agent-reach`, https://github.com/Panniantong/Agent-Reach). Say "Using ag
   named `agent-reach` is a different project):
   `uv tool install https://github.com/Panniantong/Agent-Reach/releases/latest/download/agent-reach.zip`
   then `agent-reach setup`. This needs the user's permission to run downloaded code.
+- The cloud environment's setup script (Default environment) installs it with all channels at session
+  start. Binary is at `~/.local/bin/agent-reach` (add it to PATH). If a fresh session lacks it, rerun that
+  block. Cloud notes: GitHub's API is blocked here, so the OpenCLI browser extension is placed by hand from
+  `github.com/jackwener/OpenCLI/releases/download/v2.0.3/opencli-extension-v1.0.27.zip` into
+  `~/.agent-reach/browser/extension`; GitHub repo reading only works for this session's own repo.
+- X/Twitter, LinkedIn and Instagram need the user's own login; Reddit blocks cloud servers. On
+  `NEED_LOGIN`, `RATE_LIMITED` or `PLATFORM_BLOCKED`, stop, tell the user, and use the fallback below.
 - Usage: `agent-reach channels`, `agent-reach read <url>`, `agent-reach <channel> <action> [args]`.
 - Read-only: never post, comment, like or message through it; never log in for the user or ask for passwords.
 - If it cannot be installed or a channel fails, say so, then fall back to the built-in web search/fetch tools
