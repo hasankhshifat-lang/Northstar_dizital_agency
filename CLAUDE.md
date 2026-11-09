@@ -14,26 +14,32 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
 - Log uploads/schedules/edits in `social/youtube-schedule-log.md` and comment replies in
   `social/youtube-comments-log.md`, then commit and push.
 
-## YouTube thumbnails: story picture first, map as the channel signature
+## YouTube thumbnails: always the Figma story-picture thumbnail (user's standing rule, 2026-11-09)
 
-Every new video gets a custom thumbnail. Follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
-read the full script first (`social/scripts/<VIDEO_ID>.md`, or ask for it), pick one story angle, write three
-heading options and choose the clearest. Render it with `social/thumbnails/make_thumbnails.py` in the
-channel's illustrated map style (the same look as the maps inside the Shorts):
-- Parchment/cream land, teal water and rivers, thin state lines, the story's state filled in tan,
-  rust-red route with white waypoint dots, red teardrop pins, dark label tags, dark date tag with gold text.
-- A clear, specific heading (2–6 words, Anton font, white + gold) that adds to the title and never repeats it.
-  Don't force dramatic words; curiosity about the actual story, never a misleading claim.
-- **Shorts: 9:16, 1080×1920** (`--vertical`, file `<VIDEO_ID>_9x16.jpg`), hero style (user's request, 2026-11-09:
-  a map alone didn't show what the video is about): a painted story illustration fills the frame
-  (`social/thumbnails/art/<VIDEO_ID>.png`, prompt in `gen_art.py`, generated with Figma's image AI), the heading
-  says in plain words what happened (e.g. THESE TANKS ARE FAKE), plus a date tag and a small map card with pin and
-  place tag. Use a ring/arrow when the key detail is small. Bottom ~400 px kept clear for YouTube's title overlay.
-  No close-up faces; people small or from behind.
-- Long-form videos: 16:9, 1280×720 (`<VIDEO_ID>.jpg`), hook on the left, map on the right.
-- Add a function for the new video in `make_thumbnails.py` (`VERTICAL` for Shorts, `VIDEOS` for long-form),
-  render it, look at the result, then set it with `yt.py thumbnail VIDEO_ID FILE` and log it in
-  `social/youtube-schedule-log.md`. Update `social/thumbnails/README.md`, then commit and push.
+Every new video (Short or long-form) gets a custom thumbnail in the **hero style made with Figma**: a viewer
+must understand what the video is about from the thumbnail alone, and it must be attractive. A map by itself
+is not enough. Follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
+- Read the full script first (`social/scripts/<VIDEO_ID>.md`, YouTube captions, or ask), pick one story angle,
+  write three heading options and choose the clearest.
+- **Picture: always generate it with Figma's image AI** (Figma MCP `generate_image`, model `gpt-image-2.5-flare`,
+  file "Which Life Next – Shorts thumbnail art" `YLi5kQtUtNyvaAsNNsDM4y`, team `team::1697353188971902501`;
+  call `create_session` first). A painted, cinematic illustration of the one moment the angle is about, in the
+  channel palette (amber/parchment, deep teal, rust red), no text in the image, no close-up faces (people small
+  or from behind), historically accurate. Add the prompt to `ART` in `social/thumbnails/gen_art.py`, download the
+  PNG right away (the Figma URL expires in 7 days) to `social/thumbnails/art/<VIDEO_ID>.png`.
+  If Figma refuses (no AI credits, not connected), say so and ask; don't fall back to a map-only thumbnail.
+- **Heading:** 2–6 words, Anton, white + gold, says in plain words what happened (e.g. THESE TANKS ARE FAKE,
+  27 HOURS IN THIS BOX); never a copy of the title, never misleading.
+- **Channel signature:** dark date tag with gold text and a small parchment map card (pin + place tag, route
+  if there is one). Ring/arrow on the key detail when it is small in the picture.
+- **Shorts: 9:16, 1080×1920** (`--vertical`, `<VIDEO_ID>_9x16.jpg`): date tag + heading at the top, subject in
+  the middle, map card in a free corner, bottom ~400 px clear for YouTube's title overlay.
+- **Long-form: 16:9, 1280×720** (`<VIDEO_ID>.jpg`): generate the picture landscape (2048×1152), heading on the
+  left, subject on the right, map card in a free corner.
+- Add a function in `make_thumbnails.py` (`hero_base` + `inset_map` + `callout`; `VERTICAL` for Shorts,
+  `VIDEOS` for long-form), render, look at it full size and at phone size, fix overlaps, then set it with
+  `yt.py thumbnail VIDEO_ID FILE`, log it in `social/youtube-schedule-log.md`, update
+  `social/thumbnails/README.md`, commit and push.
 
 ## YouTube analysis: use vidIQ
 

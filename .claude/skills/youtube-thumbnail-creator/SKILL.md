@@ -1,28 +1,39 @@
 ---
 name: youtube-thumbnail-creator
-description: "Story-driven YouTube thumbnail creator for the Which Life Next channel. Use for ANY thumbnail task (new video, Short, redesign, heading change). Read the full video script first, pick one story angle, write three heading options, choose the clearest one, then render the channel's illustrated map-style thumbnail (9:16 for Shorts, 16:9 for long-form) with social/thumbnails/make_thumbnails.py."
+description: "Story-driven YouTube thumbnail creator for the Which Life Next channel. Use for ANY thumbnail task (new video, Short, redesign, heading change). Read the full video script first, pick one story angle, write three heading options, choose the clearest one, generate the story picture with Figma's image AI, then render the hero thumbnail (picture + plain heading + date tag + small map card; 9:16 for Shorts, 16:9 for long-form) with social/thumbnails/make_thumbnails.py."
 ---
 
 # Story-driven YouTube thumbnail creator
 
 ## 0. Channel rules (these override the generic parts below)
 
-- **Style:** every thumbnail uses the channel's illustrated map style, the same look as the maps inside
-  the Shorts: parchment/cream land, teal water and rivers, thin state lines, the story's state filled in
-  tan, rust-red route with white waypoint dots, red teardrop pins, dark label tags, and a dark date tag with
-  gold text. Heading in Anton, white with a gold accent word. Rendered by `social/thumbnails/make_thumbnails.py`.
-  In sections 5–7, "visual" means the map: the location, route, pins, highlighted state and the one or two
-  overlays (snow, swarm, flood path) that show the chosen story angle. Don't add AI-generated faces or
-  people unless the user asks for that.
-- **Shorts use the hero style (user's request, 2026-11-09):** the map alone didn't tell viewers what the video
-  was about. A Short's thumbnail is a painted story illustration of the one moment the angle is about (prompt in
-  `social/thumbnails/gen_art.py`, image generated with Figma's image AI and saved to `social/thumbnails/art/`),
-  a plain-English heading that names what happened, the date tag, and a small map card (pin + place tag) as the
-  channel signature. A viewer must be able to say what the video is about from the thumbnail alone. People
-  only small or from behind, no close-up faces.
-- **Canvas:** Shorts are **9:16, 1080×1920** (`--vertical`, `<VIDEO_ID>_9x16.jpg`): date tag and heading
-  at the top, the illustrated subject in the middle (map card in a free corner), bottom ~400 px clear for YouTube's title overlay. Long-form videos
-  are 16:9, 1280×720 (`<VIDEO_ID>.jpg`): heading on the left, map on the right.
+- **Style (user's standing rule, 2026-11-09): every thumbnail, Short or long-form, is the hero style made
+  with Figma.** The map alone didn't tell viewers what the video was about. A viewer must be able to say what
+  the video is about from the thumbnail alone, and it must look attractive in the feed. Each thumbnail has:
+  1. **A painted story picture** of the one moment the chosen angle is about, filling the frame. Generate it
+     with Figma's image AI every time:
+     - Figma MCP: `create_session` on file `YLi5kQtUtNyvaAsNNsDM4y` ("Which Life Next – Shorts thumbnail art",
+       team `team::1697353188971902501`), then `generate_image` with model `gpt-image-2.5-flare`,
+       1152×2048 for Shorts or 2048×1152 for long-form, and the prompt `STYLE + ART[VIDEO_ID]` from
+       `social/thumbnails/gen_art.py` (add the new video's `ART` entry first).
+     - Prompt rules: cinematic painted history illustration in the channel palette (amber/parchment, deep teal,
+       rust red); the subject big and obvious (the sinking ship, the rubber tank, the crate, the sled dogs);
+       empty sky/dark area where the heading goes; no text, letters or logos in the image; no close-up faces,
+       people small or from behind; historically accurate clothing, objects and places.
+     - Download the PNG at once (the URL expires in 7 days) to `social/thumbnails/art/<VIDEO_ID>.png` and look
+       at it. If the subject isn't instantly readable, regenerate with a sharper prompt.
+     - If Figma can't generate (no AI credits, not connected), tell the user and ask. Don't fall back to a
+       map-only thumbnail.
+  2. **A plain heading** (Anton, white + gold accent word) that says what happened, e.g. THESE TANKS ARE FAKE,
+     27 HOURS IN THIS BOX, THE DOGS THAT SAVED A TOWN.
+  3. **The channel signature:** the dark date tag with gold text and a small parchment map card (pin, place tag,
+     route if any) drawn by `inset_map` in `make_thumbnails.py`. Use `callout` (gold ring + arrow) when the key
+     detail is small in the picture.
+  In sections 5–7, "visual" means this picture plus the map card.
+- **Canvas:** Shorts are **9:16, 1080×1920** (`--vertical`, `<VIDEO_ID>_9x16.jpg`): date tag and heading at the
+  top, the subject in the middle (`hero_base(vid, shift=...)` pushes the art down if the heading would cover it),
+  map card in a free corner, bottom ~400 px clear for YouTube's title overlay. Long-form videos are 16:9,
+  1280×720 (`<VIDEO_ID>.jpg`): heading on the left, subject on the right, map card in a free corner.
 - **Where the script is:** look in this order and use the first that has the full script:
   1. `social/scripts/<VIDEO_ID>.md` (or the script file the user names / attaches),
   2. the script the user pasted in chat,
@@ -30,7 +41,7 @@ description: "Story-driven YouTube thumbnail creator for the Which Life Next cha
      transcript tool, for videos already uploaded.
   If none gives the complete script, ask the user for it. Don't write a heading from the title alone.
   Save any script you found to `social/scripts/<VIDEO_ID>.md` so the next run has it.
-- **Output:** save to `social/thumbnails/`, add the video's row (heading + map) to
+- **Output:** save to `social/thumbnails/`, add the video's row (heading, picture, map card) to
   `social/thumbnails/README.md`. Setting it on YouTube follows the youtube-channel-automation skill
   (`yt.py thumbnail`), is logged in `social/youtube-schedule-log.md`, then commit and push.
 - **Report:** when delivering, show the story beats with their share of the script and thumbnail direction, the
@@ -230,10 +241,12 @@ Follow this workflow every time:
    script spends the most attention on (section 4).
 4. **Create heading options:** develop three possible thumbnail headings.
 5. **Select the winner:** choose the strongest heading based on clarity, curiosity, relevance, and visual potential.
-6. **Design:** add the video's function to `make_thumbnails.py` (`VERTICAL` for Shorts, `VIDEOS` for
-   long-form) with the selected heading and a map concept that accurately represents the story, and render it.
-7. **Review:** check spelling, composition, readability, accuracy, and overall quality.
-8. **Deliver:** save the final thumbnail in `social/thumbnails/`, update the README, commit and push.
+6. **Generate the picture in Figma:** write the `ART` prompt in `gen_art.py` for the chosen moment, generate it
+   with Figma's image AI (section 0), download it to `social/thumbnails/art/<VIDEO_ID>.png` and check it.
+7. **Design:** add the video's hero function to `make_thumbnails.py` (`VERTICAL` for Shorts, `VIDEOS` for
+   long-form): `hero_base` + heading + date tag + `inset_map` card (+ `callout` if needed), and render it.
+8. **Review:** check spelling, composition, readability, accuracy, and overall quality.
+9. **Deliver:** set it on YouTube, save the final thumbnail in `social/thumbnails/`, update the README, commit and push.
 
 ## 10. Final operating principle
 
