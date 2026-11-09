@@ -17,7 +17,9 @@ Files: `raw/<key>.png` is the Figma output; `<key>.png` is the transparent cut-o
 
 ## When and how a scientist appears (owner, 2026-11-09)
 - **At most twice a week.** Count the scientist Shorts in the last 7 days from the "Scientist" column of `../../shorts/queue.md` before using one. Most Shorts have no scientist.
-- **The story beat:** বিথী herself doesn't know the science behind the topic. She says so honestly, then **summons the scientist by name**, for example "এটা তো আমিও জানি না… জগদীশ চন্দ্র বসু! আপনি কি একটু বুঝিয়ে বলবেন?"
+- **The story beat (the summon):** বিথী herself doesn't know the science behind it. She says so, then calls the scientist by name and asks for help, in this pattern:
+  > "এটা তো আমি জানি না… কিন্তু আমি জানি কে জানে! **জগদীশ চন্দ্র বসু স্যার!** আপনি কি আমাদের এটা শিখিয়ে দেবেন? আমাদের আপনার সাহায্য দরকার… প্লিজ, আমাদের জন্য একটু নেমে আসুন!"
+  Use "স্যার" for men and "ম্যাডাম" for women (e.g. "মেরি কুরি ম্যাডাম!"). Vary the wording a little each time but keep the parts: "I don't know, but I know who knows", the name, "will you teach us", "we need your help", "please come down for us". About 6–8 s.
 - **The scientist appears** with a short sparkle/whoosh at the edge of the scene, walks in, and explains the key point in 1–2 short, correct lines.
 - Then the cast reacts. The usual ending (puzzle, end card) follows.
 - Use it only when the topic really came from that scientist's discovery or work.
