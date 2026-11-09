@@ -49,3 +49,11 @@ deleting, timed takedowns, checking status), use `.claude/skills/facebook-page-a
   injected by the proxy). Do not use Clawlink or Metricool for the Facebook Page.
 - Never delete an uploaded video or post unless the user explicitly asks for that deletion.
 - Log every action in `social/facebook-page-log.md`, then commit and push.
+
+## 3D animation: use the blender-3d-animation skill
+
+For 3D animations, 3D logo reveals, product turntables, animated 3D text or any Blender render, use
+`.claude/skills/blender-3d-animation/SKILL.md`. It installs the official Blender LTS build headless
+(`scripts/install_blender.sh`), builds scenes in Python with `scripts/bl_helpers.py`, and renders MP4
+(16:9 or 9:16), PNG stills or PNG sequences. Always check a still and a `--preview` render before the
+slow full-quality render.
