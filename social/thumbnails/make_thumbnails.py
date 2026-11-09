@@ -904,9 +904,104 @@ def v_cholera():
     return img
 
 
+TITANIC = [(50.90, -1.40), (49.65, -1.62), (51.85, -8.29), (41.73, -49.95)]
+NEW_YORK = (40.70, -74.01)
+
+
+def v_titanic():
+    # framed on the western Atlantic: the route comes in from Southampton off the right edge
+    v, img, _ = vbase((40, 70, 110), fit=[(47.5, -53.0), NEW_YORK, (40.5, -38.0)], box=(110, 1080, 970, 1460),
+                      tint_amt=0.14)
+    pts = P(v, TITANIC)
+    wreck = pts[-1]
+    glow_line(img, pts, ROUTE, width=11, glow=30)
+    glow_line(img, [wreck, v.to_img(*NEW_YORK)], (140, 120, 92), width=7, dash=True)
+    label(img, v.to_img(44.6, -40.0), "FROM SOUTHAMPTON", "c", dy=-60, size=36)
+    label(img, v.to_img(*NEW_YORK), "NEW YORK", "c", dy=60, size=36)
+    d = ImageDraw.Draw(img)  # iceberg just ahead of the wreck site
+    ib = v.to_img(42.3, -47.6)
+    d.polygon([(ib[0] - 40, ib[1] + 20), (ib[0] - 12, ib[1] - 34), (ib[0] + 10, ib[1] - 14), (ib[0] + 38, ib[1] + 20)],
+              fill=(240, 250, 255), outline=INK, width=4)
+    pin(img, wreck, PIN, r=20)
+    label(img, wreck, "SANK 2:20 AM", "c", dy=84, size=LS)
+    label(img, v.to_img(36.8, -50.0), "NEAR-FREEZING WATER", "c", bg=(30, 70, 100), size=34)
+    vbadge(img, "APRIL 15, 1912", YELLOW)
+    vhook(img, [[("HE RODE", WHITE)], [("IT ", WHITE), ("DOWN", YELLOW)]], 250)
+    return img
+
+
+RHINE_FAKE = (51.34, 6.66)    # decoy build-up, south of the real crossing (Operation Viersen)
+RHINE_REAL = (51.60, 6.62)    # real Ninth Army crossing, Rheinberg / Wesel area
+
+
+def v_ghost():
+    v, img, _ = vbase((60, 60, 40), fit=[(51.80, 6.15), (51.15, 7.15)], box=VB)
+    fake, real = v.to_img(*RHINE_FAKE), v.to_img(*RHINE_REAL)
+    for dx, dy in ((-60, -10), (-20, 30), (25, -20), (60, 25), (-45, 55), (15, 70)):  # inflatable tank column
+        x, y = fake[0] + dx - 120, fake[1] + dy + 40
+        b = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        bd = ImageDraw.Draw(b)
+        bd.rounded_rectangle([x - 22, y - 12, x + 22, y + 12], 6, fill=(120, 130, 90, 235), outline=INK + (255,), width=3)
+        bd.line([x, y, x + 34, y - 6], fill=INK + (255,), width=5)
+        img.paste(b, (0, 0), b)
+    pin(img, fake, (150, 150, 150), r=17, ring=False)
+    label(img, fake, "RUBBER DECOY", "c", dy=170, dx=-110, size=LS, bg=(90, 90, 90))
+    pin(img, real, PIN, r=18)
+    label(img, real, "REAL CROSSING", "c", dy=-140, size=LS)
+    label(img, v.to_img(51.47, 6.70), "RHINE RIVER", "l", dx=40, size=34, bg=(30, 90, 95))
+    vbadge(img, "MARCH 1945", YELLOW)
+    vhook(img, [[("AN ARMY OF", WHITE)], [("ARTISTS", YELLOW)]], 240)
+    return img
+
+
+BOX_BROWN = [(37.54, -77.43), (38.30, -77.46), (38.43, -77.36), (38.90, -77.01), (39.29, -76.61),
+             (39.55, -76.09), (39.74, -75.55), (39.95, -75.16)]
+
+
+def v_boxbrown():
+    v, img, _ = vbase((60, 45, 20), fit=BOX_BROWN, box=(240, 1060, 840, 1480))
+    state_outline(img, v, None, "Virginia", width=3)
+    pts = P(v, BOX_BROWN)
+    glow_line(img, pts, ROUTE, width=10, glow=28)
+    waypoints(img, pts[1:-1], r=8)
+    pin(img, pts[0], PIN, r=16, ring=False)
+    label(img, pts[0], "RICHMOND, VA", "r", dx=30, size=LS)
+    pin(img, pts[-1], PIN, r=18)
+    label(img, pts[-1], "PHILADELPHIA", "c", dy=-140, size=LS)
+    label(img, pts[4], "27 HOURS IN A BOX", "l", dx=40, size=LS)
+    vbadge(img, "MARCH 1849", YELLOW)
+    vhook(img, [[("THIS SIDE", WHITE)], [("UP", YELLOW)]], 260)
+    return img
+
+
+SERUM = [(64.56, -149.09), (65.17, -152.08), (64.74, -155.49), (64.74, -156.93), (64.72, -158.10),
+         (64.33, -158.72), (63.87, -160.79), (64.35, -161.18), (64.54, -163.03), (64.62, -163.70)]
+SERUM_LAST = [(64.62, -163.70), (64.48, -164.75), (64.50, -165.41)]
+
+
+def v_serum():
+    v, img, _ = vsnow_base(fit=SERUM + SERUM_LAST, box=(130, 1100, 950, 1440))
+    state_outline(img, v, None, "Alaska", width=3)
+    pts, last = P(v, SERUM), P(v, SERUM_LAST)
+    glow_line(img, pts, ROUTE, width=9, glow=24)
+    glow_line(img, last, PIN, width=13, glow=30)
+    waypoints(img, pts[1:], r=7)
+    pin(img, pts[0], PIN, r=14, ring=False)
+    label(img, pts[0], "NENANA", "c", dy=60, size=LS)
+    pin(img, last[-1], PIN, r=18)
+    label(img, last[-1], "NOME", "c", dy=-140, dx=10, size=LS)
+    label(img, v.to_img(64.0, -162.4), "NORTON SOUND ICE", "c", dy=70, size=34, bg=(30, 90, 95))
+    label(img, last[1], "BLIZZARD", "c", dy=64, size=34, bg=(140, 0, 0))
+    snow(img, 2200, 7)
+    vbadge(img, "JAN 1925", ICE)
+    vhook(img, [[("THE SERUM", WHITE)], [("VANISHED", YELLOW)]], 240)
+    return img
+
+
 VERTICAL = {
     "A7IMwfCRwjg": v_booth, "bwhHw3tLIDQ": v_donner, "ctoVTthJ_2w": v_pony, "pXOy92KjJt4": v_vanished,
     "qbtwhG8IDL8": v_rope, "J5rJThy08hk": v_minnie, "HyqmpcvzHKI": v_drop, "7kxCubu2UdI": v_cholera,
+    "ctx0tm_C56c": v_titanic, "vy-qRhRjnN0": v_ghost, "ahJknPq0Z_g": v_boxbrown, "5cj7cAPSqw0": v_serum,
 }
 
 

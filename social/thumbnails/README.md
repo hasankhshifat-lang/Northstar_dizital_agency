@@ -48,5 +48,18 @@ the bottom ~400 px is kept clear for YouTube's title overlay.
 | J5rJThy08hk | 0:51 | J5rJThy08hk_9x16.jpg |
 | HyqmpcvzHKI | 0:50 | HyqmpcvzHKI_9x16.jpg |
 | 7kxCubu2UdI | 0:40 | 7kxCubu2UdI_9x16.jpg |
+| ctx0tm_C56c | 0:56 | ctx0tm_C56c_9x16.jpg |
+| vy-qRhRjnN0 | 0:58 | vy-qRhRjnN0_9x16.jpg |
+| ahJknPq0Z_g | 1:31 | ahJknPq0Z_g_9x16.jpg |
+| 5cj7cAPSqw0 | 1:41 | 5cj7cAPSqw0_9x16.jpg |
+
+Shorts-only (9:16, no 16:9 version):
+
+| Video ID | Title | Hook | Map |
+|---|---|---|---|
+| ctx0tm_C56c | The Titanic's Baker Was Having a Drink While It Sank | HE RODE IT DOWN | North Atlantic, Southampton route → wreck site, iceberg, dashed line to New York |
+| vy-qRhRjnN0 | The US Army Fooled Hitler With Rubber Tanks | AN ARMY OF ARTISTS | Lower Rhine, March 1945: rubber-tank decoy south of the real crossing |
+| ahJknPq0Z_g | He Mailed Himself to Freedom in a Wooden Box (1849) | THIS SIDE UP | Richmond, VA (Virginia in tan) → Philadelphia by wagon, rail and steamboat |
+| 5cj7cAPSqw0 | 20 Mushers. 150 Dogs. 674 Miles to Save Nome (1925) | THE SERUM VANISHED | Alaska relay Nenana → Nome, Norton Sound ice, Balto's blizzard leg |
 
 Not included: Dd6icXr-dW0 (3:09), NtC-QGdCfG0 and kQzq9g26F6Q (8:39) are long-form; the other 7 videos are private.
