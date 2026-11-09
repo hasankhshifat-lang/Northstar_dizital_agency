@@ -38,4 +38,4 @@ This is everything needed to make a Short with মন্টু মামা, ব
 Any character can walk: add `"walk": {"name": [[t0, x0], [t1, x1], ...]}` to a shot. Between two keys the character walks from x0 to x1 with eased start and stop. The step is front-view, the feet never cross, the body bobs and shifts weight, the arms swing and the head looks where they're going. Keep walks slow, about 100–130 px per second at scale 0.8.
 
 ## Scientist characters
-When the science in a Short was discovered by a famous scientist, that scientist can appear as a full rigged character (jc_bose, newton, einstein, marie_curie in `chars/scientists.json`). They walk in, talk and explain like the cast. See `cameos/README.md` for rules, voices and how to add new scientists.
+When the science in a Short was discovered by a famous scientist, that scientist can appear as a full rigged character (jc_bose, newton, einstein, marie_curie in `chars/scientists.json`). They arrive through a sci-fi portal (`cameos/portal.py` + the shot's `"appear"` key), step out, and talk and explain like the cast. See `cameos/README.md` for rules, voices and how to add new scientists.

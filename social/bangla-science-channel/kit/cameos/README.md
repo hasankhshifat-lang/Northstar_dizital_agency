@@ -1,6 +1,6 @@
 # Scientist cameos
 
-**Since 2026-11-09 the scientists are full rigged characters** (`../chars/scientists.json`, made by `../chars/gen_sci.py`). They use the same rig and drawing style as মামা, বিথী and বল্টু, so they walk, talk (lip-sync), blink, gesture and turn their heads in the engine like the cast. Use them by key in a shot's `chars`, e.g. `"jc_bose": [800, 1820, .82]`, and make them walk in with `"walk": {"jc_bose": [[t0, 1260], [t1, 800]]}`. Head height above the feet is about 830 × scale. `scientists_sheet.png` shows them next to the cast. The test clip is `../../episodes/tests/scientist_walk_talk_test.mp4`, built by `build_scientist_test.py`.
+**Since 2026-11-09 the scientists are full rigged characters** (`../chars/scientists.json`, made by `../chars/gen_sci.py`). They use the same rig and drawing style as মামা, বিথী and বল্টু, so they walk, talk (lip-sync), blink, gesture and turn their heads in the engine like the cast. Use them by key in a shot's `chars`, e.g. `"jc_bose": [800, 1820, .82]`, and make them walk in with `"walk": {"jc_bose": [[t0, 1260], [t1, 800]]}`. Head height above the feet is about 830 × scale. `scientists_sheet.png` shows them next to the cast. The test clip is `../../episodes/tests/scientist_portal_test.mp4`, built by `build_scientist_test.py`.
 
 The Figma portraits below are now the **look reference** for drawing each scientist (hair, face, clothes). The `cameo()` photo cut-out prop is kept only as an option; normally use the character.
 
@@ -20,7 +20,12 @@ Files: `raw/<key>.png` is the Figma output; `<key>.png` is the transparent cut-o
 - **The story beat (the summon):** বিথী herself doesn't know the science behind it. She says so, then calls the scientist by name and asks for help, in this pattern:
   > "এটা তো আমি জানি না… কিন্তু আমি জানি কে জানে! **জগদীশ চন্দ্র বসু স্যার!** আপনি কি আমাদের এটা শিখিয়ে দেবেন? আমাদের আপনার সাহায্য দরকার… প্লিজ, আমাদের জন্য একটু নেমে আসুন!"
   Use "স্যার" for men and "ম্যাডাম" for women (e.g. "মেরি কুরি ম্যাডাম!"). Vary the wording a little each time but keep the parts: "I don't know, but I know who knows", the name, "will you teach us", "we need your help", "please come down for us". About 6–8 s.
-- **The scientist appears** with a short sparkle/whoosh at the edge of the scene, walks in, and explains the key point in 1–2 short, correct lines.
+- **The scientist arrives through a sci-fi portal** (`portal.py`, sounds from `portal_sfx.py`):
+  1. A glowing blue energy ring with a swirling core and gold sparks opens beside the cast. Use `portal_props(t_open, t_close, x, y, 0.8)` with z below the characters.
+  2. The scientist materialises inside it, fading in with a cyan glow (`"appear": {"key": [t0, t0+0.7]}`).
+  3. They step out (`"walk"` keys from the portal's x to their spot), and the portal snaps shut behind them.
+  4. They explain the key point in 1–2 short, correct lines.
+  Keep the whole portal inside the frame (centre about x 790, y 1450 at size 0.8 in the wide courtyard shot). The test clip is `../../episodes/tests/scientist_portal_test.mp4`.
 - Then the cast reacts. The usual ending (puzzle, end card) follows.
 - Use it only when the topic really came from that scientist's discovery or work.
 

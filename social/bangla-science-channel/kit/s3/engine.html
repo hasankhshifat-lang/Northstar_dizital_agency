@@ -326,7 +326,14 @@ function render(t) {
     if (wp) leanDeg += wp.sway;
     for (const [g, pv, a, l] of [[node.legL, node.legLP, wp ? wp.legL : 0, wp ? wp.liftL : 0], [node.legR, node.legRP, wp ? wp.legR : 0, wp ? wp.liftR : 0]])
       if (g) { if (wp) g.setAttribute('transform', `translate(0 ${(-l).toFixed(1)}) rotate(${a.toFixed(1)} ${pv[0]} ${pv[1]})`); else g.removeAttribute('transform'); }
-    node.wrap.style.transform = `scale(${cPos[2]})` + (isFlipped ? ' scaleX(-1)' : '') + (leanDeg ? ` rotate(${leanDeg}deg)` : '');
+    // shot.appear = {name: [t0, t1]}: the character materialises (fade + grow) between t0 and t1, e.g. inside a portal
+    let appearS = 1;
+    if (shot.appear && shot.appear[name]) {
+      const [a0, a1] = shot.appear[name], k = Math.max(0, Math.min(1, (t - a0) / Math.max(0.001, a1 - a0)));
+      node.wrap.style.opacity = k; node.wrap.style.filter = k < 1 ? `brightness(${1 + 1.5 * (1 - k)}) drop-shadow(0 0 ${30 * (1 - k)}px #7FF0FF)` : '';
+      appearS = 0.85 + 0.15 * easeIO(k);
+    } else { node.wrap.style.opacity = 1; node.wrap.style.filter = ''; }
+    node.wrap.style.transform = `scale(${cPos[2] * appearS})` + (isFlipped ? ' scaleX(-1)' : '') + (leanDeg ? ` rotate(${leanDeg}deg)` : '');
 
     // Breathing
     const breath = 1 + 0.012 * Math.sin(2 * Math.PI * t / 3.2 + phase);
