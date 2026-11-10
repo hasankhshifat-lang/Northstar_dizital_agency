@@ -1,5 +1,17 @@
 # Northstar Digital Agency — Claude instructions
 
+## Video topics and scripts: read the scriptwriting rules first
+
+Before choosing a topic or writing/editing any script for a YouTube video (long-form or Short) **or a
+Facebook Page video/Reel**, read `docs/content/scriptwriting-rules.md` and follow it.
+- Prepare the topic research report and score the topic out of 100 (section 2.G–H) before writing;
+  reject topics below 65 unless there is a stated strategic reason.
+- If the user supplied a topic, evaluate it and suggest a stronger angle if needed, but never silently replace it.
+- Hook in the first 5 seconds, 4-act structure for long-form, the Shorts/Reels timing for vertical videos.
+- Accuracy over drama: no invented quotes, evidence or events; label speculation.
+- Run the topic and script checklists (section 15) before handing over a script, and save it in
+  `social/scripts/<VIDEO_ID>.md` (or `<working-title>.md`).
+
 ## YouTube: always use the youtube-channel-automation skill (own Google Cloud client)
 
 For any YouTube channel task (uploading, scheduling, editing titles/descriptions/tags/privacy/
