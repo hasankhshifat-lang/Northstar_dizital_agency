@@ -1,0 +1,72 @@
+{
+ "type": "photo",
+ "design": {
+  "layout": "split",
+  "palette": "purple",
+  "head": [
+   {
+    "t": "সকালে উঠেই"
+   },
+   {
+    "t": "পুরো customer list"
+   },
+   {
+    "t": "[রেডি]",
+    "cls": "baloo"
+   }
+  ],
+  "box": "নাম · Phone number · কী চাইলো · কখন call দিতে হবে ( AI নিজেই লিখে রাখে )",
+  "sub": "Messenger · WhatsApp · Website · Phone",
+  "phone": {
+   "name": "Your Shop",
+   "initials": "YS",
+   "messages": [
+    {
+     "from": "me",
+     "text": "Red কালারটা আছে? কাল নিবো",
+     "time": "11:42 PM"
+    },
+    {
+     "from": "ai",
+     "text": "আছে 😊 আপনার নাম আর number দিবেন?",
+     "time": "11:42 PM"
+    },
+    {
+     "from": "me",
+     "text": "Rina, 017XXXXXXXX",
+     "time": "11:43 PM"
+    },
+    {
+     "from": "ai",
+     "text": "ধন্যবাদ! সকালে আমাদের team call দিবে ✅",
+     "time": "11:43 PM"
+    }
+   ]
+  },
+  "emoji": [
+   {
+    "e": "✨",
+    "pos": [
+     600,
+     140
+    ],
+    "size": 60
+   },
+   {
+    "e": "💬",
+    "pos": [
+     960,
+     820
+    ],
+    "size": 70,
+    "blur": true
+   }
+  ],
+  "cta": "WhatsApp করুন",
+  "theme": "layout"
+ },
+ "status": "draft",
+ "pillar": "Signature",
+ "angle": "Customer-এর নাম, number, চাহিদা লিখে রাখে → সকালে আপনি পুরো list পান",
+ "caption": "রাতে অনেকে message দিলো, সকালে মনে নেই কে কী চেয়েছিলো। 😵\nকার number কোথায়, কে কোন product চাইলো, সব হারিয়ে যায়।\n\nAI receptionist নাম, number আর চাহিদা লিখে রাখে, সকালে আপনি পুরো list পান।\n👉 আপনার ব্যবসার জন্য জানতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital"
+}
