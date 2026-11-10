@@ -33,3 +33,4 @@ Note 2026-11-02 11:01 SGT (user: "cancel scheduled shorts, only publish Pony Exp
 - Kept: 2026-11-03 06:00 SGT Pony Express (Metricool #413119675), which is the approved style.
 | 2026-11-03 | 2026-11-03 (public immediately, test) | Northstar Dizital – Upload Test #Shorts | Google Cloud (YouTube Data API) | video QehsAzlfOzI (uploaded public; gone by 15:00 SGT check, 404) |
 | 2026-11-09 | 2026-11-10 21:00 SGT (2026-11-10 08:00 ET) | The US Army Fooled Hitler With Rubber Tanks #shorts | Google Cloud (YouTube Data API) | video vy-qRhRjnN0, 57.5 s, 9:16 thumbnail set |
+| 2026-11-10 | 2026-11-11 21:00 SGT (2026-11-11 08:00 ET) | This Chicken Lived 18 Months Without a Head #shorts | Google Cloud (YouTube Data API) | video PKdcctcYjfw, 55.0 s, 9:16 thumbnail set |

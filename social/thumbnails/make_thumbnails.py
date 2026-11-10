@@ -923,7 +923,26 @@ def v_ghost():
     return img
 
 
+MIKE_ROUTE = [(39.16, -108.73), (40.76, -111.89), (34.05, -118.24), (33.45, -112.07)]
+
+
+def v_mike():
+    v, img, _ = vbase((60, 40, 20), fit=MIKE_ROUTE + [(41.5, -106.0), (32.0, -109.0)], box=(110, 1000, 970, 1540), sat=0.9)
+    pts = P(v, MIKE_ROUTE)
+    glow_line(img, pts, ROUTE, dash=True, width=10, glow=28)
+    for p in pts[1:-1]:
+        ImageDraw.Draw(img).ellipse([p[0] - 8, p[1] - 8, p[0] + 8, p[1] + 8], fill=WHITE, outline=(0, 0, 0), width=2)
+    pin(img, pts[0], PIN, r=16, ring=False)
+    label(img, pts[0], "FRUITA, COLORADO", "c", dy=75, size=LS)
+    pin(img, pts[-1], PIN, r=18)
+    label(img, pts[-1], "PHOENIX", "c", dy=-80, size=LS)
+    vbadge(img, "1945-47", YELLOW)
+    vhook(img, [[("HEADLESS", YELLOW)], [("MIKE", WHITE)]], 215)
+    return img
+
+
 VERTICAL = {
+    "MIKECHICKEN": v_mike,
     "vy-qRhRjnN0": v_ghost,
     "A7IMwfCRwjg": v_booth, "bwhHw3tLIDQ": v_donner, "ctoVTthJ_2w": v_pony, "pXOy92KjJt4": v_vanished,
     "qbtwhG8IDL8": v_rope, "J5rJThy08hk": v_minnie, "HyqmpcvzHKI": v_drop, "7kxCubu2UdI": v_cholera,

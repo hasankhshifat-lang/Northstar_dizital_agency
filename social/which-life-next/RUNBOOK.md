@@ -447,3 +447,9 @@ Start on the map, then **dive into the place** and show what the narration descr
 - `yt.py thumbnail` only exists in main's helper (`/tmp/ytmain/yt.py`); the working-branch helper lacks it.
 - Facebook `scheduled_publish_time` is unix seconds: `date -u -d <ISO> +%s`.
 - Keep ground-scene actors above y≈1400 (after the −130 shift); the bottom 400 px is covered by the YouTube UI.
+
+### Learned 2026-11-10 (Mike the Headless Chicken Short)
+- US topics: copy `src/stories/chickenMike.tsx` (US Albers map, state fills, tour route) + `src/sets/chickenScenes.tsx` (Chicken rooster rig, Farm, Label, scenes); mix in `shorts/<slug>/mix.py`.
+- Full render takes ~8 min (1,650 frames); start it in the background right after stills pass.
+- `pip install faster-whisper` is needed each fresh container; `--sort` is not exposed by `yt.py analytics`, call `yt._call` with `sort=-views,maxResults` for the per-video report.
+- Thumbnails: add a `v_<slug>` function to `social/thumbnails/make_thumbnails.py`, run with `/usr/bin/python3 -I … --vertical <KEY>`.

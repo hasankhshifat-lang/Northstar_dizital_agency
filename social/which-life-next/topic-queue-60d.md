@@ -15,7 +15,7 @@ WD weird but true · FT feats & escapes
 |---|---|---|---|---|
 | 1 | TI | He Survived the Titanic… Drunk | The Titanic's baker drank whiskey, and it may have saved his life. | done 2026-11-08 ctx0tm_C56c (found already scheduled; not logged by that run) |
 | 2 | WR | The US Army Fooled Hitler With Balloons | These tanks are made of rubber. | done 2026-11-09 vy-qRhRjnN0 |
-| 3 | WD | This Chicken Lived 18 Months Without a Head | In 1945 a farmer cut off a chicken's head. It kept walking. | |
+| 3 | WD | This Chicken Lived 18 Months Without a Head | In 1945 a farmer cut off a chicken's head. It kept walking. | done 2026-11-10 PKdcctcYjfw |
 | 4 | WW | Mauled by a Grizzly, Left for Dead, He Crawled 200 Miles | His friends buried him alive and took his rifle. | |
 | 5 | SV | The Year the Mississippi Ran Backward | In 1812 the Mississippi River flowed the wrong way. | |
 | 6 | PI | Blackbeard Set His Own Beard on Fire | He tied burning fuses into his beard before every fight. | |

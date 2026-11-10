@@ -8,6 +8,7 @@ import { Thumb } from "./Thumb";
 import { MapShort, MAP_SHORT_FRAMES } from "./MapShort";
 import { PonyVoiced, PONY_VOICED_FRAMES } from "./stories/ponyVoiced";
 import { GhostArmy, GHOST_END } from "./stories/ghostArmy";
+import { MikeChicken, MIKE_END } from "./stories/chickenMike";
 import { fonts, palette } from "./theme";
 
 const episodeMeta: CalculateMetadataFunction<EpisodeProps> = ({ props }) => ({ durationInFrames: Math.max(1, episodeDuration(props)) });
@@ -48,6 +49,7 @@ export const RemotionRoot: React.FC = () => (
       defaultProps={demoEpisode} calculateMetadata={episodeMeta} />
     <Composition id="Short" component={Short} width={1080} height={1920} fps={30} durationInFrames={300}
       defaultProps={{ ...demoEpisode, startFrame: 0, durationInFrames: 300, hook: ["KIT'S FIRST WINTER", "WOULD YOU MAKE IT?"] }} calculateMetadata={shortMeta} />
+    <Composition id="MikeChicken" component={MikeChicken} width={1080} height={1920} fps={30} durationInFrames={Math.round(MIKE_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="GhostArmy" component={GhostArmy} width={1080} height={1920} fps={30} durationInFrames={Math.round(GHOST_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="PonyVoiced" component={PonyVoiced} width={1080} height={1920} fps={30} durationInFrames={PONY_VOICED_FRAMES} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="MapShort" component={MapShort} width={1080} height={1920} fps={30} durationInFrames={MAP_SHORT_FRAMES} defaultProps={{}} />
