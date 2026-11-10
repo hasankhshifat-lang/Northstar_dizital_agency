@@ -7,6 +7,12 @@ description: "Story-driven thumbnail creator for the Which Life Next YouTube cha
 
 ## 0. Channel rules (these override the generic parts below)
 
+- **Master thumbnail rules:** before every thumbnail, read `docs/content/thumbnail-rules.md` and follow
+  it: full script first, three concepts (character / action / mystery) and three headlines, one main idea,
+  2–5 word headline that never repeats the title, historical accuracy, the 100-point score (redo below 70),
+  and A/B testing with YouTube "Test & compare" judged on CTR plus watch time per impression. Its "generate"
+  means "build in Figma", and the map style below stays the house style.
+
 - **Style:** every thumbnail uses the channel's illustrated map style, the same look as the maps inside
   the Shorts: parchment/cream land, teal water and rivers, thin state lines, the story's state filled in
   tan, rust-red route with white waypoint dots, red teardrop pins, dark label tags, and a dark date tag with

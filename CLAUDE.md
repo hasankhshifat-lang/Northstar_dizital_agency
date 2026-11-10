@@ -32,7 +32,8 @@ Every new YouTube video **and every Facebook Page video/Reel** gets a custom thu
 Figma only** (Figma connector: `use_figma`, `get_screenshot`, `download_assets`). Don't use other design or
 image tools for thumbnails: no `make_thumbnails.py`/PIL rendering, Canva, Higgsfield, vidIQ thumbnail generator,
 AI image generators, Spline etc. If Figma is not connected or fails, say so and stop.
-Follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
+Read the master thumbnail rules in `docs/content/thumbnail-rules.md` first (three concepts, short headline that
+works with the title, 100-point score, A/B testing), then follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
 read the full script first (`social/scripts/<VIDEO_ID>.md`, or ask for it), pick one story angle, write three
 heading options and choose the clearest. Build it in the Figma file "NorthStar Thumbnails" (one frame per video,
 named `<VIDEO_ID>` / `<VIDEO_ID>_9x16` / `fb_<FB_VIDEO_ID>`) in the same illustrated map style as last time
