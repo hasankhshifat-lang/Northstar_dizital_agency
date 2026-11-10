@@ -64,7 +64,7 @@ const Feathers: React.FC<{ x: number; y: number; lt: number; at: number }> = ({ 
   return <g>{Array.from({ length: 9 }, (_, i) => { const a = (i / 9) * Math.PI * 2, d = k * (150 + rnd(i) * 130); return <ellipse key={i} cx={x + Math.cos(a) * d} cy={y + Math.sin(a) * d * 0.8 + k * k * 90} rx={22} ry={8} fill={i % 2 ? "#f4efe2" : "#b0561f"} stroke={INK} strokeWidth={2} transform={`rotate(${k * 300 + i * 40} ${x + Math.cos(a) * d} ${y + Math.sin(a) * d * 0.8})`} opacity={1 - k / 1.4} />; })}</g>;
 };
 
-const Farm: React.FC<{ frame: number; night?: boolean; barn?: boolean }> = ({ frame, night, barn = true }) => (
+export const Farm: React.FC<{ frame: number; night?: boolean; barn?: boolean }> = ({ frame, night, barn = true }) => (
   <g>
     {night ? <Sky top="#1a2240" bottom="#3a4a78" stars moon /> : <Sky top="#8fc4e0" bottom="#f7ecc8" sun={{ x: 220, y: 560, r: 90, color: "#fff4c4" }} clouds={3} drift={frame * 0.4} />}
     <Hills y={GY - 130} color={night ? "#2c3a4c" : "#93b078"} amp={70} seed={3} />

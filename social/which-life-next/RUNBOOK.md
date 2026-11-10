@@ -453,3 +453,4 @@ Start on the map, then **dive into the place** and show what the narration descr
 - Full render takes ~8 min (1,650 frames); start it in the background right after stills pass.
 - `pip install faster-whisper` is needed each fresh container; `--sort` is not exposed by `yt.py analytics`, call `yt._call` with `sort=-views,maxResults` for the per-video report.
 - Thumbnails: add a `v_<slug>` function to `social/thumbnails/make_thumbnails.py`, run with `/usr/bin/python3 -I … --vertical <KEY>`.
+- Thumbnails 2026-11-10 (owner): map-only thumbnails don't explain the topic. Make a 2D cartoon of the story (Remotion composition `MikeThumb` in src/stories/mikeThumb.tsx, Anton font in public/anton.ttf): the main character + the key object + big 2-word hook + one proof line. No 3D/Blender models. Figma connector was not available in the session.
