@@ -63,7 +63,11 @@ it is not a guarantee, and on today's numbers it is unlikely without a breakout 
 Every Short stops at ~1–1.7K because the test audience doesn't react: 1 share and 4 comments across ~12K views.
 35–55% swipe away in the first second, and every curve drops ~20 points at 10–20% of the runtime (the background beat).
 - **No background beat.** Context is one on-screen line over the action, never its own voiceover section.
-- **Choice question at the end + pinned comment** with the same question ("Would you have taken the shortcut?",
+- **Length test (owner approved 2026-11-10):** 2 of every 7 Shorts run **25–35 s** (5 stay 45–60 s), for 2026-11-11 → 11-24.
+  Compare % watched, swipe-away and 72 h views between the two groups, then pick one length.
+- **Choice question at the end + pinned comment** (owner approved 2026-11-10) with the same question.
+  Post it right after publishing with `yt.py comment VIDEO_ID "question"`. The API can't pin, so the owner pins it
+  in YouTube Studio / the app (Comments → ⋮ → Pin) ("Would you have taken the shortcut?",
   "Which life would you pick?"). It has to be a real question people can answer in one word. No "like and subscribe".
 - **Loop ending:** the payoff in the last 2 s, nothing after it, last words lead back into the opening line.
 - **First frame:** hook text (2–5 words) + the subject in motion. Never "POV:", never a date card.

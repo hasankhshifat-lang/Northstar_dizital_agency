@@ -66,7 +66,12 @@ YouTube Analytics API (youtube-channel-automation skill, `audienceWatchRatio` by
 6. **Add a list/compilation format** ("3 Titanic survivors who shouldn't have lived") once a week as a test.
 7. **Daily check** adds shares, comments and the 10–20% drop next to views and swipe-away.
 
-## Needs the owner
+## Owner decisions (2026-11-10)
+
+- Approved: the 25–35 s length test and a question comment on every Short. 11 question comments were posted on
+  2026-11-10 (see `social/youtube-comments-log.md`). The owner pins them by hand, because the API can't pin.
+
+## Originally raised with the owner
 
 - **Length:** the data favours shorter Shorts (31 s → 104% watched, 50 s → 85%; 1:50+ → 56–62%). The current owner
   rule is 45–60 s. Recommendation: test **25–35 s** on 2 of every 7 Shorts for two weeks.

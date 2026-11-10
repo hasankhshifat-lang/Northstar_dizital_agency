@@ -180,6 +180,16 @@ def cmd_reply(a):
     out({"reply_id": r["id"], "parent": a.comment_id, "text": r["snippet"].get("textOriginal")})
 
 
+def cmd_comment(a):
+    # Top-level comment from the channel. The YouTube API cannot pin comments: pin it in Studio / the app.
+    ch = _call("GET", f"{API}/channels", {"part": "id", "mine": "true"})["items"][0]["id"]
+    r = _call("POST", f"{API}/commentThreads", {"part": "snippet"},
+              body={"snippet": {"channelId": ch, "videoId": a.video_id,
+                                "topLevelComment": {"snippet": {"textOriginal": a.text}}}})
+    out({"comment_thread_id": r["id"], "video": a.video_id,
+         "text": r["snippet"]["topLevelComment"]["snippet"].get("textOriginal")})
+
+
 def cmd_playlist_add(a):
     r = _call("POST", f"{API}/playlistItems", {"part": "snippet"},
               body={"snippet": {"playlistId": a.playlist_id,
@@ -191,6 +201,8 @@ def cmd_analytics(a):
     params = {"ids": "channel==MINE", "startDate": a.start, "endDate": a.end, "metrics": a.metrics}
     if a.dimensions:
         params["dimensions"] = a.dimensions
+    if a.filters:
+        params["filters"] = a.filters
     out(_call("GET", "https://youtubeanalytics.googleapis.com/v2/reports", params))
 
 
@@ -213,11 +225,12 @@ def main():
     s = sp.add_parser("comments"); s.add_argument("--video"); s.add_argument("--unanswered", action="store_true")
     s.add_argument("--max", type=int, default=50); s.set_defaults(f=cmd_comments)
     s = sp.add_parser("reply"); s.add_argument("comment_id"); s.add_argument("text"); s.set_defaults(f=cmd_reply)
+    s = sp.add_parser("comment"); s.add_argument("video_id"); s.add_argument("text"); s.set_defaults(f=cmd_comment)
     s = sp.add_parser("playlist-add"); s.add_argument("playlist_id"); s.add_argument("video_id")
     s.set_defaults(f=cmd_playlist_add)
     s = sp.add_parser("analytics"); s.add_argument("start"); s.add_argument("end")
     s.add_argument("--metrics", default="views,estimatedMinutesWatched,likes,subscribersGained")
-    s.add_argument("--dimensions"); s.set_defaults(f=cmd_analytics)
+    s.add_argument("--dimensions"); s.add_argument("--filters"); s.set_defaults(f=cmd_analytics)
     a = p.parse_args()
     if a.cmd == "upload" and a.title is None:
         sys.exit("--title is required for upload")

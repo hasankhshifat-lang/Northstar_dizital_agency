@@ -83,6 +83,12 @@ white + gold that doesn't repeat the title).
 In a scheduled task, run this flow without asking for confirmation for each reply, but follow
 the skip rules strictly. Report a summary at the end (replied / skipped / errors).
 
+## Question comment on every Short (owner approved 2026-11-10)
+
+`python3 yt.py comment VIDEO_ID "question"` posts a top-level comment as the channel (50 quota units).
+Post the Short's choice question right after publishing and log it in `social/youtube-comments-log.md`.
+The YouTube API can't pin comments, so tell the owner to pin it (Studio/app: Comments → ⋮ → Pin).
+
 ## Analytics
 
 Per `CLAUDE.md`, use vidIQ first. The YouTube Analytics API through this project is the fallback
@@ -94,5 +100,4 @@ Useful reports for Shorts (all tested 2026-11-08):
 - Traffic sources: `--metrics views --dimensions insightTrafficSourceType` (`SHORTS` = the Shorts feed).
 - Countries: `--metrics views --dimensions country`.
 - Retention curve for one video: `--metrics audienceWatchRatio --dimensions elapsedVideoTimeRatio`
-  plus the filter `video==VIDEO_ID` (call the API with `filters`; yt.py has no `--filters` flag yet,
-  so use `yt._call` from Python for this one).
+  plus `--filters video==VIDEO_ID`.
