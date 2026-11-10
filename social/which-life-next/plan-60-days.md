@@ -59,6 +59,18 @@ it is not a guarantee, and on today's numbers it is unlikely without a breakout 
 5. No "subscribe", no outro, no sources on screen (sources go in the description).
 6. Real facts only, 2+ sources that agree; no invented quotes.
 
+### Added 2026-11-10 (data: `shorts-analysis-2026-11-10.md`)
+Every Short stops at ~1–1.7K because the test audience doesn't react: 1 share and 4 comments across ~12K views.
+35–55% swipe away in the first second, and every curve drops ~20 points at 10–20% of the runtime (the background beat).
+- **No background beat.** Context is one on-screen line over the action, never its own voiceover section.
+- **Choice question at the end + pinned comment** with the same question ("Would you have taken the shortcut?",
+  "Which life would you pick?"). It has to be a real question people can answer in one word. No "like and subscribe".
+- **Loop ending:** the payoff in the last 2 s, nothing after it, last words lead back into the opening line.
+- **First frame:** hook text (2–5 words) + the subject in motion. Never "POV:", never a date card.
+- **Titles name the searchable thing** (person/event/place) and prefer "X. Then Y." contrast
+  ("He Was Only Allowed to Serve Food. Then He Shot Down Planes").
+- **Once a week, test a list format** ("3 Titanic Survivors Who Shouldn't Have Lived").
+
 ### Visuals and sound
 Keep the approved channel look (map + ground scenes, Jesse voiceover, ducked SFX, captions in 1–4-word chunks),
 but cut harder: a new shot every 2–4 s, and the first frame must already show the hook text and the main subject.
@@ -75,7 +87,9 @@ but cut harder: a new shot every 2–4 s, and the first frame must already show 
 - Cross-post the same file to the Which Life Next Facebook Page (existing rule).
 
 ### Measure and adjust (every day, 2 minutes)
-- Views at 24 h and 72 h per Short plus swipe-away (engagedViews ÷ views) and % watched from YouTube Analytics.
+- Views at 24 h and 72 h per Short plus swipe-away (engagedViews ÷ views), % watched, **shares, comments** and the
+  retention drop between 10% and 20% (`audienceWatchRatio`) from YouTube Analytics. Targets: swipe-away under 35%,
+  10→20% drop under 10 points, at least 1 share or comment per 100 views.
 - A Short that passes **10K in 24 h**: make 2 follow-ups in the same bucket within 3 days ("Part 2", same title pattern).
 - A bucket that stays under 2K for 3 Shorts: drop it for 2 weeks.
 - Weekly: re-rank the buckets and rewrite the next 7 topics in the queue.
