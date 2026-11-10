@@ -16,3 +16,4 @@ Newest last. Theme rotation and topic repeats are checked against this table (se
 | 010 | 010-photo-holiday-who-replies | photo | layout:bignum / blue / shopkeeper-elder-phone | Missed customers: শুক্রবার/ঈদ/ছুটির দিনে দোকান বন্ধ — AI উত্তর দেয় | 2026-11-03 12:30 | photo 122116230129502830 | scheduled |
 | 011 | 011-photo-setup-4-steps | photo | layout:laptop / yellow / — | Trust & setup: Setup ৪ ধাপে — তথ্য → training → test → live | 2026-11-04 12:30 | photo 122116571991502830 | scheduled |
 | 012 | 012-video-wrong-answer-myth | video | motion / sky / receptionist-headset / Swati | Trust & setup: "AI ভুল উত্তর দিলে?" — শুধু আপনার তথ্য, না জানলে team-কে | 2026-11-04 20:30 | video 2054292635273386 (post 122116574901502830) | published |
+| 013 | 013-photo-morning-lead-list | photo | layout:split / purple / — | Signature: নাম, number, চাহিদা লিখে রাখে → সকালে পুরো customer list (5–9 Nov runs missed) | 2026-11-10 12:30 | photo 122118726321502830 | scheduled |
