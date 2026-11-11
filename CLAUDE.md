@@ -31,7 +31,9 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
 Every new YouTube video **and every Facebook Page video/Reel** gets a custom thumbnail, and it is **designed in
 Figma only** (Figma connector: `use_figma`, `get_screenshot`, `download_assets`). Don't use other design or
 image tools for thumbnails: no `make_thumbnails.py`/PIL rendering, Canva, Higgsfield, vidIQ thumbnail generator,
-AI image generators, Spline etc. The Figma account is on **pay-as-you-go** (owner, 2026-11-11), in chat and in
+AI image generators outside Figma, Spline etc. **Artwork comes from the ChatGPT model inside Figma** (owner, 2026-11-11):
+Figma `generate_image` with model `gpt-image-2.5-flare` (never the Gemini models), with no text in the image and at
+most 3 generations per thumbnail; headings, tags and date tags are added as live Figma text with `use_figma`. The Figma account is on **pay-as-you-go** (owner, 2026-11-11), in chat and in
 every scheduled task: Figma usage/tool-call limits are never a reason to skip Figma; on a rate or usage limit wait
 ~60 s and retry (max 3 times). If Figma is not connected or still fails, say so with the exact error and stop.
 Read the master thumbnail rules in `docs/content/thumbnail-rules.md` first (three concepts, short headline that

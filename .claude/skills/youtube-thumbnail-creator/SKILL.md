@@ -56,6 +56,11 @@ description: "Story-driven thumbnail creator for the Which Life Next YouTube cha
 5. Export with `download_assets` on the frame (`defaultFormat: "jpg"`, scale 1) and save the file in
    `social/thumbnails/`. Make sure it is exactly 1280×720 or 1080×1920 and under 2 MB (YouTube's limit).
 
+**ChatGPT model in Figma (owner, 2026-11-11):** generate the artwork inside Figma with `generate_image`, model
+`gpt-image-2.5-flare` (the ChatGPT image model; never the Gemini models). Prompt for the map style above plus the
+story's key subject, with no text, letters or numbers in the image (1280×720 or 1080×1920). At most 3 generations
+per thumbnail. Then add the heading, label tags and date tag as live text with `use_figma`.
+
 **Figma pay-as-you-go (owner, 2026-11-11):** the owner's Figma account is on pay-as-you-go billing, so Figma
 usage, credit or tool-call limits are no longer a reason to skip Figma. If a call hits a rate or usage limit,
 wait about 60 s and retry it (at most 3 times). If the Figma connector is not connected, still fails after that,

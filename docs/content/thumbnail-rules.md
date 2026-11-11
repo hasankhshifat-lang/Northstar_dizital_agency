@@ -10,8 +10,10 @@ The channel rules in `CLAUDE.md` and section 0 of the thumbnail skill still hold
 rules differ, the channel rules win:
 
 - **Tool:** every thumbnail is built in **Figma** (file "NorthStar Thumbnails"). Where this file says
-  "generate", it means "build in Figma". No AI image generators, Canva, PIL, Higgsfield or vidIQ thumbnail
-  generator. The owner's Figma account is on **pay-as-you-go** (owner, 2026-11-11): Figma usage or
+  "generate", it means "build in Figma". The artwork is generated inside Figma with the ChatGPT image model
+  (`generate_image`, model `gpt-image-2.5-flare`; owner, 2026-11-11), no text in the image, max 3 generations;
+  all words are live Figma text. No image generators outside Figma, no Gemini models, no Canva, PIL, Higgsfield or
+  vidIQ thumbnail generator. The owner's Figma account is on **pay-as-you-go** (owner, 2026-11-11): Figma usage or
   tool-call limits are never a reason to skip Figma; on a rate/usage limit wait ~60 s and retry (max 3 times).
 - **Style:** the channel's **illustrated map style** (parchment land, teal water, tan story state, rust-red
   route, red pins, dark label tags, gold-on-dark date tag, Anton heading in white + gold) is the default.
