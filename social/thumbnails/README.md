@@ -1,5 +1,7 @@
 # YouTube thumbnails (map view + hook heading)
 
+Figma file "NorthStar Thumbnails": key `Kg0Qo4VpVpS5Ufwk0wr4Or`, https://www.figma.com/design/Kg0Qo4VpVpS5Ufwk0wr4Or (created 2026-11-11).
+
 1280×720 JPGs for every Which Life Next video, built by `make_thumbnails.py`. Each one uses the same
 illustrated map style as the channel's Shorts (parchment land, teal water, thin state lines, the story's
 state highlighted in tan, a rust-red route with white waypoints, red teardrop pins, dark label tags), drawn

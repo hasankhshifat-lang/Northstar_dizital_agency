@@ -10,3 +10,4 @@ One row per day. Check this before picking a topic so nothing repeats.
 | 2026-11-01 | Pony Express 1860–61 — first voiced map Short (approved template) | GeoGlobeTales style study (Louisiana Purchase 18M) | — (Shorts only) | Metricool #413119675 (2026-11-03 06:00 SGT) · Drive: TEMPLATE-approved-pony-express-voiced-v3.mp4 |
 | 2026-11-09 | The Ghost Army: US inflatable-tank deception, WWII (queue #2, WR) | Smithsonian, National WWII Museum, ghostarmy.org, History.com | — | vy-qRhRjnN0 (2026-11-10 21:00 SGT) |
 | 2026-11-10 | Mike the Headless Chicken, Fruita CO 1945 (queue #3, WD) | Wikipedia, Smithsonian, Fruita Mike the Headless Chicken Days | — | PKdcctcYjfw (2026-11-11 21:00 SGT) |
+| 2026-11-11 | Hugh Glass, grizzly mauling + 200-mile survival, South Dakota 1823 (queue #4, WW) | HISTORY.com This Day in History; Wikipedia | — | _w_jqoz9elc (2026-11-12 21:00 SGT) |

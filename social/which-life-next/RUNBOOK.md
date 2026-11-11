@@ -454,3 +454,10 @@ Start on the map, then **dive into the place** and show what the narration descr
 - `pip install faster-whisper` is needed each fresh container; `--sort` is not exposed by `yt.py analytics`, call `yt._call` with `sort=-views,maxResults` for the per-video report.
 - Thumbnails: add a `v_<slug>` function to `social/thumbnails/make_thumbnails.py`, run with `/usr/bin/python3 -I … --vertical <KEY>`.
 - Thumbnails 2026-11-10 (owner): map-only thumbnails don't explain the topic. Make a 2D cartoon of the story (Remotion composition `MikeThumb` in src/stories/mikeThumb.tsx, Anton font in public/anton.ttf): the main character + the key object + big 2-word hook + one proof line. No 3D/Blender models. Figma connector was not available in the session.
+
+### Learned 2026-11-11 (Hugh Glass Short)
+- Story: `src/stories/hughGlass.tsx` (US map with SD fill, hand-placed rivers, route preview flash in the question beat) + `src/sets/glassScenes.tsx` (Bear rig with rear/roar, Lying man, Rifle, Knife, Fort stockade, Prairie, crawl via Kit `lean`); mix in `shorts/hugh-glass-2026-11-12/mix.py` (synth growl + fire crackle).
+- Big hook text in Anton: add `@font-face` for `public/anton.ttf` inside the composition (family "AntonT").
+- Remotion's mp4 is yuvj420p: re-encode with `-vf "scale=in_range=pc:out_range=tv,format=yuv420p"` to get true yuv420p.
+- Lying figures: the Kit rig rotated −90° puts the head ~400 px left of x, so keep x ≥ 560 or the head is cut off.
+- Figma: the file "NorthStar Thumbnails" now exists (key `Kg0Qo4VpVpS5Ufwk0wr4Or`). The owner's Figma seat is **Collab** on the Professional plan, and its MCP tool-call limit was hit after `create_new_file` + `create_session` + one `generate_image`; every `use_figma` call then failed. A Dev/Full seat is needed for a full Figma thumbnail each day.

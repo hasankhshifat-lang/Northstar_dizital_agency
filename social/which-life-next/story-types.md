@@ -47,3 +47,4 @@ A slow-moving threat (insects eating crops) seems weaker than a person facing su
 | They Carried Mail 1,900 Miles in 10 Days… on Horseback (FIRST voiced map Short) | Journey / race against time | 11-03 06:00 | #413119675 |
 
 - 2026-11-09 vy-qRhRjnN0: WR (war stories & inventions) — Ghost Army inflatable tanks. Track 24 h views and engagedViews ÷ views.
+- 2026-11-11 _w_jqoz9elc: WW (Wild West) — Hugh Glass, grizzly + left for dead + 200 miles (survival/revenge feat). Track 24 h views and engagedViews ÷ views.
