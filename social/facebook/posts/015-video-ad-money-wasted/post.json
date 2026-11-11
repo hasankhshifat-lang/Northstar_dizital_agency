@@ -1,0 +1,167 @@
+{
+ "type": "video",
+ "status": "draft",
+ "pillar": "Missed customers",
+ "angle": "Ad-এ টাকা খরচ করলেন, কিন্তু message-এর উত্তর দেরিতে → ad-এর টাকা নষ্ট",
+ "voice": "Tazim",
+ "title": "Boost-এ টাকা দিলেন, message-এর উত্তর দিলেন না?",
+ "caption": "Boost-এ টাকা দিলেন, message এলো… আর উত্তর গেলো ৫ ঘণ্টা পরে? 💸\nততক্ষণে customer অন্য page থেকে কিনে ফেলেছে, ad-এর টাকাটাই নষ্ট।\n\nAI receptionist প্রতিটা message-এর সাথে সাথে উত্তর দেয়, order-ও নেয়।\n👉 আপনার page-এ বসাতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
+ "design": {
+  "engine": "motion",
+  "palette": "lime",
+  "cover_at": 2.5,
+  "beats": [
+   {
+    "type": "kinetic",
+    "small": "এই মাসের boost 💸",
+    "text": "Ad-এ *টাকা* দিলেন…",
+    "size": "s3",
+    "avatars": [
+     [
+      "woman-fcommerce-phone.png",
+      90,
+      520
+     ],
+     [
+      "shopkeeper-elder-phone.png",
+      840,
+      560
+     ],
+     [
+      "salon-owner-thumbsup.png",
+      120,
+      1300
+     ],
+     [
+      "man-blue-shirt-phone.png",
+      820,
+      1340
+     ]
+    ],
+    "say": "এই মাসে page boost-এ টাকা দিলেন। Ad চলছে, message-ও আসছে... দারুণ!",
+    "tone": "curious"
+   },
+   {
+    "type": "dashboard",
+    "title": "Message আসছে, *উত্তর নেই*",
+    "head": "Page Inbox",
+    "rows": [
+     [
+      "💬",
+      "\"Price কত?\"",
+      "দুপুর ২:১০ · Messenger",
+      "অপেক্ষায়"
+     ],
+     [
+      "💬",
+      "\"Size আছে?\"",
+      "দুপুর ২:২৫ · Messenger",
+      "অপেক্ষায়"
+     ],
+     [
+      "💬",
+      "\"Delivery কবে?\"",
+      "বিকাল ৩:০৫ · WhatsApp",
+      "অপেক্ষায়"
+     ],
+     [
+      "💬",
+      "\"Order করবো\"",
+      "বিকাল ৪:৪০ · Messenger",
+      "অপেক্ষায়"
+     ]
+    ],
+    "say": "কিন্তু আপনি তখন দোকানে ব্যস্ত। একটার পর একটা message জমছে, উত্তর দেওয়ার কেউ নেই।"
+   },
+   {
+    "type": "bigword",
+    "dark": true,
+    "trans": "wipe",
+    "text": "নষ্ট",
+    "after": "Ad-এর টাকা দিয়ে আনা customer অন্য page-এ চলে গেলো",
+    "say": "পাঁচ ঘণ্টা পরে যখন উত্তর দিলেন, customer ততক্ষণে অন্য page থেকে কিনে ফেলেছে। মানে ad-এর টাকাটাই নষ্ট।",
+    "tone": "serious"
+   },
+   {
+    "type": "kinetic",
+    "text": "Ad আনে message,\n*উত্তর* আনে sale",
+    "size": "s2",
+    "say": "মনে রাখবেন, ad আনে message। কিন্তু sale আসে তখনই, যখন উত্তর যায় সাথে সাথে।"
+   },
+   {
+    "type": "chat",
+    "title": "AI থাকলে, *সাথে সাথে*",
+    "name": "Your Page",
+    "initials": "YP",
+    "messages": [
+     {
+      "from": "me",
+      "text": "Price কত?"
+     },
+     {
+      "from": "ai",
+      "text": "জি 😊 দাম আর details দিলাম"
+     },
+     {
+      "from": "me",
+      "text": "Order করবো"
+     },
+     {
+      "from": "ai",
+      "text": "নাম আর address দিন ✅"
+     }
+    ],
+    "chips": [
+     [
+      "⚡",
+      "সাথে সাথে উত্তর",
+      80,
+      560
+     ],
+     [
+      "🛒",
+      "Order নেওয়া হলো",
+      600,
+      1500
+     ]
+    ],
+    "say": "AI receptionist থাকলে ad থেকে আসা প্রতিটা message-এর উত্তর যায় সাথে সাথে। দাম বলে, order-ও নিয়ে নেয়।",
+    "tone": "warmly"
+   },
+   {
+    "type": "person",
+    "title": "আপনার *ad-এর টাকা* কাজে লাগে",
+    "size": "s2",
+    "person": "man-laptop.png",
+    "chips": [
+     [
+      "📈",
+      "বেশি message, বেশি উত্তর",
+      60,
+      820
+     ],
+     [
+      "✅",
+      "কেউ অপেক্ষায় নেই",
+      600,
+      1000
+     ]
+    ],
+    "button": [
+     "📊 Inbox দেখুন",
+     90,
+     1120
+    ],
+    "say": "তখন ad-এর প্রতিটা টাকা কাজে লাগে। কেউ অপেক্ষায় বসে থাকে না।",
+    "tone": "warmly"
+   },
+   {
+    "type": "cta",
+    "text": "Ad-এর সাথে *AI receptionist*",
+    "sub": "মাসিক, usage অনুযায়ী খরচ",
+    "say": "NorthStar Dizital আপনার page-এ AI receptionist সেট করে দেয়। খরচ মাসিক, usage অনুযায়ী। আজই WhatsApp করুন!",
+    "tone": "excited"
+   }
+  ]
+ }
+}

@@ -98,7 +98,7 @@ the `ad` (classic) and `chat` themes. Starting files for each are in `templates/
 | `laptop` | dashboard mockup + floating icons | owner sees everything in one place, setup |
 | `question` | "AI কি …?" hook, robot, person | myths, objections, curiosity |
 | `bignum` | giant number/keyword (`big`) + person | ২৪/৭, ০ মিস — for a word like "ছুটি নেই" set `bigSize: 190, bigTop: 250` |
-| `sketch` | line-art city, big word behind person | "for everyone", offline shops |
+| `sketch` | line-art city, big word behind person | "for everyone", offline shops — not with `orange` (logo and big word wash out); keep `head` line 1 short |
 
 Rules: never repeat a layout within the last 5 photo posts or a palette within the last 2; never
 the same person twice in a row; match the layout to the angle. Headline markup: `*word*` accent

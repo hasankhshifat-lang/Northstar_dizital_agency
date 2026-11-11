@@ -1,0 +1,43 @@
+{
+ "type": "photo",
+ "status": "draft",
+ "pillar": "Industry",
+ "angle": "Gadget / mobile shop: \"দাম কত? stock আছে? EMI হবে?\" — AI সাথে সাথে উত্তর দেয়, order নেয়",
+ "caption": "\"ভাই, এই phone-টার দাম কত? Stock আছে?\" — দিনে কতবার শোনেন? 📱\nCounter-এ ভিড়, inbox-এ উত্তর দেওয়ার সময় নেই, customer চলে যায়।\n\nAI receptionist আপনার দেওয়া দাম আর stock দেখে সাথে সাথে উত্তর দেয়, order-ও নেয়।\n👉 আপনার shop-এর জন্য জানতে WhatsApp করুন: +880 1872-692783\n\n#NorthStarDizital",
+ "design": {
+  "theme": "layout",
+  "layout": "sketch",
+  "palette": "green",
+  "head": [
+   {
+    "t": "দাম? Stock? *AI* বলে দেবে"
+   },
+   {
+    "t": "Gadget shop-এর ২৪/৭ receptionist"
+   }
+  ],
+  "big": "AI",
+  "person": "social/facebook/people/man-blue-shirt-phone.png",
+  "cards": [
+   {
+    "icon": "📱",
+    "text": "\"Stock আছে?\" → জি আছে ✅",
+    "pos": [
+     40,
+     620
+    ],
+    "rotate": -4
+   },
+   {
+    "icon": "🛒",
+    "text": "Order নেওয়া হয়েছে",
+    "pos": [
+     730,
+     640
+    ],
+    "rotate": 4
+   }
+  ],
+  "cta": "WhatsApp করুন"
+ }
+}
