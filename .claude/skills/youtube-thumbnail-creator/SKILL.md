@@ -56,7 +56,10 @@ description: "Story-driven thumbnail creator for the Which Life Next YouTube cha
 5. Export with `download_assets` on the frame (`defaultFormat: "jpg"`, scale 1) and save the file in
    `social/thumbnails/`. Make sure it is exactly 1280×720 or 1080×1920 and under 2 MB (YouTube's limit).
 
-If the Figma connector is not connected, out of quota or the seat can't edit the file, say so and stop:
+**Figma pay-as-you-go (owner, 2026-11-11):** the owner's Figma account is on pay-as-you-go billing, so Figma
+usage, credit or tool-call limits are no longer a reason to skip Figma. If a call hits a rate or usage limit,
+wait about 60 s and retry it (at most 3 times). If the Figma connector is not connected, still fails after that,
+returns an auth/billing error, or the seat can't edit the file, say so (with the exact error) and stop:
 don't fall back to another tool.
 - **Report:** when delivering, show the story beats with their share of the script and thumbnail direction, the
   three heading options, which one won and why (one line), and the image.
