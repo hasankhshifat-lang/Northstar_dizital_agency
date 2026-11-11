@@ -26,6 +26,16 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
 - Log uploads/schedules/edits in `social/youtube-schedule-log.md` and comment replies in
   `social/youtube-comments-log.md`, then commit and push.
 
+## Figma: always use the ChatGPT image model
+
+Whenever the user asks to use Figma (thumbnails, posts, designs, mock-ups, reference images or anything else), any
+image generated in Figma is made with the **ChatGPT model inside Figma** (owner, 2026-11-11): the Figma
+`generate_image` tool with `model: "gpt-image-2.5-flare"`, always passed explicitly. Never use the Gemini models
+(`gemini-3.1-flash-image`, `gemini-3.1-flash-lite-image`), and don't generate the image outside Figma. Words go in as
+live Figma text with `use_figma`, not drawn by the model. The Figma account is on pay-as-you-go: on a rate or
+usage limit wait ~60 s and retry (max 3 times); if Figma still fails, say so with the exact error and stop.
+Generations cost Figma AI credits, so keep them to what the task needs (max 3 per thumbnail).
+
 ## YouTube + Facebook thumbnails: always made in Figma, map style
 
 Every new YouTube video **and every Facebook Page video/Reel** gets a custom thumbnail, and it is **designed in
