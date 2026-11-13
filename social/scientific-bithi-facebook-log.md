@@ -13,3 +13,5 @@ Page ID 1497857623404891. Graph API v21.0. The page token comes from GET /149785
 | 2026-11-13 | Status check: posted but not logged by its run | সাবান দিলেই হলুদ লাল! 😱 (Short 2) | 1958131865150436 | published 2026-11-11 14:00 | Live /reel/1958131865150436/; 192 views, 0 likes, 0 comments |
 | 2026-11-13 | Comment check (last 21 days, 3 Reels + 3 posts) | – | – | – | 0 comments, 0 replies, 0 skips |
 | 2026-11-13 | Insights check | – | – | – | video_insights: (#200) read_insights permission missing; only views/likes/comments available |
+| 2026-11-13 | Upload + schedule (Reel), owner approved | চমক আগে, গর্জন পরে কেন? ⚡ (Short 4) | 1152017963974579 | 2026-11-14 14:00 (20:00 Dhaka) | Scheduled; processing; permalink /reel/1152017963974579/ |
+| 2026-11-13 | Set cover (preview made outside Figma: Figma Collab-seat tool-call limit; owner approved) | চমক আগে, গর্জন পরে কেন? ⚡ (Short 4) | 1152017963974579 | – | {"success":true}; is_preferred=true |
