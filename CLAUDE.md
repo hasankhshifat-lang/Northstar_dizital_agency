@@ -12,6 +12,23 @@ Facebook Page video/Reel**, read `docs/content/scriptwriting-rules.md` and follo
 - Run the topic and script checklists (section 15) before handing over a script, and save it in
   `social/scripts/<VIDEO_ID>.md` (or `<working-title>.md`).
 
+## Every video: animation direction, storyboard and learning (default for all generated videos)
+
+For every video we make (YouTube long-form/Shorts, Facebook Page videos/Reels, both channels), in chat and in
+every scheduled task, read and follow `docs/content/animation-direction-rules.md` (owner, 2026-11-13).
+- Work as animation director, cinematographer, storyteller and data analyst: every movement, scene and camera
+  move needs a purpose; believable hand-object contact; characters react to each other; no "character stands
+  and talks in front of a background"; no random zooms or filler motion.
+- **Storyboard before animating** (scene purpose, positions, actions, object contact, shot + camera reason,
+  SFX cue) and run the scene inspection (section 7.3) before the final render. Never hide defects with effects.
+- Keep the two brands separate: Which Life Next (US history) and Scientific Bithi (Bangla comic science) have
+  their own styles and their own learning databases, `social/learning/which-life-next.md` and
+  `social/learning/scientific-bithi.md`. Never mix their lessons.
+- Read the channel's learning database before a new video; add a row after each published video; change one
+  variable at a time for experiments; no conclusions from one video. Use real metrics only.
+- When views are low, check in this order: topic, first 1–3 s, story/retention, packaging, animation, sound.
+- A weekly scheduled task reviews both channels and updates the databases.
+
 ## YouTube: always use the youtube-channel-automation skill (own Google Cloud client)
 
 For any YouTube channel task (uploading, scheduling, editing titles/descriptions/tags/privacy/
