@@ -6,3 +6,4 @@
 | 2026-11-10 | Scheduled Reel upload | This Chicken Lived 18 Months Without a Head | 1501407483048801 | 2026-11-11 13:00 | (status processing at upload time) |
 | 2026-11-11 | Scheduled Reel upload | Left for Dead, He Crawled 200 Miles | 1415038377023916 | 2026-11-12 13:00 | (status processing at upload time) |
 | 2026-11-13 | Scheduled Reel upload | The Night the Mississippi Ran Backward | 1887036389329820 | 2026-11-14 13:00 | (status processing at upload time) |
+| 2026-11-13 | Thumbnail set | The Night the Mississippi Ran Backward | 1887036389329820 (thumb 1887105365989589) | — | is_preferred=true; Figma frame 2:3 render upscaled to 1080×1920 |

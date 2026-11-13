@@ -55,3 +55,4 @@ Not included: Dd6icXr-dW0 (3:09), NtC-QGdCfG0 and kQzq9g26F6Q (8:39) are long-fo
 
 | vy-qRhRjnN0 | THE GHOST ARMY (options: "1,100 ARTISTS", "FAKE ARMY, REAL WAR") | Normandy → Rhine route, 1944-45 | 9:16 |
 | MIKECHICKEN | "NO HEAD / 18 MONTHS ALIVE" (2D cartoon, Remotion composition MikeThumb: headless rooster, cut-off head + axe on block) | PKdcctcYjfw |
+| ulARZlhrP30_9x16.jpg (+ fb_1887036389329820_9x16.jpg) | The Night the Mississippi Ran Backward | AN EARTHQUAKE / DID THIS · FEB 7, 1812 · NEW MADRID | Figma "NorthStar Thumbnails" Kg0Qo4VpVpS5Ufwk0wr4Or node 2:3 (gpt-image-2.5-flare, 1 generation); saved from the Figma screenshot (432×768, upscaled) since export was blocked |
