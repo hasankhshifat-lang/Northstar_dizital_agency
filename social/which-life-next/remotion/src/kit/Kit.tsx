@@ -27,6 +27,9 @@ export type KitProps = {
   lantern?: boolean;
   /** Side pose only: one arm reaches forward along a rope/line. */
   holdingRope?: boolean;
+  /** Side pose only: fixed near/far arm angles in degrees (0 = hanging down, -90 = pointing forward, -150 = raised). Overrides the swing. */
+  armAngle?: number;
+  farArmAngle?: number;
   outfit?: KitOutfit;
   /** Lean into the wind, in degrees (storm scenes). */
   lean?: number;
@@ -315,7 +318,7 @@ const FrontPose: React.FC<{ coat: string; armSwing: number; lantern: boolean; fr
   );
 };
 
-const SidePose: React.FC<{ coat: string; legSwing: number; armSwing: number; lantern: boolean; holdingRope: boolean; frame: number; outfit: KitOutfit; expression: KitExpression }> = ({ coat, legSwing, armSwing, lantern, holdingRope, frame, outfit, expression }) => {
+const SidePose: React.FC<{ coat: string; legSwing: number; armSwing: number; lantern: boolean; holdingRope: boolean; frame: number; outfit: KitOutfit; expression: KitExpression; armAngle?: number; farArmAngle?: number }> = ({ coat, legSwing, armSwing, lantern, holdingRope, frame, outfit, expression, armAngle, farArmAngle }) => {
   const k = useContext(KitColorCtx);
   const blink = expression !== "scared" && frame % 110 >= 105;
   const scared = expression === "scared";
@@ -330,7 +333,7 @@ const SidePose: React.FC<{ coat: string; legSwing: number; armSwing: number; lan
   return (
     <g>
       {/* far arm */}
-      <g transform={`rotate(${holdingRope ? -70 : armSwing} 0 -284)`}>
+      <g transform={`rotate(${farArmAngle ?? (holdingRope ? -70 : armSwing)} 0 -284)`}>
         <path d="M -14 -292 Q -17 -220 -14 -160 L 14 -160 Q 17 -220 14 -292 Z" fill={k.coatShade} stroke={k.ink} strokeWidth={SW} />
         <Hand x={2} y={-146} shade />
       </g>
@@ -391,7 +394,7 @@ const SidePose: React.FC<{ coat: string; legSwing: number; armSwing: number; lan
         <path d={expression === "determined" ? "M 20 -360 Q 32 -356 44 -350" : scared || expression === "sad" ? "M 20 -362 Q 32 -370 44 -364" : "M 20 -360 Q 32 -366 44 -360"} stroke={k.hair} strokeWidth={5} strokeLinecap="round" fill="none" />
       </g>
       {/* near arm */}
-      <g transform={`rotate(${holdingRope ? -78 : -armSwing} 0 -284)`}>
+      <g transform={`rotate(${armAngle ?? (holdingRope ? -78 : -armSwing)} 0 -284)`}>
         <path d="M -15 -292 Q -18 -220 -15 -160 L 15 -160 Q 18 -220 15 -292 Z" fill={coat} stroke={k.ink} strokeWidth={SW} />
         <ellipse cx={0} cy={-214} rx={9} ry={13} fill={k.patch} stroke={k.ink} strokeWidth={2} strokeDasharray="3 3" />
         <rect x={-17} y={-172} width={34} height={12} rx={4} fill={k.coatShade} stroke={k.ink} strokeWidth={SW * 0.8} />
@@ -453,6 +456,8 @@ export const Kit: React.FC<KitProps> = ({
   facing = 1,
   lantern = false,
   holdingRope = false,
+  armAngle,
+  farArmAngle,
   outfit = "frontier",
   lean = 0,
   expression = "neutral",
@@ -479,7 +484,7 @@ export const Kit: React.FC<KitProps> = ({
         {pose === "front" && <FrontPose coat={coat} armSwing={armSwing} lantern={lantern} frame={frame} outfit={outfit} expression={expression} />}
         {pose === "side" && (
           <g transform={`scale(${facing} 1)`}>
-            <SidePose coat={coat} legSwing={legSwing} armSwing={armSwing} lantern={lantern} holdingRope={holdingRope} frame={frame} outfit={outfit} expression={expression} />
+            <SidePose coat={coat} legSwing={legSwing} armSwing={armSwing} lantern={lantern} holdingRope={holdingRope} frame={frame} outfit={outfit} expression={expression} armAngle={armAngle} farArmAngle={farArmAngle} />
           </g>
         )}
       </g>

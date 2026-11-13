@@ -461,3 +461,12 @@ Start on the map, then **dive into the place** and show what the narration descr
 - Remotion's mp4 is yuvj420p: re-encode with `-vf "scale=in_range=pc:out_range=tv,format=yuv420p"` to get true yuv420p.
 - Lying figures: the Kit rig rotated −90° puts the head ~400 px left of x, so keep x ≥ 560 or the head is cut off.
 - Figma: the file "NorthStar Thumbnails" now exists (key `Kg0Qo4VpVpS5Ufwk0wr4Or`). The owner's Figma seat is **Collab** on the Professional plan, and its MCP tool-call limit was hit after `create_new_file` + `create_session` + one `generate_image`; every `use_figma` call then failed. A Dev/Full seat is needed for a full Figma thumbnail each day.
+
+### Learned 2026-11-13 (New Madrid / Mississippi ran backward Short)
+- Story: `src/stories/newMadrid.tsx` (US map, hand-placed Mississippi/Ohio/Missouri, flow chevrons that flip, quake rings + aftershock dots, Reelfoot Lake fill, fault-zone line) + `src/sets/madridScenes.tsx`; mix in `shorts/mississippi-backward-2026-11-14/mix.py` (synth water, rattle, crash).
+- Kit rig now takes `armAngle` / `farArmAngle` (side pose) and `handAt(x, y, s, facing, angle, lean)` in madridScenes returns the exact hand position, so props (pole, axe, bucket, rail, a child's hand) attach to the hands instead of floating. Use it for every held object.
+- Loop trick: the hook scene takes a phase `u0`; the last scene runs the same scene so it ends exactly at frame 0's state.
+- Ground-scene backgrounds must reach y ≥ 2050 (the layer is shifted −130 px); shorter rects show the map through the bottom.
+- `Big`/`Tag` windows shorter than 0.3 s crash the render (non-monotonic interpolate range).
+- `yt.py scheduled` returns nothing for private scheduled uploads; confirm publishAt with `yt.py recent 2`.
+- Figma: the Collab-seat MCP limit still blocks after ~4 calls (create_session, generate_image, 2× use_figma); `download_assets` failed. Pay-as-you-go AI credits don't lift the MCP tool-call limit; a Dev/Full seat is needed.

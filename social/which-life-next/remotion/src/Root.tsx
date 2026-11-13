@@ -11,6 +11,7 @@ import { GhostArmy, GHOST_END } from "./stories/ghostArmy";
 import { MikeChicken, MIKE_END } from "./stories/chickenMike";
 import { MikeThumb } from "./stories/mikeThumb";
 import { HughGlass, GLASS_END } from "./stories/hughGlass";
+import { NewMadrid, MADRID_END } from "./stories/newMadrid";
 import { fonts, palette } from "./theme";
 
 const episodeMeta: CalculateMetadataFunction<EpisodeProps> = ({ props }) => ({ durationInFrames: Math.max(1, episodeDuration(props)) });
@@ -52,6 +53,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Short" component={Short} width={1080} height={1920} fps={30} durationInFrames={300}
       defaultProps={{ ...demoEpisode, startFrame: 0, durationInFrames: 300, hook: ["KIT'S FIRST WINTER", "WOULD YOU MAKE IT?"] }} calculateMetadata={shortMeta} />
     <Composition id="MikeChicken" component={MikeChicken} width={1080} height={1920} fps={30} durationInFrames={Math.round(MIKE_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
+    <Composition id="NewMadrid" component={NewMadrid} width={1080} height={1920} fps={30} durationInFrames={Math.round(MADRID_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="HughGlass" component={HughGlass} width={1080} height={1920} fps={30} durationInFrames={Math.round(GLASS_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="MikeThumb" component={MikeThumb} width={1080} height={1920} fps={30} durationInFrames={1} />
     <Composition id="GhostArmy" component={GhostArmy} width={1080} height={1920} fps={30} durationInFrames={Math.round(GHOST_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />

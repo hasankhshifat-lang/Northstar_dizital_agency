@@ -48,3 +48,4 @@ A slow-moving threat (insects eating crops) seems weaker than a person facing su
 
 - 2026-11-09 vy-qRhRjnN0: WR (war stories & inventions) — Ghost Army inflatable tanks. Track 24 h views and engagedViews ÷ views.
 - 2026-11-11 _w_jqoz9elc: WW (Wild West) — Hugh Glass, grizzly + left for dead + 200 miles (survival/revenge feat). Track 24 h views and engagedViews ÷ views.
+- 2026-11-13 ulARZlhrP30: SV (survival & disasters) — New Madrid earthquake 1812, the Mississippi runs backward (natural-disaster mystery, no single hero). Track 24 h views and engagedViews ÷ views.
