@@ -1,0 +1,51 @@
+# Blackbeard's Scariest Weapon Wasn't a Gun (queue #6, PI)
+Slot: 2026-11-15 21:00 SGT (13:00 UTC, 08:00 ET). Narration 53.2 s, 126 words. Render 53.6 s.
+YouTube / Facebook IDs: see `social/youtube-schedule-log.md` and `social/facebook-whichlifenext-log.md`.
+
+## Topic research report (scriptwriting-rules 2.H)
+1. Topic: Blackbeard (Edward Teach/Thatch), the most feared pirate of 1717–18, and the gap between his image and his record.
+2. Why viewers care: everyone knows the name and the smoking-beard image; almost nobody knows there's no record he killed anyone before the fight that killed him.
+3. Central question: how did the most feared pirate rob ships without killing?
+4. Angle: fear as a weapon (fuses, ribbons, pistols), proved by the Charleston blockade (ransom = a chest of medicine), then the twist: his first real fight was his last (Ocracoke, 22 Nov 1718).
+5. Hook: "Blackbeard reportedly lit fuses under his hat before a fight, so smoke curled around his face."
+6. Titles: "Blackbeard's Scariest Weapon Wasn't a Gun" · "The Most Feared Pirate May Never Have Killed Anyone" · "Blackbeard's Ransom Was a Chest of Medicine".
+7. Interest: high; pirates are one of the plan's winning buckets, Blackbeard is the best-known US-coast pirate, and the 22 Nov anniversary is a week away.
+8. Evergreen.
+9. Visuals: smoking fuses under the hat, braided beard with ribbons, the bandolier of pistols, a merchant crew lowering its flag, the Charleston blockade on the map, the medicine chest, the Navy route to Ocracoke, the sword fight, the empty smoking hat.
+10. Sources: Smithsonian Magazine, "Three Centuries After His Beheading, a Kinder, Gentler Blackbeard Emerges" (2018); NPS Cape Hatteras, "Blackbeard (Edward Teach)"; Wikipedia "Blackbeard" / "Battle of Ocracoke"; NCpedia / northcarolinahistory.org "Blackbeard the Pirate"; Royal Museums Greenwich "Who was Blackbeard?"; QAR Online (NC Dept. of Natural and Cultural Resources) "The day Charleston was besieged"; Walter Magazine "6 Blackbeard myths, debunked".
+11. Score: curiosity 18/20, emotion 10/15, suspense 12/15, demand 13/15, unexpected 9/10, visual 10/10, discussion 8/10, research 4/5 = **84/100** (strong).
+
+Queue note: the queue's working title "Blackbeard Set His Own Beard on Fire" was changed: the 1724 account (Johnson, quoted by Smithsonian/NCpedia) puts the lit matches **under his hat** (some retellings say in the beard), and one historian (Duffus, Walter Magazine) doubts it, so the script says "reportedly … under his hat".
+
+## Script (Jesse, eleven_v4)
+1. [tense] Blackbeard reportedly lit fuses under his hat before a fight, so smoke curled around his face. But there's no record he killed anyone... until his very last fight. So how did he rob ships without killing?
+2. Fear. Ribbons braided into his beard. Six pistols strapped across his chest. Crews took one look... and often gave up without a fight.
+3. In seventeen eighteen, he blockaded Charleston. The whole port. He took hostages... and his ransom was a chest of medicine. The town paid. The hostages went free.
+4. [tense] Then, in North Carolina, the Navy came for him. Ocracoke Inlet. Five gunshots. Twenty sword cuts. His head hung from the bowsprit.
+5. [quietly] The first real fight of his life... was his last. And it started with fuses under his hat... (loops to line 1)
+
+Fact check (only what the sources agree on): lit matches/slow fuses under his hat making smoke around his face (Johnson 1724 via Smithsonian and NCpedia; labelled "reportedly"); no evidence/record he killed anyone before Ocracoke (Smithsonian; Walter Magazine/historian; Wikipedia); beard braided/twisted with ribbons and a sling with three brace (six) of pistols (Johnson via Wikipedia/RMG); victims often surrendered without a fight (Smithsonian/Ewen: scaring people beat damaging the prize; Wikipedia); 1718 blockade of Charleston, hostages, ransom of a chest of medicine, hostages released (RMG, QAR Online, Wikipedia; month differs May/June, so no month is given); killed at Ocracoke Inlet, NC, 22 Nov 1718 by Lt. Robert Maynard's Royal Navy force sent from Virginia (NPS, Wikipedia, HISTORY); five gunshot and about twenty sword/stab wounds (NPS, Wikipedia; some say 25 in total); head hung from the bowsprit of Maynard's sloop (Wikipedia, HISTORY; NPS adds it was later put on a pike at Hampton). Left out: the "body swam around the ship" legend, the skull flag (attribution disputed), exact number of hostages.
+
+## Storyboard (animation-direction-rules 7.2)
+Ground scenes drawn at GY=1240, shifted up 130 px; captions at y 1420; actors kept above y≈1400.
+
+| # | Time (s) | Narration | Purpose | Shot + camera (why) | Characters: position, action, eyes, expression | Object interactions (contact) | Environment | SFX / music |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 0.0–6.3 | "Blackbeard reportedly lit fuses… around his face." | Hook: the image itself, already happening on frame 0 | Ground, medium-wide on his deck, very slow push-in (rising menace) | Blackbeard left third, facing right toward a merchant sail on the horizon; determined glare | Near hand lifts a burning slow-match (cord hangs from the hand, glowing tip) to the hat brim, tucks it (it stays under the brim), then the hand drops onto a pistol butt on the bandolier | Dawn sky, sea ripples, smoke curling from both fuses | Sea, fuse fizz, soft click on the tuck and on the pistol |
+| 2 | 6.3–10.95 | "But there's no record he killed anyone… last fight." | New information + geography of his career | Map, Caribbean → East Coast, slow drift north following the route | — | Rust-red route draws Caribbean → Nassau → Charleston → Ocracoke with white waypoints; red pin + "LAST FIGHT" at Ocracoke | Parchment land, teal sea | Dings on waypoints, pop on pin |
+| 3 | 10.95–13.8 | "So how did he rob ships without killing?" | The question, seen from the victims' side | Ground, wide on a merchant deck (over the captain's line of sight) | Captain holds a spyglass to his eye (tube from eye through his hand), sailor points at the black sloop; captain lowers the glass, scared | Spyglass stays in the hand while lowered | Black-sailed sloop grows on the horizon | Water, pop on HOW? |
+| 4 | 13.8–14.85 | "Fear." | Emotional beat, one word | Close-up of his face, slow dolly-in (intensity) | Glaring, smoke both sides of the face | — | Dark red backdrop | Low boom |
+| 5 | 14.85–17.35 | "Ribbons braided into his beard." | Detail of the costume | Close-up on beard + chest | He pulls a red ribbon taut from a braid, the bow pops tied, hand drops | Ribbon runs from the braid tip to his hand until tied | Deck | Pop on the tie |
+| 6 | 17.35–20.3 | "Six pistols strapped across his chest." | Data + prop | Medium shot | Slides a pistol into the bandolier's holster (now 4 visible); crewman behind hauls a rope, leaning back | Pistol attached to the hand, then stays in the holster; rope runs from the crewman's hands up to the rigging | Sea, mast | Holster click |
+| 7 | 20.3–24.25 | "Crews took one look… without a fight." | Consequence: surrender | Wide on the merchant deck, pirate sloop alongside | Captain (back to camera side, facing the mast) hauls the halyard down hand over hand; two sailors raise their hands at different moments, scared | Halyard runs from his hand to the mast pulley to the flag; flag comes down as his hand comes down | Black sloop rocking alongside | Rope run, pops on hands-up |
+| 8 | 24.25–29.15 | "In 1718, he blockaded Charleston. The whole port." | Place + scale | Map push from the coast to Charleston harbour (motivated by the name) | — | SC filled tan, pin, tag, four pirate sloops pop into a line across the harbour mouth | — | Ding (date), pops, low boom on THE WHOLE PORT |
+| 9 | 29.15–30.6 | "He took hostages," | Human cost | Ground, wide, Charleston skyline behind | Pirate walks a gentleman across the deck, hand on his shoulder; hostage scared, eyes forward | Pirate's hand on the hostage's back shoulder (computed contact) | Low town buildings, church spire | Footsteps on foot contact |
+| 10 | 30.6–33.4 | "and his ransom was a chest of medicine." | The surprising reveal | Close-up on the chest | Blackbeard lifts the lid, looks in | Lid's front edge stays in his hand while it opens; bottles and jars revealed; MEDICINE label | Dark hold | Lid creak, ding |
+| 11 | 33.4–36.25 | "The town paid, the hostages went free." | Resolution of the blockade | Wide on deck | Townsman sets the chest down (both hands on it, then releases); freed gentleman walks off left, relieved | Chest held between both hands until set on the deck | Skyline | Thump on set-down, footsteps |
+| 12 | 36.25–41.75 | "Then, in North Carolina, the Navy came for him. Ocracoke Inlet." | Turning point + geography | Map, NC/VA coast, push-in to Ocracoke on the name | — | NC tan, ROYAL NAVY tag at Hampton, route + two blue sloops down to Ocracoke, pin, tag | — | Pops, ding |
+| 13 | 41.75–44.9 | "Five gunshots. Twenty sword cuts." | Climax, non-graphic | Ground, medium two-shot on deck | Maynard (blue coat, gold-trimmed tricorn) vs Blackbeard, swords clash twice; Navy marksman fires 5 times; Blackbeard staggers back | Swords fixed in the hands along the arm line; sparks where the blades meet; muzzle flash + smoke at the musket | Grey dawn, gunsmoke | 5 shots, 2 clangs |
+| 14 | 44.9–47.0 | "His head hung from the bowsprit." | Consequence, implied (no gore) | Wide silhouette at sunset, the sloop sails off | — | Navy sloop under sail, bowsprit leading | Sunset, gulls | Water, wind |
+| 15 | 47.0–50.65 | "The first real fight of his life was his last" | Emotional payoff | Close on the empty hat and cutlass on the deck, slow dolly-in | — | Fuses still under the brim, smoke thinning and glow fading | Dusk | Fizz fading, soft boom |
+| 16 | 50.65–53.6 | "and it started with fuses under his hat." | Loop back to frame 0 | Same as #1 | Same action from 2.95 s earlier, ending on frame 0's pose | Same match + hat contact | Same | Fizz, sea |
+
+Check: hook visual + text on frame 0 (Blackbeard with smoking fuses + FUSES UNDER HIS HAT); no "stands and talks" scene; camera moves are motivated (menace, place names, intensity); period props (tricorns, slow-match, flintlock pistols, bandolier, cutlasses, sloops, red ensign); 16 views, 11 ground.

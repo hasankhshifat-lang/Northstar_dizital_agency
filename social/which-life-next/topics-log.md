@@ -12,3 +12,4 @@ One row per day. Check this before picking a topic so nothing repeats.
 | 2026-11-10 | Mike the Headless Chicken, Fruita CO 1945 (queue #3, WD) | Wikipedia, Smithsonian, Fruita Mike the Headless Chicken Days | — | PKdcctcYjfw (2026-11-11 21:00 SGT) |
 | 2026-11-11 | Hugh Glass, grizzly mauling + 200-mile survival, South Dakota 1823 (queue #4, WW) | HISTORY.com This Day in History; Wikipedia | — | _w_jqoz9elc (2026-11-12 21:00 SGT) |
 | 2026-11-13 | New Madrid earthquakes 1811–12: the Mississippi runs backward, Reelfoot Lake (queue #5, SV) | USGS summary + NMSZ page; Wikipedia (Eliza Bryan letter) | — | ulARZlhrP30 (2026-11-14 21:00 SGT) · FB 1887036389329820 |
+| 2026-11-14 | Blackbeard 1718: fuses under his hat, no recorded kill before Ocracoke, Charleston blockade ransom of medicine (queue #6, PI) | Smithsonian 2018; NPS Cape Hatteras; RMG; NCpedia; Wikipedia | — | vIm7ATNVI4o (2026-11-15 21:00 SGT) · FB 1041071278392110 |

@@ -18,7 +18,7 @@ WD weird but true · FT feats & escapes
 | 3 | WD | This Chicken Lived 18 Months Without a Head | In 1945 a farmer cut off a chicken's head. It kept walking. | done 2026-11-10 PKdcctcYjfw |
 | 4 | WW | Mauled by a Grizzly, Left for Dead, He Crawled 200 Miles | His own men left him for dead, and took his rifle. ("buried alive" dropped: not in the sources) | done 2026-11-11 _w_jqoz9elc |
 | 5 | SV | The Year the Mississippi Ran Backward | In 1812 the Mississippi River flowed the wrong way. | done 2026-11-13 ulARZlhrP30 (title: The Night the Mississippi Ran Backward) |
-| 6 | PI | Blackbeard Set His Own Beard on Fire | He tied burning fuses into his beard before every fight. | |
+| 6 | PI | Blackbeard Set His Own Beard on Fire | He tied burning fuses into his beard before every fight. | done 2026-11-14 vIm7ATNVI4o (title: Blackbeard's Scariest Weapon Wasn't a Gun; fuses were under his hat per the 1724 account) |
 | 7 | MY | 3 Men Escaped Alcatraz and Were Never Found | The guards found these heads in the beds. They were fake. | |
 | 8 | WR | Japan Bombed Oregon With Balloons | 6 people died on a picnic in Oregon in 1945. | |
 | 9 | TI | She Survived the Titanic… and 2 More Shipwrecks | Violet Jessop was on 3 ships that sank or crashed. | |

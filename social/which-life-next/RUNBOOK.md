@@ -470,3 +470,10 @@ Start on the map, then **dive into the place** and show what the narration descr
 - `Big`/`Tag` windows shorter than 0.3 s crash the render (non-monotonic interpolate range).
 - `yt.py scheduled` returns nothing for private scheduled uploads; confirm publishAt with `yt.py recent 2`.
 - Figma: the Collab-seat MCP limit still blocks after ~4 calls (create_session, generate_image, 2× use_figma); `download_assets` failed. Pay-as-you-go AI credits don't lift the MCP tool-call limit; a Dev/Full seat is needed.
+
+### Learned 2026-11-14 (Blackbeard Short)
+- Story: `src/stories/blackbeard.tsx` (East-coast Albers map rotated to 78°W so the Caribbean fits, animated route with a ship icon riding the head, blockade ship icons, Navy route) + `src/sets/pirateScenes.tsx` (`Figure` = Kit side pose + costume overlays in rig units: Tricorn, Beard with ribbons, bandolier `Sling` with pistols, burning `Fuse` with `Smoke`; `Sloop`, `Sea`, `Deck`); mix in `shorts/blackbeard-2026-11-15/mix.py` (synth sword clang, musket shot, fuse fizz, footsteps on Kit walk-cycle contacts: t = kπ/0.22/30).
+- Kit side-pose landmarks (rig units, feet at 0,0): cap −47..77 × −425..−360, eye (34,−335), mouth (35,−310), chin y≈−295, chest front x≈46; straight arm reach = 138 from the shoulder (0,−284), so the hand can't touch the chin: stage beard/face contacts with a held ribbon or prop instead.
+- `interpolate` needs an increasing input range: use `interpolate(-angle, [40, 88], …)` for decreasing arm angles.
+- `yt.py recent` / `scheduled` live only in the working-branch helper; main's helper has `analytics`/`thumbnail`. Per-video analytics need `sort=-views` + `maxResults` (call `yt._call`).
+- Figma Collab-seat MCP limit hit again after create_session + 1 generate_image; all 4 `use_figma` attempts failed.
