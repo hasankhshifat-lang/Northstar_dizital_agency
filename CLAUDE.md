@@ -12,6 +12,8 @@ documentary cut), use `.claude/skills/lemo-opuscar/SKILL.md` (library: github.co
   treatment, production, delivery.
 - Put each film's project folder under `videos/<name>/` in this repo. Commit the source and the
   final video (keep files under GitHub's 100 MB limit), then push.
+- **Don't use the 3D Map Explainer style (`map-explainer`)** for any video, and don't suggest it
+  (owner, 2026-11-14). Pick or suggest other styles.
 - The renderer wants ffmpeg 7+. If the container only has an older ffmpeg, say so before rendering.
 - Uploading or posting the finished video still follows the YouTube and Facebook sections below.
 
