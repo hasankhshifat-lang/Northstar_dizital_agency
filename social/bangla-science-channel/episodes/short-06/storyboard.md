@@ -1,7 +1,7 @@
 # Short 6 storyboard: চিরুনিতে কি চুম্বক আছে? (chiruni-chumbok, static electricity)
 
 Script and topic report: `../../shorts/short-06-chiruni-chumbok.md` (score 82). Voice timeline: `../../voiceover/short-06/timeline.json` (voice 0.9–55.04 s). Total ≈ 57.8 s with the end card.
-Setting: the village courtyard from Short 3, afternoon. A small wooden table (paper bits, pins) between Mama (x280) and Boltu (x690); Bithi (x870) stands in front of a blue water drum with a brass tap, a thin stream running into a bucket. Feet line F=1820.
+Setting (3D, Blender): a Dhaka rooftop in the afternoon: terracotta-tiled roof, cream parapet, blue water tank with a brass tap and a bucket, clothesline with laundry, potted plants, pastel city skyline. A small wooden table (paper bits, pins) between Mama (x250) and Boltu (x640); Bithi (x820) stands beside the tank, the tap stream running into the bucket. Close-ups (scenes 1, 5, 7, 10) use a 3D table camera; the reveal (scene 13) uses a 3D tap camera. Feet line F=1820.
 Structure (scriptwriting rules §14): hook 0–3 s, mystery 3–10 s, development with a twist 10–35 s (the magnet fails, then the real cause), big reveal 40–48 s (water bends), puzzle at the end. Three curiosity loops: is it a magnet? → no, so what is it? → can it bend water?
 
 | # | Time | Line | Purpose | Shot + camera (why) | Characters: position, action, eyes, expression | Object interaction (contact) | Environment | SFX |

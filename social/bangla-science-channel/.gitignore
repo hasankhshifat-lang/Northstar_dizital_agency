@@ -3,3 +3,4 @@ kit/s[4-9]/
 kit/s[1-9][0-9]/
 voiceover/*/lines/
 voiceover/*/vo.wav
+kit/env3d/out/render.log

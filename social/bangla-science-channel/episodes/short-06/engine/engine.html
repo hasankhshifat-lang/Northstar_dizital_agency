@@ -79,6 +79,9 @@ CHAR_NAMES.forEach((name, cIdx) => {
 const bgEl = document.getElementById('bg');
 const charsEl = document.getElementById('chars');
 if (D.bg) bgEl.innerHTML = D.bg;
+// 3D environment plates: D.bgs = {key: '<img/svg markup>'}; a shot picks one with shot.bgk (default: D.bg)
+const bgPlates = {};
+if (D.bgs) { bgEl.style.transform = 'none'; bgEl.innerHTML = ''; for (const k in D.bgs) { const d = document.createElement('div'); d.style.cssText = 'position:absolute;left:0;top:0;width:1080px;height:1920px;display:none'; d.innerHTML = D.bgs[k]; bgEl.appendChild(d); bgPlates[k] = d; } }
 
 const charNodes = {};
 CHAR_NAMES.forEach(name => {
@@ -188,6 +191,7 @@ function render(t) {
   if (!shot) return;
 
   // Camera ease-in-out
+  if (D.bgs) { const k = shot.bgk || D.bgDefault; for (const kk in bgPlates) bgPlates[kk].style.display = (kk === k) ? '' : 'none'; }
   const shotDur = Math.max(0.001, shot.end - shot.start);
   const st = Math.max(0, Math.min(1, (t - shot.start) / shotDur));
   const ease = st * st * (3 - 2 * st);

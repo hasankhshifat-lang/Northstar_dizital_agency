@@ -17,13 +17,16 @@ This is everything needed to make a Short with মন্টু মামা, ব
 | `p5/fonts.css`, `fonts/` | Baloo Da 2, Hind Siliguri and Atma (Bangla), linked by relative path |
 | `brand/` | Facebook cover/profile generator |
 
+## 3D environments (owner rule 2026-11-14)
+Every Short is staged in a **3D environment built in Blender, and never the same environment twice**. See `env3d/README.md` (camera convention, plates, anchor points, environment register). The puppets and props stay 2D on top of the 3D plates.
+
 ## Making a new Short (45–60 s, about 90–110 Bangla words)
 1. **Script:** use `../shorts/short-NN-*.md` if it exists, otherwise draft with `../tools/freellm.py draft`, then fix it by hand. Check every fact in two steps (the NCTB textbook, then a second source). The characters' roles: মামা gets it funny-wrong, বল্টু asks, বিথী explains in correct scientific language, and the end has a puzzle for the comments.
 2. **Voice:** ElevenLabs `eleven_v4`, one take per character with lines separated by `[long pause]`.
    - Voices: Mama `MNuISDUw2Kqij2hI0QHV` ("[deep voice]"), Bithi `nUarI71Lei0IFt1ybDm1`, Boltu `N6PAsaEqAXM8EIxJn9g3` ("[childlike voice] [high voice]").
    - Split the takes on silences (ffmpeg silencedetect −38 dB / 0.55 s) and assemble with about 0.3 s gaps.
    - Write `timeline.json` (`lines[i] = {i, speaker, also?, start, end, text}`; the voice starts at 1.0 s). See `../voiceover/short-03/` (`split_check.py`).
-3. **Art + shots:** copy `s3/` into a new folder (for example `s4/`).
+3. **Environment + art + shots:** first build a new 3D environment (`env3d/README.md`); then copy `s6/` (engine with 3D plates) into a new folder.
    - Make the story props in `art4.py` (import `art` like `art3.py` does) and the shots in `build_s4.py`. Use `cam()`, which never shows past the 1080×1920 background, plus `pop()` and `prop()`.
    - Positions: feet line F=1820; head heights mama 845, bithi 850, boltu 700 (times scale).
    - Rules: text stays inside the frame and is explanation only, in scientific language; no border designs; no needless hand raising; heads turn toward the speaker; the end card has the সাইন্টিফিক বিথী banner, the wheel and three name plates.

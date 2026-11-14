@@ -4,13 +4,18 @@ Held props sit at hand points measured with probe.py (chars at scale 0.8 on F=18
 import json, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import art6 as X
+import art6 as X, base64
 A = X.A
 
 S = Path(sys.argv[1]); V = Path(sys.argv[2])
 P = S / "s6"
 chars = json.loads((S / "chars/chars3.json").read_text())
 tl = json.loads((V / "timeline.json").read_text())
+ENV = S / "env3d/out"                                     # 3D rooftop plates + projected anchor points (env3d/rooftop.py)
+PT = json.loads((ENV / "rooftop_points.json").read_text())
+def plate(name):
+    b64 = base64.b64encode((ENV / f"rooftop_{name}.jpg").read_bytes()).decode()
+    return f'<img src="data:image/jpeg;base64,{b64}" style="width:1080px;height:1920px;display:block">'
 G_LINES = {5, 6}                                  # Bithi's explaining lines get a talking gesture
 lines = [{"speaker": l["speaker"], "start": l["start"], "end": l["end"], **({"g": True} if l["i"] in G_LINES else {})} for l in tl["lines"]]
 LN = {l["i"]: l for l in tl["lines"]}
@@ -40,40 +45,53 @@ B_OFFER, B_OFFER_H = [60, 0, -40, 6, 0], (B[0] - 169, 1482)    # Boltu's left ar
 B_UP, B_UP_H = [0, -120, 6, -20, 0], (B[0] + 198, 1243)          # Boltu's right arm raised
 T_RUB = (([0, -150, -6, -50, 0], (T[0] + 87, 1045)), ([0, -168, -6, -50, 0], (T[0] + 27, 1065)))   # Bithi's comb on her hair
 
-TABLE = (450, 1650); TOP = 1530                          # bits/pins rest centre line on the table top
-BITS = [(400 + k * 28, TOP + (k % 2) * 4) for k in range(5)]
-PINS = [(318, TOP + 4, 10), (343, TOP, -20), (366, TOP + 6, 30)]
-DRUM = (1085, 1516); TAP = (DRUM[0] - 117, 1558)
-STREAM_C = (TAP[0] - 111.6 + 90, TAP[1] + 100)          # stream svg 180 x 200, x0 at 0.62*180
+TOPW = PT["wide"]["table_top_c"][1] + 6                  # table top (front half) in the wide plate
+TC = PT["table"]["c"]; KT = PT["table"]["px_per_m_at_c"] / 1235      # close-up props were laid out for 1235 px/m around (540, 944)
+def tp(x, y): return (TC[0] + (x - 540) * KT, TC[1] + (y - 944) * KT)
+TOP = tp(0, 940)[1]
+KP = PT["tap"]["px_per_m"] / 855
+BITS = [tp(400 + k * 55, 950 + (k % 2) * 14) for k in range(5)]
+PINS = [(*tp(190, 960), 10), (*tp(240, 945), -20), (*tp(290, 968), 30)]
+TAPW = PT["wide"]["tap"]; RIMW = PT["wide"]["rim"]; TAPC = PT["tap"]["tap"]; RIMC = PT["tap"]["rim"]
 bitsvg = [X.bit(k) for k in range(5)]
 CB = X.comb_bits(); COMB = X.comb(); HC = X.hand_comb(); HM = X.hand_magnet(); MAG = X.magnet(); MP = X.magnet_pins()
 
 def table_props(a, b, bits=True, pins=True, comb_on_table=False):
-    out = [prop(X.table(), hold(a, b, *TABLE), z=6)]
-    if bits: out += [prop(bitsvg[k], hold(a, b, x, y, .8, k * 23 % 40 - 20), z=7) for k, (x, y) in enumerate(BITS)]
-    if pins: out += [prop(X.pin(r), hold(a, b, x, y, .7), z=7) for x, y, r in PINS]
-    if comb_on_table: out.append(prop(COMB, hold(a, b, 565, TOP - 10, .42, 4), z=8))
+    """Small items on the 3D table in the WIDE plate (the table itself is part of the 3D environment)."""
+    out = []
+    if bits: out += [prop(bitsvg[k], hold(a, b, 395 + k * 18, TOPW + (k % 2) * 3, .32, k * 23 % 40 - 20), z=7) for k in range(5)]
+    if pins: out += [prop(X.pin(r), hold(a, b, 330 + k * 14, TOPW + 2, .3), z=7) for k, (x, y, r) in enumerate(PINS)]
+    if comb_on_table: out.append(prop(COMB, hold(a, b, 535, TOPW - 4, .3, 4), z=8))
     return out
+def stream_at(tap, rim, s, bend=0.0, a=0, b=1, op=None):
+    L = (rim[1] - tap[1]) / s
+    keys = op if op else hold(a, b, tap[0] - 111.6 * s + 90 * s, tap[1] + (rim[1] - tap[1]) / 2, s)
+    return prop(X.stream(bend, L), keys, z=3)
 def drum_props(a, b, bend=None):
-    out = [prop(X.drum_tap(), hold(a, b, *DRUM, .9), z=3), prop(X.bucket(), hold(a, b, TAP[0] + 10, 1802, .8), z=4)]
-    if bend is None: out.append(prop(X.stream(0, 200), hold(a, b, *STREAM_C), z=3))
-    else: out += bend
+    """Running tap water in the WIDE plate (tank, tap and bucket are 3D)."""
+    return [stream_at(TAPW, RIMW, .45, 0, a, b)]
+def table_cu_props(a, b, bits=True, pins=True, comb_on_table=True):
+    out = []
+    if bits: out += [prop(bitsvg[k], hold(a, b, x, y, .9 * KT, k * 23 % 40 - 20), z=7) for k, (x, y) in enumerate(BITS)]
+    if pins: out += [prop(X.pin(r), hold(a, b, x, y, 1.0 * KT), z=7) for x, y, r in PINS]
+    if comb_on_table: out.append(prop(COMB, hold(a, b, *tp(830, 920), .7 * KT, 4), z=8))
     return out
 
 shots = []
 def shot(a, b, **kw): shots.append({"start": a, "end": b, **kw})
-CU = lambda x, y, s=2.6: {"from": cam(x, y, s, 540, 960), "to": cam(x, y, s + 0.08, 540, 960)}
+CU = lambda x=540, y=960, s=1.0: {"from": cam(x, y, s, 540, 960), "to": cam(x, y, s + 0.05, 540, 960)}     # close-ups use their own 3D camera plate
 
 # 1 · HOOK: close-up of the table, the comb comes down, the bits leap up and stick
 a, b = 0, 2.6
-hc = [[0, 455, 1100, .8, 0, 1], [0.35, 455, 1306, .8, 0, 1], [1.8, 455, 1306, .8, 0, 1], [2.6, 455, 1150, .8, 0, 1]]
-pr = [prop(X.table(), hold(a, b, *TABLE), z=6)] + [prop(X.pin(r), hold(a, b, x, y, .7), z=7) for x, y, r in PINS]
-pr.append(prop(HC, hc, z=30))
+HCX, HCY = tp(510, 693); HS = .9 * KT                    # hand_comb: teeth bottom just above the bits
+UPY = HCY - 300 * KT
+hc = [[0, HCX, UPY, HS, 0, 1], [0.35, HCX, HCY, HS, 0, 1], [1.8, HCX, HCY, HS, 0, 1], [2.6, HCX, HCY - 240 * KT, HS, 0, 1]]
+pr = table_cu_props(a, b, bits=False, comb_on_table=False) + [prop(HC, hc, z=30)]
 for k, (x, y) in enumerate(BITS):
-    tj = 0.45 + k * 0.08; tx = 378 + k * 38; ty = 1500 + (k % 2) * 6
-    pr.append(prop(bitsvg[k], [[0, x, y, .8, k * 23 % 40 - 20, 1], [tj, x, y, .8, k * 23 % 40 - 20, 1], [tj + 0.12, tx, ty, .8, k * 31 % 30, 1],
-                               [1.8, tx, ty, .8, k * 31 % 30, 1], [2.6, tx, ty - 156, .8, k * 31 % 30, 1]], z=31))
-shot(a, b, blur=0, cam=CU(460, 1450), chars={}, props=pr)
+    tj = 0.45 + k * 0.08; tx = HCX + (-100 + k * 50) * KT; ty = HCY + (212 + (k % 2) * 8) * KT
+    pr.append(prop(bitsvg[k], [[0, x, y, .9 * KT, k * 23 % 40 - 20, 1], [tj, x, y, .9 * KT, k * 23 % 40 - 20, 1], [tj + 0.12, tx, ty, .9 * KT, k * 31 % 30, 1],
+                               [1.8, tx, ty, .9 * KT, k * 31 % 30, 1], [2.6, tx, ty - 240 * KT, .9 * KT, k * 31 % 30, 1]], z=31))
+shot(a, b, blur=0, bgk="table", cam=CU(), chars={}, props=pr)
 # 2 · wide: Mama proudly holds the comb up, Boltu amazed, Bithi watching
 a2, b2 = 2.6, 5.3
 comb_up = prop(CB, hold(a2, b2, M_UP_H[0] + 95, M_UP_H[1] - 8, .75, -12), z=45)
@@ -96,8 +114,9 @@ shot(a4, b4, blur=1.2, cam={"from": cam(450, 1340, 1.4), "to": cam(455, 1345, 1.
      props=table_props(a4, b4, comb_on_table=True) + [prop(MAG, [[a4, 700, 1560, .55, 0, 0], [a4 + 0.39, 700, 1560, .55, 0, 0], [a4 + 0.4, B_OFFER_H[0], B_OFFER_H[1] + 40, .55, 0, 1], [b4, B_OFFER_H[0], B_OFFER_H[1] + 40, .55, 0, 1]], z=45)])
 # 5 · close-up: the magnet over the paper bits, nothing moves
 a5, b5 = b4, LN[3]["start"] + 0.9
-hm = [[a5, 455, 1000, .8, 0, 1], [a5 + 0.45, 455, 1273, .8, 0, 1], [a5 + 0.9, 475, 1273, .8, 3, 1], [a5 + 1.4, 435, 1273, .8, -3, 1], [b5, 455, 1273, .8, 0, 1]]
-shot(a5, b5, blur=0, cam=CU(460, 1450), chars={}, props=table_props(a5, b5, comb_on_table=True) + [prop(HM, hm, z=30)])
+MX, MY = tp(510, 656); MS = .9 * KT                       # hand_magnet: magnet bottom just above the bits
+hm = [[a5, MX, MY - 300 * KT, MS, 0, 1], [a5 + 0.45, MX, MY, MS, 0, 1], [a5 + 0.9, MX + 25 * KT, MY, MS, 3, 1], [a5 + 1.4, MX - 25 * KT, MY, MS, -3, 1], [b5, MX, MY, MS, 0, 1]]
+shot(a5, b5, blur=0, bgk="table", cam=CU(), chars={}, props=table_cu_props(a5, b5) + [prop(HM, hm, z=30)])
 # 6 · Mama, annoyed, stares at the magnet: "it's broken!"
 a6, b6 = b5, LN[3]["end"] + 0.55
 shot(a6, b6, blur=1.5, cam={"from": cam(400, 1300, 1.6), "to": cam(400, 1300, 1.7)},
@@ -106,14 +125,13 @@ shot(a6, b6, blur=1.5, cam={"from": cam(400, 1300, 1.6), "to": cam(400, 1300, 1.
      props=table_props(a6, b6, comb_on_table=True) + [prop(MAG, hold(a6, b6, M_OUT_H[0] + 8, M_OUT_H[1] + 42, .55), z=45)])
 # 7 · close-up: Boltu's magnet over the pins, the pins jump up and stick
 a7, b7 = b6, LN[4]["start"] + 1.45
-tp = a7 + 0.6
+tpin = a7 + 0.6
 pins7 = []
 for k, (x, y, r) in enumerate(PINS):
-    tx = 315 + k * 30; ty = 1505 + k * 3
-    pins7.append(prop(X.pin(r), [[a7, x, y, .7, 0, 1], [tp + k * 0.05, x, y, .7, 0, 1], [tp + k * 0.05 + 0.08, tx, ty, .7, 60 + k * 15, 1], [b7, tx, ty, .7, 60 + k * 15, 1]], z=31))
-shot(a7, b7, blur=0, cam=CU(380, 1450),
-     chars={}, props=[prop(X.table(), hold(a7, b7, *TABLE), z=6)] + [prop(bitsvg[k], hold(a7, b7, x, y, .8, k * 23 % 40 - 20), z=7) for k, (x, y) in enumerate(BITS)] +
-     [prop(HM, [[a7, 345, 1000, .8, 0, 1], [tp - 0.05, 345, 1273, .8, 0, 1], [b7, 345, 1273, .8, 0, 1]], z=30)] + pins7)
+    tx, ty = tp(200 + k * 50, 900 + k * 4)
+    pins7.append(prop(X.pin(r), [[a7, x, y, KT, 0, 1], [tpin + k * 0.05, x, y, KT, 0, 1], [tpin + k * 0.05 + 0.08, tx, ty, KT, 60 + k * 15, 1], [b7, tx, ty, KT, 60 + k * 15, 1]], z=31))
+shot(a7, b7, blur=0, bgk="table", cam=CU(),
+     chars={}, props=table_cu_props(a7, b7, pins=False) + [prop(HM, [[a7, tp(250, 0)[0], MY - 300 * KT, MS, 0, 1], [tpin - 0.05, tp(250, 0)[0], MY, MS, 0, 1], [b7, tp(250, 0)[0], MY, MS, 0, 1]], z=30)] + pins7)
 # 8 · Boltu shows the magnet with the pins: "not broken!"
 a8, b8 = b7, LN[4]["end"] + 0.3
 shot(a8, b8, blur=1.2, cam={"from": cam(520, 1320, 1.4), "to": cam(525, 1325, 1.46)},
@@ -127,7 +145,7 @@ shot(a9, b9, blur=1.0, cam={"from": cam(600, 1340, 1.2), "to": cam(660, 1340, 1.
      chars={"mama": M, "boltu": B, "bithi": T}, mood={"mama": "neutral", "boltu": "neutral", "bithi": "happy"},
      poses={"boltu": [[a9, *B_UP], [a9 + 0.5, *REST], [b9, *REST]]},
      props=table_props(a9, b9, pins=False, comb_on_table=True) + drum_props(a9, b9) +
-           [prop(MP, [[a9, B_UP_H[0] + 4, B_UP_H[1] - 30, .55, 0, 1], [a9 + 0.5, 330, TOP - 20, .5, 0, 1], [b9, 330, TOP - 20, .5, 0, 1]], z=45),
+           [prop(MP, [[a9, B_UP_H[0] + 4, B_UP_H[1] - 30, .55, 0, 1], [a9 + 0.5, 340, TOPW - 10, .32, 0, 1], [b9, 340, TOPW - 10, .32, 0, 1]], z=45),
             scr(A.tag("স্থির বিদ্যুৎ", 420, 54, "#7A4FB5"), pop(t_name, 540, 300, 1), z=60)])
 # 10 · DEMONSTRATION: comb through hair, electrons hop hair -> comb; then the charged comb lifts the bits
 a10, b10 = b9, LN[6]["end"] + 0.2
@@ -164,7 +182,7 @@ for k in range(5):
     x = 380 + k * 80; y = 1290
     dp.append(scr(bitsvg[k], [[t_split - 0.01, x, y, 1.3, k * 23 % 40 - 20, 0], [t_split, x, y, 1.3, k * 23 % 40 - 20, 1], [tj + k * 0.07, x, y, 1.3, k * 23 % 40 - 20, 1],
                               [tj + k * 0.07 + 0.12, 420 + k * 60, 1130, 1.3, k * 31 % 30, 1], [b10, 420 + k * 60, 1130, 1.3, k * 31 % 30, 1]], z=61))
-shot(a10, b10, blur=8, cam={"from": cam(540, 1300, 1.3), "to": cam(540, 1300, 1.3)}, chars={}, props=dp)
+shot(a10, b10, blur=8, bgk="table", cam=CU(), chars={}, props=dp)
 # 11 · Mama's dare, pointing at the tap: "bend the tap water with it, if you can!"
 a11, b11 = b10, LN[7]["end"] + 0.15
 t_pt = LN[7]["start"] + 2.0
@@ -185,11 +203,13 @@ shot(a12, b12, blur=1.5, cam={"from": cam(hx + 40, hy + 260, 1.55, 540, 820), "t
 # 13 · REVEAL: close-up of the stream, the comb beside it (never touching), the stream bends toward it
 a13, b13 = b12, LN[8]["end"] + 0.25
 t_b = a13 + 0.5
-hc13 = [[a13, TAP[0] - 193, 1450, .8, 0, 1], [a13 + 0.45, TAP[0] - 151, 1506, .8, 0, 1], [b13, TAP[0] - 151, 1506, .8, 0, 1]]
-bend = [prop(X.stream(0, 200), [[a13, *STREAM_C, 1, 0, 1], [t_b, *STREAM_C, 1, 0, 1], [t_b + 0.25, *STREAM_C, 1, 0, 0]], z=3),
-        prop(X.stream(0.5, 200), [[t_b, *STREAM_C, 1, 0, 0], [t_b + 0.25, *STREAM_C, 1, 0, 1], [t_b + 0.5, *STREAM_C, 1, 0, 0]], z=3),
-        prop(X.stream(1.0, 200), [[t_b + 0.25, *STREAM_C, 1, 0, 0], [t_b + 0.5, *STREAM_C, 1, 0, 1], [b13, *STREAM_C, 1, 0, 1]], z=3)]
-shot(a13, b13, blur=0, cam=CU(TAP[0] - 30, 1640, 2.3), chars={}, props=drum_props(a13, b13, bend) + [prop(HC, hc13, z=30)])
+SS = .8 * KP; SC = (TAPC[0] - 111.6 * SS + 90 * SS, (TAPC[1] + RIMC[1]) / 2)
+CMID = (TAPC[1] + RIMC[1]) / 2 - 154 * KP                 # hand_comb: comb at the stream's mid height, right end ~40 px from it
+hc13 = [[a13, TAPC[0] - 230 * KP, CMID - 120 * KP, .8 * KP, 0, 1], [a13 + 0.45, TAPC[0] - 145 * KP, CMID, .8 * KP, 0, 1], [b13, TAPC[0] - 145 * KP, CMID, .8 * KP, 0, 1]]
+bend = [stream_at(TAPC, RIMC, SS, 0, op=[[a13, *SC, SS, 0, 1], [t_b, *SC, SS, 0, 1], [t_b + 0.25, *SC, SS, 0, 0]]),
+        stream_at(TAPC, RIMC, SS, 0.5, op=[[t_b, *SC, SS, 0, 0], [t_b + 0.25, *SC, SS, 0, 1], [t_b + 0.5, *SC, SS, 0, 0]]),
+        stream_at(TAPC, RIMC, SS, 1.0, op=[[t_b + 0.25, *SC, SS, 0, 0], [t_b + 0.5, *SC, SS, 0, 1], [b13, *SC, SS, 0, 1]])]
+shot(a13, b13, blur=0, bgk="tap", cam=CU(), chars={}, props=bend + [prop(HC, hc13, z=30)])
 # 14 · Mama pats his hair, proud: "so much power in my hair!"; Boltu laughs
 a14, b14 = b13, LN[9]["end"] + 0.25
 pk = []; t = a14; i = 0
@@ -224,7 +244,8 @@ shot(E0, DUR + 1, bg="paper", cam={"from": [0, 0, 1], "to": [0, 0, 1]},
             scr(A.tag("বিথী", 200, 44, "#FFFFFF", "#1A1A1A"), pop(E0 + .6, 540, 1128, 1), z=6),
             scr(A.tag("বল্টু", 200, 44, "#F72585", "#1A1A1A"), pop(E0 + .8, 830, 1128, 1), z=6)])
 
-D = {"chars": {"mama": chars["Montu Mama"], "bithi": chars["Bithi"], "boltu": chars["Boltu"]}, "bg": X.bg(),
+D = {"chars": {"mama": chars["Montu Mama"], "bithi": chars["Bithi"], "boltu": chars["Boltu"]}, "bg": "",
+     "bgs": {k: plate(k) for k in ("wide", "table", "tap")}, "bgDefault": "wide",
      "lines": lines, "mouth": json.loads((P / "mouth.json").read_text()), "shots": shots, "dur": DUR}
 html = (P / "engine.html").read_text().replace("__DATA__", json.dumps(D, ensure_ascii=False))
 html = html.replace("</head>", "<style>" + (S / "p5/fonts.css").read_text() + "</style></head>", 1)
