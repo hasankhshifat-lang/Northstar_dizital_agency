@@ -88,11 +88,11 @@ const CAM = [
   [HIT.rise2 + 1.1, [UDW[0] - 300, UDW[1] + 700], 0.36, -1.0],
   [HIT.trib - 1.2, [UDW[0] - 200, UDW[1] + 640], 0.37, -1.5],
   [HIT.trib - 0.2, [TNW[0], TNW[1] + 500], 0.34, 2.0],
-  [HIT.trib + 1.6, [TNW[0] + 300, TNW[1] + 500], 0.35, 2.2],
-  [HIT.med - 1.4, [TEW[0], TEW[1] + 520], 0.32, 2.5],
+  [HIT.trib + 2.6, [TNW[0] + 300, TNW[1] + 500], 0.35, 2.2],
+  [HIT.med - 1.0, [TEW[0], TEW[1] + 520], 0.32, 2.5],
   [HIT.med - 0.2, [MNW[0], MNW[1] + 480], 0.34, -2.5],
-  [HIT.med + 1.6, [MNW[0] + 300, MNW[1] + 480], 0.35, -2.7],
-  [HIT.drop3 - 1.6, [MEW[0], MEW[1] + 500], 0.32, -3.0],
+  [HIT.med + 2.4, [MNW[0] + 300, MNW[1] + 480], 0.35, -2.7],
+  [HIT.drop3 - 1.2, [MEW[0], MEW[1] + 500], 0.32, -3.0],
   [HIT.drop3, [L3W[0] + 100, L3W[1] - 100], 0.27, -1.0],
   [HIT.dive3, L3W, 0.29, -1.5],
   [HIT.enter3, L3W, 1.4, -1.5],
@@ -474,7 +474,7 @@ function overlay(t, st) {
   // the count card: 0 -> 1,340 -> 1,492 (screen-anchored, upper third)
   const ca = seg(t, HIT.trib + 0.3, HIT.trib + 0.8) * (1 - seg(t, HIT.drop3 - 0.9, HIT.drop3 - 0.4));
   if (ca > 0) {
-    const n1 = seg(t, HIT.trib + 0.4, HIT.trib + 1.2), n2 = seg(t, HIT.med + 0.4, HIT.med + 1.0);
+    const n1 = seg(t, HIT.trib + 1.4, HIT.trib + 2.2), n2 = seg(t, HIT.med + 1.7, HIT.med + 2.3);
     const val = Math.round(n2 > 0 ? lerp(1340, 1492, eio(n2)) : lerp(0, 1340, eio(n1)));
     const src = n2 > 0 ? 'Medford Mail Tribune · 16 Apr: "1492 LIVES LOST"' : 'New-York Tribune · 16 Apr: "1,340 PERISH"';
     c.save(); c.globalAlpha = 1;

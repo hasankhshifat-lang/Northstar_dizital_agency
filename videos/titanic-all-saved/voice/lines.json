@@ -1,0 +1,66 @@
+[
+ {
+  "id": "L1",
+  "text": "Monday evening, April fifteenth, nineteen twelve.",
+  "voice": "am_michael",
+  "speed": 0.95,
+  "asr": "Monday evening, April 15, 1912"
+ },
+ {
+  "id": "L2",
+  "text": "A New Haven paper tells its readers: Titanic afloat. No lives lost.",
+  "voice": "am_michael",
+  "speed": 0.95
+ },
+ {
+  "id": "L3",
+  "text": "In New York, crowds push into the White Star Line's office, waiting for names.",
+  "voice": "am_michael",
+  "speed": 0.95
+ },
+ {
+  "id": "L4",
+  "text": "But the ship had sunk before dawn, hours before that paper was printed.",
+  "voice": "am_michael",
+  "speed": 0.95
+ },
+ {
+  "id": "L5",
+  "text": "Tuesday morning, the New-York Tribune: thirteen hundred and forty dead.",
+  "voice": "am_michael",
+  "speed": 0.95,
+  "asr": "Tuesday morning the New York Tribune 1340 dead"
+ },
+ {
+  "id": "L6",
+  "text": "In Oregon, the count is fourteen ninety-two.",
+  "voice": "am_michael",
+  "speed": 0.95,
+  "asr": "In Oregon, the count is 1492."
+ },
+ {
+  "id": "L7",
+  "text": "The Carpathia picked up seven hundred and six people from the lifeboats.",
+  "voice": "am_michael",
+  "speed": 0.95
+ },
+ {
+  "id": "L8",
+  "text": "Everyone else was gone.",
+  "voice": "am_michael",
+  "speed": 0.95
+ },
+ {
+  "id": "L9",
+  "text": "No lives lost, the paper said.",
+  "voice": "am_michael",
+  "speed": 0.95
+ },
+ {
+  "id": "L10",
+  "text": "The National Archives count: fifteen hundred and seventeen died.",
+  "voice": "am_michael",
+  "speed": 0.95,
+  "asr": "The National Archives count 1517 died"
+ }
+]
