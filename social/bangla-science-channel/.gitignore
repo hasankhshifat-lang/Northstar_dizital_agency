@@ -1,4 +1,5 @@
 # build-only working files (runbook: never commit frames, wav files or line splits)
-kit/s[0-9]*/
+kit/s[4-9]/
+kit/s[1-9][0-9]/
 voiceover/*/lines/
 voiceover/*/vo.wav
