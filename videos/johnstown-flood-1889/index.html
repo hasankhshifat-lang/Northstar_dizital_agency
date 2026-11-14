@@ -207,7 +207,7 @@ const flowS = arc(flowPts), FLEN = flowS[flowS.length - 1];
 const flood = {
   water: ribbon(flowPts, { wW: .22, pxW: 9, k: 1.1, normalA: .92, col: 0x5b4a33, order: 3 }),
   silt: ribbon(flowPts, { wW: .14, pxW: 4, k: 1.6, normalA: .55, col: 0x8a7350, order: 3 }),
-  foam: ribbon(flowPts, { wW: .20, pxW: 10, k: 1.4, base: 0, col: 0xfff6ea, flowAmt: .35, flowSp: .9, flowLen: .25, order: 4, headW: .28 }),
+  foam: ribbon(flowPts, { wW: .16, pxW: 7, k: 1.8, base: 0, col: 0xd9cbb4, flowAmt: .22, flowSp: .9, flowLen: .25, order: 4, headW: .2 }),
 };
 // the calm river and the 14-mile ruler (S2): the same line, drawn from the town up to the dam in warm white
 const rulerPts = flowPts.slice().reverse();
@@ -478,6 +478,7 @@ function runLabels(t) {
     txt('TONS OF WATER', 76, 584, { size: 30, w: 600, sp: 5, align: 'left', col: C.light, a, id: 'tons2', shadow: 1 });
   }
   const b = ss(seg(t, 30.9, 31.4)) * (1 - ss(seg(t, 34.4, 34.9)));
+  if (b > 0) panel(40, 610, 700, 56, b);
   if (b > 0) txt('WAVE ≈ 35 FT HIGH AT ITS CREST', 76, 646, { size: 30, w: 600, sp: 3, align: 'left', col: C.amberSoft, a: b, id: 'crest', shadow: 1 });
   // the breach: a pulse on the dam
   const r = seg(t, K.breach, K.breach + 1.6);
@@ -552,7 +553,7 @@ function frame(t) {
   const hs = headS(t), on = t >= K.breach + .25 ? 1 : 0, far = lerp(.7, 1, ss(seg(dist, 2, 6)));
   rv(flood.water, { revB: hs, inten: on, soft: .25 });
   rv(flood.silt, { revB: hs, inten: on, soft: .25 });
-  rv(flood.foam, { revB: hs, inten: on, head: hs - .05, headAmt: 1.6 * (1 - ss(seg(runK(t), .96, 1))), headW: lerp(.18, .45, ss(seg(dist, 3, 12))), flowPh: t * 1.4, soft: .2 });
+  rv(flood.foam, { revB: hs, inten: on, head: hs - .05, headAmt: .42 * (1 - ss(seg(runK(t), .96, 1))), headW: lerp(.08, .2, ss(seg(dist, 3, 12))), flowPh: t * 1.4, soft: .2 });
   // the pile: grows on "piled", slab by slab, then burns
   PILE.grp.visible = t >= K.piled - .1; growPile(eio(seg(t, K.piled, K.piled + 1.6)));
   const fire = ss(seg(t, K.fire, K.fire + .8)) * (1 - ss(seg(t, 45.5, 48)) * .55);
