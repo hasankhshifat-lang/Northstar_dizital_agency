@@ -1,0 +1,116 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>As Printed · channel art</title>
+<style>
+@font-face{font-family:'PM';src:url(IBMPlexMono-400.woff2);font-weight:400}
+@font-face{font-family:'PM';src:url(IBMPlexMono-500.woff2);font-weight:500}
+@font-face{font-family:'PS';src:url(IBMPlexSans-400.woff2);font-weight:400}
+@font-face{font-family:'PS';src:url(IBMPlexSans-500.woff2);font-weight:500}
+@font-face{font-family:'SF';src:url(IBMPlexSerif-600.woff2);font-weight:600}
+html,body{margin:0;background:#0d0e10}
+canvas{display:block}
+</style></head>
+<body><canvas id="c"></canvas>
+<script>
+// As Printed: YouTube channel art. ?w=banner (2560x1440, safe area 1546x423) or ?w=avatar (800x800).
+const ORANGE = '#ff5a1f', INK = '#15171a';
+const which = new URLSearchParams(location.search).get('w') || 'banner';
+const cv = document.getElementById('c'), c = cv.getContext('2d');
+const img = s => new Promise((r, j) => { const i = new Image(); i.onload = () => r(i); i.onerror = j; i.src = s; });
+function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+function table(W, H) {
+  const g = c.createRadialGradient(W * .5, H * .48, 10, W * .5, H * .5, Math.hypot(W, H) * .62);
+  g.addColorStop(0, '#f8fafc'); g.addColorStop(.6, '#eef1f4'); g.addColorStop(1, '#d9dde2');
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  const r = rnd(7); c.fillStyle = 'rgba(40,44,50,0.05)';            // dust on the diffuser
+  for (let i = 0; i < W * H / 9000; i++) { c.beginPath(); c.arc(r() * W, r() * H, .6 + r() * 1.6, 0, 7); c.fill(); }
+}
+function item(im, x, y, w, rotDeg, alpha = 1) {
+  const h = im.height * w / im.width;
+  c.save(); c.translate(x + w / 2, y + h / 2); c.rotate(rotDeg * Math.PI / 180); c.globalAlpha = alpha;
+  c.shadowColor = 'rgba(20,24,30,0.10)'; c.shadowBlur = 10;               // the faint edge of a backlit object, not a cast shadow
+  c.drawImage(im, -w / 2, -h / 2, w, h); c.restore();
+  return { x, y, w, h, r: rotDeg };
+}
+function tag(x, y, rot, no, label, id, s = 1) {
+  c.save(); c.translate(x, y); c.rotate(rot * Math.PI / 180); c.scale(s, s);
+  c.font = '500 26px PM'; c.fillStyle = ORANGE; c.fillText(no, 0, 0);
+  c.font = '500 24px PS'; c.fillStyle = INK; c.fillText(label, 46, 0);
+  c.font = '400 19px PM'; c.fillStyle = 'rgba(21,23,26,0.6)'; c.fillText(id, 46, -30);
+  c.restore();
+}
+// the loupe: magnified view of an image region inside a black bevelled ring with an acrylic skirt
+function loupe(cx, cy, R, drawInside, mag) {
+  c.save();
+  c.beginPath(); c.arc(cx, cy, R * 1.30, 0, 7); c.fillStyle = 'rgba(255,255,255,0.18)'; c.fill();       // acrylic skirt
+  c.lineWidth = R * .02; c.strokeStyle = 'rgba(180,186,192,0.55)'; c.stroke();
+  c.beginPath(); c.arc(cx, cy, R, 0, 7); c.save(); c.clip(); drawInside();
+  const v = c.createRadialGradient(cx, cy, R * .7, cx, cy, R); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.22)');
+  c.fillStyle = v; c.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+  const hl = c.createRadialGradient(cx - R * .38, cy - R * .46, 0, cx - R * .38, cy - R * .46, R * .55); hl.addColorStop(0, 'rgba(255,255,255,0.22)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = hl; c.fillRect(cx - R, cy - R, 2 * R, 2 * R); c.restore();
+  c.lineWidth = R * .075; c.strokeStyle = '#0c0d0f'; c.beginPath(); c.arc(cx, cy, R * 1.035, 0, 7); c.stroke();     // ring
+  const bev = c.createLinearGradient(cx - R, cy - R, cx + R, cy + R); bev.addColorStop(0, 'rgba(255,255,255,0.75)'); bev.addColorStop(.35, 'rgba(255,255,255,0.05)'); bev.addColorStop(1, 'rgba(255,255,255,0.15)');
+  c.lineWidth = R * .012; c.strokeStyle = bev; c.beginPath(); c.arc(cx, cy, R * 1.01, 0, 7); c.stroke();
+  c.beginPath(); c.arc(cx, cy, R * 1.065, 0, 7); c.stroke();
+  c.restore();
+}
+function grain(W, H, a = 10) {
+  const d = c.getImageData(0, 0, W, H), p = d.data, r = rnd(3);
+  for (let i = 0; i < p.length; i += 4) { const n = (r() - .5) * a; p[i] += n; p[i + 1] += n; p[i + 2] += n; }
+  c.putImageData(d, 0, 0);
+}
+async function banner() {
+  const W = 2560, H = 1440; cv.width = W; cv.height = H;
+  const [un, tr, me, bo, nw, sv] = await Promise.all(['union.jpg', 'tribune.jpg', 'medford.jpg', 'boats_neg.jpg', 'news_neg.jpg', 'surv_neg.jpg'].map(img));
+  table(W, H);
+  // archive objects around the edges, the safe area (507..2053 × 508..931) left to the title
+  const U = item(un, 70, 10, 880, -3.5);
+  item(bo, 40, 960, 1000, 2.5);
+  item(tr, 1640, -120, 980, 3.0);
+  item(nw, 1560, 975, 980, -2.5);
+  item(sv, 1040, 1110, 560, 1.5);
+  tag(70, 925, 2.5, '06', 'LIFEBOATS ON WAY TO CARPATHIA', 'LC-B2- 2485-4');
+  tag(1590, 950, -2.5, '02', 'WHITE STAR OFFICE, N.Y.', 'LC-B2- 2391-30');
+  // the loupe over the Union's headline: "NO LIVES LOST," magnified
+  const lx = 250, ly = 200, R = 125, mag = 2.2;
+  loupe(lx, ly, R, () => {
+    c.save(); c.translate(lx, ly); c.scale(mag, mag); c.translate(-lx, -ly);
+    c.translate(U.x + U.w / 2, U.y + U.h / 2); c.rotate(U.r * Math.PI / 180); c.drawImage(un, -U.w / 2, -U.h / 2, U.w, U.h); c.restore();
+  });
+  // a reading pinned to the loupe, like the films
+  c.strokeStyle = ORANGE; c.lineWidth = 3; c.beginPath(); c.moveTo(lx + R * 1.12, ly + R * .55); c.lineTo(lx + R * 1.12 + 60, ly + R * .55 + 50); c.lineTo(lx + R * 1.12 + 130, ly + R * .55 + 50); c.stroke();
+  c.font = '500 30px PM'; c.fillStyle = ORANGE; c.fillText('×2.2', lx + R * 1.12 + 142, ly + R * .55 + 60);
+  // title block, centred in the safe area
+  const cx = W / 2;
+  c.textAlign = 'center';
+  c.font = '600 220px SF'; c.fillStyle = INK; c.fillText('As Printed', cx, 760);
+  const tw = c.measureText('As Printed').width;
+  c.fillStyle = ORANGE; c.fillRect(cx - tw / 2, 790, tw, 5);
+  c.font = '500 40px PM'; c.fillStyle = INK;
+  c.save(); c.letterSpacing = '6px'; c.fillText('WHAT THE PAPERS SAID · WHAT THE ARCHIVE SAYS', cx, 868); c.restore();
+  c.beginPath(); c.arc(cx - tw / 2, 792.5, 9, 0, 7); c.fillStyle = ORANGE; c.fill();
+  c.lineWidth = 3; c.strokeStyle = ORANGE; c.beginPath(); c.arc(cx - tw / 2, 792.5, 18, 0, 7); c.stroke();
+  c.textAlign = 'left';
+  const vg = c.createRadialGradient(W / 2, H / 2, H * .45, W / 2, H / 2, W * .72); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(10,12,16,0.22)');
+  c.fillStyle = vg; c.fillRect(0, 0, W, H);
+  grain(W, H, 8);
+}
+async function avatar() {
+  const W = 800, H = 800; cv.width = W; cv.height = H;
+  table(W, H);
+  const cx = 400, cy = 400, R = 300;
+  loupe(cx, cy, R, () => {
+    c.fillStyle = '#fbfcfd'; c.fillRect(0, 0, W, H);
+    c.textAlign = 'center'; c.font = '600 380px SF'; c.fillStyle = INK; c.fillText('A', cx, cy + 128);
+    const tw = c.measureText('A').width + 60; c.textAlign = 'left';
+    c.fillStyle = ORANGE; c.fillRect(cx - tw / 2, cy + 140, tw, 14);
+    c.beginPath(); c.arc(cx - tw / 2, cy + 147, 20, 0, 7); c.fill();
+  });
+  grain(W, H, 6);
+}
+(async () => {
+  for (const f of ['400 20px PM', '500 20px PM', '400 20px PS', '500 20px PS', '600 20px SF']) await document.fonts.load(f);
+  await (which === 'avatar' ? avatar() : banner());
+  window.READY = true;
+})();
+</script></body></html>
