@@ -18,3 +18,4 @@ Page ID 1497857623404891. Graph API v21.0. The page token comes from GET /149785
 | 2026-11-14 | Comment check (last 21 days: 3 Reels + 3 posts; Short 4 still scheduled) | – | – | – | 0 comments, 0 replies, 0 skips |
 | 2026-11-14 | Insights check | – | – | – | video_insights now works: avg watch 8.4 s (Short 3), 8.4 s (Short 1), 3.4 s (Short 2); retention falls to 48–69% by ~5 s; page followers 1 |
 | 2026-11-14 | Short 5 made, sent for approval (not uploaded) | চোখের সামনে মাছ, হাতে খালি পানি! 🐟 (Short 5) | – | planned 2026-11-15 14:00 (20:00 Dhaka) | awaiting owner approval; cover preview made outside Figma (Figma Collab-seat tool-call limit, 3 retries) |
+| 2026-11-14 | Short 5 audio fix (owner reported jumps/cut-offs), re-rendered, sent again for approval (not uploaded) | চোখের সামনে মাছ, হাতে খালি পানি! 🐟 (Short 5) | – | planned 2026-11-15 14:00 (20:00 Dhaka) | lines re-split with padding + fades + fixed gain; 62.1 s; awaiting owner approval |

@@ -1,6 +1,8 @@
 # Short 5 — পুকুর আসলের চেয়ে বেশি গভীর! (apparent depth / refraction)
 
-`short5_pukur_gobhir.mp4`: 1080×1920, 24 fps, 60.0 s (voice 1.05–57.24 s + end card). Voice: `../../voiceover/short-05/` (ElevenLabs eleven_v4, one take per character, sped up 6%; Whisper match 0.86–0.94).
+`short5_pukur_gobhir.mp4`: 1080×1920, 24 fps, 62.1 s (voice 0.95–59.33 s + end card). Voice: `../../voiceover/short-05/` (ElevenLabs eleven_v4, one take per character, sped up 6%; Whisper match per placed line 0.81–0.95).
+
+**Audio fix 2026-11-14 (owner: "audio jumps and cuts to the next dialogue")**: the first version cut each line at −38 dB with only 0.1 s padding, which clipped quiet last syllables, and a per-line dynamic loudnorm pumped the level at the clip edges, so with 0.3 s gaps the next line seemed to jump in. `assemble.py` now keeps 0.18 s before / 0.40 s after each line (never past the middle of the pause), adds 30 ms / 120 ms fades, uses one fixed gain per line (−20 dB RMS), and the shots and SFX were re-timed from the new timeline and the whole Short re-rendered.
 Storyboard: `storyboard.md`. Post: `post.md`. Thumbnail: `thumbnail/` (preview made outside Figma: the Figma MCP Collab-seat tool-call limit blocked the first call and all 3 retries on 2026-11-14).
 
 | Time (s) | Shot |
@@ -18,4 +20,4 @@ Storyboard: `storyboard.md`. Post: `post.md`. Thumbnail: `thumbnail/` (preview m
 | 51.8–57.3 | Puzzle board: air→water, toward the normal or away? |
 | 57.3–60.0 | End card |
 
-Rebuild: copy `engine/` into `kit/s5/`, `python3 ../anim/mouth_env.py ../../voiceover/short-05/vo.wav mouth.json`, `python3 build_s5.py .. ../../voiceover/short-05`, `python3 sound_s5.py ..`, mix as in `kit/README.md`, render with `anim/make_video.py --total 1440`.
+Rebuild: copy `engine/` into `kit/s5/`, `python3 ../anim/mouth_env.py ../../voiceover/short-05/vo.wav mouth.json`, `python3 build_s5.py .. ../../voiceover/short-05`, `python3 sound_s5.py ..`, mix as in `kit/README.md`, render with `anim/make_video.py --total 1489`.

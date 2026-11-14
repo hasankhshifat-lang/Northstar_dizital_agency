@@ -1,6 +1,6 @@
 # Short 5 storyboard: পুকুর আসলের চেয়ে বেশি গভীর! (pukur-gobhir, light refraction / apparent depth)
 
-Voice timeline: `../../voiceover/short-05/timeline.json` (voice 1.05–57.24 s, sped up 6%). Total 60.0 s with the end card.
+Voice timeline: `../../voiceover/short-05/timeline.json` (voice 0.95–59.33 s after the audio fix, sped up 6%). Total 62.1 s with the end card. Scene times below are from the first cut (60.0 s); every shot is timed from the timeline, so the order and content are unchanged and each scene starts up to ~2 s later.
 Setting: the village-pond ghat from Pilot 5 (clear water, banyan tree, cement steps). Cast on the platform, feet line F=1820: Mama x380, Boltu x680, Bithi x880.
 Data behind the opening (first FB insights, 3 Reels): 30–50% of viewers leave between 3 s and 6 s. So the surprising visual lands at 0.3 s and the line names the mystery by 4.8 s; Boltu's jump pose at ~9 s is a second hook before the answer.
 
