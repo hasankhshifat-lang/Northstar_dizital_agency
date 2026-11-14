@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Three.js scene</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #0b1020; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// ---- Render-script contract -------------------------------------------------
+// render.mjs opens this page with ?w=WIDTH&h=HEIGHT&capture=1, waits for
+// window.sceneReady === true, then calls window.renderFrame(t) for each frame
+// (t = seconds) and screenshots the canvas. In a normal browser the page just
+// animates in real time. Keep every animation a pure function of t.
+const params = new URLSearchParams( location.search );
+const capture = params.has( 'capture' );
+const W = Number( params.get( 'w' ) ) || window.innerWidth;
+const H = Number( params.get( 'h' ) ) || window.innerHeight;
+
+const renderer = new THREE.WebGLRenderer( { antialias: true, preserveDrawingBuffer: capture } );
+renderer.setPixelRatio( capture ? 1 : window.devicePixelRatio );
+renderer.setSize( W, H );
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.shadowMap.enabled = true;
+document.body.appendChild( renderer.domElement );
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color( 0x0b1020 );
+const pmrem = new THREE.PMREMGenerator( renderer );
+scene.environment = pmrem.fromScene( new RoomEnvironment(), 0.04 ).texture;
+
+const camera = new THREE.PerspectiveCamera( 40, W / H, 0.1, 100 );
+camera.position.set( 0, 2, 7.5 );
+const target = new THREE.Vector3( 0, 0.3, 0 );
+camera.lookAt( target );
+
+const controls = capture ? null : new OrbitControls( camera, renderer.domElement );
+if ( controls ) { controls.target.copy( target ); controls.enableDamping = true; }
+
+const key = new THREE.DirectionalLight( 0xffffff, 2.5 );
+key.position.set( 3, 5, 4 );
+key.castShadow = true;
+scene.add( key );
+
+// ---- Scene content (replace this block) ------------------------------------
+const knot = new THREE.Mesh(
+  new THREE.TorusKnotGeometry( 0.9, 0.3, 200, 32 ),
+  new THREE.MeshStandardMaterial( { color: 0xd4a017, metalness: 0.8, roughness: 0.25 } )
+);
+knot.castShadow = true;
+knot.position.y = 0.6;
+scene.add( knot );
+
+const floor = new THREE.Mesh(
+  new THREE.CircleGeometry( 4, 64 ),
+  new THREE.MeshStandardMaterial( { color: 0x1a2340, roughness: 0.9 } )
+);
+floor.rotation.x = - Math.PI / 2;
+floor.position.y = - 0.8;
+floor.receiveShadow = true;
+scene.add( floor );
+
+function update( t ) {
+  knot.rotation.y = t * 0.8;
+  knot.rotation.x = Math.sin( t * 0.5 ) * 0.3;
+}
+// ----------------------------------------------------------------------------
+
+window.renderFrame = ( t ) => { update( t ); renderer.render( scene, camera ); };
+
+window.addEventListener( 'resize', () => {
+  if ( capture ) return;
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+} );
+
+if ( ! capture ) {
+  const clock = new THREE.Clock();
+  renderer.setAnimationLoop( () => { controls.update(); window.renderFrame( clock.getElapsedTime() ); } );
+}
+window.sceneReady = true; // set this later instead if you load models/fonts first
+</script>
+</body>
+</html>

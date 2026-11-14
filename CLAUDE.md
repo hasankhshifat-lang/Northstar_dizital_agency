@@ -64,3 +64,11 @@ For 3D animations, 3D logo reveals, product turntables, animated 3D text or any 
 (`scripts/install_blender.sh`), builds scenes in Python with `scripts/bl_helpers.py`, and renders MP4
 (16:9 or 9:16), PNG stills or PNG sequences. Always check a still and a `--preview` render before the
 slow full-quality render.
+
+## three.js / web 3D: use the threejs skill
+
+For three.js scenes, interactive 3D on websites, WebGL/WebGPU effects, TSL shaders, GLTF viewers or
+browser-rendered 3D clips, use `.claude/skills/threejs/SKILL.md`. Read `references/llms.txt` (official
+three.js LLM docs, r187) before writing code, start from `templates/scene.html`, and export with
+`scripts/render.mjs` (check a still and a `--preview` render before the full one). For offline
+photoreal renders use the blender-3d-animation skill instead.
