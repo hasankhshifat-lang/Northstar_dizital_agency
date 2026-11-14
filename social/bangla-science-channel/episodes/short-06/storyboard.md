@@ -1,0 +1,31 @@
+# Short 6 storyboard: চিরুনিতে কি চুম্বক আছে? (chiruni-chumbok, static electricity)
+
+Script and topic report: `../../shorts/short-06-chiruni-chumbok.md` (score 82). Voice timeline: `../../voiceover/short-06/timeline.json` (voice 0.9–55.04 s). Total ≈ 57.8 s with the end card.
+Setting: the village courtyard from Short 3, afternoon. A small wooden table (paper bits, pins) between Mama (x280) and Boltu (x690); Bithi (x870) stands in front of a blue water drum with a brass tap, a thin stream running into a bucket. Feet line F=1820.
+Structure (scriptwriting rules §14): hook 0–3 s, mystery 3–10 s, development with a twist 10–35 s (the magnet fails, then the real cause), big reveal 40–48 s (water bends), puzzle at the end. Three curiosity loops: is it a magnet? → no, so what is it? → can it bend water?
+
+| # | Time | Line | Purpose | Shot + camera (why) | Characters: position, action, eyes, expression | Object interaction (contact) | Environment | SFX |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 0–2.6 | Boltu: "মামা! কাগজগুলা লাফ দিয়া…" (starts 0.9) | HOOK: the phenomenon first | Close-up on the table top (what Boltu sees) | Mama's forearm only | Fist grips the comb by its spine; comb lowers over the bits (0.35 s); bits jump up one after another and stick under the teeth (0.45–0.8 s); comb lifts with bits attached | — | soft ticks per bit |
+| 2 | 2.6–5.3 | Boltu continues | Who did it + reaction | Medium-wide (all three, table between) | Mama proudly holds the comb up (right arm raised), bits still stuck; Boltu worried-amazed looks at Mama; Bithi watches the comb | comb attached at Mama's raised hand | stream runs at the drum | — |
+| 3 | 5.3–10.0 | Mama: "হেহে! চুলে ঘইষা চিরুনিতে চুম্বক বানাইছি, বুঝলি?" | Funny-wrong claim (the misconception) | Medium on Mama, slow push-in (his smugness is the joke) | Mama happy, comb still up; Boltu at the edge looks at him | comb in hand | — | — |
+| 4 | 10.0–13.5 | Boltu: "তাইলে আসল চুম্বকে তো আরো বেশি উঠবো!" | Test proposed (audience logic) | Two-shot Mama + Boltu | Boltu holds a red horseshoe magnet out toward Mama (left arm out), happy; Mama has put the comb on the table, looks at the magnet | magnet attached at Boltu's left hand; comb lying on the table | — | — |
+| 5 | 13.5–15.6 | Mama: "উঠে না ক্যান?…" (starts 14.67) | TWIST 1: magnet fails | Close-up on the table | Mama's forearm | Fist holds the magnet; it lowers to just above the bits and hovers; bits do not move | — | — |
+| 6 | 15.6–17.6 | "…চুম্বকটাই নষ্ট!" | Comic blame | Medium on Mama | Mama worried/annoyed, holds the magnet out at arm's length, staring at it; Boltu grins | magnet in Mama's hand | — | boing |
+| 7 | 17.6–19.6 | (Boltu's line starts 18.14) | Proof the magnet works | Close-up on the pins | Boltu's forearm | Fist with the magnet lowers over the pins; pins jump up and stick (18.3) | — | metallic clicks |
+| 8 | 19.6–22.2 | Boltu: "নষ্ট না মামা! এই দেখো, আলপিন ঠিকই উঠছে!" | New question: so what is in the comb? | Two-shot Boltu + Mama | Boltu happy, holds the magnet up with pins hanging; Mama worried, turns to it | magnet + pins attached at Boltu's raised hand | — | — |
+| 9 | 22.2–28.0 | Bithi: "চুম্বক লোহা টানে, কাগজ না। চিরুনিতে জমেছে স্থির বিদ্যুৎ!" | Answer begins | Three-shot, slight push toward Bithi | Bithi happy, explaining gesture toward Mama; Mama and Boltu turn to her | — | tag "স্থির বিদ্যুৎ" on the word | ding |
+| 10 | 28.0–35.6 | Bithi: "শুকনো চুলে ঘষলে চুল থেকে কিছু ইলেকট্রন চিরুনিতে চলে যায়। আহিত চিরুনি তখন হালকা জিনিস টেনে নেয়।" | DEMONSTRATION (mechanism) | Close-up demonstration over the blurred courtyard: hair patch, then the bits | (hand only) | The fist drags the comb through the hair (3 strokes); yellow "−" electrons hop from the hair into the comb, pink "+" stay in the hair; label "ঘষায় ইলেকট্রন: চুল → চিরুনি"; then the charged comb moves over paper bits and they jump to it; label "আহিত চিরুনি হালকা জিনিস টানে" | — | soft swish per stroke, ticks |
+| 11 | 35.6–40.0 | Mama: "চাপা মারিস না! পারলে এইটা দিয়া কলের পানি বাঁকা কইরা দেখা!" | Challenge → loop 3 | Medium-wide (Mama left, Bithi + drum right, so the dare points at something we can see) | Mama smug (happy), at "কলের পানি" he points his right arm at the drum; Bithi looks at him, then at the tap | — | stream running | — |
+| 12 | 40.0–41.9 | — | Setup of the reveal (action, no talk) | Medium on Bithi and the drum | Bithi rubs the comb on her own hair (3 short strokes), eyes on the stream | comb attached at her hand, follows the stroke | stream | swish ×3 |
+| 13 | 41.9–46.3 | Boltu: "আরে! পানি তো সত্যিই বাঁইকা চিরুনির দিকে যাইতাছে!" (starts 42.59) | BIG REVEAL | Close-up on the stream (static, so the bend reads) | Bithi's forearm only | Comb held beside the stream, never touching it; the stream bends toward the comb (42.3–42.8) and stays bent | — | rising chime |
+| 14 | 46.3–48.9 | Mama: "আমার চুলে এত পাওয়ার!" | Character payoff (comedy) | Medium Mama + Boltu | Mama pats his own hair, proud (happy); Boltu laughs (happy), turned to him | hand on his head | — | — |
+| 15 | 48.9–55.1 | Bithi: "ধাঁধা! দুইটা চিরুনিই চুলে ঘষে কাছে আনলে, টানবে নাকি ঠেলবে? কমেন্টে লেখো!" | Comment puzzle (answer not shown) | Card: two combs facing each other, "?" | Bithi small, pointing | — | tags "ক) টানবে?", "খ) ঠেলবে?", "কমেন্টে লেখো!" on the words | pops, chime |
+| 16 | 55.1–57.8 | — | End card | Static | Cast waves goodbye | — | banner, wheel, name plates | chime |
+
+## Checks on paper
+- Hook: bits leap at 0.45 s, before any word.
+- No board lecture: the mechanism (scene 10) is a 7-second close-up demonstration, in the scene's own objects (comb, hair, bits).
+- No "stands and talks": every talking shot has a held object, a test or a reaction.
+- Accuracy: magnet attracts the iron pins, not the paper; electrons move from hair to comb; the comb never touches the water; the puzzle shows no charges, so it doesn't give the answer away.
+- Held props are attached at the measured hand points (probe.py) and follow the hand; close-ups show only the forearm.
