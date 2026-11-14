@@ -1,0 +1,71 @@
+[
+ {
+  "id": "v01",
+  "text": "Johnstown, Pennsylvania. May thirty-first, eighteen eighty-nine.",
+  "voice": "am_michael",
+  "speed": 0.9,
+  "asr": "Johnstown, Pennsylvania, May 31, 1889"
+ },
+ {
+  "id": "v02",
+  "text": "Fourteen miles upstream, a lake sat behind a wall of packed earth.",
+  "voice": "am_michael",
+  "speed": 0.9
+ },
+ {
+  "id": "v03",
+  "text": "The wall was seventy-two feet high.",
+  "voice": "am_michael",
+  "speed": 0.9
+ },
+ {
+  "id": "v04",
+  "text": "Cut it open, and you see the problem.",
+  "voice": "am_michael",
+  "speed": 0.9
+ },
+ {
+  "id": "v05",
+  "text": "Sixty feet of water, held back by dirt.",
+  "voice": "am_michael",
+  "speed": 0.9
+ },
+ {
+  "id": "v06",
+  "text": "At about three-ten in the afternoon, the dam gave way.",
+  "voice": "am_michael",
+  "speed": 0.9
+ },
+ {
+  "id": "v07",
+  "text": "Twenty million tons of water poured down the valley.",
+  "voice": "am_michael",
+  "speed": 0.9
+ },
+ {
+  "id": "v08",
+  "text": "A wave thirty-five feet high at its crest.",
+  "voice": "am_michael",
+  "speed": 0.9
+ },
+ {
+  "id": "v09",
+  "text": "At four-oh-seven, it hit Johnstown.",
+  "voice": "am_michael",
+  "speed": 0.9,
+  "asr": "At 407, it hit Johnstown."
+ },
+ {
+  "id": "v10",
+  "text": "At the Stone Bridge, the wreckage piled forty feet high, and caught fire.",
+  "voice": "am_michael",
+  "speed": 0.9
+ },
+ {
+  "id": "v11",
+  "text": "Two thousand, two hundred and nine people died.",
+  "voice": "am_michael",
+  "speed": 0.9,
+  "asr": "2,209 people died."
+ }
+]

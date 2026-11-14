@@ -1,0 +1,90 @@
+[
+ {
+  "id": "v01",
+  "t0": 0.5,
+  "t1": 5.82,
+  "vo_end": 5.147,
+  "en": "Johnstown, Pennsylvania.|May 31, 1889.",
+  "text": "Johnstown, Pennsylvania.\nMay 31, 1889."
+ },
+ {
+  "id": "v02",
+  "t0": 5.9,
+  "t1": 11.37,
+  "vo_end": 10.746,
+  "en": "14 miles upstream, a lake sat|behind a wall of packed earth.",
+  "text": "14 miles upstream, a lake sat\nbehind a wall of packed earth."
+ },
+ {
+  "id": "v03",
+  "t0": 11.45,
+  "t1": 14.32,
+  "vo_end": 13.719,
+  "en": "The wall was 72 feet high.",
+  "text": "The wall was 72 feet high."
+ },
+ {
+  "id": "v04",
+  "t0": 14.4,
+  "t1": 17.42,
+  "vo_end": 16.815,
+  "en": "Cut it open, and you see the problem:",
+  "text": "Cut it open, and you see the problem:"
+ },
+ {
+  "id": "v05",
+  "t0": 17.5,
+  "t1": 21.91,
+  "vo_end": 20.31,
+  "en": "60 feet of water, held back by dirt.",
+  "text": "60 feet of water, held back by dirt."
+ },
+ {
+  "id": "v06",
+  "t0": 22.4,
+  "t1": 26.62,
+  "vo_end": 25.967,
+  "en": "At about 3:10 p.m.,|the dam gave way.",
+  "text": "At about 3:10 p.m.,\nthe dam gave way."
+ },
+ {
+  "id": "v07",
+  "t0": 26.7,
+  "t1": 30.57,
+  "vo_end": 29.964,
+  "en": "20 million tons of water|poured down the valley,",
+  "text": "20 million tons of water\npoured down the valley,"
+ },
+ {
+  "id": "v08",
+  "t0": 30.65,
+  "t1": 33.92,
+  "vo_end": 33.289,
+  "en": "a wave 35 feet high at its crest.",
+  "text": "a wave 35 feet high at its crest."
+ },
+ {
+  "id": "v09",
+  "t0": 34.0,
+  "t1": 37.12,
+  "vo_end": 36.428,
+  "en": "At 4:07 p.m., it hit Johnstown.",
+  "text": "At 4:07 p.m., it hit Johnstown."
+ },
+ {
+  "id": "v10",
+  "t0": 37.2,
+  "t1": 42.47,
+  "vo_end": 41.824,
+  "en": "At the Stone Bridge, the wreckage|piled 40 feet high, and caught fire.",
+  "text": "At the Stone Bridge, the wreckage\npiled 40 feet high, and caught fire."
+ },
+ {
+  "id": "v11",
+  "t0": 42.55,
+  "t1": 46.805,
+  "vo_end": 45.605,
+  "en": "2,209 people died.",
+  "text": "2,209 people died."
+ }
+]
