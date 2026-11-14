@@ -59,7 +59,7 @@ const mid = b => [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
 
 // photograph spaces: nearness 0 at the far edge (the street's horizon row / the top of the sea), 1 at the bottom
 const NEWS_HZ = 1380, BOATS_HZ = 0;
-const BOAT_A = [1040, 1860], BOAT_B = [2240, 2190];   // the two lifeboats (texture px, at the waterline)
+const BOAT_A = [1130, 1340], BOAT_B = [2300, 1600];   // the two lifeboats (texture px, at the waterline)
 const DOOR = [1240, 1000];                            // the White Star office door
 
 // lens positions (world)
@@ -118,13 +118,13 @@ const UDATE_W = toW(IT.union, [1080, 313]), UHEAD_W = toW(IT.union, [400, 400]),
 const D1 = dive(L1W, HIT.drop1, HIT.lift1,
   [[HIT.dive1, 0.74], [HIT.dive1 + 1.2, 0.30], [HIT.lineDate + 1.0, 0.30], [HIT.lineAfloat, 0.34], [HIT.lineLost + 0.4, 0.36], [HIT.rise1, 0.40]],
   [[HIT.dive1, L1W], [HIT.dive1 + 1.2, UDATE_W], [HIT.lineDate + 1.0, UDATE_W], [HIT.lineAfloat, UHEAD_W], [HIT.lineLost + 0.4, ULOST_W], [HIT.rise1, ULOST_W]]);
-const NEWS_IN = toW(IT.news, [1700, 1500]), NEWS_IN2 = toW(IT.news, [1500, 1420]);
+const NEWS_IN = toW(IT.news, [1650, 1455]), NEWS_IN2 = toW(IT.news, [1580, 1455]);
 const D2 = dive(L2W, HIT.drop2, HIT.rise2 + 1.0,
-  [[HIT.dive2, 0.82], [HIT.enter2, 0.46], [HIT.rise2, 0.50]],
+  [[HIT.dive2, 0.82], [HIT.enter2, 0.74], [HIT.rise2, 0.78]],
   [[HIT.dive2, L2W], [HIT.enter2, NEWS_IN], [HIT.rise2, NEWS_IN2]]);
-const BOATS_IN = toW(IT.boats, [1700, 1900]), BOATS_IN2 = toW(IT.boats, [1640, 1960]);
+const BOATS_IN = toW(IT.boats, [1760, 1450]), BOATS_IN2 = toW(IT.boats, [1720, 1450]);
 const D3 = dive(L3W, HIT.drop3, HIT.rise3 + 1.0,
-  [[HIT.dive3, 0.80], [HIT.enter3, 0.44], [HIT.rise3, 0.52]],
+  [[HIT.dive3, 0.80], [HIT.enter3, 0.74], [HIT.rise3, 0.80]],
   [[HIT.dive3, L3W], [HIT.enter3, BOATS_IN], [HIT.rise3, BOATS_IN2]]);
 const DIVES = [D1, D2, D3];
 
@@ -390,7 +390,7 @@ function subtitles(c, t) {
     const font = '500 40px PS', wm = tw(c, q.en, font) + 60, x0 = (W - wm) / 2;
     plate(c, x0, SUB_Y, wm, 74, 1.1);
     c.fillStyle = ORANGE; c.fillRect(x0, SUB_Y, 4, 74);
-    text(c, 'sub', q.en, W / 2 + 2, SUB_Y + 51, font, 'rgba(250,250,247,0.98)', { align: 'center' });
+    text(c, null, q.en, W / 2 + 2, SUB_Y + 51, font, 'rgba(250,250,247,0.98)', { align: 'center' });
     c.restore();
   }
 }
@@ -472,7 +472,7 @@ function overlay(t, st) {
   c.restore();
 
   // the count card: 0 -> 1,340 -> 1,492 (screen-anchored, upper third)
-  const ca = seg(t, HIT.trib + 0.3, HIT.trib + 0.8) * (1 - seg(t, HIT.drop3 - 0.9, HIT.drop3 - 0.4));
+  const ca = seg(t, HIT.trib + 0.3, HIT.trib + 0.8) * (1 - seg(t, HIT.drop3 - 0.2, HIT.drop3 + 0.3));
   if (ca > 0) {
     const n1 = seg(t, HIT.trib + 1.4, HIT.trib + 2.2), n2 = seg(t, HIT.med + 1.7, HIT.med + 2.3);
     const val = Math.round(n2 > 0 ? lerp(1340, 1492, eio(n2)) : lerp(0, 1340, eio(n1)));
@@ -481,7 +481,7 @@ function overlay(t, st) {
     card(c, 150, 250, 780, 250, ca, () => {
       text(c, 'cnt-a', 'DEAD, AS PRINTED', 182, 302, '500 24px PM', 'rgba(250,250,247,0.75)');
       text(c, null, val.toLocaleString('en-US'), 182, 410, '500 112px PM', ORANGE);
-      if (n1 >= 1) TXT.push({ id: 'cnt-n', text: val.toLocaleString('en-US'), x0: 182, y0: 325, x1: 182 + tw(c, val.toLocaleString('en-US'), '500 112px PM'), y1: 412 });
+      if (n1 >= 1 && (n2 <= 0 || n2 >= 1)) TXT.push({ id: 'cnt-n', text: val.toLocaleString('en-US'), x0: 182, y0: 325, x1: 182 + tw(c, val.toLocaleString('en-US'), '500 112px PM'), y1: 412 });
       text(c, 'cnt-c', 'Mon 15 Apr: 0  →  Tue 16 Apr', 182, 454, '400 26px PS', 'rgba(250,250,247,0.92)');
       text(c, 'cnt-d', src, 182, 486, '400 18px PM', 'rgba(250,250,247,0.6)', { pass: true });
     });
@@ -515,7 +515,7 @@ function overlay(t, st) {
     }
     c.restore();
   }
-  const r0 = seg(t, HIT.pull0, HIT.pull0 + 0.45), out0 = seg(t, HIT.lift1 + 0.5, HIT.lift1 + 0.9);
+  const r0 = seg(t, HIT.pull0, HIT.pull0 + 0.45), out0 = seg(t, HIT.lift1 + 1.3, HIT.lift1 + 1.7);
   if (r0 > 0 && out0 < 1) {
     c.save(); c.globalAlpha = 1 - out0;
     card(c, 150, 250, 780, 250, seg(t, HIT.pull0 + 0.1, HIT.pull0 + 0.6), () => {
@@ -530,11 +530,11 @@ function overlay(t, st) {
   // ---- dive 2: inside the White Star office photograph
   if (st.dive === D2 && st.enter > 0.5) {
     const p = int2s(toW(IT.news, DOOR), nNews(DOOR), st, NF_NEWS);
-    annot(c, t, HIT.crowdLbl, 'door', p, 150, 'right', [
+    annot(c, t, HIT.crowdLbl, 'door', p, 150, 'left', [
       ['600 40px SF', 'rgba(250,250,247,0.97)', 'White Star Line office'],
       ['400 26px PS', 'rgba(250,250,247,0.9)', 'New York · April 1912'],
-    ], HIT.rise2 + 0.3, true);
-    credit(c, t, HIT.crowdLbl + 0.5, HIT.rise2, 'Bain News Service glass negative', 'LC-B2- 2391-30', true);
+    ], HIT.rise2 + 0.8, true);
+    credit(c, t, HIT.crowdLbl + 0.5, HIT.rise2, 'Bain News Service', 'LC-B2- 2391-30', true);
   }
 
   // ---- dive 3: inside the lifeboat photograph
@@ -551,7 +551,7 @@ function overlay(t, st) {
       text(c, 'b-c', 'from the lifeboats, morning of 15 April', 182, 454, '400 26px PS', 'rgba(250,250,247,0.92)');
       text(c, 'b-d', 'NARA, Prologue (2012)', 182, 486, '400 18px PM', 'rgba(250,250,247,0.6)', { pass: true });
     });
-    credit(c, t, HIT.boatLbl + 0.6, HIT.rise3, 'Bain News Service glass negative', 'LC-B2- 2485-4', true);
+    credit(c, t, HIT.boatLbl + 0.6, HIT.rise3, 'Bain News Service', 'LC-B2- 2485-4', true);
   }
 
   if (t > HIT.compare - 0.1 && t < HIT.index + 0.5) compare(c, t);

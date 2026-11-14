@@ -1,6 +1,6 @@
 // "No Lives Lost" — the single timeline. 72 BPM, one beat = 0.8333 s; key actions sit on the grid.
 // film.js (picture), tools/export.mjs (voice cues, subtitles) and mix.py (via out/timeline.json) read it.
-export const BPM = 72, BEAT = 60 / BPM, DUR = 56.0;
+export const BPM = 72, BEAT = 60 / BPM, DUR = 57.0;
 export const b = n => +(n * BEAT).toFixed(4);
 
 export const HIT = {
@@ -17,9 +17,9 @@ export const HIT = {
   develop: b(14),     // 10.208 negative -> positive
   dive2: b(15),          // 10.833 push into the lens
   enter2: b(16.5),       // 12.083 inside the street photograph
-  crowdLbl: b(17),       // 12.5   label: White Star Line office
-  rise2: b(19.5),        // 14.583 out of the photograph
-  sank: b(21),           // 15.833 back on the Union: "already sunk" pinned to its date line
+  crowdLbl: b(16),       // 12.5   label: White Star Line office
+  rise2: b(20.5),        // 14.583 out of the photograph
+  sank: b(21.5),           // 15.833 back on the Union: "already sunk" pinned to its date line
   trib: b(27),         // 19.583 the Tribune line lights: 1,340
   med: b(32),            // 23.333 the Medford line lights: 1,492
   drop3: b(37),        // 27.083 loupe lands on the lifeboat negative
