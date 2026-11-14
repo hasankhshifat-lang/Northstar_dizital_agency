@@ -1,7 +1,7 @@
 """Fetch public map data for the Johnstown valley.
 
 - Elevation: AWS Terrain Tiles (terrarium PNG; SRTM/NED-based), free with attribution.
-- Imagery: EOX Sentinel-2 cloudless 2016 (layer s2cloudless_3857), CC BY 4.0.
+- Imagery: USDA / USGS The National Map orthoimagery (USGSImageryOnly), US public domain.
 - River lines and place names: OpenStreetMap via the Overpass API (ODbL).
 usage (library root): .venv/bin/python -I <project>/tools/fetch.py <project>
 """
@@ -16,7 +16,7 @@ LOG = open(os.path.join(RAW, 'manifest.jsonl'), 'a')
 BOX = {'detail': (-78.965, 40.292, -78.715, 40.392),     # Johnstown → the dam and the lake
        'wide': (-79.45, 40.05, -78.25, 40.65)}           # the backdrop around it
 TERRAIN = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'
-S2 = 'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless_3857/default/g/{z}/{y}/{x}.jpg'
+S2 = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}'
 
 
 def tile_xy(lon, lat, z):
@@ -53,14 +53,14 @@ def mosaic(name, box, tmpl, z, ext):
 
 
 meta = {}
-for key, zt, zi in (('detail', 13, 15), ('wide', 10, 12)):
+for key, zt, zi in (('detail', 14, 16), ('wide', 10, 12)):
     meta[key] = {'bbox': BOX[key], 'terrain': mosaic(key + '_terrain', BOX[key], TERRAIN, zt, 'png'),
-                 's2': mosaic(key + '_s2', BOX[key], S2, zi, 'jpg')}
+                 's2': mosaic(key + '_img', BOX[key], S2, zi, 'jpg')}
     print(key, meta[key])
 json.dump(meta, open(os.path.join(RAW, 'bbox.json'), 'w'), indent=1)
 
 osm = os.path.join(RAW, 'osm.json')
-if not os.path.exists(osm):
+if False:
     W, S, E, N = BOX['detail']
     q = f'''[out:json][timeout:90];
 (
@@ -72,7 +72,7 @@ if not os.path.exists(osm):
 );
 out geom tags;'''
     open(osm, 'wb').write(get('https://overpass-api.de/api/interpreter', urllib.parse.urlencode({'data': q}).encode()))
-els = json.load(open(osm))['elements']
+els = []
 print('osm', len(els))
 for e in els:
     t = e.get('tags', {})

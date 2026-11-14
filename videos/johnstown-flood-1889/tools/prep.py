@@ -19,7 +19,7 @@ Image.MAX_IMAGE_PIXELS = None
 M = json.load(open(os.path.join(RAW, 'bbox.json')))
 DAM = (-78.7719, 40.3478)          # South Fork Dam (remains), Johnstown Flood National Memorial
 SEED = (-78.7620, 40.3380)         # a point on the old lakebed
-LEVEL = 491.0                      # lake surface, m (see FACTS.md: gives a lake over 2 miles long, ~60 ft deep)
+LEVEL = 490.0                      # lake surface, m (see FACTS.md: gives a lake over 2 miles long, ~60 ft deep)
 PLACES = {'JOHNSTOWN': (-78.9220, 40.3267), 'SOUTH FORK': (-78.7914, 40.3673), 'MINERAL POINT': (-78.8353, 40.3795),
           'EAST CONEMAUGH': (-78.8836, 40.3487), 'WOODVALE': (-78.8842, 40.3425), 'STONE BRIDGE': (-78.9250, 40.3325)}
 
@@ -33,7 +33,7 @@ def build(key, grid_div, img_max):
     m = M[key]; W, S, E, N = m['bbox']
     s2 = m['s2']; z = s2['z']
     x0, y0 = mpx(W, N, z); x1, y1 = mpx(E, S, z)
-    img = Image.open(os.path.join(RAW, f'{key}_s2_z{z}.jpg')).convert('RGB')
+    img = Image.open(os.path.join(RAW, f'{key}_img_z{z}.jpg')).convert('RGB')
     img = img.crop((int(x0 - s2['tx0'] * 256), int(y0 - s2['ty0'] * 256), int(x1 - s2['tx0'] * 256), int(y1 - s2['ty0'] * 256)))
     if img.size[0] > img_max:
         img = img.resize((img_max, round(img.size[1] * img_max / img.size[0])), Image.LANCZOS)
@@ -60,7 +60,7 @@ def build(key, grid_div, img_max):
     return meta, hg, alb, h, (tx0 - t['tx0'] * 256, ty0 - t['ty0'] * 256, tx1 - t['tx0'] * 256, ty1 - t['ty0'] * 256, zt)
 
 
-dm, dh, dalb, draw, dbox = build('detail', 5, 4096)
+dm, dh, dalb, draw, dbox = build('detail', 6, 8192)
 wm, wh, walb, _, _ = build('wide', 4, 4096)
 wh = np.maximum(wh, 250.0)   # a few no-data cells at the far edge
 
@@ -74,14 +74,15 @@ cell_km = dm['width_km'] / GW
 dx, dy = gpix(*DAM)
 # the dam: today the breach is a gap down to the old bed; plug it with a band across the channel at the dam
 cx, cy = int(round(dx)), int(round(dy))
-block = np.zeros_like(dh, bool); block[cy - 2:cy + 3, cx - 16:cx + 3] = True
-row = dh[cy, cx - 22:cx + 8]; low = np.nonzero(row < LEVEL)[0]
-A = (cx - 22 + low.min() - 2, cy); B = (cx - 22 + low.max() + 2, cy)
+cm = cell_km * 1000; c = lambda m: int(round(m / cm))            # plug sized in metres: 130 m thick, from 420 m west to 80 m east of the dam point
+block = np.zeros_like(dh, bool); block[cy - c(52):cy + c(52) + 1, cx - c(420):cx + c(80)] = True
+row = dh[cy, cx - c(570):cx + c(210)]; low = np.nonzero(row < LEVEL)[0]
+A = (cx - c(570) + low.min() - 2, cy); B = (cx - c(570) + low.max() + 2, cy)
 wet = (dh < LEVEL) & ~block
 lab, _ = ndimage.label(wet)
 sx, sy = gpix(*SEED); sx, sy = int(round(sx)), int(round(sy))
-win = dh[sy - 10:sy + 11, sx - 10:sx + 11]; ky, kx = np.unravel_index(np.argmin(win), win.shape)
-lake = lab == lab[sy - 10 + ky, sx - 10 + kx]
+r_ = int(round(260 / (cell_km * 1000))); win = dh[sy - r_:sy + r_ + 1, sx - r_:sx + r_ + 1]; ky, kx = np.unravel_index(np.argmin(win), win.shape)
+lake = lab == lab[sy - r_ + ky, sx - r_ + kx]
 depth = np.where(lake, LEVEL - dh, 0)
 ys, xs = np.nonzero(lake)
 pts = np.stack([xs, ys], 1) * cell_km
@@ -138,7 +139,7 @@ json.dump({'path': path, 'trace_n': len(tll)}, open(os.path.join(OUT, 'path.json
 
 for name, mm, hh, aa in (('', dm, dh, dalb), ('wide_', wm, wh, walb)):
     hh.astype('<f4').tofile(os.path.join(OUT, name + 'height.bin'))
-    Image.fromarray(aa).save(os.path.join(OUT, name + 'albedo.jpg'), quality=92)
+    Image.fromarray(aa).save(os.path.join(OUT, name + 'albedo.jpg'), quality=88)
 dm.update({'level': LEVEL, 'dam': list(DAM), 'dam_line': dam_line, 'sec_end': sec_end, 'places': PLACES,
            'lake_km2': float(lake.sum() * cell_km ** 2), 'lake_span_km': float(span), 'lake_maxdepth': float(depth.max())})
 json.dump(dm, open(os.path.join(OUT, 'meta.json'), 'w'), indent=1)

@@ -8,7 +8,7 @@ from PIL import Image
 from scipy import ndimage
 
 D = sys.argv[1]; A = os.path.join(D, 'assets')
-EX, H0 = 3.0, 360.0
+EX, H0 = 2.0, 360.0
 SUN = np.array([-150.0, 59.0, 60.0])             # world: x east, y up, z south
 hor = math.hypot(SUN[0], SUN[2]); TAN = SUN[1] / hor
 dx, dz = SUN[0] / hor, SUN[2] / hor

@@ -20,15 +20,16 @@ Not used: "40 mph average speed" (JAHA) — it doesn't square with 14 miles in a
 
 Reconstructed, labelled on screen:
 - **1889 lake extent** ("1889 lake reconstructed"): the lake drained in 1889 and is gone today. Its outline is computed
-  from today's terrain (AWS Terrain Tiles): the basin behind the dam's breach, plugged at the dam, filled to 491 m.
-  Result: 1.62 km² (≈ 400 acres), deepest point ≈ 19 m (63 ft) — consistent with F3's "60 feet deep"; on screen
-  the sounding reads "≈ 60 FT" (rounded to 10 ft). Its straight-line length (2.6 km, 1.6 mi) is shorter than F3's
+  from today's terrain (AWS Terrain Tiles): the basin behind the dam's breach, plugged at the dam, filled to 490 m.
+  Result: 1.49 km² (≈ 370 acres), deepest point ≈ 19 m (62 ft) — consistent with F3's "60 feet deep"; on screen
+  the sounding reads "≈ 60 FT" (rounded to 10 ft). Its straight-line length (2.5 km, 1.6 mi) is shorter than F3's
   "over two miles"; the film does not state the lake's length. In the section, narrow modern fills (roads,
   embankments narrower than ~440 m) are removed from the lakebed.
+- **Terrain** at 7 m (z14) with relief ×2 (stated on screen); imagery USDA/USGS, today's valley.
 - **The dam**: drawn restored across today's breach, with a schematic profile (20 ft crest, ~270 ft base); the
   height on screen (72 ft) is F2's.
-- **The flood path**: 22.7 km (14.1 mi) — the river stretch from the dam to South Fork traced on the terrain, then the
+- **The flood path**: 22.8 km (14.2 mi) — the river stretch from the dam to South Fork traced on the terrain, then the
   Little Conemaugh River from OpenStreetMap to the Stone Bridge. Consistent with F1. It is the river's course,
   not a mapped flood extent.
-- **The debris pile**: drawn at its 30-acre footprint (F9); its height is a pillar of 8 slabs, one per 5 ft.
+- **The debris pile**: a mound drawn at its 30-acre footprint (F9); its 40-ft height is drawn ×6 so it reads at this distance.
 - **The clock** runs 3:10 → 4:07 (F5, F6) in step with the line; the line's speed is not historical data.

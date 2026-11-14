@@ -8,11 +8,11 @@ FACTS
 
 MAP DATA (downloads logged in raw/manifest.jsonl)
   Elevation: AWS Terrain Tiles (Mapzen/Tilezen terrarium; SRTM, NED, GMTED and others), free with attribution.
-  Imagery: Sentinel-2 cloudless 2016 by EOX IT Services GmbH (s2maps.eu), CC BY 4.0
-           (contains modified Copernicus Sentinel data 2016).
+  Imagery: USDA / USGS The National Map, Orthoimagery (USGSImageryOnly service, refreshed 2024), US public domain.
+           The imagery shows the valley today; the 1889 lake and dam are drawn over it.
   River line (Little Conemaugh River) and place positions: © OpenStreetMap contributors, ODbL 1.0
            (openstreetmap.org/copyright), via the Nominatim search service. Share-alike applies to the database.
-  The 1889 lake: reconstructed from today's terrain (basin behind the dam filled to 491 m; narrow modern fills
+  The 1889 lake: reconstructed from today's terrain (basin behind the dam filled to 490 m; narrow modern fills
            removed from the lakebed). The river stretch from the dam to South Fork is traced on the terrain.
   Map view: a regional view of Pennsylvania; no borders drawn.
 

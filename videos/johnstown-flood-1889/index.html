@@ -29,7 +29,7 @@ const K = { lake: 8.14, dam: 12.1, cut: 14.72, close: 20.6, clock: 21.4, breach:
 const J = u => fetch(u).then(r => r.json()), B = u => fetch(u).then(r => r.arrayBuffer());
 const [meta, wmeta, hraw, wraw, PATH, CUES] = await Promise.all([J('assets/meta.json'), J('assets/wide_meta.json'), B('assets/height.bin'), B('assets/wide_height.bin'), J('assets/path.json'), J('voice/cues.json')]);
 const hbuf = new Float32Array(hraw), wbuf = new Float32Array(wraw);
-const H0 = 360, EX = 3, DEX = 30, LEVEL = meta.level;          // heights: (m − H0) km × EX; the lake's depth ×30 inside the section
+const H0 = 360, EX = 2, DEX = 30, LEVEL = meta.level;          // heights: (m − H0) km × EX; the lake's depth ×30 inside the section
 const { GW, GH, km_px, width_km: WK, height_km: HK } = meta;
 const [MX0, MY0] = meta.merc, D2R = Math.PI / 180;
 function merc(lon, lat) { const n = 2 ** meta.z * 256; return [(lon + 180) / 360 * n, (1 - Math.asinh(Math.tan(lat * D2R)) / Math.PI) / 2 * n]; }
@@ -53,23 +53,27 @@ function unxz(p) { let lo = -78.84, la = 40.34; for (let i = 0; i < 6; i++) { co
 // ---------- renderer ----------
 const renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
 renderer.setPixelRatio(1); renderer.setSize(Wd, Ht);
-renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.75;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.45;
 document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
-const HAZE = new THREE.Color(0x9a958a);
-scene.background = HAZE.clone(); scene.fog = new THREE.Fog(HAZE, 30, 90);
+const HAZE = new THREE.Color(0xb9c3c8);
+{ const c = document.createElement('canvas'); c.width = 4; c.height = 512; const cg = c.getContext('2d'), gr = cg.createLinearGradient(0, 0, 0, 512);
+  gr.addColorStop(0, '#5f86ad'); gr.addColorStop(.42, '#93afc6'); gr.addColorStop(.5, '#c6cfd2'); gr.addColorStop(.56, '#d8d2c4'); gr.addColorStop(1, '#d8d2c4');
+  cg.fillStyle = gr; cg.fillRect(0, 0, 4, 512); const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; scene.background = tx; }
+scene.fog = new THREE.Fog(HAZE, 30, 90);
 const tl = new THREE.TextureLoader(), load = u => new Promise((r, e) => tl.load(u, r, undefined, e));
 const [albedo, shadowTex, walbedo, wshadowTex, lakeTex] = await Promise.all(['assets/albedo.jpg', 'assets/shadow.png', 'assets/wide_albedo.jpg', 'assets/wide_shadow.png', 'assets/lake.png'].map(load));
 for (const t of [albedo, walbedo]) { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; }
 lakeTex.minFilter = THREE.LinearFilter; lakeTex.generateMipmaps = false;
 
 // the section cut: everything on the camera side of the section line goes (S3)
-const CUT = { p: new THREE.Vector4(0, 0, 0, 0), d: { value: 0 } };
-const cutU = { cutP: { value: CUT.p }, cutD: CUT.d };
-const CUT_GLSL = `uniform vec4 cutP; uniform float cutD;
-  bool cutAway(vec3 w){ if (cutD <= 0.) return false; float s = dot(w.xz - cutP.xy, cutP.zw); return s > 0. && s < cutD; }
+const CUT = { p: new THREE.Vector4(0, 0, 0, 0), d: { value: 0 }, f: { value: 1 } };
+const cutU = { cutP: { value: CUT.p }, cutD: CUT.d, cutF: CUT.f };
+const CUT_GLSL = `uniform vec4 cutP; uniform float cutD, cutF;
+  bool cutAway(vec3 w){ if (cutD <= 0.) return false; float s = dot(w.xz - cutP.xy, cutP.zw); if (!(s > 0. && s < cutD)) return false;
+    float h = fract(sin(dot(floor(gl_FragCoord.xy / 2.), vec2(12.9898, 78.233))) * 43758.5453); return h < cutF; }
 `;
-const LIGHT_CHUNK = THREE.ShaderChunk.lights_fragment_begin.replaceAll('RE_Direct( directLight,', 'directLight.color *= mix( 1.0, texture2D( tShadow, vMapUv ).r, 0.72 );\n\t\tRE_Direct( directLight,');
+const LIGHT_CHUNK = THREE.ShaderChunk.lights_fragment_begin.replaceAll('RE_Direct( directLight,', 'directLight.color *= mix( 1.0, texture2D( tShadow, vMapUv ).r, 0.78 );\n\t\tRE_Direct( directLight,');
 function terrainMat(map, shadow, clipRect) {
   const m = new THREE.MeshStandardMaterial({ map, roughness: 1, metalness: 0 });
   m.onBeforeCompile = sh => {
@@ -94,7 +98,7 @@ scene.add(terrainMesh(WK, HK, GW, GH, hbuf, terrainMat(albedo, shadowTex)));
 }
 const sun = new THREE.DirectionalLight(0xffe0b4, 3.4);
 sun.position.set(-150, 59, 60); sun.target.position.set(0, 0, 0);
-scene.add(sun, sun.target, new THREE.HemisphereLight(0xb4c6d2, 0x5a4630, 1.05));
+scene.add(sun, sun.target, new THREE.HemisphereLight(0xc4d4e2, 0x5a4a36, 0.95));
 
 // ---------- the 1889 lake (reconstructed: the basin behind the dam filled to LEVEL), drains after the breach ----------
 const lakeU = { tLake: { value: lakeTex }, drop: { value: 0 }, op: { value: 0 }, ...cutU };
@@ -103,10 +107,13 @@ const lakeMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
   fragmentShader: `varying vec2 vUv; varying vec3 vW; uniform sampler2D tLake; uniform float drop, op; ${CUT_GLSL}
     void main(){ if (cutAway(vW)) discard; vec4 L = texture2D(tLake, vUv); float dep = L.g * 40. - drop;
       float a = smoothstep(.3, .7, L.r) * smoothstep(0., 1.5, dep) * op; if (a < .01) discard;
-      vec3 c = mix(vec3(.050, .150, .155), vec3(.010, .040, .075), clamp(dep / 16., 0., 1.));
-      vec3 v = normalize(cameraPosition - vW); float f = pow(1. - clamp(v.y, 0., 1.), 4.);
-      c += vec3(.55, .48, .38) * f * .18;
-      gl_FragColor = vec4(c, a * .96); }` });
+      vec3 c = mix(vec3(.060, .110, .095), vec3(.012, .035, .055), clamp(dep / 12., 0., 1.));
+      vec3 v = normalize(cameraPosition - vW); float f = .02 + .98 * pow(1. - clamp(v.y, 0., 1.), 5.);
+      float rip = .5 + .5 * sin(vW.x * 180. + sin(vW.z * 140.) * 2.) * sin(vW.z * 210. + vW.x * 60.);
+      c = mix(c, vec3(.55, .66, .74) * (.85 + .15 * rip), clamp(f, 0., .75));
+      vec3 sd = normalize(vec3(-150., 59., 60.)), hv = normalize(sd + v); c += vec3(1., .9, .75) * pow(max(hv.y, 0.), 400.) * .6;
+      float edge = smoothstep(0., 2.5, dep); c = mix(vec3(.30, .28, .20), c, edge);
+      gl_FragColor = vec4(c, a * .97); }` });
 const lakeMesh = new THREE.Mesh(new THREE.PlaneGeometry(WK, HK).rotateX(-Math.PI / 2), lakeMat);
 lakeMesh.renderOrder = 1; scene.add(lakeMesh);
 const setLakeLevel = dropM => { lakeU.drop.value = dropM; lakeMesh.position.y = yOf(LEVEL - dropM) + .002; };
@@ -198,28 +205,44 @@ const flowPts = (() => {
 })();
 const flowS = arc(flowPts), FLEN = flowS[flowS.length - 1];
 const flood = {
-  wash: ribbon(flowPts, { wW: .32, pxW: 6, k: 2.2, base: .30, col: AMB, order: 3 }),
-  glow: ribbon(flowPts, { wW: .10, pxW: 16, k: 3, base: .30, col: AMB, order: 4 }),
-  core: ribbon(flowPts, { wW: .025, pxW: 3, k: 1.2, base: 1.4, col: AMB2, flowAmt: 2.4, flowSp: 1.8, flowLen: .5, order: 4, headW: .5 }),
+  water: ribbon(flowPts, { wW: .22, pxW: 9, k: 1.1, normalA: .92, col: 0x5b4a33, order: 3 }),
+  silt: ribbon(flowPts, { wW: .14, pxW: 4, k: 1.6, normalA: .55, col: 0x8a7350, order: 3 }),
+  foam: ribbon(flowPts, { wW: .20, pxW: 10, k: 1.4, base: 0, col: 0xfff6ea, flowAmt: .35, flowSp: .9, flowLen: .25, order: 4, headW: .28 }),
 };
 // the calm river and the 14-mile ruler (S2): the same line, drawn from the town up to the dam in warm white
 const rulerPts = flowPts.slice().reverse();
 const ruler = ribbon(rulerPts, { wW: .006, pxW: 2.2, k: 1.1, base: .85, col: RULE, order: 5, dash: .16, duty: .6 });
 
-// ---------- the debris pile at the Stone Bridge (S6): 30 acres across, 40 ft high, one slab per 5 ft ----------
+// ---------- the debris pile at the Stone Bridge (S6): 30 acres across, 40 ft high (drawn ×6 so it reads), then fire ----------
 const BRIDGE = geo(...meta.places['STONE BRIDGE']);
 const PILE = (() => {
-  const R = Math.sqrt(.1214 / Math.PI);                 // 30 acres = 0.1214 km², drawn at its true footprint
-  const SH = .055, grp = new THREE.Group(); grp.position.copy(BRIDGE); scene.add(grp);
-  const slabG = new THREE.CylinderGeometry(R, R, SH * .86, 64, 1);
-  const mat = new THREE.MeshStandardMaterial({ color: 0xffb04a, emissive: 0xff9a2e, emissiveIntensity: .4, roughness: .5, metalness: .05 });
-  const ringG = new THREE.TorusGeometry(R, R * .025, 6, 72); ringG.rotateX(Math.PI / 2);
-  const edgeM = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffb04a).multiplyScalar(2.2), toneMapped: false });
-  const slabs = [];
-  for (let k = 0; k < 8; k++) { const s = new THREE.Group(); s.add(new THREE.Mesh(slabG, mat)); const r = new THREE.Mesh(ringG, edgeM); r.position.y = SH * .43; s.add(r); s.position.y = k * SH + SH / 2; grp.add(s); slabs.push(s); }
-  return { grp, slabs, SH, R, mat, edgeM };
+  const R = Math.sqrt(.1214 / Math.PI), H = 12.2 / 1000 * 6, grp = new THREE.Group(); grp.position.copy(BRIDGE); scene.add(grp);
+  const geo_ = new THREE.CircleGeometry(R, 160, 0, Math.PI * 2); geo_.rotateX(-Math.PI / 2);
+  { const g2 = new THREE.PlaneGeometry(R * 2.2, R * 2.2, 140, 140); g2.rotateX(-Math.PI / 2); geo_.copy(g2); }
+  const p = geo_.attributes.position, col = [], fireA = [];
+  const nz = (x, z) => Math.sin(x * 61) * Math.sin(z * 53) * .5 + Math.sin(x * 173 + z * 37) * Math.sin(z * 151 - x * 29) * .3 + Math.sin(x * 431) * Math.sin(z * 397) * .2;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), z = p.getZ(i), r = Math.hypot(x, z * 1.15) / R + .12 * nz(x * .7, z * .7);
+    const m = clamp(1 - r); const y = H * Math.pow(m, .55) * (.75 + .35 * nz(x, z)) - (m <= 0 ? .004 : 0);
+    p.setY(i, y);
+    const k = .5 + .5 * nz(x * 2.3, z * 2.3); col.push(.20 + .14 * k, .16 + .10 * k, .12 + .06 * k);
+    fireA.push(m > .05 ? clamp(.5 + .55 * nz(x * 9.7 + 1.3, z * 8.9 - .7) * nz(x * 4.3, z * 5.1 + 2.) * 2.) : 0);
+  }
+  geo_.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); geo_.setAttribute('aFire', new THREE.Float32BufferAttribute(fireA, 1)); geo_.computeVertexNormals();
+  const U = { fire: { value: 0 }, fl: { value: 1 } };
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0, transparent: true });
+  mat.onBeforeCompile = sh => { Object.assign(sh.uniforms, U);
+    sh.vertexShader = 'attribute float aFire; varying float vFire; varying float vH;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vFire = aFire; vH = position.y;');
+    sh.fragmentShader = 'uniform float fire, fl; varying float vFire; varying float vH;\n' + sh.fragmentShader
+      .replace('void main() {', 'void main() {\n if (vH < -.002) discard;')
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n totalEmissiveRadiance += vec3(1., .40, .10) * fire * smoothstep(.72, .95, vFire) * fl * 3.2;'); };
+  const m = new THREE.Mesh(geo_, mat); grp.add(m);
+  // a warm glow over it once it burns
+  const glow = new THREE.Mesh(new THREE.SphereGeometry(R * .9, 32, 16), new THREE.MeshBasicMaterial({ color: 0xff7a2a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+  glow.scale.set(1, .35, 1); glow.position.y = H * .3; grp.add(glow);
+  return { grp, m, U, glow, H, R, SH: H / 8 };
 })();
-function growPile(k) { const v = 8 * k; PILE.slabs.forEach((s, i) => { const f = clamp(v - i); s.visible = f > 0; s.scale.set(1, Math.max(.001, f), 1); s.position.y = i * PILE.SH + PILE.SH * f / 2; }); }
+function growPile(k) { PILE.m.scale.set(1, Math.max(.001, k), 1); PILE.m.visible = k > 0; }
 
 // ---------- the section: along the lake's long axis, through the breach in the dam ----------
 const SEC = (() => {
@@ -293,10 +316,11 @@ const CAM = track([
   [8.2, [Math.log(12.5), 50, -108, ...T(-78.828, 40.358), yT(460)]],
   [11.2, [Math.log(5.6), 47, -138, ...T(-78.768, 40.339), yT(490)]],
   [12.9, [Math.log(5.0), 38, -150, ...T(-78.768, 40.339), yT(490)]],
-  [14.6, [Math.log(4.5), 6, YAWS - 6, SECMID.x, SECMID.z, lakeTopY - .18]],
-  [17.0, [Math.log(4.2), 5, YAWS + 2, SECMID.x, SECMID.z, lakeTopY - .18]],
-  [20.4, [Math.log(4.1), 5, YAWS + 7, SECMID.x, SECMID.z, lakeTopY - .18]],
-  [21.8, [Math.log(3.0), 30, 200, DAMC.x, DAMC.z - .15, lakeTopY]],
+  [14.6, [Math.log(4.4), 11, YAWS - 6, SECMID.x, SECMID.z, lakeTopY - .26]],
+  [17.0, [Math.log(4.2), 10, YAWS + 2, SECMID.x, SECMID.z, lakeTopY - .26]],
+  [20.6, [Math.log(4.1), 10, YAWS + 7, SECMID.x, SECMID.z, lakeTopY - .26]],
+  [21.3, [Math.log(4.05), 11, YAWS + 8, SECMID.x, SECMID.z, lakeTopY - .24]],
+  [22.6, [Math.log(3.0), 30, 200, DAMC.x, DAMC.z - .15, lakeTopY]],
   [24.6, [Math.log(2.5), 36, 188, DAMC.x, DAMC.z - .12, lakeTopY]],
   [25.6, [Math.log(3.1), 42, 168, DAMC.x, DAMC.z - .4, lakeTopY]],
   [28.0, [Math.log(7.0), 52, 125, ...T(-78.787, 40.360), yT(470)]],
@@ -317,10 +341,10 @@ function setCamera(t) {
 }
 
 // ---------- post ----------
-const SSAA = +(Q.get('ssaa') || 1);
+const SSAA = +(Q.get('ssaa') || 2);
 const post = makePost(renderer, scene, camera, Wd, Ht, { ssaa: SSAA, ao: false });
-post.dof.maxCoc = 5; post.bloom.strength = .6; post.bloom.radius = .5; post.bloom.threshold = .95;
-const VU = post.vig.uniforms; VU.amt.value = .4; VU.warm.value = .25; VU.sat.value = .92; VU.contrast.value = .12;
+post.dof.maxCoc = 1.2; post.bloom.strength = .6; post.bloom.radius = .5; post.bloom.threshold = .95;
+const VU = post.vig.uniforms; VU.amt.value = .28; VU.warm.value = .12; VU.sat.value = 1.0; VU.contrast.value = .1;
 
 // ---------- overlay ----------
 const ov = document.createElement('canvas'); ov.width = Wd * 2; ov.height = Ht * 2; ov.style.width = Wd + 'px'; ov.style.height = Ht + 'px'; document.body.appendChild(ov);
@@ -350,15 +374,19 @@ const LABELS = [
   ['SOUTH FORK', 'land', 6.4, 12.4], ['MINERAL POINT', 'land', 6.0, 10.6], ['EAST CONEMAUGH', 'land', 5.4, 9.4],
   ['SOUTH FORK', 'land', 26.4, 31.0], ['MINERAL POINT', 'land', 28.0, 33.0], ['EAST CONEMAUGH', 'land', 30.2, 35.0],
   ['JOHNSTOWN', 'town', 32.4, 36.2]];
-const STY = { land: { size: 30, w: 600, sp: 6, col: C.light, shadow: 1 }, town: { size: 40, w: 600, sp: 9, col: C.light, shadow: 1 } };
+const STY = { land: { size: 34, w: 600, sp: 5, col: C.light }, town: { size: 46, w: 600, sp: 8, col: C.light } };
+function panel(x, y, w, h, a) { if (a <= 0) return; g.save(); g.globalAlpha = clamp(a) * .62; const gr = g.createLinearGradient(x, 0, x + w, 0); gr.addColorStop(0, 'rgba(14,11,8,1)'); gr.addColorStop(1, 'rgba(14,11,8,0)'); g.fillStyle = gr; g.beginPath(); g.roundRect(x, y, w, h, 10); g.fill(); g.restore(); }
+function tag(x, y, w, size, a) { g.save(); g.globalAlpha = clamp(a) * .82; g.fillStyle = '#16120e'; const pw = w + size * .9, ph = size * 1.35; g.beginPath(); g.roundRect(x - pw / 2, y - ph / 2, pw, ph, 6); g.fill(); g.restore(); }
 function mapLabels(t) {
   for (const [name, kind, a0, a1] of LABELS) {
     let a = ss(seg(t, a0, a0 + .6)) * (1 - ss(seg(t, a1 - .5, a1))); if (a <= .01) continue;
     const st = STY[kind], [x, y, z] = scr(geo(...PL[name], .02)); if (z > 1) continue;
     const w = tw(name, st.size, st.w, st.sp);
     a *= ss(seg(Math.min(x - w / 2 - 40, Wd - 40 - x - w / 2, y - TOP_SAFE - 30, BOT_SAFE - y), 0, 40)); if (a <= .01) continue;
-    dot(x, y, 5, C.light, a);
-    txt(name, x, y - 30, { ...st, a, id: 'L' + name + a0 });
+    tag(x, y - 34, w, st.size, a);
+    line([[x, y - 34 + st.size * .7], [x, y - 6]], 'rgba(20,16,12,.8)', 2, a);
+    dot(x, y, 6, '#fff6ea', a); ring(x, y, 6, 'rgba(20,16,12,.9)', a, 2);
+    txt(name, x, y - 34, { ...st, a, shadow: 0, id: 'L' + name + a0 });
   }
 }
 
@@ -370,6 +398,7 @@ function townPin(t) {
   for (const k of [0, .33, .66]) { const q = (r * 1.5 + k) % 1; ring(x, y, 8 + 50 * q, C.amber, a * (1 - q) * .85, 2.4); }
   dot(x, y, 7, C.amber, a);
   const lx = 92, ly = 470, e = eo(seg(t, .7, 1.4));
+  panel(50, ly - 110, 900, 230, a);
   line([[x, y - 8], [x + (lx + 200 - x) * e, y - 8 + (ly + 90 - y) * e]], 'rgba(255,214,150,.85)', 2, a);
   txt('40°19′N   78°55′W', lx, ly - 60, { size: 28, w: 500, sp: 6, align: 'left', col: C.amberSoft, a, id: 'coord' });
   txt('JOHNSTOWN', lx - 3, ly, { size: 112, w: 600, sp: 6, align: 'left', col: C.light, a: a * ss(seg(t, .8, 1.4)), id: 'title', shadow: 1 });
@@ -380,6 +409,7 @@ function townPin(t) {
 function climbLabels(t) {
   const a = ss(seg(t, 8.0, 8.5)) * (1 - ss(seg(t, 11.6, 12.1)));
   if (a > 0) {
+    panel(40, 440, 720, 180, a);
     txt('14 MILES', 70, 520, { size: 110, w: 600, sp: 3, align: 'left', col: C.light, a, id: 'r14', shadow: 1 });
     txt('JOHNSTOWN → THE DAM, ALONG THE RIVER', 74, 590, { size: 28, w: 600, sp: 3, align: 'left', col: C.light, a: a * .92, id: 'r14b', shadow: 1 });
   }
@@ -420,9 +450,10 @@ function sectionLabels(t) {
   txt('THE DAM', dx, dy - 40, { size: 26, w: 600, sp: 5, col: C.light, a, id: 'secdam' });
   line([[dx, dy - 22], [dx, dy - 4]], C.light, 2, a);
   // caption, upper left
+  panel(40, 262, 900, 180, a);
   txt('SECTION · ALONG THE LAKE', 72, 300, { size: 26, w: 600, sp: 5, align: 'left', col: C.amberSoft, a, id: 'sec-t' });
   txt('A LAKE HELD BY DIRT', 70, 362, { size: 72, w: 600, sp: 3, align: 'left', col: C.light, a, id: 'sec-h', shadow: 1 });
-  txt(`WATER DEPTH ×${DEX} · RELIEF ×${EX} · 1889 LAKE RECONSTRUCTED`, 72, 416, { size: 21, w: 500, sp: 2.5, align: 'left', col: C.dim, a, id: 'sec-n' });
+  txt(`WATER DEPTH ×${DEX} · RELIEF ×${EX} · 1889 LAKE RECONSTRUCTED FROM TERRAIN`, 72, 416, { size: 21, w: 500, sp: 2.5, align: 'left', col: C.dim, a, id: 'sec-n' });
 }
 
 // S4–S5: the clock, 3:10 → 4:07
@@ -442,11 +473,12 @@ function clock(t) {
 function runLabels(t) {
   const a = ss(seg(t, 28.4, 28.9)) * (1 - ss(seg(t, 34.4, 34.9)));
   if (a > 0) {
+    panel(40, 450, 720, 230, a);
     txt('20 MILLION', 72, 520, { size: 92, w: 600, sp: 2, align: 'left', col: C.num, a, id: 'tons', shadow: 1 });
     txt('TONS OF WATER', 76, 584, { size: 30, w: 600, sp: 5, align: 'left', col: C.light, a, id: 'tons2', shadow: 1 });
   }
   const b = ss(seg(t, 30.9, 31.4)) * (1 - ss(seg(t, 34.4, 34.9)));
-  if (b > 0) txt('WAVE ≈ 35 FT HIGH AT ITS CREST', 76, 640, { size: 30, w: 600, sp: 3, align: 'left', col: C.amberSoft, a: b, id: 'crest', shadow: 1 });
+  if (b > 0) txt('WAVE ≈ 35 FT HIGH AT ITS CREST', 76, 646, { size: 30, w: 600, sp: 3, align: 'left', col: C.amberSoft, a: b, id: 'crest', shadow: 1 });
   // the breach: a pulse on the dam
   const r = seg(t, K.breach, K.breach + 1.6);
   if (r > 0 && r < 1) { const [x, y] = scr(DAMC); for (const k of [0, .3]) { const q = clamp(r * 1.3 - k); if (q > 0 && q < 1) ring(x, y, 10 + 90 * eo(q), '#fff1dc', (1 - q) * .9, 3); } dot(x, y, 6, '#fff1dc', 1 - r); }
@@ -456,6 +488,7 @@ function pileLabels(t) {
   const a = ss(seg(t, K.piled + .3, K.piled + .8)) * (1 - ss(seg(t, 42.2, 42.7))); if (a <= 0) return;
   const top = BRIDGE.clone(); top.y += PILE.SH * 8 + .02; const [x, y] = scr(top);
   const lx = Math.min(x + 60, Wd - 420), ly = y - 150;
+  panel(lx - 24, ly - 70, 420, 190, a);
   line([[x + 6, y - 6], [lx - 8, ly + 30]], 'rgba(255,214,150,.9)', 2, a);
   txt('40', lx, ly, { size: 110, w: 600, sp: 1, align: 'left', col: C.num, a, id: 'p40', shadow: 1 });
   txt('FT HIGH', lx + tw('40', 110, 600, 1) + 14, ly - 16, { size: 30, w: 600, sp: 4, align: 'left', col: C.light, a, id: 'p40b', shadow: 1 });
@@ -470,6 +503,7 @@ function pileLabels(t) {
 function count(t) {
   const a = ss(seg(t, K.count - .5, K.count)); if (a <= 0) return;
   const X = 72, Y = 560;
+  panel(36, Y - 120, 900, 340, a);
   txt('2,209', X - 4, Y, { size: 210, w: 600, sp: 2, align: 'left', col: C.num, a, id: 'n', shadow: 1 });
   txt('PEOPLE DIED', X, Y + 130, { size: 48, w: 600, sp: 8, align: 'left', col: C.light, a, id: 'n2', shadow: 1 });
   const b = ss(seg(t, K.count + 1.2, K.count + 1.7));
@@ -491,9 +525,10 @@ function subtitles(t) {
   lines.forEach((s, i) => txt(s, X, SUB_Y + i * 60, { size: 50, w: 500, sp: 1.2, align: 'left', col: C.light, a, id: 'sub' + i, nobox: true }));
 }
 function credits(t) {
-  const a = .62;
-  txt('FACTS NPS · JOHNSTOWN AREA HERITAGE ASSN. · ELEVATION AWS TERRAIN TILES', Wd - 36, 250, { size: 15, w: 500, sp: 1.2, align: 'right', col: 'rgba(240,232,216,.9)', a, id: 'cr1', nobox: true });
-  txt('IMAGERY SENTINEL-2 CLOUDLESS 2016 BY EOX (CC BY 4.0) · RIVER, PLACES © OPENSTREETMAP (ODbL) · RELIEF ×3', Wd - 36, 272, { size: 15, w: 500, sp: 1.2, align: 'right', col: 'rgba(240,232,216,.9)', a, id: 'cr2', nobox: true });
+  const a = .8, X = Wd - 36;
+  g.save(); g.globalAlpha = .5; g.fillStyle = '#16120e'; g.fillRect(X - 760, 236, 772, 54); g.restore();
+  txt('FACTS NPS · JOHNSTOWN AREA HERITAGE ASSN. · ELEVATION AWS TERRAIN TILES · RELIEF ×2', X, 252, { size: 17, w: 500, sp: 1, align: 'right', col: '#f3ece0', a, id: 'cr1', nobox: true });
+  txt('IMAGERY USDA / USGS THE NATIONAL MAP (TODAY) · RIVER, PLACES © OPENSTREETMAP (ODbL)', X, 276, { size: 17, w: 500, sp: 1, align: 'right', col: '#f3ece0', a, id: 'cr2', nobox: true });
 }
 
 // ---------- the frame at film time t ----------
@@ -501,10 +536,10 @@ function frame(t) {
   TX = [];
   const dist = setCamera(t);
   // the section cut
-  const cutOn = t >= K.cut && t < K.close + .9;
-  const open = eio(seg(t, K.cut, K.cut + .9)) * (1 - eio(seg(t, K.close, K.close + .9)));
+  const cutOn = t >= K.cut && t < K.close + .7;
+  const open = eio(seg(t, K.cut, K.cut + .9)); CUT.f.value = 1 - ss(seg(t, K.close, K.close + .7));
   CUT.p.set(SEC.P0.x, SEC.P0.z, SEC.nx, SEC.nz); CUT.d.value = cutOn ? .001 + 60 * open : 0;
-  wall.mesh.visible = cutOn && open > .02; wall.m.uniforms.op.value = ss(seg(open, 0, .3));
+  wall.mesh.visible = cutOn && open > .02; wall.m.uniforms.op.value = ss(seg(open, .3, .7)) * CUT.f.value;
   // the lake: fills at K.lake, drains after the breach
   setLakeLevel(lerp(0, 22, eio(seg(t, K.breach + .1, K.breach + 4.5))));
   lakeU.op.value = ss(seg(t, K.lake - .2, K.lake + .9));
@@ -515,17 +550,16 @@ function frame(t) {
   { const k = eio(seg(t, 6.6, 10.4)); rv(ruler, { revB: k * ruler.L, inten: ss(seg(t, 6.6, 6.9)) * (1 - ss(seg(t, 13.0, 13.8))), soft: .2 }); }
   // the flood: ignites at the breach and runs to the Stone Bridge
   const hs = headS(t), on = t >= K.breach + .25 ? 1 : 0, far = lerp(.7, 1, ss(seg(dist, 2, 6)));
-  rv(flood.wash, { revB: hs, inten: on * .9, soft: .4 });
-  rv(flood.glow, { revB: hs, inten: on * far, soft: .3 });
-  rv(flood.core, { revB: hs, inten: on, head: hs, headAmt: 3.2 * (1 - ss(seg(runK(t), .95, 1))), headW: lerp(.25, .6, ss(seg(dist, 3, 10))), flowPh: t * 1.6, soft: .25 });
+  rv(flood.water, { revB: hs, inten: on, soft: .25 });
+  rv(flood.silt, { revB: hs, inten: on, soft: .25 });
+  rv(flood.foam, { revB: hs, inten: on, head: hs - .05, headAmt: 1.6 * (1 - ss(seg(runK(t), .96, 1))), headW: lerp(.18, .45, ss(seg(dist, 3, 12))), flowPh: t * 1.4, soft: .2 });
   // the pile: grows on "piled", slab by slab, then burns
-  PILE.grp.visible = t >= K.piled - .1 && t < 44.2; PILE.grp.scale.setScalar(1 - ss(seg(t, 42.8, 44.2)) * .999); growPile(eio(seg(t, K.piled, K.piled + 1.6)));
-  const fire = ss(seg(t, K.fire, K.fire + .6)) * (1 - ss(seg(t, 46, 48)) * .5);
-  const fl = .75 + .25 * Math.sin(t * 23.0) * Math.sin(t * 7.3 + 1.1);
-  PILE.mat.color.setHex(0xffb04a).lerp(new THREE.Color(0xff5a2a), fire); PILE.mat.emissive.setHex(0xff9a2e).lerp(new THREE.Color(0xff3a10), fire);
-  PILE.mat.emissiveIntensity = .4 + fire * .9 * fl; PILE.edgeM.color.setHex(0xffb04a).lerp(new THREE.Color(0xff6a30), fire).multiplyScalar(2.2 + fire * fl);
+  PILE.grp.visible = t >= K.piled - .1; growPile(eio(seg(t, K.piled, K.piled + 1.6)));
+  const fire = ss(seg(t, K.fire, K.fire + .8)) * (1 - ss(seg(t, 45.5, 48)) * .55);
+  const fl = .7 + .3 * Math.sin(t * 23.0) * Math.sin(t * 7.3 + 1.1);
+  PILE.U.fire.value = fire; PILE.U.fl.value = fl; PILE.glow.material.opacity = fire * (.22 + .1 * fl);
   // depth of field: aperture grows with distance; deeper in the section
-  post.dof.focus = dist; post.dof.aper = dist * (t > K.cut && t < K.close + .9 ? 2.5 : 4.0);
+  post.dof.focus = dist; post.dof.aper = dist * 1.0;
   post.bloom.strength = .6; VU.fade.value = ss(seg(t, 0, .5)) * (1 - ss(seg(t, FULL - .8, FULL)) * .0);
   post.composer.render();
   // overlay
