@@ -1,4 +1,13 @@
-# Scientific Bithi: 3D rigged characters (Spline, v1, 2026-11-14)
+# Scientific Bithi: 3D rigged characters (Spline, 2026-11-14)
+
+## v2 (owner rule 2026-11-14): copy the reference characters top to bottom
+Reference: `reference_owner_2026-11-14.jpg`. The owner said: follow these characters exactly, don't assume anything.
+- **Mama = the tall man:** very tall and slim (~120 units vs Bithi ~76), tousled dark-brown hair with tufts, long face, big ears, long pointed nose, thin brows, small smile; white shirt with collar and striped dark-red tie; open dark green-grey blazer with lapels; dark belt with buckle; olive-brown straight trousers; brown messenger bag on his right hip with strap; black sneakers with white soles. (Mustache, panjabi, gamchha and lungi removed.)
+- **Bithi = the girl:** dark-blonde chin-length bob with side-swept fringe and outward flicks, big brown eyes, thin brows, freckles and blush, small nose, small pout; white collar and brown tie under a khaki V-neck sweater with dark V trim; brown satchel with a strap across the chest; dark olive plaid skirt; thin legs; grey ankle socks; black sneakers with white soles. (Glasses, braids, sash and navy skirt removed.)
+- **Boltu:** not in the reference; unchanged (v1) until the owner decides.
+- Both rebuilt with the same joint names. Built blind (the Spline Free plan's 20 daily calls ran out); NOT yet verified on screen, and Mama's jacket back/side panels have a reported flush top face at y ≈ 87 to offset. Check and fix after the limit resets (2026-11-15 00:00 UTC).
+
+## v1
 
 Owner asked for 3D rigged characters made in Spline, with three reference images for the look
 (stylised animated-feature style: sculpted soft forms, big expressive eyes with catch-lights, slender limbs, warm light).
