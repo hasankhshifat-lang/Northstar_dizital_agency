@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""YouTube Data API helper for the Which Life Next channel (own Google Cloud OAuth client).
+"""YouTube Data API helper for the agency's channels (own Google Cloud OAuth client, one refresh token per channel).
 
-Credentials come from the environment: YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN.
+Credentials come from the environment: YT_CLIENT_ID, YT_CLIENT_SECRET, plus one refresh token per channel:
+  --channel whichlifenext (default)  YT_REFRESH_TOKEN
+  --channel asprinted                YT_REFRESH_TOKEN_ASPRINTED
 Never print them. Standard library only; HTTPS goes through the session proxy automatically.
+Every run checks that the token belongs to the channel named, so a command never lands on the wrong channel.
 
-Usage (all output is JSON):
+Usage (all output is JSON; put --channel NAME before the command):
   yt.py whoami
   yt.py videos [--max 25]                       # latest uploads with status / publishAt / stats
   yt.py video VIDEO_ID                          # full snippet, status, statistics
@@ -21,7 +24,12 @@ Usage (all output is JSON):
 import argparse, json, mimetypes, os, sys, urllib.error, urllib.parse, urllib.request
 
 API = "https://www.googleapis.com/youtube/v3"
-CHANNEL_ID = "UCPTrW0n3ONI9uU4WetWwFCQ"
+CHANNELS = {   # name -> (refresh-token variable, channel ID; None until the first connection is verified)
+    "whichlifenext": ("YT_REFRESH_TOKEN", "UCPTrW0n3ONI9uU4WetWwFCQ"),
+    "asprinted": ("YT_REFRESH_TOKEN_ASPRINTED", None),
+}
+CHANNEL = "whichlifenext"
+CHANNEL_ID = CHANNELS[CHANNEL][1]
 _token = None
 
 
@@ -29,14 +37,26 @@ def token():
     global _token
     if _token:
         return _token
-    missing = [k for k in ("YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN") if not os.environ.get(k)]
+    global CHANNEL_ID
+    var = CHANNELS[CHANNEL][0]
+    missing = [k for k in ("YT_CLIENT_ID", "YT_CLIENT_SECRET", var) if not os.environ.get(k)]
     if missing:
-        sys.exit(f"Missing environment variables: {', '.join(missing)}")
+        sys.exit(f"Missing environment variables for channel '{CHANNEL}': {', '.join(missing)}")
     body = urllib.parse.urlencode({
         "client_id": os.environ["YT_CLIENT_ID"], "client_secret": os.environ["YT_CLIENT_SECRET"],
-        "refresh_token": os.environ["YT_REFRESH_TOKEN"], "grant_type": "refresh_token"}).encode()
+        "refresh_token": os.environ[var], "grant_type": "refresh_token"}).encode()
     _token = _call("POST", "https://oauth2.googleapis.com/token", data=body,
                    headers={"Content-Type": "application/x-www-form-urlencoded"}, auth=False)["access_token"]
+    mine = _call("GET", f"{API}/channels", {"part": "id,snippet", "mine": "true"}).get("items", [])
+    ids = [c["id"] for c in mine]
+    want = CHANNELS[CHANNEL][1]
+    if want and want not in ids:
+        _token = None
+        sys.exit(f"{var} belongs to {[c['snippet']['title'] for c in mine]}, not channel '{CHANNEL}' ({want}). Stopping.")
+    if not ids:
+        _token = None
+        sys.exit(f"{var} has no YouTube channel. Stopping.")
+    CHANNEL_ID = want or ids[0]
     return _token
 
 
@@ -79,6 +99,7 @@ def cmd_whoami(a):
 
 
 def cmd_videos(a):
+    token()                                   # resolves CHANNEL_ID for the chosen channel
     uploads = "UU" + CHANNEL_ID[2:]
     items = _call("GET", f"{API}/playlistItems",
                   {"part": "contentDetails", "playlistId": uploads, "maxResults": min(a.max, 50)}).get("items", [])
@@ -154,6 +175,7 @@ def cmd_thumbnail(a):
 
 
 def cmd_comments(a):
+    token()
     params = {"part": "snippet,replies", "maxResults": min(a.max, 100), "order": "time", "textFormat": "plainText"}
     if a.video:
         params["videoId"] = a.video
@@ -195,7 +217,9 @@ def cmd_analytics(a):
 
 
 def main():
+    global CHANNEL, CHANNEL_ID
     p = argparse.ArgumentParser()
+    p.add_argument("--channel", choices=sorted(CHANNELS), default="whichlifenext")
     sp = p.add_subparsers(dest="cmd", required=True)
     sp.add_parser("whoami").set_defaults(f=cmd_whoami)
     s = sp.add_parser("videos"); s.add_argument("--max", type=int, default=25); s.set_defaults(f=cmd_videos)
@@ -219,6 +243,7 @@ def main():
     s.add_argument("--metrics", default="views,estimatedMinutesWatched,likes,subscribersGained")
     s.add_argument("--dimensions"); s.set_defaults(f=cmd_analytics)
     a = p.parse_args()
+    CHANNEL = a.channel; CHANNEL_ID = CHANNELS[CHANNEL][1]
     if a.cmd == "upload" and a.title is None:
         sys.exit("--title is required for upload")
     a.f(a)

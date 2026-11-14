@@ -13,7 +13,15 @@ Do **not** use Clawlink or Metricool for YouTube, in chat or in scheduled tasks.
 - Google Cloud project `168994544641`, OAuth client from the environment:
   `YT_CLIENT_ID`, `YT_CLIENT_SECRET`, `YT_REFRESH_TOKEN`. `yt.py` turns the refresh token into
   an access token on each run. Never print, log or commit these values.
-- Channel: **Which Life Next** (`@whichlifenext`), ID `UCPTrW0n3ONI9uU4WetWwFCQ`.
+- Channels (one refresh token each; pick with `--channel NAME` **before** the command, default `whichlifenext`):
+  - **Which Life Next** (`@whichlifenext`), ID `UCPTrW0n3ONI9uU4WetWwFCQ` — `--channel whichlifenext`, token `YT_REFRESH_TOKEN`.
+  - **As Printed** (archive history, created 2026-11-14) — `--channel asprinted`, token `YT_REFRESH_TOKEN_ASPRINTED`.
+    Connect: the owner runs `get_refresh_token.py` on their own computer, picks the As Printed channel on Google's
+    screen, and pastes the printed token into the environment's settings as `YT_REFRESH_TOKEN_ASPRINTED`
+    (never into chat or the repo). A new session picks it up; check with `yt.py --channel asprinted whoami`,
+    then put its channel ID into `CHANNELS` in `yt.py`.
+  - Every run checks the token belongs to the named channel and stops otherwise.
+  - Always say which channel a command is for. Log As Printed actions in the same log files with the channel name.
 - Granted scopes: `youtube.force-ssl` (manage videos, comments, playlists, captions, channel),
   `youtube.upload`, `youtube.readonly`.
 - YouTube Analytics API: **enabled** (2026-11-08) and working; the refresh token also has
