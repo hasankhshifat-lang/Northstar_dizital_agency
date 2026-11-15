@@ -2,7 +2,7 @@
 
 New animated football stories channel. Opuscar style: Comic History Cartoon (`comic-history`).
 No match footage, club crests or league logos: everything is drawn, with club colours only.
-Status: **topic report done; script v1 written (2026-11-15). Storyboard not done yet.**
+Status: **topic report, script v1 and storyboard v1 done (2026-11-15). Production not started.**
 
 ## Topic research (YouTube Data API, 2026-11-15)
 
@@ -252,4 +252,80 @@ On-screen text is in [brackets]. Style: Comic History Cartoon, with players draw
 Details checked after v1: Sergi Roberto was a substitute (76'), the last free kick went short to Neymar, and ter Stegen went forward in stoppage time.
 The line saying Messi handed the penalty to Neymar was removed (no source for it).
 
-Next step: storyboard (scene table) following `docs/content/animation-direction-rules.md`, then production in lemo-opuscar.
+Next step: production in lemo-opuscar (see the storyboard and blockers below).
+
+## Storyboard v1 (long-form, 16:9)
+
+### Direction decisions (adapting Comic History Cartoon to football)
+
+- **No real likenesses.** The style rule is that puppets personify a side, never a real person. So players are
+  **faceless paper puppets in club colours with shirt numbers** (Barcelona: blue/garnet striped card; PSG: navy card
+  with a red centre stripe). The narration names the player, and the number on the back says who it is (10, 9, 11, 20 for
+  Barcelona; 7 for Cavani and 11 for Di María on PSG). The two coaches are generic tracksuit puppets labelled by role
+  on a paper tag. No club crests, sponsors or league marks anywhere.
+- **The "map" is a printed pitch.** An engraved 19th-century-style stadium plan: cream paper, ink pitch lines,
+  hatched stands, small-caps labels (CAMP NOU, PARC DES PRINCES). A printed map of Europe is used once, for the Paris → Barcelona travel.
+- **Goals are paper actions, never recolouring.** Every goal is a numbered paper patch slapped onto the
+  **aggregate scoreboard**, a printed board pinned in the top-right panel all the way through. The away-goals rule is a
+  paper stamp. The whole tie is told as the board filling up, being torn and patched again.
+- **Two colours for the whole film:** Barcelona printed blue `#3E5FA8` with garnet `#9B2335`; PSG printed navy `#24335A`
+  with red `#C8463A` (the style's accent red is only for the scoreboard's PSG numbers and the scissors). Paper `#F1E8D2`, ink `#2B2219`.
+- **Serious register:** the Cavani goal (scene 13) and the waiting before 88' (scene 15) drop saturation and the jokes stop.
+  Comedy only comes back with Neymar's free kick.
+- **Captions** are English only, in pale yellow caption boxes at the bottom centre. Speech bubbles only for the crowd (no invented lines for real people).
+- **Sound:** Barcelona = brass oom-pah, PSG = accordion; paper foley for every slap; a thin tremolo before the
+  biggest slap (scene 19); music stops dead on the freeze frame.
+
+### Scene table
+
+| # | Time | Narration (short) | Purpose | Shot + camera (why) | Characters: position, action, eyes, expression | Object contact | Environment | SFX / music |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 0:00–0:06 | "Eighty-eight minutes gone… two more goals" | Hook: the impossible situation shown before it's explained | Close-up of a big printed stadium clock at 88:00, then a fast push out to the scoreboard panel (the stakes: AGG 4–5) | Barcelona #11 crouched over the ball in the corner of frame, head turned to the clock, worried head | Ball pinned under #11's foot; it rocks on contact | Clock's minute hand ticks once; crowd strip at the bottom flutters | Single loud tick, then silence |
+| 2 | 0:06–0:12 | "…no team had ever come back from where Barcelona started" | Raise the stakes | Slow push in on the scoreboard (attention) | None | A paper slip reading "0 TEAMS IN HISTORY" slaps onto the board | Paper scraps settle | Paper slap; low brass note |
+| 3 | 0:12–0:25 | "…go back three weeks. To Paris" | Transition to the setup | Clock hands spin backwards; whip across a gutter with speed lines (jump in time) to a printed map of Europe, a dashed line Barcelona → Paris | Barcelona team puppets hop along the dashed line in single file, eyes forward, confident | Each foot lands on the line (no sliding) | Title card slapped into a narrow panel: THE 7 MINUTES THAT BROKE FOOTBALL | Rewind whirr, xylophone hops, title slap |
+| 4 | 0:25–0:40 | "February fourteenth… Messi, Suárez and Neymar" | Introduce the attack (who to watch) | Wide panel: printed Parc des Princes plan (location), slow push on three puppets #10 #9 #11 | The three stand shoulder to shoulder, chests out, then turn heads to each other, cocky | — | Date tag pasted top-left: 14 FEB 2017 | Brass swagger; crowd murmur |
+| 5 | 0:40–0:55 | "Di María curls a free kick… one nil" | First goal: the turn | Medium shot behind the PSG #11 puppet (we see his view of the wall) | PSG #11 winds up (lean back, tremble), strikes; wall puppets jump; the ball arcs as a dashed ink line | Foot meets the ball at the laces; the ball leaves on the impact frame | Net ripples as cut paper strips | Wind-up tremolo, kick thwack, net rustle |
+| 6 | 0:55–1:02 | "It's his birthday" | Comic beat, true fact | Narrow side panel, close-up | PSG #11 turns to camera; a paper party hat drops onto his head with a big shadow, then lands (small shadow) | Hat sits on the head, bounces once | Paper confetti | Slide whistle, party horn |
+| 7 | 1:02–1:15 | "Draxler… Di María again… Cavani… his birthday too" | The collapse | Three quick panels down the page (diagonal drop = the next row of story), one per goal | Each PSG scorer celebrates differently (arms up / knee slide / point to the sky); Barcelona puppets react in the background (one sits, one clutches his head) | Each goal = a red "1" patch slapped onto the scoreboard: 2, 3, 4 | Second party hat for #7 | Three slaps getting louder; accordion rises |
+| 8 | 1:15–1:30 | "Four nil… all but over" | Low point | Pull back to the whole page (it reads like an ending) | Barcelona coach puppet (tag: BARÇA COACH) on the touchline, head down, then slowly looks up at the board | His hand rubs the back of his neck (hand stays on the neck) | Scoreboard: PSG 4–0 BARCELONA, printed big | Music thins to one low string |
+| 9 | 1:30–2:00 | "No team had ever overturned a four-nil… everyone except one man" | The central question: is it possible? | Slow push in on a newspaper prop | A newspaper drops onto the table; a puppet hand turns the page; the headline is printed "OVER." | The hand grips the paper's edge; the page bends as it turns | The camera stops on a tiny printed photo-style drawing of the coach puppet | Paper rustle; a single brass note on "one man" |
+| 10 | 2:00–2:40 | "…if PSG could score four… we can score six" (as reported) | The promise (curiosity loop) | Medium shot, press room; slight low angle on the coach (authority) | Reporter puppets lean in with paper microphones; the coach puppet holds up six fingers (cut paper hand) | Microphones held by the reporters' hands, pointing at the coach | Flashbulbs: cut-paper white bursts; a paper slip "AS REPORTED" pasted under the date tag | Camera flashes; murmur; a beat of silence after "six" |
+| 11 | 2:40–3:20 | "March eighth… Suárez, head first… one nil" | Act 2 opens; a fast start | Wide printed Camp Nou plan with crowd strips (scale: 96,290), then a tracking shot following #9 | #9 dives at the near post, eyes on the ball, body stretched | His head meets the ball; the ball changes direction on the contact frame | Crowd strips lift like waves; date tag 8 MAR 2017 | Huge crowd roar; brass sting |
+| 12 | 3:20–4:10 | "Kurzawa… own goal… Messi… three nil" | Momentum builds | Two panels side by side (lateral slide = the same night, building) | PSG defender puppet stretches to clear, the ball deflects off his shin into the net, he freezes with an embarrassed head; then #10 places the ball on the spot, steps back, scores | Ball under #10's hand on the spot, released; shin contact for the own goal | Scoreboard patches 2 and 3 slap on; agg 3–4 | Two slaps; crowd louder each time |
+| 13 | 4:10–4:40 | "Sixty-two minutes. Cavani… three-one" | Turning point (serious register) | Colour drains, slow motion close-up on PSG #7 turning in the box | #7 swivels, volleys; Barcelona keeper puppet dives too late; Barcelona heads swap to shocked | Foot meets the ball mid-air; the ball crosses the line | Crowd strips freeze; the panel is darker and colder | Music cuts dead; one heavy thump |
+| 14 | 4:40–5:00 | "Away goals count double… three more goals… fans head for the exits" | Explain the maths clearly | Extreme close-up on the scoreboard | A big rubber stamp drops: "AWAY GOAL ×2"; a slip "NEED 3" slaps on under it | The stamp hits, leaves ink, lifts | A few crowd puppets get up and walk to the exits (walk cycles, direction consistent) | Stamp thud; footsteps; low tremolo |
+| 15 | 5:00–5:40 | "Seventy… eighty… eighty-five… nothing goes in" | Despair; time running out | Time-jump whips across three narrow panels, each with a clock (70, 80, 85) | Attacks blocked: a shot saved, a header over, #10 hands on knees, breathing | Keeper's hands meet the ball on the save | Clock tags change as paper slips | Ticking gets louder |
+| 16 | 5:40–6:15 | "Eighty-eight… Neymar… top corner. Four-one" | Hope returns (colour comes back) | Over-the-shoulder behind #11 at the free kick (what he sees), then the ball's arc as a dashed ink line | #11 places the ball (hand contact), steps back three paces, strikes; the wall jumps; the keeper puppet stretches and misses | Ball released from the hand onto the grass; laces contact on the kick | Colour floods back into the panel | Brass returns; net rustle; crowd roar |
+| 17 | 6:15–6:35 | "…even their goalkeeper, ter Stegen, runs forward…" | Desperation, true and visual | Wide panel, tracking left to right | Barcelona keeper puppet (gloves, #1) sprints the length of the pitch, arms pumping, into the PSG box | Feet contact the ground each step | The crowd strip rises | Running footsteps; rising strings |
+| 18 | 6:35–7:00 | "Suárez goes down… penalty… Neymar… five-one" | The disputed penalty (debate, not fact) | Medium shot | #9 falls under a PSG defender's challenge; the referee puppet points to the spot; PSG puppets surround him with arms out; then #11 scores | The referee's arm extends with the finger pointing; the ball on the spot under #11's hand | Paper slip pasted: "STILL DEBATED"; scoreboard 5–5 + slip "PSG THROUGH ON AWAY GOALS" | Whistle; protests; slap; crowd |
+| 19 | 7:00–7:30 | "Final seconds… rolled short to Neymar… lifts the ball into the box" | Climax build | High angle over the whole box (geography of the last chance) then a slow push in | Every Barcelona puppet runs forward; #11 receives the short pass, looks up, chips | Neymar's foot gets under the ball; the ball loops as a dashed line | The clock tag reads 94:XX | Near silence: a thin tremolo, heartbeat |
+| 20 | 7:30–7:45 | "It's Sergi Roberto… stretching out his foot… And it's in" | The payoff moment | Freeze frame: the ball between #20's toe and the net, held one full second; then release | #20 stretches out his foot, eyes on the ball | Toe meets the ball at the freeze frame | Everything freezes, even the crowd | Silence for one second, then the biggest slap of the film as patch "6" hits the board |
+| 21 | 7:45–8:15 | "Six-one… seismographs half a kilometre away recorded a small tremor" | Release, true detail | Big camera shake (the weight of the moment), pull back to the full page | Barcelona puppets pile onto #20; PSG puppets flat on the grass | Puppets' hands grip each other's shoulders in the pile | A seismograph prop in a narrow panel: the needle scribbles; slip "SMALL TREMOR RECORDED 500 M AWAY" | Crowd explosion; brass fanfare |
+| 22 | 8:15–8:45 | "La Remontada… a scar for PSG" | Meaning and legacy | Lateral slide between two panels (parallel) | Left: Barcelona puppets lift the coach puppet; right: PSG coach puppet alone on the bench, head in hands | Hands lift the coach by the waist; he sits on the hands | A paper banner slaps on: LA REMONTADA | Music softens to a glockenspiel line |
+| 23 | 8:45–9:05 | "…it isn't over until the clock stops… does Istanbul beat it?" | Ending + comment question | Back to the clock from the hook (circle closed), now at 95:00, then pull back to the full comic page | None; then a pin drops onto Camp Nou on the printed map of Barcelona | The pin pierces the paper; its shadow shrinks as it lands | End card panel slapped in: NEXT STORY: ISTANBUL 2005 | Final tick; music button |
+
+### Storyboard check (rules 7.2)
+
+- [x] Every scene has a purpose from 1.2 (listed in the table)
+- [x] The camera is varied but motivated: push = attention, whip = time jump, pull back = ending/reveal, freeze = payoff
+- [x] The first scene hooks in 1–3 s (88:00 clock + worried #11 + loud tick)
+- [x] No "character stands and talks" scene: the coach's press conference uses reporters, microphones and the six-finger gesture
+- [x] Every hand-object contact is named (ball on the spot, stamp, newspaper, microphones, pile-on, pin)
+- [x] No invented quotes: the crowd is the only one with speech bubbles; the coach's line is a narrated paraphrase with an "AS REPORTED" slip
+- [x] Serious register at Cavani's goal and the long wait; the comedy only comes back with the 88th-minute goal
+
+## Storyboard v1 (Short, 9:16)
+
+Reuses scenes 1, 14, 16, 18, 19, 20, 21, re-laid-out as vertical panels: hook text and the scoreboard at the top,
+the action panel in the middle, the bottom ~400 px kept clear for captions/UI. Open on scene 1 (88:00 clock) with the
+caption "NEED 3 GOALS · 7 MINUTES LEFT", end on the seismograph scribble + comment question.
+
+## Production blockers (before anything is rendered)
+
+1. **Part sheets need an image generator.** Comic History draws its puppets from generated part sheets, and
+   lemo-opuscar's Codex CLI is not installed here (`gen_image.py --check`: "codex not found"). Options: the user provides
+   sheets from their own image tool, or approves a connected image API (the Gemini API is connected in this
+   environment) to generate them. About 6 sheets: Barcelona outfield puppet, Barcelona keeper, PSG outfield puppet,
+   PSG keeper, referee, and a coach/reporter puppet, all on chroma green with no text.
+2. **Channel name** is still open (needed for the end card, the learning database and the YouTube upload).
+3. ffmpeg here is 8.1 (OK, the renderer needs 7+). The narration will use VibeVoice (voice Frank).
