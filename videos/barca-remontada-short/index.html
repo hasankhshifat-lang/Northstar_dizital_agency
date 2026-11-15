@@ -228,13 +228,13 @@ function puppet(o) {
 }
 
 // ---------------------------------------------------------------- printed scenery
-function crowd(x, y, w, h, t, lift = 0, seed = 3) {
+function crowd(x, y, w, h, t, lift = 0, seed = 3, cols = ['#3E5FA8', '#9B2335', '#E9DEC4', '#3E5FA8', '#9B2335', '#C8B48A']) {
   // rows of little paper heads in the stands, hatched behind
   X.save(); X.beginPath(); X.rect(x, y, w, h); X.clip();
   X.fillStyle = '#D9CDB0'; X.fillRect(x, y, w, h);
   X.strokeStyle = 'rgba(43,34,25,.25)'; X.lineWidth = 1.2;
   for (let i = -h; i < w; i += 9) { X.beginPath(); X.moveTo(x + i, y + h); X.lineTo(x + i + h, y); X.stroke(); }
-  const R = mulberry(seed); const cols = ['#3E5FA8', '#9B2335', '#E9DEC4', '#3E5FA8', '#9B2335', '#C8B48A'];
+  const R = mulberry(seed);
   const tq = Math.floor(t * 12) / 12;
   for (let row = 0; row < Math.ceil(h / 22) + 1; row++) for (let i = 0; i < w / 20 + 1; i++) {
     const cx = x + i * 20 + (row % 2) * 10, cy = y + row * 22 + 10;
@@ -656,7 +656,45 @@ function camera(t) {
   return { s, cx, cy, sx, sy };
 }
 
-window.render = (t) => {
+// ---------------------------------------------------------------- brand art for the channel (index.html?brand=banner|profile)
+const BRAND = new URLSearchParams(location.search).get('brand');
+function brandBanner() {           // 2560 x 1440; every device shows the centre 1546 x 423 (x 507-2053, y 508-931)
+  X.fillStyle = C.paper; X.fillRect(0, 0, W, H);
+  crowd(0, 0, W, 560, 0, 0, 11, ['#C8463A', '#EDE3CC', '#C8463A', '#2B2219', '#EDE3CC', '#C8B48A', '#8FA07A']);
+  grassBand(0, 560, W, H - 560);
+  const G = 905;     // ground line, inside the safe strip
+  puppet({ sh: 'fa', x: 620, y: G - 228, s: .2, face: 1, pose: POSES.cheer, head: 'expr2', num: '9', ground: G });
+  puppet({ sh: 'fa', x: 800, y: G - 228, s: .2, face: 1, pose: POSES.strike, head: 'expr1', num: '10', ground: G });
+  ball(935, G - 135, 22, .6);
+  X.save(); X.strokeStyle = C.ink; X.lineWidth = 5; X.setLineDash([16, 12]); X.beginPath(); X.moveTo(880, G - 40); X.quadraticCurveTo(905, G - 120, 935, G - 135); X.stroke(); X.restore();
+  puppet({ sh: 'gk', x: 1835, y: G - 250, s: .19, face: -1, rot: -38, pose: POSES.dive, head: 'expr2' });
+  puppet({ sh: 'ref', x: 1985, y: G - 222, s: .19, face: -1, pose: POSES.point, head: 'expr1', ground: G });
+  // the name card (the words themselves are live text in Figma)
+  paperCard(1030, 560, 640, 300, C.cap, .15, -.012);
+  X.save(); X.translate(1350, 710); X.rotate(-.012); X.strokeStyle = C.ink; X.lineWidth = 3; X.setLineDash([12, 8]); X.strokeRect(-300, -130, 600, 260); X.restore();
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .5; X.drawImage(TEX, 0, 0, W, H); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+}
+function brandProfile() {          // 800 x 800, shown as a circle
+  X.fillStyle = C.paper; X.fillRect(0, 0, W, H);
+  X.save(); X.beginPath(); X.arc(400, 400, 392, 0, 7); X.clip();
+  for (let i = -8; i < 12; i++) { X.fillStyle = i % 2 ? C.red : '#EDE3CC'; X.fillRect(i * 80, 0, 80, H); }
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .55; X.drawImage(TEX, 0, 0, W, H); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+  const hp = part('fa', 'expr2'); const sc = 1.05;
+  X.save(); X.translate(400, 360); X.scale(sc, sc);
+  X.shadowColor = 'rgba(43,34,25,.4)'; X.shadowBlur = 10; X.shadowOffsetX = 8; X.shadowOffsetY = 12;
+  X.drawImage(hp.img, -hp.img.width / 2, -hp.img.height / 2); X.restore();
+  ball(560, 520, 62, .5);
+  paperCard(150, 600, 500, 120, C.cap, .1, -.02);   // name slip (live text in Figma)
+  X.restore();
+  X.strokeStyle = C.ink; X.lineWidth = 10; X.beginPath(); X.arc(400, 400, 386, 0, 7); X.stroke();
+}
+if (BRAND) {
+  window.DUR = 1; window.EV = []; window.TEXTS = () => [];
+  window.render = () => { X.setTransform(1, 0, 0, 1, 0, 0); BRAND === 'banner' ? brandBanner() : brandProfile(); };
+  window.render(0); window.READY = true;
+}
+
+const filmRender = (t) => {
   const texts = [];
   X.setTransform(1, 0, 0, 1, 0, 0);
   X.fillStyle = C.table; X.fillRect(0, 0, W, H);
@@ -680,8 +718,11 @@ window.render = (t) => {
   // texts to screen space
   window._texts = texts.map(b => ({ ...b, x0: W / 2 + (b.x0 - cam.cx) * cam.s + cam.sx, x1: W / 2 + (b.x1 - cam.cx) * cam.s + cam.sx, y0: H / 2 + (b.y0 - cam.cy) * cam.s + cam.sy, y1: H / 2 + (b.y1 - cam.cy) * cam.s + cam.sy }));
 };
-window.TEXTS = (t) => { window.render(t); return window._texts.map(b => ({ ...b, x0: Math.max(0, b.x0), y0: Math.max(0, b.y0), x1: Math.min(W, b.x1), y1: Math.min(H, b.y1) })); };
-window.EV = EV.sort((a, b) => a.t - b.t);
-window.render(0);
-window.READY = true;
+if (!BRAND) {
+  window.render = filmRender;
+  window.TEXTS = (t) => { window.render(t); return window._texts.map(b => ({ ...b, x0: Math.max(0, b.x0), y0: Math.max(0, b.y0), x1: Math.min(W, b.x1), y1: Math.min(H, b.y1) })); };
+  window.EV = EV.sort((a, b) => a.t - b.t);
+  window.render(0);
+  window.READY = true;
+}
 </script></body></html>
