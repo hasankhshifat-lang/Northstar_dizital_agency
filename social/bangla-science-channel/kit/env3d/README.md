@@ -29,6 +29,7 @@ on the 3D plates by the puppet engine.
 | Short 4 মেঘের গর্জন | roadside tea stall, stormy evening | 2D (before the rule) |
 | Short 5 পুকুর (dropped) | village pond ghat | 2D (before the rule) |
 | Short 6 চিরুনি | **Dhaka rooftop**: tiled roof, parapet, water tank with tap, clothesline, plants, city skyline (`rooftop.py`) | 3D |
+| Short 7 শরবত-স্ট্র | **bazaar sharbat stall**: striped awning, teal counter, sharbat jars, lemons, ice block, bunting, shop fronts across the street (`sharbat_stall.py`) | 3D |
 
 Ideas for the next ones (each used once): school science lab, village kitchen (মাটির চুলা), riverside boat
-(নৌকা), rice field at sunset, bazaar stall, railway platform, rainy-day veranda, night rooftop with stars.
+(নৌকা), rice field at sunset, railway platform, rainy-day veranda, night rooftop with stars.
