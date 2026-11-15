@@ -69,15 +69,10 @@ Log every edit in the log file.
 
 ## Thumbnails (always, for every new video)
 
-Follow `.claude/skills/youtube-thumbnail-creator/SKILL.md` (read the full script first, three heading
-options, pick the clearest). Summary:
-Use the map-style thumbnail from `social/thumbnails/make_thumbnails.py` (same illustrated map look as the
-Shorts: parchment land, teal water, tan state highlight, rust route, red pins, dark tags, 2–6 word heading in
-white + gold that doesn't repeat the title).
-- Shorts: 9:16 1080×1920 → add a `v_*` function to `VERTICAL`, run `make_thumbnails.py --vertical VIDEO_ID`.
-- Long-form: 16:9 1280×720 → add a `t_*` function to `VIDEOS`, run `make_thumbnails.py VIDEO_ID`.
-- Check the image, then `yt.py thumbnail VIDEO_ID social/thumbnails/<file>.jpg`, log it, update
-  `social/thumbnails/README.md`, commit and push. After an upload, do this as part of the same task.
+Follow `CLAUDE.md` and `.claude/skills/youtube-thumbnail-creator/SKILL.md`: designed in Figma (`gpt-image-2.5-flare`),
+Spline fallback, then the Remotion fallback in `.claude/skills/youtube-growth-intelligence/remotion-thumb/`; channel
+style (Which Life Next map, As Printed archive, Overthinking Pad notebook). Check the rendered file, then
+`yt.py thumbnail VIDEO_ID social/thumbnails/<file>.jpg`, log it, update `social/thumbnails/README.md`, commit and push.
 
 ## Comment replies (manual or in a scheduled task)
 
@@ -98,7 +93,8 @@ the skip rules strictly. Report a summary at the end (replied / skipped / errors
 
 ## Analytics
 
-Per `CLAUDE.md`, use vidIQ first. The YouTube Analytics API through this project is the fallback
+Per `CLAUDE.md`, use vidIQ first. For checkpoint tracking, channel reports, retention drop-offs and YPP progress use
+`.claude/skills/youtube-growth-intelligence/scripts/growth.py` (built on this file's client). The YouTube Analytics API through this project is the fallback
 (also when vidIQ is out of credits): `yt.py analytics START END [--metrics ...] [--dimensions ...]`.
 
 Useful reports for Shorts (all tested 2026-11-08):

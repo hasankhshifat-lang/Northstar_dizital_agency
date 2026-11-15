@@ -59,6 +59,26 @@ follow `.claude/skills/vibevoice-voiceover/SKILL.md` (`scripts/voiceover.sh`, de
   in the skill (duration, transcript vs script, first second) before using the audio.
 - If VibeVoice fails to install or run, say so with the exact error and stop; don't fall back to another TTS.
 
+## YouTube growth: the youtube-growth-intelligence skill is the central controller
+
+For every YouTube channel (Which Life Next, As Printed, The Overthinking Pad, Foot All FC), in chat and in every
+scheduled task, use `.claude/skills/youtube-growth-intelligence/SKILL.md` (owner, 2026-11-15) as the controller for
+research, topic choice, calendar, production direction, packaging, publish timing, post-publish tracking, diagnosis,
+experiments and monetisation progress. It calls the other skills (scriptwriting/animation rules, lemo-opuscar,
+VibeVoice, thumbnails, yt.py) and never replaces the rules in this file; where they differ, this file wins.
+- Don't keep making the same kind of video hoping for better results: measure every video at 24h/48h/72h/7d/14d/28d
+  (`scripts/growth.py`, append-only database in `youtube-growth/<channel>/`), diagnose in the order topic demand →
+  thumbnail + title → hook → story/production → satisfaction, test one variable at a time, keep what wins, record
+  what fails. Never optimise CTR alone.
+- Impressions, CTR, returning viewers and viewer online times are not in the public API: get them from vidIQ
+  extended reports or a Studio export, or write n/a. Never invent analytics.
+- Publishing, money and channel settings stay with the owner (approval first); fixed publish times change only on
+  the owner's say-so.
+- **Remotion** is the fallback when lemo-opuscar/the channel engine can't make a scene, and the **third thumbnail
+  fallback** after Figma and Spline (`remotion-thumb/` in the skill; never an arbitrary video frame). Check the
+  rendered file before use.
+- Scheduled tasks: "YouTube growth: daily checkpoints" and "YouTube growth: weekly audit".
+
 ## YouTube: always use the youtube-channel-automation skill (own Google Cloud client)
 
 For any YouTube channel task (uploading, scheduling, editing titles/descriptions/tags/privacy/
@@ -121,7 +141,8 @@ heading rules as above. Artwork from Spline's own image generation (`2d_generate
 per thumbnail) or real archive/stock images you may use; if Spline has no AI credits, build it from shapes and real
 images. All words are live Spline text. Check it with `2d_review_frame`, export with `2d_export_html` and render the
 frame to JPG at the exact size with the preinstalled Playwright/Chromium. Say in the report and the log that it was made
-in Spline, with the exact Figma error. If Spline is not available either, say so with both errors and stop.
+in Spline, with the exact Figma error. If Spline is not available either, use the Remotion fallback (youtube-growth-intelligence skill, `remotion-thumb/`, same
+style and sizes, real or already-generated art, never an arbitrary video frame) and say so with both errors (owner, 2026-11-15).
 
 ## YouTube analysis: use vidIQ
 
