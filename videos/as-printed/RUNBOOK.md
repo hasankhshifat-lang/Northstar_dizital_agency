@@ -10,8 +10,9 @@ YouTube channel **As Printed** (`yt.py --channel asprinted`). Owner decisions (2
 - **Look: the Archive Light Table template** (`engine/`), never the 3D map style.
 - **Thumbnails: archive style** (`engine/thumb.html`), not the map style used by Which Life Next.
 
-Read these before writing a script: `CLAUDE.md`, this file, `videos/as-printed/topics.md` and `social/youtube-schedule-log.md`
-(what is already out).
+Read these before writing a script: `CLAUDE.md`, **`docs/content/scriptwriting-rules.md`** (the master script rules: they win
+over anything here), `docs/content/animation-direction-rules.md`, this file, `videos/as-printed/topics.md` and
+`social/youtube-schedule-log.md` (what is already out).
 
 ## 1. Topic (15 min)
 
@@ -26,6 +27,8 @@ The channel's promise is in its name: **what the papers printed, against what th
 3. American history first (the audience), any era with printed sources; one clear question a stranger would click.
 4. Not already covered (check the schedule log). Rotate eras and themes; never two disasters in a row.
 Take the next topic from `topics.md` unless research finds a better one that fits; add new finds to the queue.
+Score it out of 100 and write the topic research report (scriptwriting rules §2.G–H) as `TOPIC.md` in the episode
+folder; below 65, pick another topic.
 
 ## 2. Research (45 min)
 
@@ -40,16 +43,18 @@ Take the next topic from `topics.md` unless research finds a better one that fit
 ## 3. Script — long video (8–12 min, about 1,250–1,800 words)
 
 VibeVoice reads at about 155 words a minute; shots add 1–3 s of picture around each line.
-1. **Cold open (0:00–0:30):** the printed claim, quoted, on the first item (a `title` shot then a `read` shot), and the
-   question the video answers. No "in this video", no channel intro.
+1. **Cold open (0:00–0:30):** the first sentence is the surprise itself (rules §3: no date-first background, no channel
+   intro, no "in this video"), then the printed claim quoted on the first item (`title` then `read`), the conflict, and
+   the question the video answers. Don't reveal the answer.
 2. **3–5 chapters** (`chapter` shot, a kicker like "PART 2" and a 2–5 word title). Each chapter is built around 1–3
    archive items: a `read` (the line that matters, lit), a `photo` (inside the photograph), a `table` (a detail pinned).
    One new item or one new reading every 20–40 s. Each chapter ends on an open question or a new problem.
 3. **The turn** near the middle: the record that contradicts the print.
 4. **The verdict:** a `compare` shot (printed value vs. the record, the printed one struck), then why it went wrong.
-5. **End (`end` shot):** the archive index and one closing line. No begging for subscriptions; one plain line is fine
-   ("More of what the papers got wrong on As Printed.").
-6. Plain spoken English, short sentences, one fact per sentence, numbers as words where they are spoken
+5. **End:** the payoff answers the opening; then one specific comment question about the story and one short like +
+   subscribe line (rules §12), never earlier in the video; the `end` shot shows the archive index.
+6. A curiosity loop every 30–45 s, a new development every 30–60 s (rules §6, §10); never invent thoughts or quotes.
+7. Plain spoken English, short sentences, one fact per sentence, numbers as words where they are spoken
    ("fifteen hundred and seventeen"), dates spoken naturally. Write `say` per shot: 1–4 sentences.
 
 ## 4. Script — Short (45–60 s, 110–150 words) — the channel's Shorts rules
@@ -58,11 +63,14 @@ VibeVoice reads at about 155 words a minute; shots add 1–3 s of picture around
 2. **1–5 s:** the question that makes people stay.
 3. **5–45 s:** 3–5 beats, a new image every 3–5 s, one number or name per beat (`photo`, `table`, `read`).
 4. **Last 5 s:** the payoff (`compare` with the strike), ending on a line that loops back to the first.
-5. No subscribe, no outro. The description points to the long video.
+5. Rules §14 timing (0–3 s hook, 3–10 s conflict, 10–35 s development, 35–50 s payoff); no subscribe; the last line can be a
+   question. The description points to the long video.
 
 ## 5. The episode folder
 
-`videos/as-printed/<YYYY-MM-DD>-<slug>/` with `episode.json`, `FACTS.md`, `thumb.json`, `raw/` (ignored), `out/` (ignored).
+`videos/as-printed/<YYYY-MM-DD>-<slug>/` with `episode.json`, `FACTS.md`, `TOPIC.md`, `thumb.json`, `raw/` (ignored), `out/` (ignored).
+Save both scripts in `social/scripts/<working-title>.md` (rename to `<VIDEO_ID>.md` after upload). The shot list is the
+storyboard (animation rules): every shot has a reason; look at stills of every shot before the full render.
 `episode.json`:
 ```json
 { "slug": "no-lives-lost", "title": "…", "indexTitle": "Titanic · April 1912", "seed": 7,

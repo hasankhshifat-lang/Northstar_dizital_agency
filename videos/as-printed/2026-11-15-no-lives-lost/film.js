@@ -411,8 +411,10 @@ function card(c, t, s, cd, id) {                                   // label · b
     yy += 104 * U; const num = parseFloat(String(cd.value).replace(/,/g, ''));
     const cnt = !isNaN(num) && /^[\d,.]+$/.test(cd.value) && cd.count !== false;
     const kv = cnt ? eio(seg(t, t0 + 0.2, t0 + 1.2)) : 1, shown = cnt ? fmtNum(num * kv, cd.value) : cd.value;
-    text(c, kv >= 1 ? `${id}v` : null, shown, x + pad, yy, fV, ORANGE);
-    if (cd.unit) text(c, `${id}u`, cd.unit, x + pad + tw(c, shown, fV) + 18 * U, yy - 6 * U, `400 ${Math.round(34 * U)}px PS`, LIGHT);
+    const fU = `400 ${Math.round(34 * U)}px PS`, room = w - 2 * pad - (cd.unit ? tw(c, cd.unit, fU) + 18 * U : 0);
+    const fit = Math.min(104 * U, 104 * U * room / Math.max(1, tw(c, cd.value, fV))), fV2 = `500 ${Math.round(fit)}px PM`;   // shrink long values to the card
+    text(c, kv >= 1 ? `${id}v` : null, shown, x + pad, yy, fV2, ORANGE);
+    if (cd.unit) text(c, `${id}u`, cd.unit, x + pad + tw(c, shown, fV2) + 18 * U, yy - 6 * U, fU, LIGHT);
   }
   for (const n of notes) { yy += 36 * U; text(c, `${id}n`, n, x + pad, yy, fN, 'rgba(250,250,247,0.93)'); }
   if (cd.source) { yy += 32 * U; text(c, `${id}s`, cd.source, x + pad, yy, fS, 'rgba(250,250,247,0.6)', { pass: true }); }

@@ -145,7 +145,7 @@
      "title": "No Lives Lost",
      "sub": "THE TITANIC \u00b7 WHAT THE PAPERS PRINTED \u00b7 APRIL 1912",
      "chapterName": "The front page",
-     "say": "On the evening of Monday, April fifteenth, nineteen twelve, families across America opened their newspapers and read that everyone was safe. This is the story of that front page, told with the papers themselves on the table. What they printed, day by day, and what the record shows."
+     "say": "Everyone is safe. That is what families across America read in their newspapers on the evening of Monday, April fifteenth, nineteen twelve. By then, the Titanic had been at the bottom of the North Atlantic for hours."
     },
     {
      "type": "read",
@@ -170,7 +170,7 @@
       "note": "\"Titanic afloat, no lives lost\"",
       "source": "The New Haven Union \u00b7 Monday evening, 15 April 1912"
      },
-     "say": "In New Haven, Connecticut, the City Edition of the Union put it in the biggest type it had. Titanic afloat. No lives lost. Ships to rescue. By the time that page came off the press, the Titanic had been at the bottom of the North Atlantic for many hours."
+     "say": "In New Haven, Connecticut, the City Edition of the Union put it in the biggest type it had. Titanic afloat. No lives lost. Ships to rescue. Every one of those words was wrong."
     },
     {
      "type": "read",
@@ -649,11 +649,11 @@
        585
       ]
      ],
-     "say": "The papers that Monday were not inventing a rescue. They printed what came over the wire, as fast as it came, and on Monday, what came was hope. By Tuesday, it was the truth. But for one evening, in New Haven, in Idaho, in Washington, a front page told families that everyone they loved had lived."
+     "say": "The papers that Monday were not inventing a rescue. They printed what came over the wire, as fast as it came, and on Monday, what came was hope. By Tuesday, it was the truth. But for one evening, in New Haven, in Idaho, in Washington, a front page told families that everyone they loved had lived. If you had opened that paper on Monday evening, would you have believed it? Tell me in the comments."
     },
     {
      "type": "end",
-     "say": "This is As Printed. What the papers said, and what the archive says."
+     "say": "If you like stories told from the papers themselves, give this video a like, and subscribe to As Printed, for what the papers said, and what the archive says."
     }
    ]
   },
