@@ -43,7 +43,9 @@ for e in EP['items']:
 
 # layout: rows in episode order, row width ~ 2.6 broadsheets, gaps of ~1 inch
 order = [e['id'] for e in EP['items']]
-rowW, gap = 17 * PPI * 2.4, 1.2 * PPI
+gap = 1.2 * PPI
+area = sum(it['size'][0] * it['k'] * (it['size'][1] * it['k']) for it in items.values())
+rowW = max(17 * PPI * 2.2, (area * 1.9) ** 0.5 * 1.25)          # table close to 16:9 once the gaps are in
 x = y = 0; rowH = 0; placed = []
 for iid in order:
     it = items[iid]; w, h = it['size'][0] * it['k'], it['size'][1] * it['k']
