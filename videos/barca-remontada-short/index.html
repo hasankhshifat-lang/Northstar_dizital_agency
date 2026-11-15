@@ -1,0 +1,753 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>html,body{margin:0;background:#7B6A57;overflow:hidden}canvas{display:block}</style>
+</head><body><canvas id="c"></canvas>
+<script type="module">
+// "Need 3 Goals" - Barcelona 6-1 PSG (8 March 2017), Comic History Cartoon, 9:16 Short.
+// One comic page: the aggregate scoreboard pinned on top, the action panel in the middle, caption band below.
+import { mulberry, clamp, lerp, seg, ss, eio, eo, ei, back } from '/core/lib.js';
+
+const W = innerWidth, H = innerHeight;           // 1080 x 1920
+const cv = document.getElementById('c'); cv.width = W; cv.height = H;
+const X = cv.getContext('2d');
+window.DUR = 48.5;
+
+// ---------------------------------------------------------------- palette and type
+const C = { paper: '#F1E8D2', ink: '#2B2219', table: '#7B6A57', cap: '#F5E9C4', red: '#C8463A', brass: '#D9B158',
+  bar: '#3E5FA8', barG: '#9B2335', barP: '#5C7BC0', psg: '#24335A', psgP: '#3D4F80', grass: '#C9D2A8', grass2: '#BCC79A', sea: '#A6CCD3' };
+const F = { sc: "'IM Fell English SC', serif", num: "'Old Standard TT', serif", shout: "'Lilita One', sans-serif" };
+
+// ---------------------------------------------------------------- assets
+const RIG = await (await fetch('parts/rig.json')).json();
+const IMG = {};
+const loads = [];
+for (const sh in RIG) for (const role in RIG[sh]) {
+  const id = RIG[sh][role].id, k = `${sh}_${id}`;
+  if (IMG[k]) continue;
+  const im = new Image(); im.src = `parts/${k}.png`; IMG[k] = im;
+  loads.push(im.decode().catch(() => {}));
+}
+await Promise.all(loads);
+await document.fonts.load(`80px ${F.num}`); await document.fonts.load(`bold 80px ${F.num}`);
+await document.fonts.load(`40px ${F.sc}`); await document.fonts.load(`40px ${F.shout}`);
+
+// paper texture (mottle + fibres), made once
+function makeTex(w, h, seed, base) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  const R = mulberry(seed); const id = g.createImageData(w, h);
+  for (let i = 0; i < w * h; i++) { const n = 236 + R() * 19; id.data[i*4] = n; id.data[i*4+1] = n - 2; id.data[i*4+2] = n - 6; id.data[i*4+3] = 255; }
+  g.putImageData(id, 0, 0);
+  g.globalAlpha = .07; g.fillStyle = '#8a7a60';
+  for (let i = 0; i < 260; i++) { g.beginPath(); g.ellipse(R()*w, R()*h, 20 + R()*90, 12 + R()*60, R()*3, 0, 7); g.fill(); }
+  g.globalAlpha = .18; g.strokeStyle = '#a8977a'; g.lineWidth = .6;
+  for (let i = 0; i < 900; i++) { const x = R()*w, y = R()*h, a = R()*6.3, l = 3 + R()*9; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a+1)*l*.5, y + Math.sin(a+1)*l*.5, x + Math.cos(a)*l, y + Math.sin(a)*l); g.stroke(); }
+  return c;
+}
+const TEX = makeTex(W, H, 7);
+
+// ---------------------------------------------------------------- timeline (film seconds; voice word timings from vo/words.json)
+const T = {
+  hookEnd: 3.4,  ring1: 3.75, noTeam: 5.8, awayKick: 8.3, awayNet: 8.85, ring2: 9.5, stamp: 10.05, need3: 10.9,
+  sC: 11.6, fkWind: 13.75, fkKick: 14.1, fkNet: 14.75, p4: 15.0, need2: 15.35,
+  sD: 15.6, fall: 16.35, point: 17.1, debated: 17.55, slideD: 17.85, penKick: 18.3, penNet: 18.55, p5: 18.8, need1: 19.6, through: 21.0,
+  sE: 24.6, pass: 26.4, chip: 27.7, land: 29.9,
+  sF: 31.75, goal6: 33.3,
+  sG: 33.3, seismo: 36.4, tremor: 37.1,
+  sH: 41.0, pin: 42.3, end: 48.5,
+};
+// captions (digits in captions, numbers spoken as words)
+const CAPS = [
+  [0.35, 3.45, 'Barcelona needed 3 goals… in 7 minutes.'],
+  [3.55, 7.7, 'They’d lost the first leg 4–0. No team had ever come back from that…'],
+  [7.8, 11.55, '…and PSG had scored an away goal at the Camp Nou.'],
+  [12.0, 15.6, '88 minutes. Neymar… free kick… top corner.'],
+  [15.65, 19.35, '91. Penalty… Neymar again.'],
+  [19.4, 24.4, '5–5 on aggregate… but PSG still go through, on away goals.'],
+  [24.6, 29.0, 'One more goal. Final seconds… Neymar lifts it into the box…'],
+  [29.1, 33.2, '…and substitute Sergi Roberto stretches out a foot.'],
+  [33.25, 35.15, '6–1.'],
+  [35.2, 40.95, 'The celebrations were so loud, seismographs half a kilometer away recorded a small tremor.'],
+  [41.4, 48.5, 'Greatest comeback ever… or not even close?'],
+];
+window.CAPS = CAPS;
+
+// sound / cue events for mix.py
+const EV = [{ t: 0.0, type: 'vo', id: 'narration' }, { t: 0.0, type: 'tick' }, { t: 1.0, type: 'tick' }, { t: 2.0, type: 'tick' }];
+const ev = (t, type, o = {}) => EV.push({ t, type, ...o });
+ev(T.ring1 - .1, 'scribble', { d: .5 }); ev(T.noTeam, 'slip'); ev(T.awayKick, 'kick'); ev(T.awayNet, 'net'); ev(T.ring2 - .1, 'scribble', { d: .5 });
+ev(T.stamp - .25, 'stampdown', { d: .25 }); ev(T.stamp, 'stamp'); ev(T.need3, 'slip');
+ev(T.sC - .15, 'whip', { d: .35 }); ev(T.fkWind, 'windup', { d: .35 }); ev(T.fkKick, 'kick'); ev(T.fkNet, 'net'); ev(T.fkNet, 'roar', { d: 2.2, v: .8 });
+ev(T.p4, 'slap'); ev(T.p4 + .18, 'slap', { v: .6 }); ev(T.need2, 'slip');
+ev(T.sD - .15, 'whip', { d: .35 }); ev(T.fall, 'fall'); ev(T.point - .05, 'whistle'); ev(T.debated, 'slip'); ev(T.slideD, 'slide', { d: .45 });
+ev(T.penKick, 'kick'); ev(T.penNet, 'net'); ev(T.penNet, 'roar', { d: 2.4, v: 1 }); ev(T.p5, 'slap'); ev(T.p5 + .18, 'slap', { v: .6 }); ev(T.need1, 'slip'); ev(T.through, 'slip');
+ev(T.sE - .15, 'whip', { d: .35 });
+for (let i = 0; i < 12; i++) ev(T.sE + .3 + i * .28, 'step', { pan: -.3 + (i % 3) * .3 });
+ev(T.pass, 'kick', { v: .4 }); ev(T.chip, 'kick', { v: .6 }); ev(T.chip + .1, 'lift', { d: 1.4 });
+ev(T.sF, 'freeze'); ev(T.goal6 - .02, 'kick', { v: .7 }); ev(T.goal6, 'bigslap'); ev(T.goal6, 'net'); ev(T.goal6, 'roar', { d: 7.5, v: 1.4 });
+for (let i = 0; i < 8; i++) ev(T.sG + .7 + i * .42, 'hop', { i });
+ev(T.seismo, 'slap', { v: .5 }); ev(T.seismo + .2, 'scratch', { d: 4.2 }); ev(T.tremor, 'slip');
+ev(T.sH, 'pullback', { d: 1.4 }); ev(T.pin, 'pin');
+
+// ---------------------------------------------------------------- helpers
+function rr(x, y, w, h, r) { X.beginPath(); X.roundRect(x, y, w, h, r); }
+function inkText(s, x, y, size, font = F.sc, color = C.ink, align = 'center', weight = '') {
+  X.font = `${weight} ${size}px ${font}`; X.fillStyle = color; X.textAlign = align; X.textBaseline = 'middle'; X.fillText(s, x, y);
+}
+function paperCard(x, y, w, h, fill, held = 0, rot = 0, rim = true) {
+  // opaque card; held = 0..1 lifts it off the page (big soft shadow)
+  X.save(); X.translate(x + w / 2, y + h / 2); X.rotate(rot);
+  X.shadowColor = 'rgba(43,34,25,.38)'; X.shadowBlur = lerp(3, 26, held); X.shadowOffsetX = lerp(2, 30, held); X.shadowOffsetY = lerp(3, 40, held);
+  X.fillStyle = fill; X.fillRect(-w / 2, -h / 2, w, h);
+  X.shadowColor = 'transparent';
+  if (rim) { X.strokeStyle = 'rgba(241,232,210,.9)'; X.lineWidth = 3; X.strokeRect(-w / 2 + 1.5, -h / 2 + 1.5, w - 3, h - 3); }
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .5; X.drawImage(TEX, 0, 0, w, h, -w / 2, -h / 2, w, h); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+  X.restore();
+}
+// a patch/slip that drops in: returns {held, s, rot, vis}
+function drop(t, t0, dur = .32, seed = 1) {
+  if (t < t0 - dur) return { vis: false };
+  const k = clamp((t - (t0 - dur)) / dur, 0, 1);
+  const R = mulberry(seed); const r0 = (R() - .5) * .2;
+  if (k < 1) return { vis: true, held: 1 - ei(k) * .9, s: lerp(1.25, 1.0, ei(k)), rot: r0 * 2.2 * (1 - k), y: -60 * (1 - ei(k)) };
+  const a = clamp((t - t0) / .25, 0, 1);
+  return { vis: true, held: 0, s: 1 + .05 * Math.sin(a * Math.PI) * (1 - a), rot: r0 * .25, y: 0 };
+}
+function slip(t, t0, x, y, w, h, text, size, opts = {}) {
+  const d = drop(t, t0, .3, Math.round(t0 * 100)); if (!d.vis) return null;
+  X.save(); X.translate(x + w / 2, y + h / 2 + d.y); X.scale(d.s, d.s);
+  paperCard(-w / 2, -h / 2, w, h, opts.fill || C.cap, d.held, d.rot);
+  X.save(); X.rotate(d.rot); X.strokeStyle = C.ink; X.lineWidth = 2; X.setLineDash([7, 5]); X.strokeRect(-w / 2 + 9, -h / 2 + 9, w - 18, h - 18); X.setLineDash([]);
+  const lines = text.split('\n');
+  lines.forEach((ln, i) => inkText(ln, 0, (i - (lines.length - 1) / 2) * size * 1.15 + 2, size, opts.font || F.sc, opts.color || C.ink));
+  X.restore(); X.restore();
+  return { text: text.replace(/\n/g, ' '), x0: x, y0: y, x1: x + w, y1: y + h };
+}
+
+// ---------------------------------------------------------------- puppets (paper parts on split pins, poses on twos)
+const DEG = Math.PI / 180;
+const POSES = {
+  stand:   { lean: 0, h: 0, uL: 14, fL: 6, uR: -14, fR: -6, tL: 3, sL: 0, tR: -3, sR: 0 },
+  slump:   { lean: 4, h: 8, uL: 6, fL: 2, uR: -6, fR: -2, tL: 2, sL: 0, tR: -2, sR: 0, dy: 6 },
+  ready:   { lean: -4, h: -4, uL: 40, fL: 30, uR: -40, fR: -30, tL: 10, sL: 6, tR: -10, sR: -6 },
+  windup:  { lean: 10, h: 6, uL: 70, fL: 20, uR: -30, fR: -10, tL: -6, sL: 0, tR: 38, sR: 40 },
+  strike:  { lean: -14, h: -6, uL: 80, fL: 10, uR: -60, fR: -20, tL: 6, sL: 0, tR: -78, sR: -8 },
+  follow:  { lean: -8, h: -2, uL: 60, fL: 10, uR: -50, fR: -20, tL: 4, sL: 0, tR: -40, sR: 4 },
+  cheer:   { lean: 0, h: -6, uL: 160, fL: 12, uR: -160, fR: -12, tL: 12, sL: 0, tR: -12, sR: 0 },
+  cheer2:  { lean: 0, h: 6, uL: 140, fL: 30, uR: -150, fR: -20, tL: 6, sL: 14, tR: -16, sR: -10, dy: -40 },
+  run1:    { lean: -10, h: -4, uL: -40, fL: -40, uR: 30, fR: 50, tL: -36, sL: 40, tR: 24, sR: 20 },
+  run2:    { lean: -10, h: -4, uL: 30, fL: 50, uR: -40, fR: -40, tL: 24, sL: 20, tR: -36, sR: 40 },
+  point:   { lean: 0, h: -4, uL: 16, fL: 4, uR: -96, fR: 6, tL: 3, sL: 0, tR: -3, sR: 0 },
+  protest: { lean: 6, h: 6, uL: 120, fL: 40, uR: -120, fR: -40, tL: 6, sL: 0, tR: -6, sR: 0 },
+  stretch: { lean: 18, h: 4, uL: 100, fL: 20, uR: -70, fR: -20, tL: 20, sL: 10, tR: -92, sR: -4 },
+  dive:    { lean: 0, h: 0, uL: 170, fL: 0, uR: -170, fR: 0, tL: 14, sL: 0, tR: -14, sR: 0 },
+  despair: { lean: 10, h: 14, uL: 4, fL: 0, uR: -4, fR: 0, tL: 2, sL: 0, tR: -2, sR: 0, dy: 10 },
+};
+function mix(a, b, k) { const o = {}; for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) o[key] = lerp(a[key] || 0, b[key] || 0, k); return o; }
+// track: [[t, poseName|obj, ease?], ...]  evaluated on twos with spring overshoot
+function poseAt(track, t) {
+  const tq = Math.floor(t * 12) / 12;
+  const P = p => typeof p === 'string' ? POSES[p] : p;
+  if (tq <= track[0][0]) return P(track[0][1]);
+  for (let i = 0; i < track.length - 1; i++) {
+    const [t0, p0] = track[i], [t1, p1, e] = track[i + 1];
+    if (tq < t1) { const k = (tq - t0) / (t1 - t0); return mix(P(p0), P(p1), e === 'lin' ? k : back(k, 1.6)); }
+  }
+  return P(track[track.length - 1][1]);
+}
+function trackAt(track, t, quant = true) {    // positions/numbers: [[t, v], ...]
+  const tq = quant ? Math.floor(t * 12) / 12 : t;
+  if (tq <= track[0][0]) return track[0][1];
+  for (let i = 0; i < track.length - 1; i++) {
+    const [t0, v0] = track[i], [t1, v1, e] = track[i + 1];
+    if (tq < t1) { const k = (tq - t0) / (t1 - t0); const kk = e === 'lin' ? k : e === 'out' ? eo(k) : eio(k);
+      return Array.isArray(v0) ? v0.map((v, j) => lerp(v, v1[j], kk)) : lerp(v0, v1, kk); }
+  }
+  return track[track.length - 1][1];
+}
+function part(sh, role) { const r = RIG[sh][role]; return r ? { r, img: IMG[`${sh}_${r.id}`] } : null; }
+function drawLimb(sh, role, jx, jy, ang, isLeg) {
+  // place the part so its pivot sits on (jx, jy) and its axis points at world angle `ang` (0 = straight down)
+  const p = part(sh, role); if (!p) return [jx, jy];
+  const a0 = isLeg ? Math.PI / 2 : p.r.ang;
+  const want = Math.PI / 2 + ang;
+  X.save(); X.translate(jx, jy); X.rotate(want - a0);
+  X.drawImage(p.img, -p.r.pivot[0], -p.r.pivot[1]);
+  X.restore();
+  // child joint: the part's 'end' rotated the same way
+  const ex = p.r.end[0] - p.r.pivot[0], ey = p.r.end[1] - p.r.pivot[1], rot = want - a0;
+  return [jx + ex * Math.cos(rot) - ey * Math.sin(rot), jy + ex * Math.sin(rot) + ey * Math.cos(rot)];
+}
+// puppet: {sh, x, y (torso centre, world), s, face (+1 right / -1 left), rot (deg), pose, head ('head'|'expr1'..), num, shadow}
+function puppet(o) {
+  const sh = o.sh, P = o.pose, Tr = RIG[sh].torso;
+  X.save();
+  X.translate(o.x, o.y + (P.dy || 0) * o.s);
+  // cast shadow on the page (only when standing on the ground)
+  if (o.ground !== undefined) {
+    X.save(); X.translate(0, (o.ground - o.y)); X.scale(1, .22);
+    X.fillStyle = 'rgba(43,34,25,.22)'; X.beginPath(); X.ellipse(10 * o.s, 0, 230 * o.s * (o.shw || 1), 90 * o.s, 0, 0, 7); X.fill(); X.restore();
+  }
+  X.rotate((o.rot || 0) * DEG); X.scale(o.s * (o.face || 1), o.s);
+  X.shadowColor = 'rgba(43,34,25,.35)'; X.shadowBlur = 5; X.shadowOffsetX = 4 * (o.face || 1); X.shadowOffsetY = 5;
+  X.rotate(P.lean * DEG);
+  X.translate(-Tr.c[0], -Tr.c[1]);
+  const tor = part(sh, 'torso');
+  const L = P.lean;
+  // legs (behind the torso)
+  for (const sd of ['L', 'R']) {
+    const hip = Tr['hip' + sd];
+    const [kx, ky] = drawLimb(sh, 'thigh' + sd, hip[0], hip[1], (P['t' + sd]) * DEG, true);
+    drawLimb(sh, 'shin' + sd, kx, ky - 8, (P['t' + sd] + P['s' + sd]) * DEG, true);
+  }
+  X.drawImage(tor.img, 0, 0);
+  // shirt number: a small cream paper slip printed in ink
+  if (o.num) {
+    X.save(); X.translate(Tr.c[0] + Tr.w * .17, Tr.c[1] - Tr.h * .12);
+    if ((o.face || 1) < 0) X.scale(-1, 1);
+    X.shadowColor = 'transparent';
+    X.fillStyle = C.paper; X.fillRect(-80, -68, 160, 136); X.strokeStyle = C.ink; X.lineWidth = 5; X.strokeRect(-80, -68, 160, 136);
+    X.font = `bold 118px ${F.num}`; X.fillStyle = C.ink; X.textAlign = 'center'; X.textBaseline = 'middle'; X.fillText(o.num, 0, 4);
+    X.restore();
+  }
+  // arms
+  for (const sd of ['L', 'R']) {
+    const sho = Tr['sh' + sd];
+    const up = RIG[sh]['uarm' + sd];
+    const [ex, ey] = drawLimb(sh, 'uarm' + sd, sho[0], sho[1], P['u' + sd] * DEG, false);
+    if (!up.whole) drawLimb(sh, 'farm' + sd, ex, ey, (P['u' + sd] + P['f' + sd]) * DEG, false);
+  }
+  // head (expression heads swap; a swap pops 1.08x for two frames)
+  const hp = part(sh, o.head || 'head');
+  X.save(); X.translate(Tr.neck[0], Tr.neck[1]); X.rotate(P.h * DEG);
+  const pop = o.pop ? 1.08 : 1; X.scale(pop, pop);
+  X.drawImage(hp.img, -hp.r.neck[0], -hp.r.neck[1]);
+  if (o.whistle) { const w = part(sh, 'prop0'); if (w) { X.save(); X.translate(30, -hp.r.h * .18); X.rotate(-.3); X.scale(.55, .55); X.drawImage(w.img, -w.img.width / 2, 0); X.restore(); } }
+  X.restore();
+  X.restore();
+}
+
+// ---------------------------------------------------------------- printed scenery
+function crowd(x, y, w, h, t, lift = 0, seed = 3, cols = ['#3E5FA8', '#9B2335', '#E9DEC4', '#3E5FA8', '#9B2335', '#C8B48A']) {
+  // rows of little paper heads in the stands, hatched behind
+  X.save(); X.beginPath(); X.rect(x, y, w, h); X.clip();
+  X.fillStyle = '#D9CDB0'; X.fillRect(x, y, w, h);
+  X.strokeStyle = 'rgba(43,34,25,.25)'; X.lineWidth = 1.2;
+  for (let i = -h; i < w; i += 9) { X.beginPath(); X.moveTo(x + i, y + h); X.lineTo(x + i + h, y); X.stroke(); }
+  const R = mulberry(seed);
+  const tq = Math.floor(t * 12) / 12;
+  for (let row = 0; row < Math.ceil(h / 22) + 1; row++) for (let i = 0; i < w / 20 + 1; i++) {
+    const cx = x + i * 20 + (row % 2) * 10, cy = y + row * 22 + 10;
+    const L = lift * (0.6 + .4 * Math.sin(tq * 9 + i * .7 + row)) * 14;
+    X.fillStyle = cols[Math.floor(R() * cols.length)];
+    X.beginPath(); X.arc(cx, cy - Math.max(0, L), 8, 0, 7); X.fill();
+  }
+  X.restore();
+  X.strokeStyle = C.ink; X.lineWidth = 3; X.beginPath(); X.moveTo(x, y + h); X.lineTo(x + w, y + h); X.stroke();
+}
+function grassBand(x, y, w, h) {
+  X.fillStyle = C.grass; X.fillRect(x, y, w, h);
+  X.fillStyle = C.grass2; for (let i = 0; i < w; i += 120) X.fillRect(x + i, y, 60, h);
+  X.strokeStyle = 'rgba(43,34,25,.18)'; X.lineWidth = 1;
+  for (let j = 0; j < 6; j++) { X.beginPath(); X.moveTo(x, y + 18 + j * 34); X.lineTo(x + w, y + 18 + j * 34); X.stroke(); }
+}
+function goalFrame(x, y, w, h, ripple = 0) {      // side-on goal: posts, bar and a hatched net
+  X.save();
+  X.strokeStyle = 'rgba(43,34,25,.55)'; X.lineWidth = 1.4;
+  for (let i = 0; i <= 10; i++) { const k = i / 10; const r = ripple * Math.sin(k * Math.PI) * 26;
+    X.beginPath(); X.moveTo(x + k * w + r * .3, y); X.quadraticCurveTo(x + k * w + 18 + r, y + h * .5, x + k * w + 10, y + h); X.stroke(); }
+  for (let j = 0; j <= 8; j++) { const k = j / 8; X.beginPath(); X.moveTo(x, y + k * h); X.lineTo(x + w + ripple * 22 * Math.sin(k * Math.PI), y + k * h + 6); X.stroke(); }
+  X.strokeStyle = '#FBF6EA'; X.lineWidth = 14; X.lineCap = 'round';
+  X.beginPath(); X.moveTo(x, y + h); X.lineTo(x, y); X.lineTo(x + w, y); X.lineTo(x + w, y + h); X.stroke();
+  X.strokeStyle = C.ink; X.lineWidth = 3;
+  X.beginPath(); X.moveTo(x - 7, y + h); X.lineTo(x - 7, y - 7); X.lineTo(x + w + 7, y - 7); X.lineTo(x + w + 7, y + h); X.stroke();
+  X.restore();
+}
+function ball(x, y, r = 16, spin = 0) {
+  X.save(); X.translate(x, y); X.rotate(spin);
+  X.shadowColor = 'rgba(43,34,25,.35)'; X.shadowBlur = 4; X.shadowOffsetX = 3; X.shadowOffsetY = 4;
+  X.fillStyle = '#FBF6EA'; X.beginPath(); X.arc(0, 0, r, 0, 7); X.fill(); X.shadowColor = 'transparent';
+  X.strokeStyle = C.ink; X.lineWidth = 2.5; X.stroke();
+  X.fillStyle = C.ink; X.beginPath(); for (let i = 0; i < 5; i++) { const a = i * 1.2566 - 1.57; X.lineTo(Math.cos(a) * r * .38, Math.sin(a) * r * .38); } X.fill();
+  for (let i = 0; i < 5; i++) { const a = i * 1.2566 - 1.57; X.beginPath(); X.arc(Math.cos(a) * r * .92, Math.sin(a) * r * .92, r * .2, 0, 7); X.fill(); }
+  X.restore();
+}
+function dashedArc(pts, k, color = C.ink) {       // the ball's path, drawn as a dashed ink line up to fraction k
+  X.save(); X.strokeStyle = color; X.lineWidth = 4; X.setLineDash([14, 10]); X.lineCap = 'round';
+  X.beginPath(); const n = 40;
+  for (let i = 0; i <= n * k; i++) { const [x, y] = bez(pts, i / n); i ? X.lineTo(x, y) : X.moveTo(x, y); }
+  X.stroke(); X.restore();
+}
+function bez(p, u) { const [a, b, c] = p; const m = 1 - u; return [m*m*a[0] + 2*m*u*b[0] + u*u*c[0], m*m*a[1] + 2*m*u*b[1] + u*u*c[1]]; }
+function speedLines(t0, t, x, y, w, h) {
+  const k = (t - t0) / .35; if (k < 0 || k > 1) return;
+  X.save(); X.globalAlpha = Math.sin(k * Math.PI); X.strokeStyle = C.ink; X.lineWidth = 3;
+  const R = mulberry(Math.round(t0 * 10));
+  for (let i = 0; i < 26; i++) { const yy = y + R() * h, l = 120 + R() * 320, xx = x + R() * w; X.beginPath(); X.moveTo(xx, yy); X.lineTo(xx + l, yy); X.stroke(); }
+  X.restore();
+}
+function inkRing(cx, cy, rx, ry, t0, t) {       // a hand-drawn marker ring growing round a number
+  const k = clamp((t - t0) / .45, 0, 1); if (k <= 0) return;
+  X.save(); X.strokeStyle = C.red; X.lineWidth = 6; X.lineCap = 'round'; X.beginPath();
+  for (let i = 0; i <= 60 * k * 1.12; i++) { const a = -1.9 + i / 60 * 6.6; const w = 1 + .06 * Math.sin(i * .9); X.lineTo(cx + Math.cos(a) * rx * w, cy + Math.sin(a) * ry * w); }
+  X.stroke(); X.restore();
+}
+
+// ---------------------------------------------------------------- layout
+const PG = { x: 22, y: 22, w: W - 44, h: H - 44 };
+const SB = { x: 52, y: 62, w: W - 104, h: 360 };        // scoreboard panel
+const AP = { x: 52, y: 446, w: W - 104, h: 856 };       // action panel
+const CB = { y: 1330, h: 170 };                          // caption band
+
+// ---------------------------------------------------------------- scoreboard
+// cell values over time: [team][col] -> [[t, value], ...]
+const CELLS = {
+  bar: { leg1: [[-9, '0']], leg2: [[-9, '3'], [T.p4, '4'], [T.p5, '5'], [T.goal6, '6']], agg: [[-9, '3'], [T.p4 + .18, '4'], [T.p5 + .18, '5'], [T.goal6 + .12, '6']] },
+  psg: { leg1: [[-9, '4']], leg2: [[-9, '1']], agg: [[-9, '5']] },
+};
+const COLX = { leg1: 560, leg2: 740, agg: 922 };
+const ROWY = { bar: 214, psg: 338 };
+function cell(team, col, t, texts) {
+  const hist = CELLS[team][col]; const cx = COLX[col], cy = ROWY[team], w = 132, h = 104;
+  // every value is a paper patch laid on the one before (layer on layer)
+  for (let i = 0; i < hist.length; i++) {
+    const [t0, v] = hist[i];
+    const big = team === 'bar' && v === '6';
+    const d = i === 0 ? { vis: true, held: 0, s: 1, rot: (mulberry(cx + cy)() - .5) * .03, y: 0 } : drop(t, t0, big ? .45 : .3, cx * 7 + i);
+    if (!d.vis) continue;
+    const fill = i === 0 ? '#E9DDBF' : (team === 'bar' ? C.barP : C.psgP);
+    X.save(); X.translate(cx, cy + d.y); X.scale(d.s * (big ? 1.06 : 1), d.s * (big ? 1.06 : 1));
+    paperCard(-w / 2, -h / 2, w, h, fill, d.held, d.rot);
+    X.rotate(d.rot);
+    if (i > 0) { X.strokeStyle = 'rgba(241,232,210,.85)'; X.lineWidth = 2; X.setLineDash([6, 5]); X.strokeRect(-w / 2 + 9, -h / 2 + 9, w - 18, h - 18); X.setLineDash([]); }
+    X.font = `bold 86px ${F.num}`; X.textAlign = 'center'; X.textBaseline = 'middle';
+    X.fillStyle = i === 0 ? (team === 'psg' ? C.psg : C.ink) : C.paper; X.fillText(v, 0, 6);
+    X.restore();
+  }
+}
+function scoreboard(t, texts) {
+  X.save();
+  inkText('AGGREGATE · CHAMPIONS LEAGUE · LAST 16', W / 2, SB.y + 40, 30);
+  X.strokeStyle = C.ink; X.lineWidth = 1.5; X.beginPath(); X.moveTo(SB.x + 40, SB.y + 64); X.lineTo(SB.x + SB.w - 40, SB.y + 64); X.stroke();
+  inkText('1st leg', COLX.leg1, SB.y + 92, 28); inkText('2nd leg', COLX.leg2, SB.y + 92, 28); inkText('Total', COLX.agg, SB.y + 92, 30);
+  // team names: a printed colour chip + small caps
+  for (const [team, label, col] of [['bar', 'BARCELONA', C.bar], ['psg', 'PSG', C.psg]]) {
+    const y = ROWY[team];
+    X.fillStyle = col; X.fillRect(SB.x + 34, y - 30, 22, 60); if (team === 'bar') { X.fillStyle = C.barG; X.fillRect(SB.x + 45, y - 30, 11, 60); } else { X.fillStyle = C.red; X.fillRect(SB.x + 41, y - 30, 8, 60); }
+    inkText(label, SB.x + 74, y + 4, team === 'bar' ? 50 : 58, F.sc, col, 'left');
+  }
+  // the aggregate column is boxed in ink
+  X.strokeStyle = C.ink; X.lineWidth = 2.5; X.strokeRect(COLX.agg - 84, SB.y + 114, 168, 236);
+  for (const team of ['bar', 'psg']) for (const col of ['leg1', 'leg2', 'agg']) cell(team, col, t, texts);
+  // marker rings: the 4-0 in Paris, then PSG's away goal
+  if (t < T.sC) { inkRing(COLX.leg1, ROWY.psg, 86, 66, T.ring1, t); inkRing(COLX.leg2, ROWY.psg, 86, 66, T.ring2, t); }
+  // the rubber stamp: AWAY GOAL x2 lands across PSG's second-leg goal
+  if (t > T.stamp - .25 && t < T.sE) {
+    const k = clamp((t - (T.stamp - .25)) / .25, 0, 1);
+    X.save(); X.translate(COLX.leg2 - 4, ROWY.psg - 2); X.rotate(-.16); X.scale(lerp(1.5, 1, ei(k)), lerp(1.5, 1, ei(k)));
+    X.globalAlpha = k < 1 ? .5 : .92;
+    X.strokeStyle = C.red; X.lineWidth = 5; X.strokeRect(-118, -40, 236, 80); X.lineWidth = 2; X.strokeRect(-110, -32, 220, 64);
+    inkText('AWAY GOAL ×2', 0, 3, 32, F.sc, C.red);
+    X.restore();
+    if (k >= 1) texts.push({ id: 'stamp', text: 'AWAY GOAL ×2', x0: COLX.leg2 - 120, y0: ROWY.psg - 44, x1: COLX.leg2 + 120, y1: ROWY.psg + 44 });
+  }
+  X.restore();
+  texts.push({ id: 'board', text: 'scoreboard', x0: SB.x, y0: SB.y, x1: SB.x + SB.w, y1: SB.y + SB.h, pass: true });
+}
+
+// ---------------------------------------------------------------- action-panel scenes (drawn in panel coordinates, clipped)
+const PW = AP.w, PH = AP.h;   // 976 x 856
+const GROUND = 700;            // ground line inside side-on scenes
+
+function tag(text, texts, t0, t) {   // the minute/date tag pasted top-left of the panel
+  const d = drop(t, t0, .25, 99 + Math.round(t0)); if (!d.vis) return;
+  X.save(); X.translate(30 + 150, 34 + 38 + d.y); X.scale(d.s, d.s);
+  paperCard(-150, -38, 300, 76, C.paper, d.held, d.rot);
+  X.rotate(d.rot); X.font = `bold 46px ${F.num}`; X.fillStyle = C.ink; X.textAlign = 'center'; X.textBaseline = 'middle'; X.fillText(text, 0, 4);
+  X.fillRect(-110, 30, 220, 2.5);
+  X.restore();
+  texts.push({ id: 'tag' + text, text, x0: AP.x + 30, y0: AP.y + 34, x1: AP.x + 330, y1: AP.y + 110 });
+}
+
+function sceneA(t, texts) {   // 0 - 3.4  the match clock at 88:00
+  X.fillStyle = '#E8DCC0'; X.fillRect(0, 0, PW, PH);
+  const cx = PW / 2, cy = 470, R = 300;
+  // printed dial: 90 minutes round the face
+  X.save(); X.translate(cx, cy);
+  X.shadowColor = 'rgba(43,34,25,.35)'; X.shadowBlur = 8; X.shadowOffsetX = 6; X.shadowOffsetY = 8;
+  X.fillStyle = C.paper; X.beginPath(); X.arc(0, 0, R, 0, 7); X.fill(); X.shadowColor = 'transparent';
+  X.strokeStyle = C.ink; X.lineWidth = 6; X.stroke(); X.lineWidth = 1.5; X.beginPath(); X.arc(0, 0, R - 16, 0, 7); X.stroke();
+  for (let m = 0; m < 90; m++) { const a = m / 90 * 6.2832 - 1.5708; const l = m % 15 === 0 ? 30 : m % 5 === 0 ? 18 : 8;
+    X.lineWidth = m % 15 === 0 ? 5 : 2; X.beginPath(); X.moveTo(Math.cos(a) * (R - 22), Math.sin(a) * (R - 22)); X.lineTo(Math.cos(a) * (R - 22 - l), Math.sin(a) * (R - 22 - l)); X.stroke(); }
+  for (const m of [15, 30, 45, 60, 75, 90]) { const a = (m % 90) / 90 * 6.2832 - 1.5708; inkText(String(m), Math.cos(a) * (R - 82), Math.sin(a) * (R - 82) + 4, 50, F.num, C.ink, 'center', 'bold'); }
+  // the last minutes, shaded red on the dial
+  X.fillStyle = 'rgba(200,70,58,.28)'; X.beginPath(); X.moveTo(0, 0); X.arc(0, 0, R - 24, (88 / 90) * 6.2832 - 1.5708, 6.2832 - 1.5708 + .02); X.fill();
+  // hand: ticks once a second (88:00, 88:01 ...)
+  const sec = Math.floor(t); const a = (88 + sec / 60) / 90 * 6.2832 - 1.5708;
+  X.strokeStyle = C.ink; X.lineWidth = 12; X.lineCap = 'round'; X.beginPath(); X.moveTo(-Math.cos(a) * 30, -Math.sin(a) * 30); X.lineTo(Math.cos(a) * (R - 60), Math.sin(a) * (R - 60)); X.stroke();
+  X.fillStyle = C.brass; X.beginPath(); X.arc(0, 0, 18, 0, 7); X.fill(); X.strokeStyle = C.ink; X.lineWidth = 3; X.stroke();
+  X.restore();
+  // readout slip under the dial
+  const s = `88:0${sec}`;
+  paperCard(cx - 150, 800 - 50 - 10, 300, 84, C.paper, 0, -.02);
+  inkText(s, cx, 800 - 6, 64, F.num, C.ink, 'center', 'bold');
+  texts.push({ id: 'clock', text: '88:00', x0: AP.x + cx - 150, y0: AP.y + 740, x1: AP.x + cx + 150, y1: AP.y + 824, pass: true });
+  // hook line, pasted across the top of the panel
+  const hs = slip(t, 0.12, 60, 22, PW - 120, 112, 'NEED 3 GOALS · 7 MINUTES LEFT', 54, { font: F.shout, fill: C.cap });
+  if (hs) texts.push({ id: 'hook', ...off(hs) });
+}
+function off(b) { return { text: b.text, x0: b.x0 + AP.x, y0: b.y0 + AP.y, x1: b.x1 + AP.x, y1: b.y1 + AP.y }; }
+
+function stage(t, lift) {   // side-on stadium: stands above, grass below
+  crowd(0, 0, PW, 300, t, lift);
+  grassBand(0, 300, PW, PH - 300);
+}
+
+function sceneB(t, texts) {   // 3.4 - 11.6  why it's impossible; PSG's away goal
+  stage(t, 0);
+  goalFrame(PW - 250, 380, 220, 300, t > T.awayNet ? Math.exp(-(t - T.awayNet) * 4) * Math.sin((t - T.awayNet) * 30) : 0);
+  // a Barcelona player, slumped (left), PSG #7 strikes the away goal (right)
+  const kick = [[0, 'stand'], [T.awayKick - .4, 'stand'], [T.awayKick - .12, 'windup'], [T.awayKick, 'strike'], [T.awayKick + .5, 'follow'], [T.awayKick + 1.2, 'cheer']];
+  puppet({ sh: 'bar', x: 220, y: 470, s: .26, face: 1, pose: poseAt([[0, 'slump']], t), head: t > T.awayNet + .2 ? 'expr3' : 'head', num: '10', ground: GROUND });
+  puppet({ sh: 'psg', x: 600, y: 470, s: .26, face: 1, pose: poseAt(kick, t), head: t > T.awayNet ? 'expr1' : 'head', num: '7', ground: GROUND });
+  puppet({ sh: 'gk', x: PW - 120, y: 486, s: .22, face: -1, pose: poseAt([[0, 'ready'], [T.awayKick + .1, 'ready'], [T.awayKick + .5, 'dive']], t), rot: t > T.awayKick + .15 ? -lerp(0, 50, clamp((t - T.awayKick - .15) / .35, 0, 1)) : 0, head: t > T.awayNet ? 'expr3' : 'head', ground: GROUND });
+  // ball
+  const path = [[660, 676], [780, 470], [880, 520]];
+  if (t < T.awayKick) ball(660, 676);
+  else { const k = clamp((t - T.awayKick) / (T.awayNet - T.awayKick), 0, 1); dashedArc(path, k); const [bx, by] = bez(path, k); ball(bx, by, 16, k * 8); }
+  tag('8 MAR 2017', texts, 3.55, t);
+  const s1 = slip(t, T.noTeam, 34, 128, 600, 128, 'NO TEAM HAD EVER COME\nBACK FROM 4–0', 36); if (s1) texts.push({ id: 'noteam', ...off(s1) });
+}
+
+function sceneC(t, texts) {   // 11.6 - 15.6  88': Neymar's free kick
+  const roar = t > T.fkNet ? clamp(1 - (t - T.fkNet) / 2.5, 0, 1) : 0;
+  stage(t, roar);
+  goalFrame(PW - 270, 360, 240, 320, t > T.fkNet ? Math.exp(-(t - T.fkNet) * 4) * Math.sin((t - T.fkNet) * 30) : 0);
+  const kick = [[0, 'stand'], [T.fkWind, 'stand'], [T.fkKick - .02, 'windup'], [T.fkKick + .08, 'strike'], [T.fkKick + .6, 'follow'], [T.fkNet + .3, 'cheer']];
+  // the wall: three PSG puppets, jumping as the ball goes over
+  const jump = k => -Math.max(0, Math.sin(clamp((t - T.fkKick) / .5, 0, 1) * Math.PI)) * k;
+  for (let i = 0; i < 3; i++) puppet({ sh: 'psg', x: 470 + i * 62, y: 480 + jump(60), s: .22, face: -1, pose: POSES.stand, head: t > T.fkNet ? 'expr2' : 'head', ground: GROUND });
+  puppet({ sh: 'gk', x: PW - 150, y: 490, s: .22, face: -1, pose: poseAt([[0, 'ready'], [T.fkKick + .25, 'ready'], [T.fkKick + .6, 'dive']], t), rot: t > T.fkKick + .3 ? -lerp(0, 40, clamp((t - T.fkKick - .3) / .3, 0, 1)) : 0, head: t > T.fkNet ? 'expr3' : 'expr1', ground: GROUND });
+  puppet({ sh: 'bar', x: 170, y: 478, s: .27, face: 1, pose: poseAt(kick, t), head: t > T.fkNet ? 'expr2' : 'expr1', num: '11', ground: GROUND, pop: t > T.fkNet && t < T.fkNet + .1 });
+  const path = [[250, 680], [560, 230], [PW - 70, 400]];
+  if (t < T.fkKick) ball(250, 680);
+  else { const k = clamp((t - T.fkKick) / (T.fkNet - T.fkKick), 0, 1); dashedArc(path, k); const [bx, by] = bez(path, k); ball(bx, by, 16, k * 10); }
+  tag("88′", texts, T.sC + .1, t);
+}
+
+function sceneD(t, texts) {   // 15.6 - 24.6  90+1': the penalty (two small panels, a lateral slide between them)
+  const slide = eio(clamp((t - T.slideD) / .45, 0, 1));
+  X.save(); X.translate(-slide * PW, 0);
+  // panel 1: Suarez goes down, the referee points
+  stage(t, 0);
+  const fallK = clamp((t - T.fall) / .35, 0, 1);
+  puppet({ sh: 'psg', x: 470, y: 476, s: .26, face: -1, pose: poseAt([[0, 'stand'], [T.fall - .2, 'stand'], [T.fall, 'strike'], [T.point + .2, 'protest']], t), head: t > T.point ? 'expr2' : 'expr1', ground: GROUND });
+  puppet({ sh: 'bar', x: 300 + fallK * 30, y: 476 + fallK * 150, s: .26, face: 1, rot: fallK * 82, pose: POSES.stand, head: 'expr3', num: '9', ground: t < T.fall ? GROUND : undefined });
+  puppet({ sh: 'ref', x: 760, y: 470, s: .25, face: 1, pose: poseAt([[0, 'stand'], [T.point - .15, 'stand'], [T.point + .05, 'point']], t), head: t > T.point - .1 && t < T.point + .6 ? 'expr2' : 'head', ground: GROUND });
+  if (t > T.point && t < T.point + .5) {     // whistle blast lines
+    X.save(); X.strokeStyle = C.ink; X.lineWidth = 4; for (let i = 0; i < 3; i++) { X.beginPath(); X.moveTo(700 - i * 4, 300 + i * 22); X.lineTo(660 - i * 10, 290 + i * 26); X.stroke(); } X.restore();
+  }
+  // panel 2: Neymar again from the spot (drawn one panel to the right)
+  X.save(); X.translate(PW, 0);
+  X.fillStyle = C.ink; X.fillRect(-4, 0, 8, PH);
+  stage(t, t > T.penNet ? clamp(1 - (t - T.penNet) / 3, 0, 1) : 0);
+  goalFrame(PW - 300, 360, 270, 320, t > T.penNet ? Math.exp(-(t - T.penNet) * 4) * Math.sin((t - T.penNet) * 30) : 0);
+  const dive = clamp((t - T.penKick - .05) / .3, 0, 1);
+  puppet({ sh: 'gk', x: PW - 160 - dive * 60, y: 494 - dive * 30, s: .22, face: -1, rot: dive * 70, pose: poseAt([[0, 'ready'], [T.penKick, 'ready'], [T.penKick + .3, 'dive']], t), head: t > T.penNet ? 'expr3' : 'expr2', ground: dive < .3 ? GROUND : undefined });
+  const kick = [[0, 'stand'], [T.penKick - .3, 'stand'], [T.penKick - .06, 'windup'], [T.penKick + .06, 'strike'], [T.penKick + .5, 'follow'], [T.penNet + .4, 'cheer']];
+  puppet({ sh: 'bar', x: 330, y: 478, s: .27, face: 1, pose: poseAt(kick, t), head: t > T.penNet ? 'expr2' : 'expr1', num: '11', ground: GROUND });
+  const path = [[420, 676], [620, 500], [PW - 100, 470]];
+  if (t < T.penKick) ball(420, 676); else { const k = clamp((t - T.penKick) / (T.penNet - T.penKick), 0, 1); dashedArc(path, k); const [bx, by] = bez(path, k); ball(bx, by, 16, k * 8); }
+  X.restore();
+  X.restore();
+  tag('90+1′', texts, T.sD + .1, t);
+  { const sd = slip(t, T.debated, 34, 128, 380, 96, 'STILL DEBATED', 38); if (sd) texts.push({ id: 'debated', ...off(sd) }); }
+  if (slide > .5) {
+    const s2 = slip(t, T.through, 430, 122, 520, 128, 'PSG STILL THROUGH\nON AWAY GOALS', 40); if (s2) texts.push({ id: 'through', ...off(s2) });
+  }
+}
+
+function boxPlan(t) {        // high angle: the penalty area printed from above
+  X.fillStyle = C.grass; X.fillRect(0, 0, PW, PH);
+  X.fillStyle = C.grass2; for (let i = 0; i < PH; i += 110) X.fillRect(0, i, PW, 55);
+  X.strokeStyle = '#FBF6EA'; X.lineWidth = 8;
+  X.strokeRect(150, 60, PW - 300, 330); X.strokeRect(330, 60, PW - 660, 120);
+  X.beginPath(); X.arc(PW / 2, 390, 120, .35, Math.PI - .35); X.stroke();
+  X.beginPath(); X.arc(PW / 2, 280, 5, 0, 7); X.fillStyle = '#FBF6EA'; X.fill();
+  X.strokeStyle = C.ink; X.lineWidth = 2; X.strokeRect(146, 56, PW - 292, 338); X.strokeRect(326, 56, PW - 652, 128);
+  // the goal at the top, seen from above
+  X.fillStyle = 'rgba(43,34,25,.15)'; X.fillRect(PW / 2 - 120, 18, 240, 42);
+  X.strokeStyle = C.ink; X.lineWidth = 6; X.strokeRect(PW / 2 - 120, 18, 240, 42);
+  X.lineWidth = 1; for (let i = 0; i < 12; i++) { X.beginPath(); X.moveTo(PW / 2 - 120 + i * 20, 18); X.lineTo(PW / 2 - 120 + i * 20, 60); X.stroke(); }
+}
+function sceneE(t, texts) {   // 24.6 - 31.75  the last chance, from above
+  boxPlan(t);
+  const run = (i, x0, y0, x1, y1, t0, num) => {
+    const k = clamp((t - t0) / 2.2, 0, 1); const x = lerp(x0, x1, eo(k)), y = lerp(y0, y1, eo(k));
+    const cyc = Math.floor(t * 6 + i) % 2 ? 'run1' : 'run2';
+    puppet({ sh: 'bar', x, y, s: .13, face: x1 > x0 ? 1 : -1, pose: k < 1 ? POSES[cyc] : POSES.ready, head: 'expr1', num, ground: y + 92 });
+  };
+  // PSG defenders hold the line of the box
+  for (let i = 0; i < 4; i++) puppet({ sh: 'psg', x: 300 + i * 125, y: 250 + (i % 2) * 30, s: .13, face: -1, pose: POSES.ready, head: 'head', ground: 342 + (i % 2) * 30 });
+  puppet({ sh: 'gk', x: PW / 2, y: 120, s: .12, face: 1, pose: POSES.ready, head: 'expr1', ground: 205 });
+  run(0, 300, 800, 380, 330, T.sE + .2, '9');
+  run(1, 520, 820, 560, 360, T.sE + .35, '10');
+  run(2, 760, 820, 700, 300, T.sE + .5, '20');
+  run(3, 420, 860, 470, 520, T.sE + .6, '3');
+  // the short free kick to Neymar (left), then the chip into the box
+  const nx = 150, ny = 560;
+  puppet({ sh: 'bar', x: nx, y: ny, s: .14, face: 1, pose: poseAt([[0, 'ready'], [T.chip - .3, 'ready'], [T.chip - .06, 'windup'], [T.chip + .06, 'strike'], [T.chip + .6, 'follow']], t), head: 'expr1', num: '11', ground: ny + 98 });
+  const pass = [[110, 760], [120, 700], [nx + 30, ny + 92]];
+  const chip = [[nx + 30, ny + 92], [420, 120], [690, 330]];
+  if (t < T.pass) ball(110, 760, 11);
+  else if (t < T.chip) { const k = clamp((t - T.pass) / .6, 0, 1); const [bx, by] = bez(pass, k); ball(bx, by, 11, k * 4); }
+  else { const k = clamp((t - T.chip) / (T.land - T.chip), 0, 1); dashedArc(chip, k); const [bx, by] = bez(chip, k);
+    const hgt = Math.sin(k * Math.PI) * 60; ball(bx, by - hgt * .3, 11 + hgt * .12, k * 6);
+    X.fillStyle = 'rgba(43,34,25,.2)'; X.beginPath(); X.ellipse(bx, by + 20, 12, 5, 0, 0, 7); X.fill(); }
+  tag('90+5′', texts, T.sE + .1, t);
+}
+
+function sceneF(t, texts) {   // 31.75 - 33.3  the freeze: Sergi Roberto's toe and the ball
+  const frozen = t < T.goal6;
+  stage(t, frozen ? 0 : 1);
+  goalFrame(PW - 300, 340, 280, 340, frozen ? 0 : .8);
+  puppet({ sh: 'bar', x: 360, y: 430, s: .4, face: 1, pose: POSES.stretch, head: 'expr1', num: '20', ground: GROUND + 40, pop: !frozen });
+  if (frozen) {
+    ball(690, 590, 26, .4);
+    // ink motion arcs behind the boot and the ball (the held in-between)
+    X.save(); X.strokeStyle = C.ink; X.lineWidth = 4; X.setLineDash([16, 10]);
+    for (let i = 0; i < 3; i++) { X.beginPath(); X.arc(430, 470, 210 + i * 26, .25, .95); X.stroke(); }
+    X.restore();
+    // freeze-frame wash: the panel drains and a white frame holds
+    X.fillStyle = 'rgba(241,232,210,.32)'; X.fillRect(0, 0, PW, PH);
+    X.strokeStyle = '#FBF6EA'; X.lineWidth = 18; X.strokeRect(9, 9, PW - 18, PH - 18);
+  } else ball(PW - 120, 470, 26, 2);
+  tag('90+5′', texts, -1, t);
+}
+
+function sceneG(t, texts) {   // 33.3 - 41  the explosion, the pile-on, the seismograph
+  stage(t, 1);
+  // PSG: the keeper flat on the grass, a defender in despair
+  puppet({ sh: 'gk', x: PW - 150, y: 650, s: .2, face: -1, rot: 88, pose: POSES.dive, head: 'expr3' });
+  puppet({ sh: 'psg', x: PW - 300, y: 486, s: .24, face: -1, pose: POSES.despair, head: 'expr3', num: '7', ground: GROUND });
+  // Barcelona: three puppets hopping round #20
+  const hop = (i, x, num, ph) => {
+    const k = ((t - T.sG) * 2.4 + ph) % 1; const up = Math.sin(k * Math.PI) * 70;
+    puppet({ sh: 'bar', x, y: 470 - up, s: .25, face: i % 2 ? -1 : 1, pose: k < .5 ? POSES.cheer : POSES.cheer2, head: 'expr2', num, ground: GROUND });
+  };
+  hop(0, 110, '9', 0); hop(1, 240, '20', .33); hop(2, 370, '11', .66); hop(3, 500, '10', .15);
+  // the seismograph: a narrow corner panel, slapped on, the needle scribbling
+  if (t > T.seismo - .3) {
+    const d = drop(t, T.seismo, .3, 77);
+    if (d.vis) {
+      const bx = PW - 420, by = PH - 360, bw = 390, bh = 330;
+      X.save(); X.translate(bx + bw / 2, by + bh / 2 + d.y); X.scale(d.s, d.s); X.rotate(d.rot);
+      paperCard(-bw / 2, -bh / 2, bw, bh, C.paper, d.held, 0);
+      X.strokeStyle = C.ink; X.lineWidth = 5; X.strokeRect(-bw / 2 + 8, -bh / 2 + 8, bw - 16, bh - 16);
+      // the drum and its paper trace
+      X.fillStyle = '#E9DEC4'; X.fillRect(-bw / 2 + 30, -60, bw - 60, 150);
+      X.strokeStyle = 'rgba(43,34,25,.25)'; X.lineWidth = 1; for (let j = 0; j < 7; j++) { X.beginPath(); X.moveTo(-bw / 2 + 30, -60 + j * 25); X.lineTo(bw / 2 - 30, -60 + j * 25); X.stroke(); }
+      const run = clamp((t - T.seismo - .2) / 4.2, 0, 1);
+      X.strokeStyle = C.red; X.lineWidth = 3; X.beginPath();
+      const R = mulberry(5);
+      for (let i = 0; i <= 160 * run; i++) { const x = -bw / 2 + 30 + i * (bw - 60) / 160; const amp = i > 40 && i < 120 ? 55 * Math.sin((i - 40) / 80 * Math.PI) : 4;
+        const y = 15 + (R() - .5) * 2 * amp; i ? X.lineTo(x, y) : X.moveTo(x, y); }
+      X.stroke();
+      X.fillStyle = C.ink; X.fillRect(-4, -100, 8, 40);
+      inkText('SEISMOGRAPH', 0, -bh / 2 + 44, 34);
+      inkText('500 m from the stadium', 0, bh / 2 - 40, 26, F.num);
+      X.restore();
+      texts.push({ id: 'seis', text: 'SEISMOGRAPH 500 m from the stadium', x0: AP.x + bx, y0: AP.y + by, x1: AP.x + bx + bw, y1: AP.y + by + bh });
+    }
+    const s = slip(t, T.tremor, 40, 128, 560, 128, 'A SMALL TREMOR\nWAS RECORDED', 44); if (s) texts.push({ id: 'tremor', ...off(s) });
+  }
+  tag('90+5′', texts, -1, t);
+}
+
+function sceneH(t, texts) {   // 41 - 48.5  the place: Camp Nou on a printed plan, and the pin
+  X.fillStyle = '#E8DCC0'; X.fillRect(0, 0, PW, PH);
+  // engraved street plan: a few blocks and avenues, the stadium oval
+  X.save(); X.strokeStyle = 'rgba(43,34,25,.45)'; X.lineWidth = 2;
+  for (let i = -2; i < 12; i++) { X.beginPath(); X.moveTo(i * 110, 0); X.lineTo(i * 110 + 220, PH); X.stroke(); }
+  for (let j = 0; j < 9; j++) { X.beginPath(); X.moveTo(0, j * 110 + 30); X.lineTo(PW, j * 110 - 40); X.stroke(); }
+  X.restore();
+  X.fillStyle = '#E8DCC0'; X.beginPath(); X.ellipse(PW / 2, 470, 330, 250, -.25, 0, 7); X.fill();
+  X.save(); X.translate(PW / 2, 470); X.rotate(-.25);
+  X.fillStyle = '#D9CDB0'; X.beginPath(); X.ellipse(0, 0, 300, 220, 0, 0, 7); X.fill();
+  X.strokeStyle = 'rgba(43,34,25,.4)'; X.lineWidth = 1.2; for (let r = 0; r < 9; r++) { X.beginPath(); X.ellipse(0, 0, 300 - r * 9, 220 - r * 7, 0, 0, 7); X.stroke(); }
+  X.fillStyle = C.grass; X.fillRect(-170, -100, 340, 200); X.strokeStyle = '#FBF6EA'; X.lineWidth = 4; X.strokeRect(-160, -92, 320, 184);
+  X.beginPath(); X.moveTo(0, -92); X.lineTo(0, 92); X.stroke(); X.beginPath(); X.arc(0, 0, 34, 0, 7); X.stroke();
+  X.strokeStyle = C.ink; X.lineWidth = 4; X.beginPath(); X.ellipse(0, 0, 300, 220, 0, 0, 7); X.stroke();
+  X.restore();
+  inkText('CAMP NOU', PW / 2, 790, 62); inkText('BARCELONA · 8 MARCH 2017', PW / 2, 846, 32, F.num);
+  texts.push({ id: 'plan', text: 'CAMP NOU', x0: AP.x + 300, y0: AP.y + 760, x1: AP.x + 680, y1: AP.y + 820 });
+  // the pin drops onto the centre spot
+  if (t > T.pin - .5) {
+    const k = clamp((t - (T.pin - .5)) / .5, 0, 1); const hgt = (1 - ei(k)) * 260;
+    X.save(); X.translate(PW / 2, 470);
+    X.fillStyle = 'rgba(43,34,25,.25)'; X.beginPath(); X.ellipse(lerp(40, 4, k), lerp(30, 3, k), lerp(26, 8, k), lerp(10, 4, k), 0, 0, 7); X.fill();
+    X.translate(0, -hgt);
+    X.strokeStyle = '#8E8577'; X.lineWidth = 6; X.beginPath(); X.moveTo(0, 0); X.lineTo(0, -70); X.stroke();
+    X.fillStyle = C.red; X.beginPath(); X.arc(0, -86, 26, 0, 7); X.fill(); X.strokeStyle = C.ink; X.lineWidth = 3; X.stroke();
+    X.fillStyle = 'rgba(255,255,255,.5)'; X.beginPath(); X.arc(-8, -94, 8, 0, 7); X.fill();
+    X.restore();
+  }
+  // the clock, stopped
+  paperCard(PW - 330, 40, 290, 90, C.paper, 0, .03);
+  inkText('95:00', PW - 185, 88, 60, F.num, C.ink, 'center', 'bold');
+  texts.push({ id: 'clock2', text: '95:00', x0: AP.x + PW - 330, y0: AP.y + 40, x1: AP.x + PW - 40, y1: AP.y + 130 });
+  const s = slip(t, T.pin + .5, 40, 40, 400, 100, '6 – 5 TOTAL', 52, { font: F.num }); if (s) texts.push({ id: 'final', ...off(s) });
+}
+
+const SCENES = [[0, sceneA], [T.hookEnd, sceneB], [T.sC, sceneC], [T.sD, sceneD], [T.sE, sceneE], [T.sF, sceneF], [T.sG, sceneG], [T.sH, sceneH]];
+function actionPanel(t, texts) {
+  let i = 0; while (i < SCENES.length - 1 && t >= SCENES[i + 1][0]) i++;
+  const [t0, fn] = SCENES[i];
+  // whip in from the right across the gutter (0.3 s) for every scene change except the freeze and the explosion
+  const whip = i > 0 && ![T.sF, T.sG].includes(t0) ? clamp((t - t0) / .3, 0, 1) : 1;
+  X.save(); X.beginPath(); X.rect(AP.x, AP.y, AP.w, AP.h); X.clip();
+  if (whip < 1) { X.save(); X.translate(AP.x - eio(whip) * PW, AP.y); SCENES[i - 1][1](t, []); X.restore(); }
+  X.save(); X.translate(AP.x + (1 - eio(whip)) * PW, AP.y); fn(t, whip < 1 ? [] : texts); X.restore();
+  if (whip < 1) speedLines(t0, t, AP.x, AP.y, AP.w, AP.h);
+  X.restore();
+  // ink frame
+  X.strokeStyle = C.ink; X.lineWidth = 6; X.strokeRect(AP.x, AP.y, AP.w, AP.h);
+}
+
+// the NEED n slip: pasted across the corner between the scoreboard and the action panel, each new one laid over the last
+function needSlip(t, texts) {
+  if (t >= T.goal6) return;
+  const list = [[T.need3, 'NEED 3'], [T.need2, 'NEED 2'], [T.need1, 'NEED 1']];
+  let cur = null;
+  for (const [t0, txt] of list) { if (t < t0 - .3) break; const b = slip(t, t0, W - 340, 372, 270, 104, txt, 62, { font: F.shout }); if (b) cur = b; }
+  if (cur) texts.push({ id: 'need', ...cur });
+}
+
+// ---------------------------------------------------------------- captions
+function caption(t, texts) {
+  const c = CAPS.find(c => t >= c[0] && t < c[1]); if (!c) return;
+  const txt = c[2];
+  X.font = `600 44px ${F.num}`;
+  // wrap into at most 2 lines
+  const words = txt.split(' '); let lines = [''];
+  for (const w of words) { const tr = (lines[lines.length - 1] + ' ' + w).trim(); if (X.measureText(tr).width > 900 && lines[lines.length - 1]) lines.push(w); else lines[lines.length - 1] = tr; }
+  const bw = Math.min(980, Math.max(...lines.map(l => X.measureText(l).width)) + 80), bh = 40 + lines.length * 56;
+  const x = W / 2 - bw / 2, y = CB.y + (CB.h - bh) / 2;
+  X.save(); X.shadowColor = 'rgba(43,34,25,.3)'; X.shadowBlur = 3; X.shadowOffsetX = 2; X.shadowOffsetY = 3;
+  X.fillStyle = C.cap; X.fillRect(x, y, bw, bh); X.shadowColor = 'transparent';
+  X.strokeStyle = C.ink; X.lineWidth = 3; X.strokeRect(x, y, bw, bh); X.restore();
+  lines.forEach((l, i) => inkText(l, W / 2, y + 48 + i * 56, 44, F.num, C.ink, 'center', '600'));
+  texts.push({ id: 'cap' + c[0], text: txt, x0: x, y0: y, x1: x + bw, y1: y + bh, pass: true });
+}
+
+// ---------------------------------------------------------------- camera (smooth every frame) and the page
+function shake(t, t0, amp, dur = .5) { const k = t - t0; if (k < 0 || k > dur) return [0, 0]; const d = (1 - k / dur) ** 2; return [Math.sin(k * 61) * amp * d, Math.cos(k * 47) * amp * d]; }
+function camera(t) {
+  let s = 1, cx = W / 2, cy = H / 2;
+  if (t < T.hookEnd) { s = lerp(1.0, 1.06, ss(t / T.hookEnd)); cy = lerp(H / 2, 820, ss(t / T.hookEnd)); }           // push into the clock
+  else if (t < T.hookEnd + .4) { const k = ss((t - T.hookEnd) / .4); s = lerp(1.06, 1, k); cy = lerp(820, H / 2, k); }
+  if (t > T.sC && t < T.sD) { const k = ss(clamp((t - T.sC - .3) / 2.5, 0, 1)); s = lerp(1, 1.035, k); cx = lerp(W / 2, 556, k); cy = lerp(H / 2, 900, k); }   // push in on the free kick
+  if (t > T.sE && t < T.sF) { const k = ss(clamp((t - T.chip) / (T.sF - T.chip), 0, 1)); s = lerp(1, 1.04, k); cx = lerp(W / 2, 560, k); cy = lerp(H / 2, 880, k); }  // slow push on the last chance
+  if (t >= T.sF && t < T.goal6) { s = 1.04; cx = 560; cy = 880; }                                       // locked on the freeze
+  if (t >= T.goal6 && t < T.goal6 + .5) { const k = ss((t - T.goal6) / .5); s = lerp(1.04, 1, k); cx = lerp(560, W / 2, k); cy = lerp(880, H / 2, k); }
+  if (t > T.sH) { const k = ss(clamp((t - T.sH) / 1.4, 0, 1)); s = lerp(1, .88, k); cy = lerp(H / 2, H / 2 + 60, k); }   // pull back to the whole page
+  let [sx, sy] = [0, 0];
+  for (const [t0, a, d] of [[T.stamp, 6, .3], [T.p4, 7, .35], [T.p5, 7, .35], [T.goal6, 26, .7], [T.seismo + .3, 9, 3.5], [T.pin, 4, .3]]) { const [a1, b1] = shake(t, t0, a, d); sx += a1; sy += b1; }
+  return { s, cx, cy, sx, sy };
+}
+
+// ---------------------------------------------------------------- brand art for the channel (index.html?brand=banner|profile)
+const BRAND = new URLSearchParams(location.search).get('brand');
+function brandBanner() {           // 2560 x 1440; every device shows the centre 1546 x 423 (x 507-2053, y 508-931)
+  X.fillStyle = C.paper; X.fillRect(0, 0, W, H);
+  crowd(0, 0, W, 560, 0, 0, 11, ['#C8463A', '#EDE3CC', '#C8463A', '#2B2219', '#EDE3CC', '#C8B48A', '#8FA07A']);
+  grassBand(0, 560, W, H - 560);
+  const G = 905;     // ground line, inside the safe strip
+  puppet({ sh: 'fa', x: 620, y: G - 228, s: .2, face: 1, pose: POSES.cheer, head: 'expr2', num: '9', ground: G });
+  puppet({ sh: 'fa', x: 800, y: G - 228, s: .2, face: 1, pose: POSES.strike, head: 'expr1', num: '10', ground: G });
+  ball(935, G - 135, 22, .6);
+  X.save(); X.strokeStyle = C.ink; X.lineWidth = 5; X.setLineDash([16, 12]); X.beginPath(); X.moveTo(880, G - 40); X.quadraticCurveTo(905, G - 120, 935, G - 135); X.stroke(); X.restore();
+  puppet({ sh: 'gk', x: 1835, y: G - 250, s: .19, face: -1, rot: -38, pose: POSES.dive, head: 'expr2' });
+  puppet({ sh: 'ref', x: 1985, y: G - 222, s: .19, face: -1, pose: POSES.point, head: 'expr1', ground: G });
+  // the name card (the words themselves are live text in Figma)
+  paperCard(1030, 560, 640, 300, C.cap, .15, -.012);
+  X.save(); X.translate(1350, 710); X.rotate(-.012); X.strokeStyle = C.ink; X.lineWidth = 3; X.setLineDash([12, 8]); X.strokeRect(-300, -130, 600, 260); X.restore();
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .5; X.drawImage(TEX, 0, 0, W, H); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+}
+function brandProfile() {          // 800 x 800, shown as a circle
+  X.fillStyle = C.paper; X.fillRect(0, 0, W, H);
+  X.save(); X.beginPath(); X.arc(400, 400, 392, 0, 7); X.clip();
+  for (let i = -8; i < 12; i++) { X.fillStyle = i % 2 ? C.red : '#EDE3CC'; X.fillRect(i * 80, 0, 80, H); }
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .55; X.drawImage(TEX, 0, 0, W, H); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+  const hp = part('fa', 'expr2'); const sc = 1.05;
+  X.save(); X.translate(400, 360); X.scale(sc, sc);
+  X.shadowColor = 'rgba(43,34,25,.4)'; X.shadowBlur = 10; X.shadowOffsetX = 8; X.shadowOffsetY = 12;
+  X.drawImage(hp.img, -hp.img.width / 2, -hp.img.height / 2); X.restore();
+  ball(560, 520, 62, .5);
+  paperCard(150, 600, 500, 120, C.cap, .1, -.02);   // name slip (live text in Figma)
+  X.restore();
+  X.strokeStyle = C.ink; X.lineWidth = 10; X.beginPath(); X.arc(400, 400, 386, 0, 7); X.stroke();
+}
+function brandThumb() {           // 1080 x 1920 Short thumbnail art; heading is added as live text in Remotion
+  X.fillStyle = C.table; X.fillRect(0, 0, W, H);
+  X.fillStyle = C.paper; X.fillRect(22, 22, W - 44, H - 44);
+  // the action panel: Camp Nou, 90+5', Sergi Roberto's toe a moment before the ball crosses
+  const px = 52, py = 520, pw = W - 104, ph = 930;
+  X.save(); X.beginPath(); X.rect(px, py, pw, ph); X.clip(); X.translate(px, py);
+  crowd(0, 0, pw, 330, 0, .4, 5);
+  grassBand(0, 330, pw, ph - 330);
+  goalFrame(pw - 330, 330, 300, 420, 0);
+  puppet({ sh: 'bar', x: 360, y: 470, s: .46, face: 1, pose: POSES.stretch, head: 'expr1', num: '20', ground: 830 });
+  X.save(); X.strokeStyle = C.ink; X.lineWidth = 6; X.setLineDash([18, 12]);
+  for (let i = 0; i < 3; i++) { X.beginPath(); X.arc(440, 480, 240 + i * 30, .2, .92); X.stroke(); }
+  X.restore();
+  ball(668, 628, 34, .4);
+  X.restore();
+  X.strokeStyle = C.ink; X.lineWidth = 8; X.strokeRect(px, py, pw, ph);
+  // pasted slips: the minute, the score, what's still needed
+  const sl = (x, y, w, h, txt, size, font, fill, rot) => { X.save(); X.translate(x + w / 2, y + h / 2); paperCard(-w / 2, -h / 2, w, h, fill, .1, rot); X.rotate(rot);
+    X.strokeStyle = C.ink; X.lineWidth = 2.5; X.setLineDash([8, 6]); X.strokeRect(-w / 2 + 10, -h / 2 + 10, w - 20, h - 20); X.setLineDash([]);
+    inkText(txt, 0, 4, size, font, C.ink, 'center', font === F.num ? 'bold' : ''); X.restore(); };
+  sl(90, 560, 300, 96, "90+5′", 58, F.num, C.paper, -.03);
+  sl(W - 430, 548, 360, 120, 'NEED 1', 80, F.shout, C.cap, .04);
+  sl(90, 1300, 470, 110, 'TOTAL 5 – 5', 64, F.num, C.paper, .02);
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .5; X.drawImage(TEX, 22, 22, W - 44, H - 44, 22, 22, W - 44, H - 44); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+}
+if (BRAND) {
+  window.DUR = 1; window.EV = []; window.TEXTS = () => [];
+  window.render = () => { X.setTransform(1, 0, 0, 1, 0, 0); BRAND === 'banner' ? brandBanner() : BRAND === 'thumb' ? brandThumb() : brandProfile(); };
+  window.render(0); window.READY = true;
+}
+
+const filmRender = (t) => {
+  const texts = [];
+  X.setTransform(1, 0, 0, 1, 0, 0);
+  X.fillStyle = C.table; X.fillRect(0, 0, W, H);
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .6; X.drawImage(TEX, 0, 0); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+  const cam = camera(t);
+  X.setTransform(cam.s, 0, 0, cam.s, W / 2 - cam.cx * cam.s + cam.sx, H / 2 - cam.cy * cam.s + cam.sy);
+  // the page
+  X.save(); X.shadowColor = 'rgba(30,22,14,.45)'; X.shadowBlur = 24; X.shadowOffsetY = 10;
+  X.fillStyle = C.paper; X.fillRect(PG.x, PG.y, PG.w, PG.h); X.restore();
+  // scoreboard panel
+  X.fillStyle = '#EFE4CA'; X.fillRect(SB.x, SB.y, SB.w, SB.h);
+  scoreboard(t, texts);
+  X.strokeStyle = C.ink; X.lineWidth = 6; X.strokeRect(SB.x, SB.y, SB.w, SB.h);
+  actionPanel(t, texts);
+  needSlip(t, texts);
+  caption(t, texts);
+  // a printed footer line low on the page (under the platform's buttons on a phone)
+  inkText('FOOT ALL FC', W / 2, 1585, 46); X.fillStyle = C.ink; X.fillRect(W / 2 - 200, 1616, 400, 2); inkText('The Greatest Comebacks · Part One', W / 2, 1650, 28);
+  // paper grain over the page
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .55; X.drawImage(TEX, PG.x, PG.y, PG.w, PG.h, PG.x, PG.y, PG.w, PG.h); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+  // texts to screen space
+  window._texts = texts.map(b => ({ ...b, x0: W / 2 + (b.x0 - cam.cx) * cam.s + cam.sx, x1: W / 2 + (b.x1 - cam.cx) * cam.s + cam.sx, y0: H / 2 + (b.y0 - cam.cy) * cam.s + cam.sy, y1: H / 2 + (b.y1 - cam.cy) * cam.s + cam.sy }));
+};
+if (!BRAND) {
+  window.render = filmRender;
+  window.TEXTS = (t) => { window.render(t); return window._texts.map(b => ({ ...b, x0: Math.max(0, b.x0), y0: Math.max(0, b.y0), x1: Math.min(W, b.x1), y1: Math.min(H, b.y1) })); };
+  window.EV = EV.sort((a, b) => a.t - b.t);
+  window.render(0);
+  window.READY = true;
+}
+</script></body></html>

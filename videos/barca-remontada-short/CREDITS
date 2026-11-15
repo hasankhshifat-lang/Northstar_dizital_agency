@@ -1,0 +1,13 @@
+"Need 3 Goals" - Barcelona 6-1 PSG (8 March 2017), an animated fan retelling for the Foot All FC channel. Comic History Cartoon style (lemo-opuscar).
+Unofficial: not made or endorsed by FC Barcelona, Paris Saint-Germain, UEFA or any broadcaster. No club crests,
+league marks, broadcast footage or real likenesses are used; players are generic paper puppets identified by shirt number.
+
+Puppet art: four green-screen part sheets generated with the ChatGPT image model in Figma (gpt-image-2.5-flare),
+  file "Football Story Puppets" (https://www.figma.com/design/Uwqpox50KchNbzlkC3l9lc); prompts in tools/sheets.json
+  (the Figma prompts are the same descriptions without reference images). AI-generated. Boot stripes painted out by hand.
+Narration: Microsoft VibeVoice-Realtime-0.5B, voice "Frank" (MIT licence), AI-generated voice.
+Fonts (SIL Open Font License): IM FELL English SC (Igino Marini), Old Standard TT (Alexey Kryukov), Lilita One (Juan Montoreano).
+Instruments (sampled, via lemo-opuscar core/audio/sampler.py):
+Samples (CC0): FreePats project (freepats.zenvoid.org), VS Chamber Orchestra: Community Edition (Versilian Studios), Versilian Community Sample Library (Versilian Studios)
+Foley, crowd and ambience: synthesized in mix.py.
+Facts: see social/scripts/barca-6-1-psg-remontada.md (fact sheet with sources).

@@ -5,6 +5,7 @@ Credentials come from the environment: YT_CLIENT_ID, YT_CLIENT_SECRET, plus one 
   --channel whichlifenext (default)  YT_REFRESH_TOKEN
   --channel asprinted                YT_REFRESH_TOKEN_ASPRINTED
   --channel overthinkingpad          YT_REFRESH_TOKEN_PSYCHOLOGY
+  --channel footallfc                YT_REFRESH_TOKEN_FOOTALLFC
 Never print them. Standard library only; HTTPS goes through the session proxy automatically.
 Every run checks that the token belongs to the channel named, so a command never lands on the wrong channel.
 
@@ -29,6 +30,7 @@ CHANNELS = {   # name -> (refresh-token variable, channel ID; None until the fir
     "whichlifenext": ("YT_REFRESH_TOKEN", "UCPTrW0n3ONI9uU4WetWwFCQ"),
     "asprinted": ("YT_REFRESH_TOKEN_ASPRINTED", "UC4w5k2HS3wH-oiPaoYwrDaQ"),
     "overthinkingpad": ("YT_REFRESH_TOKEN_PSYCHOLOGY", "UCujai-eJcIEOCp7hsPmSPKA"),
+    "footallfc": ("YT_REFRESH_TOKEN_FOOTALLFC", "UC1qGYw3aAOeADXrOu1X4HrQ"),
 }
 CHANNEL = "whichlifenext"
 CHANNEL_ID = CHANNELS[CHANNEL][1]

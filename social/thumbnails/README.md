@@ -56,3 +56,9 @@ the bottom ~400 px is kept clear for YouTube's title overlay.
 | 7kxCubu2UdI | 0:40 | 7kxCubu2UdI_9x16.jpg |
 
 Not included: Dd6icXr-dW0 (3:09), NtC-QGdCfG0 and kQzq9g26F6Q (8:39) are long-form; the other 7 videos are private.
+
+## Foot All FC (football channel): paper-puppet style, not the map style
+
+| File | Video | Heading | Score | How it was made |
+|---|---|---|---|---|
+| `barca-remontada-short_9x16.jpg` | Barcelona 6–1 PSG Short (not uploaded yet; suggested title "Barcelona Needed 3 Goals in 7 Minutes") | IT WAS OVER… RIGHT? | 88/100 | Puppet art from the film's engine (`videos/barca-remontada-short/index.html?brand=thumb`) + live text in Remotion (`social/brand/foot-all-fc/remotion`, composition `Thumb`). Not Figma: the Figma MCP Collab-seat tool-call limit was hit on 2026-11-15, and the owner chose Remotion for this one. A/B variants kept as concepts: B "4–0 DOWN… THEN THIS" (6–5 scoreboard mid-slap), C "7 MINUTES LEFT" (88:00 clock). |

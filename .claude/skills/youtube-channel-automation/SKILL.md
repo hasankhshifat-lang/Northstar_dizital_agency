@@ -19,6 +19,8 @@ Do **not** use Clawlink or Metricool for YouTube, in chat or in scheduled tasks.
     `--channel asprinted`, token `YT_REFRESH_TOKEN_ASPRINTED` (verified 2026-11-15).
   - **The Overthinking Pad** (`@overthinkingpad`), ID `UCujai-eJcIEOCp7hsPmSPKA` — `--channel overthinkingpad`,
     token `YT_REFRESH_TOKEN_PSYCHOLOGY` (verified 2026-11-15).
+  - **Foot All FC** (`@footallfc`, animated football stories, created 2026-11-15), ID `UC1qGYw3aAOeADXrOu1X4HrQ` —
+    `--channel footallfc`, token `YT_REFRESH_TOKEN_FOOTALLFC` (verified 2026-11-15). Daily scheduled task "Foot All FC daily Shorts".
   - Connecting a new channel: the owner runs `get_refresh_token.py` on their own computer, picks the channel on
     Google's screen, and pastes the printed token into the environment's settings as a new `YT_REFRESH_TOKEN_<NAME>`
     (never into chat or the repo). A new session picks it up; add it to `CHANNELS` in `yt.py` with its channel ID
