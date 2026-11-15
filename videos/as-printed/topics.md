@@ -6,7 +6,7 @@ Rights: pre-1929 US newspapers and photographs are public domain; anything later
 
 | # | Topic | Printed claim | What the record shows | Material to look for | Status |
 |---|---|---|---|---|---|
-| 1 | Titanic, April 1912 | "Titanic afloat, no lives lost" (15 Apr) | 1,517 of 2,223 died (NARA) | New Haven Union, Washington Times, Daily Star-Mirror (15 Apr); NY Tribune, Medford (16 Apr); Bain negatives | pilot, in production 2026-11-15 |
+| 1 | Titanic, April 1912 | "Titanic afloat, no lives lost" (15 Apr) | 1,517 of 2,223 died (NARA) | New Haven Union, Washington Times, Daily Star-Mirror (15 Apr); NY Tribune, Medford (16 Apr); Bain negatives | done 2026-11-15, nfI5VIM0wP8 (Short I3uM_6UVWp0) |
 | 2 | The False Armistice, 7 Nov 1918 | "War is over" — premature UP flash, celebrations in US cities | The armistice was signed 11 Nov 1918, 4 days later | Chronicling America 7–8 Nov 1918 extras; Bain/Harris & Ewing celebration photos | open |
 | 3 | Mark Twain's death, 1897 | Papers reported Twain dying / dead | Alive; his "greatly exaggerated" reply (check the exact wording in the 1897 source) | NY Journal 1897, Chronicling America; LoC portraits | open |
 | 4 | Halley's Comet panic, May 1910 | Poison gas from the tail, "comet pills" | Earth passed through the tail unharmed | Chronicling America May 1910; LoC comet photographs | open |
