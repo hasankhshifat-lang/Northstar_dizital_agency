@@ -50,6 +50,8 @@ export const kitColors = {
   cap: "#3b3733",
   capShade: "#2a2724",
   capBand: "#24211e",
+  /** "cap" (default flat cap) or "hair" (bare head, short hair: 1960s inmates etc.); side pose only */
+  capStyle: "cap" as string,
   coat: "#7a522f",
   coatShade: "#5a3b20",
   coatLight: "#94683d",
@@ -381,13 +383,15 @@ const SidePose: React.FC<{ coat: string; legSwing: number; armSwing: number; lan
       </g>
       {scared && <path d="M -14 -376 Q -8 -362 -12 -356 Q -20 -358 -14 -376 Z" fill="#d6efff" stroke="#6aa3c4" strokeWidth={1.6} />}
       {/* flat cap, brim forward (raised so the eye stays clear) */}
-      <g transform="translate(0 -10)">
+      {k.capStyle === "hair" ? (
+        <path d="M -44 -342 Q -52 -398 4 -400 Q 48 -398 52 -360 Q 34 -370 14 -366 Q 2 -376 -10 -362 Q -24 -358 -30 -342 Z" fill={k.hair} stroke={k.ink} strokeWidth={SW} strokeLinejoin="round" />
+      ) : <g transform="translate(0 -10)">
         <path d="M -46 -354 Q -50 -404 4 -406 Q 50 -404 56 -364 L -44 -348 Z" fill={k.cap} stroke={k.ink} strokeWidth={SW} strokeLinejoin="round" />
         <path d="M -40 -396 Q -10 -408 20 -402" stroke="#5a554f" strokeWidth={4} fill="none" strokeLinecap="round" />
         <circle cx={4} cy={-406} r={4.5} fill={k.capShade} stroke={k.ink} strokeWidth={2} />
         <path d="M -44 -350 L 54 -366 L 56 -356 L -44 -342 Z" fill={k.capBand} stroke={k.ink} strokeWidth={2.4} />
         <path d="M 46 -366 Q 70 -366 76 -356 Q 66 -350 46 -354 Z" fill={k.capBand} stroke={k.ink} strokeWidth={2.4} />
-      </g>
+      </g>}
       {/* brow over the brim */}
       <g transform="translate(0 8)">
         <path d={expression === "determined" ? "M 20 -360 Q 32 -356 44 -350" : scared || expression === "sad" ? "M 20 -362 Q 32 -370 44 -364" : "M 20 -360 Q 32 -366 44 -360"} stroke={k.ink} strokeWidth={8} strokeLinecap="round" fill="none" />

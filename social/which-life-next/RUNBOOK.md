@@ -5,7 +5,7 @@
 > **CURRENT MODE (user, 2026-10-31): SHORTS ONLY.** Long videos are paused until the 10M Shorts-views target is
 > **FORMAT (user, 2026-11-01, latest): ALL Shorts are map Shorts WITH a voiceover. 45–60 seconds (owner, 2026-11-08; 110–150 words), opening on a hook of the main story.**
 > - Visuals: the "Map Shorts" section below (continuous camera over a real map, Kit v2 on the map).
-> - Narration: Jesse (`4N8zjn9tVNuDEBFWVHAq`, eleven_v4), as in the voiceover sections.
+> - Narration (owner, 2026-11-15): VibeVoice, voice Frank, via the vibevoice-voiceover skill on main; ElevenLabs only for sound effects. (Older Jesse/ElevenLabs narration steps below are retired.)
 > - Sound effects must NEVER cover the voice. `pony_mix.py` with `VOICE=` ducks effects to −14 dB and music to −20 dB under speech; they come back up between lines.
 > reached or the user says to resume. Each day: step 0 (report, story-type ranking, comments) → 4 standalone story
 > Shorts ("Standalone story Shorts" section; 3 from the best type, 1 test) → schedule (config.md slots,
@@ -477,3 +477,11 @@ Start on the map, then **dive into the place** and show what the narration descr
 - `interpolate` needs an increasing input range: use `interpolate(-angle, [40, 88], …)` for decreasing arm angles.
 - `yt.py recent` / `scheduled` live only in the working-branch helper; main's helper has `analytics`/`thumbnail`. Per-video analytics need `sort=-views` + `maxResults` (call `yt._call`).
 - Figma Collab-seat MCP limit hit again after create_session + 1 generate_image; all 4 `use_figma` attempts failed.
+
+### Learned 2026-11-15 (Alcatraz Short, first VibeVoice narration)
+- Narration (owner, 2026-11-15): VibeVoice, voice Frank, via the vibevoice-voiceover skill on main; ElevenLabs only for sound effects. VibeVoice was NOT preinstalled in this container: `bash /tmp/vvskill/install.sh` took ~3 min; a 131-word take took ~75 s and came out 47.2 s with ~0.8 s leading silence (trimmed). Its level is low: the mix check reports voice gain ≈3.2 (still passes).
+- `python3` (3.11) has no numpy/faster-whisper by default: `python3 -m pip install faster-whisper numpy` (pip points at another Python).
+- Story: `src/stories/alcatraz.tsx` (Mercator SF Bay map from a real 1:500k coastline: `src/sets/sfbay.json`, made from the US Census `cb_2023_us_state_500k` shapefile with pyshp; Alcatraz/Angel/Treasure islands included) + `src/sets/alcatrazScenes.tsx` (cell set with bars, sink + vent with a dug-out hole, DummyHead, Flashlight with beam, Spoon on the forearm, paddlers, pipe climb with hands kept on the pipe, stamp, wanted poster); mix in `shorts/alcatraz-2026-11-16/mix.py` (synth scrape, splash, hum).
+- Kit: new colour key `capStyle: "hair"` draws bare short hair instead of the flat cap (side pose) for characters who wouldn't wear one (1960s inmates).
+- Natural Earth/us-atlas 10m coastlines are blobs below state scale; for city/bay-level maps download the Census 500k shapefile (census.gov opens) and clip it.
+- Figma Collab-seat MCP limit hit again after create_session + 1 generate_image (art node 4:2 made); `use_figma` failed 4×.

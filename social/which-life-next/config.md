@@ -31,3 +31,4 @@ Check with `python3 .claude/skills/youtube-automation/yt.py scheduled` and `soci
 - Record every change in `timing-log.md` with the data behind it.
 
 Short length (owner, 2026-11-08): 45–60 seconds, 110–150 words.
+Narration (owner, 2026-11-15): VibeVoice, voice Frank, via the vibevoice-voiceover skill on main; ElevenLabs only for sound effects.
