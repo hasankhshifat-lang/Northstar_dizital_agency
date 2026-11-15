@@ -1,0 +1,1 @@
+{"name":"foot-all-fc-brand","private":true,"type":"module","scripts":{"banner":"remotion still src/index.ts Banner ../banner.png --scale=1","profile":"remotion still src/index.ts Profile ../profile.png --scale=1"},"dependencies":{"@remotion/cli":"^4.0.300","react":"^18.3.1","react-dom":"^18.3.1","remotion":"^4.0.300","typescript":"^5.6.3"}}
