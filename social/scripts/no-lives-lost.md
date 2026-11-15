@@ -71,16 +71,16 @@ In New York, the Tribune's front page read: Thirteen hundred and forty perish as
 Next to it, a smaller story. Crowd besieges White Star office. Line officials, the paper said, could only tell the people outside that six hundred and seventy-five of twenty-two hundred were saved.
 
 **23. TABLE · medford**  
-And across the country, in Oregon, the Medford Mail Tribune printed its own number. Fourteen ninety-two lives lost. Every paper had a different count, and the numbers kept moving for days.
-
-**24. CHAPTER · The record**  
 And across the country, in Oregon, the Medford Mail Tribune printed its own number. Fourteen ninety-two lives lost. Every paper had a different count, and the numbers kept moving for days. Zero on Monday evening. Thirteen hundred and forty on Tuesday morning. Fourteen ninety-two by Tuesday afternoon in Oregon.
 
+**24. CHAPTER · The record**  
+Part four. The record.
+
 **25. PHOTO · pier**  
-On Thursday, April eighteenth, the Carpathia landed her passengers in New York. Crowds waited for her in the dark. For the families on that pier, the count was no longer a headline.
+On Thursday, April eighteenth, the Carpathia landed her passengers in New York. This is the crowd that waited for her, in the dark, packed into the street between the buildings. For the families here, the count was no longer a headline. It was a list of names, read out one by one.
 
 **26. COMPARE**  
-On Thursday, April eighteenth, the Carpathia landed her passengers in New York. This is the crowd that waited for her, in the dark, packed into the street between the buildings. For the families here, the count was no longer a headline. It was a list of names, read out one by one.
+No lives lost, the New Haven Union had printed. The National Archives count: of two thousand two hundred and twenty-three people aboard, fifteen hundred and seventeen died. Seven hundred and six lived.
 
 **27. TABLE · union**  
 The papers that Monday were not inventing a rescue. They printed what came over the wire, as fast as it came, and on Monday, what came was hope. By Tuesday, it was the truth. But for one evening, in New Haven, in Idaho, in Washington, a front page told families that everyone they loved had lived. If you had opened that paper on Monday evening, would you have believed it? Tell me in the comments.

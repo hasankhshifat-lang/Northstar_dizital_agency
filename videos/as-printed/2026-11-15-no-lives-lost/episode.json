@@ -601,14 +601,14 @@
       "value": "1,492",
       "source": "Medford Mail Tribune \u00b7 16 April 1912"
      },
-     "say": "And across the country, in Oregon, the Medford Mail Tribune printed its own number. Fourteen ninety-two lives lost. Every paper had a different count, and the numbers kept moving for days."
+     "say": "And across the country, in Oregon, the Medford Mail Tribune printed its own number. Fourteen ninety-two lives lost. Every paper had a different count, and the numbers kept moving for days. Zero on Monday evening. Thirteen hundred and forty on Tuesday morning. Fourteen ninety-two by Tuesday afternoon in Oregon."
     },
     {
      "type": "chapter",
      "kicker": "PART 4",
      "title": "The record",
      "chapterName": "The record",
-     "say": "And across the country, in Oregon, the Medford Mail Tribune printed its own number. Fourteen ninety-two lives lost. Every paper had a different count, and the numbers kept moving for days. Zero on Monday evening. Thirteen hundred and forty on Tuesday morning. Fourteen ninety-two by Tuesday afternoon in Oregon."
+     "say": "Part four. The record."
     },
     {
      "type": "photo",
@@ -618,7 +618,7 @@
       2500
      ],
      "nf": 0.4,
-     "say": "On Thursday, April eighteenth, the Carpathia landed her passengers in New York. Crowds waited for her in the dark. For the families on that pier, the count was no longer a headline."
+     "say": "On Thursday, April eighteenth, the Carpathia landed her passengers in New York. This is the crowd that waited for her, in the dark, packed into the street between the buildings. For the families here, the count was no longer a headline. It was a list of names, read out one by one."
     },
     {
      "type": "compare",
@@ -636,7 +636,7 @@
       "source": "NARA, Prologue, Spring 2012"
      },
      "strike": "a",
-     "say": "On Thursday, April eighteenth, the Carpathia landed her passengers in New York. This is the crowd that waited for her, in the dark, packed into the street between the buildings. For the families here, the count was no longer a headline. It was a list of names, read out one by one."
+     "say": "No lives lost, the New Haven Union had printed. The National Archives count: of two thousand two hundred and twenty-three people aboard, fifteen hundred and seventeen died. Seven hundred and six lived."
     },
     {
      "type": "table",
