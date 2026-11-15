@@ -17,4 +17,5 @@ Mirror each card as a row in `social/learning/<channel>.md` → Experiments.
 - **Metric + checkpoint:** US share of views and engagedViews at 72 h and 7 d (`growth.py snapshot`), plus vidIQ
   Shorts-feed impressions if available.
 - **Sample:** ≥5 Shorts per arm (alternate days or a straight week), compared at the same checkpoints.
-- **Status:** planned (owner approval needed to move the slot). **Result:** — **Decision:** —
+- **Status:** running. Owner approved 2026-11-15. Control arm: the 08:00 ET Shorts of 11-09…11-16 (the last one is uBHrZaAZw4A Alcatraz, 2026-11-16 13:00 UTC, left in place). Test arm: Shorts at 17:00 ET (22:00 UTC while EST is in effect) from 2026-11-17, one a day, with format, cadence and bucket rotation unchanged. The daily Shorts task "Which Life Next — 1 YouTube Short a day" was updated the same day; the Facebook cross-post uses the same moment. First read-out after ≥5 test Shorts reach 72 h (about 2026-11-24); decision after 7 d (about 2026-11-28).
+- **Result:** — **Decision:** —

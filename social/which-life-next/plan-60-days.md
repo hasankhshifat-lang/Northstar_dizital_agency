@@ -72,6 +72,9 @@ but cut harder: a new shot every 2–4 s, and the first frame must already show 
 ### Posting
 - 1 Short a day at the slot with the most US views so far (start with **21:00 SGT = 08:00 ET**,
   test 06:00 SGT = 17:00 ET in week 2).
+- **From 2026-11-17: 17:00 ET** (22:00 UTC while EST is in effect; 06:00 SGT the next morning), the publish-window
+  experiment EXP-whichlifenext-001, approved by the owner 2026-11-15
+  (`youtube-growth/whichlifenext/experiments/experiment-log.md`). Keep the 08:00 ET Shorts already scheduled.
 - Cross-post the same file to the Which Life Next Facebook Page (existing rule).
 
 ### Measure and adjust (every day, 2 minutes)
