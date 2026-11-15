@@ -4,7 +4,7 @@
 as the JPGs below, and exported from Figma into this folder. See `.claude/skills/youtube-thumbnail-creator/SKILL.md`
 ("Figma workflow"). The thumbnails listed below were made earlier with `make_thumbnails.py`; they stay as the style reference.
 
-Figma file "NorthStar Thumbnails": not created yet (the first Figma thumbnail run creates it and records the key + URL here).
+Figma file "NorthStar Thumbnails": key `sUKf0kWmynmyr28DvLKX1N`, https://www.figma.com/design/sUKf0kWmynmyr28DvLKX1N (created 2026-11-15, team "KH Touhidul Islam's team"; still empty: the Collab seat hit its Figma MCP tool-call limit before the first frame).
 
 1280×720 JPGs for every Which Life Next video, built by `make_thumbnails.py`. Each one uses the same
 illustrated map style as the channel's Shorts (parchment land, teal water, thin state lines, the story's
