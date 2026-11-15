@@ -15,6 +15,9 @@ documentary cut), use `.claude/skills/lemo-opuscar/SKILL.md` (library: github.co
 - **Don't use the 3D Map Explainer style (`map-explainer`)** for any video, and don't suggest it
   (owner, 2026-11-14). Pick or suggest other styles.
 - The renderer wants ffmpeg 7+. If the container only has an older ffmpeg, say so before rendering.
+- **Voiceover: always VibeVoice** (owner, 2026-11-15): Microsoft VibeVoice-1.5B on CPU through
+  `videos/as-printed/engine/voice/vv_tts.py` (setup: `setup_vibevoice.sh`; narrator reference `narrator_ref.wav`).
+  It writes the same `<id>.wav` + `dur.json` as the library's `core/tts/tts.py`, so it replaces Kokoro in any pipeline.
 - Uploading or posting the finished video still follows the YouTube and Facebook sections below.
 
 ## YouTube: always use the youtube-channel-automation skill (own Google Cloud client)
@@ -66,3 +69,15 @@ deleting, timed takedowns, checking status), use `.claude/skills/facebook-page-a
   injected by the proxy). Do not use Clawlink or Metricool for the Facebook Page.
 - Never delete an uploaded video or post unless the user explicitly asks for that deletion.
 - Log every action in `social/facebook-page-log.md`, then commit and push.
+
+## As Printed (archive history channel): daily long video + Short
+
+Owner request 2026-11-15: one long video (8–12 min) and one Short (45–60 s) every day for the YouTube channel
+**As Printed** (`yt.py --channel asprinted`), in the Archive Light Table template (`videos/as-printed/engine/`).
+Follow `videos/as-printed/RUNBOOK.md`.
+- **Approval first** (owner's choice): send the finished videos, titles, descriptions and publish times; upload only
+  after the owner approves. The general YouTube confirmation rule above stays in force.
+- Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
+- **Thumbnails for As Printed use the archive style** (`engine/thumb.html`), not the map style: the map-style rule
+  above applies to Which Life Next.
+
