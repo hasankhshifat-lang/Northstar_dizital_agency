@@ -31,3 +31,6 @@ Page ID 1497857623404891. Graph API v21.0. The page token comes from GET /149785
 | 2026-11-15 | Status check | চিরুনিতে কি চুম্বক আছে? ⚡ (Short 6) | 1143508351493782 | 2026-11-15 14:00 (20:00 Dhaka) | Still scheduled as planned (checked 12:10 UTC) |
 | 2026-11-15 | Comment check, second run (last 21 days: 4 Reels + 4 posts, 2 scheduled) | – | – | – | 0 comments, 0 replies, 0 skips |
 | 2026-11-15 | Insights check, second run | – | – | – | Short 4 116 plays avg 4.1 s (58% at 5 s, 21% at 8 s); Short 2 192 / 3.4 s; Short 1 127 / 8.4 s; Short 3 11 / 8.4 s; followers 1. No new Short made: today's (Short 7) already made and scheduled |
+| 2026-11-15 | Live check (21:28 Dhaka) | চিরুনিতে কি চুম্বক আছে? ⚡ (Short 6) | 1143508351493782 | published 2026-11-15 14:00 | Live on time: /reel/1143508351493782/; 6 plays at ~1.5 h |
+| 2026-11-15 | Comment check, third run (last 21 days: 5 Reels + 5 posts; Short 7 still scheduled) | – | – | – | 0 comments, 0 replies, 0 skips |
+| 2026-11-15 | Insights check, third run | – | – | – | Short 6 6 plays avg 6.9 s (too early); Short 4 116 plays avg 4.1 s (92% at 3 s, 58% at 5 s, 21% at 8 s); followers 1. No new Short made: today's (Short 7) already made and scheduled for 2026-11-16 |
