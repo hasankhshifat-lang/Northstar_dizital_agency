@@ -688,9 +688,34 @@ function brandProfile() {          // 800 x 800, shown as a circle
   X.restore();
   X.strokeStyle = C.ink; X.lineWidth = 10; X.beginPath(); X.arc(400, 400, 386, 0, 7); X.stroke();
 }
+function brandThumb() {           // 1080 x 1920 Short thumbnail art; heading is added as live text in Remotion
+  X.fillStyle = C.table; X.fillRect(0, 0, W, H);
+  X.fillStyle = C.paper; X.fillRect(22, 22, W - 44, H - 44);
+  // the action panel: Camp Nou, 90+5', Sergi Roberto's toe a moment before the ball crosses
+  const px = 52, py = 520, pw = W - 104, ph = 930;
+  X.save(); X.beginPath(); X.rect(px, py, pw, ph); X.clip(); X.translate(px, py);
+  crowd(0, 0, pw, 330, 0, .4, 5);
+  grassBand(0, 330, pw, ph - 330);
+  goalFrame(pw - 330, 330, 300, 420, 0);
+  puppet({ sh: 'bar', x: 360, y: 470, s: .46, face: 1, pose: POSES.stretch, head: 'expr1', num: '20', ground: 830 });
+  X.save(); X.strokeStyle = C.ink; X.lineWidth = 6; X.setLineDash([18, 12]);
+  for (let i = 0; i < 3; i++) { X.beginPath(); X.arc(440, 480, 240 + i * 30, .2, .92); X.stroke(); }
+  X.restore();
+  ball(668, 628, 34, .4);
+  X.restore();
+  X.strokeStyle = C.ink; X.lineWidth = 8; X.strokeRect(px, py, pw, ph);
+  // pasted slips: the minute, the score, what's still needed
+  const sl = (x, y, w, h, txt, size, font, fill, rot) => { X.save(); X.translate(x + w / 2, y + h / 2); paperCard(-w / 2, -h / 2, w, h, fill, .1, rot); X.rotate(rot);
+    X.strokeStyle = C.ink; X.lineWidth = 2.5; X.setLineDash([8, 6]); X.strokeRect(-w / 2 + 10, -h / 2 + 10, w - 20, h - 20); X.setLineDash([]);
+    inkText(txt, 0, 4, size, font, C.ink, 'center', font === F.num ? 'bold' : ''); X.restore(); };
+  sl(90, 560, 300, 96, "90+5′", 58, F.num, C.paper, -.03);
+  sl(W - 430, 548, 360, 120, 'NEED 1', 80, F.shout, C.cap, .04);
+  sl(90, 1300, 470, 110, 'TOTAL 5 – 5', 64, F.num, C.paper, .02);
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .5; X.drawImage(TEX, 22, 22, W - 44, H - 44, 22, 22, W - 44, H - 44); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+}
 if (BRAND) {
   window.DUR = 1; window.EV = []; window.TEXTS = () => [];
-  window.render = () => { X.setTransform(1, 0, 0, 1, 0, 0); BRAND === 'banner' ? brandBanner() : brandProfile(); };
+  window.render = () => { X.setTransform(1, 0, 0, 1, 0, 0); BRAND === 'banner' ? brandBanner() : BRAND === 'thumb' ? brandThumb() : brandProfile(); };
   window.render(0); window.READY = true;
 }
 

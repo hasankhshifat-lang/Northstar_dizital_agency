@@ -39,9 +39,21 @@ const Profile: React.FC = () => (
   </AbsoluteFill>
 );
 
+// 1080 x 1920 Short thumbnail: heading at the top, the action in the middle, bottom ~400 px kept clear
+const Thumb: React.FC = () => (
+  <AbsoluteFill>
+    <Img src={staticFile('thumb-art.jpg')} />
+    <div style={{ position: 'absolute', left: 0, top: 120, width: 1080, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: 'rotate(-1.5deg)' }}>
+      <div style={{ fontFamily: 'Lilita One', fontSize: 132, lineHeight: 1.0, color: INK, whiteSpace: 'nowrap' }}>IT WAS OVER…</div>
+      <div style={{ fontFamily: 'Lilita One', fontSize: 184, lineHeight: 1.0, color: RED, whiteSpace: 'nowrap', marginTop: 6 }}>RIGHT?</div>
+    </div>
+  </AbsoluteFill>
+);
+
 export const Root: React.FC = () => (
   <>
     <Still id="Banner" component={Banner} width={2560} height={1440} />
     <Still id="Profile" component={Profile} width={800} height={800} />
+    <Still id="Thumb" component={Thumb} width={1080} height={1920} />
   </>
 );
