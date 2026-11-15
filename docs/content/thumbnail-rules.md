@@ -15,6 +15,11 @@ rules differ, the channel rules win:
   all words are live Figma text. No image generators outside Figma, no Gemini models, no Canva, PIL, Higgsfield or
   vidIQ thumbnail generator. The owner's Figma account is on **pay-as-you-go** (owner, 2026-11-11): Figma usage or
   tool-call limits are never a reason to skip Figma; on a rate/usage limit wait ~60 s and retry (max 3 times).
+- **Spline fallback (owner, 2026-11-15):** only when Figma is not available (not connected, or still failing after the
+  retries), build the thumbnail in **Spline** (2D editor, `2d_*` tools) with the same style, sizes, heading and
+  scoring rules: artwork from `2d_generate_images` (no text, max 3) or real images, words as live Spline text,
+  checked with `2d_review_frame`, exported with `2d_export_html` and rendered to JPG with Playwright. Report and log
+  "made in Spline" with the exact Figma error. If Spline also fails, report both errors and stop.
 - **Style:** the channel's **illustrated map style** (parchment land, teal water, tan story state, rust-red
   route, red pins, dark label tags, gold-on-dark date tag, Anton heading in white + gold) is the default.
   Apply the "cinematic" rules below (composition, hierarchy, contrast, lighting, colour discipline,
