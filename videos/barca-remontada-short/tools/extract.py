@@ -18,9 +18,9 @@ SRC = os.path.join(HERE, 'src')
 OUT = os.path.join(HERE, 'parts')
 os.makedirs(OUT, exist_ok=True)
 
-SHEETS = {'fr': 'sheet-fr.png', 'pr': 'sheet-pr.png', 'al': 'sheet-al.png'}
-GROW = {'fr': 6, 'pr': 6, 'al': 3}   # the Alsace sheet has tighter gaps between the arm pieces
-UP = 2  # upsample before keying: the sheets are only 1672 px wide
+SHEETS = {'bar': 'sheet-bar.png', 'psg': 'sheet-psg.png', 'gk': 'sheet-gk.png', 'ref': 'sheet-ref.png'}
+GROW = {'bar': 4, 'psg': 4, 'gk': 4, 'ref': 4}
+UP = 2  # upsample before keying: the sheets are only 1536 px wide
 
 
 def key(img):
