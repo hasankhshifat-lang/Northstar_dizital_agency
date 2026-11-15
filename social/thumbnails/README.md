@@ -56,3 +56,9 @@ the bottom ~400 px is kept clear for YouTube's title overlay.
 | 7kxCubu2UdI | 0:40 | 7kxCubu2UdI_9x16.jpg |
 
 Not included: Dd6icXr-dW0 (3:09), NtC-QGdCfG0 and kQzq9g26F6Q (8:39) are long-form; the other 7 videos are private.
+
+## Psychology channel (made in Spline because Figma's Collab seat hit its tool-call limit; owner, 2026-11-15)
+
+| File | Video | Heading | Source |
+|---|---|---|---|
+| `spotlight-marker_9x16.jpg` | Spotlight Effect, Marker on Paper Short (not uploaded yet) | ALL EYES ON ME? | Spline file https://app.spline.design/ui/08a2d5d5-0c55-4175-9cc8-2ea0e9f3d0f9 (frame `spotlight-marker_9x16`); exported HTML in `spline/`, rendered 1080×1920. Art = the film's own hook drawing redrawn as vectors (no AI image) |

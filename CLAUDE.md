@@ -82,6 +82,9 @@ image generated in Figma is made with the **ChatGPT model inside Figma** (owner,
 live Figma text with `use_figma`, not drawn by the model. The Figma account is on pay-as-you-go: on a rate or
 usage limit wait ~60 s and retry (max 3 times); if Figma still fails, say so with the exact error and stop.
 Generations cost Figma AI credits, so keep them to what the task needs (max 3 per thumbnail).
+**Fallback (owner, 2026-11-15):** if Figma can't be reached or still fails after the retries (for example the Collab seat's
+MCP tool-call limit), make the thumbnail in **Spline** (2D editor, `2d_*` tools) instead, same layout rules; don't use
+Spline's AI image generator (it is a Gemini model): draw the art as vectors or use the video's own frames.
 
 ## YouTube + Facebook thumbnails: always made in Figma, map style
 

@@ -7,7 +7,7 @@ Status: **draft, waiting for approval and for the channel to be connected.** Not
 | File | `videos/spotlight-effect/marker/spotlight-marker.mp4` (1080×1920, 11.2 s, −14 LUFS) |
 | Channel | new psychology channel, `yt.py --channel psychology` (token `YT_REFRESH_TOKEN_PSYCHOLOGY`, not connected yet) |
 | Title | **Why You Think Everyone Noticed #shorts** |
-| Thumbnail | `social/thumbnails/spotlight-marker_9x16.jpg`, made in Figma, heading "WHO NOTICED?" (doesn't repeat the title) |
+| Thumbnail | `social/thumbnails/spotlight-marker_9x16.jpg` (ready), made in Spline, heading "ALL EYES ON ME?" (no word shared with the title); score 83/100 |
 | Privacy / time | scheduled; proposed **Mon 2026-11-16, 6:00 PM US Eastern** (to be confirmed) |
 | Category | 27 Education |
 | Made for kids | no |
