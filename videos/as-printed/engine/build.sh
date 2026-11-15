@@ -28,14 +28,23 @@ render() {
 finish() {
   for F in long short; do
     FPS=24; [ $F = short ] && FPS=30
-    "$PY" "$ENG/mix.py" "$EP" $F
-    (cd "$LIB" && sh core/render/mux.sh "$EP/out/$F/video.mp4" "$EP/out/$F/mix.wav" "$EP/out/$F/muxed.mp4" $FPS 1) | grep -E " I:" | tail -n 1
-    ffmpeg -v error -y -i "$EP/out/$F/muxed.mp4" -c:v libx264 -crf 21 -preset slow -pix_fmt yuv420p -profile:v high -movflags +faststart -c:a copy "$EP/${SLUG}_$F.mp4"
+    # a re-run keeps finished parts: delete out/$F/muxed.mp4 (and master.mp4) to remix
+    [ -f "$EP/out/$F/muxed.mp4" ] || { "$PY" "$ENG/mix.py" "$EP" $F
+    (cd "$LIB" && sh core/render/mux.sh "$EP/out/$F/video.mp4" "$EP/out/$F/mix.wav" "$EP/out/$F/muxed.mp4" $FPS 1) | grep -E " I:" | tail -n 1; }
+    # master (YouTube upload, git-ignored) at crf 21; the repo copy must stay under GitHub's 100 MB limit
+    [ -f "$EP/out/$F/master.mp4" ] || ffmpeg -v error -y -i "$EP/out/$F/muxed.mp4" -c:v libx264 -crf 21 -preset slow -pix_fmt yuv420p -profile:v high -movflags +faststart -c:a copy "$EP/out/$F/master.mp4"
+    MB=$(( $(stat -c %s "$EP/out/$F/master.mp4") / 1048576 ))
+    if [ $MB -lt 95 ]; then cp "$EP/out/$F/master.mp4" "$EP/${SLUG}_$F.mp4"; else
+      D=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$EP/out/$F/master.mp4")
+      VK=$(python3 -c "print(int(92*8388.608/$D - 128))")   # ~92 MiB in all, 128 kb/s audio
+      (cd "$EP/out/$F" && ffmpeg -v error -y -i master.mp4 -c:v libx264 -b:v ${VK}k -preset medium -pass 1 -an -f null /dev/null && \
+        ffmpeg -v error -y -i master.mp4 -c:v libx264 -b:v ${VK}k -preset medium -pass 2 -pix_fmt yuv420p -profile:v high -movflags +faststart -c:a aac -b:a 128k "$EP/${SLUG}_$F.mp4"; rm -f ffmpeg2pass-0.log*)
+    fi
     "$PY" "$LIB/core/render/srt.py" "$EP/out/$F/cues_srt.json" "$EP/${SLUG}_$F.srt"
     SZ=$( [ $F = short ] && echo 1080x1920 || echo 1920x1080 )
-    (cd "$LIB" && node core/render/readcheck.mjs "$EP" --size $SZ --q "film=$F" > "$EP/out/$F/readcheck.txt" 2>&1) && echo "$F readcheck ok" || { echo "$F readcheck:"; grep -E "^BAD" "$EP/out/$F/readcheck.txt" | head -20; }
+    (cd "$LIB" && node core/render/readcheck.mjs "$EP" --size $SZ --q "film=$F" --step 0.2 > "$EP/out/$F/readcheck.txt" 2>&1) && echo "$F readcheck ok" || { echo "$F readcheck:"; grep -E "^BAD" "$EP/out/$F/readcheck.txt" | head -20; }
     ffmpeg -i "$EP/${SLUG}_$F.mp4" -vf blackdetect=d=0.5 -f null - 2>&1 | grep -c black_start | sed "s/^/$F black segments: /"
-    ls -la "$EP/${SLUG}_$F.mp4"
+    ls -la "$EP/out/$F/master.mp4" "$EP/${SLUG}_$F.mp4"
   done
   [ -f "$EP/thumb.json" ] && node "$ENG/tools/thumb.mjs" "$EP" || echo "no thumb.json yet"
   ffmpeg -v error -y -i "$EP/${SLUG}_long.mp4" -vf "fps=1/20,scale=320:-1,tile=6x6" -frames:v 1 "$EP/out/sheet_long.jpg" || true
