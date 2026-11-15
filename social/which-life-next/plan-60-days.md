@@ -60,7 +60,7 @@ it is not a guarantee, and on today's numbers it is unlikely without a breakout 
 6. Real facts only, 2+ sources that agree; no invented quotes.
 
 ### Visuals and sound
-Keep the approved channel look (map + ground scenes, Jesse voiceover, ducked SFX, captions in 1–4-word chunks),
+Keep the approved channel look (map + ground scenes, VibeVoice voiceover (Frank), ducked SFX, captions in 1–4-word chunks),
 but cut harder: a new shot every 2–4 s, and the first frame must already show the hook text and the main subject.
 
 ### Thumbnail and title

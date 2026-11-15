@@ -46,6 +46,19 @@ documentary cut), use `.claude/skills/lemo-opuscar/SKILL.md` (library: github.co
 - The renderer wants ffmpeg 7+. If the container only has an older ffmpeg, say so before rendering.
 - Uploading or posting the finished video still follows the YouTube and Facebook sections below.
 
+## Voiceovers: English with VibeVoice, Bangla with ElevenLabs
+
+Every **English** voiceover or narration (YouTube long-form and Shorts, Facebook videos/Reels, ads, explainers,
+lemo-opuscar films), in chat and in every scheduled task, is made with **VibeVoice** (owner, 2026-11-15):
+follow `.claude/skills/vibevoice-voiceover/SKILL.md` (`scripts/voiceover.sh`, default voice Frank).
+- Don't use ElevenLabs, Gemini, OpenAI TTS or lemo-opuscar's built-in voice (Kokoro) for English narration. In
+  lemo-opuscar films, make the narration with VibeVoice and use that audio instead of its built-in voice.
+- **Bangla** voiceovers stay on ElevenLabs (`eleven_v4`, the channel's fixed Bangla voices): VibeVoice can't
+  speak Bangla. ElevenLabs sound effects (`eleven_text_to_sound_v2`) are not voiceovers and stay as they are.
+- VibeVoice has no audio tags: pace with punctuation and "...", write numbers as words, and run the take check
+  in the skill (duration, transcript vs script, first second) before using the audio.
+- If VibeVoice fails to install or run, say so with the exact error and stop; don't fall back to another TTS.
+
 ## YouTube: always use the youtube-channel-automation skill (own Google Cloud client)
 
 For any YouTube channel task (uploading, scheduling, editing titles/descriptions/tags/privacy/
