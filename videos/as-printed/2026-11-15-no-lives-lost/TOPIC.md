@@ -18,3 +18,15 @@ Per docs/content/scriptwriting-rules.md §2.G–H.
 Script check (§15): first sentence is the surprise; the first 30 s set the conflict and the question; loops at the end of the
 cold open and each chapter; each chapter adds a new item; the turn (Tuesday's wire) before the verdict; payoff answers the
 opening; one comment question and one short like/subscribe line at the end; every number is in FACTS.md.
+
+## Thumbnail (v2, Spline, 2026-11-15; owner asked for Spline and the thumbnail rules)
+Concepts: A object — the "NO LIVES LOST" clipping alone with a red stamp; B contrast — the printed claim against
+the number and the real lifeboat photograph; C mystery — the clipping with "WHY DID THEY PRINT THIS?".
+Headline options: "1,517 DIED", "THEY PRINTED THIS", "WHY PRINT THIS?". Chosen: B with "1,517 DIED" (the real
+headline and the real death toll side by side; does not repeat the title's words).
+All imagery is real archive material: New Haven Union, 15 Apr 1912 (LoC Chronicling America) and Bain News Service
+"TITANIC life boats on way to CARPATHIA" (LC-B2- 2485-4). Spline AI images were not used (no credits).
+Score (rules §14): attention 18, curiosity 18, storytelling 14, composition 13, headline 10, emotion 9, accuracy 5,
+mobile 5 = 92/100. A/B variant to test later: concept C. Spline file: "As Printed Thumbnails"
+(frames no-lives-lost_long, no-lives-lost_9x16); exported to HTML in thumb_spline/ and rendered to JPG.
+Old engine thumbnails kept in thumb_v1/.
