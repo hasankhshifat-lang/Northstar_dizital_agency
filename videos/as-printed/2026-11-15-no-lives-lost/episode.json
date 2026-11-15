@@ -1,0 +1,753 @@
+{
+ "slug": "no-lives-lost",
+ "title": "No Lives Lost",
+ "indexTitle": "Titanic \u00b7 April 1912",
+ "seed": 11,
+ "items": [
+  {
+   "id": "union",
+   "kind": "paper",
+   "src": "raw/union.jpg",
+   "label": "THE NEW HAVEN UNION \u00b7 15 APR 1912",
+   "short": "The New Haven Union",
+   "catalog": "LCCN sn92051126",
+   "row": "0 lost"
+  },
+  {
+   "id": "starmirror",
+   "kind": "paper",
+   "src": "raw/starmirror.jpg",
+   "label": "THE DAILY STAR-MIRROR \u00b7 15 APR 1912",
+   "short": "Daily Star-Mirror, Idaho",
+   "catalog": "LCCN sn89055128",
+   "row": "all saved"
+  },
+  {
+   "id": "wtimes15",
+   "kind": "paper",
+   "src": "raw/wtimes15.jpg",
+   "label": "THE WASHINGTON TIMES \u00b7 15 APR 1912",
+   "short": "Washington Times, Monday",
+   "catalog": "LCCN sn84026749",
+   "row": "afloat"
+  },
+  {
+   "id": "news",
+   "kind": "negative",
+   "src": "raw/news.tif",
+   "horizon": 1970,
+   "label": "WHITE STAR OFFICE, N.Y.",
+   "short": "White Star office",
+   "catalog": "LC-B2- 2391-30",
+   "credit": "Bain News Service",
+   "row": "photo"
+  },
+  {
+   "id": "eworld15",
+   "kind": "paper",
+   "src": "raw/eworld15.jpg",
+   "label": "THE EVENING WORLD \u00b7 15 APR 1912",
+   "short": "The Evening World",
+   "catalog": "LCCN sn83030193",
+   "row": "sinking"
+  },
+  {
+   "id": "boats",
+   "kind": "negative",
+   "src": "raw/boats.tif",
+   "horizon": 0,
+   "water": true,
+   "levels": [
+    0.05,
+    0.92
+   ],
+   "label": "LIFEBOATS ON WAY TO CARPATHIA",
+   "short": "Lifeboats",
+   "catalog": "LC-B2- 2485-4",
+   "credit": "Bain News Service",
+   "row": "photo"
+  },
+  {
+   "id": "surv",
+   "kind": "negative",
+   "src": "raw/survivors.tif",
+   "horizon": 2300,
+   "label": "SURVIVORS ON CARPATHIA",
+   "short": "Survivors on Carpathia",
+   "catalog": "LC-B2- 2485-2",
+   "credit": "Bain News Service",
+   "row": "706 saved"
+  },
+  {
+   "id": "rostron",
+   "kind": "negative",
+   "src": "raw/rostron.tif",
+   "horizon": 3200,
+   "label": "CAPT. ROSTRON, CARPATHIA",
+   "short": "Capt. Rostron",
+   "catalog": "LC-B2- 2391-27",
+   "credit": "Bain News Service"
+  },
+  {
+   "id": "wtimes16",
+   "kind": "paper",
+   "src": "raw/wtimes16.jpg",
+   "label": "THE WASHINGTON TIMES \u00b7 16 APR 1912",
+   "short": "Washington Times, Tuesday",
+   "catalog": "LCCN sn84026749",
+   "row": "none saved"
+  },
+  {
+   "id": "tribune",
+   "kind": "paper",
+   "src": "raw/tribune.jpg",
+   "label": "NEW-YORK TRIBUNE \u00b7 16 APR 1912",
+   "short": "New-York Tribune",
+   "catalog": "LCCN sn83030214",
+   "row": "1,340"
+  },
+  {
+   "id": "medford",
+   "kind": "paper",
+   "src": "raw/medford.jpg",
+   "label": "MEDFORD MAIL TRIBUNE \u00b7 16 APR 1912",
+   "short": "Medford Mail Tribune",
+   "catalog": "LCCN sn97071090",
+   "row": "1,492"
+  },
+  {
+   "id": "pier",
+   "kind": "negative",
+   "src": "raw/pier.tif",
+   "horizon": 1500,
+   "label": "CROWD AWAITING SURVIVORS",
+   "short": "Crowd awaiting survivors",
+   "catalog": "LC-B2- 2391-15",
+   "credit": "Bain News Service",
+   "row": "18 Apr"
+  }
+ ],
+ "end": {
+  "sub": "The Titanic, April 1912",
+  "credits": [
+   "Library of Congress \u00b7 Chronicling America",
+   "Bain News Service negatives \u00b7 National Archives",
+   "Narration: VibeVoice \u00b7 Piano: Salamander Grand (CC BY 3.0)"
+  ]
+ },
+ "films": {
+  "long": {
+   "size": "1920x1080",
+   "shots": [
+    {
+     "type": "title",
+     "item": "union",
+     "title": "No Lives Lost",
+     "sub": "THE TITANIC \u00b7 WHAT THE PAPERS PRINTED \u00b7 APRIL 1912",
+     "chapterName": "The front page",
+     "say": "Everyone is safe. That is what families across America read in their newspapers on the evening of Monday, April fifteenth, nineteen twelve. By then, the Titanic had been at the bottom of the North Atlantic for hours."
+    },
+    {
+     "type": "read",
+     "item": "union",
+     "boxes": [
+      [
+       115,
+       345,
+       682,
+       452
+      ],
+      [
+       177,
+       478,
+       700,
+       585
+      ]
+     ],
+     "card": {
+      "label": "LIVES LOST, AS PRINTED",
+      "value": "0",
+      "note": "\"Titanic afloat, no lives lost\"",
+      "source": "The New Haven Union \u00b7 Monday evening, 15 April 1912"
+     },
+     "say": "In New Haven, Connecticut, the City Edition of the Union put it in the biggest type it had. Titanic afloat. No lives lost. Ships to rescue. Every one of those words was wrong."
+    },
+    {
+     "type": "read",
+     "item": "union",
+     "boxes": [
+      [
+       110,
+       788,
+       726,
+       841
+      ],
+      [
+       110,
+       858,
+       726,
+       925
+      ],
+      [
+       110,
+       925,
+       726,
+       995
+      ],
+      [
+       110,
+       995,
+       726,
+       1065
+      ]
+     ],
+     "say": "Underneath, the details. Big White Star liner, rammed by iceberg, now heading for Halifax, in tow of the Virginian. Passengers transferred. It reads like a near miss. A damaged ship, a rescue at sea, and a happy ending."
+    },
+    {
+     "type": "table",
+     "item": "starmirror",
+     "boxes": [
+      [
+       230,
+       490,
+       2474,
+       592
+      ]
+     ],
+     "card": {
+      "label": "AS PRINTED \u00b7 MOSCOW, IDAHO",
+      "value": "ALL ARE SAVED",
+      "source": "The Daily Star-Mirror \u00b7 15 April 1912"
+     },
+     "say": "More than two thousand miles to the west, in Moscow, Idaho, the Daily Star-Mirror went further. Biggest boat afloat wrecked. All are saved."
+    },
+    {
+     "type": "read",
+     "item": "wtimes15",
+     "boxes": [
+      [
+       110,
+       373,
+       2310,
+       470
+      ],
+      [
+       221,
+       470,
+       2614,
+       567
+      ]
+     ],
+     "say": "And in the nation's capital, the Washington Times printed a reason to believe it. Liner Titanic kept afloat by water-tight compartments, being towed into Halifax, Nova Scotia. Water-tight compartments were the feature everyone had read about. If they held, the ship would float."
+    },
+    {
+     "type": "table",
+     "item": "wtimes15",
+     "boxes": [
+      [
+       124,
+       580,
+       415,
+       604
+      ],
+      [
+       1908,
+       580,
+       2185,
+       604
+      ]
+     ],
+     "zoom": 1.6,
+     "say": "Around the headline, the Times ran portraits of famous passengers. Major Archibald Butt. Colonel Archibald Gracie. Mrs. John Jacob Astor. Above their faces, in the biggest type on the page, the word afloat. For one evening, readers had every reason to think these people were on their way to Halifax."
+    },
+    {
+     "type": "table",
+     "item": "union",
+     "zoom": 0.75,
+     "say": "Three newspapers. Three cities. The same good news. None of it was true. So how did so many front pages print a rescue that never happened? Who printed the truth first? And what does the record say about that night? To answer that, we have to read Monday's papers the way their readers did, one page at a time."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 1",
+     "title": "Monday's front pages",
+     "chapterName": "Monday's front pages",
+     "say": "Part one. Monday's front pages."
+    },
+    {
+     "type": "photo",
+     "item": "news",
+     "focus": [
+      2800,
+      2500
+     ],
+     "nf": 0.35,
+     "drift": [
+      -1,
+      -0.5
+     ],
+     "labels": [
+      {
+       "at": [
+        1770,
+        1428
+       ],
+       "text": "White Star Line office",
+       "sub": "New York \u00b7 April 1912"
+      }
+     ],
+     "say": "In New York, the news drew crowds to the offices of the White Star Line, the company that owned the Titanic. Look at the picture. A mounted policeman. A motor car at the curb. Men in overcoats and bowler hats, crowding the steps. They had come for one thing. Names. Who was aboard, and who was safe. This glass negative was made by the Bain News Service that April."
+    },
+    {
+     "type": "read",
+     "item": "eworld15",
+     "boxes": [
+      [
+       150,
+       131,
+       2004,
+       267
+      ],
+      [
+       286,
+       267,
+       2058,
+       387
+      ]
+     ],
+     "say": "Not every paper printed good news. The same Monday, New York's Evening World ran this across the top of its final edition. Liners take off passengers. Titanic is reported sinking."
+    },
+    {
+     "type": "read",
+     "item": "eworld15",
+     "boxes": [
+      [
+       1355,
+       714,
+       2617,
+       818
+      ],
+      [
+       1418,
+       818,
+       2617,
+       910
+      ]
+     ],
+     "say": "And on the same front page, just below the masthead: Disabled ship under tow, after hitting big iceberg. Sinking, and under tow, side by side. The editors were printing everything that reached them."
+    },
+    {
+     "type": "table",
+     "item": "tribune",
+     "boxes": [
+      [
+       1285,
+       950,
+       1452,
+       1050
+      ]
+     ],
+     "ring": [
+      1285,
+      950,
+      1452,
+      1050
+     ],
+     "zoom": 2.2,
+     "say": "How did the news reach them? By wireless. The next morning, the New-York Tribune printed a map of the North Atlantic. Here, at Cape Race in Newfoundland, is the wireless station that first received news of the accident. From the ships, to shore stations like this one, then by telegraph to newsrooms across the country, every message passed through many hands. And on Monday, the messages did not agree. Some said the passengers had been moved to other ships. Some said the Titanic was sinking. A paper on deadline had to choose."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 2",
+     "title": "The ship that was gone",
+     "chapterName": "The ship that was gone",
+     "say": "Part two. The ship that was gone."
+    },
+    {
+     "type": "photo",
+     "item": "boats",
+     "focus": [
+      2560,
+      2100
+     ],
+     "nf": 0.62,
+     "labels": [
+      {
+       "at": [
+        1645,
+        1950
+       ],
+       "text": "Lifeboat"
+      },
+      {
+       "at": [
+        3348,
+        2329
+       ],
+       "text": "Lifeboat",
+       "align": "right"
+      }
+     ],
+     "card": {
+      "label": "ICEBERG SIGHTED",
+      "value": "11:40 P.M.",
+      "note": "Sunday, 14 April. She sank less than three hours later.",
+      "source": "National Archives, Prologue (2012)"
+     },
+     "say": "Here is what had actually happened. On Sunday night, April fourteenth, the iceberg was sighted at eleven forty. Less than three hours later, the Titanic was gone. What was left on the water were her lifeboats. In this photograph, two of them, low in the water, row toward the ship that would take them in."
+    },
+    {
+     "type": "photo",
+     "item": "surv",
+     "focus": [
+      3000,
+      2500
+     ],
+     "nf": 0.55,
+     "labels": [
+      {
+       "at": [
+        3400,
+        2700
+       ],
+       "text": "Titanic survivors",
+       "sub": "on the deck of the Carpathia"
+      }
+     ],
+     "card": {
+      "label": "PICKED UP BY THE CARPATHIA",
+      "value": "706",
+      "note": "from the lifeboats, morning of 15 April",
+      "source": "National Archives, Prologue (2012)"
+     },
+     "say": "In the morning, the liner Carpathia reached them. She picked up seven hundred and six people from the lifeboats. These are survivors, on her deck."
+    },
+    {
+     "type": "photo",
+     "item": "rostron",
+     "focus": [
+      2400,
+      1900
+     ],
+     "nf": 0.5,
+     "zoom": 1.15,
+     "drift": [
+      0.6,
+      -0.3
+     ],
+     "labels": [
+      {
+       "at": [
+        2400,
+        1400
+       ],
+       "text": "Arthur Rostron",
+       "sub": "Captain, the Carpathia"
+      }
+     ],
+     "say": "This is the Carpathia's captain, Arthur Rostron. When his ship reached the scene, there was no Titanic left to tow to Halifax. And no other ship had her passengers. Every survivor of the Titanic was on board the Carpathia. But it would take time for the world to learn that. On Monday evening, while the Union's front page was being read in New Haven, the people this photograph shows were still at sea."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 3",
+     "title": "Tuesday's correction",
+     "chapterName": "Tuesday's correction",
+     "say": "Part three. Tuesday's correction."
+    },
+    {
+     "type": "read",
+     "item": "wtimes16",
+     "boxes": [
+      [
+       96,
+       395,
+       2427,
+       491
+      ],
+      [
+       178,
+       491,
+       2427,
+       587
+      ],
+      [
+       219,
+       587,
+       2605,
+       683
+      ]
+     ],
+     "say": "On Tuesday, the good news collapsed. The Washington Times, the same paper that had the Titanic under tow the night before, now printed this. Last hope of further rescue vanishes, with wireless message that the Virginian and Parisian saved none of Titanic's passengers."
+    },
+    {
+     "type": "read",
+     "item": "wtimes16",
+     "boxes": [
+      [
+       170,
+       808,
+       1850,
+       868
+      ]
+     ],
+     "say": "The Virginian was the ship that New Haven had said was towing the Titanic. Her captain had wired: We arrived too late to rescue anyone, and we are proceeding to Liverpool. And from the wireless station on Sable Island, about the Parisian: She has no Titanic's passengers on board."
+    },
+    {
+     "type": "table",
+     "item": "wtimes16",
+     "boxes": [
+      [
+       98,
+       936,
+       754,
+       1022
+      ],
+      [
+       147,
+       1034,
+       754,
+       1116
+      ],
+      [
+       206,
+       1120,
+       803,
+       1195
+      ]
+     ],
+     "zoom": 2.0,
+     "card": {
+      "label": "NO HOPE, AS PRINTED",
+      "value": "1,492",
+      "unit": "souls",
+      "source": "The Washington Times \u00b7 16 April 1912"
+     },
+     "say": "Further down the same page: Line officials give up hope for fourteen hundred and ninety-two souls on Titanic. On Monday the line's own officials had been talking about passengers transferred. By Tuesday evening, they had given up hope."
+    },
+    {
+     "type": "table",
+     "item": "tribune",
+     "boxes": [
+      [
+       45,
+       436,
+       2793,
+       559
+      ],
+      [
+       346,
+       559,
+       3094,
+       693
+      ]
+     ],
+     "ring": [
+      45,
+      436,
+      345,
+      559
+     ],
+     "card": {
+      "label": "DEAD, AS PRINTED \u00b7 NEW YORK",
+      "value": "1,340",
+      "source": "New-York Tribune \u00b7 16 April 1912"
+     },
+     "say": "In New York, the Tribune's front page read: Thirteen hundred and forty perish as Titanic sinks. Only eight hundred and eighty-six, mostly women and children, rescued. It was closer to the truth than Monday's papers. It was still wrong."
+    },
+    {
+     "type": "table",
+     "item": "tribune",
+     "boxes": [
+      [
+       40,
+       760,
+       480,
+       960
+      ],
+      [
+       45,
+       1016,
+       474,
+       1140
+      ]
+     ],
+     "zoom": 2.4,
+     "card": {
+      "label": "SAVED, AS THE LINE TOLD IT",
+      "value": "675",
+      "unit": "of 2,200",
+      "source": "New-York Tribune \u00b7 16 April 1912"
+     },
+     "say": "Next to it, a smaller story. Crowd besieges White Star office. Line officials, the paper said, could only tell the people outside that six hundred and seventy-five of twenty-two hundred were saved."
+    },
+    {
+     "type": "table",
+     "item": "medford",
+     "boxes": [
+      [
+       172,
+       486,
+       2672,
+       617
+      ]
+     ],
+     "ring": [
+      172,
+      486,
+      475,
+      617
+     ],
+     "card": {
+      "label": "DEAD, AS PRINTED \u00b7 OREGON",
+      "value": "1,492",
+      "source": "Medford Mail Tribune \u00b7 16 April 1912"
+     },
+     "say": "And across the country, in Oregon, the Medford Mail Tribune printed its own number. Fourteen ninety-two lives lost. Every paper had a different count, and the numbers kept moving for days. Zero on Monday evening. Thirteen hundred and forty on Tuesday morning. Fourteen ninety-two by Tuesday afternoon in Oregon."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 4",
+     "title": "The record",
+     "chapterName": "The record",
+     "say": "Part four. The record."
+    },
+    {
+     "type": "photo",
+     "item": "pier",
+     "focus": [
+      3200,
+      2500
+     ],
+     "nf": 0.4,
+     "say": "On Thursday, April eighteenth, the Carpathia landed her passengers in New York. This is the crowd that waited for her, in the dark, packed into the street between the buildings. For the families here, the count was no longer a headline. It was a list of names, read out one by one."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "THE NEW HAVEN UNION \u00b7 15 APRIL 1912",
+      "quote": "Titanic afloat, no lives lost",
+      "value": "0",
+      "unit": "lives lost"
+     },
+     "b": {
+      "label": "NATIONAL ARCHIVES \u00b7 THE RECORD",
+      "quote": "Of the 2,223 people aboard, 1,517 perished.",
+      "value": "1,517",
+      "unit": "died",
+      "source": "NARA, Prologue, Spring 2012"
+     },
+     "strike": "a",
+     "say": "No lives lost, the New Haven Union had printed. The National Archives count: of two thousand two hundred and twenty-three people aboard, fifteen hundred and seventeen died. Seven hundred and six lived."
+    },
+    {
+     "type": "table",
+     "item": "union",
+     "boxes": [
+      [
+       177,
+       478,
+       700,
+       585
+      ]
+     ],
+     "say": "The papers that Monday were not inventing a rescue. They printed what came over the wire, as fast as it came, and on Monday, what came was hope. By Tuesday, it was the truth. But for one evening, in New Haven, in Idaho, in Washington, a front page told families that everyone they loved had lived. If you had opened that paper on Monday evening, would you have believed it? Tell me in the comments."
+    },
+    {
+     "type": "end",
+     "say": "If you like stories told from the papers themselves, give this video a like, and subscribe to As Printed, for what the papers said, and what the archive says."
+    }
+   ]
+  },
+  "short": {
+   "size": "1080x1920",
+   "shots": [
+    {
+     "type": "read",
+     "item": "union",
+     "boxes": [
+      [
+       115,
+       345,
+       682,
+       452
+      ],
+      [
+       177,
+       478,
+       700,
+       585
+      ]
+     ],
+     "card": {
+      "label": "LIVES LOST, AS PRINTED",
+      "value": "0",
+      "source": "The New Haven Union \u00b7 15 April 1912"
+     },
+     "say": "Titanic afloat. No lives lost. That was a real front page, printed on the evening of April fifteenth, nineteen twelve."
+    },
+    {
+     "type": "table",
+     "item": "starmirror",
+     "boxes": [
+      [
+       230,
+       490,
+       2474,
+       592
+      ]
+     ],
+     "say": "So how did papers across America print a rescue that never happened? In Moscow, Idaho, the headline was: all are saved."
+    },
+    {
+     "type": "read",
+     "item": "wtimes15",
+     "boxes": [
+      [
+       110,
+       373,
+       2310,
+       470
+      ],
+      [
+       221,
+       470,
+       2614,
+       567
+      ]
+     ],
+     "say": "In Washington, the Times said water-tight compartments were keeping her afloat, and she was being towed into Halifax."
+    },
+    {
+     "type": "photo",
+     "item": "boats",
+     "focus": [
+      2560,
+      2100
+     ],
+     "nf": 0.62,
+     "card": {
+      "label": "PICKED UP",
+      "value": "706",
+      "source": "National Archives"
+     },
+     "say": "But the Titanic had sunk hours before, in the middle of the night. At dawn, the liner Carpathia picked up seven hundred and six people from the lifeboats. There was no one else."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "AS PRINTED",
+      "value": "0",
+      "unit": "lost"
+     },
+     "b": {
+      "label": "THE RECORD",
+      "value": "1,517",
+      "unit": "died",
+      "source": "National Archives"
+     },
+     "strike": "a",
+     "say": "Of two thousand two hundred and twenty-three people aboard, fifteen hundred and seventeen died. And that front page said: no lives lost."
+    }
+   ]
+  }
+ }
+}

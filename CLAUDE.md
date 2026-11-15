@@ -80,7 +80,8 @@ image generated in Figma is made with the **ChatGPT model inside Figma** (owner,
 `generate_image` tool with `model: "gpt-image-2.5-flare"`, always passed explicitly. Never use the Gemini models
 (`gemini-3.1-flash-image`, `gemini-3.1-flash-lite-image`), and don't generate the image outside Figma. Words go in as
 live Figma text with `use_figma`, not drawn by the model. The Figma account is on pay-as-you-go: on a rate or
-usage limit wait ~60 s and retry (max 3 times); if Figma still fails, say so with the exact error and stop.
+usage limit wait ~60 s and retry (max 3 times); if Figma still fails, thumbnails use the Spline fallback (next section);
+for anything else, say so with the exact error and stop.
 Generations cost Figma AI credits, so keep them to what the task needs (max 3 per thumbnail).
 
 ## YouTube + Facebook thumbnails: always made in Figma, map style
@@ -88,11 +89,11 @@ Generations cost Figma AI credits, so keep them to what the task needs (max 3 pe
 Every new YouTube video **and every Facebook Page video/Reel** gets a custom thumbnail, and it is **designed in
 Figma only** (Figma connector: `use_figma`, `get_screenshot`, `download_assets`). Don't use other design or
 image tools for thumbnails: no `make_thumbnails.py`/PIL rendering, Canva, Higgsfield, vidIQ thumbnail generator,
-AI image generators outside Figma, Spline etc. **Artwork comes from the ChatGPT model inside Figma** (owner, 2026-11-11):
+AI image generators outside Figma etc. (Spline only as the fallback below). **Artwork comes from the ChatGPT model inside Figma** (owner, 2026-11-11):
 Figma `generate_image` with model `gpt-image-2.5-flare` (never the Gemini models), with no text in the image and at
 most 3 generations per thumbnail; headings, tags and date tags are added as live Figma text with `use_figma`. The Figma account is on **pay-as-you-go** (owner, 2026-11-11), in chat and in
 every scheduled task: Figma usage/tool-call limits are never a reason to skip Figma; on a rate or usage limit wait
-~60 s and retry (max 3 times). If Figma is not connected or still fails, say so with the exact error and stop.
+~60 s and retry (max 3 times). If Figma is not connected or still fails, use the Spline fallback below.
 Read the master thumbnail rules in `docs/content/thumbnail-rules.md` first (three concepts, short headline that
 works with the title, 100-point score, A/B testing), then follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
 read the full script first (`social/scripts/<VIDEO_ID>.md`, or ask for it), pick one story angle, write three
@@ -111,6 +112,16 @@ named `<VIDEO_ID>` / `<VIDEO_ID>_9x16` / `fb_<FB_VIDEO_ID>`) in the same illustr
 - YouTube: set it with `yt.py thumbnail VIDEO_ID FILE` and log it in `social/youtube-schedule-log.md`.
   Facebook: set it through the Graph API (facebook-page-automation skill, "Thumbnail") and log it in
   `social/facebook-page-log.md`. Add the row (with the Figma frame link) to `social/thumbnails/README.md`, then commit and push.
+
+**Spline fallback (owner, 2026-11-15):** if Figma is not available (connector not connected, or it still fails after
+the retries with an auth, billing, permission or other error), make the thumbnail in **Spline** instead, in chat and
+in every scheduled task, instead of stopping. Use the Spline connector's 2D editor (Hana, `2d_*` tools): one frame per
+thumbnail in the Spline file "NorthStar Thumbnails" (As Printed: "As Printed Thumbnails"), same names, sizes, style and
+heading rules as above. Artwork from Spline's own image generation (`2d_generate_images`, no text in the image, max 3
+per thumbnail) or real archive/stock images you may use; if Spline has no AI credits, build it from shapes and real
+images. All words are live Spline text. Check it with `2d_review_frame`, export with `2d_export_html` and render the
+frame to JPG at the exact size with the preinstalled Playwright/Chromium. Say in the report and the log that it was made
+in Spline, with the exact Figma error. If Spline is not available either, say so with both errors and stop.
 
 ## YouTube analysis: use vidIQ
 
@@ -138,3 +149,29 @@ For 3D animations, 3D logo reveals, product turntables, animated 3D text or any 
 (`scripts/install_blender.sh`), builds scenes in Python with `scripts/bl_helpers.py`, and renders MP4
 (16:9 or 9:16), PNG stills or PNG sequences. Always check a still and a `--preview` render before the
 slow full-quality render.
+
+## As Printed (archive history channel): daily long video + Short
+
+Owner request 2026-11-15: one long video (8–12 min) and one Short (45–60 s) every day for the YouTube channel
+**As Printed** (`yt.py --channel asprinted`), in the Archive Light Table template (`videos/as-printed/engine/`).
+Follow `videos/as-printed/RUNBOOK.md`, together with the scriptwriting rules, the animation direction rules and
+the VibeVoice voiceover skill above (they apply to As Printed too).
+- **Approval first** (owner's choice): send the finished videos, titles, descriptions and publish times; upload only
+  after the owner approves. The general YouTube confirmation rule above stays in force.
+- Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
+- **Thumbnails for As Printed use the archive style** (`engine/thumb.html`), not the map style: the map-style rule
+  above applies to Which Life Next.
+
+
+## The Overthinking Pad (psychology channel): 4 long videos + 4 Shorts a week
+
+Owner request 2026-11-15: YouTube channel **The Overthinking Pad** (`yt.py --channel overthinkingpad`). Every
+**Monday, Tuesday, Thursday and Saturday**: one long video (10–12 min, 16:9) and one Short (45–60 s, 9:16) cut from it.
+Follow `videos/overthinking-pad/RUNBOOK.md`, together with the scriptwriting rules, the animation direction rules and
+the VibeVoice voiceover skill above. Learning database: `social/learning/overthinking-pad.md` (its own, never mixed).
+- **Approval first:** send the finished videos, thumbnails, titles, descriptions and publish times; upload only after
+  the owner approves.
+- Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
+- **Look: notebook doodle** (lemo-opuscar Sketchnote style). **Thumbnails use the notebook style** described in the
+  runbook, not the map style (the map style is for Which Life Next); everything else in the thumbnail rules applies.
+- Accuracy: real, cited studies only; flag disputed findings; education, not medical advice.

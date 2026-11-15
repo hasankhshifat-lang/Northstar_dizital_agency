@@ -1,0 +1,63 @@
+1
+00:00:00,500 --> 00:00:04,060
+Monday evening, April 15, 1912.
+
+2
+00:00:04,100 --> 00:00:05,930
+A New Haven paper tells its readers:
+
+3
+00:00:05,970 --> 00:00:10,017
+Titanic afloat. No lives lost.
+
+4
+00:00:10,900 --> 00:00:12,790
+In New York, crowds push into the
+
+5
+00:00:12,830 --> 00:00:16,657
+White Star Line's office, waiting for names.
+
+6
+00:00:16,700 --> 00:00:19,250
+But the ship had sunk before dawn,
+
+7
+00:00:19,290 --> 00:00:21,760
+hours before that paper was printed.
+
+8
+00:00:21,800 --> 00:00:23,850
+Tuesday morning, the New-York Tribune:
+
+9
+00:00:23,890 --> 00:00:26,760
+1,340 dead.
+
+10
+00:00:26,800 --> 00:00:30,322
+In Oregon, the count is 1,492.
+
+11
+00:00:34,500 --> 00:00:37,450
+The Carpathia picked up 706 people
+
+12
+00:00:37,490 --> 00:00:39,384
+from the lifeboats.
+
+13
+00:00:39,500 --> 00:00:41,554
+Everyone else was gone.
+
+14
+00:00:42,600 --> 00:00:45,259
+No lives lost, the paper said.
+
+15
+00:00:46,000 --> 00:00:48,050
+The National Archives count:
+
+16
+00:00:48,090 --> 00:00:50,889
+1,517 died.

@@ -13,7 +13,20 @@ Do **not** use Clawlink or Metricool for YouTube, in chat or in scheduled tasks.
 - Google Cloud project `168994544641`, OAuth client from the environment:
   `YT_CLIENT_ID`, `YT_CLIENT_SECRET`, `YT_REFRESH_TOKEN`. `yt.py` turns the refresh token into
   an access token on each run. Never print, log or commit these values.
-- Channel: **Which Life Next** (`@whichlifenext`), ID `UCPTrW0n3ONI9uU4WetWwFCQ`.
+- Channels (one refresh token each; pick with `--channel NAME` **before** the command, default `whichlifenext`):
+  - **Which Life Next** (`@whichlifenext`), ID `UCPTrW0n3ONI9uU4WetWwFCQ` — `--channel whichlifenext`, token `YT_REFRESH_TOKEN`.
+  - **As Printed** (`@asprinted`, archive history, created 2026-11-14), ID `UC4w5k2HS3wH-oiPaoYwrDaQ` —
+    `--channel asprinted`, token `YT_REFRESH_TOKEN_ASPRINTED` (verified 2026-11-15).
+  - **The Overthinking Pad** (`@overthinkingpad`), ID `UCujai-eJcIEOCp7hsPmSPKA` — `--channel overthinkingpad`,
+    token `YT_REFRESH_TOKEN_PSYCHOLOGY` (verified 2026-11-15).
+  - **Foot All FC** (`@footallfc`, animated football stories, created 2026-11-15), ID `UC1qGYw3aAOeADXrOu1X4HrQ` —
+    `--channel footallfc`, token `YT_REFRESH_TOKEN_FOOTALLFC` (verified 2026-11-15). Daily scheduled task "Foot All FC daily Shorts".
+  - Connecting a new channel: the owner runs `get_refresh_token.py` on their own computer, picks the channel on
+    Google's screen, and pastes the printed token into the environment's settings as a new `YT_REFRESH_TOKEN_<NAME>`
+    (never into chat or the repo). A new session picks it up; add it to `CHANNELS` in `yt.py` with its channel ID
+    and check with `yt.py --channel NAME whoami`.
+  - Every run checks the token belongs to the named channel and stops otherwise.
+  - Always say which channel a command is for. Log As Printed actions in the same log files with the channel name.
 - Granted scopes: `youtube.force-ssl` (manage videos, comments, playlists, captions, channel),
   `youtube.upload`, `youtube.readonly`.
 - YouTube Analytics API: **enabled** (2026-11-08) and working; the refresh token also has
@@ -21,12 +34,6 @@ Do **not** use Clawlink or Metricool for YouTube, in chat or in scheduled tasks.
 - Quota: the project's own 10,000 units/day (an upload is ~100 units, a comment reply 50,
   a list call 1). If the quota is exhausted, say so and stop; do not fall back to Clawlink/Metricool.
 - Check the connection first if anything looks off: `python3 yt.py whoami`.
-- **Other channels** (same OAuth client, one refresh token each): pick with `--channel` before the command,
-  e.g. `yt.py --channel footallfc upload ...`. Every run first checks that the token belongs to that channel and
-  stops if not. `whichlifenext` (default, `YT_REFRESH_TOKEN`), `footallfc` (Foot All FC, @FootAllFC,
-  `UC1qGYw3aAOeADXrOu1X4HrQ`, `YT_REFRESH_TOKEN_FOOTALLFC`), `psychology` (The Overthinking Pad,
-  `YT_REFRESH_TOKEN_PSYCHOLOGY`), `asprinted` (As Printed, `YT_REFRESH_TOKEN_ASPRINTED`). A token added in the
-  environment settings is only visible to sessions started after it was saved.
 
 Run from the repo root: `python3 .claude/skills/youtube-channel-automation/yt.py <command>`.
 

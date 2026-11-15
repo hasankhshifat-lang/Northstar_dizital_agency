@@ -64,8 +64,21 @@ per thumbnail. Then add the heading, label tags and date tag as live text with `
 **Figma pay-as-you-go (owner, 2026-11-11):** the owner's Figma account is on pay-as-you-go billing, so Figma
 usage, credit or tool-call limits are no longer a reason to skip Figma. If a call hits a rate or usage limit,
 wait about 60 s and retry it (at most 3 times). If the Figma connector is not connected, still fails after that,
-returns an auth/billing error, or the seat can't edit the file, say so (with the exact error) and stop:
-don't fall back to another tool.
+returns an auth/billing error, or the seat can't edit the file, use the **Spline fallback** below (and give the
+exact Figma error in the report). Don't use any other tool.
+
+**Spline fallback (owner, 2026-11-15):** when Figma is not available, build the same thumbnail in Spline:
+1. `spline_open_file` the Spline file "NorthStar Thumbnails" (create it with `spline_create_file` if missing; for As
+   Printed use "As Printed Thumbnails"). Load the Hana skills first: `2d_load_skill` "authoring-guide" and
+   "authoring-guide-2".
+2. `2d_reserve_frames` one frame per thumbnail (1280×720 or 1080×1920, same names as the Figma frames), then build it
+   with `2d_write_html`: same map style, heading (Anton, white + gold), label tags and date tag, all as live text.
+3. Artwork: `2d_generate_images` (no text, letters or numbers in the image; max 3 per thumbnail) or real
+   archive/stock images you are allowed to use. If Spline has no AI credits, build it from shapes and real images.
+4. Check with `2d_review_frame`, fix anything off, export with `2d_export_html` and render the frame to JPG at the
+   exact size with the preinstalled Playwright/Chromium (deviceScaleFactor 1), under 2 MB, into `social/thumbnails/`.
+5. In `social/thumbnails/README.md`, the log and the report, write "made in Spline" plus the Spline file/frame and
+   the exact Figma error. If Spline is not available either, report both errors and stop.
 - **Report:** when delivering, show the story beats with their share of the script and thumbnail direction, the
   three heading options, which one won and why (one line), and the image.
 
