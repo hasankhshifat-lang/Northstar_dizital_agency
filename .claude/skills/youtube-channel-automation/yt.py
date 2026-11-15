@@ -28,7 +28,7 @@ API = "https://www.googleapis.com/youtube/v3"
 CHANNELS = {   # name -> (refresh-token variable, channel ID; None until the first connection is verified)
     "whichlifenext": ("YT_REFRESH_TOKEN", "UCPTrW0n3ONI9uU4WetWwFCQ"),
     "asprinted": ("YT_REFRESH_TOKEN_ASPRINTED", None),
-    "psychology": ("YT_REFRESH_TOKEN_PSYCHOLOGY", None),   # new psychology channel (2026-11-15); name and ID set once connected
+    "psychology": ("YT_REFRESH_TOKEN_PSYCHOLOGY", None),   # The Overthinking Pad (psychology, 2026-11-15); ID set once connected
 }
 CHANNEL = "whichlifenext"
 CHANNEL_ID = CHANNELS[CHANNEL][1]
