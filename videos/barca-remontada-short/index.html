@@ -674,7 +674,7 @@ window.render = (t) => {
   needSlip(t, texts);
   caption(t, texts);
   // a printed footer line low on the page (under the platform's buttons on a phone)
-  inkText('THE GREATEST COMEBACKS · No. 1', W / 2, 1600, 30); X.fillStyle = C.ink; X.fillRect(W / 2 - 220, 1630, 440, 2);
+  inkText('FOOT ALL FC', W / 2, 1585, 46); X.fillStyle = C.ink; X.fillRect(W / 2 - 200, 1616, 400, 2); inkText('The Greatest Comebacks · Part One', W / 2, 1650, 28);
   // paper grain over the page
   X.globalCompositeOperation = 'multiply'; X.globalAlpha = .55; X.drawImage(TEX, PG.x, PG.y, PG.w, PG.h, PG.x, PG.y, PG.w, PG.h); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
   // texts to screen space

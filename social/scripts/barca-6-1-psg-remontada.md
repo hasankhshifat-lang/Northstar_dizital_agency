@@ -1,6 +1,6 @@
 # Barcelona 6–1 PSG: "La Remontada" (working title)
 
-New animated football stories channel. Opuscar style: Comic History Cartoon (`comic-history`).
+New animated football stories channel: **Foot All FC** (learning database `social/learning/foot-all-fc.md`). Opuscar style: Comic History Cartoon (`comic-history`).
 No match footage, club crests or league logos: everything is drawn, with club colours only.
 Status: **Short produced (2026-11-15): `videos/barca-remontada-short/barca-remontada-short.mp4` (48.5 s, 9:16). Long-form not started. Not uploaded.**
 
