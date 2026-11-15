@@ -20,6 +20,10 @@ Do **not** use Clawlink or Metricool for YouTube, in chat or in scheduled tasks.
     screen, and pastes the printed token into the environment's settings as `YT_REFRESH_TOKEN_ASPRINTED`
     (never into chat or the repo). A new session picks it up; check with `yt.py --channel asprinted whoami`,
     then put its channel ID into `CHANNELS` in `yt.py`.
+  - **Psychology channel** (new, 2026-11-15; Shorts in the Lemo-Opuscar Marker on Paper style) — `--channel psychology`,
+    token `YT_REFRESH_TOKEN_PSYCHOLOGY`. Connect the same way as As Printed: the owner creates the channel on YouTube,
+    runs `get_refresh_token.py` on their own computer, picks that channel on Google's screen, and saves the token in the
+    environment's settings as `YT_REFRESH_TOKEN_PSYCHOLOGY`. Then `yt.py --channel psychology whoami` and put the ID in `CHANNELS`.
   - Every run checks the token belongs to the named channel and stops otherwise.
   - Always say which channel a command is for. Log As Printed actions in the same log files with the channel name.
 - Granted scopes: `youtube.force-ssl` (manage videos, comments, playlists, captions, channel),

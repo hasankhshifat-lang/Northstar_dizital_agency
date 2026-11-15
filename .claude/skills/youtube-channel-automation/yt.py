@@ -4,6 +4,7 @@
 Credentials come from the environment: YT_CLIENT_ID, YT_CLIENT_SECRET, plus one refresh token per channel:
   --channel whichlifenext (default)  YT_REFRESH_TOKEN
   --channel asprinted                YT_REFRESH_TOKEN_ASPRINTED
+  --channel psychology               YT_REFRESH_TOKEN_PSYCHOLOGY
 Never print them. Standard library only; HTTPS goes through the session proxy automatically.
 Every run checks that the token belongs to the channel named, so a command never lands on the wrong channel.
 
@@ -27,6 +28,7 @@ API = "https://www.googleapis.com/youtube/v3"
 CHANNELS = {   # name -> (refresh-token variable, channel ID; None until the first connection is verified)
     "whichlifenext": ("YT_REFRESH_TOKEN", "UCPTrW0n3ONI9uU4WetWwFCQ"),
     "asprinted": ("YT_REFRESH_TOKEN_ASPRINTED", None),
+    "psychology": ("YT_REFRESH_TOKEN_PSYCHOLOGY", None),   # new psychology channel (2026-11-15); name and ID set once connected
 }
 CHANNEL = "whichlifenext"
 CHANNEL_ID = CHANNELS[CHANNEL][1]
