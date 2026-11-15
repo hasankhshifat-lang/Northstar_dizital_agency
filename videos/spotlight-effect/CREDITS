@@ -1,0 +1,12 @@
+Spotlight Effect — three 11-second Shorts (Marker on Paper, Whiteboard Explainer, Stick-figure Explainer)
+Made by NorthStar Dizital Agency. Directed and built in code with the Lemo-Opuscar film-style library.
+
+Narration   VibeVoice-Realtime-0.5B (Microsoft, MIT licence), voice "Frank". Narration voiced with AI.
+Fonts       Kalam (Indian Type Foundry) — SIL Open Font License 1.1 — fonts/OFL-Kalam.txt
+            Architects Daughter (Kimberly Geswein) — SIL Open Font License 1.1 — fonts/OFL-ArchitectsDaughter.txt
+            Jost (indestructible type*) — SIL Open Font License 1.1 — fonts/OFL-Jost.txt
+            EMS Tech single-line font data (whiteboard/fonts/EMSTech.json), from the Whiteboard Explainer style demo — SIL OFL 1.1
+Engines     marker/pen.js, whiteboard/engine/wb.js, stick/rig.js: adapted from the Lemo-Opuscar style demos
+            (github.com/lemomo-ai/lemo-opuscar; see that repository's LICENSE and REUSE.toml)
+Sound       all foley and music synthesised in code (mix.py, core/audio/sfx.py); no samples
+Facts       FACTS.md

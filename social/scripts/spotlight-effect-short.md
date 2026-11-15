@@ -116,3 +116,23 @@ the accent has one meaning only · verdict frame held ≥ 2.5 s · subtitle line
 - [n/a] CTA: there is no room for one at 10 s; the payoff line works as a loop back into the hook.
 - [ ] Still to do before production: a scene inspection (animation-direction-rules §7.3) of a still and a preview
       for each style, the VibeVoice take check, and a learning database for the new channel.
+
+---
+
+## Production notes (2026-11-15): films made, `videos/spotlight-effect/`
+
+- **Length 11.2 s**, not 10 s. The voice runs 10.2 s after its pauses were tightened, and the answer stays on screen
+  1.5 s after "four" (marker style rule; stick verdict frame ≥ 2 s).
+- **Fact check:** secondary sources agree that wearers guessed ≈46–50 % and ≈23 % noticed, so "half" and "about 1 in 4"
+  are kept. On-screen numbers are rounded and the 12 people are an illustration (FACTS.md).
+- **A (marker):** the student doesn't walk across the sheet (ink can't move). A dashed arrow through the door shows
+  the path, then the student is drawn inside the room. The fractions are written "1/2" and "1/4" (the handwriting
+  set has no ½ glyph).
+- **B (whiteboard):** at the payoff, the three people who noticed **turn toward the student** (the magnet's head icon
+  and wedge rotate). The other nine keep facing the front. This matches the stick version and keeps one meaning per move.
+  The beat-4 move is a quick snap push onto the grid, not a whip to another region.
+- **C (stick):** the room grows around the student during the pull-back instead of the student walking in. The
+  push-in in beat 3 is gentle (×1.13), so the rows stay readable. The panel says "THEY GUESSED · half". The accent
+  is used only for the three who noticed (the shirt has no accent mark).
+- Scene inspection (§7.3) done on stills and contact sheets. Remaining minor issue: during the marker lean-in on the
+  guess (6.3–7.3 s), the subtitle slip briefly covers the student's legs.
