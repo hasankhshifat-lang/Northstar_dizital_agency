@@ -27,3 +27,7 @@ Page ID 1497857623404891. Graph API v21.0. The page token comes from GET /149785
 | 2026-11-15 | Comment check (last 21 days: 4 Reels + 4 posts) | – | – | – | 0 comments, 0 replies, 0 skips |
 | 2026-11-15 | Insights check | – | – | – | Short 4: 107 plays, avg 4.3 s, 64% at 5 s, 23% at 8 s; Short 1 127 plays avg 8.4 s; Short 2 192 plays avg 3.4 s; Short 3 11 plays avg 8.4 s; page followers 1 |
 | 2026-11-15 | Short 7 made, sent for approval (not uploaded) | শরবত কে তোলে? মুখ না বাতাস? 🥤 (Short 7) | – | planned 2026-11-16 14:00 (20:00 Dhaka) | awaiting owner approval; new 3D set (bazaar sharbat stall); cover artwork generated in Figma (gpt-image-2.5-flare, 1 generation), text layout outside Figma: Figma Collab-seat tool-call limit on use_figma, 3 retries |
+| 2026-11-15 | Status check: scheduled but not logged by its run | শরবত কে তোলে? মুখ না বাতাস? 🥤 (Short 7) | 4882699202057540 | 2026-11-16 14:00 (20:00 Dhaka) | Uploaded 02:13 UTC; publish_status scheduled; preferred cover set; /reel/4882699202057540/ |
+| 2026-11-15 | Status check | চিরুনিতে কি চুম্বক আছে? ⚡ (Short 6) | 1143508351493782 | 2026-11-15 14:00 (20:00 Dhaka) | Still scheduled as planned (checked 12:10 UTC) |
+| 2026-11-15 | Comment check, second run (last 21 days: 4 Reels + 4 posts, 2 scheduled) | – | – | – | 0 comments, 0 replies, 0 skips |
+| 2026-11-15 | Insights check, second run | – | – | – | Short 4 116 plays avg 4.1 s (58% at 5 s, 21% at 8 s); Short 2 192 / 3.4 s; Short 1 127 / 8.4 s; Short 3 11 / 8.4 s; followers 1. No new Short made: today's (Short 7) already made and scheduled |

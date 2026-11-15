@@ -12,5 +12,5 @@ One Short a day at 20:00 Asia/Dhaka (Bangladesh prime time, 14:00 UTC). The dail
 | 4 | Short 4 megher-gorjon (`shorts/short-04-megher-gorjon.md`, `episodes/short-04/`) | posted 2026-11-14 1152017963974579 (approved 2026-11-13, scheduled 14:00 UTC / 20:00 Dhaka) | – |
 | 5 | Short 5 pukur-gobhir (`shorts/short-05-pukur-gobhir.md`, `episodes/short-05/`) | dropped by the owner 2026-11-14 (not posted; files kept in `episodes/short-05/`) | – |
 | 6 | Short 6 chiruni-chumbok (`shorts/short-06-chiruni-chumbok.md`, `episodes/short-06/`) | posted 2026-11-15 1143508351493782 (approved 2026-11-14, scheduled 14:00 UTC / 20:00 Dhaka; 3D rooftop) | – |
-| 7 | Short 7 straw-bayuchap: শরবত কে তোলে? (`shorts/short-07-straw-bayuchap.md`, `episodes/short-07/`; NCTB 9–10 physics ch.5 বায়ুচাপ; 3D bazaar sharbat stall) | awaiting approval (made 2026-11-15, planned 2026-11-16 14:00 UTC / 20:00 Dhaka) | – |
+| 7 | Short 7 straw-bayuchap: শরবত কে তোলে? (`shorts/short-07-straw-bayuchap.md`, `episodes/short-07/`; NCTB 9–10 physics ch.5 বায়ুচাপ; 3D bazaar sharbat stall) | scheduled 4882699202057540 for 2026-11-16 14:00 UTC / 20:00 Dhaka (found already scheduled on FB at 12:10 UTC 2026-11-15, cover set; the run that uploaded it never logged it here) | – |
 | 8 | Short 8 ayna-ulto: আয়নায় ডান-বাম উল্টো কেন? (NCTB 9–10 physics ch.8 আলোর প্রতিফলন) | idea | – |
