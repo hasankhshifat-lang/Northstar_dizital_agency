@@ -21,6 +21,12 @@ Do **not** use Clawlink or Metricool for YouTube, in chat or in scheduled tasks.
 - Quota: the project's own 10,000 units/day (an upload is ~100 units, a comment reply 50,
   a list call 1). If the quota is exhausted, say so and stop; do not fall back to Clawlink/Metricool.
 - Check the connection first if anything looks off: `python3 yt.py whoami`.
+- **Other channels** (same OAuth client, one refresh token each): pick with `--channel` before the command,
+  e.g. `yt.py --channel footallfc upload ...`. Every run first checks that the token belongs to that channel and
+  stops if not. `whichlifenext` (default, `YT_REFRESH_TOKEN`), `footallfc` (Foot All FC, @FootAllFC,
+  `UC1qGYw3aAOeADXrOu1X4HrQ`, `YT_REFRESH_TOKEN_FOOTALLFC`), `psychology` (The Overthinking Pad,
+  `YT_REFRESH_TOKEN_PSYCHOLOGY`), `asprinted` (As Printed, `YT_REFRESH_TOKEN_ASPRINTED`). A token added in the
+  environment settings is only visible to sessions started after it was saved.
 
 Run from the repo root: `python3 .claude/skills/youtube-channel-automation/yt.py <command>`.
 

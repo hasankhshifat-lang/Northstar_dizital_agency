@@ -4,6 +4,13 @@
 Credentials come from the environment: YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN.
 Never print them. Standard library only; HTTPS goes through the session proxy automatically.
 
+Channels: --channel picks the token and checks it belongs to the expected channel before anything runs
+(default whichlifenext). Put it before the command: yt.py --channel footallfc upload ...
+  whichlifenext  YT_REFRESH_TOKEN             UCPTrW0n3ONI9uU4WetWwFCQ  Which Life Next
+  footallfc      YT_REFRESH_TOKEN_FOOTALLFC   UC1qGYw3aAOeADXrOu1X4HrQ  Foot All FC
+  psychology     YT_REFRESH_TOKEN_PSYCHOLOGY  UCujai-eJcIEOCp7hsPmSPKA  The Overthinking Pad
+  asprinted      YT_REFRESH_TOKEN_ASPRINTED   UC4w5k2HS3wH-oiPaoYwrDaQ  As Printed
+
 Usage (all output is JSON):
   yt.py whoami
   yt.py videos [--max 25]                       # latest uploads with status / publishAt / stats
@@ -21,7 +28,13 @@ Usage (all output is JSON):
 import argparse, json, mimetypes, os, sys, urllib.error, urllib.parse, urllib.request
 
 API = "https://www.googleapis.com/youtube/v3"
-CHANNEL_ID = "UCPTrW0n3ONI9uU4WetWwFCQ"
+CHANNELS = {
+    "whichlifenext": ("YT_REFRESH_TOKEN", "UCPTrW0n3ONI9uU4WetWwFCQ"),
+    "footallfc": ("YT_REFRESH_TOKEN_FOOTALLFC", "UC1qGYw3aAOeADXrOu1X4HrQ"),
+    "psychology": ("YT_REFRESH_TOKEN_PSYCHOLOGY", "UCujai-eJcIEOCp7hsPmSPKA"),
+    "asprinted": ("YT_REFRESH_TOKEN_ASPRINTED", "UC4w5k2HS3wH-oiPaoYwrDaQ"),
+}
+TOKEN_VAR, CHANNEL_ID = CHANNELS["whichlifenext"]
 _token = None
 
 
@@ -29,12 +42,12 @@ def token():
     global _token
     if _token:
         return _token
-    missing = [k for k in ("YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN") if not os.environ.get(k)]
+    missing = [k for k in ("YT_CLIENT_ID", "YT_CLIENT_SECRET", TOKEN_VAR) if not os.environ.get(k)]
     if missing:
         sys.exit(f"Missing environment variables: {', '.join(missing)}")
     body = urllib.parse.urlencode({
         "client_id": os.environ["YT_CLIENT_ID"], "client_secret": os.environ["YT_CLIENT_SECRET"],
-        "refresh_token": os.environ["YT_REFRESH_TOKEN"], "grant_type": "refresh_token"}).encode()
+        "refresh_token": os.environ[TOKEN_VAR], "grant_type": "refresh_token"}).encode()
     _token = _call("POST", "https://oauth2.googleapis.com/token", data=body,
                    headers={"Content-Type": "application/x-www-form-urlencoded"}, auth=False)["access_token"]
     return _token
@@ -196,6 +209,7 @@ def cmd_analytics(a):
 
 def main():
     p = argparse.ArgumentParser()
+    p.add_argument("--channel", choices=sorted(CHANNELS), default="whichlifenext")
     sp = p.add_subparsers(dest="cmd", required=True)
     sp.add_parser("whoami").set_defaults(f=cmd_whoami)
     s = sp.add_parser("videos"); s.add_argument("--max", type=int, default=25); s.set_defaults(f=cmd_videos)
@@ -219,6 +233,12 @@ def main():
     s.add_argument("--metrics", default="views,estimatedMinutesWatched,likes,subscribersGained")
     s.add_argument("--dimensions"); s.set_defaults(f=cmd_analytics)
     a = p.parse_args()
+    global TOKEN_VAR, CHANNEL_ID
+    TOKEN_VAR, CHANNEL_ID = CHANNELS[a.channel]
+    # safety: the token must belong to the channel we think we are working on
+    mine = [c["id"] for c in _call("GET", f"{API}/channels", params={"part": "id", "mine": "true"}).get("items", [])]
+    if CHANNEL_ID not in mine:
+        sys.exit(f"Token {TOKEN_VAR} is for channel {mine}, not {a.channel} ({CHANNEL_ID}); stopping.")
     if a.cmd == "upload" and a.title is None:
         sys.exit("--title is required for upload")
     a.f(a)
