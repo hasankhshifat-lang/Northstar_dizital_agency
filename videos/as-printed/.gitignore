@@ -1,0 +1,8 @@
+raw/
+out/
+*/raw/
+*/out/
+*/out_*.log
+*/assets/tex/
+*/voice/*/out/*.wav
+*/fonts/

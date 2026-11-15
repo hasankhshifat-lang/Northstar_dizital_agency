@@ -138,3 +138,16 @@ For 3D animations, 3D logo reveals, product turntables, animated 3D text or any 
 (`scripts/install_blender.sh`), builds scenes in Python with `scripts/bl_helpers.py`, and renders MP4
 (16:9 or 9:16), PNG stills or PNG sequences. Always check a still and a `--preview` render before the
 slow full-quality render.
+
+## As Printed (archive history channel): daily long video + Short
+
+Owner request 2026-11-15: one long video (8–12 min) and one Short (45–60 s) every day for the YouTube channel
+**As Printed** (`yt.py --channel asprinted`), in the Archive Light Table template (`videos/as-printed/engine/`).
+Follow `videos/as-printed/RUNBOOK.md`, together with the scriptwriting rules, the animation direction rules and
+the VibeVoice voiceover skill above (they apply to As Printed too).
+- **Approval first** (owner's choice): send the finished videos, titles, descriptions and publish times; upload only
+  after the owner approves. The general YouTube confirmation rule above stays in force.
+- Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
+- **Thumbnails for As Printed use the archive style** (`engine/thumb.html`), not the map style: the map-style rule
+  above applies to Which Life Next.
+
