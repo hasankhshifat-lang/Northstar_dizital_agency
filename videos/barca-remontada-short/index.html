@@ -206,8 +206,8 @@ function puppet(o) {
     X.save(); X.translate(Tr.c[0] + Tr.w * .17, Tr.c[1] - Tr.h * .12);
     if ((o.face || 1) < 0) X.scale(-1, 1);
     X.shadowColor = 'transparent';
-    X.fillStyle = C.paper; X.fillRect(-46, -40, 92, 80); X.strokeStyle = C.ink; X.lineWidth = 3; X.strokeRect(-46, -40, 92, 80);
-    X.font = `bold 64px ${F.num}`; X.fillStyle = C.ink; X.textAlign = 'center'; X.textBaseline = 'middle'; X.fillText(o.num, 0, 4);
+    X.fillStyle = C.paper; X.fillRect(-80, -68, 160, 136); X.strokeStyle = C.ink; X.lineWidth = 5; X.strokeRect(-80, -68, 160, 136);
+    X.font = `bold 118px ${F.num}`; X.fillStyle = C.ink; X.textAlign = 'center'; X.textBaseline = 'middle'; X.fillText(o.num, 0, 4);
     X.restore();
   }
   // arms
@@ -416,8 +416,7 @@ function sceneB(t, texts) {   // 3.4 - 11.6  why it's impossible; PSG's away goa
   if (t < T.awayKick) ball(660, 676);
   else { const k = clamp((t - T.awayKick) / (T.awayNet - T.awayKick), 0, 1); dashedArc(path, k); const [bx, by] = bez(path, k); ball(bx, by, 16, k * 8); }
   tag('8 MAR 2017', texts, 3.55, t);
-  const s1 = slip(t, T.noTeam, 40, 128, 520, 128, 'NO TEAM HAD EVER COME\nBACK FROM 4–0', 40); if (s1) texts.push({ id: 'noteam', ...off(s1) });
-  const s2 = slip(t, T.need3, PW - 330, 128, 290, 110, 'NEED 3', 64, { font: F.shout }); if (s2) texts.push({ id: 'need', ...off(s2) });
+  const s1 = slip(t, T.noTeam, 34, 128, 600, 128, 'NO TEAM HAD EVER COME\nBACK FROM 4–0', 36); if (s1) texts.push({ id: 'noteam', ...off(s1) });
 }
 
 function sceneC(t, texts) {   // 11.6 - 15.6  88': Neymar's free kick
@@ -434,8 +433,6 @@ function sceneC(t, texts) {   // 11.6 - 15.6  88': Neymar's free kick
   if (t < T.fkKick) ball(250, 680);
   else { const k = clamp((t - T.fkKick) / (T.fkNet - T.fkKick), 0, 1); dashedArc(path, k); const [bx, by] = bez(path, k); ball(bx, by, 16, k * 10); }
   tag("88′", texts, T.sC + .1, t);
-  const s = slip(t, T.need2, PW - 330, 128, 290, 110, 'NEED 2', 64, { font: F.shout }); if (s) texts.push({ id: 'need', ...off(s) });
-  if (t < T.need2 - .3) { const s0 = slip(t, -1, PW - 330, 128, 290, 110, 'NEED 3', 64, { font: F.shout }); if (s0) texts.push({ id: 'need3c', ...off(s0), pass: true }); }
 }
 
 function sceneD(t, texts) {   // 15.6 - 24.6  90+1': the penalty (two small panels, a lateral slide between them)
@@ -464,10 +461,9 @@ function sceneD(t, texts) {   // 15.6 - 24.6  90+1': the penalty (two small pane
   X.restore();
   X.restore();
   tag('90+1′', texts, T.sD + .1, t);
-  const sd = slip(t, T.debated, PW - 360, 128, 320, 96, 'STILL DEBATED', 42); if (sd && slide < .5) texts.push({ id: 'debated', ...off(sd) });
+  { const sd = slip(t, T.debated, 34, 128, 380, 96, 'STILL DEBATED', 38); if (sd) texts.push({ id: 'debated', ...off(sd) }); }
   if (slide > .5) {
-    const s = slip(t, T.need1, PW - 330, 128, 290, 110, 'NEED 1', 64, { font: F.shout }); if (s) texts.push({ id: 'need', ...off(s) });
-    const s2 = slip(t, T.through, 40, 250, 600, 128, 'PSG STILL THROUGH\nON AWAY GOALS', 42); if (s2) texts.push({ id: 'through', ...off(s2) });
+    const s2 = slip(t, T.through, 430, 122, 520, 128, 'PSG STILL THROUGH\nON AWAY GOALS', 40); if (s2) texts.push({ id: 'through', ...off(s2) });
   }
 }
 
@@ -527,20 +523,19 @@ function sceneF(t, texts) {   // 31.75 - 33.3  the freeze: Sergi Roberto's toe a
     X.strokeStyle = '#FBF6EA'; X.lineWidth = 18; X.strokeRect(9, 9, PW - 18, PH - 18);
   } else ball(PW - 120, 470, 26, 2);
   tag('90+5′', texts, -1, t);
-  const s = slip(t, T.sF + .05, PW - 330, 128, 290, 110, 'NEED 1', 64, { font: F.shout }); if (s) texts.push({ id: 'need', ...off(s), pass: true });
 }
 
 function sceneG(t, texts) {   // 33.3 - 41  the explosion, the pile-on, the seismograph
   stage(t, 1);
   // PSG: the keeper flat on the grass, a defender in despair
-  puppet({ sh: 'gk', x: PW - 200, y: 640, s: .22, face: -1, rot: 88, pose: POSES.dive, head: 'expr3' });
-  puppet({ sh: 'psg', x: PW - 330, y: 486, s: .24, face: -1, pose: POSES.despair, head: 'expr3', num: '7', ground: GROUND });
+  puppet({ sh: 'gk', x: PW - 150, y: 650, s: .2, face: -1, rot: 88, pose: POSES.dive, head: 'expr3' });
+  puppet({ sh: 'psg', x: PW - 300, y: 486, s: .24, face: -1, pose: POSES.despair, head: 'expr3', num: '7', ground: GROUND });
   // Barcelona: three puppets hopping round #20
   const hop = (i, x, num, ph) => {
     const k = ((t - T.sG) * 2.4 + ph) % 1; const up = Math.sin(k * Math.PI) * 70;
     puppet({ sh: 'bar', x, y: 470 - up, s: .25, face: i % 2 ? -1 : 1, pose: k < .5 ? POSES.cheer : POSES.cheer2, head: 'expr2', num, ground: GROUND });
   };
-  hop(0, 150, '9', 0); hop(1, 290, '20', .33); hop(2, 430, '11', .66); hop(3, 560, '10', .15);
+  hop(0, 110, '9', 0); hop(1, 240, '20', .33); hop(2, 370, '11', .66); hop(3, 500, '10', .15);
   // the seismograph: a narrow corner panel, slapped on, the needle scribbling
   if (t > T.seismo - .3) {
     const d = drop(t, T.seismo, .3, 77);
@@ -619,6 +614,15 @@ function actionPanel(t, texts) {
   X.strokeStyle = C.ink; X.lineWidth = 6; X.strokeRect(AP.x, AP.y, AP.w, AP.h);
 }
 
+// the NEED n slip: pasted across the corner between the scoreboard and the action panel, each new one laid over the last
+function needSlip(t, texts) {
+  if (t >= T.goal6) return;
+  const list = [[T.need3, 'NEED 3'], [T.need2, 'NEED 2'], [T.need1, 'NEED 1']];
+  let cur = null;
+  for (const [t0, txt] of list) { if (t < t0 - .3) break; const b = slip(t, t0, W - 340, 372, 270, 104, txt, 62, { font: F.shout }); if (b) cur = b; }
+  if (cur) texts.push({ id: 'need', ...cur });
+}
+
 // ---------------------------------------------------------------- captions
 function caption(t, texts) {
   const c = CAPS.find(c => t >= c[0] && t < c[1]); if (!c) return;
@@ -642,10 +646,10 @@ function camera(t) {
   let s = 1, cx = W / 2, cy = H / 2;
   if (t < T.hookEnd) { s = lerp(1.0, 1.06, ss(t / T.hookEnd)); cy = lerp(H / 2, 820, ss(t / T.hookEnd)); }           // push into the clock
   else if (t < T.hookEnd + .4) { const k = ss((t - T.hookEnd) / .4); s = lerp(1.06, 1, k); cy = lerp(820, H / 2, k); }
-  if (t > T.sC && t < T.sD) { const k = ss(clamp((t - T.sC - .3) / 2.5, 0, 1)); s = lerp(1, 1.08, k); cx = lerp(W / 2, 600, k); cy = lerp(H / 2, 880, k); }   // push in on the free kick
-  if (t > T.sE && t < T.sF) { const k = ss(clamp((t - T.chip) / (T.sF - T.chip), 0, 1)); s = lerp(1, 1.12, k); cx = lerp(W / 2, 700, k); cy = lerp(H / 2, 820, k); }  // slow push on the last chance
-  if (t >= T.sF && t < T.goal6) { s = 1.1; cx = 600; cy = 900; }                                       // locked on the freeze
-  if (t >= T.goal6 && t < T.goal6 + .5) { const k = ss((t - T.goal6) / .5); s = lerp(1.1, 1, k); cx = lerp(600, W / 2, k); cy = lerp(900, H / 2, k); }
+  if (t > T.sC && t < T.sD) { const k = ss(clamp((t - T.sC - .3) / 2.5, 0, 1)); s = lerp(1, 1.035, k); cx = lerp(W / 2, 556, k); cy = lerp(H / 2, 900, k); }   // push in on the free kick
+  if (t > T.sE && t < T.sF) { const k = ss(clamp((t - T.chip) / (T.sF - T.chip), 0, 1)); s = lerp(1, 1.04, k); cx = lerp(W / 2, 560, k); cy = lerp(H / 2, 880, k); }  // slow push on the last chance
+  if (t >= T.sF && t < T.goal6) { s = 1.04; cx = 560; cy = 880; }                                       // locked on the freeze
+  if (t >= T.goal6 && t < T.goal6 + .5) { const k = ss((t - T.goal6) / .5); s = lerp(1.04, 1, k); cx = lerp(560, W / 2, k); cy = lerp(880, H / 2, k); }
   if (t > T.sH) { const k = ss(clamp((t - T.sH) / 1.4, 0, 1)); s = lerp(1, .88, k); cy = lerp(H / 2, H / 2 + 60, k); }   // pull back to the whole page
   let [sx, sy] = [0, 0];
   for (const [t0, a, d] of [[T.stamp, 6, .3], [T.p4, 7, .35], [T.p5, 7, .35], [T.goal6, 26, .7], [T.seismo + .3, 9, 3.5], [T.pin, 4, .3]]) { const [a1, b1] = shake(t, t0, a, d); sx += a1; sy += b1; }
@@ -667,6 +671,7 @@ window.render = (t) => {
   scoreboard(t, texts);
   X.strokeStyle = C.ink; X.lineWidth = 6; X.strokeRect(SB.x, SB.y, SB.w, SB.h);
   actionPanel(t, texts);
+  needSlip(t, texts);
   caption(t, texts);
   // a printed footer line low on the page (under the platform's buttons on a phone)
   inkText('THE GREATEST COMEBACKS · No. 1', W / 2, 1600, 30); X.fillStyle = C.ink; X.fillRect(W / 2 - 220, 1630, 440, 2);

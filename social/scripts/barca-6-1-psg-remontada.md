@@ -2,7 +2,7 @@
 
 New animated football stories channel. Opuscar style: Comic History Cartoon (`comic-history`).
 No match footage, club crests or league logos: everything is drawn, with club colours only.
-Status: **topic report, script v1 and storyboard v1 done (2026-11-15). Production not started.**
+Status: **Short produced (2026-11-15): `videos/barca-remontada-short/barca-remontada-short.mp4` (48.5 s, 9:16). Long-form not started. Not uploaded.**
 
 ## Topic research (YouTube Data API, 2026-11-15)
 
