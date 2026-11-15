@@ -162,3 +162,16 @@ the VibeVoice voiceover skill above (they apply to As Printed too).
 - **Thumbnails for As Printed use the archive style** (`engine/thumb.html`), not the map style: the map-style rule
   above applies to Which Life Next.
 
+
+## The Overthinking Pad (psychology channel): 4 long videos + 4 Shorts a week
+
+Owner request 2026-11-15: YouTube channel **The Overthinking Pad** (`yt.py --channel overthinkingpad`). Every
+**Monday, Tuesday, Thursday and Saturday**: one long video (10–12 min, 16:9) and one Short (45–60 s, 9:16) cut from it.
+Follow `videos/overthinking-pad/RUNBOOK.md`, together with the scriptwriting rules, the animation direction rules and
+the VibeVoice voiceover skill above. Learning database: `social/learning/overthinking-pad.md` (its own, never mixed).
+- **Approval first:** send the finished videos, thumbnails, titles, descriptions and publish times; upload only after
+  the owner approves.
+- Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
+- **Look: notebook doodle** (lemo-opuscar Sketchnote style). **Thumbnails use the notebook style** described in the
+  runbook, not the map style (the map style is for Which Life Next); everything else in the thumbnail rules applies.
+- Accuracy: real, cited studies only; flag disputed findings; education, not medical advice.
