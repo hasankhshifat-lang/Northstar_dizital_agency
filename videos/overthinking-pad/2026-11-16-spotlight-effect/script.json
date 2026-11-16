@@ -1,0 +1,281 @@
+{
+ "long": [
+  {
+   "id": "hook1",
+   "say": "You walk into a room... and for one awful second, you're certain everyone saw it. The coffee stain on your shirt. The little trip on the doorframe. The thing you said just a bit too loud."
+  },
+  {
+   "id": "hook2",
+   "say": "That feeling has a name. And in the year two thousand, a team of psychologists at Cornell University decided to stop guessing about it... and count."
+  },
+  {
+   "id": "hook3",
+   "say": "They put students in a shirt they'd be embarrassed to wear, sent them into a room full of other students, and asked one simple question. How many people actually noticed?"
+  },
+  {
+   "id": "hook4",
+   "say": "The answer was about half of what the students expected. And the reason why says something strange about where you're standing, every time you picture yourself through other people's eyes."
+  },
+  {
+   "id": "sting",
+   "type": "sting"
+  },
+  {
+   "id": "ch1",
+   "type": "chapter",
+   "num": "1",
+   "title": "THE SHIRT"
+  },
+  {
+   "id": "c1a",
+   "say": "The researchers were Thomas Gilovich, Victoria Medvec and Kenneth Savitsky. And first, they needed a shirt that college students really would not want to be seen in."
+  },
+  {
+   "id": "c1b",
+   "say": "They tested the idea on students first, and landed on a T-shirt with a big picture of the singer Barry Manilow. Nothing against Barry. In that place, at that time, students rated it as embarrassing to wear."
+  },
+  {
+   "id": "c1b2",
+   "say": "Why a shirt? Because it's something everyone in the room could check for themselves. No guessing about thoughts or feelings. Either you saw the face on that shirt... or you didn't."
+  },
+  {
+   "id": "c1c",
+   "say": "Here's how it worked. One student puts on the shirt. They're led into a room where a group of other students are already sitting, filling out questionnaires. They're there for a short while... and then they're taken back out."
+  },
+  {
+   "id": "c1d",
+   "say": "Now comes the question. How many of the people in that room could say who was on your shirt?"
+  },
+  {
+   "id": "c1e",
+   "say": "Put yourself in those shoes for a second. You just walked in with a giant face on your chest. Heads turned when the door opened. Of course they saw it."
+  },
+  {
+   "id": "c1f",
+   "say": "The wearers guessed that close to half the room would be able to name the face on the shirt."
+  },
+  {
+   "id": "c1g",
+   "say": "Then the researchers asked the room. ... About a quarter could."
+  },
+  {
+   "id": "c1h",
+   "say": "Close to half... versus about a quarter. The wearers had roughly doubled their audience. Most of the people in that room either didn't notice, or didn't remember."
+  },
+  {
+   "id": "c1j",
+   "say": "And remember, these people were sitting right there, a few feet away, with nothing more interesting in front of them than a questionnaire."
+  },
+  {
+   "id": "c1i",
+   "say": "The researchers called it the spotlight effect: the feeling that a beam of light follows you around, when most of the time, the audience is looking somewhere else. But that raised an obvious question. Was it only about embarrassment?"
+  },
+  {
+   "id": "ch2",
+   "type": "chapter",
+   "num": "2",
+   "title": "NOT JUST SHAME"
+  },
+  {
+   "id": "c2a",
+   "say": "Maybe we only inflate the bad stuff. Fear makes everything look bigger. So the team ran it again, with a twist."
+  },
+  {
+   "id": "c2b",
+   "say": "This time, students wore a shirt they actually liked: one with Bob Marley, Martin Luther King Junior, or the comedian Jerry Seinfeld. A shirt you might be proud to wear."
+  },
+  {
+   "id": "c2c",
+   "say": "And the same thing happened. The wearers overestimated how many people noticed. Pride didn't fix it. The spotlight shines on the good stuff too."
+  },
+  {
+   "id": "c2d",
+   "say": "Then they left the shirts behind and tried something closer to real life: group discussions. People talked through a topic together, and afterward, each person was asked how much their own comments had stood out. The clever points... and the awkward ones."
+  },
+  {
+   "id": "c2e",
+   "say": "Again, people believed their own moments were more noticeable to the others than they really were. The great line you were proud of, and the clumsy one you've been replaying ever since... both landed softer than you think."
+  },
+  {
+   "id": "c2f",
+   "say": "A couple of years later, in two thousand two, Gilovich and his colleagues pushed the idea further. Do other people notice our ups and downs? A bad hair day. A bad game. A bad round of a video game?"
+  },
+  {
+   "id": "c2g",
+   "say": "Across three studies, people kept overestimating how much others noticed those swings. To you, Tuesday's hair is a crisis. To everyone else, you look... like you."
+  },
+  {
+   "id": "c2g2",
+   "say": "Think about what that means on an ordinary day. You notice the pimple, the wrinkled sleeve, the word you mispronounced in the meeting. Each one feels like front page news. To the people around you, it's a tiny dot in a busy picture... gone by lunch."
+  },
+  {
+   "id": "c2h",
+   "say": "So it isn't only shame, and it isn't only pride. Something more basic is going on. And the explanation is a little uncomfortable, because the problem isn't other people. It's where your brain is standing."
+  },
+  {
+   "id": "ch3",
+   "type": "chapter",
+   "num": "3",
+   "title": "THE VIEW FROM INSIDE"
+  },
+  {
+   "id": "c3a",
+   "say": "Here's the idea. When you try to imagine how you look to others, you don't start from nothing. You start from your own experience. And your own experience of you is enormous."
+  },
+  {
+   "id": "c3b",
+   "say": "You feel the shirt the entire time. You know about the stain. You heard your own voice crack. You've been living inside that moment, in close-up, with the sound turned all the way up."
+  },
+  {
+   "id": "c3c",
+   "say": "Psychologists call this anchoring and adjustment. You anchor on your own vivid experience, then you try to adjust for the fact that other people aren't inside your head. The trouble is, we adjust... but not nearly enough."
+  },
+  {
+   "id": "c3c2",
+   "say": "Picture standing on a stage under a bright light. From up there, the light is all you can see. From the seats, you're one small figure, and most of the audience is thinking about something else."
+  },
+  {
+   "id": "c3d",
+   "say": "Two more experiments in that same paper supported this explanation. And it points to something that's easy to forget. Every person in that room has an anchor of their own: their own shirt, their own questionnaire, the thing they said earlier. Your spotlight is competing with a room full of other spotlights."
+  },
+  {
+   "id": "c3e",
+   "say": "There's an older experiment that shows just how strong the inside view can be. In nineteen eighty, at Dartmouth College, researchers Richard Kleck and Angelo Strenta gave volunteers a realistic scar, painted on with makeup. Each volunteer saw it in a mirror."
+  },
+  {
+   "id": "c3f",
+   "say": "Then, just before they met a stranger for a conversation, the makeup artist came back for a quick touch up... and secretly removed the scar."
+  },
+  {
+   "id": "c3g",
+   "say": "The volunteers didn't know it was gone. And afterward, they reported that the stranger had reacted to their appearance. They felt reactions to a scar that wasn't there."
+  },
+  {
+   "id": "c3h",
+   "say": "It's a different study, about a different question. But it shows the same pattern. What we expect people to see can quietly rewrite what we think they saw."
+  },
+  {
+   "id": "c3i",
+   "say": "So the spotlight effect isn't vanity, and it isn't a flaw in your character. It's a side effect of being the only person who lives inside your own head."
+  },
+  {
+   "id": "ch4",
+   "type": "chapter",
+   "num": "4",
+   "title": "WHEN THEY DO NOTICE"
+  },
+  {
+   "id": "c4a",
+   "say": "Okay. But sometimes people really do notice. You really did trip. Everybody really did hear it. What then?"
+  },
+  {
+   "id": "c4b",
+   "say": "In two thousand one, Kenneth Savitsky, Nicholas Epley and Thomas Gilovich tested exactly that. Across four studies, people imagined social blunders, or failed at a task in front of others, or were described in an embarrassing way."
+  },
+  {
+   "id": "c4c",
+   "say": "Each time, they expected to be judged more harshly than they actually were."
+  },
+  {
+   "id": "c4d",
+   "say": "Part of the reason: when you're the one who messed up, you're locked onto the mistake. The people watching see more of the picture. The question was hard. The room was loud. You seem tired. They give you context you don't give yourself."
+  },
+  {
+   "id": "c4d2",
+   "say": "Think about the last time a friend tripped, or lost their words in a meeting. Did you think less of them? Or did you think: rough day? That's the view from the outside... and it's usually kinder."
+  },
+  {
+   "id": "c4e",
+   "say": "A few years earlier, the same team had found a cousin of this effect, the illusion of transparency. People overestimate how much their inner feelings show. Liars think their lies are obvious. People think their disgust is written all over their face. Mostly, it isn't."
+  },
+  {
+   "id": "c4f",
+   "say": "Now, an honest note. Most of these studies come from one group of researchers, often with small groups of college students, and the exact numbers move around. What holds up is the direction: we think we're more visible than we are."
+  },
+  {
+   "id": "c4g",
+   "say": "And pressure matters. In a study at the University of Southampton, the spotlight feeling got stronger when people felt they were being evaluated. That's why knowing about it helps... but doesn't switch the feeling off on its own."
+  },
+  {
+   "id": "ch5",
+   "type": "chapter",
+   "num": "5",
+   "title": "TURNING DOWN THE BEAM"
+  },
+  {
+   "id": "c5a",
+   "say": "So what can you actually do with this? Here are three things, each tied to the research."
+  },
+  {
+   "id": "c5b",
+   "say": "One. Name it. In a two thousand three study, Savitsky and Gilovich had people give a short speech. Some of them were told about the illusion of transparency beforehand: that nerves show less than they feel."
+  },
+  {
+   "id": "c5c",
+   "say": "In that study, those speakers felt less nervous, and both they and the people watching rated their speeches as better. Just knowing about the effect made a difference."
+  },
+  {
+   "id": "c5d",
+   "say": "Two. Widen the frame. When you replay a mistake, picture what the other person saw: the whole situation, not just the worst second of it. That's what the blunder studies suggest onlookers actually do."
+  },
+  {
+   "id": "c5e",
+   "say": "Three. Count the room. Next time you're sure everyone noticed, try this: name three things you noticed about other people today. Most of us struggle to name even one. That's your evidence that their attention was busy too."
+  },
+  {
+   "id": "c5e2",
+   "say": "So, three things: name it, widen the frame, count the room. The beam doesn't go away. You just stop mistaking it for the whole stage."
+  },
+  {
+   "id": "c5f",
+   "say": "None of this replaces real help for serious anxiety. If the feeling of being watched is running your life, that's worth talking to a professional about. But for the everyday version, it's a useful reality check."
+  },
+  {
+   "id": "end1",
+   "say": "So, back to that room at Cornell. One student, one embarrassing shirt, a room full of people... and most of them couldn't tell you who was on it."
+  },
+  {
+   "id": "end2",
+   "say": "The spotlight you feel is real. It's just mostly pointed at you... by you."
+  },
+  {
+   "id": "end3",
+   "say": "What's one moment you're still sure everyone noticed? Tell me in the comments. I bet it was smaller than it felt. And if this made a crowded room feel a little emptier, subscribe for more ways your brain gets in its own way."
+  },
+  {
+   "id": "card",
+   "type": "end",
+   "min": 8
+  }
+ ],
+ "short": [
+  {
+   "id": "s1",
+   "say": "Researchers made students wear an embarrassing shirt... and counted who noticed."
+  },
+  {
+   "id": "s2",
+   "say": "At Cornell, in the year two thousand, each student walked into a room full of other students, wearing a giant picture of Barry Manilow.",
+   "tail": 1.0
+  },
+  {
+   "id": "s3",
+   "say": "Then they guessed how many people could name the face on their shirt. Close to half, they said.",
+   "tail": 1.0
+  },
+  {
+   "id": "s4",
+   "say": "The real number? About a quarter.",
+   "min": 4.6
+  },
+  {
+   "id": "s5",
+   "say": "And here's the twist. When students wore a shirt they were proud of, the same thing happened. It isn't shame. You see yourself from the inside, in close-up, and everyone else is busy with their own spotlight."
+  },
+  {
+   "id": "s6",
+   "say": "So next time you're sure the whole room saw it... remember the shirt. Most of them probably didn't. What moment are you still sure everybody noticed?",
+   "tail": 1.8
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+# The Overthinking Pad: build products and copies of the engine inside episode folders
+*/out/
+*/raw/
+*/voice/*/out/
+*/voice/*/take*/
+*/voice/*/gen*.log
+*/fonts/
+*/index.html
+*/film.js
+*/lib.js
+*/glyphs.json
+!engine/index.html
+!engine/film.js
+!engine/lib.js
+!engine/glyphs.json
+!engine/fonts/
