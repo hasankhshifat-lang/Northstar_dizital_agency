@@ -8,5 +8,10 @@
   "voice_id": "N8jsIhEtPnj3PWFmH8hZ",
   "name": "Elder Rowan (ElevenLabs library; deep, slow, wise; light foreign accent in Bangla suits a Greek scientist)",
   "tags": "[calm] [wise]"
+ },
+ "newton": {
+  "voice_id": "LvmvHEBEmMJBJw9UuhwO",
+  "name": "Eldrin - Wise Ancient Wizard Storyteller (ElevenLabs library; old, deep, British; chosen 2026-11-16 for the Sci-Fi Toon demo)",
+  "tags": "[calm] [wise]"
  }
 }
