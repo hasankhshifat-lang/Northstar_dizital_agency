@@ -1,5 +1,7 @@
 # 3D environments (owner rule 2026-11-14)
 
+> Superseded for new Shorts on 2026-11-16: Shorts are now drawn as flat 2D sets in the Sci-Fi Sitcom Toon template (`../scifi-toon/README.md`). The rule "never the same environment twice" still holds: keep adding a row to the register below.
+
 **Every Short gets a 3D environment, and never the same one as an earlier Short.** The environments are built
 in code with Blender (headless, Cycles CPU, cartoon outlines with Freestyle, "Standard" colour so colours stay
 bright like the 2D characters). The kit's rigged 2D puppets and held props stay as they are and are composited
@@ -31,6 +33,7 @@ on the 3D plates by the puppet engine.
 | Short 6 চিরুনি | **Dhaka rooftop**: tiled roof, parapet, water tank with tap, clothesline, plants, city skyline (`rooftop.py`) | 3D |
 | Short 7 শরবত-স্ট্র | **bazaar sharbat stall**: striped awning, teal counter, sharbat jars, lemons, ice block, bunting, shop fronts across the street (`sharbat_stall.py`) | 3D |
 | Short 8 আয়না-অ্যাম্বুলেন্স | **footpath barber stall under a rain tree**: mirror on the trunk, red barber chair, towels, tin wall with posters; reverse plate of the street behind the camera (traffic jam: rickshaws, CNG, bus, car) shown in the mirror (`barber_stall.py`) | 3D |
+| Sci-Fi Toon demo (not a Short) | Dhaka rooftop, afternoon (parapet, water tank, clothesline, chilli pots) | 2D toon |
 
 Ideas for the next ones (each used once): school science lab, village kitchen (মাটির চুলা), riverside boat
 (নৌকা), rice field at sunset, railway platform, rainy-day veranda, night rooftop with stars.

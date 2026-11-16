@@ -61,3 +61,10 @@ send the heavy generation to the free LLM router `social/bangla-science-channel/
 - Claude still reviews every result, runs and tests the code, and fixes what the free model gets wrong.
   Facts in scripts still need the two-step check against the NCTB textbooks.
 - Say in the reply which free model did the work.
+
+## Scientific Bithi Shorts: Sci-Fi Sitcom Toon is the default (owner, 2026-11-16)
+
+Every new Short for the Scientific Bithi Facebook Page is made in the lemo-opuscar Sci-Fi Sitcom Toon template, following
+`social/bangla-science-channel/kit/scifi-toon/README.md` (cast redrawn in the style, a new Bangladeshi setting each time,
+cyan + gold scientist portal, Bangla subtitles, synthesized score). It replaces the old puppet engine and the Blender 3D
+plates for this channel; voices, story and fact rules, approval, posting time, thumbnails and Facebook steps are unchanged.

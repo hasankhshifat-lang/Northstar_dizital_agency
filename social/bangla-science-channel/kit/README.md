@@ -1,5 +1,10 @@
 # Scientific Bithi production kit
 
+> **Owner rule 2026-11-16: every new Short is made in the lemo-opuscar Sci-Fi Sitcom Toon template — see
+> `scifi-toon/README.md`.** That replaces the puppet engine below and the Blender 3D plate rule for this channel; the cast,
+> Bangladeshi settings (a new one each Short), voices, story/fact rules, approval and posting steps stay the same.
+> The rest of this file describes the old pipeline (kept for re-renders of Shorts 1–8).
+
 This is everything needed to make a Short with মন্টু মামা, বিথী and বল্টু from a fresh checkout. `kit/` stands in for the old working scratchpad, so scripts take the kit folder as their first argument (`K`).
 
 | Path | What it is |
