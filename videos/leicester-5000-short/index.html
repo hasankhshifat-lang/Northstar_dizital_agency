@@ -1,0 +1,660 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>html,body{margin:0;background:#7B6A57;overflow:hidden}canvas{display:block}</style>
+</head><body><canvas id="c"></canvas>
+<script type="module">
+// "5000-1" - Leicester City 2015-16, Comic History Cartoon, 9:16 Short (Foot All FC).
+// One comic page: the aggregate scoreboard pinned on top, the action panel in the middle, caption band below.
+import { mulberry, clamp, lerp, seg, ss, eio, eo, ei, back } from '/core/lib.js';
+
+const W = innerWidth, H = innerHeight;           // 1080 x 1920
+const cv = document.getElementById('c'); cv.width = W; cv.height = H;
+const X = cv.getContext('2d');
+
+// ---------------------------------------------------------------- palette and type
+const C = { paper: '#F1E8D2', ink: '#2B2219', table: '#7B6A57', cap: '#F5E9C4', red: '#C8463A', brass: '#D9B158',
+  bar: '#3E5FA8', barG: '#9B2335', barP: '#5C7BC0', psg: '#24335A', psgP: '#3D4F80', grass: '#C9D2A8', grass2: '#BCC79A', sea: '#A6CCD3' };
+const F = { sc: "'IM Fell English SC', serif", num: "'Old Standard TT', serif", shout: "'Lilita One', sans-serif" };
+
+// ---------------------------------------------------------------- assets
+const RIG = await (await fetch('parts/rig.json')).json();
+const IMG = {};
+const loads = [];
+for (const sh in RIG) for (const role in RIG[sh]) {
+  const id = RIG[sh][role].id, k = `${sh}_${id}`;
+  if (IMG[k]) continue;
+  const im = new Image(); im.src = `parts/${k}.png`; IMG[k] = im;
+  loads.push(im.decode().catch(() => {}));
+}
+await Promise.all(loads);
+await document.fonts.load(`80px ${F.num}`); await document.fonts.load(`bold 80px ${F.num}`);
+await document.fonts.load(`40px ${F.sc}`); await document.fonts.load(`40px ${F.shout}`);
+
+// paper texture (mottle + fibres), made once
+function makeTex(w, h, seed, base) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  const R = mulberry(seed); const id = g.createImageData(w, h);
+  for (let i = 0; i < w * h; i++) { const n = 236 + R() * 19; id.data[i*4] = n; id.data[i*4+1] = n - 2; id.data[i*4+2] = n - 6; id.data[i*4+3] = 255; }
+  g.putImageData(id, 0, 0);
+  g.globalAlpha = .07; g.fillStyle = '#8a7a60';
+  for (let i = 0; i < 260; i++) { g.beginPath(); g.ellipse(R()*w, R()*h, 20 + R()*90, 12 + R()*60, R()*3, 0, 7); g.fill(); }
+  g.globalAlpha = .18; g.strokeStyle = '#a8977a'; g.lineWidth = .6;
+  for (let i = 0; i < 900; i++) { const x = R()*w, y = R()*h, a = R()*6.3, l = 3 + R()*9; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a+1)*l*.5, y + Math.sin(a+1)*l*.5, x + Math.cos(a)*l, y + Math.sin(a)*l); g.stroke(); }
+  return c;
+}
+const TEX = makeTex(W, H, 7);
+
+window.DUR = 48.5;
+// timeline (film seconds; from the voice's word timings in vo/words.json)
+const T = {
+  slip: .12, stampOdds: 1.6,
+  sB: 4.85, pos20: 6.3, climb: 7.6, pos14: 8.6,
+  sC: 10.0, paper: 10.3, drop: 11.75,
+  sD: 14.25, record: 17.55,
+  sE: 18.75, kante: 21.25, tackle: 21.75, pos1: 24.4, top: 23.6,
+  sF: 26.1, mustWin: 31.85, ht: 33.1, g1: 35.4, g2: 37.6,
+  sG: 38.6, y132: 38.85,
+  sH: 42.35, endPull: 42.35, ring: 42.75, won: 43.5, end: 48.5,
+};
+const VK = [14.65, 15.6, 16.45, 17.25], VN = [1, 4, 8, 11];   // Vardy's kicks and the game number each one shows
+const CAPS = [
+  [0.15, 4.75, 'Bookmakers gave Leicester City a 5000–1 chance… of winning the Premier League.'],
+  [4.85, 9.95, 'A year earlier, they’d spent Christmas bottom of the table… and only just escaped relegation.'],
+  [10.0, 14.2, 'Then they hired Claudio Ranieri. Most predictions still had them going down.'],
+  [14.25, 18.7, 'But Jamie Vardy scored in 11 Premier League games in a row… a new record.'],
+  [18.75, 23.45, 'Riyad Mahrez danced past defenders. N’Golo Kanté won the ball back everywhere.'],
+  [23.55, 26.05, 'By Christmas… Leicester were top.'],
+  [26.1, 28.15, 'May 2, 2016.'],
+  [28.2, 32.95, 'The players gathered at Vardy’s house to watch Chelsea v Tottenham. Spurs had to win.'],
+  [33.0, 36.4, '2–0 Tottenham at half-time… then Chelsea fought back.'],
+  [36.45, 38.55, 'Eden Hazard… 2–2.'],
+  [38.6, 42.3, 'Leicester were champions, for the first time in their 132-year history.'],
+  [42.35, 48.5, 'Biggest shock in sport… or can you name a bigger one?'],
+];
+window.CAPS = CAPS;
+const FOOTER = 'Greatest Upsets · Part One';
+const PUSH = [[0, 4.85, 1.04, 580, 900], [33.1, 37.6, 1.05, 740, 860]];
+const SHAKES = [[1.6, 6, .3], [6.3, 5, .3], [17.55, 6, .3], [37.6, 18, .6], [38.5, 12, .5], [43.5, 6, .3]];
+// ---------------------------------------------------------------- film: "5000-1" (Leicester City 2015-16), Comic History Cartoon, 9:16 Short
+// One comic page: Leicester's season board pinned on top (odds, league position, Vardy's run), the action panel, caption band.
+Object.assign(C, { lei: '#2D4E9C', leiP: '#5B78BE', opp: '#ECE6D6', wall: '#E6D7B4', wall2: '#DCC9A0', wood: '#9C7650', sofa: '#8E5A44', tv: '#3A3530' });
+/*TIMELINE*/
+
+// sound / cue events for mix.py
+const EV = [{ t: 0.0, type: 'vo', id: 'narration' }];
+const ev = (t, type, o = {}) => EV.push({ t, type, ...o });
+ev(T.slip - .3, 'slip'); ev(T.stampOdds - .25, 'stampdown', { d: .25 }); ev(T.stampOdds, 'stamp');
+ev(T.sB - .15, 'whip', { d: .35 }); ev(T.pos20, 'slap'); ev(T.climb, 'lift', { d: T.pos14 - T.climb }); ev(T.pos14, 'slap', { v: .7 });
+ev(T.sC - .15, 'whip', { d: .35 }); ev(T.paper, 'slap', { v: .8 }); ev(T.drop, 'slip');
+ev(T.sD - .15, 'whip', { d: .35 });
+for (const k of VK) { ev(k, 'kick'); ev(k + .35, 'net'); ev(k + .4, 'slap', { v: .45 }); }
+ev(VK[VK.length - 1] + .35, 'roar', { d: 2.2, v: .9 }); ev(T.record - .25, 'stampdown', { d: .25 }); ev(T.record, 'stamp');
+ev(T.sE - .15, 'whip', { d: .35 });
+for (let i = 0; i < 8; i++) ev(T.sE + .3 + i * .3, 'step', { pan: -.4 + i * .1 });
+ev(T.tackle, 'fall'); ev(T.pos1, 'slap'); ev(T.top, 'slip'); ev(T.pos1, 'roar', { d: 1.8, v: .6 });
+ev(T.sF - .15, 'whip', { d: .35 }); ev(T.mustWin, 'slip'); ev(T.ht, 'tvclick');
+ev(T.g1, 'tvclick'); ev(T.g2, 'tvclick'); ev(T.g2 + .05, 'leap'); ev(T.g2, 'roar', { d: 4.0, v: 1.3 });
+ev(T.sG - .1, 'bigslap');
+for (let i = 0; i < 8; i++) ev(T.sG + .4 + i * .42, 'hop', { i });
+ev(T.y132, 'slip');
+ev(T.sH, 'pullback', { d: 1.4 }); ev(T.ring, 'scribble', { d: .5 }); ev(T.won - .25, 'stampdown', { d: .25 }); ev(T.won, 'stamp');
+// ---------------------------------------------------------------- helpers
+function rr(x, y, w, h, r) { X.beginPath(); X.roundRect(x, y, w, h, r); }
+function inkText(s, x, y, size, font = F.sc, color = C.ink, align = 'center', weight = '') {
+  X.font = `${weight} ${size}px ${font}`; X.fillStyle = color; X.textAlign = align; X.textBaseline = 'middle'; X.fillText(s, x, y);
+}
+function paperCard(x, y, w, h, fill, held = 0, rot = 0, rim = true) {
+  // opaque card; held = 0..1 lifts it off the page (big soft shadow)
+  X.save(); X.translate(x + w / 2, y + h / 2); X.rotate(rot);
+  X.shadowColor = 'rgba(43,34,25,.38)'; X.shadowBlur = lerp(3, 26, held); X.shadowOffsetX = lerp(2, 30, held); X.shadowOffsetY = lerp(3, 40, held);
+  X.fillStyle = fill; X.fillRect(-w / 2, -h / 2, w, h);
+  X.shadowColor = 'transparent';
+  if (rim) { X.strokeStyle = 'rgba(241,232,210,.9)'; X.lineWidth = 3; X.strokeRect(-w / 2 + 1.5, -h / 2 + 1.5, w - 3, h - 3); }
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .5; X.drawImage(TEX, 0, 0, w, h, -w / 2, -h / 2, w, h); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+  X.restore();
+}
+// a patch/slip that drops in: returns {held, s, rot, vis}
+function drop(t, t0, dur = .32, seed = 1) {
+  if (t < t0 - dur) return { vis: false };
+  const k = clamp((t - (t0 - dur)) / dur, 0, 1);
+  const R = mulberry(seed); const r0 = (R() - .5) * .2;
+  if (k < 1) return { vis: true, held: 1 - ei(k) * .9, s: lerp(1.25, 1.0, ei(k)), rot: r0 * 2.2 * (1 - k), y: -60 * (1 - ei(k)) };
+  const a = clamp((t - t0) / .25, 0, 1);
+  return { vis: true, held: 0, s: 1 + .05 * Math.sin(a * Math.PI) * (1 - a), rot: r0 * .25, y: 0 };
+}
+function slip(t, t0, x, y, w, h, text, size, opts = {}) {
+  const d = drop(t, t0, .3, Math.round(t0 * 100)); if (!d.vis) return null;
+  X.save(); X.translate(x + w / 2, y + h / 2 + d.y); X.scale(d.s, d.s);
+  paperCard(-w / 2, -h / 2, w, h, opts.fill || C.cap, d.held, d.rot);
+  X.save(); X.rotate(d.rot); X.strokeStyle = C.ink; X.lineWidth = 2; X.setLineDash([7, 5]); X.strokeRect(-w / 2 + 9, -h / 2 + 9, w - 18, h - 18); X.setLineDash([]);
+  const lines = text.split('\n');
+  lines.forEach((ln, i) => inkText(ln, 0, (i - (lines.length - 1) / 2) * size * 1.15 + 2, size, opts.font || F.sc, opts.color || C.ink));
+  X.restore(); X.restore();
+  return { text: text.replace(/\n/g, ' '), x0: x, y0: y, x1: x + w, y1: y + h };
+}
+
+// ---------------------------------------------------------------- puppets (paper parts on split pins, poses on twos)
+const DEG = Math.PI / 180;
+const POSES = {
+  stand:   { lean: 0, h: 0, uL: 14, fL: 6, uR: -14, fR: -6, tL: 3, sL: 0, tR: -3, sR: 0 },
+  slump:   { lean: 4, h: 8, uL: 6, fL: 2, uR: -6, fR: -2, tL: 2, sL: 0, tR: -2, sR: 0, dy: 6 },
+  ready:   { lean: -4, h: -4, uL: 40, fL: 30, uR: -40, fR: -30, tL: 10, sL: 6, tR: -10, sR: -6 },
+  windup:  { lean: 10, h: 6, uL: 70, fL: 20, uR: -30, fR: -10, tL: -6, sL: 0, tR: 38, sR: 40 },
+  strike:  { lean: -14, h: -6, uL: 80, fL: 10, uR: -60, fR: -20, tL: 6, sL: 0, tR: -78, sR: -8 },
+  follow:  { lean: -8, h: -2, uL: 60, fL: 10, uR: -50, fR: -20, tL: 4, sL: 0, tR: -40, sR: 4 },
+  cheer:   { lean: 0, h: -6, uL: 160, fL: 12, uR: -160, fR: -12, tL: 12, sL: 0, tR: -12, sR: 0 },
+  cheer2:  { lean: 0, h: 6, uL: 140, fL: 30, uR: -150, fR: -20, tL: 6, sL: 14, tR: -16, sR: -10, dy: -40 },
+  run1:    { lean: -10, h: -4, uL: -40, fL: -40, uR: 30, fR: 50, tL: -36, sL: 40, tR: 24, sR: 20 },
+  run2:    { lean: -10, h: -4, uL: 30, fL: 50, uR: -40, fR: -40, tL: 24, sL: 20, tR: -36, sR: 40 },
+  point:   { lean: 0, h: -4, uL: 16, fL: 4, uR: -96, fR: 6, tL: 3, sL: 0, tR: -3, sR: 0 },
+  protest: { lean: 6, h: 6, uL: 120, fL: 40, uR: -120, fR: -40, tL: 6, sL: 0, tR: -6, sR: 0 },
+  stretch: { lean: 18, h: 4, uL: 100, fL: 20, uR: -70, fR: -20, tL: 20, sL: 10, tR: -92, sR: -4 },
+  dive:    { lean: 0, h: 0, uL: 170, fL: 0, uR: -170, fR: 0, tL: 14, sL: 0, tR: -14, sR: 0 },
+  despair: { lean: 10, h: 14, uL: 4, fL: 0, uR: -4, fR: 0, tL: 2, sL: 0, tR: -2, sR: 0, dy: 10 },
+};
+function mix(a, b, k) { const o = {}; for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) o[key] = lerp(a[key] || 0, b[key] || 0, k); return o; }
+// track: [[t, poseName|obj, ease?], ...]  evaluated on twos with spring overshoot
+function poseAt(track, t) {
+  const tq = Math.floor(t * 12) / 12;
+  const P = p => typeof p === 'string' ? POSES[p] : p;
+  if (tq <= track[0][0]) return P(track[0][1]);
+  for (let i = 0; i < track.length - 1; i++) {
+    const [t0, p0] = track[i], [t1, p1, e] = track[i + 1];
+    if (tq < t1) { const k = (tq - t0) / (t1 - t0); return mix(P(p0), P(p1), e === 'lin' ? k : back(k, 1.6)); }
+  }
+  return P(track[track.length - 1][1]);
+}
+function trackAt(track, t, quant = true) {    // positions/numbers: [[t, v], ...]
+  const tq = quant ? Math.floor(t * 12) / 12 : t;
+  if (tq <= track[0][0]) return track[0][1];
+  for (let i = 0; i < track.length - 1; i++) {
+    const [t0, v0] = track[i], [t1, v1, e] = track[i + 1];
+    if (tq < t1) { const k = (tq - t0) / (t1 - t0); const kk = e === 'lin' ? k : e === 'out' ? eo(k) : eio(k);
+      return Array.isArray(v0) ? v0.map((v, j) => lerp(v, v1[j], kk)) : lerp(v0, v1, kk); }
+  }
+  return track[track.length - 1][1];
+}
+function part(sh, role) { const r = RIG[sh][role]; return r ? { r, img: IMG[`${sh}_${r.id}`] } : null; }
+function drawLimb(sh, role, jx, jy, ang, isLeg) {
+  // place the part so its pivot sits on (jx, jy) and its axis points at world angle `ang` (0 = straight down)
+  const p = part(sh, role); if (!p) return [jx, jy];
+  const a0 = isLeg ? Math.PI / 2 : p.r.ang;
+  const want = Math.PI / 2 + ang;
+  X.save(); X.translate(jx, jy); X.rotate(want - a0);
+  X.drawImage(p.img, -p.r.pivot[0], -p.r.pivot[1]);
+  X.restore();
+  // child joint: the part's 'end' rotated the same way
+  const ex = p.r.end[0] - p.r.pivot[0], ey = p.r.end[1] - p.r.pivot[1], rot = want - a0;
+  return [jx + ex * Math.cos(rot) - ey * Math.sin(rot), jy + ex * Math.sin(rot) + ey * Math.cos(rot)];
+}
+// puppet: {sh, x, y (torso centre, world), s, face (+1 right / -1 left), rot (deg), pose, head ('head'|'expr1'..), num, shadow}
+function puppet(o) {
+  const sh = o.sh, P = o.pose, Tr = RIG[sh].torso;
+  X.save();
+  X.translate(o.x, o.y + (P.dy || 0) * o.s);
+  // cast shadow on the page (only when standing on the ground)
+  if (o.ground !== undefined) {
+    X.save(); X.translate(0, (o.ground - o.y)); X.scale(1, .22);
+    X.fillStyle = 'rgba(43,34,25,.22)'; X.beginPath(); X.ellipse(10 * o.s, 0, 230 * o.s * (o.shw || 1), 90 * o.s, 0, 0, 7); X.fill(); X.restore();
+  }
+  X.rotate((o.rot || 0) * DEG); X.scale(o.s * (o.face || 1), o.s);
+  X.shadowColor = 'rgba(43,34,25,.35)'; X.shadowBlur = 5; X.shadowOffsetX = 4 * (o.face || 1); X.shadowOffsetY = 5;
+  X.rotate(P.lean * DEG);
+  X.translate(-Tr.c[0], -Tr.c[1]);
+  const tor = part(sh, 'torso');
+  const L = P.lean;
+  // legs (behind the torso)
+  for (const sd of ['L', 'R']) {
+    const hip = Tr['hip' + sd];
+    const [kx, ky] = drawLimb(sh, 'thigh' + sd, hip[0], hip[1], (P['t' + sd]) * DEG, true);
+    drawLimb(sh, 'shin' + sd, kx, ky - 8, (P['t' + sd] + P['s' + sd]) * DEG, true);
+  }
+  X.drawImage(tor.img, 0, 0);
+  // shirt number: a small cream paper slip printed in ink
+  if (o.num) {
+    X.save(); X.translate(Tr.c[0] + Tr.w * .17, Tr.c[1] - Tr.h * .12);
+    if ((o.face || 1) < 0) X.scale(-1, 1);
+    X.shadowColor = 'transparent';
+    X.fillStyle = C.paper; X.fillRect(-80, -68, 160, 136); X.strokeStyle = C.ink; X.lineWidth = 5; X.strokeRect(-80, -68, 160, 136);
+    X.font = `bold 118px ${F.num}`; X.fillStyle = C.ink; X.textAlign = 'center'; X.textBaseline = 'middle'; X.fillText(o.num, 0, 4);
+    X.restore();
+  }
+  // arms
+  for (const sd of ['L', 'R']) {
+    const sho = Tr['sh' + sd];
+    const up = RIG[sh]['uarm' + sd];
+    const [ex, ey] = drawLimb(sh, 'uarm' + sd, sho[0], sho[1], P['u' + sd] * DEG, false);
+    if (!up.whole) drawLimb(sh, 'farm' + sd, ex, ey, (P['u' + sd] + P['f' + sd]) * DEG, false);
+  }
+  // head (expression heads swap; a swap pops 1.08x for two frames)
+  const hp = part(sh, o.head || 'head');
+  X.save(); X.translate(Tr.neck[0], Tr.neck[1]); X.rotate(P.h * DEG);
+  const pop = o.pop ? 1.08 : 1; X.scale(pop, pop);
+  X.drawImage(hp.img, -hp.r.neck[0], -hp.r.neck[1]);
+  if (o.whistle) { const w = part(sh, 'prop0'); if (w) { X.save(); X.translate(30, -hp.r.h * .18); X.rotate(-.3); X.scale(.55, .55); X.drawImage(w.img, -w.img.width / 2, 0); X.restore(); } }
+  X.restore();
+  X.restore();
+}
+
+// ---------------------------------------------------------------- printed scenery
+function crowd(x, y, w, h, t, lift = 0, seed = 3, cols = ['#3E5FA8', '#9B2335', '#E9DEC4', '#3E5FA8', '#9B2335', '#C8B48A']) {
+  // rows of little paper heads in the stands, hatched behind
+  X.save(); X.beginPath(); X.rect(x, y, w, h); X.clip();
+  X.fillStyle = '#D9CDB0'; X.fillRect(x, y, w, h);
+  X.strokeStyle = 'rgba(43,34,25,.25)'; X.lineWidth = 1.2;
+  for (let i = -h; i < w; i += 9) { X.beginPath(); X.moveTo(x + i, y + h); X.lineTo(x + i + h, y); X.stroke(); }
+  const R = mulberry(seed);
+  const tq = Math.floor(t * 12) / 12;
+  for (let row = 0; row < Math.ceil(h / 22) + 1; row++) for (let i = 0; i < w / 20 + 1; i++) {
+    const cx = x + i * 20 + (row % 2) * 10, cy = y + row * 22 + 10;
+    const L = lift * (0.6 + .4 * Math.sin(tq * 9 + i * .7 + row)) * 14;
+    X.fillStyle = cols[Math.floor(R() * cols.length)];
+    X.beginPath(); X.arc(cx, cy - Math.max(0, L), 8, 0, 7); X.fill();
+  }
+  X.restore();
+  X.strokeStyle = C.ink; X.lineWidth = 3; X.beginPath(); X.moveTo(x, y + h); X.lineTo(x + w, y + h); X.stroke();
+}
+function grassBand(x, y, w, h) {
+  X.fillStyle = C.grass; X.fillRect(x, y, w, h);
+  X.fillStyle = C.grass2; for (let i = 0; i < w; i += 120) X.fillRect(x + i, y, 60, h);
+  X.strokeStyle = 'rgba(43,34,25,.18)'; X.lineWidth = 1;
+  for (let j = 0; j < 6; j++) { X.beginPath(); X.moveTo(x, y + 18 + j * 34); X.lineTo(x + w, y + 18 + j * 34); X.stroke(); }
+}
+function goalFrame(x, y, w, h, ripple = 0) {      // side-on goal: posts, bar and a hatched net
+  X.save();
+  X.strokeStyle = 'rgba(43,34,25,.55)'; X.lineWidth = 1.4;
+  for (let i = 0; i <= 10; i++) { const k = i / 10; const r = ripple * Math.sin(k * Math.PI) * 26;
+    X.beginPath(); X.moveTo(x + k * w + r * .3, y); X.quadraticCurveTo(x + k * w + 18 + r, y + h * .5, x + k * w + 10, y + h); X.stroke(); }
+  for (let j = 0; j <= 8; j++) { const k = j / 8; X.beginPath(); X.moveTo(x, y + k * h); X.lineTo(x + w + ripple * 22 * Math.sin(k * Math.PI), y + k * h + 6); X.stroke(); }
+  X.strokeStyle = '#FBF6EA'; X.lineWidth = 14; X.lineCap = 'round';
+  X.beginPath(); X.moveTo(x, y + h); X.lineTo(x, y); X.lineTo(x + w, y); X.lineTo(x + w, y + h); X.stroke();
+  X.strokeStyle = C.ink; X.lineWidth = 3;
+  X.beginPath(); X.moveTo(x - 7, y + h); X.lineTo(x - 7, y - 7); X.lineTo(x + w + 7, y - 7); X.lineTo(x + w + 7, y + h); X.stroke();
+  X.restore();
+}
+function ball(x, y, r = 16, spin = 0) {
+  X.save(); X.translate(x, y); X.rotate(spin);
+  X.shadowColor = 'rgba(43,34,25,.35)'; X.shadowBlur = 4; X.shadowOffsetX = 3; X.shadowOffsetY = 4;
+  X.fillStyle = '#FBF6EA'; X.beginPath(); X.arc(0, 0, r, 0, 7); X.fill(); X.shadowColor = 'transparent';
+  X.strokeStyle = C.ink; X.lineWidth = 2.5; X.stroke();
+  X.fillStyle = C.ink; X.beginPath(); for (let i = 0; i < 5; i++) { const a = i * 1.2566 - 1.57; X.lineTo(Math.cos(a) * r * .38, Math.sin(a) * r * .38); } X.fill();
+  for (let i = 0; i < 5; i++) { const a = i * 1.2566 - 1.57; X.beginPath(); X.arc(Math.cos(a) * r * .92, Math.sin(a) * r * .92, r * .2, 0, 7); X.fill(); }
+  X.restore();
+}
+function dashedArc(pts, k, color = C.ink) {       // the ball's path, drawn as a dashed ink line up to fraction k
+  X.save(); X.strokeStyle = color; X.lineWidth = 4; X.setLineDash([14, 10]); X.lineCap = 'round';
+  X.beginPath(); const n = 40;
+  for (let i = 0; i <= n * k; i++) { const [x, y] = bez(pts, i / n); i ? X.lineTo(x, y) : X.moveTo(x, y); }
+  X.stroke(); X.restore();
+}
+function bez(p, u) { const [a, b, c] = p; const m = 1 - u; return [m*m*a[0] + 2*m*u*b[0] + u*u*c[0], m*m*a[1] + 2*m*u*b[1] + u*u*c[1]]; }
+function speedLines(t0, t, x, y, w, h) {
+  const k = (t - t0) / .35; if (k < 0 || k > 1) return;
+  X.save(); X.globalAlpha = Math.sin(k * Math.PI); X.strokeStyle = C.ink; X.lineWidth = 3;
+  const R = mulberry(Math.round(t0 * 10));
+  for (let i = 0; i < 26; i++) { const yy = y + R() * h, l = 120 + R() * 320, xx = x + R() * w; X.beginPath(); X.moveTo(xx, yy); X.lineTo(xx + l, yy); X.stroke(); }
+  X.restore();
+}
+function inkRing(cx, cy, rx, ry, t0, t) {       // a hand-drawn marker ring growing round a number
+  const k = clamp((t - t0) / .45, 0, 1); if (k <= 0) return;
+  X.save(); X.strokeStyle = C.red; X.lineWidth = 6; X.lineCap = 'round'; X.beginPath();
+  for (let i = 0; i <= 60 * k * 1.12; i++) { const a = -1.9 + i / 60 * 6.6; const w = 1 + .06 * Math.sin(i * .9); X.lineTo(cx + Math.cos(a) * rx * w, cy + Math.sin(a) * ry * w); }
+  X.stroke(); X.restore();
+}
+POSES.sit = { lean: -4, h: 0, uL: 30, fL: -50, uR: -10, fR: -60, tL: -84, sL: 84, tR: -80, sR: 80 };
+POSES.sitlean = { lean: -14, h: -6, uL: 40, fL: -70, uR: 20, fR: -80, tL: -84, sL: 84, tR: -80, sR: 80 };
+POSES.dribble1 = { lean: -8, h: -2, uL: 30, fL: 20, uR: -30, fR: -10, tL: -24, sL: 18, tR: 16, sR: 10 };
+POSES.dribble2 = { lean: -8, h: -2, uL: -20, fL: -10, uR: 30, fR: 20, tL: 14, sL: 12, tR: -26, sR: 20 };
+POSES.slide = { lean: -40, h: -10, uL: 120, fL: 10, uR: 40, fR: 10, tL: -70, sL: -10, tR: 10, sR: 40 };
+
+// ---------------------------------------------------------------- layout
+const PG = { x: 22, y: 22, w: W - 44, h: H - 44 };
+const SB = { x: 52, y: 62, w: W - 104, h: 360 };
+const AP = { x: 52, y: 446, w: W - 104, h: 856 };
+const CB = { y: 1330, h: 170 };
+const PW = AP.w, PH = AP.h, GROUND = 700;
+
+// ---------------------------------------------------------------- the season board (top panel)
+const COLX = { odds: 240, pos: 540, run: 840 };
+const ROWY = 262;
+const CELLS = {
+  odds: [[-9, '?'], [T.stampOdds, '5000–1']],
+  pos: [[-9, '–'], [T.pos20, '20th'], [T.pos14, '14th'], [T.pos1, '1st'], [T.sG - .1, 'CHAMPS']],
+  run: [[-9, '0'], ...VK.map((k, i) => [k + .4, String(VN[i])])],
+};
+function cell(col, t) {
+  const hist = CELLS[col]; const cx = COLX[col], cy = ROWY, w = 270, h = 150;
+  let lastI = 0; for (let i = 0; i < hist.length; i++) if (t >= hist[i][0] - .3) lastI = i;
+  for (let i = Math.max(0, lastI - 1); i <= lastI; i++) {
+    const [t0, v] = hist[i];
+    const d = i === 0 ? { vis: true, held: 0, s: 1, rot: (mulberry(cx)() - .5) * .03, y: 0 } : drop(t, t0, .3, cx * 7 + i);
+    if (!d.vis) continue;
+    const champ = v === 'CHAMPS';
+    const fill = i === 0 ? '#E9DDBF' : champ ? C.brass : C.leiP;
+    X.save(); X.translate(cx, cy + d.y); X.scale(d.s, d.s);
+    paperCard(-w / 2, -h / 2, w, h, fill, d.held, d.rot);
+    X.rotate(d.rot);
+    if (i > 0) { X.strokeStyle = 'rgba(241,232,210,.85)'; X.lineWidth = 2; X.setLineDash([6, 5]); X.strokeRect(-w / 2 + 9, -h / 2 + 9, w - 18, h - 18); X.setLineDash([]); }
+    const size = v.length > 5 ? (champ ? 50 : 58) : 92;
+    X.font = `bold ${size}px ${champ ? F.shout : F.num}`; X.textAlign = 'center'; X.textBaseline = 'middle';
+    X.fillStyle = i === 0 ? C.ink : champ ? C.ink : C.paper; X.fillText(v, 0, 6);
+    X.restore();
+  }
+}
+function scoreboard(t, texts) {
+  inkText('LEICESTER CITY · PREMIER LEAGUE', W / 2, SB.y + 40, 34, F.sc, C.lei);
+  X.strokeStyle = C.ink; X.lineWidth = 1.5; X.beginPath(); X.moveTo(SB.x + 40, SB.y + 64); X.lineTo(SB.x + SB.w - 40, SB.y + 64); X.stroke();
+  inkText('Odds to win it', COLX.odds, SB.y + 106, 32); inkText('League position', COLX.pos, SB.y + 106, 32); inkText('Vardy: games in a row', COLX.run, SB.y + 106, 28);
+  for (const col of ['odds', 'pos', 'run']) cell(col, t);
+  if (t > T.record - .25 && t < T.sH) {     // RECORD stamp across the run cell
+    const k = clamp((t - (T.record - .25)) / .25, 0, 1);
+    X.save(); X.translate(COLX.run, ROWY + 70); X.rotate(-.12); X.scale(lerp(1.5, 1, ei(k)), lerp(1.5, 1, ei(k)));
+    X.globalAlpha = k < 1 ? .5 : .95;
+    X.fillStyle = 'rgba(241,232,210,.85)'; X.fillRect(-110, -30, 220, 60);
+    X.strokeStyle = C.red; X.lineWidth = 5; X.strokeRect(-110, -30, 220, 60);
+    inkText('RECORD', 0, 3, 38, F.sc, C.red); X.restore();
+    if (k >= 1) texts.push({ id: 'record', text: 'RECORD', x0: COLX.run - 110, y0: ROWY + 40, x1: COLX.run + 110, y1: ROWY + 100 });
+  }
+  texts.push({ id: 'board', text: 'board', x0: SB.x, y0: SB.y, x1: SB.x + SB.w, y1: SB.y + SB.h, pass: true });
+}
+
+// ---------------------------------------------------------------- action panel helpers
+function tag(text, texts, t0, t, w = 300) {
+  const d = drop(t, t0, .25, 99 + Math.round(t0 * 10)); if (!d.vis) return;
+  X.save(); X.translate(30 + w / 2, 34 + 38 + d.y); X.scale(d.s, d.s);
+  paperCard(-w / 2, -38, w, 76, C.paper, d.held, d.rot);
+  X.rotate(d.rot); X.font = `bold 42px ${F.num}`; X.fillStyle = C.ink; X.textAlign = 'center'; X.textBaseline = 'middle'; X.fillText(text, 0, 4);
+  X.fillRect(-w / 2 + 40, 30, w - 80, 2.5);
+  X.restore();
+  texts.push({ id: 'tag' + text, text, x0: AP.x + 30, y0: AP.y + 34, x1: AP.x + 30 + w, y1: AP.y + 110 });
+}
+function off(b) { return { text: b.text, x0: b.x0 + AP.x, y0: b.y0 + AP.y, x1: b.x1 + AP.x, y1: b.y1 + AP.y }; }
+const LEI = ['#2D4E9C', '#E9DEC4', '#2D4E9C', '#5B78BE', '#E9DEC4', '#C8B48A'];
+function stage(t, lift, cols = LEI) { crowd(0, 0, PW, 300, t, lift, 3, cols); grassBand(0, 300, PW, PH - 300); }
+function stampOn(t, t0, x, y, text, size = 64, rot = -.14) {   // red rubber stamp landing in panel coords
+  if (t < t0 - .25) return;
+  const k = clamp((t - (t0 - .25)) / .25, 0, 1);
+  X.save(); X.translate(x, y); X.rotate(rot); X.scale(lerp(1.6, 1, ei(k)), lerp(1.6, 1, ei(k))); X.globalAlpha = k < 1 ? .45 : .92;
+  X.font = `${size}px ${F.sc}`; const w = X.measureText(text).width + 60, h = size * 1.5;
+  X.strokeStyle = C.red; X.lineWidth = 6; X.strokeRect(-w / 2, -h / 2, w, h); X.lineWidth = 2; X.strokeRect(-w / 2 + 8, -h / 2 + 8, w - 16, h - 16);
+  inkText(text, 0, 4, size, F.sc, C.red); X.restore();
+}
+
+// the bookmaker's slip (hook and ending)
+function betSlip(t, texts, ringT, wonT) {
+  const cx = PW / 2 + 90, cy = 470, w = 560, h = 560;
+  X.save(); X.translate(cx, cy); X.rotate(.03);
+  paperCard(-w / 2, -h / 2, w, h, '#F7F0DC', .15, 0);
+  X.strokeStyle = C.ink; X.lineWidth = 3; X.strokeRect(-w / 2 + 16, -h / 2 + 16, w - 32, h - 32);
+  inkText('BETTING SLIP', 0, -h / 2 + 66, 44); X.fillStyle = C.ink; X.fillRect(-180, -h / 2 + 96, 360, 2);
+  inkText('Season 2015–16', 0, -h / 2 + 136, 32, F.num);
+  inkText('LEICESTER CITY', 0, -60, 46, F.sc, C.lei); inkText('to win the', 0, -12, 32, F.num); inkText('PREMIER LEAGUE', 0, 34, 42, F.sc);
+  X.setLineDash([8, 7]); X.strokeStyle = C.ink; X.lineWidth = 2; X.beginPath(); X.moveTo(-200, 80); X.lineTo(200, 80); X.stroke(); X.setLineDash([]);
+  inkText('Odds', -150, 150, 34, F.num);
+  if (t > T.stampOdds) inkText('5000 / 1', 60, 150, 76, F.num, C.ink, 'center', 'bold');
+  X.restore();
+  if (t > T.stampOdds - .25 && t < T.stampOdds + .1) stampOn(t, T.stampOdds, cx + 60, cy + 150, '5000 / 1', 54, 0);
+  if (ringT !== undefined) inkRing(cx + 62, cy + 152, 190, 70, ringT, t);
+  if (wonT !== undefined) stampOn(t, wonT, cx - 20, cy - 175, 'IT WON', 72, -.12);
+  texts.push({ id: 'slip', text: 'BETTING SLIP LEICESTER CITY to win the PREMIER LEAGUE', x0: AP.x + cx - w / 2, y0: AP.y + cy - h / 2, x1: AP.x + cx + w / 2, y1: AP.y + cy + h / 2, pass: true });
+}
+
+function sceneA(t, texts) {   // hook: the 5000-1 slip; a Leicester player looks up at it
+  X.fillStyle = '#E8DCC0'; X.fillRect(0, 0, PW, PH);
+  betSlip(t, texts);
+  const look = t > T.stampOdds + .1;
+  puppet({ sh: 'lei', x: 150, y: 520, s: .27, face: 1, pose: poseAt([[0, 'stand'], [T.stampOdds, 'stand'], [T.stampOdds + .25, 'slump']], t), head: look ? 'expr3' : 'head', num: '9', ground: 760, pop: look && t < T.stampOdds + .2 });
+  const hs = slip(t, 0.12, 60, 22, PW - 120, 112, '5000–1 · THE LONGEST SHOT', 52, { font: F.shout, fill: C.cap });
+  if (hs) texts.push({ id: 'hook', ...off(hs) });
+}
+
+function leagueTable(t, rowOf) {   // printed league table, 20 rows; Leicester's blue tag rides up it
+  X.fillStyle = '#E8DCC0'; X.fillRect(0, 0, PW, PH);
+  const x0 = 380, y0 = 140, rh = 33, w = 520;
+  X.save(); X.translate(x0, y0);
+  paperCard(-20, -60, w + 40, 20 * rh + 90, '#F7F0DC', 0, 0);
+  inkText('THE TABLE', w / 2, -28, 34);
+  X.strokeStyle = 'rgba(43,34,25,.45)'; X.lineWidth = 1.2;
+  for (let i = 0; i < 20; i++) {
+    const y = i * rh; X.beginPath(); X.moveTo(0, y + rh); X.lineTo(w, y + rh); X.stroke();
+    inkText(String(i + 1), 26, y + rh / 2 + 2, 22, F.num);
+    X.fillStyle = 'rgba(43,34,25,.28)'; X.fillRect(70, y + 13, 160 + (i * 37 % 140), 8);
+  }
+  X.fillStyle = 'rgba(200,70,58,.18)'; X.fillRect(0, 17 * rh, w, 3 * rh);   // the drop zone
+  inkText('DROP ZONE', w - 90, 18.5 * rh + 2, 20, F.sc, C.red);
+  // Leicester's tag
+  const r = rowOf(t); const y = (r - 1) * rh;
+  X.save(); X.translate(0, y);
+  X.fillStyle = C.lei; X.shadowColor = 'rgba(43,34,25,.35)'; X.shadowBlur = 6; X.shadowOffsetY = 4; X.fillRect(-14, -2, w + 28, rh + 4); X.shadowColor = 'transparent';
+  inkText('LEICESTER', 210, rh / 2 + 2, 26, F.sc, C.paper);
+  X.restore();
+  X.restore();
+  return [x0, y0 + y];
+}
+function sceneB(t, texts) {   // a year earlier: bottom at Christmas, then the escape to 14th
+  const rowOf = tt => tt < T.climb ? 20 : lerp(20, 14, eio(clamp((tt - T.climb) / (T.pos14 - T.climb), 0, 1)));
+  const [tx, ty] = leagueTable(t, rowOf);
+  // the player rides the tag: feet planted on its left end, worried at the bottom, relieved when safe
+  const safe = t > T.pos14 - .2;
+  puppet({ sh: 'lei', x: tx - 120, y: ty - 135, s: .2, face: 1, pose: safe ? poseAt([[T.pos14 - .2, 'stand'], [T.pos14 + .2, 'cheer']], t) : POSES.slump, head: safe ? 'expr2' : 'expr3', num: '9', ground: ty + 35 });
+  tag(t < T.climb - .1 ? 'XMAS 2014' : 'MAY 2015', texts, t < T.climb - .1 ? T.sB + .1 : T.climb - .1, t);
+  if (t > T.climb) { const s = slip(t, T.climb + .3, 34, 700, 320, 96, 'SURVIVED', 46); if (s) texts.push({ id: 'surv', ...off(s) }); }
+}
+
+function sceneC(t, texts) {   // the new manager: a newspaper slapped on the page; two players read it, doubtful
+  stage(t, 0);
+  const d = drop(t, T.paper, .35, 41);
+  if (d.vis) {
+    X.save(); X.translate(PW / 2 + 140, 380 + d.y); X.scale(d.s, d.s); X.rotate(d.rot - .04);
+    paperCard(-300, -230, 600, 460, '#F4EEDD', d.held, 0);
+    inkText('THE MORNING PAPER', 0, -180, 40); X.fillStyle = C.ink; X.fillRect(-260, -150, 520, 3); X.fillRect(-260, -142, 520, 1);
+    inkText('JULY 2015', 0, -118, 24, F.num);
+    inkText('RANIERI', 0, -50, 84, F.shout); inkText('APPOINTED', 0, 30, 60, F.shout);
+    X.fillStyle = 'rgba(43,34,25,.35)'; for (let i = 0; i < 5; i++) { X.fillRect(-250, 90 + i * 22, 230, 8); X.fillRect(20, 90 + i * 22, 230, 8); }
+    X.restore();
+    texts.push({ id: 'paper', text: 'RANIERI APPOINTED JULY 2015', x0: AP.x + PW / 2 - 160, y0: AP.y + 150, x1: AP.x + PW / 2 + 440, y1: AP.y + 610 });
+  }
+  puppet({ sh: 'lei', x: 140, y: 480, s: .24, face: 1, pose: POSES.stand, head: t > T.paper + .3 ? 'expr3' : 'head', num: '5', ground: GROUND });
+  puppet({ sh: 'lei', x: 270, y: 490, s: .22, face: 1, pose: poseAt([[0, 'stand'], [T.drop, 'stand'], [T.drop + .3, 'slump']], t), head: t > T.drop ? 'expr3' : 'head', num: '9', ground: GROUND + 4 });
+  stampOn(t, T.drop, PW / 2 + 150, 700, 'TIPPED TO GO DOWN', 46, .06);
+  if (t > T.drop) texts.push({ id: 'down', text: 'TIPPED TO GO DOWN', x0: AP.x + PW / 2 - 180, y0: AP.y + 650, x1: AP.x + PW / 2 + 480, y1: AP.y + 750 });
+  tag('NEW BOSS', texts, T.sC + .1, t);
+}
+
+function sceneD(t, texts) {   // Vardy's run: one goal after another, the counter racing up
+  let i = 0; while (i < VK.length - 1 && t >= VK[i + 1] - .45) i++;
+  const k0 = VK[i];
+  const roar = t > k0 + .35 ? clamp(1 - (t - k0 - .35) / 1.2, 0, 1) : 0;
+  stage(t, roar);
+  const rip = t > k0 + .35 ? Math.exp(-(t - k0 - .35) * 4) * Math.sin((t - k0 - .35) * 30) : 0;
+  goalFrame(PW - 270, 360, 240, 320, rip);
+  const kick = [[k0 - .45, 'stand'], [k0 - .12, 'windup'], [k0 + .02, 'strike'], [k0 + .3, 'follow'], [k0 + .45, i === VK.length - 1 ? 'cheer' : 'stand']];
+  const vx = 200 + (i % 3) * 60;
+  puppet({ sh: 'opp', x: 470 + (i % 2) * 40, y: 486, s: .23, face: -1, pose: poseAt([[k0 - .3, 'ready'], [k0 + .1, 'stretch']], t), head: t > k0 + .35 ? 'expr3' : 'expr1', ground: GROUND });
+  puppet({ sh: 'gk', x: PW - 150, y: 490, s: .22, face: -1, pose: poseAt([[k0 - .2, 'ready'], [k0 + .15, 'ready'], [k0 + .4, 'dive']], t), rot: t > k0 + .15 ? -lerp(0, 45, clamp((t - k0 - .15) / .25, 0, 1)) : 0, head: t > k0 + .35 ? 'expr3' : 'expr1', ground: GROUND });
+  puppet({ sh: 'lei', x: vx, y: 478, s: .27, face: 1, pose: poseAt(kick, t), head: t > k0 + .35 ? 'expr2' : 'expr1', num: '9', ground: GROUND });
+  const path = [[vx + 80, 680], [560 + (i % 2) * 40, 300 + (i % 3) * 60], [PW - 90, 430 + (i % 3) * 60]];
+  if (t < k0) ball(vx + 80, 680); else { const k = clamp((t - k0) / .35, 0, 1); dashedArc(path, k); const [bx, by] = bez(path, k); ball(bx, by, 16, k * 8); }
+  // the game number, printed big in the corner
+  const gs = slip(t, VK[i] + .4, PW - 300, 128, 260, 110, 'GAME ' + VN[i], 54, { font: F.num });
+  if (gs && t > VK[i] + .4) texts.push({ id: 'game' + i, ...off(gs), pass: true });   // the same number is on the board
+  tag('AUG – NOV 2015', texts, T.sD + .1, t, 380);
+}
+
+function sceneE(t, texts) {   // Mahrez dribbles past two; Kante wins it back; top at Christmas
+  stage(t, t > T.pos1 ? .8 : 0);
+  // Mahrez #26 runs left to right with the ball at his feet, past two defenders who turn too late
+  const k = clamp((t - T.sE - .2) / (T.kante - T.sE - .4), 0, 1); const mx = lerp(80, 820, eio(k));
+  const cyc = Math.floor(t * 8) % 2 ? 'dribble1' : 'dribble2';
+  const defs = [[360, 'expr1'], [600, 'expr1']];
+  if (t < T.kante) defs.forEach(([dx], j) => { const passed = mx > dx + 40; puppet({ sh: 'opp', x: dx, y: 486, s: .23, face: passed ? 1 : -1, rot: passed ? 6 : 0, pose: passed ? POSES.protest : POSES.ready, head: passed ? 'expr3' : 'expr1', ground: GROUND }); });
+  if (t < T.kante) {
+    puppet({ sh: 'lei', x: mx, y: 480, s: .24, face: 1, pose: k < 1 ? POSES[cyc] : POSES.stand, head: 'expr1', num: '26', ground: GROUND });
+    ball(mx + 70 + Math.abs(Math.sin(t * 12)) * 14, 684, 15, t * 9);
+    tag('MAHREZ #26', texts, T.sE + .1, t, 340);
+  } else {
+    // Kante #14 slides in and takes the ball off an attacker's toes
+    const s = clamp((t - T.kante) / .5, 0, 1);
+    puppet({ sh: 'opp', x: 640, y: 480, s: .24, face: -1, pose: t > T.tackle ? POSES.protest : POSES.run1, head: t > T.tackle ? 'expr3' : 'expr1', ground: GROUND });
+    const upK = clamp((t - T.tackle - .7) / .3, 0, 1);   // gets back up with the ball
+    puppet({ sh: 'lei', x: lerp(180, 520, eo(s)), y: lerp(lerp(480, 560, s), 480, upK), s: .24, face: upK > .5 ? -1 : 1, rot: lerp(0, -10, s) * (1 - upK), pose: upK > 0 ? mix(POSES.slide, POSES.stand, upK) : POSES.slide, head: upK > 0 ? 'expr2' : 'expr1', num: '14', ground: GROUND });
+    const bx = t < T.tackle ? 580 : lerp(580, 440, eo(clamp((t - T.tackle) / .5, 0, 1)));
+    ball(bx, 684, 15, t * 3);
+    tag('KANTÉ #14', texts, T.kante, t, 320);
+  }
+  if (t > T.top - .3) { const s2 = slip(t, T.top, 420, 128, 520, 128, 'TOP AT\nCHRISTMAS 2015', 42); if (s2) texts.push({ id: 'top', ...off(s2) }); }
+}
+
+function sceneF(t, texts) {   // 2 May 2016, Vardy's living room: the players on the sofa watch Chelsea v Tottenham
+  X.fillStyle = C.wall; X.fillRect(0, 0, PW, PH);
+  X.fillStyle = C.wall2; for (let i = 0; i < PW; i += 70) X.fillRect(i, 0, 26, 560);
+  X.fillStyle = C.wood; X.fillRect(0, 560, PW, PH - 560); X.strokeStyle = 'rgba(43,34,25,.35)'; X.lineWidth = 2;
+  for (let j = 0; j < 6; j++) { X.beginPath(); X.moveTo(0, 590 + j * 48); X.lineTo(PW, 590 + j * 48); X.stroke(); }
+  // the television on its cabinet (right)
+  const g1 = t > T.g1, g2 = t > T.g2;
+  const flash = g2 ? Math.max(0, 1 - (t - T.g2) / .4) : 0;
+  X.save(); X.translate(700, 300);
+  paperCard(-40, 180, 300, 150, '#7A5A3C', 0, 0);
+  paperCard(-70, -150, 360, 320, C.tv, 0, 0);
+  X.fillStyle = flash > 0 ? `rgba(255,250,230,${.6 + flash * .4})` : '#CFD8C4'; X.fillRect(-46, -126, 312, 240);
+  inkText('CHELSEA', 110, -76, 34, F.sc); inkText('TOTTENHAM', 110, 64, 32, F.sc);
+  const cs = g2 ? '2' : g1 ? '1' : '0';
+  inkText(`${cs} – 2`, 110, -6, 72, F.num, C.ink, 'center', 'bold');
+  if (!g1) inkText('HALF-TIME', 110, 104, 22, F.num);
+  X.restore();
+  texts.push({ id: 'tv', text: `CHELSEA ${g2 ? 2 : g1 ? 1 : 0} – 2 TOTTENHAM`, x0: AP.x + 654, y0: AP.y + 174, x1: AP.x + 966, y1: AP.y + 414, pass: true });   // a live score on the TV
+  // the sofa and three players on it, watching (facing right), then leaping up on the equaliser
+  X.save(); X.translate(60, 470);
+  const bounce = g2 ? Math.max(0, Math.sin((t - T.g2) * 18)) * Math.exp(-(t - T.g2) * 3) * 10 : 0;
+  paperCard(0, 40, 520, 120, C.sofa, 0, 0); paperCard(-10, -90, 540, 140, '#7E4D3A', 0, 0);
+  paperCard(-30, 10, 70, 170, '#7E4D3A', 0, 0); paperCard(490, 10, 70, 170, '#7E4D3A', 0, 0);
+  X.fillStyle = '#5E3A2C'; X.fillRect(20, 160, 30, 50); X.fillRect(470, 160, 30, 50);
+  X.restore();
+  const nums = ['9', '5', '11'];
+  for (let i = 0; i < 3; i++) {
+    const x = 150 + i * 150;
+    const up = g2 ? clamp((t - T.g2 - .05 - i * .06) / .25, 0, 1) : 0;
+    const hop = up >= 1 ? Math.abs(Math.sin((t - T.g2) * 6 + i)) * 60 : 0;
+    const tense = t > T.g1 && !g2;
+    puppet({ sh: 'lei', x, y: lerp(440 - bounce, 400, up) - hop, s: .2, face: 1, pose: up > 0 ? mix(POSES.sit, i % 2 ? POSES.cheer : POSES.cheer2, up) : tense ? POSES.sitlean : POSES.sit, head: up > 0 ? 'expr2' : tense ? 'expr1' : 'expr3', num: nums[i], ground: up > .5 ? 680 : undefined });
+  }
+  tag('2 MAY 2016', texts, T.sF + .1, t);
+  if (t > T.mustWin - .3 && t < T.g2) { const s = slip(t, T.mustWin, 360, 34, 300, 96, 'SPURS MUST WIN', 34); if (s) texts.push({ id: 'must', ...off(s) }); }
+}
+
+function sceneG(t, texts) {   // champions: the hop and the paper confetti
+  stage(t, 1);
+  const hop = (i, x, num, ph) => { const k = ((t - T.sG) * 2.4 + ph) % 1; const up = Math.sin(k * Math.PI) * 70;
+    puppet({ sh: 'lei', x, y: 470 - up, s: .25, face: i % 2 ? -1 : 1, pose: k < .5 ? POSES.cheer : POSES.cheer2, head: 'expr2', num, ground: GROUND }); };
+  hop(0, 150, '9', 0); hop(1, 330, '26', .33); hop(2, 510, '14', .66); hop(3, 690, '5', .15);
+  const R = mulberry(9);
+  for (let i = 0; i < 70; i++) { const x0 = R() * PW, sp = 120 + R() * 140, y = ((t - T.sG) * sp + R() * PH) % PH, a = t * 3 + i;
+    X.save(); X.translate(x0 + Math.sin(a) * 20, y); X.rotate(a); X.fillStyle = [C.lei, C.brass, C.paper, C.leiP][i % 4]; X.fillRect(-9, -5, 18, 10); X.restore(); }
+  const s = slip(t, T.y132, 160, 128, PW - 320, 128, 'FIRST TITLE IN\n132 YEARS', 42); if (s) texts.push({ id: 'y132', ...off(s) });
+  tag('CHAMPIONS', texts, T.sG, t, 330);
+}
+
+function sceneH(t, texts) {   // back to the slip: ringed, stamped
+  X.fillStyle = '#E8DCC0'; X.fillRect(0, 0, PW, PH);
+  betSlip(t, texts, T.ring, T.won);
+  puppet({ sh: 'lei', x: 150, y: 520, s: .27, face: 1, pose: poseAt([[T.sH, 'stand'], [T.won, 'stand'], [T.won + .3, 'cheer']], t), head: t > T.won ? 'expr2' : 'expr1', num: '9', ground: 760 });
+}
+
+const SCENES = [[0, sceneA], [T.sB, sceneB], [T.sC, sceneC], [T.sD, sceneD], [T.sE, sceneE], [T.sF, sceneF], [T.sG, sceneG], [T.sH, sceneH]];
+const NOWHIP = [T.sG];
+
+function brandThumb() {           // 1080 x 1920 Short thumbnail art; heading is added as live text in Remotion
+  X.fillStyle = C.table; X.fillRect(0, 0, W, H);
+  X.fillStyle = C.paper; X.fillRect(22, 22, W - 44, H - 44);
+  const px = 52, py = 560, pw = W - 104, ph = 900;
+  X.save(); X.beginPath(); X.rect(px, py, pw, ph); X.clip(); X.translate(px, py);
+  X.fillStyle = C.wall; X.fillRect(0, 0, pw, ph); X.fillStyle = C.wall2; for (let i = 0; i < pw; i += 70) X.fillRect(i, 0, 26, 600);
+  X.fillStyle = C.wood; X.fillRect(0, 600, pw, ph - 600);
+  // the TV at 2-2
+  X.save(); X.translate(690, 250); paperCard(-40, 190, 300, 170, '#7A5A3C', 0, 0); paperCard(-70, -160, 360, 330, C.tv, 0, 0);
+  X.fillStyle = '#FFF8E2'; X.fillRect(-46, -136, 312, 250); inkText('2 – 2', 110, -10, 96, F.num, C.ink, 'center', 'bold'); X.restore();
+  paperCard(20, 520, 520, 130, C.sofa, 0, 0); paperCard(10, 400, 540, 150, '#7E4D3A', 0, 0);
+  const P = [[130, '9', POSES.cheer, -40], [300, '5', POSES.cheer2, -90], [460, '11', POSES.cheer, -30]];
+  for (const [x, n, pose, up] of P) puppet({ sh: 'lei', x, y: 420 + up, s: .24, face: 1, pose, head: 'expr2', num: n, ground: 760 });
+  const R = mulberry(9); for (let i = 0; i < 60; i++) { X.save(); X.translate(R() * pw, R() * 560); X.rotate(R() * 6); X.fillStyle = [C.lei, C.brass, C.paper][i % 3]; X.fillRect(-10, -5, 20, 10); X.restore(); }
+  X.restore();
+  X.strokeStyle = C.ink; X.lineWidth = 8; X.strokeRect(px, py, pw, ph);
+  const sl = (x, y, w, h, txt, size, font, fill, rot) => { X.save(); X.translate(x + w / 2, y + h / 2); paperCard(-w / 2, -h / 2, w, h, fill, .1, rot); X.rotate(rot);
+    X.strokeStyle = C.ink; X.lineWidth = 2.5; X.setLineDash([8, 6]); X.strokeRect(-w / 2 + 10, -h / 2 + 10, w - 20, h - 20); X.setLineDash([]);
+    inkText(txt, 0, 4, size, font, C.ink, 'center', font === F.num ? 'bold' : ''); X.restore(); };
+  sl(90, 1330, 520, 110, 'ODDS: 5000 – 1', 62, F.num, C.paper, .02);
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .5; X.drawImage(TEX, 22, 22, W - 44, H - 44, 22, 22, W - 44, H - 44); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+}
+// ---------------------------------------------------------------- captions
+function caption(t, texts) {
+  const c = CAPS.find(c => t >= c[0] && t < c[1]); if (!c) return;
+  const txt = c[2];
+  X.font = `600 44px ${F.num}`;
+  // wrap into at most 2 lines
+  const words = txt.split(' '); let lines = [''];
+  for (const w of words) { const tr = (lines[lines.length - 1] + ' ' + w).trim(); if (X.measureText(tr).width > 900 && lines[lines.length - 1]) lines.push(w); else lines[lines.length - 1] = tr; }
+  const bw = Math.min(980, Math.max(...lines.map(l => X.measureText(l).width)) + 80), bh = 40 + lines.length * 56;
+  const x = W / 2 - bw / 2, y = CB.y + (CB.h - bh) / 2;
+  X.save(); X.shadowColor = 'rgba(43,34,25,.3)'; X.shadowBlur = 3; X.shadowOffsetX = 2; X.shadowOffsetY = 3;
+  X.fillStyle = C.cap; X.fillRect(x, y, bw, bh); X.shadowColor = 'transparent';
+  X.strokeStyle = C.ink; X.lineWidth = 3; X.strokeRect(x, y, bw, bh); X.restore();
+  lines.forEach((l, i) => inkText(l, W / 2, y + 48 + i * 56, 44, F.num, C.ink, 'center', '600'));
+  texts.push({ id: 'cap' + c[0], text: txt, x0: x, y0: y, x1: x + bw, y1: y + bh, pass: true });
+}
+
+// ---------------------------------------------------------------- camera (smooth every frame) and the page
+function shake(t, t0, amp, dur = .5) { const k = t - t0; if (k < 0 || k > dur) return [0, 0]; const d = (1 - k / dur) ** 2; return [Math.sin(k * 61) * amp * d, Math.cos(k * 47) * amp * d]; }
+function actionPanel(t, texts) {
+  let i = 0; while (i < SCENES.length - 1 && t >= SCENES[i + 1][0]) i++;
+  const [t0, fn] = SCENES[i];
+  const whip = i > 0 && !NOWHIP.includes(t0) ? clamp((t - t0) / .3, 0, 1) : 1;
+  X.save(); X.beginPath(); X.rect(AP.x, AP.y, AP.w, AP.h); X.clip();
+  if (whip < 1) { X.save(); X.translate(AP.x - eio(whip) * PW, AP.y); SCENES[i - 1][1](t, []); X.restore(); }
+  X.save(); X.translate(AP.x + (1 - eio(whip)) * PW, AP.y); fn(t, whip < 1 ? [] : texts); X.restore();
+  if (whip < 1) speedLines(t0, t, AP.x, AP.y, AP.w, AP.h);
+  X.restore();
+  X.strokeStyle = C.ink; X.lineWidth = 6; X.strokeRect(AP.x, AP.y, AP.w, AP.h);
+}
+function camera(t) {
+  let s = 1, cx = W / 2, cy = H / 2;
+  for (const [a, b, s1, x1, y1] of PUSH) {      // slow pushes: [t0, t1, scale, cx, cy]; ease out over 0.4 s after t1
+    if (t >= a && t < b) { const k = ss((t - a) / (b - a)); s = lerp(1, s1, k); cx = lerp(W / 2, x1, k); cy = lerp(H / 2, y1, k); }
+    else if (t >= b && t < b + .4) { const k = ss((t - b) / .4); s = lerp(s1, 1, k); cx = lerp(x1, W / 2, k); cy = lerp(y1, H / 2, k); }
+  }
+  if (t > T.endPull) { const k = ss(clamp((t - T.endPull) / 1.4, 0, 1)); s = lerp(1, .9, k); cy = lerp(H / 2, H / 2 + 50, k); }
+  let [sx, sy] = [0, 0];
+  for (const [t0, a, d] of SHAKES) { const [a1, b1] = shake(t, t0, a, d); sx += a1; sy += b1; }
+  return { s, cx, cy, sx, sy };
+}
+const filmRender = (t) => {
+  const texts = [];
+  X.setTransform(1, 0, 0, 1, 0, 0);
+  X.fillStyle = C.table; X.fillRect(0, 0, W, H);
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .6; X.drawImage(TEX, 0, 0); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+  const cam = camera(t);
+  X.setTransform(cam.s, 0, 0, cam.s, W / 2 - cam.cx * cam.s + cam.sx, H / 2 - cam.cy * cam.s + cam.sy);
+  X.save(); X.shadowColor = 'rgba(30,22,14,.45)'; X.shadowBlur = 24; X.shadowOffsetY = 10;
+  X.fillStyle = C.paper; X.fillRect(PG.x, PG.y, PG.w, PG.h); X.restore();
+  X.fillStyle = '#EFE4CA'; X.fillRect(SB.x, SB.y, SB.w, SB.h);
+  scoreboard(t, texts);
+  X.strokeStyle = C.ink; X.lineWidth = 6; X.strokeRect(SB.x, SB.y, SB.w, SB.h);
+  actionPanel(t, texts);
+  caption(t, texts);
+  inkText('FOOT ALL FC', W / 2, 1585, 46); X.fillStyle = C.ink; X.fillRect(W / 2 - 200, 1616, 400, 2); inkText(FOOTER, W / 2, 1650, 28);
+  X.globalCompositeOperation = 'multiply'; X.globalAlpha = .55; X.drawImage(TEX, PG.x, PG.y, PG.w, PG.h, PG.x, PG.y, PG.w, PG.h); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+  window._texts = texts.map(b => ({ ...b, x0: W / 2 + (b.x0 - cam.cx) * cam.s + cam.sx, x1: W / 2 + (b.x1 - cam.cx) * cam.s + cam.sx, y0: H / 2 + (b.y0 - cam.cy) * cam.s + cam.sy, y1: H / 2 + (b.y1 - cam.cy) * cam.s + cam.sy }));
+};
+const BRAND = new URLSearchParams(location.search).get('brand');
+if (BRAND === 'thumb') {
+  window.DUR = 1; window.EV = []; window.TEXTS = () => [];
+  window.render = () => { X.setTransform(1, 0, 0, 1, 0, 0); brandThumb(); };
+  window.render(0); window.READY = true;
+} else {
+  window.render = filmRender;
+  window.TEXTS = (t) => { window.render(t); return window._texts.map(b => ({ ...b, x0: Math.max(0, b.x0), y0: Math.max(0, b.y0), x1: Math.min(W, b.x1), y1: Math.min(H, b.y1) })); };
+  window.EV = EV.sort((a, b) => a.t - b.t);
+  window.render(0);
+  window.READY = true;
+}
+</script></body></html>

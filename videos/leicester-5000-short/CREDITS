@@ -1,0 +1,12 @@
+"5000-1" - Leicester City's 2015-16 Premier League title, an animated fan retelling for the Foot All FC channel. Comic History Cartoon style (lemo-opuscar).
+Unofficial: not made or endorsed by Leicester City FC, Chelsea FC, Tottenham Hotspur, the Premier League or any broadcaster or bookmaker. No club crests,
+league marks, broadcast footage or real likenesses are used; players are generic paper puppets identified by shirt number.
+
+Puppet art: the Barcelona-style part sheets of videos/barca-remontada-short (ChatGPT image model in Figma, gpt-image-2.5-flare, AI-generated),
+  recoloured into plain kits with tools/recolor_kit.py (Leicester-style plain blue 'lei', generic white opponents 'opp').
+Narration: Microsoft VibeVoice-Realtime-0.5B, voice "Frank" (MIT licence), AI-generated voice.
+Fonts (SIL Open Font License): IM FELL English SC (Igino Marini), Old Standard TT (Alexey Kryukov), Lilita One (Juan Montoreano).
+Instruments (sampled, via lemo-opuscar core/audio/sampler.py): see out/instruments.txt at build time.
+Samples (CC0): FreePats project (freepats.zenvoid.org), VS Chamber Orchestra: Community Edition (Versilian Studios), Versilian Community Sample Library (Versilian Studios)
+Foley, crowd and ambience: synthesized in mix.py.
+Facts: see social/scripts/leicester-5000-1.md (fact sheet with sources).
