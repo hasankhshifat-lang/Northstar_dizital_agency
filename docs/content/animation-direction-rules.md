@@ -18,7 +18,7 @@ The two brands are different audiences. **Never mix their styles or their perfor
 | Platforms | YouTube @whichlifenext + the Which Life Next Facebook Page (cross-posts) | Facebook Page সাইন্টিফিক বিথী (`1497857623404891`) |
 | Audience | USA, English | Bangladesh, Bangla (NCTB classes 6–10 level) |
 | Content | American history: events, people, mysteries, politics, wars, inventions, forgotten stories | Comic science explanations with recurring characters (বিথী, বল্টু, মামা, scientist cameos) |
-| House look | Pony Express style map Short: continuous-camera real map that dives into ground scenes with the recoloured Kit rig (`social/which-life-next/RUNBOOK.md`) | The kit's puppet engine and rigged characters (`social/bangla-science-channel/kit/README.md`) |
+| House look | Pony Express style map Short: continuous-camera real map that dives into ground scenes with the recoloured Kit rig (`social/which-life-next/RUNBOOK.md`) | lemo-opuscar Sci-Fi Sitcom Toon for every video (owner, 2026-11-16; `social/bangla-science-channel/kit/scifi-toon/README.md`); the old puppet engine is retired |
 | Learning database | `social/learning/which-life-next.md` | `social/learning/scientific-bithi.md` |
 
 - These rules raise the quality bar **inside** each channel's approved format and tools. They don't replace
