@@ -1,0 +1,114 @@
+{
+ "channel": "asprinted",
+ "generated_at": "2026-11-16T18:21:10+00:00",
+ "data_through": "2026-11-14",
+ "subscribers": "1",
+ "total_views": "0",
+ "videos": "2",
+ "periods": {
+  "7d": {
+   "range": [
+    "2026-11-08",
+    "2026-11-14"
+   ],
+   "by_format": {},
+   "us": {
+    "views": 0,
+    "estimatedMinutesWatched": 0,
+    "averageViewDuration": 0
+   },
+   "all": {
+    "views": 0,
+    "estimatedMinutesWatched": 0
+   }
+  },
+  "prev7d": {
+   "range": [
+    "2026-11-01",
+    "2026-11-07"
+   ],
+   "by_format": {},
+   "us": {
+    "views": 0,
+    "estimatedMinutesWatched": 0,
+    "averageViewDuration": 0
+   },
+   "all": {
+    "views": 0,
+    "estimatedMinutesWatched": 0
+   }
+  },
+  "28d": {
+   "range": [
+    "2026-10-18",
+    "2026-11-14"
+   ],
+   "by_format": {},
+   "us": {
+    "views": 0,
+    "estimatedMinutesWatched": 0,
+    "averageViewDuration": 0
+   },
+   "all": {
+    "views": 0,
+    "estimatedMinutesWatched": 0
+   }
+  },
+  "prev28d": {
+   "range": [
+    "2026-09-20",
+    "2026-10-17"
+   ],
+   "by_format": {},
+   "us": {
+    "views": 0,
+    "estimatedMinutesWatched": 0,
+    "averageViewDuration": 0
+   },
+   "all": {
+    "views": 0,
+    "estimatedMinutesWatched": 0
+   }
+  },
+  "90d": {
+   "range": [
+    "2026-08-17",
+    "2026-11-14"
+   ],
+   "by_format": {},
+   "us": {
+    "views": 0,
+    "estimatedMinutesWatched": 0,
+    "averageViewDuration": 0
+   },
+   "all": {
+    "views": 0,
+    "estimatedMinutesWatched": 0
+   }
+  },
+  "lifetime": {
+   "range": [
+    "2026-11-14",
+    "2026-11-14"
+   ],
+   "by_format": {},
+   "us": {},
+   "all": {}
+  }
+ },
+ "last28": {
+  "traffic_sources": [],
+  "top_countries": [],
+  "search_terms": [],
+  "devices": [],
+  "subscribed_status": [],
+  "top_videos": [],
+  "us_time_zone_mix": {}
+ },
+ "unavailable_in_api": [
+  "impressions",
+  "impressions CTR",
+  "returning/new viewers",
+  "when your viewers are on YouTube"
+ ]
+}

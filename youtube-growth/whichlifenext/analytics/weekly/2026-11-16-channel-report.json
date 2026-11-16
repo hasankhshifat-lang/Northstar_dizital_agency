@@ -1,0 +1,563 @@
+{
+ "channel": "whichlifenext",
+ "generated_at": "2026-11-16T18:20:59+00:00",
+ "data_through": "2026-11-14",
+ "subscribers": "20",
+ "total_views": "15944",
+ "videos": "20",
+ "periods": {
+  "7d": {
+   "range": [
+    "2026-11-08",
+    "2026-11-14"
+   ],
+   "by_format": {
+    "videoOnDemand": {
+     "creatorContentType": "videoOnDemand",
+     "views": 6,
+     "engagedViews": 3,
+     "estimatedMinutesWatched": 8,
+     "averageViewDuration": 161,
+     "averageViewPercentage": 31.2,
+     "subscribersGained": 0,
+     "subscribersLost": 0
+    },
+    "shorts": {
+     "creatorContentType": "shorts",
+     "views": 1599,
+     "engagedViews": 876,
+     "estimatedMinutesWatched": 618,
+     "averageViewDuration": 41,
+     "averageViewPercentage": 73.03,
+     "subscribersGained": 3,
+     "subscribersLost": 1
+    },
+    "creatorContentTypeUnspecified": {
+     "creatorContentType": "creatorContentTypeUnspecified",
+     "views": 0,
+     "engagedViews": 0,
+     "estimatedMinutesWatched": 0,
+     "averageViewDuration": 0,
+     "averageViewPercentage": 0,
+     "subscribersGained": 1,
+     "subscribersLost": 0
+    }
+   },
+   "us": {
+    "views": 71,
+    "estimatedMinutesWatched": 15,
+    "averageViewDuration": 26
+   },
+   "all": {
+    "views": 1605,
+    "estimatedMinutesWatched": 627
+   }
+  },
+  "prev7d": {
+   "range": [
+    "2026-11-01",
+    "2026-11-07"
+   ],
+   "by_format": {
+    "videoOnDemand": {
+     "creatorContentType": "videoOnDemand",
+     "views": 15,
+     "engagedViews": 8,
+     "estimatedMinutesWatched": 11,
+     "averageViewDuration": 84,
+     "averageViewPercentage": 17.67,
+     "subscribersGained": 0,
+     "subscribersLost": 0
+    },
+    "shorts": {
+     "creatorContentType": "shorts",
+     "views": 6570,
+     "engagedViews": 4245,
+     "estimatedMinutesWatched": 4581,
+     "averageViewDuration": 64,
+     "averageViewPercentage": 62.06,
+     "subscribersGained": 2,
+     "subscribersLost": 0
+    }
+   },
+   "us": {
+    "views": 1787,
+    "estimatedMinutesWatched": 1454,
+    "averageViewDuration": 70
+   },
+   "all": {
+    "views": 6585,
+    "estimatedMinutesWatched": 4592
+   }
+  },
+  "28d": {
+   "range": [
+    "2026-10-18",
+    "2026-11-14"
+   ],
+   "by_format": {
+    "videoOnDemand": {
+     "creatorContentType": "videoOnDemand",
+     "views": 25,
+     "engagedViews": 15,
+     "estimatedMinutesWatched": 32,
+     "averageViewDuration": 128,
+     "averageViewPercentage": 28.26,
+     "subscribersGained": 0,
+     "subscribersLost": 0
+    },
+    "shorts": {
+     "creatorContentType": "shorts",
+     "views": 14408,
+     "engagedViews": 8100,
+     "estimatedMinutesWatched": 7187,
+     "averageViewDuration": 52,
+     "averageViewPercentage": 67.34,
+     "subscribersGained": 17,
+     "subscribersLost": 1
+    },
+    "creatorContentTypeUnspecified": {
+     "creatorContentType": "creatorContentTypeUnspecified",
+     "views": 0,
+     "engagedViews": 0,
+     "estimatedMinutesWatched": 0,
+     "averageViewDuration": 0,
+     "averageViewPercentage": 0,
+     "subscribersGained": 1,
+     "subscribersLost": 1
+    }
+   },
+   "us": {
+    "views": 2800,
+    "estimatedMinutesWatched": 2081,
+    "averageViewDuration": 68
+   },
+   "all": {
+    "views": 14433,
+    "estimatedMinutesWatched": 7219
+   }
+  },
+  "prev28d": {
+   "range": [
+    "2026-09-20",
+    "2026-10-17"
+   ],
+   "by_format": {},
+   "us": {
+    "views": 0,
+    "estimatedMinutesWatched": 0,
+    "averageViewDuration": 0
+   },
+   "all": {
+    "views": 0,
+    "estimatedMinutesWatched": 0
+   }
+  },
+  "90d": {
+   "range": [
+    "2026-08-17",
+    "2026-11-14"
+   ],
+   "by_format": {
+    "videoOnDemand": {
+     "creatorContentType": "videoOnDemand",
+     "views": 25,
+     "engagedViews": 15,
+     "estimatedMinutesWatched": 32,
+     "averageViewDuration": 128,
+     "averageViewPercentage": 28.26,
+     "subscribersGained": 0,
+     "subscribersLost": 0
+    },
+    "shorts": {
+     "creatorContentType": "shorts",
+     "views": 14408,
+     "engagedViews": 8100,
+     "estimatedMinutesWatched": 7187,
+     "averageViewDuration": 52,
+     "averageViewPercentage": 67.34,
+     "subscribersGained": 17,
+     "subscribersLost": 1
+    },
+    "creatorContentTypeUnspecified": {
+     "creatorContentType": "creatorContentTypeUnspecified",
+     "views": 0,
+     "engagedViews": 0,
+     "estimatedMinutesWatched": 0,
+     "averageViewDuration": 0,
+     "averageViewPercentage": 0,
+     "subscribersGained": 1,
+     "subscribersLost": 1
+    }
+   },
+   "us": {
+    "views": 2800,
+    "estimatedMinutesWatched": 2081,
+    "averageViewDuration": 68
+   },
+   "all": {
+    "views": 14433,
+    "estimatedMinutesWatched": 7219
+   }
+  },
+  "lifetime": {
+   "range": [
+    "2026-10-29",
+    "2026-11-14"
+   ],
+   "by_format": {
+    "videoOnDemand": {
+     "creatorContentType": "videoOnDemand",
+     "views": 23,
+     "engagedViews": 13,
+     "estimatedMinutesWatched": 28,
+     "averageViewDuration": 131,
+     "averageViewPercentage": 26.729999999999997,
+     "subscribersGained": 0,
+     "subscribersLost": 0
+    },
+    "shorts": {
+     "creatorContentType": "shorts",
+     "views": 13961,
+     "engagedViews": 7905,
+     "estimatedMinutesWatched": 7099,
+     "averageViewDuration": 52,
+     "averageViewPercentage": 67.39,
+     "subscribersGained": 16,
+     "subscribersLost": 1
+    },
+    "creatorContentTypeUnspecified": {
+     "creatorContentType": "creatorContentTypeUnspecified",
+     "views": 0,
+     "engagedViews": 0,
+     "estimatedMinutesWatched": 0,
+     "averageViewDuration": 0,
+     "averageViewPercentage": 0,
+     "subscribersGained": 1,
+     "subscribersLost": 1
+    }
+   },
+   "us": {
+    "views": 2800,
+    "estimatedMinutesWatched": 2081,
+    "averageViewDuration": 68
+   },
+   "all": {
+    "views": 13984,
+    "estimatedMinutesWatched": 7127
+   }
+  }
+ },
+ "last28": {
+  "traffic_sources": [
+   {
+    "insightTrafficSourceType": "SHORTS",
+    "views": 13931,
+    "estimatedMinutesWatched": 7008
+   },
+   {
+    "insightTrafficSourceType": "YT_SEARCH",
+    "views": 264,
+    "estimatedMinutesWatched": 92
+   },
+   {
+    "insightTrafficSourceType": "YT_OTHER_PAGE",
+    "views": 187,
+    "estimatedMinutesWatched": 77
+   },
+   {
+    "insightTrafficSourceType": "SUBSCRIBER",
+    "views": 19,
+    "estimatedMinutesWatched": 8
+   },
+   {
+    "insightTrafficSourceType": "YT_CHANNEL",
+    "views": 16,
+    "estimatedMinutesWatched": 5
+   },
+   {
+    "insightTrafficSourceType": "EXT_URL",
+    "views": 15,
+    "estimatedMinutesWatched": 9
+   },
+   {
+    "insightTrafficSourceType": "RELATED_VIDEO",
+    "views": 5,
+    "estimatedMinutesWatched": 12
+   },
+   {
+    "insightTrafficSourceType": "SOUND_PAGE",
+    "views": 2,
+    "estimatedMinutesWatched": 3
+   },
+   {
+    "insightTrafficSourceType": "NO_LINK_OTHER",
+    "views": 1,
+    "estimatedMinutesWatched": 1
+   },
+   {
+    "insightTrafficSourceType": "PLAYLIST",
+    "views": 1,
+    "estimatedMinutesWatched": 0
+   }
+  ],
+  "top_countries": [
+   {
+    "country": "US",
+    "views": 2800,
+    "estimatedMinutesWatched": 2081,
+    "averageViewDuration": 68
+   },
+   {
+    "country": "GB",
+    "views": 1603,
+    "estimatedMinutesWatched": 873,
+    "averageViewDuration": 55
+   },
+   {
+    "country": "PH",
+    "views": 930,
+    "estimatedMinutesWatched": 411,
+    "averageViewDuration": 53
+   },
+   {
+    "country": "CA",
+    "views": 769,
+    "estimatedMinutesWatched": 413,
+    "averageViewDuration": 49
+   },
+   {
+    "country": "AU",
+    "views": 559,
+    "estimatedMinutesWatched": 209,
+    "averageViewDuration": 36
+   },
+   {
+    "country": "IN",
+    "views": 491,
+    "estimatedMinutesWatched": 243,
+    "averageViewDuration": 45
+   },
+   {
+    "country": "DE",
+    "views": 475,
+    "estimatedMinutesWatched": 183,
+    "averageViewDuration": 38
+   },
+   {
+    "country": "IE",
+    "views": 450,
+    "estimatedMinutesWatched": 222,
+    "averageViewDuration": 53
+   },
+   {
+    "country": "MY",
+    "views": 340,
+    "estimatedMinutesWatched": 109,
+    "averageViewDuration": 38
+   },
+   {
+    "country": "ID",
+    "views": 280,
+    "estimatedMinutesWatched": 103,
+    "averageViewDuration": 41
+   }
+  ],
+  "search_terms": [
+   {
+    "insightTrafficSourceDetail": "oregon trail",
+    "views": 4
+   },
+   {
+    "insightTrafficSourceDetail": "abraham lincoln assassination",
+    "views": 3
+   },
+   {
+    "insightTrafficSourceDetail": "john wilkes booth",
+    "views": 3
+   },
+   {
+    "insightTrafficSourceDetail": "women's land oregon",
+    "views": 3
+   },
+   {
+    "insightTrafficSourceDetail": "abraham lincoln facts",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "barron trump songs",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "britt barbie",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "charles baker",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "chernobyl exclusion zone",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "eas alarm phone",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "fairtale",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "how to unlock shady bazaar",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "jayne torvill and christopher dean bolero dancing on ice",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "pony express",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "pov soles",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "slave box",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "slave feet",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "tahun",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "war machine",
+    "views": 2
+   },
+   {
+    "insightTrafficSourceDetail": "1865",
+    "views": 1
+   }
+  ],
+  "devices": [
+   {
+    "deviceType": "DESKTOP",
+    "views": 690
+   },
+   {
+    "deviceType": "TV",
+    "views": 641
+   },
+   {
+    "deviceType": "MOBILE",
+    "views": 11738
+   },
+   {
+    "deviceType": "TABLET",
+    "views": 1359
+   }
+  ],
+  "subscribed_status": [
+   {
+    "subscribedStatus": "SUBSCRIBED",
+    "views": 15,
+    "averageViewDuration": 28
+   },
+   {
+    "subscribedStatus": "UNSUBSCRIBED",
+    "views": 14426,
+    "averageViewDuration": 52
+   }
+  ],
+  "top_videos": [
+   {
+    "video": "ctoVTthJ_2w",
+    "views": 1702,
+    "engagedViews": 1074,
+    "averageViewPercentage": 69.83,
+    "subscribersGained": 1
+   },
+   {
+    "video": "ahJknPq0Z_g",
+    "views": 1513,
+    "engagedViews": 1075,
+    "averageViewPercentage": 62.69,
+    "subscribersGained": 0
+   },
+   {
+    "video": "J5rJThy08hk",
+    "views": 1318,
+    "engagedViews": 809,
+    "averageViewPercentage": 65.94,
+    "subscribersGained": 1
+   },
+   {
+    "video": "HyqmpcvzHKI",
+    "views": 1286,
+    "engagedViews": 741,
+    "averageViewPercentage": 85.29,
+    "subscribersGained": 3
+   },
+   {
+    "video": "ctx0tm_C56c",
+    "views": 1256,
+    "engagedViews": 708,
+    "averageViewPercentage": 78.89,
+    "subscribersGained": 2
+   },
+   {
+    "video": "7kxCubu2UdI",
+    "views": 1253,
+    "engagedViews": 567,
+    "averageViewPercentage": 65.56,
+    "subscribersGained": 2
+   },
+   {
+    "video": "qbtwhG8IDL8",
+    "views": 1205,
+    "engagedViews": 535,
+    "averageViewPercentage": 73.89,
+    "subscribersGained": 4
+   },
+   {
+    "video": "A7IMwfCRwjg",
+    "views": 1087,
+    "engagedViews": 663,
+    "averageViewPercentage": 56.39999999999999,
+    "subscribersGained": 1
+   },
+   {
+    "video": "bwhHw3tLIDQ",
+    "views": 1039,
+    "engagedViews": 779,
+    "averageViewPercentage": 61.88,
+    "subscribersGained": 0
+   },
+   {
+    "video": "pXOy92KjJt4",
+    "views": 628,
+    "engagedViews": 262,
+    "averageViewPercentage": 103.75000000000001,
+    "subscribersGained": 1
+   }
+  ],
+  "us_time_zone_mix": {
+   "ET": "519 views (41%)",
+   "PT": "359 views (28%)",
+   "CT": "321 views (25%)",
+   "MT": "63 views (5%)"
+  }
+ },
+ "unavailable_in_api": [
+  "impressions",
+  "impressions CTR",
+  "returning/new viewers",
+  "when your viewers are on YouTube"
+ ]
+}
