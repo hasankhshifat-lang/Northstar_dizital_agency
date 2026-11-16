@@ -14,7 +14,8 @@ subtitles, sound and end card. Never the 3D map style. Treatment and look decisi
 | `film.js` | runtime: reads `script.json`, `out/<film>/timeline.json`, `voice/<film>/out/words.json`, `episode.js`; camera keys, culling, subtitles (paper slip; 9:16 keeps the bottom 400 px clear), page contract for the lemo-opuscar render tools |
 | `tools/timeline.mjs` | scene times from the real voice durations; subtitle cues; YouTube chapter list |
 | `voice/vv_lines.py` | VibeVoice-Realtime-0.5B, one wav per line, **voice Frank** (the channel voice; keep it) |
-| `mix.py` | narration + pen foley from the strokes + small plucked score (marimba/kalimba/pizzicato), ducked under the voice |
+| `mix.py` | narration + pen foley from the strokes (kept ~22 dB under the voice, owner 2026-11-16) + small plucked score (marimba/kalimba/pizzicato), ducked under the voice |
+| `tools/remux_audio.sh` | puts the final mix on the finished video (stream copy): two-pass loudnorm −14 LUFS, true peak ≤ −1.5 dBTP |
 | `build.sh` | `prep` · `voice` · `still` · `render` · `finish` · `all` |
 | `glyphs.json` | glyph skeletons for stroke-by-stroke lettering (from the Sketchnote demo, OFL fonts) |
 
