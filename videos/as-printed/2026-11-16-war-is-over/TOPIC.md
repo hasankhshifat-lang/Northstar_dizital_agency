@@ -34,8 +34,8 @@ comment question and one short like/subscribe line at the end; every number and 
 
 ## Thumbnail (engine archive style, `engine/thumb.html`)
 Concepts: A object — the "WAR IS OVER!" front page alone, date ringed; B contrast — "WAR IS OVER!" against the 11 Nov
-"ARMISTICE IS SIGNED; WAR ENDS"; C mystery — the page with "WHO SENT THIS?". Heading options: "Four days too soon",
-"It wasn't over", "Who sent this?". Chosen: A with "Four days too soon" (adds the twist, doesn't repeat the title).
+"ARMISTICE IS SIGNED; WAR ENDS"; C mystery — the page with "WHO SENT THIS?". Heading options: "Four days early",
+"It wasn't over", "Who sent this?". Chosen: A with "Four days early" (adds the twist, doesn't repeat the title).
 Real archive image only (Seattle Star, 7 Nov 1918, LoC). A/B variant to test later: C.
 Score (thumbnail rules): attention 17, curiosity 18, storytelling 14, composition 13, headline 9, emotion 8, accuracy 5,
 mobile 5 = 89/100.
