@@ -1,0 +1,625 @@
+{
+"text": " Bookmakers gave Leicester City a 5,000-to-1 chance of winning the Premier League. A year earlier, they'd spent Christmas bottom of the table and only just escaped relegation. Then they hired Claudio Ranieri. Most predictions still had them going down. But Jamie Vardy scored in 11 Premier League games in a row, a new record. Riyad Mahrez danced past defenders. N'Golo Kante won the ball back everywhere. By Christmas, Leicester were top. May 2nd 2016 The players gathered at Vardy's house To watch Chelsea against Tottenham Spurs had to win 2-0 Tottenham at half time Then Chelsea fought back Eden Hazard 2-2 Leicester were champions for the first time In their 132 year history Biggest shock in sport Or can you name a bigger one?",
+"words": [
+{
+"word": "Bookmakers",
+"start": 0.22,
+"end": 0.6
+},
+{
+"word": "gave",
+"start": 0.6,
+"end": 0.92
+},
+{
+"word": "Leicester",
+"start": 0.92,
+"end": 1.2
+},
+{
+"word": "City",
+"start": 1.2,
+"end": 1.44
+},
+{
+"word": "a",
+"start": 1.44,
+"end": 1.58
+},
+{
+"word": "5,000-to-1",
+"start": 1.58,
+"end": 2.5
+},
+{
+"word": "chance",
+"start": 2.5,
+"end": 2.92
+},
+{
+"word": "of",
+"start": 2.92,
+"end": 3.3
+},
+{
+"word": "winning",
+"start": 3.3,
+"end": 3.54
+},
+{
+"word": "the",
+"start": 3.54,
+"end": 3.72
+},
+{
+"word": "Premier",
+"start": 3.72,
+"end": 4
+},
+{
+"word": "League.",
+"start": 4,
+"end": 4.86
+},
+{
+"word": "A",
+"start": 4.98,
+"end": 5.06
+},
+{
+"word": "year",
+"start": 5.06,
+"end": 5.26
+},
+{
+"word": "earlier,",
+"start": 5.26,
+"end": 5.64
+},
+{
+"word": "they'd",
+"start": 5.64,
+"end": 5.78
+},
+{
+"word": "spent",
+"start": 5.78,
+"end": 5.98
+},
+{
+"word": "Christmas",
+"start": 5.98,
+"end": 6.34
+},
+{
+"word": "bottom",
+"start": 6.34,
+"end": 6.62
+},
+{
+"word": "of",
+"start": 6.62,
+"end": 6.72
+},
+{
+"word": "the",
+"start": 6.72,
+"end": 6.82
+},
+{
+"word": "table",
+"start": 6.82,
+"end": 7.12
+},
+{
+"word": "and",
+"start": 7.12,
+"end": 7.66
+},
+{
+"word": "only",
+"start": 7.66,
+"end": 7.86
+},
+{
+"word": "just",
+"start": 7.86,
+"end": 8.1
+},
+{
+"word": "escaped",
+"start": 8.1,
+"end": 8.38
+},
+{
+"word": "relegation.",
+"start": 8.38,
+"end": 8.94
+},
+{
+"word": "Then",
+"start": 9.52,
+"end": 9.62
+},
+{
+"word": "they",
+"start": 9.62,
+"end": 9.76
+},
+{
+"word": "hired",
+"start": 9.76,
+"end": 10.06
+},
+{
+"word": "Claudio",
+"start": 10.06,
+"end": 10.64
+},
+{
+"word": "Ranieri.",
+"start": 10.64,
+"end": 11.62
+},
+{
+"word": "Most",
+"start": 11.72,
+"end": 11.88
+},
+{
+"word": "predictions",
+"start": 11.88,
+"end": 12.26
+},
+{
+"word": "still",
+"start": 12.26,
+"end": 12.5
+},
+{
+"word": "had",
+"start": 12.5,
+"end": 12.68
+},
+{
+"word": "them",
+"start": 12.68,
+"end": 12.8
+},
+{
+"word": "going",
+"start": 12.8,
+"end": 13.02
+},
+{
+"word": "down.",
+"start": 13.02,
+"end": 13.94
+},
+{
+"word": "But",
+"start": 14.08,
+"end": 14.22
+},
+{
+"word": "Jamie",
+"start": 14.22,
+"end": 14.52
+},
+{
+"word": "Vardy",
+"start": 14.52,
+"end": 14.74
+},
+{
+"word": "scored",
+"start": 14.74,
+"end": 15.08
+},
+{
+"word": "in",
+"start": 15.08,
+"end": 15.2
+},
+{
+"word": "11",
+"start": 15.2,
+"end": 15.56
+},
+{
+"word": "Premier",
+"start": 15.56,
+"end": 15.98
+},
+{
+"word": "League",
+"start": 15.98,
+"end": 16.12
+},
+{
+"word": "games",
+"start": 16.12,
+"end": 16.4
+},
+{
+"word": "in",
+"start": 16.4,
+"end": 16.64
+},
+{
+"word": "a",
+"start": 16.64,
+"end": 16.7
+},
+{
+"word": "row,",
+"start": 16.7,
+"end": 16.98
+},
+{
+"word": "a",
+"start": 16.98,
+"end": 17.52
+},
+{
+"word": "new",
+"start": 17.52,
+"end": 17.68
+},
+{
+"word": "record.",
+"start": 17.68,
+"end": 18.66
+},
+{
+"word": "Riyad",
+"start": 18.8,
+"end": 19.06
+},
+{
+"word": "Mahrez",
+"start": 19.06,
+"end": 19.48
+},
+{
+"word": "danced",
+"start": 19.48,
+"end": 19.8
+},
+{
+"word": "past",
+"start": 19.8,
+"end": 20.06
+},
+{
+"word": "defenders.",
+"start": 20.06,
+"end": 21.02
+},
+{
+"word": "N'Golo",
+"start": 21.12,
+"end": 21.36
+},
+{
+"word": "Kante",
+"start": 21.36,
+"end": 21.82
+},
+{
+"word": "won",
+"start": 21.82,
+"end": 22.1
+},
+{
+"word": "the",
+"start": 22.1,
+"end": 22.24
+},
+{
+"word": "ball",
+"start": 22.24,
+"end": 22.42
+},
+{
+"word": "back",
+"start": 22.42,
+"end": 22.64
+},
+{
+"word": "everywhere.",
+"start": 22.64,
+"end": 23.52
+},
+{
+"word": "By",
+"start": 23.6,
+"end": 23.7
+},
+{
+"word": "Christmas,",
+"start": 23.7,
+"end": 24.76
+},
+{
+"word": "Leicester",
+"start": 24.76,
+"end": 25.02
+},
+{
+"word": "were",
+"start": 25.02,
+"end": 25.22
+},
+{
+"word": "top.",
+"start": 25.22,
+"end": 25.66
+},
+{
+"word": "May",
+"start": 26.18,
+"end": 26.28
+},
+{
+"word": "2nd",
+"start": 26.28,
+"end": 26.86
+},
+{
+"word": "2016",
+"start": 26.86,
+"end": 27.42
+},
+{
+"word": "The",
+"start": 28.22,
+"end": 28.34
+},
+{
+"word": "players",
+"start": 28.34,
+"end": 28.58
+},
+{
+"word": "gathered",
+"start": 28.58,
+"end": 28.92
+},
+{
+"word": "at",
+"start": 28.92,
+"end": 29.06
+},
+{
+"word": "Vardy's",
+"start": 29.06,
+"end": 29.46
+},
+{
+"word": "house",
+"start": 29.46,
+"end": 29.66
+},
+{
+"word": "To",
+"start": 29.18,
+"end": 29.84
+},
+{
+"word": "watch",
+"start": 29.84,
+"end": 30.02
+},
+{
+"word": "Chelsea",
+"start": 30.02,
+"end": 30.36
+},
+{
+"word": "against",
+"start": 30.36,
+"end": 30.68
+},
+{
+"word": "Tottenham",
+"start": 30.68,
+"end": 31.08
+},
+{
+"word": "Spurs",
+"start": 30.72,
+"end": 31.86
+},
+{
+"word": "had",
+"start": 31.86,
+"end": 32.08
+},
+{
+"word": "to",
+"start": 32.08,
+"end": 32.24
+},
+{
+"word": "win",
+"start": 32.24,
+"end": 32.52
+},
+{
+"word": "2-0",
+"start": 33.02,
+"end": 33.38
+},
+{
+"word": "Tottenham",
+"start": 33.38,
+"end": 33.7
+},
+{
+"word": "at",
+"start": 33.7,
+"end": 33.86
+},
+{
+"word": "half",
+"start": 33.86,
+"end": 34.18
+},
+{
+"word": "time",
+"start": 34.18,
+"end": 34.36
+},
+{
+"word": "Then",
+"start": 33.94,
+"end": 35.06
+},
+{
+"word": "Chelsea",
+"start": 35.06,
+"end": 35.42
+},
+{
+"word": "fought",
+"start": 35.42,
+"end": 35.66
+},
+{
+"word": "back",
+"start": 35.66,
+"end": 36.06
+},
+{
+"word": "Eden",
+"start": 36.54,
+"end": 36.86
+},
+{
+"word": "Hazard",
+"start": 36.86,
+"end": 37.4
+},
+{
+"word": "2-2",
+"start": 37.4,
+"end": 38.02
+},
+{
+"word": "Leicester",
+"start": 37.64,
+"end": 38.92
+},
+{
+"word": "were",
+"start": 38.92,
+"end": 39.04
+},
+{
+"word": "champions",
+"start": 39.04,
+"end": 39.42
+},
+{
+"word": "for",
+"start": 39.42,
+"end": 39.72
+},
+{
+"word": "the",
+"start": 39.72,
+"end": 39.84
+},
+{
+"word": "first",
+"start": 39.84,
+"end": 40.1
+},
+{
+"word": "time",
+"start": 40.1,
+"end": 40.34
+},
+{
+"word": "In",
+"start": 39.9,
+"end": 40.5
+},
+{
+"word": "their",
+"start": 40.5,
+"end": 40.64
+},
+{
+"word": "132",
+"start": 40.64,
+"end": 41.8
+},
+{
+"word": "year",
+"start": 41.8,
+"end": 41.98
+},
+{
+"word": "history",
+"start": 41.98,
+"end": 42.38
+},
+{
+"word": "Biggest",
+"start": 42.5,
+"end": 43.32
+},
+{
+"word": "shock",
+"start": 43.32,
+"end": 43.6
+},
+{
+"word": "in",
+"start": 43.6,
+"end": 43.76
+},
+{
+"word": "sport",
+"start": 43.76,
+"end": 44.14
+},
+{
+"word": "Or",
+"start": 44.64,
+"end": 44.76
+},
+{
+"word": "can",
+"start": 44.76,
+"end": 44.88
+},
+{
+"word": "you",
+"start": 44.88,
+"end": 45.02
+},
+{
+"word": "name",
+"start": 45.02,
+"end": 45.16
+},
+{
+"word": "a",
+"start": 45.16,
+"end": 45.3
+},
+{
+"word": "bigger",
+"start": 45.3,
+"end": 45.44
+},
+{
+"word": "one?",
+"start": 45.44,
+"end": 46.14
+}
+]
+}

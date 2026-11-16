@@ -50,10 +50,24 @@ const Thumb: React.FC = () => (
   </AbsoluteFill>
 );
 
+
+// Per-video Short thumbnails (same layout as Thumb): art from the film's engine (index.html?brand=thumb), heading as live text
+const ThumbH: React.FC<{ art: string; l1: string; l2: string; s1: number; s2: number }> = ({ art, l1, l2, s1, s2 }) => (
+  <AbsoluteFill>
+    <Img src={staticFile(art)} />
+    <div style={{ position: 'absolute', left: 0, top: 130, width: 1080, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: 'rotate(-1.5deg)' }}>
+      <div style={{ fontFamily: 'Lilita One', fontSize: s1, lineHeight: 1.0, color: INK, whiteSpace: 'nowrap' }}>{l1}</div>
+      <div style={{ fontFamily: 'Lilita One', fontSize: s2, lineHeight: 1.0, color: RED, whiteSpace: 'nowrap', marginTop: 6 }}>{l2}</div>
+    </div>
+  </AbsoluteFill>
+);
+
 export const Root: React.FC = () => (
   <>
     <Still id="Banner" component={Banner} width={2560} height={1440} />
     <Still id="Profile" component={Profile} width={800} height={800} />
     <Still id="Thumb" component={Thumb} width={1080} height={1920} />
+    <Still id="ThumbLeicester" component={ThumbH as any} width={1080} height={1920} defaultProps={{ art: 'thumb-art-leicester-5000-short.jpg', l1: 'BOTTOM TO', l2: 'CHAMPIONS', s1: 150, s2: 168 }} />
+    <Still id="ThumbMessi" component={ThumbH as any} width={1080} height={1920} defaultProps={{ art: 'thumb-art-messi-napkin-short.jpg', l1: 'TOO SMALL', l2: 'TO PLAY?', s1: 160, s2: 184 }} />
   </>
 );

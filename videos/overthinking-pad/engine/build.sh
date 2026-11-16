@@ -43,6 +43,7 @@ finish() {
       (cd "$EP/out/$F" && ffmpeg -v error -y -i master.mp4 -c:v libx264 -b:v ${VK}k -preset medium -pass 1 -an -f null /dev/null && \
         ffmpeg -v error -y -i master.mp4 -c:v libx264 -b:v ${VK}k -preset medium -pass 2 -pix_fmt yuv420p -profile:v high -movflags +faststart -c:a aac -b:a 160k "$EP/${SLUG}_$F.mp4"; rm -f ffmpeg2pass-0.log*)
     fi
+    sh "$ENG/tools/remux_audio.sh" "$EP/${SLUG}_$F.mp4" "$EP/out/$F/mix.wav" | sed "s/^/$F final audio /"   # loudness + true peak on the final file
     "$PY" "$LIB/core/render/srt.py" "$EP/out/$F/cues_srt.json" "$EP/${SLUG}_$F.srt"
     (cd "$LIB" && node core/render/readcheck.mjs "$EP" --size $(size $F) --q "film=$F" --step 0.25 > "$EP/out/$F/readcheck.txt" 2>&1) && echo "$F readcheck ok" || echo "$F readcheck: $(grep -c '^BAD' "$EP/out/$F/readcheck.txt") short holds (out/$F/readcheck.txt)"
     ffmpeg -i "$EP/${SLUG}_$F.mp4" -vf blackdetect=d=0.3:pix_th=0.1 -f null - 2>&1 | grep -c black_start | sed "s/^/$F black segments: /"

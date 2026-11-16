@@ -1,0 +1,715 @@
+{
+"text": " Lionel Messi's first Barcelona contract was written on a paper napkin. As a boy in Rosario, Argentina, he was always the smallest player on the pitch. At around 11, doctors found his body wasn't making enough growth hormone. The treatment meant injections night after night, reportedly about $1,000 a month. At 13, he flew to Barcelona for a trial. The coaches were impressed, but the club kept stalling. His family threatened to take him home. So on December 14th, 2000, director Carlos Rexach grabbed the nearest piece of paper, a napkin, and wrote down a promise to sign him. Barcelona paid for his treatment. That small boy went on to win eight Ballon d'Or awards and the World Cup. And the napkin? In 2024, it sold at auction for nearly a million dollars. Best signing ever? Or can you name a better one?",
+"words": [
+{
+"word": "Lionel",
+"start": 0.18,
+"end": 0.7
+},
+{
+"word": "Messi's",
+"start": 0.7,
+"end": 0.96
+},
+{
+"word": "first",
+"start": 0.96,
+"end": 1.26
+},
+{
+"word": "Barcelona",
+"start": 1.26,
+"end": 1.8
+},
+{
+"word": "contract",
+"start": 1.8,
+"end": 2.24
+},
+{
+"word": "was",
+"start": 2.24,
+"end": 3
+},
+{
+"word": "written",
+"start": 3,
+"end": 3.2
+},
+{
+"word": "on",
+"start": 3.2,
+"end": 3.34
+},
+{
+"word": "a",
+"start": 3.34,
+"end": 3.46
+},
+{
+"word": "paper",
+"start": 3.46,
+"end": 3.72
+},
+{
+"word": "napkin.",
+"start": 3.72,
+"end": 4.66
+},
+{
+"word": "As",
+"start": 4.98,
+"end": 5.18
+},
+{
+"word": "a",
+"start": 5.18,
+"end": 5.36
+},
+{
+"word": "boy",
+"start": 5.36,
+"end": 5.56
+},
+{
+"word": "in",
+"start": 5.56,
+"end": 5.72
+},
+{
+"word": "Rosario,",
+"start": 5.72,
+"end": 6.4
+},
+{
+"word": "Argentina,",
+"start": 6.4,
+"end": 7.46
+},
+{
+"word": "he",
+"start": 7.46,
+"end": 7.48
+},
+{
+"word": "was",
+"start": 7.48,
+"end": 7.6
+},
+{
+"word": "always",
+"start": 7.6,
+"end": 7.8
+},
+{
+"word": "the",
+"start": 7.8,
+"end": 7.98
+},
+{
+"word": "smallest",
+"start": 7.98,
+"end": 8.32
+},
+{
+"word": "player",
+"start": 8.32,
+"end": 8.62
+},
+{
+"word": "on",
+"start": 8.62,
+"end": 8.8
+},
+{
+"word": "the",
+"start": 8.8,
+"end": 8.9
+},
+{
+"word": "pitch.",
+"start": 8.9,
+"end": 9.7
+},
+{
+"word": "At",
+"start": 9.78,
+"end": 9.9
+},
+{
+"word": "around",
+"start": 9.9,
+"end": 10.1
+},
+{
+"word": "11,",
+"start": 10.1,
+"end": 10.6
+},
+{
+"word": "doctors",
+"start": 10.6,
+"end": 10.9
+},
+{
+"word": "found",
+"start": 10.9,
+"end": 11.14
+},
+{
+"word": "his",
+"start": 11.14,
+"end": 11.3
+},
+{
+"word": "body",
+"start": 11.3,
+"end": 11.56
+},
+{
+"word": "wasn't",
+"start": 11.56,
+"end": 11.86
+},
+{
+"word": "making",
+"start": 11.86,
+"end": 12.12
+},
+{
+"word": "enough",
+"start": 12.12,
+"end": 12.4
+},
+{
+"word": "growth",
+"start": 12.4,
+"end": 12.68
+},
+{
+"word": "hormone.",
+"start": 12.68,
+"end": 13.52
+},
+{
+"word": "The",
+"start": 13.6,
+"end": 13.7
+},
+{
+"word": "treatment",
+"start": 13.7,
+"end": 14.02
+},
+{
+"word": "meant",
+"start": 14.02,
+"end": 14.36
+},
+{
+"word": "injections",
+"start": 14.36,
+"end": 15.08
+},
+{
+"word": "night",
+"start": 15.08,
+"end": 15.42
+},
+{
+"word": "after",
+"start": 15.42,
+"end": 15.68
+},
+{
+"word": "night,",
+"start": 15.68,
+"end": 16.64
+},
+{
+"word": "reportedly",
+"start": 16.64,
+"end": 16.96
+},
+{
+"word": "about $1,000",
+"start": 16.96,
+"end": 17.94
+},
+{
+"word": "a",
+"start": 17.94,
+"end": 18.18
+},
+{
+"word": "month.",
+"start": 18.18,
+"end": 18.48
+},
+{
+"word": "At",
+"start": 19.12,
+"end": 19.26
+},
+{
+"word": "13,",
+"start": 19.26,
+"end": 20.16
+},
+{
+"word": "he",
+"start": 20.16,
+"end": 20.26
+},
+{
+"word": "flew",
+"start": 20.26,
+"end": 20.5
+},
+{
+"word": "to",
+"start": 20.5,
+"end": 20.62
+},
+{
+"word": "Barcelona",
+"start": 20.62,
+"end": 21.1
+},
+{
+"word": "for",
+"start": 21.1,
+"end": 21.34
+},
+{
+"word": "a",
+"start": 21.34,
+"end": 21.42
+},
+{
+"word": "trial.",
+"start": 21.42,
+"end": 22.32
+},
+{
+"word": "The",
+"start": 22.5,
+"end": 22.62
+},
+{
+"word": "coaches",
+"start": 22.62,
+"end": 22.92
+},
+{
+"word": "were",
+"start": 22.92,
+"end": 23.1
+},
+{
+"word": "impressed,",
+"start": 23.1,
+"end": 24.1
+},
+{
+"word": "but",
+"start": 24.1,
+"end": 24.12
+},
+{
+"word": "the",
+"start": 24.12,
+"end": 24.24
+},
+{
+"word": "club",
+"start": 24.24,
+"end": 24.42
+},
+{
+"word": "kept",
+"start": 24.42,
+"end": 24.68
+},
+{
+"word": "stalling.",
+"start": 24.68,
+"end": 25.16
+},
+{
+"word": "His",
+"start": 25.84,
+"end": 25.96
+},
+{
+"word": "family",
+"start": 25.96,
+"end": 26.32
+},
+{
+"word": "threatened",
+"start": 26.32,
+"end": 26.66
+},
+{
+"word": "to",
+"start": 26.66,
+"end": 26.82
+},
+{
+"word": "take",
+"start": 26.82,
+"end": 27.02
+},
+{
+"word": "him",
+"start": 27.02,
+"end": 27.14
+},
+{
+"word": "home.",
+"start": 27.14,
+"end": 27.9
+},
+{
+"word": "So",
+"start": 27.98,
+"end": 28.08
+},
+{
+"word": "on",
+"start": 28.08,
+"end": 28.2
+},
+{
+"word": "December",
+"start": 28.2,
+"end": 28.54
+},
+{
+"word": "14th,",
+"start": 28.54,
+"end": 29.24
+},
+{
+"word": "2000,",
+"start": 29.24,
+"end": 30.56
+},
+{
+"word": "director",
+"start": 30.56,
+"end": 30.62
+},
+{
+"word": "Carlos",
+"start": 30.62,
+"end": 31.14
+},
+{
+"word": "Rexach",
+"start": 31.14,
+"end": 31.74
+},
+{
+"word": "grabbed",
+"start": 31.74,
+"end": 32.12
+},
+{
+"word": "the",
+"start": 32.12,
+"end": 32.3
+},
+{
+"word": "nearest",
+"start": 32.3,
+"end": 32.6
+},
+{
+"word": "piece",
+"start": 32.6,
+"end": 32.86
+},
+{
+"word": "of",
+"start": 32.86,
+"end": 32.94
+},
+{
+"word": "paper,",
+"start": 32.94,
+"end": 33.8
+},
+{
+"word": "a",
+"start": 33.8,
+"end": 33.82
+},
+{
+"word": "napkin,",
+"start": 33.82,
+"end": 34.82
+},
+{
+"word": "and",
+"start": 34.82,
+"end": 34.84
+},
+{
+"word": "wrote",
+"start": 34.84,
+"end": 35.1
+},
+{
+"word": "down",
+"start": 35.1,
+"end": 35.3
+},
+{
+"word": "a",
+"start": 35.3,
+"end": 35.44
+},
+{
+"word": "promise",
+"start": 35.44,
+"end": 35.66
+},
+{
+"word": "to",
+"start": 35.66,
+"end": 35.9
+},
+{
+"word": "sign",
+"start": 35.9,
+"end": 36.14
+},
+{
+"word": "him.",
+"start": 36.14,
+"end": 36.84
+},
+{
+"word": "Barcelona",
+"start": 36.9,
+"end": 37.38
+},
+{
+"word": "paid",
+"start": 37.38,
+"end": 37.68
+},
+{
+"word": "for",
+"start": 37.68,
+"end": 37.84
+},
+{
+"word": "his",
+"start": 37.84,
+"end": 37.98
+},
+{
+"word": "treatment.",
+"start": 37.98,
+"end": 38.82
+},
+{
+"word": "That",
+"start": 38.98,
+"end": 39.1
+},
+{
+"word": "small",
+"start": 39.1,
+"end": 39.42
+},
+{
+"word": "boy",
+"start": 39.42,
+"end": 39.66
+},
+{
+"word": "went",
+"start": 39.66,
+"end": 39.92
+},
+{
+"word": "on",
+"start": 39.92,
+"end": 40.1
+},
+{
+"word": "to",
+"start": 40.1,
+"end": 40.26
+},
+{
+"word": "win",
+"start": 40.26,
+"end": 40.44
+},
+{
+"word": "eight",
+"start": 40.44,
+"end": 40.76
+},
+{
+"word": "Ballon",
+"start": 40.76,
+"end": 41.16
+},
+{
+"word": "d'Or",
+"start": 41.16,
+"end": 41.34
+},
+{
+"word": "awards",
+"start": 41.34,
+"end": 41.78
+},
+{
+"word": "and",
+"start": 41.78,
+"end": 43
+},
+{
+"word": "the",
+"start": 43,
+"end": 43.12
+},
+{
+"word": "World",
+"start": 43.12,
+"end": 43.36
+},
+{
+"word": "Cup.",
+"start": 43.36,
+"end": 43.64
+},
+{
+"word": "And",
+"start": 44.56,
+"end": 44.7
+},
+{
+"word": "the",
+"start": 44.7,
+"end": 44.82
+},
+{
+"word": "napkin?",
+"start": 44.82,
+"end": 45.2
+},
+{
+"word": "In",
+"start": 45.96,
+"end": 46.04
+},
+{
+"word": "2024,",
+"start": 46.04,
+"end": 47.3
+},
+{
+"word": "it",
+"start": 47.3,
+"end": 47.44
+},
+{
+"word": "sold",
+"start": 47.44,
+"end": 47.7
+},
+{
+"word": "at",
+"start": 47.7,
+"end": 47.86
+},
+{
+"word": "auction",
+"start": 47.86,
+"end": 48.14
+},
+{
+"word": "for",
+"start": 48.14,
+"end": 48.38
+},
+{
+"word": "nearly",
+"start": 48.38,
+"end": 48.62
+},
+{
+"word": "a",
+"start": 48.62,
+"end": 48.76
+},
+{
+"word": "million",
+"start": 48.76,
+"end": 49.1
+},
+{
+"word": "dollars.",
+"start": 49.1,
+"end": 49.46
+},
+{
+"word": "Best",
+"start": 50.42,
+"end": 50.6
+},
+{
+"word": "signing",
+"start": 50.6,
+"end": 50.98
+},
+{
+"word": "ever?",
+"start": 50.98,
+"end": 51.24
+},
+{
+"word": "Or",
+"start": 52.14,
+"end": 52.3
+},
+{
+"word": "can",
+"start": 52.3,
+"end": 52.46
+},
+{
+"word": "you",
+"start": 52.46,
+"end": 52.64
+},
+{
+"word": "name",
+"start": 52.64,
+"end": 52.86
+},
+{
+"word": "a",
+"start": 52.86,
+"end": 53.02
+},
+{
+"word": "better",
+"start": 53.02,
+"end": 53.26
+},
+{
+"word": "one?",
+"start": 53.26,
+"end": 53.52
+}
+]
+}

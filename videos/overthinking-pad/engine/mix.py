@@ -58,8 +58,8 @@ for kind, (lo, hi, gh, dep, rate, pw, g, sd) in {
     foley += pan_st(scratch_noise(lo, hi, gh, dep, sd) * wobble(rate, sd + 1) ** pw * lv, pn * 0.6) * g
 for e in EV:
     if e['type'] in ('pen', 'write') and e['d'] >= 0.15 and e['t'] < DUR:
-        add(foley, hp(click(pitch=0.55 + rng.random() * 0.2, v=1.0), 1500) * 0.03, e['t'], 1.0, e.get('pan', 0) * 0.6)
-foley *= 0.55 * (1 - 0.55 * duck)[:, None]
+        add(foley, hp(click(pitch=0.55 + rng.random() * 0.2, v=1.0), 1500) * 0.015, e['t'], 1.0, e.get('pan', 0) * 0.6)
+foley *= 0.22 * (1 - 0.8 * duck)[:, None]   # owner 2026-11-16: pens well under the voice (quieter overall, ducked ~14 dB while speaking)
 room = lp(rng.standard_normal(N), 500, 2) * 0.004; foley += np.stack([room, np.roll(room, 997)], 1)
 cues = [e for e in EV if e['type'] == 'cue']
 for e in cues:
