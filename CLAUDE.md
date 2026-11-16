@@ -1,5 +1,14 @@
 # Northstar Digital Agency — Claude instructions
 
+## Reply style: caveman mode by default
+
+Every session and scheduled task starts in **caveman mode** (owner, 2026-11-16): invoke the `caveman:caveman` skill
+(plugin: github.com/JuliusBrussee/caveman) at the start and keep chat replies short and direct until the owner asks
+for normal answers.
+- It only shortens chat replies. Deliverables stay complete and in their normal style: scripts, titles, descriptions,
+  thumbnail headings, captions, comment replies, reports, logs and commit messages.
+- Approval requests, errors and anything the owner must decide still include every fact they need.
+
 ## Video topics and scripts: read the scriptwriting rules first
 
 Before choosing a topic or writing/editing any script for a YouTube video (long-form or Short) **or a
