@@ -5,7 +5,7 @@ FACTS.md. Mark used topics `done YYYY-MM-DD (VIDEO_ID)`. Add new finds at the bo
 
 | # | Working title | Core research to check | Notes | Status |
 |---|---|---|---|---|
-| 1 | Nobody Noticed Your Shirt: The Spotlight Effect | Gilovich, Medvec & Savitsky 2000 (embarrassing T-shirt study) | Strong universal hook; replicated | open |
+| 1 | Nobody Noticed Your Shirt: The Spotlight Effect | Gilovich, Medvec & Savitsky 2000 (embarrassing T-shirt study) | Strong universal hook; replicated | done 2026-11-16 (VSaFr4doR0M, Short 8GYwZB1soxo) |
 | 2 | Why You Replay Embarrassing Moments at 2 A.M. | Rumination research (Nolen-Hoeksema); autobiographical memory and emotion | Practical close: distanced self-talk (Kross) | open |
 | 3 | They Can't Tell You're Nervous: The Illusion of Transparency | Gilovich, Savitsky & Medvec 1998; Savitsky & Gilovich 2003 (public speaking) | Pairs with #1, don't run back to back | open |
 | 4 | Why Worrying Feels Like Doing Something | Borkovec's worry research; contrast avoidance model (Newman & Llera 2011) | Mental-health line in description | open |
