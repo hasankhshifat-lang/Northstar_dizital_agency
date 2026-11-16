@@ -1,0 +1,7 @@
+DIFF short_000 | War is over! That is a real front page, printed on November seventh, nineteen eighteen. But the war was not over. → War is over! That is a real front page printed on November 7th 1918, but the war was not over. 
+OK   short_001 | So who sent it? The bulletin was signed by Roy Howard, president of the United Press, in France. → So, who sent it? The Bulletin was signed by Roy Howard, President of the United Press, in France. 
+OK   short_002 | Newspapers rushed it out so fast that in South Bend, they misspelled the word armistice. → Newspapers rushed it out so fast that in South Bend they misspelled the word armistice. 
+OK   short_003 | By that afternoon, Secretary of State Robert Lansing denied it. The German envoys had not even met the Allies yet. → By that afternoon, Secretary of State Robert Lansing denied it. The German envoys had not even met the Allies yet. 
+OK   short_004 | The source? Admiral Henry Wilson at Brest. He said it came from his office, on what appeared to be official information. → The source? Admiral Henry Wilson at Brest. He said it came from his office on what appeared to be official information. 
+DIFF short_005 | The real armistice was signed on November eleventh. Four days after the papers said: war is over. → The real armistice was signed on November 11th, four days after the paper said war is over. 
+mismatches: 2 (lang=en, model=small.en)

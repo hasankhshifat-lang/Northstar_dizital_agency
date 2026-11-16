@@ -39,8 +39,7 @@
    "label": "ROY W. HOWARD · 1914",
    "short": "Roy W. Howard",
    "catalog": "LC-H261- 4806",
-   "credit": "Harris & Ewing",
-   "row": "photo"
+   "credit": "Harris & Ewing"
   },
   {
    "id": "southbend",
@@ -95,8 +94,7 @@
    "label": "ADM. HENRY B. WILSON · 1923",
    "short": "Adm. Henry B. Wilson",
    "catalog": "LC-H234- A-5229",
-   "credit": "Harris & Ewing",
-   "row": "photo"
+   "credit": "Harris & Ewing"
   },
   {
    "id": "eworld11",
@@ -126,8 +124,7 @@
    "label": "PEACE HURRAH · 11 NOV 1918",
    "short": "Peace Hurrah (2)",
    "catalog": "LC-B2- 4743-11",
-   "credit": "Bain News Service",
-   "row": "11 Nov"
+   "credit": "Bain News Service"
   },
   {
    "id": "hurrah2",
@@ -137,8 +134,7 @@
    "label": "PEACE HURRAH · 11 NOV 1918",
    "short": "Peace Hurrah (3)",
    "catalog": "LC-B2- 4743-12",
-   "credit": "Bain News Service",
-   "row": "11 Nov"
+   "credit": "Bain News Service"
   },
   {
    "id": "seattle11",
@@ -153,8 +149,7 @@
  "end": {
   "sub": "The False Armistice, November 1918",
   "credits": [
-   "Library of Congress · Chronicling America",
-   "Harris & Ewing and Bain News Service negatives",
+   "Library of Congress · Chronicling America · Prints & Photographs",
    "Foreign Relations of the United States, 1918",
    "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"
   ]
@@ -301,7 +296,7 @@
        "sub": "United Press · photographed 1914"
       }
      ],
-     "say": "This is Roy Howard, photographed in nineteen fourteen. Four years later he was running the United Press, one of the biggest news wires in America, and he was in France. A bulletin with his own name on it was not a rumor. It was a guarantee."
+     "say": "This is Roy Howard. The photograph was made in nineteen fourteen. Four years later he was running the United Press, one of the biggest news wires in America, and he was in France. A bulletin with his own name on it was not a rumor. It was a guarantee."
     },
     {
      "type": "read",
@@ -326,7 +321,7 @@
       2349,
       975
      ],
-     "say": "Papers raced to get it out. In South Bend, Indiana, the News-Times set its headline so fast that it misspelled the word itself. Armisitce is signed. Hostilities cease at once."
+     "say": "Newspapers raced to get the story out. In South Bend, Indiana, the News-Times set its headline so fast that it misspelled the word itself. Look at the letters. Two of them are swapped. Armistice is signed. Hostilities cease at once."
     },
     {
      "type": "read",
@@ -591,7 +586,7 @@
      "kicker": "PART 4",
      "title": "The admiral",
      "chapterName": "The admiral",
-     "say": "Part four. The admiral."
+     "say": "And now, part four. The admiral."
     },
     {
      "type": "read",
@@ -986,7 +981,7 @@
       2349,
       975
      ],
-     "say": "Papers rushed it out so fast that in South Bend, they misspelled the word armistice."
+     "say": "Newspapers rushed it out so fast that in South Bend, they misspelled the word armistice."
     },
     {
      "type": "read",
