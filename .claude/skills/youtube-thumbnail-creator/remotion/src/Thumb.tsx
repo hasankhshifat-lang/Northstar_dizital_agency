@@ -5,12 +5,16 @@ import {loadFont as loadPlexSerif} from '@remotion/google-fonts/IBMPlexSerif';
 import {loadFont as loadPlexMono} from '@remotion/google-fonts/IBMPlexMono';
 import {loadFont as loadMarker} from '@remotion/google-fonts/PermanentMarker';
 import {loadFont as loadOswald} from '@remotion/google-fonts/Oswald';
+import {loadFont as loadHind} from '@remotion/google-fonts/HindSiliguri';
 
 const anton = loadAnton().fontFamily;
 const plexSerif = loadPlexSerif('normal', {weights: ['600', '700']}).fontFamily;
 const plexMono = loadPlexMono('normal', {weights: ['500', '600']}).fontFamily;
 const marker = loadMarker().fontFamily;
 const oswald = loadOswald('normal', {weights: ['600']}).fontFamily;
+// Bangla fallback (Scientific Bithi): any Bengali characters fall through to Hind Siliguri.
+const bangla = loadHind('normal', {weights: ['700'], subsets: ['bengali', 'latin']}).fontFamily;
+const withBn = (f: string) => `${f}, ${bangla}`;
 
 // Channel house styles. The visual subject (face / cutout / object / location) carries the story;
 // these only set type, tag colours and grading. Change a look in the channel rules first, then here.
@@ -69,7 +73,7 @@ export const defaultProps: ThumbProps = {
   headline: {lines: ['HEADLINE'], x: 60, y: 60, size: 120},
 };
 
-const norm = (w: string) => w.toUpperCase().replace(/[^A-Z0-9$']/g, '');
+const norm = (w: string) => w.toUpperCase().replace(/[^\p{L}\p{M}\p{N}$']/gu, '');
 
 const CropImg: React.FC<{src: string; crop?: [number, number, number, number]; style?: React.CSSProperties; filter?: string; aspect?: number}> = ({src, crop, style, filter, aspect}) => {
   if (!crop) return <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: 'cover', filter, ...style}} />;
@@ -174,7 +178,7 @@ export const Thumb: React.FC<ThumbProps> = (p) => {
 
       {/* 3. Headline: short, specific, supports the picture */}
       <div style={{position: 'absolute', left: p.headline.align === 'center' ? 0 : p.headline.x, right: p.headline.align === 'center' ? 0 : undefined,
-        top: p.headline.y, textAlign: p.headline.align ?? 'left', fontFamily: s.font, fontSize: p.headline.size,
+        top: p.headline.y, textAlign: p.headline.align ?? 'left', fontFamily: withBn(s.font), fontSize: p.headline.size,
         textTransform: s.upper ? 'uppercase' : 'none', lineHeight: p.style === 'archive' ? 1.02 : 0.98, letterSpacing: s.upper ? 1 : -1,
         ...(p.headline.panel ? {background: 'rgba(21,23,26,0.92)', padding: '22px 30px 26px', borderLeft: `8px solid ${s.mark}`} : {})}}>
         {p.headline.lines.map((line, i) => (
@@ -195,11 +199,12 @@ export const Thumb: React.FC<ThumbProps> = (p) => {
       {(p.tags ?? []).map((t, i) => {
         const sz = t.size ?? 34;
         const v = t.variant ?? 'date';
-        const st: React.CSSProperties = v === 'stamp'
+        const st0: React.CSSProperties = v === 'stamp'
           ? {color: s.mark, border: `5px solid ${s.mark}`, padding: '4px 16px', fontFamily: anton, background: 'rgba(255,255,255,0.0)', letterSpacing: 3}
           : v === 'label'
             ? {color: '#f6efe0', background: '#1f2326', padding: '4px 14px', fontFamily: oswald, letterSpacing: 1}
             : {color: s.tagText, background: s.tagBg, padding: '6px 18px', fontFamily: p.style === 'archive' ? plexMono : anton, letterSpacing: 2};
+        const st: React.CSSProperties = {...st0, fontFamily: withBn(String(st0.fontFamily))};
         return (
           <div key={i} style={{position: 'absolute', left: t.x, top: t.y, fontSize: sz, whiteSpace: 'nowrap',
             transform: `rotate(${t.rotate ?? 0}deg)`, boxShadow: v === 'stamp' ? undefined : '0 6px 14px rgba(0,0,0,0.4)', ...st}}>{t.text}</div>
