@@ -196,3 +196,14 @@ the VibeVoice voiceover skill above. Learning database: `social/learning/overthi
 - **Look: notebook doodle** (lemo-opuscar Sketchnote style). **Thumbnails use the notebook style** described in the
   runbook, not the map style (the map style is for Which Life Next); everything else in the thumbnail rules applies.
 - Accuracy: real, cited studies only; flag disputed findings; education, not medical advice.
+
+## Scientific Bithi Shorts: Sci-Fi Sitcom Toon is the default (owner, 2026-11-16)
+
+Every new Short for the Scientific Bithi Facebook Page (সাইন্টিফিক বিথী), in chat and in every scheduled task, is made in
+the lemo-opuscar **Sci-Fi Sitcom Toon** template (`scifi-toon`), following
+`social/bangla-science-channel/kit/scifi-toon/README.md` on branch `claude/bangla-science-channel-analysis-afuq9x`
+(approved reference: `videos/bithi-scifi-toon-demo/` on that branch).
+- Keep the cast (মন্টু মামা, বিথী, বল্টু, scientist cameos) redrawn in the style, and a new Bangladeshi setting every Short.
+- It replaces the kit's old puppet engine and the Blender 3D plates for this channel. Scientist portal: cyan + gold.
+- Unchanged: ElevenLabs voices (Bangla), scriptwriting and animation-direction rules, fact checks, storyboard, approval
+  before upload, the 20:00 Dhaka slot, Figma thumbnails and the Facebook Page steps.
