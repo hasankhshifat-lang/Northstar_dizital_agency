@@ -1,0 +1,9 @@
+{"width":1280,"height":720,"style":"map",
+ "background":{"src":"map_eastern_virginia_1864.jpg","crop":[0.32,0.33,0.62,0.28],"grade":"warm","blur":1.2,"side":"left","darken":0.05},
+ "layers":[
+  {"type":"pin","x":560,"y":293,"label":"WASHINGTON","size":50},
+  {"type":"cutout","src":"booth_cut.png","x":735,"y":-40,"h":780,"grade":"sepia","glow":"rgba(255,226,170,0.55)"}
+ ],
+ "headline":{"lines":["THE 12-DAY","MANHUNT"],"accent":["MANHUNT"],"x":48,"y":380,"size":118},
+ "tags":[{"text":"APRIL 1865","x":52,"y":318,"variant":"date","size":36},
+         {"text":"$50,000 REWARD","x":56,"y":618,"variant":"stamp","size":40,"rotate":-4}]}

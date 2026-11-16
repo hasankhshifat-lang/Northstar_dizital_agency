@@ -74,9 +74,9 @@ VibeVoice, thumbnails, yt.py) and never replaces the rules in this file; where t
   extended reports or a Studio export, or write n/a. Never invent analytics.
 - Publishing, money and channel settings stay with the owner (approval first); fixed publish times change only on
   the owner's say-so.
-- **Remotion** is the fallback when lemo-opuscar/the channel engine can't make a scene, and the **third thumbnail
-  fallback** after Figma and Spline (`remotion-thumb/` in the skill; never an arbitrary video frame). Check the
-  rendered file before use.
+- **Remotion** is the fallback when lemo-opuscar/the channel engine can't make a scene, and the **default thumbnail
+  renderer** (universal thumbnail skill, `.claude/skills/youtube-thumbnail-creator/remotion/`; owner, 2026-11-16;
+  never an arbitrary video frame). Check the rendered file before use.
 - Scheduled tasks: "YouTube growth: daily checkpoints" and "YouTube growth: weekly audit".
 
 ## YouTube: always use the youtube-channel-automation skill (own Google Cloud client)
@@ -100,49 +100,38 @@ image generated in Figma is made with the **ChatGPT model inside Figma** (owner,
 `generate_image` tool with `model: "gpt-image-2.5-flare"`, always passed explicitly. Never use the Gemini models
 (`gemini-3.1-flash-image`, `gemini-3.1-flash-lite-image`), and don't generate the image outside Figma. Words go in as
 live Figma text with `use_figma`, not drawn by the model. The Figma account is on pay-as-you-go: on a rate or
-usage limit wait ~60 s and retry (max 3 times); if Figma still fails, thumbnails use the Spline fallback (next section);
+usage limit wait ~60 s and retry (max 3 times); if Figma still fails, thumbnail art comes from Spline `2d_generate_images` (universal thumbnail skill, next section);
 for anything else, say so with the exact error and stop.
 Generations cost Figma AI credits, so keep them to what the task needs (max 3 per thumbnail).
 
-## YouTube + Facebook thumbnails: always made in Figma, map style
+## YouTube + Facebook thumbnails: universal thumbnail skill (owner, 2026-11-16)
 
-Every new YouTube video **and every Facebook Page video/Reel** gets a custom thumbnail, and it is **designed in
-Figma only** (Figma connector: `use_figma`, `get_screenshot`, `download_assets`). Don't use other design or
-image tools for thumbnails: no `make_thumbnails.py`/PIL rendering, Canva, Higgsfield, vidIQ thumbnail generator,
-AI image generators outside Figma etc. (Spline only as the fallback below). **Artwork comes from the ChatGPT model inside Figma** (owner, 2026-11-11):
-Figma `generate_image` with model `gpt-image-2.5-flare` (never the Gemini models), with no text in the image and at
-most 3 generations per thumbnail; headings, tags and date tags are added as live Figma text with `use_figma`. The Figma account is on **pay-as-you-go** (owner, 2026-11-11), in chat and in
-every scheduled task: Figma usage/tool-call limits are never a reason to skip Figma; on a rate or usage limit wait
-~60 s and retry (max 3 times). If Figma is not connected or still fails, use the Spline fallback below.
-Read the master thumbnail rules in `docs/content/thumbnail-rules.md` first (three concepts, short headline that
-works with the title, 100-point score, A/B testing), then follow `.claude/skills/youtube-thumbnail-creator/SKILL.md`:
-read the full script first (`social/scripts/<VIDEO_ID>.md`, or ask for it), pick one story angle, write three
-heading options and choose the clearest. Build it in the Figma file "NorthStar Thumbnails" (one frame per video,
-named `<VIDEO_ID>` / `<VIDEO_ID>_9x16` / `fb_<FB_VIDEO_ID>`) in the same illustrated map style as last time
-(the existing thumbnails in `social/thumbnails/` are the reference):
-- Parchment/cream land, teal water and rivers, thin state lines, the story's state filled in tan,
-  rust-red route with white waypoint dots, red teardrop pins, dark label tags, dark date tag with gold text.
-- A clear, specific heading (2–6 words, Anton font, white + gold) that adds to the title and never repeats it.
-  Don't force dramatic words; curiosity about the actual story, never a misleading claim.
-- **Shorts / Facebook Reels: 9:16, 1080×1920** (file `<VIDEO_ID>_9x16.jpg`): date tag and hook at the top,
-  map focus in the middle, bottom ~400 px kept clear for the title/caption overlay.
-- Long-form YouTube and Facebook feed videos: 16:9, 1280×720 (`<VIDEO_ID>.jpg`), hook on the left, map on the right.
-- Look at the Figma screenshot, fix anything off, then export the frame from Figma (`download_assets`,
-  JPG/PNG at scale 1) into `social/thumbnails/` (Facebook: `fb_<FB_VIDEO_ID>.jpg` / `fb_<FB_VIDEO_ID>_9x16.jpg`).
-- YouTube: set it with `yt.py thumbnail VIDEO_ID FILE` and log it in `social/youtube-schedule-log.md`.
-  Facebook: set it through the Graph API (facebook-page-automation skill, "Thumbnail") and log it in
-  `social/facebook-page-log.md`. Add the row (with the Figma frame link) to `social/thumbnails/README.md`, then commit and push.
-
-**Spline fallback (owner, 2026-11-15):** if Figma is not available (connector not connected, or it still fails after
-the retries with an auth, billing, permission or other error), make the thumbnail in **Spline** instead, in chat and
-in every scheduled task, instead of stopping. Use the Spline connector's 2D editor (Hana, `2d_*` tools): one frame per
-thumbnail in the Spline file "NorthStar Thumbnails" (As Printed: "As Printed Thumbnails"), same names, sizes, style and
-heading rules as above. Artwork from Spline's own image generation (`2d_generate_images`, no text in the image, max 3
-per thumbnail) or real archive/stock images you may use; if Spline has no AI credits, build it from shapes and real
-images. All words are live Spline text. Check it with `2d_review_frame`, export with `2d_export_html` and render the
-frame to JPG at the exact size with the preinstalled Playwright/Chromium. Say in the report and the log that it was made
-in Spline, with the exact Figma error. If Spline is not available either, use the Remotion fallback (youtube-growth-intelligence skill, `remotion-thumb/`, same
-style and sizes, real or already-generated art, never an arbitrary video frame) and say so with both errors (owner, 2026-11-15).
+Every new YouTube video (long-form or Short) **and every Facebook Page video/Reel**, on every channel, in chat and in
+every scheduled task, gets a custom thumbnail made with `.claude/skills/youtube-thumbnail-creator/SKILL.md` (the
+universal, Remotion-powered skill; it replaces the old Figma-only, map-only rule). Read it and
+`docs/content/thumbnail-rules.md` first.
+- **Never a text-only thumbnail.** Every thumbnail has a dominant visual subject: the main person's real face or
+  portrait, a character cutout, the key object or the location, chosen from the full script (read it first; ask for
+  it if missing). Three concepts (face / location / object), three headlines, pick the strongest; 2–5 word headline
+  that adds to the title and never repeats it; no misleading claims; the 100-point score (redo below 70).
+- **Assets:** real public-domain or licensed images first (LoC, National Archives, Wikimedia PD, stock, the channel's
+  own character art), with the source and rights recorded; generated art only from Figma `generate_image` with model
+  `gpt-image-2.5-flare` (no text in the image, max 3 per thumbnail; Spline `2d_generate_images` if Figma is not
+  available). Never an AI face for a specific real person. Cutouts with the skill's `scripts/cutout.py`.
+- **Composition and render: Remotion** (`.claude/skills/youtube-thumbnail-creator/remotion/`, `render.mjs`), exact
+  size, JPG under 2 MB, mobile-size check. If Remotion can't render, build the same layout in Figma ("NorthStar
+  Thumbnails") and then Spline, and say so with the exact error. Never an arbitrary video frame, Canva, Higgsfield,
+  vidIQ's generator or PIL drawing.
+- **Sizes:** long-form/feed 16:9 1280×720 (`<VIDEO_ID>.jpg`); Shorts/Reels 9:16 1080×1920 (`<VIDEO_ID>_9x16.jpg`),
+  bottom ~400 px clear. Facebook files `fb_<FB_VIDEO_ID>[_9x16].jpg`.
+- **Channel looks** (skill section 0.2): Which Life Next = parchment map + authentic portrait (Anton white + gold,
+  dark date tag with gold text); As Printed = archive light table with the real front page; The Overthinking Pad =
+  notebook doodle with the channel character; Foot All FC = toon puppets (never real players' faces, crests or
+  sponsors); Scientific Bithi = toon with বিথী rendered from the episode.
+- **Output:** save to `social/thumbnails/` (or the episode folder) with its props JSON, never overwrite an existing
+  thumbnail without permission. YouTube: `yt.py thumbnail VIDEO_ID FILE`, log in `social/youtube-schedule-log.md`.
+  Facebook: facebook-page-automation skill ("Thumbnail"), log in `social/facebook-page-log.md`. Add the row to
+  `social/thumbnails/README.md`, then commit and push. Approval-first channels send the thumbnail with the videos.
 
 ## YouTube analysis: use vidIQ
 
@@ -180,8 +169,8 @@ the VibeVoice voiceover skill above (they apply to As Printed too).
 - **Approval first** (owner's choice): send the finished videos, titles, descriptions and publish times; upload only
   after the owner approves. The general YouTube confirmation rule above stays in force.
 - Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
-- **Thumbnails for As Printed use the archive style** (`engine/thumb.html`), not the map style: the map-style rule
-  above applies to Which Life Next.
+- **Thumbnails for As Printed use the archive look** of the universal thumbnail skill (real front page + the person,
+  ship, place or object it is about), not the map look, which is for Which Life Next.
 
 
 ## The Overthinking Pad (psychology channel): 4 long videos + 4 Shorts a week
@@ -193,8 +182,8 @@ the VibeVoice voiceover skill above. Learning database: `social/learning/overthi
 - **Approval first:** send the finished videos, thumbnails, titles, descriptions and publish times; upload only after
   the owner approves.
 - Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
-- **Look: notebook doodle** (lemo-opuscar Sketchnote style). **Thumbnails use the notebook style** described in the
-  runbook, not the map style (the map style is for Which Life Next); everything else in the thumbnail rules applies.
+- **Look: notebook doodle** (lemo-opuscar Sketchnote style). **Thumbnails use the notebook look** of the universal
+  thumbnail skill (the channel character or the study's key object as the dominant subject), not the map look.
 - Accuracy: real, cited studies only; flag disputed findings; education, not medical advice.
 
 ## Scientific Bithi: every video is Sci-Fi Sitcom Toon (owner, 2026-11-16)
@@ -207,4 +196,4 @@ promos and any other video on the page; where the README says "Shorts", read it 
 - Keep the cast (মন্টু মামা, বিথী, বল্টু, scientist cameos) redrawn in the style, and a new Bangladeshi setting every video.
 - It replaces the kit's old puppet engine and the Blender 3D plates for this channel. Scientist portal: cyan + gold.
 - Unchanged: ElevenLabs voices (Bangla), scriptwriting and animation-direction rules, fact checks, storyboard, approval
-  before upload, the 20:00 Dhaka slot, Figma thumbnails and the Facebook Page steps.
+  before upload, the 20:00 Dhaka slot and the Facebook Page steps. Thumbnails follow the universal thumbnail skill.

@@ -17,11 +17,12 @@ Owner decisions (2026-11-15):
   written stroke by stroke. Never the 3D map style.
 - **Voice: VibeVoice, always** (`.claude/skills/vibevoice-voiceover/SKILL.md`, default voice Frank unless the channel
   later fixes another; keep the same voice for every episode once chosen).
-- **Thumbnails: notebook style, not the map style** (that one is for Which Life Next). Same rules otherwise: Figma
-  (`generate_image` with `gpt-image-2.5-flare`, no text in the image, max 3 generations), words as live Figma text,
-  Spline fallback per CLAUDE.md. Look: dot-grid paper, one bold doodle (a tangled thought loop, a head with a
+- **Thumbnails: notebook look, made with the universal thumbnail skill** (owner, 2026-11-16:
+  `.claude/skills/youtube-thumbnail-creator/SKILL.md`, Remotion `style: "notebook"`). Never text-only: the channel's
+  notebook character (rendered from `engine/`) showing the emotion, or the study's key object, is the dominant
+  subject. Generated art only from Figma `gpt-image-2.5-flare` (no text, max 3). Look: dot-grid paper, one bold doodle (a tangled thought loop, a head with a
   storm cloud, a split-path choice), black + one yellow highlight, 2–5 word heading in a heavy hand-lettered or
-  Anton face. Figma file "NorthStar Thumbnails", frames `<VIDEO_ID>` / `<VIDEO_ID>_9x16`.
+  Anton face. Files `thumb_long.jpg` / `thumb_short.jpg` in the episode folder plus their props JSON.
 
 Read before writing: `CLAUDE.md`, `docs/content/scriptwriting-rules.md` (wins over anything here),
 `docs/content/animation-direction-rules.md`, `docs/content/thumbnail-rules.md`, this file, `topics.md`,

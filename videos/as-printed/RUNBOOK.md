@@ -8,7 +8,10 @@ YouTube channel **As Printed** (`yt.py --channel asprinted`). Owner decisions (2
   daylight saving is handled by `date`). If approval comes after 7 PM ET, use the next day's slots.
 - **Voice: VibeVoice, always** (`engine/voice/vv_tts.py`, the channel's narrator reference `narrator_ref.wav`).
 - **Look: the Archive Light Table template** (`engine/`), never the 3D map style.
-- **Thumbnails: archive style** (`engine/thumb.html`), not the map style used by Which Life Next.
+- **Thumbnails: archive look, made with the universal thumbnail skill** (owner, 2026-11-16:
+  `.claude/skills/youtube-thumbnail-creator/SKILL.md`, Remotion `style: "archive"`): the real front page plus the
+  person, ship, place or object it is about (public-domain photo, cut out) as the dominant subject; never text-only.
+  `engine/thumb.html` is kept only as a last-resort fallback. Examples: `social/thumbnails/demos/universal-2026-11-16/`.
 
 Read these before writing a script: `CLAUDE.md`, **`docs/content/scriptwriting-rules.md`** (the master script rules: they win
 over anything here), `docs/content/animation-direction-rules.md`, this file, `videos/as-printed/topics.md` and

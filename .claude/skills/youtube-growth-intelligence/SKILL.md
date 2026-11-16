@@ -37,7 +37,7 @@ This skill is the controller. The house rules and specialist skills below still 
 | Animation, storyboard, scene inspection | `docs/content/animation-direction-rules.md` (storyboard before animating, §7.3 inspection) |
 | Video generation | `.claude/skills/lemo-opuscar/SKILL.md` first (never the `map-explainer` style). Channel engines: As Printed `videos/as-printed/engine/`. **Remotion** is the fallback when lemo-opuscar/the engine can't do a scene (see §5) |
 | English voice | VibeVoice (`.claude/skills/vibevoice-voiceover/`); Bangla on ElevenLabs. No other TTS |
-| Thumbnails | `docs/content/thumbnail-rules.md` + `.claude/skills/youtube-thumbnail-creator/`: **Figma** (`gpt-image-2.5-flare`) → **Spline** → **Remotion** (`remotion-thumb/`, §7). Channel styles: Which Life Next = map, As Printed = archive, Overthinking Pad = notebook |
+| Thumbnails | `docs/content/thumbnail-rules.md` + the universal `.claude/skills/youtube-thumbnail-creator/` skill (owner, 2026-11-16): dominant visual subject, real/licensed assets or Figma `gpt-image-2.5-flare` art, composed and rendered in **Remotion** (`youtube-thumbnail-creator/remotion/`), Figma → Spline as fallback composers. Channel looks: Which Life Next = map + portrait, As Printed = archive, Overthinking Pad = notebook, Foot All FC = toon |
 | Upload, schedule, edit, comments | `.claude/skills/youtube-channel-automation/` (`yt.py`, own OAuth client). Never Clawlink/Metricool |
 | Analysis | vidIQ first (connected only for **Which Life Next** as of 2026-11-15); `scripts/growth.py` + `yt.py analytics` as the fallback/collector. Say which source you used |
 | Per-channel lessons | `social/learning/<channel>.md` (never mix channels) |
@@ -246,23 +246,16 @@ Follow `docs/content/thumbnail-rules.md` and the youtube-thumbnail-creator skill
 - 2–5 words that add to the title and never repeat it, readable at mobile size
 - historically accurate clothing, objects and settings; no unrelated famous figures as bait
 
-**Tool order.**
-1. **Figma.** `generate_image` with `gpt-image-2.5-flare`, no text in the art, max 3 generations; words as live
-   Figma text.
-2. **Spline** fallback (CLAUDE.md).
-3. **Remotion fallback (owner, 2026-11-15).** Use it when Figma and Spline are both unavailable or busy:
-   ```bash
-   cd .claude/skills/youtube-growth-intelligence/remotion-thumb && npm install   # once per container
-   node render.mjs props.json ../../../../social/thumbnails/<VIDEO_ID>.jpg art.jpg [subject.png]
-   ```
-   `props.json`: `{"width":1280,"height":720,"style":"map|archive|notebook|cinematic","background":"art.jpg",
-   "subject":"subject.png","subjectSide":"right","headline":["LINE ONE","LINE TWO"],"accent":"WORD","tag":"1812"}`.
-   - Shorts: 1080×1920; the bottom ~400 px stays clear.
-   - Build layers: background art (real archive or stock images we may use, or art we already generated), a
-     directional vignette, a cut-out subject for depth, live text.
-   - **Never take an arbitrary video frame as the thumbnail.**
-   - The script converts to JPG under 2 MB at the exact size.
-4. Other image methods only if all three fail. Say so.
+**Tool order (owner, 2026-11-16).** Use the universal thumbnail skill (`.claude/skills/youtube-thumbnail-creator/SKILL.md`):
+1. **Assets:** real public-domain/licensed images or the channel's own character art; generated art only from Figma
+   `generate_image` with `gpt-image-2.5-flare` (Spline `2d_generate_images` if Figma is unavailable). Cutouts with
+   `youtube-thumbnail-creator/scripts/cutout.py`.
+2. **Compose + render in Remotion:** `cd .claude/skills/youtube-thumbnail-creator/remotion && npm ci`, then
+   `node render.mjs props.json ../../../../social/thumbnails/<VIDEO_ID>.jpg <assets...>` (props format in the skill,
+   section 8; examples in `remotion/examples/`). Shorts 1080×1920 with the bottom ~400 px clear.
+3. **Fallback composers:** Figma frame, then Spline 2D, only if Remotion can't render; say so with the error.
+   - **Never take an arbitrary video frame as the thumbnail.** Never a text-only thumbnail.
+   - The older `remotion-thumb/` here is kept only so old props still render; new work uses the skill's engine.
 
 **Check the actual rendered file** at full size *and* at about 168×94 px (the mobile suggestion size) before it is
 used. Score it against the internal targets (these are not CTR predictions) and record the scores:

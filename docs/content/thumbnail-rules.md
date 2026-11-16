@@ -9,22 +9,19 @@ any thumbnail.
 The channel rules in `CLAUDE.md` and section 0 of the thumbnail skill still hold. Where this file and those
 rules differ, the channel rules win:
 
-- **Tool:** every thumbnail is built in **Figma** (file "NorthStar Thumbnails"). Where this file says
-  "generate", it means "build in Figma". The artwork is generated inside Figma with the ChatGPT image model
-  (`generate_image`, model `gpt-image-2.5-flare`; owner, 2026-11-11), no text in the image, max 3 generations;
-  all words are live Figma text. No image generators outside Figma, no Gemini models, no Canva, PIL, Higgsfield or
-  vidIQ thumbnail generator. The owner's Figma account is on **pay-as-you-go** (owner, 2026-11-11): Figma usage or
-  tool-call limits are never a reason to skip Figma; on a rate/usage limit wait ~60 s and retry (max 3 times).
-- **Spline fallback (owner, 2026-11-15):** only when Figma is not available (not connected, or still failing after the
-  retries), build the thumbnail in **Spline** (2D editor, `2d_*` tools) with the same style, sizes, heading and
-  scoring rules: artwork from `2d_generate_images` (no text, max 3) or real images, words as live Spline text,
-  checked with `2d_review_frame`, exported with `2d_export_html` and rendered to JPG with Playwright. Report and log
-  "made in Spline" with the exact Figma error. If Spline also fails, report both errors and stop.
-- **Style:** the channel's **illustrated map style** (parchment land, teal water, tan story state, rust-red
-  route, red pins, dark label tags, gold-on-dark date tag, Anton heading in white + gold) is the default.
-  Apply the "cinematic" rules below (composition, hierarchy, contrast, lighting, colour discipline,
-  one idea, mobile readability) to that map style. Faces and people (sections 5 and 11) are used only when
-  the user asks for them.
+- **Skill and tools (owner, 2026-11-16):** follow the universal thumbnail skill
+  (`.claude/skills/youtube-thumbnail-creator/SKILL.md`). Assets come from real public-domain/licensed images or the
+  channel's own character art, generated art only from Figma `generate_image` (`gpt-image-2.5-flare`, no text, max 3;
+  Spline as its fallback); the still is composed and rendered in **Remotion** (`remotion/` in the skill), with Figma
+  and then Spline as fallback composers. Where this file says "generate" or "build in Figma", read "make with the
+  universal skill".
+- **Visual subject first:** never a text-only thumbnail. A dominant face, character cutout, key object or location
+  carries every thumbnail (the skill's sections 1, 3–5); faces and people (sections 5 and 11 below) are encouraged
+  whenever the story has a main person, using authentic portraits for real people.
+- **Style:** each channel keeps its house look (skill section 0.2): Which Life Next = parchment map + portrait,
+  As Printed = archive, The Overthinking Pad = notebook, Foot All FC and Scientific Bithi = toon. Apply the
+  "cinematic" rules below (composition, hierarchy, contrast, lighting, colour discipline, one idea, mobile
+  readability) inside that look.
 - **Heading length:** 2–6 words (channel rule); aim for 2–5 as below.
 - **Canvas:** 16:9 1280×720 for long-form/feed videos; 9:16 1080×1920 for Shorts/Reels with the bottom
   ~400 px kept clear.
@@ -189,7 +186,7 @@ Reconstructed scenes use cinematic historical realism, never a claim of photogra
 
 ## 11. Thumbnail style
 
-House style: the illustrated map style (see the top of this file). The quality bar is a premium historical
+House style: the channel's look from the universal thumbnail skill (see the top of this file). The quality bar is a premium historical
 documentary campaign:
 
 - Sharp focal subject, clean composition, high visual contrast.
@@ -267,8 +264,8 @@ viewers is not a good thumbnail. Log the variants and the result in `social/yout
 4. Write three short headline options.
 5. Compare concepts on curiosity, clarity, emotion and accuracy.
 6. Pick the strongest concept (keep the others as A/B test variants).
-7. Build the final thumbnail in Figma.
-8. Inspect the Figma screenshot/export for errors.
+7. Build the final thumbnail with the universal skill (Remotion render).
+8. Inspect the render and its mobile-size check sheet for errors.
 9. Check readability at small mobile size.
 10. Score it (section 14) and redo it if needed.
 11. Deliver the thumbnail with the chosen headline, the score, and a short explanation of why the concept
