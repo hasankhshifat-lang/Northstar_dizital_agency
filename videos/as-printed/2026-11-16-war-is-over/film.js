@@ -78,7 +78,7 @@ function buildCamera() {
       let Sin, cin;
       if (s.type === 'read') {
         const bw = Math.max(...s.boxesT.map(b => (b[2] - b[0]) * it.k));
-        Sin = clamp(0.86 * W / bw, 0.15, 1.7 / it.k);
+        Sin = clamp(0.86 * W / bw, 0.06, 1.7 / it.k);   // 0.06: wide headlines still fit a 9:16 frame
         cin = s.boxesT.map(b => toW(it, mid(b)));
       } else {
         const pw = it.size[0] * it.k, ph = it.size[1] * it.k;
