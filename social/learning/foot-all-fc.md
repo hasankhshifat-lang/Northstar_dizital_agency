@@ -28,6 +28,7 @@ _None yet. Add a line only with the videos/metrics that support it._
 
 | Tag | Variable changed (one only) | Variants | Videos so far | Status | Result |
 |---|---|---|---|---|---|
+| EXP-footallfc-001 (card: youtube-growth/footallfc/experiments/experiment-log.md) | Publish slot (two Shorts a day) | 19:00 ET · 21:00 ET, higher topic score alternating between slots | 0 balanced so far (day 1: j_ApWmdOq7A 19:00, Ee8NbFAdEfg 21:00, unbalanced) | planned (2026-11-16) | n/a yet |
 
 ## Weekly reviews
 

@@ -18,8 +18,8 @@ _None yet. Add a line only with the videos/metrics that support it._
 
 | Tag | Variable changed (one only) | Variants | Videos so far | Status | Result |
 |---|---|---|---|---|---|
-| EXP-whichlifenext-001 (card: youtube-growth/whichlifenext/experiments/experiment-log.md) | Publish time: 08:00 ET vs 17:00 ET | 08:00 ET: Shorts 11-09…11-16 · 17:00 ET: from 2026-11-17 | control: 8 (11-09…11-16); test: 5BAbL0eYfRQ (11-17) | running (owner approved 2026-11-15) | n/a yet (baseline: evening ET Shorts 6–49% US share; 08:00 ET Shorts with ≥1k views 2.1–2.4%) |
-| EXP-firstframe-person-vs-object | First frame + hook subject: a person (in danger or menacing) vs an object/place | person: ctx0tm_C56c, _w_jqoz9elc, vIm7ATNVI4o, 5BAbL0eYfRQ · object/place: vy-qRhRjnN0, ulARZlhrP30, uBHrZaAZw4A | 6 (tagged retroactively from 2026-11-14) | running | n/a yet (swipe-away: person Titanic 44%, Glass 53%; object Ghost Army 66%; public views: object ulARZlhrP30 1,293 at ~16 h, best since the plan started; need ≥3 each with analytics) |
+| EXP-whichlifenext-001 (card: youtube-growth/whichlifenext/experiments/experiment-log.md) | Publish time: 08:00 ET vs 17:00 ET | 08:00 ET: Shorts 11-09…11-16 · 17:00 ET: from 2026-11-17 | control: 8 (11-09…11-16); test: 5BAbL0eYfRQ (11-17) | running (owner approved 2026-11-15) | n/a yet (baseline: evening ET Shorts 6–49% US share; 08:00 ET Shorts with ≥1k views 2.1–2.4%). Interim 2026-11-16: reach recovered at 08:00 ET (11-14…11-16: 1.1k–1.6k public views); confound: VibeVoice voice from 11-16 (see card) |
+| EXP-firstframe-person-vs-object | First frame + hook subject: a person (in danger or menacing) vs an object/place | person: ctx0tm_C56c, _w_jqoz9elc, vIm7ATNVI4o, 5BAbL0eYfRQ · object/place: vy-qRhRjnN0, ulARZlhrP30, uBHrZaAZw4A | 7 (tagged retroactively from 2026-11-14; card added to experiment-log.md 2026-11-16) | running | n/a yet (swipe-away: person Titanic 44%, Glass 53%; object Ghost Army 66%; public views: object ulARZlhrP30 1,293 at ~16 h, best since the plan started; need ≥3 each with analytics) |
 
 ## Weekly reviews
 

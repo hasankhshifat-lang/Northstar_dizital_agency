@@ -14,6 +14,7 @@ _None yet. Add a line only with the videos/metrics that support it._
 
 | Tag | Variable changed (one only) | Variants | Videos so far | Status | Result |
 |---|---|---|---|---|---|
+| EXP-overthinkingpad-001 (card: youtube-growth/overthinkingpad/experiments/experiment-log.md) | Shorts first line + frame: study set-up vs viewer's moment | study-first (control) · your-moment-first | 0 (first Short 8GYwZB1soxo goes live 2026-11-16 20:00 ET, control) | planned (2026-11-16) | n/a yet |
 
 ## Weekly reviews
 
