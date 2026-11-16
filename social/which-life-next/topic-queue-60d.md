@@ -20,7 +20,7 @@ WD weird but true · FT feats & escapes
 | 5 | SV | The Year the Mississippi Ran Backward | In 1812 the Mississippi River flowed the wrong way. | done 2026-11-13 ulARZlhrP30 (title: The Night the Mississippi Ran Backward) |
 | 6 | PI | Blackbeard Set His Own Beard on Fire | He tied burning fuses into his beard before every fight. | done 2026-11-14 vIm7ATNVI4o (title: Blackbeard's Scariest Weapon Wasn't a Gun; fuses were under his hat per the 1724 account) |
 | 7 | MY | 3 Men Escaped Alcatraz and Were Never Found | The guards found these heads in the beds. They were fake. | done 2026-11-15 uBHrZaAZw4A (slot 2026-11-16) |
-| 8 | WR | Japan Bombed Oregon With Balloons | 6 people died on a picnic in Oregon in 1945. | |
+| 8 | WR | Japan Bombed Oregon With Balloons | 6 people died on a picnic in Oregon in 1945. | done 2026-11-16 5BAbL0eYfRQ (slot 2026-11-17 17:00 ET; title: Japan Bombed Oregon With Paper Balloons) |
 | 9 | TI | She Survived the Titanic… and 2 More Shipwrecks | Violet Jessop was on 3 ships that sank or crashed. | |
 | 10 | MAP | Why Minnesota Has a Piece Stuck in Canada | You have to drive through Canada to reach this part of the US. | |
 | 11 | FT | He Stole a Warship and Sailed to Freedom | In 1862 an enslaved pilot stole a Confederate warship. | |

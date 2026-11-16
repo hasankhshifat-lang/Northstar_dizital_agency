@@ -9,3 +9,5 @@
 | 2026-11-13 | Thumbnail set | The Night the Mississippi Ran Backward | 1887036389329820 (thumb 1887105365989589) | — | is_preferred=true; Figma frame 2:3 render upscaled to 1080×1920 |
 | 2026-11-14 | Scheduled Reel upload | Blackbeard's Scariest Weapon Wasn't a Gun | 1041071278392110 | 2026-11-15 13:00 | (status processing at upload time; no custom thumbnail: Figma seat limit) |
 | 2026-11-15 | Scheduled Reel upload | 3 Men Escaped Alcatraz and Were Never Found | 1450108923217052 | 2026-11-16 13:00 | (status processing at upload time; no custom thumbnail: Figma seat limit) |
+| 2026-11-16 | Scheduled Reel upload | Japan Bombed Oregon With Paper Balloons | 1867753887551647 | 2026-11-17 22:00 | (status processing at upload time) |
+| 2026-11-16 | Thumbnail set | Japan Bombed Oregon With Paper Balloons | 1867753887551647 | — | is_preferred=true; Spline frame render 1080×1920 |

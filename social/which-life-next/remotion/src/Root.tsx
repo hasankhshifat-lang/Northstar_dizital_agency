@@ -14,6 +14,7 @@ import { HughGlass, GLASS_END } from "./stories/hughGlass";
 import { NewMadrid, MADRID_END } from "./stories/newMadrid";
 import { Blackbeard, BB_END } from "./stories/blackbeard";
 import { Alcatraz, AZ_END } from "./stories/alcatraz";
+import { BalloonBombs, FG_END } from "./stories/balloonBombs";
 import { fonts, palette } from "./theme";
 
 const episodeMeta: CalculateMetadataFunction<EpisodeProps> = ({ props }) => ({ durationInFrames: Math.max(1, episodeDuration(props)) });
@@ -58,6 +59,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="NewMadrid" component={NewMadrid} width={1080} height={1920} fps={30} durationInFrames={Math.round(MADRID_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="Blackbeard" component={Blackbeard} width={1080} height={1920} fps={30} durationInFrames={Math.round(BB_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="Alcatraz" component={Alcatraz} width={1080} height={1920} fps={30} durationInFrames={Math.round(AZ_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
+    <Composition id="BalloonBombs" component={BalloonBombs} width={1080} height={1920} fps={30} durationInFrames={Math.round(FG_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="HughGlass" component={HughGlass} width={1080} height={1920} fps={30} durationInFrames={Math.round(GLASS_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="MikeThumb" component={MikeThumb} width={1080} height={1920} fps={30} durationInFrames={1} />
     <Composition id="GhostArmy" component={GhostArmy} width={1080} height={1920} fps={30} durationInFrames={Math.round(GHOST_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />

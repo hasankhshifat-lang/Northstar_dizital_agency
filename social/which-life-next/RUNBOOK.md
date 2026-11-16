@@ -6,6 +6,7 @@
 > **FORMAT (user, 2026-11-01, latest): ALL Shorts are map Shorts WITH a voiceover. 45–60 seconds (owner, 2026-11-08; 110–150 words), opening on a hook of the main story.**
 > - Visuals: the "Map Shorts" section below (continuous camera over a real map, Kit v2 on the map).
 > - Narration (owner, 2026-11-15): VibeVoice, voice Frank, via the vibevoice-voiceover skill on main; ElevenLabs only for sound effects. (Older Jesse/ElevenLabs narration steps below are retired.)
+> - Publish slot (owner, 2026-11-15, EXP-whichlifenext-001): 17:00 ET from 2026-11-17 (22:00 UTC in EST). Older 21:00 SGT / 08:00 ET mentions below are superseded.
 > - Sound effects must NEVER cover the voice. `pony_mix.py` with `VOICE=` ducks effects to −14 dB and music to −20 dB under speech; they come back up between lines.
 > reached or the user says to resume. Each day: step 0 (report, story-type ranking, comments) → 4 standalone story
 > Shorts ("Standalone story Shorts" section; 3 from the best type, 1 test) → schedule (config.md slots,
@@ -485,3 +486,11 @@ Start on the map, then **dive into the place** and show what the narration descr
 - Kit: new colour key `capStyle: "hair"` draws bare short hair instead of the flat cap (side pose) for characters who wouldn't wear one (1960s inmates).
 - Natural Earth/us-atlas 10m coastlines are blobs below state scale; for city/bay-level maps download the Census 500k shapefile (census.gov opens) and clip it.
 - Figma Collab-seat MCP limit hit again after create_session + 1 generate_image (art node 4:2 made); `use_figma` failed 4×.
+
+### Learned 2026-11-16 (Balloon bombs Short, first 17:00 ET slot)
+- VibeVoice again not preinstalled: `install.sh` ~2 min in the background (start it first, with `npm ci` and `python3 -m pip install faster-whisper`). A 150-word take took ~104 s and came out 56.4 s; 0.36 s leading silence trimmed.
+- Take check: small.en heard "their" for "her"; Groq `whisper-large-v3` (api.groq.com, proxy-injected) heard "her" on the clean take. Use large-v3 as the tie-breaker before regenerating.
+- Story: `src/stories/balloonBombs.tsx` (Pacific Mercator `rotate([170,0])`, route unwrapped across the date line, find pins Alaska → Mexico, Oregon fill) + `src/sets/balloonScenes.tsx` (Skirt overlay for women/girls on the Kit side pose, Fu-Go Payload ring + bomb, deflated Envelope with shroud lines, Pine/Woods with parallax scroll, Sedan with door, inflating balloon in a hall, paste brush, paper spike, newspaper). `BB_END` is taken by Blackbeard in Root.tsx: export a unique `*_END` per story.
+- Running ~20 `remotion still` processes at once got OOM-killed; cap at 4 in parallel. System PIL is broken: tile stills with `ffmpeg -pattern_type glob -i 's_*.png' -vf tile=7x3`.
+- Remotion output is yuvj420p: re-encode with `-vf "scale=in_range=full:out_range=tv,format=yuv420p" -color_range tv`.
+- Figma Collab-seat limit hit on the very first `use_figma` (a read), 4 tries ~60–70 s apart; no generation was spent. Spline fallback: account is on the Free plan (20 tool calls/day, no AI image credits: `2d_generate_images` → "not enough credits"). Built the map from real geodata as inline SVG (node + d3-geo, `clipExtent` to the frame keeps it ~12 KB), live text in HTML; `2d_export_html` adds a Google Fonts @import for Anton/Oswald, render with Playwright (`waitUntil: networkidle` + `document.fonts.ready`). Budget ~9 Spline calls per thumbnail.
