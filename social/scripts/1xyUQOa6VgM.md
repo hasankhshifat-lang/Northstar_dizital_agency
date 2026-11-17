@@ -1,5 +1,7 @@
 # War Is Over! — As Printed, 2026-11-16 (working title: war-is-over)
 
+Video IDs: long 1xyUQOa6VgM, Short BzGnyOekmnA (scheduled 17 Nov 2026, 7 PM / 8 PM ET).
+
 Channel: As Printed. Topic report: `videos/as-printed/2026-11-16-war-is-over/TOPIC.md` (score 85/100). Facts: `FACTS.md` there.
 Rename to `<VIDEO_ID>.md` after upload.
 
