@@ -1,0 +1,61 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "toon",
+ "background": {
+  "src": "bg_figma.png",
+  "grade": "none",
+  "blur": 0,
+  "darken": 0.0,
+  "side": "top"
+ },
+ "layers": [
+  {
+   "type": "cutout",
+   "src": "newton.png",
+   "x": 240,
+   "y": 730,
+   "h": 750,
+   "outline": "#fff"
+  },
+  {
+   "type": "cutout",
+   "src": "bithi.png",
+   "x": -20,
+   "y": 660,
+   "h": 820,
+   "outline": "#fff"
+  }
+ ],
+ "headline": {
+  "lines": [
+   "জাদু নাকি",
+   "বিজ্ঞান?!"
+  ],
+  "accent": [
+   "বিজ্ঞান?!"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 120,
+  "size": 150
+ },
+ "tags": [
+  {
+   "text": "প্লেট নড়েনি!",
+   "x": 620,
+   "y": 900,
+   "variant": "date",
+   "size": 62,
+   "rotate": -4
+  },
+  {
+   "text": "সাইন্টিফিক বিথী",
+   "x": 330,
+   "y": 470,
+   "variant": "label",
+   "size": 44
+  }
+ ],
+ "guides": false
+}
