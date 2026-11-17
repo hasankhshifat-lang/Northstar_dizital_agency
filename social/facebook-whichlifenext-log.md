@@ -13,3 +13,5 @@
 | 2026-11-16 | Thumbnail set | Japan Bombed Oregon With Paper Balloons | 1867753887551647 | — | is_preferred=true; Spline frame render 1080×1920 |
 | 2026-11-17 | Scheduled Reel upload | She Survived the Titanic and Both Its Sister Ships | 1139472315483528 | 2026-11-18 22:00 | (status processing at upload time) |
 | 2026-11-17 | Thumbnail set | She Survived the Titanic and Both Its Sister Ships | 1139472315483528 | — | is_preferred=true; Remotion render 1080×1920 (status: ready, scheduled 2026-11-18 22:00 UTC) |
+| 2026-11-17 | Daily check | All cross-posts 11-10…11-18 present | — | — | Alcatraz (1450108923217052) live since 2026-11-16 13:00; Balloons (1867753887551647) scheduled 2026-11-17 22:00 = YT publishAt; Titanic/Jessop scheduled 2026-11-18 22:00; 0 late publishes |
+| 2026-11-17 | Comments check | 10 videos + 27 posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
