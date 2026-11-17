@@ -48,7 +48,7 @@
   },
   {
    "id": "c1f",
-   "say": "And embarrassment is a very particular emotion. In the nineteen nineties, psychologist Mark Leary proposed that self-esteem works like a gauge... a sociometer, that tracks how accepted you are by other people."
+   "say": "Embarrassment, though, is a very particular emotion. In the nineteen nineties, psychologist Mark Leary proposed that self-esteem works like a gauge... a sociometer, that tracks how accepted you are by other people."
   },
   {
    "id": "c1g",
@@ -216,7 +216,7 @@
   },
   {
    "id": "c5h",
-   "say": "And remember the last episode: the other person almost certainly noticed less, and judged you less harshly, than you think. Your replay is in high definition. Theirs, if it exists at all, is a blurry thumbnail."
+   "say": "And remember the last episode: the other person almost certainly noticed less, and judged you less harshly, than you think. Your replay is in high definition. Theirs, if it exists at all, is a tiny, blurry little picture."
   },
   {
    "id": "c5i",
@@ -228,7 +228,7 @@
   },
   {
    "id": "end2",
-   "say": "Your brain kept that memory because it cares about belonging. That's not a flaw. But you don't have to watch it from the front row. Step back... and it's just a scene, from a long time ago, starring someone you've already grown past."
+   "say": "Your brain held on to that memory because it cares about belonging. That's not a flaw. But you don't have to watch it from the front row. Step back... and it's just a scene, from a long time ago, starring someone you've already grown past."
   },
   {
    "id": "end3",
@@ -262,12 +262,12 @@
   },
   {
    "id": "s5",
-   "say": "Up close, the why didn't help. From a distance, people felt less anger... and started making sense of the moment instead of reliving it."
+   "say": "Up close, the why didn't help. From a distance, people felt less anger... and started making sense of the moment instead of reliving it, blow by blow."
   },
   {
    "id": "s6",
    "say": "So next time your brain replays something awful at two a.m., don't fight it. Change your seat. Watch it from across the room. What's the moment your brain loves to replay?",
-   "tail": 1.8
+   "tail": 2.2
   }
  ]
 }

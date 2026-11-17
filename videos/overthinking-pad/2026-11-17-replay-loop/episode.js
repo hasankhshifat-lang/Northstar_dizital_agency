@@ -120,7 +120,7 @@ function card(L, x, y, w, h, t0, o = {}) { L.box(x, y, w, h, t0, 0.28, { r: 20, 
 function notepad(L, x, y, w, h, t0, items, o = {}) {
   const p = [[x, y], [x + w, y], [x + w, y + h], [x, y + h]]; L.FILL(p, t0); L.dropShadow(p, 7, 8, t0 + 0.1, 0.06); L.INK_(p, { closed: true, w: 2.8, amp: 0.4 }, t0, 0.14);
   for (let i = 0; i < 5; i++) L.INK_(L.ell(x + 30 + i * (w - 60) / 4, y, 8, 12, 0, L.TAU, 12), { closed: true, w: 2, amp: 0.1, passes: 1 }, t0 + 0.1, 0.02);
-  let t = t0 + 0.2; items.forEach((s, i) => { const yy = y + 80 + i * (o.lh || 64); const bx = L.rrect(x + 26, yy - 30, 30, 30, 4); L.INK_(bx, { closed: true, w: 2.4, amp: 0.2, passes: 1 }, (o.it ? o.it[i] : t), 0.05); t = L.TXT(s, x + 72, yy, o.size || 38, { f: 'PH' }, (o.it ? o.it[i] : t) + 0.05, null); });
+  let t = t0 + 0.2; items.forEach((s, i) => { const yy = y + 80 + i * (o.lh || 64); const bx = L.rrect(x + 26, yy - 30, 30, 30, 4); L.INK_(bx, { closed: true, w: 2.4, amp: 0.2, passes: 1 }, (o.it ? o.it[i] : t), 0.05); if (s) t = L.TXT(s, x + 72, yy, o.size || 38, { f: 'PH' }, (o.it ? o.it[i] : t) + 0.05, null); else L.INK_(L.line(x + 72, yy - 10, x + w - 30, yy - 12), { w: 2, amp: 0.6, passes: 1 }, t, 0.1); });
   return t;
 }
 function storm(L, P, t0) {   // an angry scribble cloud above a person's head
@@ -154,7 +154,7 @@ const def = (F, id, block, o, draw) => { F[id] = { block, ...o, draw }; };
 def(LONG, 'hook1', blk(0, 1), { purpose: 'hook: the feeling, shown before it is explained (the replay starts)', shot: 'opens close on the face on the pillow (eyes closing), pulls up to reveal the ceiling screen as the memory plays (reveal)', sfx: 'room tone; a clock tick; a soft projector click on "play"; pen', noAutoCam: true }, (S, L) => {
   const B = blk(0, 1), [x, y] = B, c = S.fit(B);
   S.cam(S.t0 - 0.01, x + 330, y + 640, 2.3, 0.01); S.cam(S.at('play') - 0.6, x + 560, y + 560, 1.5, 1.4, 'io'); S.cam(S.at('party') - 0.3, c.x, c.y, c.z * 1.02, 1.6, 'io');
-  const P = bed(L, x + 200, y + 860, 760, S.t0, { kind: 'side', you: true, k: 1.2 });
+  const P = bed(L, x + 200, y + 860, 760, S.t0 - 1.0, { kind: 'side', you: true, k: 1.2 });
   L.clock(x + 1420, y + 720, 70, S.t0 + 0.6); L.TXT('2:00', x + 1420, y + 840, 46, { f: 'KB', align: 'center' }, S.t0 + 0.9, 0.4);
   L.TXT('z', x + 400, y + 560, 44, { f: 'PH', col: L.INK2 }, S.at('asleep') - 0.2, 0.2);
   L.react(P, S.at('play') - 0.1, { kind: 'shock', look: [0.5, -1] });
@@ -195,7 +195,7 @@ def(LONG, 'hook4', blk(0, 4), { purpose: 'the promise: same memory, a way of thi
   L.TXT('not less thinking', x + 1180, y + 160, 50, { f: 'KB', align: 'center' }, S.at('less') - 0.3, 0.6);
   seat(L, x + 1020, y + 860, 1.1, S.at('stand') - 0.6); seat(L, x + 1360, y + 860, 1.1, S.at('stand') - 0.45);
   L.head(x + 1360, y + 640, 48, S.at('stand') - 0.3, { you: true, kind: 'content', look: [-1, -0.3], k: 0.6 });
-  L.TXT('front row', x + 1020, y + 360, 38, { f: 'PH', align: 'center', col: L.INK2 }, S.at('stand') - 0.1, 0.4); L.TXT('a few steps back', x + 1360, y + 360, 38, { f: 'PH', align: 'center', col: L.INK2 }, S.at('stand') + 0.2, 0.5);
+  L.head(x + 1020, y + 640, 48, S.at('stand') - 0.5, { kind: 'worry', look: [-1, -0.3], k: 0.6 }); L.TXT('front row', x + 1020, y + 895, 38, { f: 'PH', align: 'center', col: L.INK2 }, S.at('stand') - 0.1, 0.4); L.TXT('a few steps back', x + 1360, y + 895, 38, { f: 'PH', align: 'center', col: L.INK2 }, S.at('stand') + 0.2, 0.5);
   L.TXT('where you stand', x + 1190, y + 280, 56, { f: 'KB', align: 'center' }, S.at('where') - 0.2, 0.6); L.swash(x + 1000, y + 300, x + 1380, S.at('think', 2), 0.3);
 });
 def(LONG, 'sting', blk(0, 5, 1300, 600), { purpose: 'channel sting (≤ 2 s, after the hook)', shot: 'whip right across empty dots to the banner', sfx: 'paper whoosh + one kalimba note', ease: 'q', move: 0.6 }, (S, L) => {
@@ -245,7 +245,7 @@ def(LONG, 'c1c', blk(1, 3), { purpose: 'not random: cues set them off (place, ob
   partyMemory(L, mx - 60, my + 100, 0.5, S.at('random'), { react: false, text: '...' });
   L.TXT('not random', mx, my - 180, 48, { f: 'KB', align: 'center' }, S.at('random') - 0.1, 0.5);
   const cues = [['place', 'place', (cx, cy, t) => house(L, cx, cy + 60, 0.9, t), -560, -220], ['object', 'object', (cx, cy, t) => L.cup(cx, cy, 1.4, t), 560, -220], ['phrase', 'phrase', (cx, cy, t) => L.bubble(cx - 70, cy - 40, 140, 80, t, { text: '"..."', size: 34, shadow: false }), -560, 220], ['the body', 'body', (cx, cy, t) => L.person(cx, cy + 80, 0.6, t, { kind: 'worry', k: 0.4 }), 560, 220], ['a mood', 'mood', (cx, cy, t) => cloud(L, cx, cy, 160, 90, t, { tint: L.GRY2, rain: true }), 0, 340]];
-  cues.forEach(([lab, w, fn, dx, dy]) => { const t = S.at(w) - 0.3, cx = mx + dx, cy = my + dy; fn(cx, cy, t); L.TXT(lab, cx, cy + (dy === 340 ? 0 : 130) + (dy === 340 ? 0 : 0), 38, { f: 'PH', align: 'center', col: L.INK2 }, t + 0.2, 0.4); if (dy !== 340) L.inkArrow([[cx - Math.sign(dx) * 100, cy], [mx + Math.sign(dx) * 230, my + Math.sign(dy) * 60]], { w: 3.4 }, t + 0.3, 0.2); });
+  cues.forEach(([lab, w, fn, dx, dy]) => { const t = S.at(w) - 0.3, cx = mx + dx, cy = my + dy; fn(cx, cy, t); L.TXT(lab, cx + (dy === 340 ? 170 : 0), cy + (dy === 340 ? 10 : 130), 38, { f: 'PH', align: 'center', col: L.INK2 }, t + 0.2, 0.4); if (dy !== 340) L.inkArrow([[cx - Math.sign(dx) * 100, cy], [mx + Math.sign(dx) * 230, my + Math.sign(dy) * 60]], { w: 3.4 }, t + 0.3, 0.2); });
 });
 def(LONG, 'c1d', blk(1, 4), { purpose: 'the 2 a.m. trigger can be tiny: a song, the quiet, a flash of today', shot: 'pan right; medium on the bed again (continuity), push toward the head as the triggers arrive', sfx: 'three soft cues: a hummed note, silence, a tiny sting' }, (S, L) => {
   const [x, y] = blk(1, 4);
@@ -301,11 +301,11 @@ def(LONG, 'c1h', blk(1, 8), { purpose: 'so an awkward moment reads as a warning 
   const G = gauge(L, x + 480, y + 620, 260, S.t0 + 0.3, { v: 0.65, lo: 'out', hi: 'in' });
   G.needle(0.3, S.at('warning') - 0.3);
   warnLight(L, x + 480, y + 250, 60, S.at('warning'));
-  L.TXT('warning light', x + 480, y + 400, 40, { f: 'KB', align: 'center' }, S.at('light') - 0.1, 0.4);
+  L.TXT('warning light', x + 580, y + 265, 40, { f: 'KB' }, S.at('light') - 0.1, 0.4);
   const P = L.person(x + 1200, y + 840, 1.4, S.at('like') - 0.8, { pose: 'hold', you: true, kind: 'worry', look: [-0.5, -0.8], k: 0.6 });
   L.bubble(x + 850, y + 140, 420, 110, S.at('like') - 0.3, { thought: true, tail: [P.head[0] - 30, P.head[1] - 50], text: 'did they like me less?', size: 36 });
   L.bubble(x + 1080, y + 300, 330, 100, S.at('still') - 0.3, { thought: true, tail: [P.head[0] + 10, P.head[1] - 50], text: 'am I still in?', size: 38 });
-  L.TXT('a social species', x + 1150, y + 500, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('species') - 0.3, 0.6);
+  L.TXT('a social species', x + 1420, y + 620, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('species') - 0.3, 0.6);
 });
 def(LONG, 'c1i', blk(1, 9), { purpose: 'bridge: why it is kept vs why at that hour (open question into chapter 2)', shot: 'pan right; push in on the clock and the question mark', sfx: 'clock tick, then a page tap' }, (S, L) => {
   const [x, y] = blk(1, 9);
@@ -320,8 +320,8 @@ chapter(LONG, 'ch2', 2, 2, 'WHY 2 A.M.');
 def(LONG, 'c2a', blk(2, 1), { purpose: 'day vs night: a busy mind vs an empty one', shot: 'pan right; the day half, then a slow push into the empty night half', sfx: 'busy pings, then silence' }, (S, L) => {
   const [x, y] = blk(2, 1);
   L.TXT('DAY', x + 380, y + 110, 60, { f: 'KB', align: 'center' }, S.at('day') - 0.2, 0.3);
-  const P = L.person(x + 380, y + 800, 1.3, S.at('day'), { pose: 'hold', you: true, kind: 'think', look: [0.5, -0.4], k: 0.6 });
-  phone(L, P.hand[1][0] + 6, P.hand[1][1] - 60, 0.45, S.at('messages') - 0.3);
+  const P = L.person(x + 380, y + 800, 1.3, S.at('day'), { pose: 'hold', you: true, kind: 'think', look: [1, 0.2], k: 0.6, reach2: [x + 380 + 95, y + 800 - 125] });
+  phone(L, P.hand[1][0] + 4, P.hand[1][1] - 28, 0.3, S.at('messages') - 0.3);
   [['messages', -230, 260], ['traffic', 220, 240], ['conversations', -240, 420], ['next thing', 230, 400]].forEach(([w, dx, dy], i) => L.bubble(x + 380 + dx - 110, y + dy - 50, 220, 80, S.at(w.split(' ')[0]) - 0.2, { text: w, size: 28, shadow: false }));
   L.INK_(L.line(x + 800, y + 100, x + 800, y + 840), { w: 2.4, amp: 1, passes: 1, dash: [12, 10], alpha: 0.6 }, S.at('now') - 0.2, 0.3);
   L.TXT('2 A.M.', x + 1200, y + 110, 60, { f: 'KB', align: 'center' }, S.at('am') - 0.2, 0.3);
@@ -333,8 +333,8 @@ def(LONG, 'c2b', blk(2, 2), { purpose: 'the 2010 app study: random pings, three 
   const [x, y] = blk(2, 2);
   tag(L, x + 300, y + 110, 'HARVARD · 2010', 54, S.at('harvard') - 0.3);
   L.TXT('Killingsworth & Gilbert', x + 300, y + 210, 42, { f: 'PH', align: 'center', col: L.INK2 }, S.at('killingsworth') - 0.2, 0.8);
-  const P = L.person(x + 330, y + 860, 1.6, S.at('app') - 0.6, { pose: 'hold', kind: 'neutral', look: [0.6, 0.4], hair: 'curly', k: 0.6 });
-  phone(L, P.hand[1][0] + 8, P.hand[1][1] - 70, 0.6, S.at('app') - 0.2);
+  const P = L.person(x + 330, y + 860, 1.6, S.at('app') - 0.6, { pose: 'hold', kind: 'neutral', look: [1, 0.3], hair: 'curly', k: 0.6, reach2: [x + 330 + 120, y + 860 - 150] });
+  phone(L, P.hand[1][0] + 4, P.hand[1][1] - 34, 0.36, S.at('app') - 0.2);
   L.TXT('PING', P.hand[1][0] + 80, P.hand[1][1] - 180, 40, { f: 'KB' }, S.at('pinged') - 0.1, 0.3); L.sparks(P.hand[1][0] + 8, P.hand[1][1] - 150, 70, 100, [-2.2, -1.5, -0.9], S.at('pinged'), 0.12);
   for (let i = 0; i < 12; i++) L.head(x + 640 + (i % 6) * 70, y + 330 + Math.floor(i / 6) * 80, 24, S.at('thousands') + i * 0.04, { k: 0.2, hair: ['tuft', 'bun', 'cap', 'long', 'curly', 'messy'][i % 6] });
   L.TXT('thousands of people', x + 815, y + 510, 36, { f: 'PH', align: 'center', col: L.INK2 }, S.at('thousands') + 0.3, 0.5);
@@ -381,7 +381,7 @@ def(LONG, 'c2f', blk(2, 6), { purpose: 'recap the perfect setup (memory + quiet 
   const [x, y] = blk(2, 6);
   const items = [['strongly stored', 'stored'], ['a quiet mind', 'quiet'], ['no competition', 'compete']];
   items.forEach(([lab, w], i) => { const cx = x + 260 + i * 420, t = S.at(w) - 0.5; L.box(cx - 170, y + 160, 340, 220, t, 0.25, { r: 18 }); L.TXT(lab, cx, y + 290, 40, { f: 'KB', align: 'center' }, t + 0.25, 0.5); if (i < 2) L.TXT('+', cx + 210, y + 300, 70, { f: 'KB', align: 'center' }, t + 0.4, 0.2); });
-  L.TXT('= the perfect setup', x + 1450, y + 300, 44, { f: 'KB', align: 'center' }, S.at('setup') - 0.2, 0.6);
+  L.TXT('= the perfect setup', x + 800, y + 450, 44, { f: 'KB', align: 'center' }, S.at('setup') - 0.2, 0.6);
   L.box(x + 300, y + 500, 1000, 260, S.at('question') - 0.4, 0.3, { r: 26, tint: 'rgba(255,205,40,0.25)' });
   L.TXT("why can't you just let it go?", x + 800, y + 650, 62, { f: 'KB', align: 'center' }, S.at("can't") - 0.4, 1.0);
 });
@@ -407,7 +407,7 @@ def(LONG, 'c3b', blk(3, 2), { purpose: 'the natural experiment: Loma Prieta 1989
   const cx = x + 360, cy = y + 560, cal = [[cx - 150, cy], [cx + 150, cy], [cx + 150, cy + 260], [cx - 150, cy + 260]];
   L.FILL(cal, S.at('coincidence') - 0.2); L.dropShadow(cal, 7, 8, S.at('coincidence')); L.INK_(cal, { closed: true, w: 3, amp: 0.4 }, S.at('coincidence') - 0.2, 0.2);
   L.MRK([[[cx - 150, cy], [cx + 150, cy], [cx + 150, cy + 50], [cx - 150, cy + 50]]], { col: L.GRY2, w: 12, edge: false }, S.at('coincidence'), 0.1);
-  L.TXT('2 weeks before', cx, cy + 170, 42, { f: 'KB', align: 'center' }, S.at('weeks') - 0.3, 0.6);
+  L.TXT('2 weeks before', cx, cy + 170, 34, { f: 'KB', align: 'center' }, S.at('weeks') - 0.3, 0.6);
   for (let i = 0; i < 6; i++) L.student(x + 760 + i * 130, y + 830, 0.8, S.at('students') - 0.3 + i * 0.08, { hair: ['bun', 'tuft', 'long', 'cap', 'curly', 'messy'][i], kind: 'neutral', look: [0.6, 0.6], k: 0.3 });
   L.TXT('moods + coping styles', x + 1100, y + 560, 42, { f: 'PH', align: 'center', col: L.INK2 }, S.at('moods') - 0.3, 0.7);
 });
@@ -440,7 +440,7 @@ def(LONG, 'c3e', blk(3, 5), { purpose: 'the lab task: feeling low → think abou
   L.bubble(x + 880, y + 220, 440, 230, S.at('neutral') - 0.2, { thought: true, tail: [B.head[0], B.head[1] - 50] });
   cloud(L, x + 1020, y + 330, 130, 70, S.at('scenes') - 0.2); house(L, x + 1180, y + 380, 0.6, S.at('scenes'));
   L.TXT('B', x + 980, y + 880, 40, { f: 'KB', align: 'center' }, S.at('scenes'), 0.2);
-  L.TXT('nothing to do with them', x + 1100, y + 500, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('nothing') - 0.2, 0.6);
+  L.TXT('nothing to do with them', x + 1420, y + 560, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('nothing') - 0.2, 0.6);
 });
 def(LONG, 'c3f', blk(3, 6), { purpose: 'results: ruminators got more down, distracted felt better; ruminators solved social problems worse', shot: 'pan right; the two characters return and react (continuity), then the puzzle pieces', sfx: 'a falling pluck, a rising pluck; puzzle click' }, (S, L) => {
   const [x, y] = blk(3, 6);
@@ -504,7 +504,7 @@ def(LONG, 'c4a', blk(4, 1), { purpose: 'the 2005 experiment set-up: recall a tim
   const P = L.student(x + 380, y + 840, 1.5, S.at('students') - 0.4, { kind: 'neutral', look: [0.8, -0.6], you: true, k: 0.6 });
   L.TXT('recall a time you were furious', x + 1060, y + 160, 44, { f: 'KB', align: 'center' }, S.at('recall') - 0.3, 0.9);
   memScreen(L, x + 760, y + 240, 600, 380, S.at('recall') + 0.2, { rec: false, from: [P.head[0] + 40, P.head[1] - 30] });
-  const A = L.person(x + 960, y + 560, 0.9, S.at('time') - 0.1, { pose: 'point', you: true, kind: 'angry', look: [1, 0], k: 0.5 });
+  const A = L.person(x + 960, y + 560, 0.9, S.at('time') - 0.1, { pose: 'arms_up', you: true, kind: 'angry', look: [1, 0], k: 0.5 });
   const B = L.person(x + 1170, y + 560, 0.9, S.at('felt') - 0.2, { pose: 'shrug', kind: 'neutral', look: [-1, 0], hair: 'cap', k: 0.5, dir: -1 });
   storm(L, A, S.at('anger') - 0.3);
   L.react(P, S.at('anger'), { kind: 'angry', look: [0.8, -0.6] });
@@ -513,15 +513,15 @@ def(LONG, 'c4b', blk(4, 2), { purpose: 'the two instructions: relive it up close
   const [x, y] = blk(4, 2);
   L.box(x + 20, y + 100, 740, 760, S.at('relive') - 0.6, 0.3, { r: 20, tint: 'rgba(255,205,40,0.18)' });
   L.TXT('relive it', x + 390, y + 180, 56, { f: 'KB', align: 'center' }, S.at('relive') - 0.3, 0.5);
-  const A = L.person(x + 300, y + 780, 2.0, S.at('relive'), { pose: 'point', you: true, kind: 'angry', look: [1, 0], k: 0.6 });
+  const A = L.person(x + 300, y + 780, 2.0, S.at('relive'), { pose: 'arms_up', you: true, kind: 'angry', look: [1, 0], k: 0.6 });
   L.person(x + 640, y + 780, 2.0, S.at('happening') - 0.3, { pose: 'shrug', kind: 'neutral', look: [-1, 0], hair: 'cap', k: 0.6, dir: -1 });
   L.TXT('as if it\'s happening again', x + 390, y + 250, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('again') - 0.4, 0.6);
   L.TXT('a few steps back', x + 1210, y + 180, 56, { f: 'KB', align: 'center' }, S.at('steps') - 0.4, 0.6);
   memScreen(L, x + 1000, y + 260, 420, 260, S.at('watch') - 0.4, { rec: false });
-  L.person(x + 1150, y + 480, 0.6, S.at('scene') - 0.2, { pose: 'point', you: true, kind: 'angry', look: [1, 0], k: 0.3 }); L.person(x + 1270, y + 480, 0.6, S.at('scene'), { kind: 'neutral', look: [-1, 0], hair: 'cap', k: 0.3 });
+  L.person(x + 1150, y + 480, 0.6, S.at('scene') - 0.2, { pose: 'arms_up', you: true, kind: 'angry', look: [1, 0], k: 0.3 }); L.person(x + 1270, y + 480, 0.6, S.at('scene'), { kind: 'neutral', look: [-1, 0], hair: 'cap', k: 0.3 });
   seat(L, x + 1210, y + 840, 1.0, S.at('distant') - 0.6);
   L.head(x + 1210, y + 630, 46, S.at('distant') - 0.4, { you: true, kind: 'think', look: [0, -1], k: 0.5 });
-  L.TXT('the distant you', x + 1210, y + 580 - 30, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('version') - 0.3, 0.6);
+  L.TXT('the distant you', x + 1420, y + 690, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('version') - 0.3, 0.6);
 });
 def(LONG, 'c4c', blk(4, 3), { purpose: 'second split: what you feel vs why you feel it (a 2×2)', shot: 'pan right; a 2×2 grid is ruled, rows and columns labelled in order', sfx: 'four ruler strokes' }, (S, L) => {
   const [x, y] = blk(4, 3);
@@ -606,7 +606,7 @@ def(LONG, 'c5b', blk(5, 2), { purpose: '1 · step back: picture it from across t
   numDot(L, x + 110, y + 110, 1, S.t0 + 0.1, 46); L.TXT('STEP BACK', x + 190, y + 135, 66, { f: 'KB' }, S.at('step') - 0.2, 0.5);
   memScreen(L, x + 820, y + 260, 480, 300, S.t0 + 0.2, { rec: false });
   partyMemory(L, x + 980, y + 530, 0.6, S.t0 + 0.4, { react: false, text: 'ha... wait' });
-  L.INK_(L.line(x + 640, y + 150, x + 640, y + 860), { w: 3.4, amp: 0.8 }, S.at('room') - 0.4, 0.3);
+  L.INK_(L.line(x + 640, y + 170, x + 640, y + 430), { w: 3.4, amp: 0.8 }, S.at('room') - 0.4, 0.3);
   fly(L, x + 660, y + 300, 1.6, S.at('fly') - 0.2); L.TXT('fly on the wall', x + 470, y + 260, 38, { f: 'PH', align: 'center', col: L.INK2 }, S.at('wall') - 0.3, 0.6);
   const O = L.person(x + 330, y + 840, 1.4, S.at('watching') - 0.6, { you: true, kind: 'think', look: [1, -0.3], k: 0.6 });
   L.INK_(L.line(O.head[0] + 50, O.head[1], x + 820, y + 420), { w: 2.4, amp: 0.6, passes: 1, dash: [10, 10] }, S.at('observer') - 0.4, 0.3);
@@ -617,7 +617,7 @@ def(LONG, 'c5c', blk(5, 3), { purpose: 'the 2014 self-talk study: "I" vs own nam
   const [x, y] = blk(5, 3);
   tag(L, x + 300, y + 110, '2014', 54, S.at('two') - 0.3); L.TXT('Kross & colleagues', x + 300, y + 200, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('kross') - 0.2, 0.6);
   L.TXT('a speech, under pressure', x + 1080, y + 130, 50, { f: 'KB', align: 'center' }, S.at('speech') - 0.4, 0.7);
-  const pod = (px, t) => { const p = [[px - 80, y + 600], [px + 80, y + 600], [px + 64, y + 840], [px - 64, y + 840]]; L.FILL(p, t); L.MRK([p], { col: L.GRY, w: 12 }, t + 0.06, 0.06); L.INK_(p, { closed: true, w: 3, amp: 0.4 }, t, 0.14); };
+  const pod = (px, t) => { const p = [[px - 80, y + 730], [px + 80, y + 730], [px + 64, y + 840], [px - 64, y + 840]]; L.FILL(p, t); L.MRK([p], { col: L.GRY, w: 12 }, t + 0.06, 0.06); L.INK_(p, { closed: true, w: 3, amp: 0.4 }, t, 0.14); };
   const A = L.person(x + 520, y + 840, 1.4, S.at('nerves') - 0.6, { pose: 'hold', kind: 'worry', look: [0.4, -0.6], hair: 'tuft', k: 0.6 }); pod(x + 520, S.at('nerves') - 0.4);
   L.bubble(x + 300, y + 300, 420, 120, S.at('word') - 0.3, { thought: true, tail: [A.head[0], A.head[1] - 50], text: '"I can\'t do this"', size: 38 });
   L.TXT('"I"', x + 520, y + 260, 52, { f: 'KB', align: 'center' }, S.at('i') - 0.1, 0.3);
@@ -634,7 +634,6 @@ def(LONG, 'c5d', blk(5, 4), { purpose: 'results (less distress, better rated, le
   L.bubble(x + 760, y + 380, 700, 220, S.at('try') - 0.1, { tint: 'rgba(255,205,40,0.3)' });
   L.TXT('"Okay, Alex.', x + 1110, y + 470, 52, { f: 'KB', align: 'center' }, S.at('okay') - 0.2, 0.5); L.TXT('What actually happened there?"', x + 1110, y + 550, 44, { f: 'KB', align: 'center' }, S.at('actually') - 0.3, 0.8);
   L.TXT('(use your own name)', x + 1110, y + 680, 36, { f: 'PH', align: 'center', col: L.INK2 }, S.at('alex') + 0.3, 0.6);
-  const P = L.person(x + 470, y + 860, 1.0, S.at('okay') - 0.6, { you: true, kind: 'think', look: [1, -0.5], k: 0.4 });
 });
 def(LONG, 'c5e', blk(5, 5), { purpose: '2 · swap why-me for how; if there is a next step, write it down for the morning', shot: 'pan right; the "why me?" card flips to "how?", then the hand writes on the notepad by the bed (contact)', sfx: 'card flip; pencil scratch' }, (S, L) => {
   const [x, y] = blk(5, 5);
@@ -669,9 +668,9 @@ def(LONG, 'c5g', blk(5, 7), { purpose: '3 · a short absorbing distraction lets 
   L.TXT('a few absorbing minutes', x + 420, y + 330, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('minutes') - 0.3, 0.7);
   warnLight(L, x + 950, y + 360, 56, S.at('distraction') - 0.4);
   L.TXT('low moods lifted', x + 950, y + 520, 42, { f: 'KB', align: 'center' }, S.at('lifted') - 0.4, 0.5);
-  L.COVER(L.ell(x + 950, y + 360, 100, 100, 0, L.TAU, 30), S.at('settle') - 0.1); const c2 = L.ell(x + 950, y + 360, 56, 56, 0, L.TAU, 28); L.INK_(c2, { closed: true, w: 3, amp: 0.4 }, S.at('settle'), 0.1);
+  L.COVER(L.ell(x + 950, y + 360, 125, 125, 0, L.TAU, 30), S.at('settle') - 0.1); const c2 = L.ell(x + 950, y + 360, 56, 56, 0, L.TAU, 28); L.INK_(c2, { closed: true, w: 3, amp: 0.4 }, S.at('settle'), 0.1);
   L.TXT('the alarm settles', x + 950, y + 600, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('settle') + 0.1, 0.6);
-  seat(L, x + 1350, y + 840, 1.0, S.at('later') - 0.3); L.TXT('later, from a better seat', x + 1300, y + 560, 38, { f: 'KB', align: 'center' }, S.at('better') - 0.6, 0.8);
+  seat(L, x + 1350, y + 840, 1.0, S.at('later') - 0.3); L.TXT('later, from a better seat', x + 1350, y + 470, 38, { f: 'KB', align: 'center' }, S.at('better') - 0.6, 0.8);
 });
 def(LONG, 'c5h', blk(5, 8), { purpose: 'callback to episode 1: they noticed less and judged less harshly; HD replay vs blurry thumbnail', shot: 'pan right; two screens compared: the big sharp one (you) and a tiny blurry one (them)', sfx: 'a crisp click; a soft smudge' }, (S, L) => {
   const [x, y] = blk(5, 8);
@@ -682,7 +681,7 @@ def(LONG, 'c5h', blk(5, 8), { purpose: 'callback to episode 1: they noticed less
   L.TXT('YOUR REPLAY: HD', x + 500, y + 810, 44, { f: 'KB', align: 'center' }, S.at('definition') - 0.3, 0.5);
   const tb = L.rrect(x + 1080, y + 440, 260, 160, 10); L.FILL(tb, S.at('theirs') - 0.3); L.INK_(tb, { closed: true, w: 2.6, amp: 0.6 }, S.at('theirs') - 0.3, 0.1);
   L.MRK([L.ell(x + 1170, y + 520, 30, 50, 0, L.TAU, 20), L.ell(x + 1250, y + 520, 30, 50, 0, L.TAU, 20)], { col: L.GRY2, w: 22, edge: false }, S.at('exists') - 0.2, 0.2);
-  L.TXT('theirs: a blurry thumbnail', x + 1210, y + 680, 38, { f: 'KB', align: 'center' }, S.at('thumbnail') - 0.5, 0.7);
+  L.TXT('theirs: tiny and blurry', x + 1210, y + 680, 38, { f: 'KB', align: 'center' }, S.at('blurry') - 0.5, 0.7);
   L.qmark(x + 1380, y + 440, 80, S.at('exists'));
 });
 def(LONG, 'c5i', blk(5, 9), { purpose: 'care line: when to talk to a doctor or therapist', shot: 'pan right; a calm, centred card (no movement beyond the push)', sfx: 'quiet pen' }, (S, L) => {
@@ -741,9 +740,9 @@ const SHORT = {};
 def(SHORT, 's1', sblk(0), { purpose: 'hook in the first second (study-first, EXP-001 control): a furious memory on the screen, two ways to relive it', shot: 'opens close on the angry face from frame 0, pulls back to the memory screen and the "2 WAYS" label (reveal)', sfx: 'pen from frame 0; a low rumble on "furious"', noAutoCam: true }, (S, L) => {
   const B = sblk(0), [x, y] = B, c = S.fit(B);
   S.cam(S.t0, x + 450, y + 820, c.z * 1.6, 0.01); S.cam(S.t0 + 1.1, c.x, c.y, c.z * 1.05, 1.6, 'io');
-  const P = L.person(x + 450, y + 1110, 1.9, S.t0, { pose: 'hold', you: true, kind: 'angry', look: [0, -0.8], k: 0.9 });
+  const P = L.person(x + 450, y + 1110, 1.9, S.t0 - 1.2, { pose: 'hold', you: true, kind: 'angry', look: [0, -0.8], k: 0.9 });
   memScreen(L, x + 120, y + 180, 660, 360, S.at('relive') - 0.4, { rec: true, from: [P.head[0], P.head[1] - 60] });
-  const A = L.person(x + 340, y + 500, 0.85, S.at('moment') - 0.2, { pose: 'point', you: true, kind: 'angry', look: [1, 0], k: 0.4 });
+  const A = L.person(x + 340, y + 500, 0.85, S.at('moment') - 0.2, { pose: 'arms_up', you: true, kind: 'angry', look: [1, 0], k: 0.4 });
   L.person(x + 560, y + 500, 0.85, S.at('moment'), { pose: 'shrug', kind: 'neutral', look: [-1, 0], hair: 'cap', k: 0.4, dir: -1 });
   storm(L, A, S.at('furious') - 0.2);
   L.TXT('2 WAYS', x + 450, y + 120, 84, { f: 'KB', align: 'center' }, S.at('two') - 0.2, 0.4);
@@ -752,7 +751,7 @@ def(SHORT, 's2', sblk(1), { purpose: 'way 1: relive it up close, as if it is hap
   const [x, y] = sblk(1);
   L.TXT('HALF: UP CLOSE', x + 450, y + 110, 70, { f: 'KB', align: 'center' }, S.t0 + 0.05, 0.5);
   L.box(x + 30, y + 190, 840, 760, S.t0 + 0.2, 0.3, { r: 20, tint: 'rgba(255,205,40,0.2)' });
-  L.person(x + 280, y + 900, 2.3, S.at('go') - 0.2, { pose: 'point', you: true, kind: 'angry', look: [1, 0], k: 0.6 });
+  L.person(x + 280, y + 900, 2.3, S.at('go') - 0.2, { pose: 'arms_up', you: true, kind: 'angry', look: [1, 0], k: 0.6 });
   L.person(x + 680, y + 900, 2.3, S.at('live') - 0.2, { pose: 'shrug', kind: 'neutral', look: [-1, 0], hair: 'cap', k: 0.6, dir: -1 });
   L.TXT('"live it again"', x + 450, y + 1080, 56, { f: 'KB', align: 'center' }, S.at('again') - 0.3, 0.6);
 });
@@ -760,7 +759,7 @@ def(SHORT, 's3', sblk(2), { purpose: 'way 2: a few steps back, watch the distant
   const [x, y] = sblk(2);
   L.TXT('HALF: STEP BACK', x + 450, y + 110, 70, { f: 'KB', align: 'center' }, S.t0 + 0.05, 0.5);
   memScreen(L, x + 250, y + 220, 400, 250, S.at('steps') - 0.3, { rec: false });
-  L.person(x + 400, y + 430, 0.55, S.at('watch') - 0.2, { pose: 'point', you: true, kind: 'angry', look: [1, 0], k: 0.3 }); L.person(x + 510, y + 430, 0.55, S.at('watch'), { kind: 'neutral', look: [-1, 0], hair: 'cap', k: 0.3 });
+  L.person(x + 400, y + 430, 0.55, S.at('watch') - 0.2, { pose: 'arms_up', you: true, kind: 'angry', look: [1, 0], k: 0.3 }); L.person(x + 510, y + 430, 0.55, S.at('watch'), { kind: 'neutral', look: [-1, 0], hair: 'cap', k: 0.3 });
   L.TXT('the distant you', x + 450, y + 540, 44, { f: 'PH', align: 'center', col: L.INK2 }, S.at('distant') - 0.2, 0.5);
   fly(L, x + 760, y + 300, 1.8, S.at('fly') - 0.2); L.INK_(L.line(x + 820, y + 180, x + 820, y + 1000), { w: 3, amp: 0.6 }, S.at('fly') - 0.4, 0.2);
   seat(L, x + 450, y + 1000, 1.3, S.at('watch') + 0.4);

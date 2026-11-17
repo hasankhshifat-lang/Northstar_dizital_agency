@@ -1,0 +1,7 @@
+OK   s1 | Psychologists had people relive a moment that made them furious... in two different ways. → Psychologists had people relive a moment that made them furious in two different ways. 
+OK   s2 | Half were told: go back, and live it again, as if it's happening to you right now. → half were told go back and live it again as if it's happening to you right now 
+OK   s3 | The other half: take a few steps back, and watch it happen to a distant you... like a fly on the wall. → The other half, take a few steps back and watch it happen to a distant you like a fly on the wall. 
+OK   s4 | Then both groups asked the classic overthinking question. Why did I feel that way? → Then both groups asked the classic overthinking question, why did I feel that way? 
+OK   s5 | Up close, the why didn't help. From a distance, people felt less anger... and started making sense of the moment instead of reliving it, blow by blow. → Up close, the why didn't help. From a distance people felt less anger and started making sense of the moment instead of reliving it, blow by blow. 
+DIFF s6 | So next time your brain replays something awful at two a.m., don't fight it. Change your seat. Watch it from across the room. What's the moment your brain loves to replay? → So next time your brain replays something awful at 2am, don't fight it, change your seat, watch it from across the room, what's the moment your brain loves to replay? 
+mismatches: 1 (lang=en, model=small.en)
