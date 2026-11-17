@@ -1,0 +1,5 @@
+{"width":1080,"height":1920,"style":"notebook",
+ "background":{"src":"art_short.jpg","grade":"none","side":"none"},
+ "layers":[],
+ "headline":{"lines":["WATCH IT","OR RELIVE IT?"],"accent":["WATCH"],"x":540,"y":70,"size":118,"align":"center","panel":false},
+ "tags":[{"text":"REPLAY","x":130,"y":310,"variant":"label","rotate":-3}]}

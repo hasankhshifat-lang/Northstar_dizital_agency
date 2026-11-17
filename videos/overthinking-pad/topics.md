@@ -6,7 +6,7 @@ FACTS.md. Mark used topics `done YYYY-MM-DD (VIDEO_ID)`. Add new finds at the bo
 | # | Working title | Core research to check | Notes | Status |
 |---|---|---|---|---|
 | 1 | Nobody Noticed Your Shirt: The Spotlight Effect | Gilovich, Medvec & Savitsky 2000 (embarrassing T-shirt study) | Strong universal hook; replicated | done 2026-11-16 (VSaFr4doR0M, Short 8GYwZB1soxo) |
-| 2 | Why You Replay Embarrassing Moments at 2 A.M. | Rumination research (Nolen-Hoeksema); autobiographical memory and emotion | Practical close: distanced self-talk (Kross) | open |
+| 2 | Why You Replay Embarrassing Moments at 2 A.M. | Rumination research (Nolen-Hoeksema); autobiographical memory and emotion | Practical close: distanced self-talk (Kross) | done 2026-11-17 (b9ReSvwwjNw, Short q4cK6ZazDEo) |
 | 3 | They Can't Tell You're Nervous: The Illusion of Transparency | Gilovich, Savitsky & Medvec 1998; Savitsky & Gilovich 2003 (public speaking) | Pairs with #1, don't run back to back | open |
 | 4 | Why Worrying Feels Like Doing Something | Borkovec's worry research; contrast avoidance model (Newman & Llera 2011) | Mental-health line in description | open |
 | 5 | More Choices, Worse Decisions? | Iyengar & Lepper 2000 jam study + Scheibehenne et al. 2010 meta-analysis (mixed) | Honest "it's complicated" turn | open |
@@ -15,5 +15,5 @@ FACTS.md. Mark used topics `done YYYY-MM-DD (VIDEO_ID)`. Add new finds at the bo
 | 8 | The Unfinished Task Your Brain Won't Drop | Zeigarnik 1927 + replication problems (Ghibellini & Meier 2023 meta-analysis); Masicampo & Baumeister 2011 plans | Say clearly what held up | open |
 | 9 | Why Getting What You Wanted Stops Feeling Good | Hedonic adaptation; Brickman et al. 1978 lottery study and its limits | | open |
 | 10 | Overthinking a Text Message | Mind-reading errors, negativity in ambiguous messages (Kruger et al. 2005 email tone) | Very relatable Short | open |
-| 11 | Talk to Yourself in the Third Person | Kross et al. 2014 distanced self-talk | Practical episode | open |
+| 11 | Talk to Yourself in the Third Person | Kross et al. 2014 distanced self-talk | Practical episode; partly covered in #2 (2026-11-17), needs a new angle | open |
 | 12 | Decision Fatigue: Real or Myth? | Danziger et al. 2011 judges study + critiques (Weinshall-Margel & Shapard 2011); ego-depletion replication failures | Myth-check format | open |

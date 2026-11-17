@@ -1,0 +1,585 @@
+{
+"text": " Real Madrid fans standing up to applaud a Barcelona player in their own stadium. November 19th, 2005. The Cl\u00e1sico at the Bernabeu. Barcelona were already 1-0 up. Then Ronaldinho picked up the ball on the left, ran at Sergio Ramos, went past him and fired it in. 2-0. 18 minutes later, he did it again. Past Ramos and low under Eka Casillas. 3-0. And then something strange happened. Thousands of Madrid fans rose to their feet and clapped. Before him, the only Barcelona player said to get that honour was Diego Maradona in 1983. Nine days later, Ronaldinho won the Ballon d'Or. Would your fans ever clap for a rival? Tell me in the comments. you",
+"words": [
+{
+"word": "Real",
+"start": 0.2,
+"end": 0.46
+},
+{
+"word": "Madrid",
+"start": 0.46,
+"end": 0.74
+},
+{
+"word": "fans",
+"start": 0.74,
+"end": 1.24
+},
+{
+"word": "standing",
+"start": 1.24,
+"end": 2.14
+},
+{
+"word": "up",
+"start": 2.14,
+"end": 2.38
+},
+{
+"word": "to",
+"start": 2.38,
+"end": 2.52
+},
+{
+"word": "applaud",
+"start": 2.52,
+"end": 2.82
+},
+{
+"word": "a",
+"start": 2.82,
+"end": 2.94
+},
+{
+"word": "Barcelona",
+"start": 2.94,
+"end": 3.38
+},
+{
+"word": "player",
+"start": 3.38,
+"end": 3.78
+},
+{
+"word": "in",
+"start": 3.78,
+"end": 4.28
+},
+{
+"word": "their",
+"start": 4.28,
+"end": 4.42
+},
+{
+"word": "own",
+"start": 4.42,
+"end": 4.6
+},
+{
+"word": "stadium.",
+"start": 4.6,
+"end": 5.02
+},
+{
+"word": "November",
+"start": 5.9,
+"end": 6.12
+},
+{
+"word": "19th,",
+"start": 6.12,
+"end": 6.88
+},
+{
+"word": "2005.",
+"start": 6.88,
+"end": 7.92
+},
+{
+"word": "The",
+"start": 9.16,
+"end": 9.3
+},
+{
+"word": "Cl\u00e1sico",
+"start": 9.3,
+"end": 9.8
+},
+{
+"word": "at",
+"start": 9.8,
+"end": 10.44
+},
+{
+"word": "the",
+"start": 10.44,
+"end": 10.56
+},
+{
+"word": "Bernabeu.",
+"start": 10.56,
+"end": 11.14
+},
+{
+"word": "Barcelona",
+"start": 12.14,
+"end": 12.58
+},
+{
+"word": "were",
+"start": 12.58,
+"end": 12.74
+},
+{
+"word": "already",
+"start": 12.74,
+"end": 13.08
+},
+{
+"word": "1-0",
+"start": 13.08,
+"end": 13.44
+},
+{
+"word": "up.",
+"start": 13.44,
+"end": 13.7
+},
+{
+"word": "Then",
+"start": 14.56,
+"end": 14.7
+},
+{
+"word": "Ronaldinho",
+"start": 14.7,
+"end": 15.24
+},
+{
+"word": "picked",
+"start": 15.24,
+"end": 15.54
+},
+{
+"word": "up",
+"start": 15.54,
+"end": 15.7
+},
+{
+"word": "the",
+"start": 15.7,
+"end": 15.8
+},
+{
+"word": "ball",
+"start": 15.8,
+"end": 16
+},
+{
+"word": "on",
+"start": 16,
+"end": 16.18
+},
+{
+"word": "the",
+"start": 16.18,
+"end": 16.28
+},
+{
+"word": "left,",
+"start": 16.28,
+"end": 17.08
+},
+{
+"word": "ran",
+"start": 17.08,
+"end": 17.22
+},
+{
+"word": "at",
+"start": 17.22,
+"end": 17.42
+},
+{
+"word": "Sergio",
+"start": 17.42,
+"end": 17.82
+},
+{
+"word": "Ramos,",
+"start": 17.82,
+"end": 19.14
+},
+{
+"word": "went",
+"start": 19.14,
+"end": 19.26
+},
+{
+"word": "past",
+"start": 19.26,
+"end": 19.58
+},
+{
+"word": "him",
+"start": 19.58,
+"end": 19.84
+},
+{
+"word": "and",
+"start": 19.84,
+"end": 20.6
+},
+{
+"word": "fired",
+"start": 20.6,
+"end": 20.88
+},
+{
+"word": "it",
+"start": 20.88,
+"end": 21.06
+},
+{
+"word": "in.",
+"start": 21.06,
+"end": 21.28
+},
+{
+"word": "2-0.",
+"start": 22.28,
+"end": 22.68
+},
+{
+"word": "18",
+"start": 24.28,
+"end": 24.6
+},
+{
+"word": "minutes",
+"start": 24.6,
+"end": 24.88
+},
+{
+"word": "later,",
+"start": 24.88,
+"end": 25.32
+},
+{
+"word": "he",
+"start": 25.32,
+"end": 25.56
+},
+{
+"word": "did",
+"start": 25.56,
+"end": 25.72
+},
+{
+"word": "it",
+"start": 25.72,
+"end": 25.86
+},
+{
+"word": "again.",
+"start": 25.86,
+"end": 26.18
+},
+{
+"word": "Past",
+"start": 27.06,
+"end": 27.3
+},
+{
+"word": "Ramos",
+"start": 27.3,
+"end": 27.7
+},
+{
+"word": "and",
+"start": 27.7,
+"end": 28.5
+},
+{
+"word": "low",
+"start": 28.5,
+"end": 28.86
+},
+{
+"word": "under",
+"start": 28.86,
+"end": 29.6
+},
+{
+"word": "Eka",
+"start": 29.6,
+"end": 29.94
+},
+{
+"word": "Casillas.",
+"start": 29.94,
+"end": 31
+},
+{
+"word": "3-0.",
+"start": 31.72,
+"end": 32.16
+},
+{
+"word": "And",
+"start": 33.46,
+"end": 33.58
+},
+{
+"word": "then",
+"start": 33.58,
+"end": 33.68
+},
+{
+"word": "something",
+"start": 33.68,
+"end": 33.94
+},
+{
+"word": "strange",
+"start": 33.94,
+"end": 34.48
+},
+{
+"word": "happened.",
+"start": 34.48,
+"end": 35.34
+},
+{
+"word": "Thousands",
+"start": 36.02,
+"end": 36.06
+},
+{
+"word": "of",
+"start": 36.06,
+"end": 36.3
+},
+{
+"word": "Madrid",
+"start": 36.3,
+"end": 36.64
+},
+{
+"word": "fans",
+"start": 36.64,
+"end": 37
+},
+{
+"word": "rose",
+"start": 37,
+"end": 37.32
+},
+{
+"word": "to",
+"start": 37.32,
+"end": 37.54
+},
+{
+"word": "their",
+"start": 37.54,
+"end": 37.68
+},
+{
+"word": "feet",
+"start": 37.68,
+"end": 38
+},
+{
+"word": "and",
+"start": 38,
+"end": 38.98
+},
+{
+"word": "clapped.",
+"start": 38.98,
+"end": 39.38
+},
+{
+"word": "Before",
+"start": 40.36,
+"end": 40.58
+},
+{
+"word": "him,",
+"start": 40.58,
+"end": 41.46
+},
+{
+"word": "the",
+"start": 41.46,
+"end": 41.52
+},
+{
+"word": "only",
+"start": 41.52,
+"end": 41.76
+},
+{
+"word": "Barcelona",
+"start": 41.76,
+"end": 42.32
+},
+{
+"word": "player",
+"start": 42.32,
+"end": 42.58
+},
+{
+"word": "said",
+"start": 42.58,
+"end": 42.86
+},
+{
+"word": "to",
+"start": 42.86,
+"end": 43.02
+},
+{
+"word": "get",
+"start": 43.02,
+"end": 43.18
+},
+{
+"word": "that",
+"start": 43.18,
+"end": 43.42
+},
+{
+"word": "honour",
+"start": 43.42,
+"end": 43.72
+},
+{
+"word": "was",
+"start": 43.72,
+"end": 44.06
+},
+{
+"word": "Diego",
+"start": 44.06,
+"end": 44.42
+},
+{
+"word": "Maradona",
+"start": 44.42,
+"end": 44.96
+},
+{
+"word": "in",
+"start": 44.96,
+"end": 45.78
+},
+{
+"word": "1983.",
+"start": 45.78,
+"end": 46.3
+},
+{
+"word": "Nine",
+"start": 47.98,
+"end": 48.18
+},
+{
+"word": "days",
+"start": 48.18,
+"end": 48.42
+},
+{
+"word": "later,",
+"start": 48.42,
+"end": 49.08
+},
+{
+"word": "Ronaldinho",
+"start": 49.08,
+"end": 49.6
+},
+{
+"word": "won",
+"start": 49.6,
+"end": 49.86
+},
+{
+"word": "the",
+"start": 49.86,
+"end": 50.04
+},
+{
+"word": "Ballon",
+"start": 50.04,
+"end": 50.36
+},
+{
+"word": "d'Or.",
+"start": 50.36,
+"end": 50.6
+},
+{
+"word": "Would",
+"start": 51.74,
+"end": 51.88
+},
+{
+"word": "your",
+"start": 51.88,
+"end": 52.06
+},
+{
+"word": "fans",
+"start": 52.06,
+"end": 52.42
+},
+{
+"word": "ever",
+"start": 52.42,
+"end": 52.7
+},
+{
+"word": "clap",
+"start": 52.7,
+"end": 53
+},
+{
+"word": "for",
+"start": 53,
+"end": 53.18
+},
+{
+"word": "a",
+"start": 53.18,
+"end": 53.3
+},
+{
+"word": "rival?",
+"start": 53.3,
+"end": 54.1
+},
+{
+"word": "Tell",
+"start": 55.1,
+"end": 55.28
+},
+{
+"word": "me",
+"start": 55.28,
+"end": 55.42
+},
+{
+"word": "in",
+"start": 55.42,
+"end": 55.5
+},
+{
+"word": "the",
+"start": 55.5,
+"end": 55.6
+},
+{
+"word": "comments.",
+"start": 55.6,
+"end": 56.2
+},
+{
+"word": "you",
+"start": 56.3,
+"end": 56.38
+}
+]
+}

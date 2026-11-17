@@ -1,0 +1,8 @@
+{
+ "width": 1080, "height": 1920, "style": "toon",
+ "background": {"src": "united-1999-art.jpg", "grade": "none", "darken": 0, "side": "none"},
+ "layers": [],
+ "headline": {"lines": ["2 GOALS,", "2 MINUTES"], "accent": ["MINUTES"], "align": "center", "x": 0, "y": 120, "size": 150, "panel": true},
+ "tags": [{"text": "CHAMPIONS LEAGUE FINAL · 1999", "x": 250, "y": 1470, "variant": "label", "size": 36}],
+ "guides": false
+}
