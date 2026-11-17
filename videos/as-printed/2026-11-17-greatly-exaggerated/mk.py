@@ -98,7 +98,7 @@ long=[
   say="The story was by the Journal's London correspondent, Frank Marshall White. Mark Twain was undecided whether to be more amused or annoyed, when a Journal representative informed him today of the report in New York that he was dying in poverty in London."),
  dict(type="read",item="journal2",boxes=B['j2_chelsea'],
   say="He is living in comfort and even luxury, in a handsomely furnished house, in a beautiful square in Chelsea, with his wife and children."),
- dict(type="photo",item="bolles",focus=[2600,2600],nf=0.5,zoom=1.05,drift=[0.2,-0.4],labels=[dict(at=[2700,800],text="Mark Twain",sub="photographed about 1902 · C. E. Bolles")],
+ dict(type="photo",item="bolles",focus=[2600,2600],nf=0.5,zoom=1.05,drift=[0.2,-0.4],labels=[dict(at=[3400,2500],text="Mark Twain",sub="photographed about 1902 · C. E. Bolles")],
   say="This is Mark Twain a few years later, around nineteen oh two, photographed in his chair. He is doing what millions of Americans did every morning. Reading the newspaper."),
  dict(type="read",item="journal2",boxes=B['j2_dead'],
   say="Then White wrote down what Twain told him. I can understand perfectly how the report of my illness got about. I have even heard on good authority that I was dead."),
@@ -124,7 +124,7 @@ long=[
   say="A man in his seventies, on a yacht nobody could find, somewhere off the Virginia coast. If you read that over breakfast, you would have feared the worst. But where was Mark Twain, really?"),
  dict(type="read",item="light07",boxes=B['li'],
   say="The same day, in Texas, the San Antonio Light had the answer. Mark Twain not lost at all. The report that Samuel L. Clemens is missing on Henry H. Rogers's yacht Kanawha, which was given wide circulation today, is untrue. Mr. Clemens is at his home in this city. In New York."),
- dict(type="photo",item="cigar",focus=[1350,1500],nf=0.5,zoom=1.05,drift=[0.3,-0.3],labels=[dict(at=[1300,600],text="Mark Twain",sub="photographed about 1907 · A. F. Bradley")],
+ dict(type="photo",item="cigar",focus=[1350,1500],nf=0.5,zoom=1.05,drift=[0.3,-0.3],labels=[dict(at=[1800,2000],text="Mark Twain",sub="photographed about 1907 · A. F. Bradley")],
   say="Twain around the same time. Whatever they believed in Norfolk, he was not on that yacht. He was in his house on Fifth Avenue, reading about his own disappearance. And, the papers said, enjoying it hugely."),
  dict(type="chapter",kicker="PART 5",title="Greatly exaggerated",chapterName="Greatly exaggerated",say="Part five. Greatly exaggerated."),
  # the payoff: the papers rewrite his line
