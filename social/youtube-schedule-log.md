@@ -35,3 +35,9 @@ From 2026-11-03 every YouTube action goes through the YouTube API with the agenc
 | 2026-11-16 | 2026-11-16 20:00 ET (2026-11-17 01:00 UTC) | **The Overthinking Pad** · They Guessed Half the Room Noticed. The Real Number? #shorts (0:48) | YouTube API · upload approved, scheduled, category 27 · links to VSaFr4doR0M · thumbnail set: social/thumbnails/8GYwZB1soxo_9x16.jpg ("EVERYONE SAW IT?", 80/100, Spline) · containsSyntheticMedia=true | video 8GYwZB1soxo |
 | 2026-11-17 | 2026-11-17 19:00 ET (2026-11-18 00:00 UTC) | **As Printed** · The Day America Celebrated a Peace That Didn't Exist (10:34) | YouTube API · upload (crf 21 master), scheduled private→public, category 27 · thumbnail set: videos/as-printed/2026-11-16-war-is-over/thumb_long.jpg (Remotion, universal skill) · owner approved in session; 16 Nov 7 PM slot had passed, so the 17 Nov slot · captions: yt.py has no captions command, war-is-over_long.srt in the episode folder | video 1xyUQOa6VgM |
 | 2026-11-17 | 2026-11-17 20:00 ET (2026-11-18 01:00 UTC) | **As Printed** · America Celebrated the End of WWI… Four Days Early #shorts (0:57) | YouTube API · upload, scheduled, category 27 · thumbnail set: videos/as-printed/2026-11-16-war-is-over/thumb_short.jpg (9:16) · links to 1xyUQOa6VgM · captions: war-is-over_short.srt (no captions command) | video BzGnyOekmnA |
+
+## 2026-11-17 — AI disclosure set to YES on all videos (owner request)
+- Owner rule: every upload on every channel has "Altered or synthetic content" = Yes (`containsSyntheticMedia: true`).
+- `yt.py` now sets it on every `upload` and `update`; new `ai-disclose` command applies it channel-wide.
+- Applied and confirmed (`aiDisclosed: true` in the API response): Which Life Next 28/28, As Printed 4/4,
+  The Overthinking Pad 2/2, Foot All FC 4/4 (38 videos). Scheduled publish times unchanged.

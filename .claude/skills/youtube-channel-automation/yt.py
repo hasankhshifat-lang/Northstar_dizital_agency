@@ -22,6 +22,10 @@ Usage (all output is JSON; put --channel NAME before the command):
   yt.py reply COMMENT_ID TEXT                   # COMMENT_ID = top-level comment / thread id
   yt.py playlist-add PLAYLIST_ID VIDEO_ID
   yt.py analytics START END [--metrics views,likes] [--dimensions day]
+  yt.py ai-disclose [--dry-run]                 # set "Altered or synthetic content" = YES on every upload missing it
+
+AI disclosure (owner, 2026-11-17): every upload and every update sets status.containsSyntheticMedia = true
+(YouTube Studio: "Altered or synthetic content" = Yes). All our videos use AI voice/visuals, so this is never off.
 """
 import argparse, json, mimetypes, os, sys, urllib.error, urllib.parse, urllib.request
 
@@ -93,7 +97,8 @@ def video_summary(v):
     s, st = v.get("snippet", {}), v.get("status", {})
     return {"id": v["id"], "title": s.get("title"), "publishedAt": s.get("publishedAt"),
             "privacy": st.get("privacyStatus"), "publishAt": st.get("publishAt"),
-            "uploadStatus": st.get("uploadStatus"), "stats": v.get("statistics")}
+            "uploadStatus": st.get("uploadStatus"), "aiDisclosed": st.get("containsSyntheticMedia"),
+            "stats": v.get("statistics")}
 
 
 def cmd_whoami(a):
@@ -143,7 +148,8 @@ def apply_fields(snippet, status, a):
 
 def cmd_upload(a):
     snippet = {"categoryId": "22"}
-    status = {"privacyStatus": "private", "selfDeclaredMadeForKids": bool(a.kids)}
+    status = {"privacyStatus": "private", "selfDeclaredMadeForKids": bool(a.kids),
+              "containsSyntheticMedia": True}   # AI disclosure is always YES (owner, 2026-11-17)
     apply_fields(snippet, status, a)
     size = os.path.getsize(a.file)
     ctype = mimetypes.guess_type(a.file)[0] or "video/mp4"
@@ -157,17 +163,56 @@ def cmd_upload(a):
     out(video_summary(v))
 
 
-def cmd_update(a):
-    v = get_video(a.video_id, "snippet,status")
-    snippet, status = v["snippet"], v["status"]
-    apply_fields(snippet, status, a)
+def put_video(vid, snippet, status):
     keep_snip = {k: snippet[k] for k in ("title", "description", "tags", "categoryId",
                                          "defaultLanguage", "defaultAudioLanguage") if k in snippet}
     keep_stat = {k: status[k] for k in ("privacyStatus", "publishAt", "embeddable", "license",
                                         "publicStatsViewable", "selfDeclaredMadeForKids") if k in status}
-    r = _call("PUT", f"{API}/videos", {"part": "snippet,status"},
-              body={"id": a.video_id, "snippet": keep_snip, "status": keep_stat})
-    out(video_summary(r))
+    keep_stat["containsSyntheticMedia"] = True   # AI disclosure is always YES (owner, 2026-11-17)
+    return _call("PUT", f"{API}/videos", {"part": "snippet,status"},
+                 body={"id": vid, "snippet": keep_snip, "status": keep_stat})
+
+
+def cmd_update(a):
+    v = get_video(a.video_id, "snippet,status")
+    snippet, status = v["snippet"], v["status"]
+    apply_fields(snippet, status, a)
+    out(video_summary(put_video(a.video_id, snippet, status)))
+
+
+def all_upload_ids():
+    token()
+    ids, page = [], None
+    while True:
+        params = {"part": "contentDetails", "playlistId": "UU" + CHANNEL_ID[2:], "maxResults": 50}
+        if page:
+            params["pageToken"] = page
+        r = _call("GET", f"{API}/playlistItems", params)
+        ids += [i["contentDetails"]["videoId"] for i in r.get("items", [])]
+        page = r.get("nextPageToken")
+        if not page:
+            return ids
+
+
+def cmd_ai_disclose(a):
+    """Set containsSyntheticMedia = true on every upload of the channel (50 quota units per video).
+    The videos.list read does not return containsSyntheticMedia (only the update response echoes it), so a video
+    without an explicit true is re-set; that is idempotent. Check "aiDisclosed": true in the output."""
+    ids, done, fixed, failed = all_upload_ids(), [], [], []
+    for i in range(0, len(ids), 50):
+        for v in _call("GET", f"{API}/videos", {"part": "snippet,status", "id": ",".join(ids[i:i + 50])}).get("items", []):
+            if v["status"].get("containsSyntheticMedia") is True:
+                done.append(v["id"]); continue
+            if a.dry_run:
+                fixed.append({"id": v["id"], "title": v["snippet"]["title"]}); continue
+            try:
+                r = put_video(v["id"], v["snippet"], v["status"])
+                fixed.append({"id": v["id"], "title": v["snippet"]["title"],
+                              "aiDisclosed": r.get("status", {}).get("containsSyntheticMedia")})
+            except SystemExit as e:
+                failed.append({"id": v["id"], "title": v["snippet"]["title"], "error": str(e)[:300]})
+    out({"channel": CHANNEL, "total": len(ids), "already_yes": len(done),
+         ("would_set" if a.dry_run else "set_yes"): fixed, "failed": failed})
 
 
 def cmd_thumbnail(a):
@@ -246,6 +291,7 @@ def main():
     s = sp.add_parser("analytics"); s.add_argument("start"); s.add_argument("end")
     s.add_argument("--metrics", default="views,estimatedMinutesWatched,likes,subscribersGained")
     s.add_argument("--dimensions"); s.set_defaults(f=cmd_analytics)
+    s = sp.add_parser("ai-disclose"); s.add_argument("--dry-run", action="store_true"); s.set_defaults(f=cmd_ai_disclose)
     a = p.parse_args()
     CHANNEL = a.channel; CHANNEL_ID = CHANNELS[CHANNEL][1]
     if a.cmd == "upload" and a.title is None:

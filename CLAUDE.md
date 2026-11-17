@@ -89,6 +89,9 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
 - **Do not use Clawlink or Metricool for YouTube anymore**, in chat or in scheduled tasks,
   not even as a fallback. If the API fails or the quota is used up, say so and stop.
 - Confirm the title, description, publish time, and video file with the user before uploading.
+- **AI disclosure = YES on every upload, every channel** (owner, 2026-11-17): "Altered or synthetic content" is
+  always set to Yes (`status.containsSyntheticMedia = true`; `yt.py upload`/`update` do this automatically). If a
+  video is ever found without it, set it with `yt.py --channel NAME ai-disclose`.
 - Never delete a video, comment or playlist unless the user explicitly asks for that deletion.
 - Log uploads/schedules/edits in `social/youtube-schedule-log.md` and comment replies in
   `social/youtube-comments-log.md`, then commit and push.

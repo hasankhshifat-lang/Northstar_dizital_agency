@@ -56,6 +56,11 @@ yt.py upload /path/video.mp4 --title "TITLE" --description "DESC" --tags "a,b" \
   and show both UTC and local time back to the user.
 - Without `--publish-at`, add `--privacy public` to publish now (default is `private`).
 - Shorts: vertical video ≤ 3 min; add `#shorts` to the title or description.
+- **AI disclosure is always YES** (owner, 2026-11-17): every upload sets `status.containsSyntheticMedia = true`
+  (Studio: "Altered or synthetic content" = Yes) automatically, and so does every `update`. Never upload without it,
+  never turn it off. Check `"aiDisclosed": true` in the upload output. `yt.py --channel NAME ai-disclose` sets it on
+  every video of a channel (the read API does not return the field, so it re-sets all videos, 50 units each;
+  done for all 38 videos on all four channels on 2026-11-17).
 - Log every upload/schedule in `social/youtube-schedule-log.md`, then commit and push.
 
 ## Editing
