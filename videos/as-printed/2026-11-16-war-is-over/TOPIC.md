@@ -32,10 +32,14 @@ questions (where did it come from, who sent it, why believed); loops at the end 
 part adds a new item; the turn (the denial, Part 3) before the source (Part 4) and the payoff (Part 5 + compare); one
 comment question and one short like/subscribe line at the end; every number and quote is in FACTS.md.
 
-## Thumbnail (engine archive style, `engine/thumb.html`)
-Concepts: A object — the "WAR IS OVER!" front page alone, date ringed; B contrast — "WAR IS OVER!" against the 11 Nov
-"ARMISTICE IS SIGNED; WAR ENDS"; C mystery — the page with "WHO SENT THIS?". Heading options: "Four days early",
-"It wasn't over", "Who sent this?". Chosen: A with "Four days early" (adds the twist, doesn't repeat the title).
-Real archive image only (Seattle Star, 7 Nov 1918, LoC). A/B variant to test later: C.
-Score (thumbnail rules): attention 17, curiosity 18, storytelling 14, composition 13, headline 9, emotion 8, accuracy 5,
-mobile 5 = 89/100.
+## Thumbnail v2 (owner feedback 2026-11-16: v1 not convincing; Short text off-frame)
+Made in **Spline** (file "As Printed Thumbnails", https://app.spline.design/ui/0f6ce300-8d07-454f-87ce-f7bb2ded768e, frames
+war-is-over_long / war-is-over_9x16), exported with 2d_export_html and rendered to JPG with Playwright (thumb_v2/).
+Figma failed 3 times (60 s apart): "You've reached the Figma MCP tool call limit for your Collab seat on the Professional plan."
+Concepts: A contrast — the real "WAR IS OVER!" page with a red FALSE stamp + mystery heading; B timeline — "WAR IS OVER!"
+(7 Nov) vs "ARMISTICE IS SIGNED; WAR ENDS" (11 Nov), "4 DAYS EARLY"; C object — page alone, date ringed (v1, rejected).
+Headings: "WHO SENT IT?", "IT WASN'T OVER", "4 DAYS EARLY". Chosen: A + "WHO SENT IT?" (the picture says the news was false;
+the heading asks the question the video answers — the admiral at Brest; doesn't repeat the title).
+Only real archive material (Seattle Star, 7 Nov 1918, LoC IIIF); all words are live Spline text; whole page inside the frame.
+Score: attention 18, curiosity 19, storytelling 14, composition 13, headline 10, emotion 8, accuracy 5, mobile 5 = 92/100.
+A/B variant to test later: B ("4 DAYS EARLY"). v1 kept in git history.
