@@ -11,3 +11,4 @@
 | 2026-11-15 | Scheduled Reel upload | 3 Men Escaped Alcatraz and Were Never Found | 1450108923217052 | 2026-11-16 13:00 | (status processing at upload time; no custom thumbnail: Figma seat limit) |
 | 2026-11-16 | Scheduled Reel upload | Japan Bombed Oregon With Paper Balloons | 1867753887551647 | 2026-11-17 22:00 | (status processing at upload time) |
 | 2026-11-16 | Thumbnail set | Japan Bombed Oregon With Paper Balloons | 1867753887551647 | — | is_preferred=true; Spline frame render 1080×1920 |
+| 2026-11-17 | Scheduled Reel upload | She Survived the Titanic and Both Its Sister Ships | 1139472315483528 | 2026-11-18 22:00 | (status processing at upload time) |

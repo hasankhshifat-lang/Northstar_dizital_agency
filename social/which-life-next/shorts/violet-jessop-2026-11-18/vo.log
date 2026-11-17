@@ -1,0 +1,6 @@
+VibeVoice-Realtime-0.5B, voice Frank, CPU
+Generation time: 87.52 seconds
+Audio duration: 50.40 seconds
+RTF: 1.74x
+Take check: Groq whisper-large-v3 transcript matches the script word for word (sound-alikes: Jessup/Jessop, ship/ship's); faster-whisper small.en skipped one sentence (transcriber error, confirmed by large-v3).
+Leading silence: none to trim (first word at ~0.2 s).

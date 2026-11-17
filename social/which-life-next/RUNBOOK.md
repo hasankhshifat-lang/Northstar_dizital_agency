@@ -7,6 +7,8 @@
 > - Visuals: the "Map Shorts" section below (continuous camera over a real map, Kit v2 on the map).
 > - Narration (owner, 2026-11-15): VibeVoice, voice Frank, via the vibevoice-voiceover skill on main; ElevenLabs only for sound effects. (Older Jesse/ElevenLabs narration steps below are retired.)
 > - Publish slot (owner, 2026-11-15, EXP-whichlifenext-001): 17:00 ET from 2026-11-17 (22:00 UTC in EST). Older 21:00 SGT / 08:00 ET mentions below are superseded.
+> - Thumbnails (owner, 2026-11-16): universal thumbnail skill on main (dominant visual subject, Remotion render).
+> - AI disclosure (owner, 2026-11-17): every upload has Altered or synthetic content = YES (containsSyntheticMedia).
 > - Sound effects must NEVER cover the voice. `pony_mix.py` with `VOICE=` ducks effects to −14 dB and music to −20 dB under speech; they come back up between lines.
 > reached or the user says to resume. Each day: step 0 (report, story-type ranking, comments) → 4 standalone story
 > Shorts ("Standalone story Shorts" section; 3 from the best type, 1 test) → schedule (config.md slots,
@@ -494,3 +496,10 @@ Start on the map, then **dive into the place** and show what the narration descr
 - Running ~20 `remotion still` processes at once got OOM-killed; cap at 4 in parallel. System PIL is broken: tile stills with `ffmpeg -pattern_type glob -i 's_*.png' -vf tile=7x3`.
 - Remotion output is yuvj420p: re-encode with `-vf "scale=in_range=full:out_range=tv,format=yuv420p" -color_range tv`.
 - Figma Collab-seat limit hit on the very first `use_figma` (a read), 4 tries ~60–70 s apart; no generation was spent. Spline fallback: account is on the Free plan (20 tool calls/day, no AI image credits: `2d_generate_images` → "not enough credits"). Built the map from real geodata as inline SVG (node + d3-geo, `clipExtent` to the frame keeps it ~12 KB), live text in HTML; `2d_export_html` adds a Google Fonts @import for Anton/Oswald, render with Playwright (`waitUntil: networkidle` + `document.fonts.ready`). Budget ~9 Spline calls per thumbnail.
+
+### Learned 2026-11-17 (Violet Jessop Short, TI)
+- VibeVoice not preinstalled again (~2 min install). 150 words came out 50.4 s (faster than the 56 s balloon take); no leading silence to trim.
+- Take check: faster-whisper small.en silently skipped a whole sentence (looked like a dropped line); Groq whisper-large-v3 heard every word. Always tie-break with large-v3 before regenerating; its `verbose_json` + `timestamp_granularities[]=word` gives the word timestamps directly.
+- Story `src/stories/violetJessop.tsx` (Mercator Atlantic/Europe; a second path from world-atlas `land-10m` clipped to a Solent bbox is drawn when z > 6, needs `fillRule="evenodd"` or the clip fills the whole box) + `src/sets/violetScenes.tsx` (Sea, wooden Lifeboat with `seatY()` for seated people, Olympic-class Liner incl. hospital livery, baby Bundle, Rail, Skirt with apron, nurse Cross, underwater keel, propellers, cottage + hens).
+- Kit holding pose: arms at −30…−40° read as "cradling"; −60° and beyond look like pointing. Kit draws a ground shadow even underwater (minor).
+- Thumbnail: Remotion engine worked first time (`npm ci` in the skill folder ~1 min; rembg model 180 MB download). Wikimedia API is rate-limited through the proxy; the en.wikipedia REST `page/summary` endpoint still returns the lead image URL.

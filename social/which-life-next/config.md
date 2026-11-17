@@ -33,3 +33,5 @@ Check with `python3 .claude/skills/youtube-automation/yt.py scheduled` and `soci
 Short length (owner, 2026-11-08): 45–60 seconds, 110–150 words.
 Narration (owner, 2026-11-15): VibeVoice, voice Frank, via the vibevoice-voiceover skill on main; ElevenLabs only for sound effects.
 Publish slot (owner, 2026-11-15, EXP-whichlifenext-001): 17:00 ET from 2026-11-17.
+Thumbnails (owner, 2026-11-16): universal thumbnail skill on main (dominant visual subject, Remotion render).
+AI disclosure (owner, 2026-11-17): every upload has Altered or synthetic content = YES (containsSyntheticMedia).

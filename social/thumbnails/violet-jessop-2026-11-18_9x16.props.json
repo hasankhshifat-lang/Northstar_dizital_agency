@@ -1,0 +1,9 @@
+{"width":1080,"height":1920,"style":"map",
+ "background":{"src":"europe1912.jpg","crop":[0.0,0.06,0.34,0.822],"grade":"warm","blur":1.5,"side":"top","darken":0.12},
+ "layers":[
+  {"type":"pin","x":832,"y":1021,"label":"SOUTHAMPTON","size":46},
+  {"type":"cutout","src":"violet_cut.png","x":0,"y":485,"h":1460,"grade":"sepia","glow":"rgba(255,226,170,0.55)"}
+ ],
+ "headline":{"lines":["SHE WOULDN'T","SINK"],"accent":["SINK"],"align":"center","x":0,"y":110,"size":150},
+ "tags":[{"text":"1911 · 1912 · 1916","x":330,"y":430,"variant":"date","size":40}],
+ "guides":false}
