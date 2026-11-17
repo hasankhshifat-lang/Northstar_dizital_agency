@@ -10,20 +10,20 @@ export const PAL = {
   skinM: '#c98a5a', skinMs: '#a86b40', skinB: '#c68a5e', skinBs: '#a56a40', skinT: '#d39a6c', skinTs: '#b07a4e', skinN: '#f0cfae', skinNs: '#d4ab86',
   kurta: '#f5b81c', kurtaS: '#d6950b', gam: '#d8343c', gamS: '#a61f2a', lungiR: '#d23a3f', lungiG: '#2f9b55',
   shirt: '#fbfbf6', shirtS: '#d9d9cf', sash: '#2b67c9', sashS: '#1f4c99', skirt: '#24459a', skirtS: '#17306e', hair: '#1d1a24',
-  stripeY: '#f7c52a', stripeR: '#e2453a', shorts: '#c9a874', shortsS: '#a3844f', frame: '#2a2230', lens: '#e8f6ff',
+  stripeY: '#f7c52a', stripeR: '#e2453a', shorts: '#c9a874', shortsS: '#a3844f', frame: '#e0a24a', lens: '#f4fbff', eyeLine: '#8a6a58',
   coat: '#7a4a28', coatS: '#5a3418', wig: '#d9d9de', wigS: '#a9a9b2', stock: '#f4f1ea', shoe: '#2a2230', sandal: '#8a5a2b',
 };
 
 // —— face parts (the style's parametric eye and mouth) ——
-export function eye(cx, cy, rx, ry, { lid = 0, look = [0, 0], pupil = 4.5, skin = PAL.skinM, closed = false, lw = 6, jitter = 0 } = {}) {
-  if (closed) { stroke(arc(cx, cy + ry * .15, rx * .8, ry * .45, Math.PI * .1, Math.PI * .9, 14), lw); return; }
+export function eye(cx, cy, rx, ry, { lid = 0, look = [0, 0], pupil = 4.5, skin = PAL.skinM, closed = false, lw = 3, jitter = 0, line = PAL.eyeLine } = {}) {
+  if (closed) { stroke(arc(cx, cy + ry * .15, rx * .8, ry * .45, Math.PI * .1, Math.PI * .9, 14), lw, { line }); return; }
   shape(ell(cx, cy, rx, ry, 36), {
-    fill: PAL.white, lw, shade: () => {
+    fill: PAL.white, lw, line, shade: () => {
       dot(cx + look[0] * rx * .55 + jitter, cy + look[1] * ry * .5, pupil);
       if (lid > 0) {
         const yl = cy - ry + lid * 2 * ry;
         fillOnly([[cx - rx * 1.3, cy - ry * 1.4], [cx + rx * 1.3, cy - ry * 1.4], [cx + rx * 1.3, yl], [cx - rx * 1.3, yl + ry * .08]], skin, { boil: .5 });
-        stroke([[cx - rx * 1.2, yl + ry * .08], [cx + rx * 1.2, yl]], lw);
+        stroke([[cx - rx * 1.2, yl + ry * .08], [cx + rx * 1.2, yl]], lw, { line });
       }
     }
   });
@@ -113,11 +113,11 @@ function face(P, o) {
   const lid = P.blink ? 1 : clamp(P.lid ?? o.lid ?? .1, 0, 1);
   const shake = P.nerv ? (hash(Math.floor((P.t || 0) * 24) * 1.7) - .5) * 3 * P.nerv : 0;
   for (const ex of [-o.ex, o.ex]) {
-    if (o.glasses) shape(ell(ex + tn, o.ey, o.er + 10, o.er + 10, 32), { fill: PAL.lens, lw: 8, line: PAL.frame });
-    eye(ex + tn, o.ey, o.er * (P.eyeS ?? 1), o.er * 1.08 * (P.eyeS ?? 1), { lid, look, pupil: P.pupil ?? o.pupil, skin: o.glasses ? PAL.lens : o.skin, jitter: shake, lw: 5 });
-    if (o.glasses) { shape(ell(ex + tn, o.ey, o.er + 10, o.er + 10, 32), { line: PAL.frame, lw: 8 }); stroke(arc(ex + tn - 8, o.ey - 8, o.er * .55, o.er * .55, Math.PI * 1.1, Math.PI * 1.45, 6), 4, { line: '#fff' }); }
+    if (o.glasses) shape(ell(ex + tn, o.ey, o.er + 10, o.er + 10, 32), { fill: PAL.lens, lw: 3.5, line: PAL.frame });
+    eye(ex + tn, o.ey, o.er * (P.eyeS ?? 1), o.er * 1.08 * (P.eyeS ?? 1), { lid, look, pupil: P.pupil ?? o.pupil, skin: o.glasses ? PAL.lens : o.skin, jitter: shake, lw: 2.5 });
+    if (o.glasses) { shape(ell(ex + tn, o.ey, o.er + 10, o.er + 10, 32), { line: PAL.frame, lw: 3.5 }); stroke(arc(ex + tn - 8, o.ey - 8, o.er * .55, o.er * .55, Math.PI * 1.1, Math.PI * 1.45, 6), 4, { line: '#fff' }); }
   }
-  if (o.glasses) stroke([[-o.ex + o.er + 10 + tn, o.ey], [o.ex - o.er - 10 + tn, o.ey]], 6, { line: PAL.frame });
+  if (o.glasses) stroke([[-o.ex + o.er + 10 + tn, o.ey], [o.ex - o.er - 10 + tn, o.ey]], 3.5, { line: PAL.frame });
   const br = P.brow ?? 0, by = o.ey - o.er - 16;
   for (const sx of [-1, 1]) stroke([[sx * (o.ex + o.er * .8) + tn, by + 4 - br * 3], [sx * (o.ex - o.er * .5) + tn, by - 4 - br * 9 * (o.worry ? -1 : 1)]], o.browW ?? 7, { line: o.browCol ?? INK });
   // nose

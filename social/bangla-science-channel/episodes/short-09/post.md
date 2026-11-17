@@ -12,3 +12,5 @@
 **Video:** `episodes/short-09/short9_tablecloth.mp4` (59.0 s, 1080×1920, −14.6 LUFS)
 **Cover:** `episodes/short-09/thumbnail/cover.jpg` (props `cover.props.json`)
 **Planned slot:** 2026-11-18 14:00 UTC (20:00 Dhaka) — 2026-11-17 is taken by Short 8.
+
+**Revision 2026-11-17 (owner):** no black around the characters' eyes (glasses rims now thin golden, eye outlines thin soft brown, in `toon/chars.js`); sweet music (new D-major score in `toon/mix.py`: music-box arpeggios, flute-like lead, soft pad, warm bass, light shaker). Video and cover re-rendered; −14.7 LUFS.
