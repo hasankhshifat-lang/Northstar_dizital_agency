@@ -54,7 +54,7 @@ B=dict(
 long=[
  # HOOK: the printed claim itself, on the first item, first sentence = the surprise
  dict(type="title",item="etimes31",title="At Death's Door",sub="MARK TWAIN · WHAT THE PAPERS PRINTED · 1897–1910",chapterName="At death's door",
-  say="Mark Twain at death's door. That is what a newspaper in Washington printed on May thirty first, eighteen ninety seven. Mark Twain was not dying. And his answer became the most famous correction ever printed. You probably know it by heart. But the words you know are not the words he gave."),
+  say="Mark Twain... at death's door. That is what a newspaper in Washington printed on May thirty first, eighteen ninety seven. Mark Twain was not dying. And his answer became the most famous correction ever printed. You probably know it by heart. But the words you know are not the words he gave."),
  # the claim in full, lit line by line
  dict(type="read",item="etimes31",boxes=B['et_head']+B['et_lede'],
   say="Dying of a broken heart, in humble London lodgings. New York, May thirty first. The Evening Journal today says: Mark Twain, the great American humorist and novelist, is dying in the most humble lodgings in London."),
@@ -66,7 +66,7 @@ long=[
  dict(type="chapter",kicker="PART 1",title="Dead in May",chapterName="Dead in May",say="Part one. Dead in May."),
  # first false report: the denial is all that survives on the page
  dict(type="read",item="bulletin8",boxes=B['bul'],
-  say="Three weeks earlier, a small paper in Maysville, Kentucky, printed this. Mark Twain not dead. London, May eighth. The report that Samuel L. Clemens, Mark Twain, is dead is false. He is in London, and in excellent health."),
+  say="Earlier that month, a small paper in Maysville, Kentucky, printed this. Mark Twain not dead. London, May eighth. The report that Samuel L. Clemens, Mark Twain, is dead is false. He is in London, and in excellent health."),
  dict(type="read",item="savannah9",boxes=B['sav'],
   say="In Georgia, the Savannah Morning News had a word for it. The canard circulated in the United States that Samuel L. Clemens was dead had not the slightest foundation. Mr. Clemens is in London, and in better health and spirits than for a long time past. He is still working hard on his new book."),
  dict(type="table",item="savannah9",zoom=0.9,
@@ -131,7 +131,7 @@ long=[
  dict(type="read",item="wtimes07",boxes=B['wt_head'],
   say="That evening, the Washington Times ran the story with this headline. Story of his death again exaggerated greatly."),
  dict(type="read",item="wtimes07",boxes=B['wt_quote'],
-  say="And underneath: Mark Twain had the pleasure today of repeating his celebrated statement, that, the reports of my death have been greatly exaggerated."),
+  say="Below it, the story began. Mark Twain had the pleasure today of repeating his celebrated statement, that, the reports of my death have been greatly exaggerated."),
  dict(type="table",item="wtimes07",zoom=1.6,boxes=B['wt_quote'][2:4],
   say="Reports, plural. Have been. Greatly exaggerated. That is not what the Journal printed in eighteen ninety seven. In ten years, his eight plain words had picked up a greatly, and a better rhythm."),
  dict(type="read",item="wtimes07",boxes=B['wt_fog'],
@@ -139,7 +139,7 @@ long=[
  dict(type="compare",a=dict(label="THE WASHINGTON TIMES · 4 MAY 1907",quote="\"the reports of my death have been greatly exaggerated\"",value="1907",unit="retold"),b=dict(label="NEW YORK JOURNAL · 2 JUNE 1897",quote="\"The report of my death was an exaggeration.\"",value="1897",unit="his words",source="Chronicling America · Library of Congress"),strike="a",
   say="Printed in nineteen oh seven, as his celebrated statement: the reports of my death have been greatly exaggerated. Printed in eighteen ninety seven, from his own mouth: the report of my death was an exaggeration. The polished version is the one that survived."),
  dict(type="chapter",kicker="PART 6",title="The last report",chapterName="The last report",say="Part six. The last report."),
- dict(type="photo",item="porch",focus=[2400,2000],nf=0.45,drift=[-0.4,-0.2],labels=[dict(at=[1700,700],text="S. L. Clemens",sub="Bain News Service file date: 15 April 1910")],
+ dict(type="photo",item="porch",focus=[2300,1800],nf=0.45,drift=[-0.4,-0.2],labels=[dict(at=[3000,2350],text="S. L. Clemens",sub="Bain News Service file date: 15 April 1910")],
   say="Bain News Service filed this photograph under the date April fifteenth, nineteen ten. Twain resting in a long chair. He had just come back from Bermuda. He was in his seventies, and he was ill."),
  dict(type="read",item="topeka10",boxes=B['tk_head'],
   say="One week later, the Topeka State Journal. Mark Twain dead. Great humorist expires peacefully and painlessly at his country home among the New England hills."),
@@ -164,7 +164,7 @@ short=[
  dict(type="read",item="wtimes07",boxes=B['wt_quote'],
   say="And that day, a Washington paper repeated his celebrated statement as: the reports of my death have been greatly exaggerated."),
  dict(type="compare",a=dict(label="PRINTED IN 1907",quote="\"…greatly exaggerated\"",value="1907",unit="retold"),b=dict(label="HIS WORDS, 1897",quote="\"…was an exaggeration.\"",value="1897",unit="said",source="Chronicling America"),strike="a",
-  say="Greatly was never in it. The line you know is the papers' edit. His was plainer. The report of my death was an exaggeration."),
+  say="Greatly was never in it. The papers edited the line you know. His was simpler. The report of my death was an exaggeration."),
 ]
 ep=dict(slug="greatly-exaggerated",title="At Death's Door",indexTitle="Mark Twain · 1897–1910",seed=11,items=items,
  end=dict(sub="Mark Twain's deaths, as printed, 1897–1910",credits=["Library of Congress · Chronicling America · Prints & Photographs","Photographs: C. E. Bolles, A. F. Bradley, Bain News Service, Detroit Publishing Co.","Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"]),

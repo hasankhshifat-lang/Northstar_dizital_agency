@@ -1,13 +1,79 @@
-{"width":1080,"height":1920,"style":"archive",
- "background":{"color":"#dfe2e5","side":"none"},
- "layers":[
-  {"type":"cutout","src":"twain_1907_cut.png","x":330,"y":470,"h":1050,"grade":"mono","glow":"rgba(255,255,255,0.8)"},
-  {"type":"image","src":"journal_head.jpg","x":40,"y":930,"w":560,"rotate":-2.5,"grade":"none","aspect":1.485},
-  {"type":"image","src":"journal_quote.jpg","x":30,"y":1330,"w":1010,"rotate":-1,"grade":"none","aspect":6.94},
-  {"type":"ring","x":535,"y":1402,"rx":520,"ry":86,"rotate":-1,"width":10}
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "archive",
+ "background": {
+  "color": "#dfe2e5",
+  "side": "none"
+ },
+ "layers": [
+  {
+   "type": "cutout",
+   "src": "twain_1907_cut_top.png",
+   "x": 360,
+   "y": 500,
+   "h": 1000,
+   "grade": "mono",
+   "glow": "rgba(255,255,255,0.8)"
+  },
+  {
+   "type": "image",
+   "src": "journal_head.jpg",
+   "x": 40,
+   "y": 930,
+   "w": 560,
+   "rotate": -2.5,
+   "grade": "none",
+   "aspect": 1.485
+  },
+  {
+   "type": "image",
+   "src": "journal_quote.jpg",
+   "x": 30,
+   "y": 1330,
+   "w": 1010,
+   "rotate": -1,
+   "grade": "none",
+   "aspect": 6.94
+  },
+  {
+   "type": "ring",
+   "x": 535,
+   "y": 1402,
+   "rx": 520,
+   "ry": 86,
+   "rotate": -1,
+   "width": 10
+  }
  ],
- "headline":{"lines":["The real","quote"],"accent":["quote"],"x":60,"y":110,"size":150,"panel":true},
- "tags":[
-  {"text":"NEW YORK JOURNAL · 2 JUNE 1897","x":60,"y":520,"variant":"date","size":32},
-  {"text":"NO \"GREATLY\"","x":70,"y":760,"variant":"stamp","size":58,"rotate":-6}
- ]}
+ "headline": {
+  "lines": [
+   "The real",
+   "quote"
+  ],
+  "accent": [
+   "quote"
+  ],
+  "x": 60,
+  "y": 110,
+  "size": 150,
+  "panel": true
+ },
+ "tags": [
+  {
+   "text": "2 JUNE 1897",
+   "x": 60,
+   "y": 500,
+   "variant": "date",
+   "size": 40
+  },
+  {
+   "text": "NO \"GREATLY\"",
+   "x": 70,
+   "y": 800,
+   "variant": "stamp",
+   "size": 58,
+   "rotate": -6
+  }
+ ]
+}

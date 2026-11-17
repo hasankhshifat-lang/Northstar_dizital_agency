@@ -172,7 +172,7 @@
      "title": "At Death's Door",
      "sub": "MARK TWAIN · WHAT THE PAPERS PRINTED · 1897–1910",
      "chapterName": "At death's door",
-     "say": "Mark Twain at death's door. That is what a newspaper in Washington printed on May thirty first, eighteen ninety seven. Mark Twain was not dying. And his answer became the most famous correction ever printed. You probably know it by heart. But the words you know are not the words he gave."
+     "say": "Mark Twain... at death's door. That is what a newspaper in Washington printed on May thirty first, eighteen ninety seven. Mark Twain was not dying. And his answer became the most famous correction ever printed. You probably know it by heart. But the words you know are not the words he gave."
     },
     {
      "type": "read",
@@ -296,7 +296,7 @@
        3409
       ]
      ],
-     "say": "Three weeks earlier, a small paper in Maysville, Kentucky, printed this. Mark Twain not dead. London, May eighth. The report that Samuel L. Clemens, Mark Twain, is dead is false. He is in London, and in excellent health."
+     "say": "Earlier that month, a small paper in Maysville, Kentucky, printed this. Mark Twain not dead. London, May eighth. The report that Samuel L. Clemens, Mark Twain, is dead is false. He is in London, and in excellent health."
     },
     {
      "type": "read",
@@ -1155,7 +1155,7 @@
        2353
       ]
      ],
-     "say": "And underneath: Mark Twain had the pleasure today of repeating his celebrated statement, that, the reports of my death have been greatly exaggerated."
+     "say": "Below it, the story began. Mark Twain had the pleasure today of repeating his celebrated statement, that, the reports of my death have been greatly exaggerated."
     },
     {
      "type": "table",
@@ -1249,8 +1249,8 @@
      "type": "photo",
      "item": "porch",
      "focus": [
-      2400,
-      2000
+      2300,
+      1800
      ],
      "nf": 0.45,
      "drift": [
@@ -1260,8 +1260,8 @@
      "labels": [
       {
        "at": [
-        1700,
-        700
+        3000,
+        2350
        ],
        "text": "S. L. Clemens",
        "sub": "Bain News Service file date: 15 April 1910"
@@ -1543,7 +1543,7 @@
       "source": "Chronicling America"
      },
      "strike": "a",
-     "say": "Greatly was never in it. The line you know is the papers' edit. His was plainer. The report of my death was an exaggeration."
+     "say": "Greatly was never in it. The papers edited the line you know. His was simpler. The report of my death was an exaggeration."
     }
    ]
   }

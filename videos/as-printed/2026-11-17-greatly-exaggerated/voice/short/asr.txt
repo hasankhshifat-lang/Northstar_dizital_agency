@@ -1,0 +1,7 @@
+DIFF short_000 | The report of my death was an exaggeration. Those are Mark Twain's real words, printed in eighteen ninety seven. → The report of my death was an exaggeration. Those are Mark Twain's real words, printed in 1897. 
+OK   short_001 | So why does everyone quote them wrong? That spring, papers said he was dying of a broken heart in London. → So, why does everyone quote them wrong? That spring, papers said he was dying of a broken heart in London. 
+OK   short_002 | He wasn't. His cousin had been sick. Twain told a reporter: I have even heard on good authority that I was dead. → He wasn't. His cousin had been sick. Twain told a reporter, I have even heard on good authority that I was dead. 
+DIFF short_003 | Ten years later, papers said he was lost at sea on a yacht. He was at home in New York. → Ten years later, paper said he was lost at sea on a yacht. He was at home in New York. 
+OK   short_004 | And that day, a Washington paper repeated his celebrated statement as: the reports of my death have been greatly exaggerated. → And that day, a Washington paper repeated his celebrated statement as, The reports of my death have been greatly exaggerated. 
+OK   short_005 | Greatly was never in it. The papers edited the line you know. His was simpler. The report of my death was an exaggeration. → Greatly was never in it. The papers edited the line, you know. His was simpler. The report of my death was an exaggeration. 
+mismatches: 2 (lang=en, model=small.en)
