@@ -43,3 +43,14 @@ the heading asks the question the video answers — the admiral at Brest; doesn'
 Only real archive material (Seattle Star, 7 Nov 1918, LoC IIIF); all words are live Spline text; whole page inside the frame.
 Score: attention 18, curiosity 19, storytelling 14, composition 13, headline 10, emotion 8, accuracy 5, mobile 5 = 92/100.
 A/B variant to test later: B ("4 DAYS EARLY"). v1 kept in git history.
+
+## Thumbnail v3 — FINAL (owner, 2026-11-17: "use new thumbnail rules", "use the demos for this video")
+Universal thumbnail skill (Remotion, archive style). Long = the skill's demo for this episode, unchanged
+(social/thumbnails/demos/universal-2026-11-16/demo2_asprinted_war_is_over.jpg → thumb_long.jpg, props thumb_long.props.json).
+Short = the same design laid out at 1080x1920 (thumb_short.props.json), bottom ~400 px clear.
+Subject: Roy W. Howard (Harris & Ewing 1914, LoC hec.05344, no known restrictions; the man whose signed UP bulletin started
+the false report) + the real Seattle Star "WAR IS OVER!" page, ring on "(By United Press Leased Wire)". Headline "Who sent
+this?" (alternatives "It wasn't over", "4 days too soon"); stamp "4 DAYS EARLY"; date tag. Rejected: crowd photo concept
+(the Peace Hurrah photos are 11 Nov, would misdate the 7 Nov celebration); object-only (v2, text-led).
+Score: attention 18, curiosity 19, storytelling 15, composition 13, headline 9, emotion 8, accuracy 5, mobile 5 = 92/100.
+Mobile test (Remotion check sheet): face, headline and "WAR IS OVER!" readable at phone size. v1/v2 in git history.
