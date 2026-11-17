@@ -1,0 +1,12 @@
+"The Ovation" - Ronaldinho at the Santiago Bernabeu, Real Madrid 0-3 Barcelona, 19 November 2005: an animated fan retelling for the Foot All FC channel. Comic History Cartoon style (lemo-opuscar).
+Unofficial: not made or endorsed by FC Barcelona, Real Madrid, LaLiga, France Football, Ronaldinho or any broadcaster. No club
+crests, league marks, broadcast footage or real likenesses are used; players are generic paper puppets identified by shirt number.
+
+Puppet art: the part sheets of videos/barca-remontada-short (ChatGPT image model in Figma, gpt-image-2.5-flare, AI-generated);
+  generic white kit 'opp' made with tools/recolor_kit.py.
+Narration: Microsoft VibeVoice-Realtime-0.5B, voice "Frank" (MIT licence), AI-generated voice.
+Fonts (SIL Open Font License): IM FELL English SC (Igino Marini), Old Standard TT (Alexey Kryukov), Lilita One (Juan Montoreano).
+Instruments (sampled, via lemo-opuscar core/audio/sampler.py): see out/instruments.txt at build time.
+Samples (CC0): FreePats project (freepats.zenvoid.org), VS Chamber Orchestra: Community Edition (Versilian Studios), Versilian Community Sample Library (Versilian Studios)
+Foley, crowd and applause: synthesized in mix.py.
+Facts: see social/scripts/ronaldinho-bernabeu-ovation.md (fact sheet with sources).

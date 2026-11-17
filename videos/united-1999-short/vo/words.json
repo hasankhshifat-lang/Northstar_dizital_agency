@@ -1,0 +1,705 @@
+{
+"text": " 90 minutes gone and Manchester United were losing the Champions League final. Bayern Munich had scored in the sixth minute from a free kick. For more than 80 minutes, United couldn't find a way back. The referee showed three minutes of added time. Bayern's ribbons were already being tied to the trophy. The UEFA president left his seat to go and present it. 91 minutes. A corner and even the goalkeeper, Peter Schmeichel, runs up into the box. The ball breaks to Teddy Sheringham, one all. Barely two minutes later, another corner. Sheringham flicks it on and Ole Gunnar Solskjaer pokes it into the roof of the net. 2-1. Bayern's players collapsed on the grass. United had won their first European Cup in 31 years and the treble. Greatest finish to a final? Or can you name a better one?",
+"words": [
+{
+"word": "90",
+"start": 0.18,
+"end": 0.46
+},
+{
+"word": "minutes",
+"start": 0.46,
+"end": 0.68
+},
+{
+"word": "gone",
+"start": 0.68,
+"end": 0.96
+},
+{
+"word": "and",
+"start": 0.96,
+"end": 1.82
+},
+{
+"word": "Manchester",
+"start": 1.82,
+"end": 2.22
+},
+{
+"word": "United",
+"start": 2.22,
+"end": 2.48
+},
+{
+"word": "were",
+"start": 2.48,
+"end": 2.68
+},
+{
+"word": "losing",
+"start": 2.68,
+"end": 2.92
+},
+{
+"word": "the",
+"start": 2.92,
+"end": 3.08
+},
+{
+"word": "Champions",
+"start": 3.08,
+"end": 3.44
+},
+{
+"word": "League",
+"start": 3.44,
+"end": 3.64
+},
+{
+"word": "final.",
+"start": 3.64,
+"end": 4.5
+},
+{
+"word": "Bayern",
+"start": 4.92,
+"end": 5.1
+},
+{
+"word": "Munich",
+"start": 5.1,
+"end": 5.36
+},
+{
+"word": "had",
+"start": 5.36,
+"end": 5.6
+},
+{
+"word": "scored",
+"start": 5.6,
+"end": 5.82
+},
+{
+"word": "in",
+"start": 5.82,
+"end": 5.96
+},
+{
+"word": "the",
+"start": 5.96,
+"end": 6.06
+},
+{
+"word": "sixth",
+"start": 6.06,
+"end": 6.3
+},
+{
+"word": "minute",
+"start": 6.3,
+"end": 6.54
+},
+{
+"word": "from",
+"start": 6.54,
+"end": 6.7
+},
+{
+"word": "a",
+"start": 6.7,
+"end": 6.82
+},
+{
+"word": "free",
+"start": 6.82,
+"end": 6.98
+},
+{
+"word": "kick.",
+"start": 6.98,
+"end": 7.74
+},
+{
+"word": "For",
+"start": 7.86,
+"end": 7.96
+},
+{
+"word": "more",
+"start": 7.96,
+"end": 8.08
+},
+{
+"word": "than",
+"start": 8.08,
+"end": 8.26
+},
+{
+"word": "80",
+"start": 8.26,
+"end": 8.46
+},
+{
+"word": "minutes,",
+"start": 8.46,
+"end": 8.8
+},
+{
+"word": "United",
+"start": 8.8,
+"end": 9.16
+},
+{
+"word": "couldn't",
+"start": 9.16,
+"end": 9.46
+},
+{
+"word": "find",
+"start": 9.46,
+"end": 9.74
+},
+{
+"word": "a",
+"start": 9.74,
+"end": 9.84
+},
+{
+"word": "way",
+"start": 9.84,
+"end": 9.92
+},
+{
+"word": "back.",
+"start": 9.92,
+"end": 10.8
+},
+{
+"word": "The",
+"start": 10.8,
+"end": 10.9
+},
+{
+"word": "referee",
+"start": 10.9,
+"end": 11.26
+},
+{
+"word": "showed",
+"start": 11.26,
+"end": 11.54
+},
+{
+"word": "three",
+"start": 11.54,
+"end": 11.78
+},
+{
+"word": "minutes",
+"start": 11.78,
+"end": 12.08
+},
+{
+"word": "of",
+"start": 12.08,
+"end": 12.24
+},
+{
+"word": "added",
+"start": 12.24,
+"end": 12.4
+},
+{
+"word": "time.",
+"start": 12.4,
+"end": 12.98
+},
+{
+"word": "Bayern's",
+"start": 12.98,
+"end": 13.32
+},
+{
+"word": "ribbons",
+"start": 13.32,
+"end": 13.54
+},
+{
+"word": "were",
+"start": 13.54,
+"end": 13.72
+},
+{
+"word": "already",
+"start": 13.72,
+"end": 14.04
+},
+{
+"word": "being",
+"start": 14.04,
+"end": 14.3
+},
+{
+"word": "tied",
+"start": 14.3,
+"end": 14.58
+},
+{
+"word": "to",
+"start": 14.58,
+"end": 14.72
+},
+{
+"word": "the",
+"start": 14.72,
+"end": 14.82
+},
+{
+"word": "trophy.",
+"start": 14.82,
+"end": 15.66
+},
+{
+"word": "The",
+"start": 15.98,
+"end": 16.1
+},
+{
+"word": "UEFA",
+"start": 16.1,
+"end": 16.42
+},
+{
+"word": "president",
+"start": 16.42,
+"end": 16.82
+},
+{
+"word": "left",
+"start": 16.82,
+"end": 17.1
+},
+{
+"word": "his",
+"start": 17.1,
+"end": 17.26
+},
+{
+"word": "seat",
+"start": 17.26,
+"end": 17.52
+},
+{
+"word": "to",
+"start": 17.52,
+"end": 17.66
+},
+{
+"word": "go",
+"start": 17.66,
+"end": 17.78
+},
+{
+"word": "and",
+"start": 17.78,
+"end": 17.88
+},
+{
+"word": "present",
+"start": 17.88,
+"end": 18.16
+},
+{
+"word": "it.",
+"start": 18.16,
+"end": 18.9
+},
+{
+"word": "91",
+"start": 18.86,
+"end": 19.24
+},
+{
+"word": "minutes.",
+"start": 19.24,
+"end": 19.64
+},
+{
+"word": "A",
+"start": 20.66,
+"end": 20.78
+},
+{
+"word": "corner",
+"start": 20.78,
+"end": 21.04
+},
+{
+"word": "and",
+"start": 21.04,
+"end": 21.4
+},
+{
+"word": "even",
+"start": 21.4,
+"end": 21.58
+},
+{
+"word": "the",
+"start": 21.58,
+"end": 21.7
+},
+{
+"word": "goalkeeper,",
+"start": 21.7,
+"end": 22.14
+},
+{
+"word": "Peter",
+"start": 22.14,
+"end": 22.56
+},
+{
+"word": "Schmeichel,",
+"start": 22.56,
+"end": 22.96
+},
+{
+"word": "runs",
+"start": 22.96,
+"end": 23.34
+},
+{
+"word": "up",
+"start": 23.34,
+"end": 23.52
+},
+{
+"word": "into",
+"start": 23.52,
+"end": 23.68
+},
+{
+"word": "the",
+"start": 23.68,
+"end": 23.82
+},
+{
+"word": "box.",
+"start": 23.82,
+"end": 24.6
+},
+{
+"word": "The",
+"start": 24.74,
+"end": 24.9
+},
+{
+"word": "ball",
+"start": 24.9,
+"end": 25.06
+},
+{
+"word": "breaks",
+"start": 25.06,
+"end": 25.34
+},
+{
+"word": "to",
+"start": 25.34,
+"end": 25.48
+},
+{
+"word": "Teddy",
+"start": 25.48,
+"end": 25.74
+},
+{
+"word": "Sheringham,",
+"start": 25.74,
+"end": 26.6
+},
+{
+"word": "one",
+"start": 26.6,
+"end": 26.68
+},
+{
+"word": "all.",
+"start": 26.68,
+"end": 27.3
+},
+{
+"word": "Barely",
+"start": 27.9,
+"end": 28.16
+},
+{
+"word": "two",
+"start": 28.16,
+"end": 28.32
+},
+{
+"word": "minutes",
+"start": 28.32,
+"end": 28.58
+},
+{
+"word": "later,",
+"start": 28.58,
+"end": 29.18
+},
+{
+"word": "another",
+"start": 29.18,
+"end": 29.44
+},
+{
+"word": "corner.",
+"start": 29.44,
+"end": 29.98
+},
+{
+"word": "Sheringham",
+"start": 30.22,
+"end": 30.58
+},
+{
+"word": "flicks",
+"start": 30.58,
+"end": 30.84
+},
+{
+"word": "it",
+"start": 30.84,
+"end": 31.02
+},
+{
+"word": "on",
+"start": 31.02,
+"end": 31.28
+},
+{
+"word": "and",
+"start": 31.28,
+"end": 31.72
+},
+{
+"word": "Ole",
+"start": 31.72,
+"end": 32
+},
+{
+"word": "Gunnar",
+"start": 32,
+"end": 32.26
+},
+{
+"word": "Solskjaer",
+"start": 32.26,
+"end": 32.7
+},
+{
+"word": "pokes",
+"start": 32.7,
+"end": 33.04
+},
+{
+"word": "it",
+"start": 33.04,
+"end": 33.2
+},
+{
+"word": "into",
+"start": 33.2,
+"end": 33.38
+},
+{
+"word": "the",
+"start": 33.38,
+"end": 33.56
+},
+{
+"word": "roof",
+"start": 33.56,
+"end": 33.7
+},
+{
+"word": "of",
+"start": 33.7,
+"end": 33.8
+},
+{
+"word": "the",
+"start": 33.8,
+"end": 33.9
+},
+{
+"word": "net.",
+"start": 33.9,
+"end": 34.46
+},
+{
+"word": "2-1.",
+"start": 34.4,
+"end": 35.18
+},
+{
+"word": "Bayern's",
+"start": 35.18,
+"end": 35.46
+},
+{
+"word": "players",
+"start": 35.46,
+"end": 35.66
+},
+{
+"word": "collapsed",
+"start": 35.66,
+"end": 36.02
+},
+{
+"word": "on",
+"start": 36.02,
+"end": 36.18
+},
+{
+"word": "the",
+"start": 36.18,
+"end": 36.28
+},
+{
+"word": "grass.",
+"start": 36.28,
+"end": 37.04
+},
+{
+"word": "United",
+"start": 37.1,
+"end": 37.38
+},
+{
+"word": "had",
+"start": 37.38,
+"end": 37.58
+},
+{
+"word": "won",
+"start": 37.58,
+"end": 37.72
+},
+{
+"word": "their",
+"start": 37.72,
+"end": 37.88
+},
+{
+"word": "first",
+"start": 37.88,
+"end": 38.16
+},
+{
+"word": "European",
+"start": 38.16,
+"end": 38.68
+},
+{
+"word": "Cup",
+"start": 38.68,
+"end": 38.82
+},
+{
+"word": "in",
+"start": 38.82,
+"end": 39.02
+},
+{
+"word": "31",
+"start": 39.02,
+"end": 39.48
+},
+{
+"word": "years",
+"start": 39.48,
+"end": 40
+},
+{
+"word": "and",
+"start": 40,
+"end": 40.5
+},
+{
+"word": "the",
+"start": 40.5,
+"end": 40.64
+},
+{
+"word": "treble.",
+"start": 40.64,
+"end": 41.38
+},
+{
+"word": "Greatest",
+"start": 41.6,
+"end": 41.92
+},
+{
+"word": "finish",
+"start": 41.92,
+"end": 42.22
+},
+{
+"word": "to",
+"start": 42.22,
+"end": 42.38
+},
+{
+"word": "a",
+"start": 42.38,
+"end": 42.5
+},
+{
+"word": "final?",
+"start": 42.5,
+"end": 43.64
+},
+{
+"word": "Or",
+"start": 43.64,
+"end": 43.72
+},
+{
+"word": "can",
+"start": 43.72,
+"end": 43.88
+},
+{
+"word": "you",
+"start": 43.88,
+"end": 44
+},
+{
+"word": "name",
+"start": 44,
+"end": 44.12
+},
+{
+"word": "a",
+"start": 44.12,
+"end": 44.24
+},
+{
+"word": "better",
+"start": 44.24,
+"end": 44.48
+},
+{
+"word": "one?",
+"start": 44.48,
+"end": 44.68
+}
+]
+}
