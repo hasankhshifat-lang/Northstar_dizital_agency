@@ -1,0 +1,1551 @@
+{
+ "slug": "greatly-exaggerated",
+ "title": "At Death's Door",
+ "indexTitle": "Mark Twain · 1897–1910",
+ "seed": 11,
+ "items": [
+  {
+   "id": "etimes31",
+   "kind": "paper",
+   "src": "raw/etimes31.jpg",
+   "label": "THE EVENING TIMES (WASHINGTON) · 31 MAY 1897",
+   "short": "The Evening Times, Washington",
+   "catalog": "LCCN sn84024441",
+   "row": "at death's door"
+  },
+  {
+   "id": "bulletin8",
+   "kind": "paper",
+   "src": "raw/bulletin8.jpg",
+   "label": "THE EVENING BULLETIN (MAYSVILLE, KY.) · 8 MAY 1897",
+   "short": "The Evening Bulletin, Maysville",
+   "catalog": "LCCN sn87060190",
+   "row": "not dead"
+  },
+  {
+   "id": "savannah9",
+   "kind": "paper",
+   "src": "raw/savannah9.jpg",
+   "label": "THE MORNING NEWS (SAVANNAH) · 9 MAY 1897",
+   "short": "The Morning News, Savannah",
+   "catalog": "LCCN sn86063034",
+   "row": "a canard"
+  },
+  {
+   "id": "savannah96",
+   "kind": "paper",
+   "src": "raw/savannah96.jpg",
+   "label": "THE MORNING NEWS (SAVANNAH) · 21 AUG 1896",
+   "short": "The Morning News, Aug. 1896",
+   "catalog": "LCCN sn86063034"
+  },
+  {
+   "id": "star1",
+   "kind": "paper",
+   "src": "raw/star1.jpg",
+   "label": "EVENING STAR (WASHINGTON) · 1 JUNE 1897",
+   "short": "Evening Star, Washington",
+   "catalog": "LCCN sn83045462",
+   "row": "all right"
+  },
+  {
+   "id": "journal1",
+   "kind": "paper",
+   "src": "raw/journal1.jpg",
+   "label": "NEW YORK JOURNAL · 1 JUNE 1897",
+   "short": "New York Journal, June 1",
+   "catalog": "LCCN sn83030180",
+   "row": "in luxury"
+  },
+  {
+   "id": "journal2",
+   "kind": "paper",
+   "src": "raw/journal2.jpg",
+   "label": "NEW YORK JOURNAL · 2 JUNE 1897",
+   "short": "New York Journal, June 2",
+   "catalog": "LCCN sn83030180",
+   "row": "an exaggeration"
+  },
+  {
+   "id": "bolles",
+   "kind": "print",
+   "src": "raw/bolles.tif",
+   "horizon": 6400,
+   "label": "MARK TWAIN · c. 1902 · C. E. BOLLES",
+   "short": "Mark Twain, c. 1902",
+   "catalog": "LC-DIG-ds-05448",
+   "credit": "Charles E. Bolles"
+  },
+  {
+   "id": "kanawha",
+   "kind": "negative",
+   "src": "raw/kanawha.tif",
+   "horizon": 2580,
+   "water": true,
+   "label": "THE YACHT KANAWHA · 7 AUG 1897",
+   "short": "Kanawha, 1897",
+   "catalog": "LC-D4-62119",
+   "credit": "Detroit Publishing Co."
+  },
+  {
+   "id": "rogers",
+   "kind": "negative",
+   "src": "raw/rogers.tif",
+   "horizon": 3600,
+   "label": "H. H. ROGERS AND S. L. CLEMENS",
+   "short": "Rogers and Clemens",
+   "catalog": "LC-B2- 140-15",
+   "credit": "Bain News Service"
+  },
+  {
+   "id": "tribune07",
+   "kind": "paper",
+   "src": "raw/tribune07.jpg",
+   "label": "NEW-YORK TRIBUNE · 4 MAY 1907",
+   "short": "New-York Tribune",
+   "catalog": "LCCN sn83030214",
+   "row": "missing"
+  },
+  {
+   "id": "light07",
+   "kind": "paper",
+   "src": "raw/light07.jpg",
+   "label": "THE SAN ANTONIO LIGHT · 4 MAY 1907",
+   "short": "The San Antonio Light",
+   "catalog": "LCCN sn86090330",
+   "row": "not lost"
+  },
+  {
+   "id": "cigar",
+   "kind": "print",
+   "src": "raw/cigar.tif",
+   "horizon": 3500,
+   "label": "MARK TWAIN · c. 1907",
+   "short": "Mark Twain, c. 1907",
+   "catalog": "LC-USZ62-112065",
+   "credit": "A. F. Bradley"
+  },
+  {
+   "id": "wtimes07",
+   "kind": "paper",
+   "src": "raw/wtimes07.jpg",
+   "label": "THE WASHINGTON TIMES · 4 MAY 1907",
+   "short": "The Washington Times",
+   "catalog": "LCCN sn84026749",
+   "row": "greatly exaggerated"
+  },
+  {
+   "id": "porch",
+   "kind": "negative",
+   "src": "raw/porch.tif",
+   "horizon": 3300,
+   "label": "S. L. CLEMENS · BAIN, DATED 15 APR 1910",
+   "short": "S. L. Clemens, 1910",
+   "catalog": "LC-B2- 1022-9",
+   "credit": "Bain News Service"
+  },
+  {
+   "id": "topeka10",
+   "kind": "paper",
+   "src": "raw/topeka10.jpg",
+   "label": "THE TOPEKA STATE JOURNAL · 22 APR 1910",
+   "short": "Topeka State Journal",
+   "catalog": "LCCN sn82016014",
+   "row": "dead"
+  }
+ ],
+ "end": {
+  "sub": "Mark Twain's deaths, as printed, 1897–1910",
+  "credits": [
+   "Library of Congress · Chronicling America · Prints & Photographs",
+   "Photographs: C. E. Bolles, A. F. Bradley, Bain News Service, Detroit Publishing Co.",
+   "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"
+  ]
+ },
+ "films": {
+  "long": {
+   "size": "1920x1080",
+   "shots": [
+    {
+     "type": "title",
+     "item": "etimes31",
+     "title": "At Death's Door",
+     "sub": "MARK TWAIN · WHAT THE PAPERS PRINTED · 1897–1910",
+     "chapterName": "At death's door",
+     "say": "Mark Twain at death's door. That is what a newspaper in Washington printed on May thirty first, eighteen ninety seven. Mark Twain was not dying. And his answer became the most famous correction ever printed. You probably know it by heart. But the words you know are not the words he gave."
+    },
+    {
+     "type": "read",
+     "item": "etimes31",
+     "boxes": [
+      [
+       2785,
+       2244,
+       3093,
+       2261
+      ],
+      [
+       2698,
+       2285,
+       3092,
+       2302
+      ],
+      [
+       2802,
+       2310,
+       2993,
+       2329
+      ],
+      [
+       2767,
+       2337,
+       3086,
+       2357
+      ],
+      [
+       2697,
+       2364,
+       3092,
+       2383
+      ],
+      [
+       2697,
+       2389,
+       3091,
+       2409
+      ],
+      [
+       2697,
+       2415,
+       3051,
+       2431
+      ]
+     ],
+     "say": "Dying of a broken heart, in humble London lodgings. New York, May thirty first. The Evening Journal today says: Mark Twain, the great American humorist and novelist, is dying in the most humble lodgings in London."
+    },
+    {
+     "type": "read",
+     "item": "etimes31",
+     "boxes": [
+      [
+       2714,
+       2441,
+       3092,
+       2462
+      ],
+      [
+       2697,
+       2468,
+       3091,
+       2488
+      ],
+      [
+       2696,
+       2492,
+       2938,
+       2507
+      ]
+     ],
+     "say": "Friends of the great author in this city say that his physical condition is brought about by a broken heart."
+    },
+    {
+     "type": "table",
+     "item": "etimes31",
+     "zoom": 0.7,
+     "say": "It was not the first time that spring that the papers had buried him. And it would not be the last. So how does the most famous writer in America get reported dead, again and again, while he is still alive? And what did he really say? The answer is in the papers themselves."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 1",
+     "title": "Dead in May",
+     "chapterName": "Dead in May",
+     "say": "Part one. Dead in May."
+    },
+    {
+     "type": "read",
+     "item": "bulletin8",
+     "boxes": [
+      [
+       1392,
+       3307,
+       1597,
+       3320
+      ],
+      [
+       1328,
+       3327,
+       1681,
+       3347
+      ],
+      [
+       1310,
+       3349,
+       1681,
+       3369
+      ],
+      [
+       1310,
+       3370,
+       1679,
+       3387
+      ],
+      [
+       1310,
+       3391,
+       1390,
+       3409
+      ]
+     ],
+     "say": "Three weeks earlier, a small paper in Maysville, Kentucky, printed this. Mark Twain not dead. London, May eighth. The report that Samuel L. Clemens, Mark Twain, is dead is false. He is in London, and in excellent health."
+    },
+    {
+     "type": "read",
+     "item": "savannah9",
+     "boxes": [
+      [
+       1887,
+       1593,
+       2219,
+       1606
+      ],
+      [
+       1874,
+       1609,
+       2219,
+       1622
+      ],
+      [
+       1873,
+       1624,
+       2219,
+       1638
+      ],
+      [
+       1875,
+       1640,
+       2219,
+       1654
+      ],
+      [
+       1875,
+       1656,
+       2220,
+       1670
+      ],
+      [
+       1875,
+       1671,
+       2221,
+       1686
+      ],
+      [
+       1876,
+       1688,
+       2058,
+       1700
+      ]
+     ],
+     "say": "In Georgia, the Savannah Morning News had a word for it. The canard circulated in the United States that Samuel L. Clemens was dead had not the slightest foundation. Mr. Clemens is in London, and in better health and spirits than for a long time past. He is still working hard on his new book."
+    },
+    {
+     "type": "table",
+     "item": "savannah9",
+     "zoom": 0.9,
+     "say": "A canard is a false rumor. But why would anyone believe that Mark Twain was dying? The answer starts nine months earlier."
+    },
+    {
+     "type": "read",
+     "item": "savannah96",
+     "boxes": [
+      [
+       899,
+       3106,
+       1215,
+       3122
+      ],
+      [
+       899,
+       3132,
+       1220,
+       3145
+      ],
+      [
+       902,
+       3152,
+       1230,
+       3167
+      ],
+      [
+       887,
+       3167,
+       1229,
+       3182
+      ],
+      [
+       887,
+       3183,
+       1229,
+       3199
+      ],
+      [
+       887,
+       3198,
+       1093,
+       3211
+      ]
+     ],
+     "say": "August, eighteen ninety six. The same Savannah paper. Death of Mark Twain's daughter. Hartford, Connecticut. Olivia Susan Clemens, eldest daughter of Samuel L. Clemens, died tonight at her father's home here. She was twenty four."
+    },
+    {
+     "type": "read",
+     "item": "savannah96",
+     "boxes": [
+      [
+       887,
+       3275,
+       1229,
+       3294
+      ],
+      [
+       888,
+       3289,
+       1229,
+       3308
+      ],
+      [
+       886,
+       3306,
+       1230,
+       3325
+      ],
+      [
+       888,
+       3323,
+       1102,
+       3336
+      ]
+     ],
+     "say": "Her father was not there. While her parents and sisters were on Mr. Clemens's lecturing tour, she was seeking to regain her health here. Twain was abroad, on a lecture tour."
+    },
+    {
+     "type": "read",
+     "item": "star1",
+     "boxes": [
+      [
+       107,
+       2582,
+       418,
+       2602
+      ],
+      [
+       57,
+       2598,
+       420,
+       2620
+      ],
+      [
+       57,
+       2616,
+       419,
+       2637
+      ],
+      [
+       59,
+       2633,
+       420,
+       2651
+      ],
+      [
+       68,
+       2646,
+       415,
+       2665
+      ],
+      [
+       91,
+       2660,
+       420,
+       2679
+      ],
+      [
+       73,
+       2675,
+       413,
+       2695
+      ],
+      [
+       58,
+       2690,
+       420,
+       2709
+      ],
+      [
+       58,
+       2706,
+       373,
+       2722
+      ]
+     ],
+     "say": "The Associated Press later described what came next. Mr. Clemens was living in quiet lodgings in London, and working day and night at his book, in order to pay his creditors and provide for his family. He had reached London after the death of his daughter, in a terribly depressed condition and in bad health."
+    },
+    {
+     "type": "table",
+     "item": "star1",
+     "zoom": 1.2,
+     "boxes": [
+      [
+       68,
+       2646,
+       415,
+       2665
+      ]
+     ],
+     "say": "Perfectly true at that time, the report said. So the story of a broken man in humble lodgings was built on something real. It was just months out of date. And at the end of May, it came back. Worse."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 2",
+     "title": "Dying in poverty",
+     "chapterName": "Dying in poverty",
+     "say": "Part two. Dying in poverty."
+    },
+    {
+     "type": "read",
+     "item": "journal1",
+     "boxes": [
+      [
+       525,
+       3624,
+       947,
+       3651
+      ],
+      [
+       511,
+       3645,
+       949,
+       3672
+      ],
+      [
+       512,
+       3668,
+       949,
+       3695
+      ],
+      [
+       509,
+       3690,
+       714,
+       3715
+      ]
+     ],
+     "say": "On Monday, May thirty first, a new rumor went around New York. The next morning, the New York Journal described it. The rumor current in this city yesterday, that the well known writer was dying in poverty in England."
+    },
+    {
+     "type": "read",
+     "item": "journal1",
+     "boxes": [
+      [
+       507,
+       3286,
+       942,
+       3321
+      ],
+      [
+       507,
+       3328,
+       946,
+       3361
+      ],
+      [
+       586,
+       3357,
+       866,
+       3386
+      ],
+      [
+       695,
+       3384,
+       756,
+       3411
+      ]
+     ],
+     "say": "And the Journal answered it with a cable from its own man in London. Roughing it? Nay, nay! Mark Twain is living in luxury, is in good health, and writing another book. Roughing It was the title of one of his own books."
+    },
+    {
+     "type": "read",
+     "item": "star1",
+     "boxes": [
+      [
+       83,
+       2340,
+       383,
+       2360
+      ],
+      [
+       52,
+       2371,
+       383,
+       2394
+      ],
+      [
+       157,
+       2387,
+       306,
+       2407
+      ],
+      [
+       268,
+       2478,
+       413,
+       2496
+      ],
+      [
+       55,
+       2492,
+       422,
+       2514
+      ],
+      [
+       56,
+       2512,
+       420,
+       2532
+      ],
+      [
+       55,
+       2530,
+       177,
+       2548
+      ]
+     ],
+     "say": "The same day, his friends went to the Associated Press. Mark Twain is all right. Friends deny reports of his poverty and ill health. And look at the date in the next line. They repeated the statement cabled on May fifth, when Mr. Clemens was reported to have died suddenly."
+    },
+    {
+     "type": "table",
+     "item": "star1",
+     "zoom": 0.8,
+     "say": "Two false reports in four weeks. But nobody had yet asked the man himself."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 3",
+     "title": "The reporter",
+     "chapterName": "The reporter",
+     "say": "Part three. The reporter."
+    },
+    {
+     "type": "read",
+     "item": "journal2",
+     "boxes": [
+      [
+       927,
+       2166,
+       1368,
+       2228
+      ],
+      [
+       931,
+       2252,
+       1377,
+       2306
+      ],
+      [
+       989,
+       2297,
+       1320,
+       2350
+      ],
+      [
+       1050,
+       2341,
+       1259,
+       2390
+      ],
+      [
+       925,
+       2415,
+       1261,
+       2463
+      ]
+     ],
+     "say": "Wednesday, June second. Front page of the New York Journal. Mark Twain amused. Humorist says he even heard on good authority that he was dead. Cousin, not he, sick."
+    },
+    {
+     "type": "read",
+     "item": "journal2",
+     "boxes": [
+      [
+       1262,
+       2665,
+       1371,
+       2690
+      ],
+      [
+       948,
+       2690,
+       1371,
+       2715
+      ],
+      [
+       948,
+       2714,
+       1371,
+       2738
+      ],
+      [
+       948,
+       2737,
+       1371,
+       2761
+      ],
+      [
+       948,
+       2759,
+       1371,
+       2785
+      ],
+      [
+       933,
+       2782,
+       1371,
+       2808
+      ],
+      [
+       932,
+       2805,
+       1019,
+       2826
+      ]
+     ],
+     "say": "The story was by the Journal's London correspondent, Frank Marshall White. Mark Twain was undecided whether to be more amused or annoyed, when a Journal representative informed him today of the report in New York that he was dying in poverty in London."
+    },
+    {
+     "type": "read",
+     "item": "journal2",
+     "boxes": [
+      [
+       946,
+       2828,
+       1371,
+       2856
+      ],
+      [
+       939,
+       2850,
+       1371,
+       2877
+      ],
+      [
+       933,
+       2874,
+       1371,
+       2895
+      ],
+      [
+       935,
+       2896,
+       1079,
+       2921
+      ]
+     ],
+     "say": "He is living in comfort and even luxury, in a handsomely furnished house, in a beautiful square in Chelsea, with his wife and children."
+    },
+    {
+     "type": "photo",
+     "item": "bolles",
+     "focus": [
+      2600,
+      2600
+     ],
+     "nf": 0.5,
+     "zoom": 1.05,
+     "drift": [
+      0.2,
+      -0.4
+     ],
+     "labels": [
+      {
+       "at": [
+        2700,
+        800
+       ],
+       "text": "Mark Twain",
+       "sub": "photographed about 1902 · C. E. Bolles"
+      }
+     ],
+     "say": "This is Mark Twain a few years later, around nineteen oh two, photographed in his chair. He is doing what millions of Americans did every morning. Reading the newspaper."
+    },
+    {
+     "type": "read",
+     "item": "journal2",
+     "boxes": [
+      [
+       948,
+       3150,
+       1371,
+       3174
+      ],
+      [
+       931,
+       3172,
+       1370,
+       3198
+      ],
+      [
+       931,
+       3194,
+       1365,
+       3221
+      ]
+     ],
+     "say": "Then White wrote down what Twain told him. I can understand perfectly how the report of my illness got about. I have even heard on good authority that I was dead."
+    },
+    {
+     "type": "read",
+     "item": "journal2",
+     "boxes": [
+      [
+       929,
+       3216,
+       1370,
+       3244
+      ],
+      [
+       930,
+       3239,
+       1370,
+       3266
+      ],
+      [
+       927,
+       3262,
+       1370,
+       3287
+      ],
+      [
+       933,
+       3284,
+       1370,
+       3306
+      ]
+     ],
+     "say": "James Ross Clemens, of Saint Louis, a cousin of mine, was seriously ill two or three weeks ago in London, but is well now. The report of my illness grew out of his illness."
+    },
+    {
+     "type": "table",
+     "item": "journal2",
+     "zoom": 1.3,
+     "boxes": [
+      [
+       929,
+       3216,
+       1370,
+       3244
+      ]
+     ],
+     "say": "So that was the source. A different Clemens, sick in the same city. And then comes the line the whole world thinks it knows."
+    },
+    {
+     "type": "read",
+     "item": "journal2",
+     "boxes": [
+      [
+       948,
+       3329,
+       1371,
+       3353
+      ],
+      [
+       930,
+       3352,
+       1371,
+       3377
+      ]
+     ],
+     "card": {
+      "label": "AS PRINTED · 2 JUNE 1897",
+      "value": "8",
+      "unit": "words",
+      "note": "\"The report of my death was an exaggeration.\"",
+      "source": "New York Journal · front page"
+     },
+     "say": "The report of my death was an exaggeration. Eight words. The report, singular. Was. An exaggeration. No greatly."
+    },
+    {
+     "type": "table",
+     "item": "journal2",
+     "zoom": 0.75,
+     "say": "So the papers had their answer, in his own words. Case closed. Except that ten years later, the story of his death went to sea."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 4",
+     "title": "Lost at sea",
+     "chapterName": "Lost at sea",
+     "say": "Part four. Lost at sea."
+    },
+    {
+     "type": "photo",
+     "item": "kanawha",
+     "focus": [
+      2620,
+      2780
+     ],
+     "nf": 0.4,
+     "drift": [
+      0.5,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        2620,
+        2300
+       ],
+       "text": "Kanawha",
+       "sub": "steam yacht · photographed 1897"
+      }
+     ],
+     "say": "This is the Kanawha, a steam yacht, photographed in eighteen ninety seven. It belonged to Henry H. Rogers."
+    },
+    {
+     "type": "photo",
+     "item": "rogers",
+     "focus": [
+      2650,
+      1800
+     ],
+     "nf": 0.5,
+     "drift": [
+      -0.3,
+      -0.2
+     ],
+     "labels": [
+      {
+       "at": [
+        1955,
+        1250
+       ],
+       "text": "H. H. Rogers",
+       "sub": "Bain News Service"
+      },
+      {
+       "at": [
+        3340,
+        1250
+       ],
+       "text": "S. L. Clemens",
+       "sub": "date not recorded"
+      }
+     ],
+     "say": "And this is Rogers, on the left, with Samuel Clemens, on the right. Bain News Service did not record the date. In the spring of nineteen oh seven, Twain was a guest on Rogers's yacht."
+    },
+    {
+     "type": "read",
+     "item": "tribune07",
+     "boxes": [
+      [
+       578,
+       3972,
+       1026,
+       3994
+      ],
+      [
+       572,
+       4026,
+       1046,
+       4049
+      ],
+      [
+       554,
+       4047,
+       1046,
+       4070
+      ],
+      [
+       554,
+       4068,
+       1046,
+       4093
+      ],
+      [
+       554,
+       4089,
+       1046,
+       4110
+      ],
+      [
+       553,
+       4110,
+       990,
+       4133
+      ]
+     ],
+     "say": "Saturday, May fourth, nineteen oh seven. The New York Tribune. Mark Twain and yacht missing. Norfolk, Virginia. The wireless station and the weather observatory at Cape Henry have been appealed to, in an effort to locate H. H. Rogers's Kanawha, having on board Mark Twain. The yacht has been missing since Wednesday."
+    },
+    {
+     "type": "read",
+     "item": "tribune07",
+     "boxes": [
+      [
+       612,
+       4232,
+       1046,
+       4255
+      ],
+      [
+       554,
+       4254,
+       1046,
+       4272
+      ],
+      [
+       556,
+       4268,
+       900,
+       4289
+      ]
+     ],
+     "say": "Fog had trapped the yacht for days. Mr. Rogers and his son went north by rail. Mr. Clemens declined to go by rail, and remained on board the Kanawha. He fretted considerably, as the fog would not lift."
+    },
+    {
+     "type": "table",
+     "item": "tribune07",
+     "zoom": 1.0,
+     "say": "A man in his seventies, on a yacht nobody could find, somewhere off the Virginia coast. If you read that over breakfast, you would have feared the worst. But where was Mark Twain, really?"
+    },
+    {
+     "type": "read",
+     "item": "light07",
+     "boxes": [
+      [
+       105,
+       3070,
+       426,
+       3086
+      ],
+      [
+       122,
+       3103,
+       425,
+       3119
+      ],
+      [
+       102,
+       3120,
+       426,
+       3136
+      ],
+      [
+       105,
+       3138,
+       422,
+       3154
+      ],
+      [
+       103,
+       3155,
+       419,
+       3171
+      ],
+      [
+       104,
+       3173,
+       421,
+       3188
+      ],
+      [
+       104,
+       3190,
+       256,
+       3204
+      ]
+     ],
+     "say": "The same day, in Texas, the San Antonio Light had the answer. Mark Twain not lost at all. The report that Samuel L. Clemens is missing on Henry H. Rogers's yacht Kanawha, which was given wide circulation today, is untrue. Mr. Clemens is at his home in this city. In New York."
+    },
+    {
+     "type": "photo",
+     "item": "cigar",
+     "focus": [
+      1350,
+      1500
+     ],
+     "nf": 0.5,
+     "zoom": 1.05,
+     "drift": [
+      0.3,
+      -0.3
+     ],
+     "labels": [
+      {
+       "at": [
+        1300,
+        600
+       ],
+       "text": "Mark Twain",
+       "sub": "photographed about 1907 · A. F. Bradley"
+      }
+     ],
+     "say": "Twain around the same time. Whatever they believed in Norfolk, he was not on that yacht. He was in his house on Fifth Avenue, reading about his own disappearance. And, the papers said, enjoying it hugely."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 5",
+     "title": "Greatly exaggerated",
+     "chapterName": "Greatly exaggerated",
+     "say": "Part five. Greatly exaggerated."
+    },
+    {
+     "type": "read",
+     "item": "wtimes07",
+     "boxes": [
+      [
+       1431,
+       2069,
+       1796,
+       2106
+      ],
+      [
+       1482,
+       2115,
+       1796,
+       2156
+      ],
+      [
+       1574,
+       2163,
+       1702,
+       2203
+      ]
+     ],
+     "say": "That evening, the Washington Times ran the story with this headline. Story of his death again exaggerated greatly."
+    },
+    {
+     "type": "read",
+     "item": "wtimes07",
+     "boxes": [
+      [
+       1679,
+       2247,
+       1847,
+       2263
+      ],
+      [
+       1431,
+       2267,
+       1847,
+       2287
+      ],
+      [
+       1431,
+       2289,
+       1848,
+       2309
+      ],
+      [
+       1430,
+       2312,
+       1847,
+       2332
+      ],
+      [
+       1431,
+       2333,
+       1520,
+       2353
+      ]
+     ],
+     "say": "And underneath: Mark Twain had the pleasure today of repeating his celebrated statement, that, the reports of my death have been greatly exaggerated."
+    },
+    {
+     "type": "table",
+     "item": "wtimes07",
+     "zoom": 1.6,
+     "boxes": [
+      [
+       1431,
+       2289,
+       1848,
+       2309
+      ],
+      [
+       1430,
+       2312,
+       1847,
+       2332
+      ]
+     ],
+     "say": "Reports, plural. Have been. Greatly exaggerated. That is not what the Journal printed in eighteen ninety seven. In ten years, his eight plain words had picked up a greatly, and a better rhythm."
+    },
+    {
+     "type": "read",
+     "item": "wtimes07",
+     "boxes": [
+      [
+       1928,
+       2076,
+       2213,
+       2098
+      ],
+      [
+       1904,
+       2144,
+       2264,
+       2165
+      ],
+      [
+       1882,
+       2172,
+       2264,
+       2196
+      ],
+      [
+       1882,
+       2200,
+       2263,
+       2221
+      ],
+      [
+       1882,
+       2228,
+       2264,
+       2253
+      ],
+      [
+       1882,
+       2256,
+       2264,
+       2278
+      ]
+     ],
+     "say": "Right beside it, the paper printed what Twain actually said that day. Still a little foggy. That Actors' Fund affair is still a little foggy, but I'm not lost in it. Neither am I aboard Mr. Rogers's yacht. I'm simply paddling my own canoe."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "THE WASHINGTON TIMES · 4 MAY 1907",
+      "quote": "\"the reports of my death have been greatly exaggerated\"",
+      "value": "1907",
+      "unit": "retold"
+     },
+     "b": {
+      "label": "NEW YORK JOURNAL · 2 JUNE 1897",
+      "quote": "\"The report of my death was an exaggeration.\"",
+      "value": "1897",
+      "unit": "his words",
+      "source": "Chronicling America · Library of Congress"
+     },
+     "strike": "a",
+     "say": "Printed in nineteen oh seven, as his celebrated statement: the reports of my death have been greatly exaggerated. Printed in eighteen ninety seven, from his own mouth: the report of my death was an exaggeration. The polished version is the one that survived."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 6",
+     "title": "The last report",
+     "chapterName": "The last report",
+     "say": "Part six. The last report."
+    },
+    {
+     "type": "photo",
+     "item": "porch",
+     "focus": [
+      2400,
+      2000
+     ],
+     "nf": 0.45,
+     "drift": [
+      -0.4,
+      -0.2
+     ],
+     "labels": [
+      {
+       "at": [
+        1700,
+        700
+       ],
+       "text": "S. L. Clemens",
+       "sub": "Bain News Service file date: 15 April 1910"
+      }
+     ],
+     "say": "Bain News Service filed this photograph under the date April fifteenth, nineteen ten. Twain resting in a long chair. He had just come back from Bermuda. He was in his seventies, and he was ill."
+    },
+    {
+     "type": "read",
+     "item": "topeka10",
+     "boxes": [
+      [
+       1610,
+       304,
+       1957,
+       324
+      ],
+      [
+       1607,
+       385,
+       1950,
+       405
+      ],
+      [
+       1670,
+       412,
+       1894,
+       432
+      ],
+      [
+       1606,
+       463,
+       1958,
+       485
+      ],
+      [
+       1651,
+       491,
+       1913,
+       511
+      ]
+     ],
+     "say": "One week later, the Topeka State Journal. Mark Twain dead. Great humorist expires peacefully and painlessly at his country home among the New England hills."
+    },
+    {
+     "type": "read",
+     "item": "topeka10",
+     "boxes": [
+      [
+       1623,
+       756,
+       1957,
+       770
+      ],
+      [
+       1606,
+       774,
+       1956,
+       788
+      ],
+      [
+       1606,
+       791,
+       1957,
+       806
+      ]
+     ],
+     "say": "Redding, Connecticut. Samuel Langhorne Clemens died painlessly at six thirty o'clock last night, of angina pectoris. That was Thursday, April twenty first, nineteen ten."
+    },
+    {
+     "type": "read",
+     "item": "topeka10",
+     "boxes": [
+      [
+       1605,
+       541,
+       1957,
+       563
+      ],
+      [
+       1606,
+       598,
+       1957,
+       617
+      ],
+      [
+       1616,
+       625,
+       1948,
+       646
+      ]
+     ],
+     "say": "Give me my glasses. Were his last words, before lapsing into unconsciousness. The paper said he wrote them out in pencil. "
+    },
+    {
+     "type": "table",
+     "item": "etimes31",
+     "boxes": [
+      [
+       2785,
+       2244,
+       3093,
+       2261
+      ],
+      [
+       2698,
+       2285,
+       3092,
+       2302
+      ],
+      [
+       2802,
+       2310,
+       2993,
+       2329
+      ]
+     ],
+     "zoom": 1.0,
+     "say": "Thirteen years after the papers put him at death's door, the report was finally true. In between, they had buried him, impoverished him, lost him at sea, and improved his best line. The improved version is the one we still quote. Which line do you think is better? The one he gave, or the one the papers gave him? Tell me in the comments."
+    },
+    {
+     "type": "end",
+     "say": "If you like stories told from the papers themselves, give this video a like, and subscribe to As Printed, for what the papers said, and what the archive says."
+    }
+   ]
+  },
+  "short": {
+   "size": "1080x1920",
+   "shots": [
+    {
+     "type": "read",
+     "item": "journal2",
+     "boxes": [
+      [
+       948,
+       3329,
+       1371,
+       3353
+      ],
+      [
+       930,
+       3352,
+       1371,
+       3377
+      ]
+     ],
+     "card": {
+      "label": "AS PRINTED",
+      "value": "2 JUNE 1897",
+      "source": "New York Journal"
+     },
+     "say": "The report of my death was an exaggeration. Those are Mark Twain's real words, printed in eighteen ninety seven."
+    },
+    {
+     "type": "read",
+     "item": "etimes31",
+     "boxes": [
+      [
+       2785,
+       2244,
+       3093,
+       2261
+      ],
+      [
+       2698,
+       2285,
+       3092,
+       2302
+      ],
+      [
+       2802,
+       2310,
+       2993,
+       2329
+      ]
+     ],
+     "say": "So why does everyone quote them wrong? That spring, papers said he was dying of a broken heart in London."
+    },
+    {
+     "type": "read",
+     "item": "journal2",
+     "boxes": [
+      [
+       948,
+       3150,
+       1371,
+       3174
+      ],
+      [
+       931,
+       3172,
+       1370,
+       3198
+      ],
+      [
+       931,
+       3194,
+       1365,
+       3221
+      ],
+      [
+       929,
+       3216,
+       1370,
+       3244
+      ],
+      [
+       930,
+       3239,
+       1370,
+       3266
+      ]
+     ],
+     "say": "He wasn't. His cousin had been sick. Twain told a reporter: I have even heard on good authority that I was dead."
+    },
+    {
+     "type": "read",
+     "item": "tribune07",
+     "boxes": [
+      [
+       578,
+       3972,
+       1026,
+       3994
+      ]
+     ],
+     "say": "Ten years later, papers said he was lost at sea on a yacht. He was at home in New York."
+    },
+    {
+     "type": "read",
+     "item": "wtimes07",
+     "boxes": [
+      [
+       1679,
+       2247,
+       1847,
+       2263
+      ],
+      [
+       1431,
+       2267,
+       1847,
+       2287
+      ],
+      [
+       1431,
+       2289,
+       1848,
+       2309
+      ],
+      [
+       1430,
+       2312,
+       1847,
+       2332
+      ],
+      [
+       1431,
+       2333,
+       1520,
+       2353
+      ]
+     ],
+     "say": "And that day, a Washington paper repeated his celebrated statement as: the reports of my death have been greatly exaggerated."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "PRINTED IN 1907",
+      "quote": "\"…greatly exaggerated\"",
+      "value": "1907",
+      "unit": "retold"
+     },
+     "b": {
+      "label": "HIS WORDS, 1897",
+      "quote": "\"…was an exaggeration.\"",
+      "value": "1897",
+      "unit": "said",
+      "source": "Chronicling America"
+     },
+     "strike": "a",
+     "say": "Greatly was never in it. The line you know is the papers' edit. His was plainer. The report of my death was an exaggeration."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,14 @@
+{"width":1280,"height":720,"style":"archive",
+ "background":{"color":"#dfe2e5","side":"none"},
+ "layers":[
+  {"type":"image","src":"journal_head.jpg","x":40,"y":282,"w":470,"rotate":-2.5,"grade":"none","aspect":1.485},
+  {"type":"image","src":"journal_quote.jpg","x":24,"y":585,"w":720,"rotate":-1,"grade":"none","aspect":6.94},
+  {"type":"ring","x":384,"y":636,"rx":372,"ry":62,"rotate":-1,"width":8},
+  {"type":"cutout","src":"twain_1907_cut.png","x":690,"y":-6,"h":1010,"grade":"mono","glow":"rgba(255,255,255,0.8)"},
+  {"type":"arrow","from":[700,470],"to":[600,575],"bend":-0.25,"width":11}
+ ],
+ "headline":{"lines":["The real","quote"],"accent":["quote"],"x":40,"y":32,"size":104,"panel":true},
+ "tags":[
+  {"text":"NEW YORK JOURNAL · 2 JUNE 1897","x":40,"y":262,"variant":"date","size":24},
+  {"text":"NO \"GREATLY\"","x":540,"y":300,"variant":"stamp","size":40,"rotate":-6}
+ ]}
