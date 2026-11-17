@@ -1,8 +1,17 @@
 # YouTube + Facebook thumbnails (map view + hook heading)
 
-**From 2026-11-09 all new thumbnails (YouTube and Facebook) are designed in Figma only**, in the same map style
-as the JPGs below, and exported from Figma into this folder. See `.claude/skills/youtube-thumbnail-creator/SKILL.md`
-("Figma workflow"). The thumbnails listed below were made earlier with `make_thumbnails.py`; they stay as the style reference.
+**From 2026-11-16 every new thumbnail (YouTube and Facebook, all channels) is made with the universal thumbnail skill**
+(`.claude/skills/youtube-thumbnail-creator/SKILL.md`): a dominant visual subject (real portrait, character cutout,
+key object or location), real/licensed assets or Figma `gpt-image-2.5-flare` art, composed and rendered in Remotion
+(`.claude/skills/youtube-thumbnail-creator/remotion/`). Never text-only. Demo set:
+`demos/universal-2026-11-16/` (props in `remotion/examples/`). The map-only thumbnails listed below were made earlier
+with `make_thumbnails.py`; they stay as the Which Life Next colour/type reference.
+
+| Date | File | Channel | Headline | Main subject (source) | Tool |
+|---|---|---|---|---|---|
+| 2026-11-16 | demos/universal-2026-11-16/demo1_whichlifenext_booth.jpg | Which Life Next (demo) | THE 12-DAY MANHUNT | John Wilkes Booth portrait, LoC ppmsca.19233; Map of Eastern Virginia 1864, LoC cw0493400 | Remotion |
+| 2026-11-16 | demos/universal-2026-11-16/demo2_asprinted_war_is_over.jpg | As Printed (demo) | Who sent this? | Roy W. Howard 1914, LoC hec.05344 (Harris & Ewing, no known restrictions); Seattle Star 7 Nov 1918 | Remotion |
+| 2026-11-16 | demos/universal-2026-11-16/demo3_asprinted_no_lives_lost_9x16.jpg | As Printed (demo, 9:16) | Every word was wrong | Titanic 1912, LoC cph.3c16091; New Haven Union 15 Apr 1912 | Remotion |
 
 Figma file "NorthStar Thumbnails": not created yet (the first Figma thumbnail run creates it and records the key + URL here).
 

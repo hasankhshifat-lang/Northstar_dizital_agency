@@ -1,0 +1,82 @@
+{
+ "width": 1280,
+ "height": 720,
+ "style": "archive",
+ "background": {
+  "color": "#dfe2e5",
+  "side": "none"
+ },
+ "layers": [
+  {
+   "type": "image",
+   "src": "seattle_star_1918-11-07.jpg",
+   "x": 24,
+   "y": 338,
+   "w": 880,
+   "rotate": -3,
+   "grade": "none",
+   "aspect": 2.819
+  },
+  {
+   "type": "ring",
+   "x": 505,
+   "y": 578,
+   "rx": 300,
+   "ry": 34,
+   "rotate": -4,
+   "width": 8
+  },
+  {
+   "type": "cutout",
+   "src": "howard_cut.png",
+   "x": 905,
+   "y": -20,
+   "h": 770,
+   "grade": "mono",
+   "glow": "rgba(255,255,255,0.8)"
+  },
+  {
+   "type": "arrow",
+   "from": [
+    905,
+    330
+   ],
+   "to": [
+    760,
+    540
+   ],
+   "bend": -0.25,
+   "width": 11
+  }
+ ],
+ "headline": {
+  "lines": [
+   "Who sent",
+   "this?"
+  ],
+  "accent": [
+   "this?"
+  ],
+  "x": 40,
+  "y": 40,
+  "size": 112,
+  "panel": true
+ },
+ "tags": [
+  {
+   "text": "THURSDAY, 7 NOVEMBER 1918",
+   "x": 40,
+   "y": 650,
+   "variant": "date",
+   "size": 28
+  },
+  {
+   "text": "4 DAYS EARLY",
+   "x": 625,
+   "y": 250,
+   "variant": "stamp",
+   "size": 44,
+   "rotate": -6
+  }
+ ]
+}

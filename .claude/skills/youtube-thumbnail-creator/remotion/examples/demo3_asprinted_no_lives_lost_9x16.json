@@ -1,0 +1,85 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "archive",
+ "background": {
+  "src": "titanic_1912.jpg",
+  "crop": [
+   0.2,
+   0.0,
+   0.6,
+   0.92
+  ],
+  "grade": "mono",
+  "blur": 10,
+  "darken": 0.45,
+  "side": "top"
+ },
+ "layers": [
+  {
+   "type": "image",
+   "src": "titanic_1912.jpg",
+   "x": 40,
+   "y": 480,
+   "w": 1000,
+   "rotate": 2,
+   "grade": "mono",
+   "paper": true,
+   "aspect": 1.295,
+   "crop": [
+    0.06,
+    0.08,
+    0.88,
+    0.84
+   ]
+  },
+  {
+   "type": "image",
+   "src": "new_haven_union_1912-04-15.jpg",
+   "crop": [
+    0.08,
+    0.26,
+    0.43,
+    0.35
+   ],
+   "x": 150,
+   "y": 1120,
+   "w": 780,
+   "rotate": -3,
+   "paper": true,
+   "aspect": 2.2
+  },
+  {
+   "type": "ring",
+   "x": 535,
+   "y": 1375,
+   "rx": 345,
+   "ry": 68,
+   "rotate": -5,
+   "width": 10
+  }
+ ],
+ "headline": {
+  "lines": [
+   "Every word",
+   "was wrong"
+  ],
+  "accent": [
+   "wrong"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 110,
+  "size": 132
+ },
+ "tags": [
+  {
+   "text": "MONDAY, 15 APRIL 1912",
+   "x": 300,
+   "y": 392,
+   "variant": "date",
+   "size": 34
+  }
+ ],
+ "guides": false
+}
