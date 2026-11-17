@@ -7,7 +7,7 @@ Never prints tokens. Scopes on the refresh token: youtube.upload + youtube.reado
 Usage:
   yt.py whoami
   yt.py upload FILE --title T --description-file D.txt [--tags a,b] [--publish-at 2026-11-04T22:00:00Z]
-               [--category 27] [--thumbnail thumb.jpg] [--no-synthetic]
+               [--category 27] [--thumbnail thumb.jpg]   # AI disclosure is always YES
       Without --publish-at the video goes PUBLIC immediately (only when the user asked for that).
       With --publish-at it is uploaded private and YouTube makes it public at that UTC time.
   yt.py scheduled            # own uploads that are private with a future publishAt
@@ -127,7 +127,7 @@ def main():
     elif a.cmd == "upload":
         desc = open(a.description_file).read() if a.description_file else a.description
         status = {"selfDeclaredMadeForKids": False, "embeddable": True, "license": "youtube",
-                  "containsSyntheticMedia": not a.no_synthetic}
+                  "containsSyntheticMedia": True}  # AI disclosure always YES (owner, 2026-11-17); --no-synthetic is ignored
         if a.publish_at:
             t = datetime.datetime.fromisoformat(a.publish_at.replace("Z", "+00:00"))
             if t <= datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=15):
@@ -187,7 +187,8 @@ def main():
         elif a.privacy:
             st["privacyStatus"] = a.privacy; st.pop("publishAt", None)
         body = {"id": a.id, "snippet": {k: sn[k] for k in ("title", "description", "tags", "categoryId", "defaultLanguage", "defaultAudioLanguage") if k in sn},
-                "status": {k: st[k] for k in ("privacyStatus", "publishAt", "selfDeclaredMadeForKids", "embeddable", "license", "containsSyntheticMedia") if k in st}}
+                "status": {**{k: st[k] for k in ("privacyStatus", "publishAt", "selfDeclaredMadeForKids", "embeddable", "license") if k in st},
+                           "containsSyntheticMedia": True}}  # read API omits it; always re-assert YES (owner, 2026-11-17)
         r = send(f"{API}/videos?part=snippet,status", tok, body)
         print(json.dumps({"id": r["id"], "title": r["snippet"]["title"], "privacy": r["status"]["privacyStatus"], "publishAt": r["status"].get("publishAt")}))
     elif a.cmd == "delete":
