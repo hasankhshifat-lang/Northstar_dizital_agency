@@ -34,7 +34,7 @@ def activity(kind):
     a = np.zeros(N); pw = np.zeros(N)
     for e in EV:
         if e['type'] != kind: continue
-        i0 = int(e['t'] * SR); i1 = min(N, int((e['t'] + max(e['d'], 0.03)) * SR))
+        i0 = max(0, int(e['t'] * SR)); i1 = min(N, int((e['t'] + max(e['d'], 0.03)) * SR))   # strokes drawn before t=0 (frame-0 hooks) clamp to 0
         if i1 <= i0 or i0 >= N: continue
         n = i1 - i0; env = np.ones(n); r = min(n // 3, int(0.012 * SR))
         if r > 0: env[:r] = np.linspace(0, 1, r); env[-r:] = np.linspace(1, 0, r)
