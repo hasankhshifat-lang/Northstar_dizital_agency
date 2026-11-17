@@ -10,4 +10,4 @@ Page name: **Scientific Bithi** (Bangla: সাইন্টিফিক বি�
 - `scientific-bithi-cover-1640x624-toon.png`: মন্টু মামা, বল্টু, বিথী and Newton (stepping out of the cyan + gold portal) on the Dhaka rooftop; title "সাইন্টিফিক বিথী" on top, tagline pill "হাসতে হাসতে বিজ্ঞান শিখি" on the floor. Cast inside the mobile centre band.
 - `scientific-bithi-profile-1080-toon.png`: the whole cast as one round badge in front of the portal (checked in a circle crop).
 - Source: `toon/` (same rigs as Short 9: soft eye outlines, thin golden glasses rims). Re-render: `node ~/lemo-opuscar/core/render/still.mjs toon 0 --q mode=cover --size 1640x624` and `--q mode=profile --size 1080x1080`.
-- The older puppet-style images above are kept. Not yet set on the Page (needs the owner's go-ahead).
+- The older puppet-style images above are kept. Owner approved setting them on 2026-11-17, but the Graph API refused both (#283, the token lacks pages_manage_metadata); set them by hand in the Page settings.
