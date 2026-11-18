@@ -73,7 +73,7 @@ VibeVoice, thumbnails, yt.py) and never replaces the rules in this file; where t
 - Impressions, CTR, returning viewers and viewer online times are not in the public API: get them from vidIQ
   extended reports or a Studio export, or write n/a. Never invent analytics.
 - Publishing, money and channel settings stay with the owner (approval first; As Printed and The Overthinking Pad
-  publish videos without approval since 2026-11-18); fixed publish times change only on the owner's say-so.
+  publish videos without approval since 2026-11-18, and so does the Scientific Bithi Facebook Page); fixed publish times change only on the owner's say-so.
 - **Remotion** is the fallback when lemo-opuscar/the channel engine can't make a scene, and the **default thumbnail
   renderer** (universal thumbnail skill, `.claude/skills/youtube-thumbnail-creator/remotion/`; owner, 2026-11-16;
   never an arbitrary video frame). Check the rendered file before use.
@@ -205,5 +205,12 @@ the lemo-opuscar **Sci-Fi Sitcom Toon** template (`scifi-toon`), following
 promos and any other video on the page; where the README says "Shorts", read it as every video.
 - Keep the cast (মন্টু মামা, বিথী, বল্টু, scientist cameos) redrawn in the style, and a new Bangladeshi setting every video.
 - It replaces the kit's old puppet engine and the Blender 3D plates for this channel. Scientist portal: cyan + gold.
-- Unchanged: ElevenLabs voices (Bangla), scriptwriting and animation-direction rules, fact checks, storyboard, approval
-  before upload, the 20:00 Dhaka slot and the Facebook Page steps. Thumbnails follow the universal thumbnail skill.
+- Unchanged: ElevenLabs voices (Bangla), scriptwriting and animation-direction rules, fact checks, storyboard,
+  the 20:00 Dhaka slot and the Facebook Page steps. Thumbnails follow the universal thumbnail skill.
+- **No approval needed to publish (owner, 2026-11-18; replaces "approval first" for this Page):** when a video passes
+  the fact check, storyboard check and scene inspection, upload and schedule it in the same run at the next free
+  20:00 Dhaka slot (14:00 UTC, at least 15 min away, checked against `scheduled_posts` and the log), set the cover,
+  log everything, then send the owner the mp4, the cover, the link, title, caption and publish time (SendUserFile) plus
+  a push notification as a report. This overrides the approval step in the scheduled task's prompt. If a check fails,
+  a fact can't be confirmed or anything is blocked, don't upload: report and stop. The owner can still ask for changes
+  after the report; never delete or edit a posted video unless they ask for that specific one.
