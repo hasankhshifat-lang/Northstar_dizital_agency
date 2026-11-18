@@ -9,8 +9,10 @@ Owner decisions (2026-11-15):
   and **one Short (45–60 s, 9:16) cut from it**.
 - **US prime time:** long video **7:00 PM US Eastern**, its Short **8:00 PM US Eastern** the same day
   (`TZ=America/New_York`, daylight saving handled by `date`).
-- **Approval first.** Make both videos, send the owner the files, thumbnails, titles, descriptions and publish times,
-  and upload only after they approve in that session. If approval comes after 7 PM ET, use the next free day's
+- **No approval needed (owner, 2026-11-18; this replaces the 2026-11-15 "approval first" rule).** When both videos pass
+  the checks in section 5, upload and schedule them straight away (section 7), then report to the owner (section 6).
+  If a check fails or something is blocked, don't upload: report the exact problem and stop. (Old rule, kept for
+  reference: make both videos, send the files and wait for approval in that session.) If approval comes after 7 PM ET, use the next free day's
   7 PM / 8 PM slots (never two long videos in one evening).
 - **Look: Notebook doodle**, built on the lemo-opuscar **Sketchnote** style (`$LIB/styles/sketchnote/`): black fineliner
   on dot-grid notepad paper, grey marker for volume, yellow marker only for the one idea that matters, hand lettering
@@ -86,13 +88,14 @@ cut), reuse the long video's drawings, 1080×1920, bottom ~400 px clear. Descrip
 - Before sending: stills, contact sheets and the scene inspection (animation rules §7.3), loudness ≈ −14 LUFS, no
   black frames, captions match. Fix defects; never hide them with effects. Renderer needs ffmpeg 7+.
 
-## 6. Approval message
+## 6. Report to the owner (after uploading)
 
-Send both MP4s and both thumbnails (SendUserFile), then: both titles, both descriptions (summary, chapters with
-timestamps, sources, "Narration voiced with AI.", the mental-health line where it applies), tags, publish times in ET
-and UTC, the topic score and thumbnail scores. Then stop and wait.
+After section 7 is done, send both MP4s and both thumbnails (SendUserFile) and a push notification with: both titles
+and video IDs/links, publish times in ET and UTC, "aiDisclosed": true for both, the topic score, thumbnail headlines
+and scores, defects fixed and anything blocked. Descriptions and tags are in the episode folder. If the 7 PM ET slot
+has already passed when the episode is ready, use the next free day's 7 PM / 8 PM slots and say so.
 
-## 7. After approval
+## 7. Upload and schedule (no approval step since 2026-11-18)
 
 ```bash
 python3 .claude/skills/youtube-channel-automation/yt.py --channel overthinkingpad upload LONG.mp4 --title ... \

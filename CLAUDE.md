@@ -88,7 +88,8 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
   (`YT_CLIENT_ID` / `YT_CLIENT_SECRET` / `YT_REFRESH_TOKEN`, project `168994544641`).
 - **Do not use Clawlink or Metricool for YouTube anymore**, in chat or in scheduled tasks,
   not even as a fallback. If the API fails or the quota is used up, say so and stop.
-- Confirm the title, description, publish time, and video file with the user before uploading.
+- Confirm the title, description, publish time, and video file with the user before uploading. (Exception: The Overthinking Pad
+  publishes without approval since 2026-11-18, see its section.)
 - **AI disclosure = YES on every upload, every channel** (owner, 2026-11-17): "Altered or synthetic content" is
   always set to Yes (`status.containsSyntheticMedia = true`; `yt.py upload`/`update` do this automatically). If a
   video is ever found without it, set it with `yt.py --channel NAME ai-disclose`.
@@ -182,8 +183,11 @@ Owner request 2026-11-15: YouTube channel **The Overthinking Pad** (`yt.py --cha
 **Monday, Tuesday, Thursday and Saturday**: one long video (10–12 min, 16:9) and one Short (45–60 s, 9:16) cut from it.
 Follow `videos/overthinking-pad/RUNBOOK.md`, together with the scriptwriting rules, the animation direction rules and
 the VibeVoice voiceover skill above. Learning database: `social/learning/overthinking-pad.md` (its own, never mixed).
-- **Approval first:** send the finished videos, thumbnails, titles, descriptions and publish times; upload only after
-  the owner approves.
+- **No approval needed (owner, 2026-11-18; replaces "approval first" for this channel only):** when both videos pass
+  the quality checks, upload and schedule them in the same run (7 PM / 8 PM ET slots, AI disclosure YES), set the
+  thumbnails, log everything, then send the owner the files and links (SendUserFile) and a push notification as a
+  report. This overrides the approval step in the scheduled task's prompt and the general "confirm before uploading"
+  rule below. If a check fails or anything is blocked, don't upload: report and stop. Other channels are unchanged.
 - Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
 - **Look: notebook doodle** (lemo-opuscar Sketchnote style). **Thumbnails use the notebook look** of the universal
   thumbnail skill (the channel character or the study's key object as the dominant subject), not the map look.
