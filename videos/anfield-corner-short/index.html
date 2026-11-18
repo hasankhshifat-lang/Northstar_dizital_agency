@@ -327,7 +327,7 @@ ev(T.miss - .15, 'whip', { d: .35 }); ev(T.miss + .5, 'stamp'); ev(T.miss + 1.1,
 ev(T.sC - .15, 'whip', { d: .35 }); ev(T.g1 - .3, 'kick'); ev(T.g1, 'net'); ev(T.g1, 'slap'); ev(T.g1, 'roar', { d: 2.2, v: .7 });
 ev(T.sD - .15, 'whip', { d: .35 }); ev(T.g2 - .3, 'kick'); ev(T.g2, 'net'); ev(T.g2, 'slap'); ev(T.g2, 'roar', { d: 2, v: .8 });
 ev(T.g3 - .3, 'kick'); ev(T.g3, 'net'); ev(T.g3, 'slap'); ev(T.g3, 'roar', { d: 2.5, v: .9 }); ev(T.g3 + .2, 'slip'); ev(T.agg, 'slap');
-ev(T.sE - .15, 'whip', { d: .35 }); ev(T.place, 'slap', { v: .4 }); ev(T.place + .3, 'slip'); for (let i = 0; i < 6; i++) ev(T.walk + .1 + i * .4, 'step', { pan: .1 + i * .08 });
+ev(T.sE - .15, 'whip', { d: .35 }); ev(T.place + .12, 'slap', { v: .3 }); for (let i = 0; i < 6; i++) ev(T.walk + .1 + i * .4, 'step', { pan: .1 + i * .08 });
 ev(T.sF - .15, 'whip', { d: .35 }); ev(T.sF + .6, 'groan'); ev(T.sF + .6, 'slip'); ev(T.ring1, 'scribble', { d: .45 });
 ev(T.sG - .15, 'whip', { d: .35 }); ev(T.spin, 'whoosh'); ev(T.cross, 'kick', { v: .6 }); ev(T.fire - .25, 'freeze'); ev(T.fire, 'kick', { v: .7 });
 ev(T.g4, 'net'); ev(T.g4, 'roar', { d: 6, v: 1.4 }); ev(T.g4 + .05, 'bigslap');
@@ -558,7 +558,7 @@ function sceneI(t, texts) {   // the question: the corner again, the ball alone 
   unmarked(t, 360, 200, POSES.ready);
   puppet({ sh: 'utd', x: PW - 110, y: 140, s: .13, face: -1, pose: POSES.point, head: 'expr1', num: '66', ground: 230 });
   ball(PW - 70, 75, 11);
-  const s = slip(t, T.sI + .05, 40, PH - 250, PW - 80, 108, 'WOULD YOU HAVE SPOTTED IT?', 44, { font: F.shout }); if (s) texts.push({ id: 'q', ...off(s) });
+  const s = slip(t, T.sI + .05, 40, PH - 250, PW - 80, 108, 'WOULD YOU SPOT IT?', 54, { font: F.shout }); if (s) texts.push({ id: 'q', ...off(s) });
 }
 
 const SCENES = [[0, sceneA], [T.sB, sceneB], [T.miss, sceneB2], [T.sC, sceneC], [T.sD, sceneD], [T.sE, sceneE], [T.sF, sceneF], [T.sG, sceneG], [T.sH, sceneH], [T.sI, sceneI]];
