@@ -2,10 +2,10 @@
 
 One episode a day: a **long video (8–12 min, 16:9)** and a **Short (45–60 s, 9:16)** cut from the same story, for the
 YouTube channel **As Printed** (`yt.py --channel asprinted`). Owner decisions (2026-11-15):
-- **Approval first.** Make both videos, send the owner the files, titles, descriptions and publish times, and upload
-  only after they approve in that session. No upload without that reply.
+- **No approval needed to publish** (owner, 2026-11-18): when the videos pass every check, upload and schedule them
+  at the fixed slots yourself, then send the owner the files, links, titles, descriptions and publish times as a report. (Replaces the 2026-11-15 approval-first rule.)
 - **Publish:** long video **7:00 PM US Eastern**, Short **8:00 PM US Eastern** the same day (`TZ=America/New_York`;
-  daylight saving is handled by `date`). If approval comes after 7 PM ET, use the next day's slots.
+  daylight saving is handled by `date`). If the videos are ready after 7 PM ET, use the next free day's slots.
 - **Voice: VibeVoice, always** (`engine/voice/vv_tts.py`, the channel's narrator reference `narrator_ref.wav`).
 - **Look: the Archive Light Table template** (`engine/`), never the 3D map style.
 - **Thumbnails: archive look, made with the universal thumbnail skill** (owner, 2026-11-16:
@@ -113,14 +113,14 @@ After finishing, look at `out/sheet_long.jpg`, `out/sheet_short.jpg` and both th
 real mispronunciations (reword the line), reading-check failures, labels off screen, a camera that misses its line.
 Long video 8–12 minutes, Short 45–60 s; files under 100 MB (re-encode with a higher CRF if not).
 
-## 7. Approval message (then stop and wait)
+## 7. Report to the owner (after section 8; no waiting)
 
 Send both MP4s and both thumbnails (SendUserFile), then: the two titles, both descriptions (with sources, chapters
 from `out/long/chapters.txt`, and the Short's pointer to the long video), tags, and the publish times in ET and UTC.
 Titles: 5–9 words, curious, true; never repeat the thumbnail heading. Descriptions: 2–3 sentence summary,
 chapters, "Sources:" with each item's holder and catalogue number, "Narration: synthetic voice (VibeVoice)."
 
-## 8. After approval: upload, schedule, thumbnails, log
+## 8. Upload, schedule, thumbnails, log (no approval needed)
 
 ```sh
 Y=".claude/skills/youtube-channel-automation/yt.py --channel asprinted"

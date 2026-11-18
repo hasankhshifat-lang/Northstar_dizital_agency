@@ -9,8 +9,9 @@ Owner decisions (2026-11-15):
   and **one Short (45–60 s, 9:16) cut from it**.
 - **US prime time:** long video **7:00 PM US Eastern**, its Short **8:00 PM US Eastern** the same day
   (`TZ=America/New_York`, daylight saving handled by `date`).
-- **Approval first.** Make both videos, send the owner the files, thumbnails, titles, descriptions and publish times,
-  and upload only after they approve in that session. If approval comes after 7 PM ET, use the next free day's
+- **No approval needed to publish** (owner, 2026-11-18): when the videos pass every check, upload and schedule them
+  at the fixed slots yourself, then send the owner the files, links, titles, descriptions and publish times as a report.
+  If the videos are ready after 7 PM ET, use the next free day's
   7 PM / 8 PM slots (never two long videos in one evening).
 - **Look: Notebook doodle**, built on the lemo-opuscar **Sketchnote** style (`$LIB/styles/sketchnote/`): black fineliner
   on dot-grid notepad paper, grey marker for volume, yellow marker only for the one idea that matters, hand lettering
@@ -86,13 +87,13 @@ cut), reuse the long video's drawings, 1080×1920, bottom ~400 px clear. Descrip
 - Before sending: stills, contact sheets and the scene inspection (animation rules §7.3), loudness ≈ −14 LUFS, no
   black frames, captions match. Fix defects; never hide them with effects. Renderer needs ffmpeg 7+.
 
-## 6. Approval message
+## 6. Report to the owner (after uploading; no waiting)
 
 Send both MP4s and both thumbnails (SendUserFile), then: both titles, both descriptions (summary, chapters with
 timestamps, sources, "Narration voiced with AI.", the mental-health line where it applies), tags, publish times in ET
 and UTC, the topic score and thumbnail scores. Then stop and wait.
 
-## 7. After approval
+## 7. Upload and schedule (no approval needed)
 
 ```bash
 python3 .claude/skills/youtube-channel-automation/yt.py --channel overthinkingpad upload LONG.mp4 --title ... \
