@@ -1,6 +1,6 @@
 """Score + foley + voice mix for Short 10 (sweating glass / condensation) -> out/mix.wav (48 kHz stereo).
-Score: sweet and gentle (owner 2026-11-17), see the score section;
-a square-wave arpeggio and a drum machine, 120 BPM, D minor. Hard cuts: on Mama's tape gag and in the cold pause.
+Score: comic cartoon style (owner 2026-11-18), see the score section;
+oom-pah tuba, pizzicato, xylophone, kazoo lead, woodblocks, gag stingers, 132 BPM, C major. Hard cut in the cold pause.
 A Karplus-Strong dotara-like pluck on the end card for a Bangla touch. Foley is synthesized at the cue times."""
 import json, os, numpy as np, soundfile as sf
 from scipy.signal import butter, sosfilt
@@ -20,67 +20,78 @@ def env(n, a=.005, r=.1):
     e = np.ones(n); ia = max(1, int(a * SR)); ir = max(1, int(r * SR)); e[:ia] = np.linspace(0, 1, ia); e[-ir:] *= np.linspace(1, 0, min(ir, n)); return e
 mid = lambda m: 440 * 2 ** ((m - 69) / 12)
 
-# ---------------- score: sweet, gentle (owner 2026-11-17: "use a sweet music") ----------------
-# D major, 96 BPM: music-box/celesta arpeggios, soft pad, warm sine bass, a breathy flute-like lead,
-# a light shaker instead of a drum machine. Hard cuts stay where the comedy needs them (first smash, cold pause).
-BPM = 96; BEAT = 60 / BPM
+# ---------------- score: comic cartoon style (owner 2026-11-18: "use comic style musics") ----------------
+# C major / F major, 132 BPM, bouncy and staccato: oom-pah tuba bass, pizzicato chords, xylophone runs, a kazoo-like
+# reedy lead, woodblock/temple-block + snare-brush groove; gag stingers (slide whistle, wah-wah trombone, boing, ding).
+# Hard music cut into the cold pause stays (comedy grammar).
+BPM = 132; BEAT = 60 / BPM
 mus = np.zeros(N)
-PROG = [(62, [0, 4, 7]), (69, [0, 4, 7]), (71, [0, 3, 7]), (67, [0, 4, 7])]   # D  A  Bm  G
-def bell(m, d=1.2, g=.06):
-    n = int(d * SR); t = np.arange(n) / SR; f = mid(m)
-    x = np.sin(2 * np.pi * f * t) * np.exp(-t * 3.2) + .35 * np.sin(2 * np.pi * 2 * f * t) * np.exp(-t * 6) + .12 * np.sin(2 * np.pi * 3.01 * f * t) * np.exp(-t * 9)
-    x[:int(.004 * SR)] *= np.linspace(0, 1, int(.004 * SR)); return x * g
-def pad(m, ivs, d, g=.025):
-    n = int(d * SR); t = np.arange(n) / SR; x = np.zeros(n)
-    for iv in ivs:
-        for dt in (1, 1.003):
-            x += np.sin(2 * np.pi * mid(m + iv - 12) * dt * t)
-    e = np.minimum(1, t / .4) * np.minimum(1, (d - t) / .4); return lp(x * e, 1800) * g
-def sbass(m, d, g=.12):
-    n = int(d * SR); t = np.arange(n) / SR
-    return np.sin(2 * np.pi * mid(m - 24) * t) * np.minimum(1, t / .02) * np.exp(-t * 1.5) * g
-def shaker(): t = tt(.08); return hp(rng.standard_normal(len(t)), 6000) * np.exp(-t * 60) * .03
-def softkick(): t = tt(.2); return np.sin(2 * np.pi * (45 + 50 * np.exp(-t * 30)) * t) * np.exp(-t * 16) * .22
-def flute(notes, gain=.11):
+PROG = [(60, [0, 4, 7]), (65, [0, 4, 7]), (67, [0, 4, 7, 10]), (60, [0, 4, 7])]   # C  F  G7  C
+def tuba(m, d=.28, g=.20):
+    n = int(d * SR); t = np.arange(n) / SR; f = mid(m - 24)
+    ph = 2 * np.pi * f * t; x = np.sin(ph) + .5 * np.sin(2 * ph) + .25 * np.sin(3 * ph)
+    return lp(x * np.minimum(1, t / .015) * np.exp(-t * 5), 900) * g
+def pizz(m, g=.05):
+    t = tt(.25); f = mid(m); return (np.sin(2 * np.pi * f * t) + .4 * np.sin(4 * np.pi * f * t)) * np.exp(-t * 22) * g
+def xylo(m, g=.07):
+    t = tt(.35); f = mid(m); return (np.sin(2 * np.pi * f * t) + .3 * np.sin(2 * np.pi * 3.93 * f * t) * np.exp(-t * 30)) * np.exp(-t * 14) * g
+def wood(f=1100, g=.09): t = tt(.06); return np.sin(2 * np.pi * f * t) * np.exp(-t * 90) * g
+def brush(g=.035): t = tt(.1); return hp(rng.standard_normal(len(t)), 3000) * np.exp(-t * 35) * g
+def kick(g=.18): t = tt(.15); return np.sin(2 * np.pi * (50 + 70 * np.exp(-t * 35)) * t) * np.exp(-t * 20) * g
+def kazoo(notes, gain=.07):                                                 # reedy buzzing lead (square + nasal formant)
     out = np.zeros(N)
     for t0, m, d in notes:
         n = int(d * SR); t = np.arange(n) / SR
-        vib = 1 + .006 * np.sin(2 * np.pi * 5 * t) * np.clip((t - .2) / .3, 0, 1)
-        ph = 2 * np.pi * np.cumsum(mid(m) * vib) / SR
-        x = (np.sin(ph) + .18 * np.sin(2 * ph) + .05 * np.sin(3 * ph)) * env(n, .07, .18)
-        x += lp(rng.standard_normal(n), 3000) * .03 * env(n, .07, .18)        # breath
-        put(out, t0, x, gain)
-    d = int(.12 * SR); out[d:] += .2 * out[:-d]                                 # soft room echo
+        vib = 1 + .012 * np.sin(2 * np.pi * 6 * t)
+        ph = np.cumsum(mid(m) * vib) / SR
+        x = np.sign(np.sin(2 * np.pi * ph)) * .6 + np.sin(2 * np.pi * ph)
+        x = bp(x, 500, 2600) + .3 * bp(rng.standard_normal(n), 800, 1600) * .05
+        put(out, t0, x * env(n, .02, .06), gain)
     return out
-def section(a, b, root=62, lead=None, drums=True, g=1.0):
+def section(a, b, lead=None, drums=True, g=1.0, xyl=True):
     t = a; k = 0
     while t < b - 1e-6:
-        bar = int((t - a) / (4 * BEAT)) % 4; r, ivs = PROG[bar]
-        if k % 8 == 0:
-            put(mus, t, pad(r, ivs, min(4 * BEAT, b - t) + .3), g); put(mus, t, sbass(r, 2 * BEAT), g)
-        if k % 8 == 4: put(mus, t, sbass(r + ivs[2], 2 * BEAT), g)
-        arp = [0, 1, 2, 1, 3, 2, 1, 2]; step = arp[k % 8]
-        note = r + (ivs + [12])[step] if step < 3 else r + 12
-        put(mus, t, bell(note + 12, 1.0), g)
+        bar = int((t - a) / (4 * BEAT)) % 4; r, ivs = PROG[bar]; beat = k % 4
+        put(mus, t, tuba(r if beat in (0, 2) and k % 8 < 4 else r + 7 if beat in (0, 2) else r), g) if beat in (0, 2) else None
+        if beat in (1, 3):                                                  # the "pah": pizzicato chord on the off-beat
+            for iv in ivs[:3]: put(mus, t, pizz(r + iv), g)
+        if xyl and k % 8 == 7:                                              # little xylophone run into each bar
+            for j, iv in enumerate([0, 4, 7, 12]): put(mus, t - BEAT * .5 + j * BEAT / 8, xylo(r + 12 + iv), g * .8)
         if drums:
-            if k % 8 == 0: put(mus, t, softkick(), g)
-            if k % 2 == 1: put(mus, t, shaker(), g)
-        t += BEAT / 2; k += 1
-    if lead: put(mus, 0, flute([(a + x * BEAT, m, d * BEAT) for x, m, d in lead]), g)
+            if beat == 0: put(mus, t, kick(), g)
+            put(mus, t, wood(1100 if beat % 2 == 0 else 800), g); put(mus, t + BEAT / 2, brush(), g)
+        t += BEAT; k += 1
+    if lead: put(mus, 0, kazoo([(a + x * BEAT, m, d * BEAT) for x, m, d in lead]), g)
+# gag stingers
+def slide_whistle(t0, d=.45, up=True, g=.10):
+    t = tt(d); f = (700 + 1100 * (t / d)) if up else (1800 - 1100 * (t / d)); put(mus, t0, np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * t / d) * g)
+def wahwah(t0, g=.10):                                                      # sad trombone: 4 falling notes, last one wobbles
+    for j, (m, d) in enumerate([(58, .28), (57, .28), (56, .28), (55, .9)]):
+        n = int(d * SR); tt_ = np.arange(n) / SR; vib = 1 + (.03 * np.sin(2 * np.pi * 7 * tt_) if j == 3 else 0)
+        ph = np.cumsum(mid(m) * vib) / SR; x = lp(np.sign(np.sin(2 * np.pi * ph)) + np.sin(4 * np.pi * ph), 1400)
+        put(mus, t0 + j * .3, x * env(n, .03, .12), g)
+def boing(t0, g=.14): t = tt(.5); f = 180 + 120 * np.sin(2 * np.pi * 9 * t) * np.exp(-t * 5); put(mus, t0, np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 5) * g)
+def ding(t0, g=.12): t = tt(1.0); put(mus, t0, (np.sin(2 * np.pi * 2093 * t) + .4 * np.sin(2 * np.pi * 4186 * t)) * np.exp(-t * 4) * g)
 L = {l["id"]: l for l in TL["lines"]}
-# sweet D-major score (the owner approved it on Short 9); hard cut into the cold pause
-section(0.0, SH["enter"][0], lead=[(0, 74, 1), (1, 73, .5), (1.5, 71, .5), (2, 69, 1), (3, 71, 1), (4, 73, 2)], drums=True, g=.8)
-section(SH["enter"][0], SH["board"][0], lead=[(0, 69, 1.5), (1.5, 71, .5), (2, 73, 1), (3, 74, 2), (5, 73, 1), (6, 71, 1), (7, 69, 2), (9, 66, 1), (10, 67, 1), (11, 69, 3), (14, 71, 2), (16, 69, 2)], g=.7)
-section(SH["board"][0], SH["airTape"][0], lead=[(0, 66, 2), (2, 69, 2), (4, 71, 2), (6, 69, 2), (8, 67, 2), (10, 66, 2), (12, 69, 4)], drums=False, g=.6)
-section(SH["airTape"][0], T["airTape"] + .02, lead=[(0, 74, .5), (.5, 76, .5), (1, 78, 1)], drums=True, g=.8)   # cut on the tape smack -> cold pause
-section(SH["puzzle"][0], T["VEND"], lead=[(0, 71, 1), (1, 69, 1), (2, 67, 1), (3, 66, 1), (4, 64, 2), (6, 69, 2)], drums=False, g=.6)
+section(0.0, SH["enter"][0], lead=[(0, 72, .5), (.5, 74, .5), (1, 76, 1), (2, 79, .5), (2.5, 76, .5), (3, 72, 1), (6, 77, .5), (6.5, 76, .5), (7, 74, 1)], g=.85)
+section(SH["enter"][0], SH["board"][0], lead=[(0, 67, .5), (.5, 69, .5), (1, 72, 1), (4, 74, .5), (4.5, 72, .5), (5, 71, 1), (8, 72, .5), (8.5, 76, .5), (9, 79, 1.5), (16, 77, .5), (16.5, 76, .5), (17, 74, 1), (20, 72, 2)], g=.65)
+section(SH["board"][0], SH["airTape"][0], drums=False, g=.5)          # lighter under the explanation (no lead, no drums)
+section(SH["airTape"][0], T["airTape"] + .02, lead=[(0, 79, .5), (.5, 77, .5), (1, 76, .5), (1.5, 74, .5)], g=.85)   # cut on the smack -> cold pause
+section(SH["puzzle"][0], T["VEND"], lead=[(0, 72, .5), (.5, 76, .5), (1, 79, 1), (4, 77, .5), (4.5, 74, .5), (5, 72, 1.5)], drums=True, g=.55)
+slide_whistle(T["tape1"] - .4, .4, up=False)          # tape slapped on
+wahwah(L["m2"]["t1"] + .05)                           # "then the tape is leaking too!"
+ding(T["dyeHit"] + 1.3)                               # inside red, outside clear: the clue
+slide_whistle(SH["lens"][0], .5, up=True, g=.07)      # magnifier swoops in
+ding(L["t3"]["t1"] - .9, g=.10)                       # "ঘনীভবন"
+slide_whistle(T["airTape"] - .45, .4, up=True, g=.09) # Mama swings at the air
+boing(T["airTape"] + .02)                             # tape lands on his moustache
 def pluck(f0, d=1.2, g=.25):
     n = int(d * SR); L_ = int(SR / f0); buf = rng.uniform(-1, 1, L_); out = np.zeros(n)
     for i in range(n): out[i] = buf[i % L_]; buf[i % L_] = .5 * (buf[i % L_] + buf[(i + 1) % L_]) * .996
     return out * g
 e0 = T["VEND"]
 for k, m in enumerate([62, 66, 69, 74, 78]): put(mus, e0 + .1 + k * .18, pluck(mid(m)))   # dotara-like pluck, major
-section(e0, DUR, lead=[(0, 74, 1), (1, 78, 1), (2, 81, 1.8)], drums=True, g=.8)
+section(e0, DUR, lead=[(0, 72, .5), (.5, 76, .5), (1, 79, .5), (1.5, 84, 1.5)], drums=True, g=.8)
 
 # ---------------- foley ----------------
 fx = np.zeros(N)
