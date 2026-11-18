@@ -61,7 +61,7 @@ Layout: scoreboard on top (BRAZIL / URUGUAY goals, minute patch KO → 47′ →
 |---|---|---|---|---|---|
 | 1 | 0–5.3 | Hook: the stakes | Side-on | the generic cup on its table, Brazil #7–#10 relaxed beside it; "A DRAW = WORLD CHAMPIONS" | applause, march |
 | 2 | 5.3–9.95 | Place | Stadium plan, pin | MARACANÃ · 16 JULY 1950 | pin |
-| 3 | 9.95–13.1 | Scale | Full-panel crowd rising | "~200,000 PEOPLE (BY MOST ACCOUNTS)" | rise, roar |
+| 3 | 9.95–13.1 | Scale | Full-panel crowd rising | "~200,000 FANS" (the hedge "by most accounts" is in the narration and caption) | rise, roar |
 | 4 | 13.1–23.0 | No final; favourites | Printed group table | 7–1 / 6–1 stamps with arrows from BRAZIL; a newspaper slides in, "CHAMPIONS ALREADY?" | stamps, slide |
 | 5 | 23.0–27.35 | 47′ Friaça | Side-on finish | Brazil #7 scores, keeper dives; 1–0 | kick, net, roar |
 | 6 | 27.35–33.25 | 66′ Schiaffino | Same staging, reversed teams | Uruguay #10 scores; "STILL ENOUGH FOR BRAZIL" | kick, net, groan |

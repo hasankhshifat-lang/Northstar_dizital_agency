@@ -320,11 +320,11 @@ const EV = [{ t: 0.0, type: 'vo', id: 'narration' }];
 const ev = (t, type, o = {}) => EV.push({ t, type, ...o });
 ev(0.2, 'slip'); ev(1.2, 'clap', { d: 3.5, v: .6 });
 ev(T.sB - .15, 'whip', { d: .35 }); ev(T.pin - .05, 'pin');
-ev(T.crowd - .15, 'whip', { d: .35 }); ev(T.crowd, 'rise', { d: 2.5 }); ev(T.crowd + .3, 'roar', { d: 3.5, v: .5 }); ev(T.crowd + .6, 'slip');
+ev(T.crowd - .15, 'whip', { d: .35 }); ev(T.crowd, 'rise', { d: 2.5 }); ev(T.crowd + .3, 'roar', { d: 3.5, v: .5 }); ev(T.crowd + .15, 'slip');
 ev(T.sC - .15, 'whip', { d: .35 }); ev(T.sC + .4, 'slip'); ev(T.res, 'stamp'); ev(T.res + 1.6, 'stamp'); ev(T.papers, 'slide', { d: .45 }); ev(T.papers + .5, 'slip');
 ev(T.sD - .15, 'whip', { d: .35 }); ev(T.g1 - .3, 'kick'); ev(T.g1, 'net'); ev(T.g1, 'slap'); ev(T.g1, 'roar', { d: 3.5, v: 1.2 });
-ev(T.sE - .15, 'whip', { d: .35 }); ev(T.g2 - .3, 'kick'); ev(T.g2, 'net'); ev(T.g2, 'slap'); ev(T.g2 + .2, 'groan'); ev(T.still, 'slip');
-ev(T.sF - .15, 'whip', { d: .35 }); for (let i = 0; i < 6; i++) ev(T.sF + .5 + i * .35, 'step', { pan: .3 }); ev(T.shot - .25, 'freeze'); ev(T.shot, 'kick', { v: .7 });
+ev(T.sE - .15, 'whip', { d: .35 }); ev(T.g2 - .3, 'kick'); ev(T.g2, 'net'); ev(T.g2, 'slap'); ev(T.g2 + .2, 'groan'); ev(T.g2 + 1.6, 'slip');
+ev(T.sF - .15, 'whip', { d: .35 }); for (let i = 0; i < 6; i++) ev(T.sF + .5 + i * .35, 'step', { pan: .3 }); ev(T.sF + 2.0, 'slip'); ev(T.shot - .25, 'freeze'); ev(T.shot, 'kick', { v: .7 });
 ev(T.g3, 'net'); ev(T.g3 + .05, 'bigslap');
 ev(T.sG - .1, 'silence', { d: T.sH - T.sG + .2 }); ev(T.sG + .5, 'slip', { v: .5 });
 ev(T.sH - .15, 'whip', { d: .35 }); ev(T.sH, 'band'); for (let i = 0; i < 6; i++) ev(T.sH + .3 + i * .42, 'hop', { i }); ev(T.blame, 'slip');
@@ -445,7 +445,7 @@ function sceneB(t, texts) {   // the place
 function sceneB2(t, texts) {  // the crowd: the whole panel is people, rising
   const lift = clamp((t - T.crowd) / 1.2, 0, 1);
   crowd(0, 0, PW, PH, t, lift, 21, FANS);
-  const s = slip(t, T.crowd + .6, 40, 340, PW - 80, 150, '~200,000 PEOPLE\n(BY MOST ACCOUNTS)', 48, { font: F.num }); if (s) texts.push({ id: 'crowd', ...off(s) });
+  const s = slip(t, T.crowd + .15, 140, 360, PW - 280, 130, '~200,000 FANS', 64, { font: F.num }); if (s) texts.push({ id: 'crowd', ...off(s) });
 }
 function sceneC(t, texts) {   // no final: a group of four; the results; the papers
   X.fillStyle = '#E8DCC0'; X.fillRect(0, 0, PW, PH);
@@ -495,7 +495,7 @@ function sceneE(t, texts) {   // 66': Schiaffino, 1-1; still enough for Brazil
   goalScene(t, texts, T.g2, 'uru', '10', 'expr3', 0);
   tag('66′', texts, T.sE + .1, t);
   const s = slip(t, T.g2 + .1, 40, 140, 360, 96, '1–1', 56, { font: F.num }); if (s) texts.push({ id: 'g2', ...off(s) });
-  const s2 = slip(t, T.still, 40, 250, 600, 96, 'STILL ENOUGH FOR BRAZIL', 40, { font: F.shout }); if (s2) texts.push({ id: 'still', ...off(s2) });
+  const s2 = slip(t, T.g2 + 1.6, 40, 250, 600, 96, 'STILL ENOUGH FOR BRAZIL', 40, { font: F.shout }); if (s2) texts.push({ id: 'still', ...off(s2) });
 }
 function sceneF(t, texts) {   // 79': #7 runs down the right, shoots low inside the near post
   const frozen = t > T.shot - .25 && t < T.shot;
@@ -522,7 +522,7 @@ function sceneF(t, texts) {   // 79': #7 runs down the right, shoots low inside 
   }
   tag('79′', texts, T.sF + .1, t);
   if (t > T.g3) { const s = slip(t, T.g3 + .1, 40, 420, 470, 104, '2–1 URUGUAY', 50, { font: F.num }); if (s) texts.push({ id: 'g3', ...off(s) }); }
-  else { const s = slip(t, T.shot - .1, 40, 420, 400, 96, 'NEAR POST', 48, { font: F.shout }); if (s) texts.push({ id: 'near', ...off(s) }); }
+  else { const s = slip(t, T.sF + 2.0, 40, 420, 400, 96, 'NEAR POST', 48, { font: F.shout }); if (s) texts.push({ id: 'near', ...off(s) }); }
 }
 function sceneG(t, texts) {   // the silence: the whole crowd, frozen, the colour drains
   const g = clamp((t - T.sG) / 1.4, 0, 1);
