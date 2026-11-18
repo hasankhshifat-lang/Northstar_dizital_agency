@@ -22,7 +22,7 @@ WD weird but true · FT feats & escapes
 | 7 | MY | 3 Men Escaped Alcatraz and Were Never Found | The guards found these heads in the beds. They were fake. | done 2026-11-15 uBHrZaAZw4A (slot 2026-11-16) |
 | 8 | WR | Japan Bombed Oregon With Balloons | 6 people died on a picnic in Oregon in 1945. | done 2026-11-16 5BAbL0eYfRQ (slot 2026-11-17 17:00 ET; title: Japan Bombed Oregon With Paper Balloons) |
 | 9 | TI | She Survived the Titanic… and 2 More Shipwrecks | Violet Jessop was on 3 ships that sank or crashed. | done 2026-11-17 VgIgGbrvjKc (slot 2026-11-18 17:00 ET; title: She Survived the Titanic and Both Its Sister Ships; lifeboat number left out: sources say 16 or 6) |
-| 10 | MAP | Why Minnesota Has a Piece Stuck in Canada | You have to drive through Canada to reach this part of the US. | |
+| 10 | MAP | Why Minnesota Has a Piece Stuck in Canada | You have to drive through Canada to reach this part of the US. | done 2026-11-18 lycDlMhOJ_M (slot 2026-11-19 17:00 ET; title: Why Part of Minnesota Is Stuck in Canada; population left out: census 149 vs CBS ~60) |
 | 11 | FT | He Stole a Warship and Sailed to Freedom | In 1862 an enslaved pilot stole a Confederate warship. | |
 | 12 | WR | America Strapped Bombs to Bats | The US tried to burn Japan with bats. They burned their own base. | |
 | 13 | HOW | Chicago Lifted the Whole City With Screws | In the 1850s Chicago jacked up entire buildings, with people inside. | |

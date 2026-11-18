@@ -1,0 +1,11 @@
+{"width":1080,"height":1920,"style":"map",
+ "background":{"src":"angle_map.png","grade":"warm","blur":0,"side":"top","darken":0},
+ "layers":[
+  {"type":"image","src":"mitchell.jpg","x":40,"y":990,"w":680,"rotate":-4,"grade":"warm","paper":true,"crop":[0.163,0.05,0.237,0.25],"aspect":1.342},
+  {"type":"ring","x":90,"y":1196,"rx":56,"ry":46,"rotate":-4,"width":9},
+  {"type":"arrow","from":[140,1140],"to":[575,905],"bend":-0.35,"width":14}
+ ],
+ "headline":{"lines":["BLAME","THIS MAP"],"accent":["MAP"],"align":"center","x":0,"y":100,"size":190},
+ "tags":[{"text":"1755 MAP · 1783 TREATY","x":250,"y":500,"variant":"date","size":40},
+         {"text":"NORTHWEST ANGLE, MINN.","x":560,"y":650,"variant":"label","size":34}],
+ "guides":false}

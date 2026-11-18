@@ -223,6 +223,7 @@ slots there if the data supports it, and add a row to `timing-log.md` either way
 - Never post something now (public) in place of scheduling it.
 
 ## Known limits (learned 2026-10-30) — plan around these
+- **Detailed maps make renders crawl (2026-11-18, Northwest Angle).** Drawing world-atlas `countries-10m` for the whole world on every frame took the full render past 30 min (killed). Use `countries-50m` for wide views and a second projection with `clipExtent` around the close-up region for 10m layers (`pathD` in `stories/northwestAngle.tsx`); the render then took ~11 min. Natural Earth 10m lakes/rivers can be fetched from jsdelivr (`gh/nvkelso/natural-earth-vector@master/geojson/...`) and trimmed to the region (`src/data/`).
 
 - **Clawlink file relay: 25 MB per file.** Long videos must be encoded to fit: 720p, two-pass
   ~310 kbps video + 48 kbps mono AAC, `-preset veryslow -tune animation` gives ~23 MB for 8:40
