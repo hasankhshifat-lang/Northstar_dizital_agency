@@ -72,8 +72,8 @@ VibeVoice, thumbnails, yt.py) and never replaces the rules in this file; where t
   what fails. Never optimise CTR alone.
 - Impressions, CTR, returning viewers and viewer online times are not in the public API: get them from vidIQ
   extended reports or a Studio export, or write n/a. Never invent analytics.
-- Publishing videos needs no approval (owner, 2026-11-18). Money and channel settings stay with the owner (approval
-  first); fixed publish times change only on the owner's say-so.
+- Publishing, money and channel settings stay with the owner (approval first; As Printed and The Overthinking Pad
+  publish videos without approval since 2026-11-18); fixed publish times change only on the owner's say-so.
 - **Remotion** is the fallback when lemo-opuscar/the channel engine can't make a scene, and the **default thumbnail
   renderer** (universal thumbnail skill, `.claude/skills/youtube-thumbnail-creator/remotion/`; owner, 2026-11-16;
   never an arbitrary video frame). Check the rendered file before use.
@@ -88,8 +88,8 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
   (`YT_CLIENT_ID` / `YT_CLIENT_SECRET` / `YT_REFRESH_TOKEN`, project `168994544641`).
 - **Do not use Clawlink or Metricool for YouTube anymore**, in chat or in scheduled tasks,
   not even as a fallback. If the API fails or the quota is used up, say so and stop.
-- **Video publishing needs no approval** (owner, 2026-11-18, all channels): upload and schedule finished videos at the
-  channel's fixed times, then report the title, description, publish time, file and link to the owner.
+- Confirm the title, description, publish time, and video file with the user before uploading. (Exceptions: As Printed
+  and The Overthinking Pad publish without approval since 2026-11-18, see their sections.)
 - **AI disclosure = YES on every upload, every channel** (owner, 2026-11-17): "Altered or synthetic content" is
   always set to Yes (`status.containsSyntheticMedia = true`; `yt.py upload`/`update` do this automatically). If a
   video is ever found without it, set it with `yt.py --channel NAME ai-disclose`.
@@ -135,7 +135,7 @@ universal, Remotion-powered skill; it replaces the old Figma-only, map-only rule
 - **Output:** save to `social/thumbnails/` (or the episode folder) with its props JSON, never overwrite an existing
   thumbnail without permission. YouTube: `yt.py thumbnail VIDEO_ID FILE`, log in `social/youtube-schedule-log.md`.
   Facebook: facebook-page-automation skill ("Thumbnail"), log in `social/facebook-page-log.md`. Add the row to
-  `social/thumbnails/README.md`, then commit and push. The thumbnail goes up with the video and is included in the report.
+  `social/thumbnails/README.md`, then commit and push. Approval-first channels send the thumbnail with the videos; no-approval channels include it in the report.
 
 ## YouTube analysis: use vidIQ
 
@@ -170,8 +170,11 @@ Owner request 2026-11-15: one long video (8–12 min) and one Short (45–60 s) 
 **As Printed** (`yt.py --channel asprinted`), in the Archive Light Table template (`videos/as-printed/engine/`).
 Follow `videos/as-printed/RUNBOOK.md`, together with the scriptwriting rules, the animation direction rules and
 the VibeVoice voiceover skill above (they apply to As Printed too).
-- **No approval needed to publish** (owner, 2026-11-18): when the videos pass every check, upload and schedule them
-  at the fixed slots yourself, then send the owner the files, links, titles, descriptions and publish times as a report.
+- **No approval needed to publish (owner, 2026-11-18; replaces "approval first" for this channel):** when both videos
+  pass every check, upload and schedule them at the fixed slots in the same run (AI disclosure YES), set the thumbnails,
+  log everything, then send the owner the files, links, titles and publish times plus a push notification as a report.
+  This overrides the approval step in the scheduled task's prompt. If a check fails or anything is blocked, don't
+  upload: report and stop.
 - Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
 - **Thumbnails for As Printed use the archive look** of the universal thumbnail skill (real front page + the person,
   ship, place or object it is about), not the map look, which is for Which Life Next.
@@ -183,8 +186,11 @@ Owner request 2026-11-15: YouTube channel **The Overthinking Pad** (`yt.py --cha
 **Monday, Tuesday, Thursday and Saturday**: one long video (10–12 min, 16:9) and one Short (45–60 s, 9:16) cut from it.
 Follow `videos/overthinking-pad/RUNBOOK.md`, together with the scriptwriting rules, the animation direction rules and
 the VibeVoice voiceover skill above. Learning database: `social/learning/overthinking-pad.md` (its own, never mixed).
-- **No approval needed to publish** (owner, 2026-11-18): when the videos pass every check, upload and schedule them
-  at the fixed slots yourself, then send the owner the files, links, titles, descriptions and publish times as a report.
+- **No approval needed (owner, 2026-11-18; replaces "approval first" for this channel only):** when both videos pass
+  the quality checks, upload and schedule them in the same run (7 PM / 8 PM ET slots, AI disclosure YES), set the
+  thumbnails, log everything, then send the owner the files and links (SendUserFile) and a push notification as a
+  report. This overrides the approval step in the scheduled task's prompt and the general "confirm before uploading"
+  rule below. If a check fails or anything is blocked, don't upload: report and stop. Other channels are unchanged.
 - Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
 - **Look: notebook doodle** (lemo-opuscar Sketchnote style). **Thumbnails use the notebook look** of the universal
   thumbnail skill (the channel character or the study's key object as the dominant subject), not the map look.
@@ -199,5 +205,5 @@ the lemo-opuscar **Sci-Fi Sitcom Toon** template (`scifi-toon`), following
 promos and any other video on the page; where the README says "Shorts", read it as every video.
 - Keep the cast (মন্টু মামা, বিথী, বল্টু, scientist cameos) redrawn in the style, and a new Bangladeshi setting every video.
 - It replaces the kit's old puppet engine and the Blender 3D plates for this channel. Scientist portal: cyan + gold.
-- Unchanged: ElevenLabs voices (Bangla), scriptwriting and animation-direction rules, fact checks, storyboard, the 20:00 Dhaka slot
-  (no approval needed before upload since 2026-11-18) and the Facebook Page steps. Thumbnails follow the universal thumbnail skill.
+- Unchanged: ElevenLabs voices (Bangla), scriptwriting and animation-direction rules, fact checks, storyboard, approval
+  before upload, the 20:00 Dhaka slot and the Facebook Page steps. Thumbnails follow the universal thumbnail skill.
