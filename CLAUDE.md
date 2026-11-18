@@ -190,7 +190,7 @@ the VibeVoice voiceover skill above. Learning database: `social/learning/overthi
   the quality checks, upload and schedule them in the same run (7 PM / 8 PM ET slots, AI disclosure YES), set the
   thumbnails, log everything, then send the owner the files and links (SendUserFile) and a push notification as a
   report. This overrides the approval step in the scheduled task's prompt and the general "confirm before uploading"
-  rule below. If a check fails or anything is blocked, don't upload: report and stop. Other channels are unchanged.
+  rule below. If a check fails or anything is blocked, don't upload: report and stop. As Printed has the same rule; other channels are unchanged.
 - Publish the long video at **7:00 PM US Eastern** and the Short at **8:00 PM US Eastern** (same day).
 - **Look: notebook doodle** (lemo-opuscar Sketchnote style). **Thumbnails use the notebook look** of the universal
   thumbnail skill (the channel character or the study's key object as the dominant subject), not the map look.
