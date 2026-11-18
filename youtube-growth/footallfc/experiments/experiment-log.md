@@ -19,4 +19,5 @@ Mirror each card as a row in `social/learning/<channel>.md` → Experiments.
 - **Metric + checkpoint:** views, engagedViews and US share at 72 h and 7 d (`growth.py snapshot`).
 - **Sample:** ≥5 Shorts per slot (about 5 days).
 - **Status:** planned. No time change needed; topic assignment per the calendar.
+- 2026-11-18 (day 4): 19:00 ET Tw7hVywh-88 (Maracanazo, 85), 21:00 ET hVYufhSqQwE (Anfield corner, 88): higher score at 21:00.
 - **Result:** — **Decision:** —
