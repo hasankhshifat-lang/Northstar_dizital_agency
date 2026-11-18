@@ -1,0 +1,92 @@
+{
+ "width": 1280,
+ "height": 720,
+ "style": "archive",
+ "background": {
+  "color": "#dfe2e5",
+  "side": "none"
+ },
+ "layers": [
+  {
+   "type": "image",
+   "src": "tribune_head.jpg",
+   "x": 36,
+   "y": 296,
+   "w": 660,
+   "rotate": -2,
+   "grade": "none",
+   "aspect": 2.97
+  },
+  {
+   "type": "image",
+   "src": "tribune_poison.jpg",
+   "x": 24,
+   "y": 556,
+   "w": 720,
+   "rotate": -1,
+   "grade": "none",
+   "aspect": 4.62
+  },
+  {
+   "type": "ring",
+   "x": 364,
+   "y": 481,
+   "rx": 254,
+   "ry": 32,
+   "rotate": -2,
+   "width": 8
+  },
+  {
+   "type": "cutout",
+   "src": "newsboy_cut.png",
+   "x": 730,
+   "y": -60,
+   "h": 840,
+   "grade": "mono",
+   "glow": "rgba(255,255,255,0.85)"
+  },
+  {
+   "type": "arrow",
+   "from": [
+    800,
+    330
+   ],
+   "to": [
+    640,
+    452
+   ],
+   "bend": -0.25,
+   "width": 11
+  }
+ ],
+ "headline": {
+  "lines": [
+   "Poison in",
+   "the tail?"
+  ],
+  "accent": [
+   "tail?"
+  ],
+  "x": 36,
+  "y": 30,
+  "size": 100,
+  "panel": true
+ },
+ "tags": [
+  {
+   "text": "NEW-YORK TRIBUNE \u00b7 8 FEB 1910",
+   "x": 40,
+   "y": 272,
+   "variant": "date",
+   "size": 24
+  },
+  {
+   "text": "MAY 18, 1910",
+   "x": 572,
+   "y": 118,
+   "variant": "stamp",
+   "size": 36,
+   "rotate": -6
+  }
+ ]
+}

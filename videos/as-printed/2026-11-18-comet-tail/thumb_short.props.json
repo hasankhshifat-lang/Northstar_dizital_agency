@@ -1,0 +1,69 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "archive",
+ "background": {
+  "color": "#dfe2e5",
+  "side": "none"
+ },
+ "layers": [
+  {
+   "type": "cutout",
+   "src": "newsboy_cut.png",
+   "x": 330,
+   "y": 470,
+   "h": 1020,
+   "grade": "mono",
+   "glow": "rgba(255,255,255,0.85)"
+  },
+  {
+   "type": "image",
+   "src": "tribune_head.jpg",
+   "x": 36,
+   "y": 1110,
+   "w": 700,
+   "rotate": -2,
+   "grade": "none",
+   "aspect": 2.97
+  },
+  {
+   "type": "ring",
+   "x": 377,
+   "y": 1303,
+   "rx": 268,
+   "ry": 34,
+   "rotate": -2,
+   "width": 10
+  }
+ ],
+ "headline": {
+  "lines": [
+   "Poison in",
+   "the tail?"
+  ],
+  "accent": [
+   "tail?"
+  ],
+  "x": 60,
+  "y": 110,
+  "size": 150,
+  "panel": true
+ },
+ "tags": [
+  {
+   "text": "NEW-YORK TRIBUNE \u00b7 8 FEB 1910",
+   "x": 60,
+   "y": 490,
+   "variant": "date",
+   "size": 34
+  },
+  {
+   "text": "MAY 18, 1910",
+   "x": 60,
+   "y": 820,
+   "variant": "stamp",
+   "size": 56,
+   "rotate": -6
+  }
+ ]
+}

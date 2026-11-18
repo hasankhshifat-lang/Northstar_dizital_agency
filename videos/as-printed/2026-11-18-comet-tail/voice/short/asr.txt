@@ -1,0 +1,7 @@
+DIFF short_000 | Cyanogen is perhaps the deadliest poison known. In nineteen ten, it was found in the tail of Halley's comet. And Earth would fly through it. → Cyanogen is perhaps the deadliest poison known. In 1910 it was found in the tail of Heli's comet, and Earth would fly through it. 
+DIFF short_001 | Papers spread the claim that the gas may snuff out life upon the earth. → The paper spread the claim that the gas may snuff out life upon the Earth. 
+OK   short_002 | Papers reported comet pills for sale. One every hour, until the comet left. → Papers reported comet pills for sale, one every hour, until the comet left. 
+DIFF short_003 | May eighteenth came. Not one instrument showed the slightest change. → May 18th came. Not one instrument showed the slightest change. 
+OK   short_004 | A day later, the director at Mount Wilson said: I do not know whether the earth passed through the tail, or not. → A day later, the director at Mount Wilson said, I do not know whether the Earth passed through the tail or not. 
+DIFF short_005 | The astronomer blamed for the scare had already written: so rarified as to be inoffensive. The deadliest poison known, too thin to matter. → The astronomer blamed for the scare had already written so rarefied as to be inoffensive, the deadliest poison known, too thin to matter. 
+mismatches: 4 (lang=en, model=small.en)
