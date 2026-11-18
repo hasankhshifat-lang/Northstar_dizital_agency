@@ -4,3 +4,4 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2026-11-17 22:00 | 17:00 | 17:00 ET test | Short 56.6 s, voiced map | Japan's balloon bombs / Bly, Oregon (WR) · 5BAbL0eYfRQ | n/a | n/a | n/a | n/a | n/a | EXP-whichlifenext-001 (test) |
 | 2026-11-18 22:00 | 17:00 | 17:00 ET test | Short 51.5 s, voiced map | Violet Jessop: Olympic, Titanic, Britannic (TI) · VgIgGbrvjKc | n/a | n/a | n/a | n/a | n/a | EXP-whichlifenext-001 (test) |
+| 2026-11-19 22:00 | 17:00 | 17:00 ET test | Short 53.3 s, voiced map | Northwest Angle: why part of Minnesota is stuck in Canada (MAP) · lycDlMhOJ_M | n/a | n/a | n/a | n/a | n/a | EXP-whichlifenext-001 (test) |
