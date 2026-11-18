@@ -34,6 +34,8 @@ on the 3D plates by the puppet engine.
 | Short 7 শরবত-স্ট্র | **bazaar sharbat stall**: striped awning, teal counter, sharbat jars, lemons, ice block, bunting, shop fronts across the street (`sharbat_stall.py`) | 3D |
 | Short 8 আয়না-অ্যাম্বুলেন্স | **footpath barber stall under a rain tree**: mirror on the trunk, red barber chair, towels, tin wall with posters; reverse plate of the street behind the camera (traffic jam: rickshaws, CNG, bus, car) shown in the mirror (`barber_stall.py`) | 3D |
 | Sci-Fi Toon demo (not a Short) | Dhaka rooftop, afternoon (parapet, water tank, clothesline, chilli pots) | 2D toon |
+| Short 9 টেবিলক্লথ | wedding pandal (striped shamiana, marigold strings, fairy lights, red plastic chairs, flower stage) | 2D toon |
+| Short 10 ঘামা গ্লাস | railway platform tea stall, hot afternoon (green coach, tin roof, green pillars, striped awning, kettle on a clay stove) | 2D toon |
 
 Ideas for the next ones (each used once): school science lab, village kitchen (মাটির চুলা), riverside boat
 (নৌকা), rice field at sunset, railway platform, rainy-day veranda, night rooftop with stars.

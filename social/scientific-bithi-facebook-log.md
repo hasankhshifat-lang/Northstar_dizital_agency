@@ -47,3 +47,7 @@ Page ID 1497857623404891. Graph API v21.0. The page token comes from GET /149785
 | 2026-11-17 | Set cover (Remotion engine, artwork Figma gpt-image-2.5-flare; owner approved) | এক টানে কাপড় বের, প্লেট নড়ে না কেন? 🍽️ (Short 9) | 988777290484778 | – | {"success":true}; is_preferred=true |
 | 2026-11-17 | Set profile picture (owner approved) | scientific-bithi-profile-1080-toon.png | – | – | FAILED: (#283) Requires pages_manage_metadata permission to manage the object |
 | 2026-11-17 | Set cover photo (owner approved) | scientific-bithi-cover-1640x624-toon.png | photo 122099950821552370 (unpublished upload) | – | upload OK; setting it as cover FAILED: (#283) Requires pages_manage_metadata permission; old cover unchanged |
+| 2026-11-18 | Comment check (last 21 days: 7 Reels + 9 posts; Short 9 scheduled) | – | – | – | 0 comments, 0 replies, 0 skips |
+| 2026-11-18 | Insights check | – | – | – | Short 8 83 plays at ~10 h, avg 2.3 s (33% at 3 s, 22% at 4 s, 11% from 5 s); Short 7 189 plays avg 4.2 s; Short 6 219 plays avg 5.2 s; 0 comments; followers 1 |
+| 2026-11-18 | Status check | অ্যাম্বুলেন্সের বানান উল্টো কেন? 🚑 (Short 8) | 956590677305122 | published 2026-11-17 14:00 | Live on time |
+| 2026-11-18 | Short 10 made, sent for approval (not uploaded) | ঠান্ডা গ্লাসের গায়ে পানি কোথা থেকে? 💧 (Short 10) | – | planned 2026-11-19 14:00 (20:00 Dhaka) | awaiting owner approval; Sci-Fi Sitcom Toon, railway platform tea stall; no scientist; cover: Figma gpt-image-2.5-flare artwork (1 generation) + Remotion engine (87/100) |

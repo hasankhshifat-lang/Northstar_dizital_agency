@@ -1,0 +1,125 @@
+"""Score + foley + voice mix for Short 10 (sweating glass / condensation) -> out/mix.wav (48 kHz stereo).
+Score: sweet and gentle (owner 2026-11-17), see the score section;
+a square-wave arpeggio and a drum machine, 120 BPM, D minor. Hard cuts: on Mama's tape gag and in the cold pause.
+A Karplus-Strong dotara-like pluck on the end card for a Bangla touch. Foley is synthesized at the cue times."""
+import json, os, numpy as np, soundfile as sf
+from scipy.signal import butter, sosfilt
+HERE = os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE)
+SR = 48000; T = json.load(open("cues.json")); TL = json.load(open("timeline.json"))
+DUR = T["DUR"]; N = int(DUR * SR); rng = np.random.default_rng(9)
+SH = {n: (a, b) for a, b, n in T["shots"]}
+def tt(d): return np.arange(int(d * SR)) / SR
+def put(buf, t0, x, g=1.0):
+    i = int(t0 * SR);
+    if i >= len(buf): return
+    e = min(len(buf), i + len(x)); buf[i:e] += x[:e - i] * g
+def lp(x, f): return sosfilt(butter(2, f, 'low', fs=SR, output='sos'), x)
+def hp(x, f): return sosfilt(butter(2, f, 'high', fs=SR, output='sos'), x)
+def bp(x, a, b): return sosfilt(butter(2, [a, b], 'band', fs=SR, output='sos'), x)
+def env(n, a=.005, r=.1):
+    e = np.ones(n); ia = max(1, int(a * SR)); ir = max(1, int(r * SR)); e[:ia] = np.linspace(0, 1, ia); e[-ir:] *= np.linspace(1, 0, min(ir, n)); return e
+mid = lambda m: 440 * 2 ** ((m - 69) / 12)
+
+# ---------------- score: sweet, gentle (owner 2026-11-17: "use a sweet music") ----------------
+# D major, 96 BPM: music-box/celesta arpeggios, soft pad, warm sine bass, a breathy flute-like lead,
+# a light shaker instead of a drum machine. Hard cuts stay where the comedy needs them (first smash, cold pause).
+BPM = 96; BEAT = 60 / BPM
+mus = np.zeros(N)
+PROG = [(62, [0, 4, 7]), (69, [0, 4, 7]), (71, [0, 3, 7]), (67, [0, 4, 7])]   # D  A  Bm  G
+def bell(m, d=1.2, g=.06):
+    n = int(d * SR); t = np.arange(n) / SR; f = mid(m)
+    x = np.sin(2 * np.pi * f * t) * np.exp(-t * 3.2) + .35 * np.sin(2 * np.pi * 2 * f * t) * np.exp(-t * 6) + .12 * np.sin(2 * np.pi * 3.01 * f * t) * np.exp(-t * 9)
+    x[:int(.004 * SR)] *= np.linspace(0, 1, int(.004 * SR)); return x * g
+def pad(m, ivs, d, g=.025):
+    n = int(d * SR); t = np.arange(n) / SR; x = np.zeros(n)
+    for iv in ivs:
+        for dt in (1, 1.003):
+            x += np.sin(2 * np.pi * mid(m + iv - 12) * dt * t)
+    e = np.minimum(1, t / .4) * np.minimum(1, (d - t) / .4); return lp(x * e, 1800) * g
+def sbass(m, d, g=.12):
+    n = int(d * SR); t = np.arange(n) / SR
+    return np.sin(2 * np.pi * mid(m - 24) * t) * np.minimum(1, t / .02) * np.exp(-t * 1.5) * g
+def shaker(): t = tt(.08); return hp(rng.standard_normal(len(t)), 6000) * np.exp(-t * 60) * .03
+def softkick(): t = tt(.2); return np.sin(2 * np.pi * (45 + 50 * np.exp(-t * 30)) * t) * np.exp(-t * 16) * .22
+def flute(notes, gain=.11):
+    out = np.zeros(N)
+    for t0, m, d in notes:
+        n = int(d * SR); t = np.arange(n) / SR
+        vib = 1 + .006 * np.sin(2 * np.pi * 5 * t) * np.clip((t - .2) / .3, 0, 1)
+        ph = 2 * np.pi * np.cumsum(mid(m) * vib) / SR
+        x = (np.sin(ph) + .18 * np.sin(2 * ph) + .05 * np.sin(3 * ph)) * env(n, .07, .18)
+        x += lp(rng.standard_normal(n), 3000) * .03 * env(n, .07, .18)        # breath
+        put(out, t0, x, gain)
+    d = int(.12 * SR); out[d:] += .2 * out[:-d]                                 # soft room echo
+    return out
+def section(a, b, root=62, lead=None, drums=True, g=1.0):
+    t = a; k = 0
+    while t < b - 1e-6:
+        bar = int((t - a) / (4 * BEAT)) % 4; r, ivs = PROG[bar]
+        if k % 8 == 0:
+            put(mus, t, pad(r, ivs, min(4 * BEAT, b - t) + .3), g); put(mus, t, sbass(r, 2 * BEAT), g)
+        if k % 8 == 4: put(mus, t, sbass(r + ivs[2], 2 * BEAT), g)
+        arp = [0, 1, 2, 1, 3, 2, 1, 2]; step = arp[k % 8]
+        note = r + (ivs + [12])[step] if step < 3 else r + 12
+        put(mus, t, bell(note + 12, 1.0), g)
+        if drums:
+            if k % 8 == 0: put(mus, t, softkick(), g)
+            if k % 2 == 1: put(mus, t, shaker(), g)
+        t += BEAT / 2; k += 1
+    if lead: put(mus, 0, flute([(a + x * BEAT, m, d * BEAT) for x, m, d in lead]), g)
+L = {l["id"]: l for l in TL["lines"]}
+# sweet D-major score (the owner approved it on Short 9); hard cut into the cold pause
+section(0.0, SH["enter"][0], lead=[(0, 74, 1), (1, 73, .5), (1.5, 71, .5), (2, 69, 1), (3, 71, 1), (4, 73, 2)], drums=True, g=.8)
+section(SH["enter"][0], SH["board"][0], lead=[(0, 69, 1.5), (1.5, 71, .5), (2, 73, 1), (3, 74, 2), (5, 73, 1), (6, 71, 1), (7, 69, 2), (9, 66, 1), (10, 67, 1), (11, 69, 3), (14, 71, 2), (16, 69, 2)], g=.7)
+section(SH["board"][0], SH["airTape"][0], lead=[(0, 66, 2), (2, 69, 2), (4, 71, 2), (6, 69, 2), (8, 67, 2), (10, 66, 2), (12, 69, 4)], drums=False, g=.6)
+section(SH["airTape"][0], T["airTape"] + .02, lead=[(0, 74, .5), (.5, 76, .5), (1, 78, 1)], drums=True, g=.8)   # cut on the tape smack -> cold pause
+section(SH["puzzle"][0], T["VEND"], lead=[(0, 71, 1), (1, 69, 1), (2, 67, 1), (3, 66, 1), (4, 64, 2), (6, 69, 2)], drums=False, g=.6)
+def pluck(f0, d=1.2, g=.25):
+    n = int(d * SR); L_ = int(SR / f0); buf = rng.uniform(-1, 1, L_); out = np.zeros(n)
+    for i in range(n): out[i] = buf[i % L_]; buf[i % L_] = .5 * (buf[i % L_] + buf[(i + 1) % L_]) * .996
+    return out * g
+e0 = T["VEND"]
+for k, m in enumerate([62, 66, 69, 74, 78]): put(mus, e0 + .1 + k * .18, pluck(mid(m)))   # dotara-like pluck, major
+section(e0, DUR, lead=[(0, 74, 1), (1, 78, 1), (2, 81, 1.8)], drums=True, g=.8)
+
+# ---------------- foley ----------------
+fx = np.zeros(N)
+def whoosh(d=.4, g=.25): t = tt(d); return bp(rng.standard_normal(len(t)), 400, 2500) * np.sin(np.pi * t / d) * g
+def tape_rip(d=.35, g=.35): t = tt(d); return bp(rng.standard_normal(len(t)), 1500, 7000) * (0.6 + .4 * np.sign(np.sin(2 * np.pi * 38 * t))) * np.exp(-t * 4) * g
+def slap(g=.6): t = tt(.12); return (bp(rng.standard_normal(len(t)), 300, 3000) * np.exp(-t * 50) + np.sin(2 * np.pi * 140 * t) * np.exp(-t * 40)) * g
+def drip(g=.18): t = tt(.18); f = 900 + 1400 * np.exp(-t * 30); return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 26) * g
+def clink(g=.2): t = tt(.7); return (np.sin(2 * np.pi * 3100 * t) + .6 * np.sin(2 * np.pi * 4700 * t) + .3 * np.sin(2 * np.pi * 7300 * t)) * np.exp(-t * 8) * g
+put(fx, T["tape1"] - .55, tape_rip()); put(fx, T["tape1"], slap()); put(fx, T["tape1"] + .22, slap(.3)); put(fx, T["tape1"] + .44, slap(.25))
+put(fx, T["tape2"] - .4, tape_rip(.5)); put(fx, T["tape2"], slap(.4))
+for k in range(6): put(fx, .4 + k * .7, drip(.12 + .05 * (k % 2)))                      # drops rolling in the hook
+for k in range(3): put(fx, SH["tapeCU"][0] + .3 + k * .6, drip(.16))
+put(fx, T["dyeHit"], drip(.3)); t = tt(1.4); put(fx, T["dyeHit"] + .05, bp(rng.standard_normal(len(t)), 200, 900) * np.sin(np.pi * t / 1.4) * .08)   # swirl
+put(fx, SH["lens"][0] + .05, whoosh(.4, .2))
+t = tt(.12); blip = np.sin(2 * np.pi * 1800 * t) * np.exp(-t * 40) * .16
+for k in range(8): put(fx, SH["board"][0] + 1.0 + k * .5, blip * .6)                        # molecules sticking
+put(fx, T["glass2"] + .5, clink(.25))
+put(fx, T["airTape"] - .6, tape_rip(.4)); put(fx, T["airTape"] - .1, whoosh(.25, .4)); put(fx, T["airTape"], slap(.7))
+t = tt(.5); put(fx, T["sip"], bp(rng.standard_normal(len(t)), 600, 3000) * np.sin(np.pi * t / .5) * .12)    # slurp
+put(fx, e0 + .15, whoosh(.5, .2))
+# platform ambience: distant crowd + a train idling; low on the board, the cold pause and the end card
+amb = lp(rng.standard_normal(N), 600) * .045 + np.sin(2 * np.pi * 48 * np.arange(N) / SR) * .012
+m = np.ones(N)
+for a, b in (SH["board"], (e0, DUR)): m[int(a * SR):int(b * SR)] = .15
+m[int(SH["pause"][0] * SR):int(SH["pause"][1] * SR)] = .6
+amb *= lp(m, 5)
+
+# ---------------- voice ----------------
+vo = np.zeros(N); x, sr = sf.read("voices/vo.wav"); x = x[:N]; vo[:len(x)] = x
+def comp(x, th=.12, ratio=3.5):
+    e = np.abs(x); e = lp(e, 30); g = np.where(e > th, (th + (e - th) / ratio) / np.maximum(e, 1e-9), 1); return x * g
+vo = comp(vo); vo = hp(vo, 90)
+d = int(.018 * SR); vo[d:] += .12 * vo[:-d]                          # short early reflection: voices sit in the space
+# duck the music under dialogue (~ -7 dB)
+act = np.zeros(N)
+for l in TL["lines"]: act[int(l["t0"] * SR):int(l["t1"] * SR)] = 1
+duck = 1 - .55 * lp(act, 3)
+mix = vo * 1.0 + mus * .55 * duck + fx * .55 + amb
+mix = mix / (np.abs(mix).max() + 1e-9) * .9
+st = np.stack([mix, mix], 1)
+os.makedirs("out", exist_ok=True); sf.write("out/mix.wav", st.astype(np.float32), SR)
+print("mix", DUR, "s")
