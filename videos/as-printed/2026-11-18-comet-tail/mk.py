@@ -169,7 +169,7 @@ short = [
   say="The astronomer blamed for the scare had already written: so rarified as to be inoffensive. The deadliest poison known, too thin to matter."),
 ]
 ep = dict(slug="comet-tail", title="The Poison Tail", indexTitle="Halley's Comet · 1910", seed=13, items=items,
- end=dict(sub="Halley's comet, as printed, February–May 1910", credits=["Library of Congress · Chronicling America · Prints & Photographs", "Pictures: Harper's Weekly (S. H. Riesenberg, R. O. Yardley), Illustrated London News (G. D'Amato), Underwood & Underwood, W. S. Beguelin", "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"]),
+ end=dict(sub="Halley's comet, as printed, February–May 1910", credits=["Library of Congress · Chronicling America · Prints & Photographs", "Art: Harper's Weekly · Illustrated London News · Underwood & Underwood", "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"]),
  films=dict(long=dict(size="1920x1080", shots=long), short=dict(size="1080x1920", shots=short)))
 json.dump(ep, open(f'{H}/episode.json', 'w'), indent=1, ensure_ascii=False)
 w = lambda f: sum(len(s.get('say', '').split()) for s in f)
