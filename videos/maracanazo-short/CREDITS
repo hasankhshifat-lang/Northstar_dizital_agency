@@ -1,0 +1,13 @@
+"The Silence" - Uruguay 2-1 Brazil, World Cup final round, Maracana, 16 July 1950: an animated fan retelling for the Foot All FC channel. Comic History Cartoon style (lemo-opuscar).
+Unofficial: not made or endorsed by the Brazilian Football Confederation, the Uruguayan Football Association, FIFA or any broadcaster. No club crests, league or
+competition marks, broadcast footage or real likenesses are used; players are generic paper puppets identified by shirt number,
+the trophy is a generic drawn cup.
+
+Puppet art: the part sheets of videos/barca-remontada-short (ChatGPT image model in Figma, gpt-image-2.5-flare, AI-generated),
+  recoloured into generic kits with tools/recolor_kit.py: plain white ('opp', Brazil wore white in 1950) and plain sky blue ('uru', Uruguay).
+Narration: Microsoft VibeVoice-Realtime-0.5B, voice "Frank" (MIT licence), AI-generated voice.
+Fonts (SIL Open Font License): IM FELL English SC (Igino Marini), Old Standard TT (Alexey Kryukov), Lilita One (Juan Montoreano).
+Instruments (sampled, via lemo-opuscar core/audio/sampler.py): see out/instruments.txt at build time.
+Samples (CC0): FreePats project (freepats.zenvoid.org), VS Chamber Orchestra: Community Edition (Versilian Studios), Versilian Community Sample Library (Versilian Studios)
+Foley, crowd and applause: synthesized in mix.py.
+Facts: see social/scripts/maracanazo-1950.md (fact sheet with sources).

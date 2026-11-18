@@ -1,0 +1,615 @@
+{
+"text": " Barcelona lost a Champions League semi-final because they weren't watching a corner. May 7th, 2019. Anfield. Liverpool had lost the first leg 3-0. And Mohamed Salah and Roberto Firmino were both missing. Divock Origi scored after seven minutes. Then, early in the second half, Jorginho Wijnaldum scored twice in two minutes. Three all on aggregate. 79 minutes, Liverpool win a corner Trent Alexander-Arnold puts the ball down and starts to walk away Barcelona's players turn their backs, they're still getting organised Then he spins round and whips it in Origi is unmarked and fires it in first time 4-0 Liverpool were in the final Less than four weeks later they won it Would you have spotted it? Tell me in the comments",
+"words": [
+{
+"word": "Barcelona",
+"start": 0,
+"end": 0.48
+},
+{
+"word": "lost",
+"start": 0.48,
+"end": 0.84
+},
+{
+"word": "a",
+"start": 0.84,
+"end": 0.94
+},
+{
+"word": "Champions",
+"start": 0.94,
+"end": 1.26
+},
+{
+"word": "League",
+"start": 1.26,
+"end": 1.58
+},
+{
+"word": "semi-final",
+"start": 1.58,
+"end": 2.24
+},
+{
+"word": "because",
+"start": 2.24,
+"end": 3.62
+},
+{
+"word": "they",
+"start": 3.62,
+"end": 3.88
+},
+{
+"word": "weren't",
+"start": 3.88,
+"end": 4.14
+},
+{
+"word": "watching",
+"start": 4.14,
+"end": 4.44
+},
+{
+"word": "a",
+"start": 4.44,
+"end": 4.58
+},
+{
+"word": "corner.",
+"start": 4.58,
+"end": 4.86
+},
+{
+"word": "May",
+"start": 6.86,
+"end": 7.04
+},
+{
+"word": "7th,",
+"start": 7.04,
+"end": 7.56
+},
+{
+"word": "2019.",
+"start": 7.56,
+"end": 9.34
+},
+{
+"word": "Anfield.",
+"start": 9.34,
+"end": 10.8
+},
+{
+"word": "Liverpool",
+"start": 10.8,
+"end": 11.06
+},
+{
+"word": "had",
+"start": 11.06,
+"end": 11.34
+},
+{
+"word": "lost",
+"start": 11.34,
+"end": 11.52
+},
+{
+"word": "the",
+"start": 11.52,
+"end": 11.66
+},
+{
+"word": "first",
+"start": 11.66,
+"end": 11.92
+},
+{
+"word": "leg",
+"start": 11.92,
+"end": 12.14
+},
+{
+"word": "3-0.",
+"start": 12.14,
+"end": 13.14
+},
+{
+"word": "And",
+"start": 14.14,
+"end": 14.34
+},
+{
+"word": "Mohamed",
+"start": 14.34,
+"end": 14.62
+},
+{
+"word": "Salah",
+"start": 14.62,
+"end": 14.96
+},
+{
+"word": "and",
+"start": 14.96,
+"end": 15.22
+},
+{
+"word": "Roberto",
+"start": 15.22,
+"end": 15.64
+},
+{
+"word": "Firmino",
+"start": 15.64,
+"end": 16.1
+},
+{
+"word": "were",
+"start": 16.1,
+"end": 16.28
+},
+{
+"word": "both",
+"start": 16.28,
+"end": 16.52
+},
+{
+"word": "missing.",
+"start": 16.52,
+"end": 17.36
+},
+{
+"word": "Divock",
+"start": 17.96,
+"end": 18.34
+},
+{
+"word": "Origi",
+"start": 18.34,
+"end": 18.76
+},
+{
+"word": "scored",
+"start": 18.76,
+"end": 19.06
+},
+{
+"word": "after",
+"start": 19.06,
+"end": 19.32
+},
+{
+"word": "seven",
+"start": 19.32,
+"end": 19.58
+},
+{
+"word": "minutes.",
+"start": 19.58,
+"end": 19.9
+},
+{
+"word": "Then,",
+"start": 21.08,
+"end": 21.58
+},
+{
+"word": "early",
+"start": 21.58,
+"end": 21.7
+},
+{
+"word": "in",
+"start": 21.7,
+"end": 21.82
+},
+{
+"word": "the",
+"start": 21.82,
+"end": 21.92
+},
+{
+"word": "second",
+"start": 21.92,
+"end": 22.16
+},
+{
+"word": "half,",
+"start": 22.16,
+"end": 22.58
+},
+{
+"word": "Jorginho",
+"start": 22.58,
+"end": 23.06
+},
+{
+"word": "Wijnaldum",
+"start": 23.06,
+"end": 23.68
+},
+{
+"word": "scored",
+"start": 23.68,
+"end": 23.98
+},
+{
+"word": "twice",
+"start": 23.98,
+"end": 24.44
+},
+{
+"word": "in",
+"start": 24.44,
+"end": 24.68
+},
+{
+"word": "two",
+"start": 24.68,
+"end": 24.88
+},
+{
+"word": "minutes.",
+"start": 24.88,
+"end": 25.74
+},
+{
+"word": "Three",
+"start": 25.84,
+"end": 26.08
+},
+{
+"word": "all",
+"start": 26.08,
+"end": 26.42
+},
+{
+"word": "on",
+"start": 26.42,
+"end": 26.58
+},
+{
+"word": "aggregate.",
+"start": 26.58,
+"end": 26.98
+},
+{
+"word": "79",
+"start": 27.02,
+"end": 28.48
+},
+{
+"word": "minutes,",
+"start": 28.48,
+"end": 29.28
+},
+{
+"word": "Liverpool",
+"start": 29.28,
+"end": 29.54
+},
+{
+"word": "win",
+"start": 29.54,
+"end": 29.74
+},
+{
+"word": "a",
+"start": 29.74,
+"end": 29.82
+},
+{
+"word": "corner",
+"start": 29.82,
+"end": 30.1
+},
+{
+"word": "Trent",
+"start": 30.84,
+"end": 31.12
+},
+{
+"word": "Alexander-Arnold",
+"start": 31.12,
+"end": 32.02
+},
+{
+"word": "puts",
+"start": 32.02,
+"end": 32.3
+},
+{
+"word": "the",
+"start": 32.3,
+"end": 32.46
+},
+{
+"word": "ball",
+"start": 32.46,
+"end": 32.6
+},
+{
+"word": "down",
+"start": 32.6,
+"end": 32.88
+},
+{
+"word": "and",
+"start": 32.88,
+"end": 33.24
+},
+{
+"word": "starts",
+"start": 33.24,
+"end": 33.48
+},
+{
+"word": "to",
+"start": 33.48,
+"end": 33.64
+},
+{
+"word": "walk",
+"start": 33.64,
+"end": 33.78
+},
+{
+"word": "away",
+"start": 33.78,
+"end": 34.1
+},
+{
+"word": "Barcelona's",
+"start": 35.12,
+"end": 35.72
+},
+{
+"word": "players",
+"start": 35.72,
+"end": 35.98
+},
+{
+"word": "turn",
+"start": 35.98,
+"end": 36.2
+},
+{
+"word": "their",
+"start": 36.2,
+"end": 36.38
+},
+{
+"word": "backs,",
+"start": 36.38,
+"end": 36.94
+},
+{
+"word": "they're",
+"start": 36.94,
+"end": 37.04
+},
+{
+"word": "still",
+"start": 37.04,
+"end": 37.24
+},
+{
+"word": "getting",
+"start": 37.24,
+"end": 37.48
+},
+{
+"word": "organised",
+"start": 37.48,
+"end": 37.86
+},
+{
+"word": "Then",
+"start": 38.56,
+"end": 38.7
+},
+{
+"word": "he",
+"start": 38.7,
+"end": 38.78
+},
+{
+"word": "spins",
+"start": 38.78,
+"end": 39.08
+},
+{
+"word": "round",
+"start": 39.08,
+"end": 39.32
+},
+{
+"word": "and",
+"start": 39.32,
+"end": 39.5
+},
+{
+"word": "whips",
+"start": 39.5,
+"end": 39.66
+},
+{
+"word": "it",
+"start": 39.66,
+"end": 39.82
+},
+{
+"word": "in",
+"start": 39.82,
+"end": 40.1
+},
+{
+"word": "Origi",
+"start": 41.56,
+"end": 41.92
+},
+{
+"word": "is",
+"start": 41.92,
+"end": 42.12
+},
+{
+"word": "unmarked",
+"start": 42.12,
+"end": 42.6
+},
+{
+"word": "and",
+"start": 42.6,
+"end": 42.94
+},
+{
+"word": "fires",
+"start": 42.94,
+"end": 43.26
+},
+{
+"word": "it",
+"start": 43.26,
+"end": 43.4
+},
+{
+"word": "in",
+"start": 43.4,
+"end": 43.52
+},
+{
+"word": "first",
+"start": 43.52,
+"end": 43.8
+},
+{
+"word": "time",
+"start": 43.8,
+"end": 44.08
+},
+{
+"word": "4-0",
+"start": 44.96,
+"end": 45.42
+},
+{
+"word": "Liverpool",
+"start": 45,
+"end": 46.7
+},
+{
+"word": "were",
+"start": 46.7,
+"end": 46.9
+},
+{
+"word": "in",
+"start": 46.9,
+"end": 46.94
+},
+{
+"word": "the",
+"start": 46.94,
+"end": 47.04
+},
+{
+"word": "final",
+"start": 47.04,
+"end": 47.4
+},
+{
+"word": "Less",
+"start": 47.3,
+"end": 48.52
+},
+{
+"word": "than",
+"start": 48.52,
+"end": 48.7
+},
+{
+"word": "four",
+"start": 48.7,
+"end": 48.88
+},
+{
+"word": "weeks",
+"start": 48.88,
+"end": 49.1
+},
+{
+"word": "later",
+"start": 49.1,
+"end": 49.48
+},
+{
+"word": "they",
+"start": 49.48,
+"end": 49.64
+},
+{
+"word": "won",
+"start": 49.64,
+"end": 49.82
+},
+{
+"word": "it",
+"start": 49.82,
+"end": 49.98
+},
+{
+"word": "Would",
+"start": 49.5,
+"end": 50.18
+},
+{
+"word": "you",
+"start": 50.18,
+"end": 50.28
+},
+{
+"word": "have",
+"start": 50.28,
+"end": 50.38
+},
+{
+"word": "spotted",
+"start": 50.38,
+"end": 50.72
+},
+{
+"word": "it?",
+"start": 50.72,
+"end": 51.42
+},
+{
+"word": "Tell",
+"start": 51.92,
+"end": 52.1
+},
+{
+"word": "me",
+"start": 52.1,
+"end": 52.2
+},
+{
+"word": "in",
+"start": 52.2,
+"end": 52.26
+},
+{
+"word": "the",
+"start": 52.26,
+"end": 52.36
+},
+{
+"word": "comments",
+"start": 52.36,
+"end": 52.58
+}
+]
+}
