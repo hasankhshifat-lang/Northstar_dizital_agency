@@ -1,0 +1,8 @@
+{
+ "width": 1080, "height": 1920, "style": "toon",
+ "background": {"src": "anfield-art.jpg", "grade": "none", "darken": 0, "side": "none"},
+ "layers": [],
+ "headline": {"lines": ["THE SNEAKY", "CORNER"], "accent": ["CORNER"], "align": "center", "x": 0, "y": 120, "size": 150, "panel": true},
+ "tags": [{"text": "SEMI-FINAL · 2019 · 3–0 DOWN", "x": 230, "y": 1330, "variant": "label", "size": 36}],
+ "guides": false
+}

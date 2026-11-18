@@ -1,0 +1,8 @@
+{
+ "width": 1080, "height": 1920, "style": "toon",
+ "background": {"src": "maracanazo-art.jpg", "grade": "none", "darken": 0, "side": "none"},
+ "layers": [],
+ "headline": {"lines": ["200,000", "WENT SILENT"], "accent": ["SILENT"], "align": "center", "x": 0, "y": 120, "size": 150, "panel": true},
+ "tags": [{"text": "WORLD CUP · 1950 · 79′", "x": 290, "y": 1395, "variant": "label", "size": 36}],
+ "guides": false
+}
