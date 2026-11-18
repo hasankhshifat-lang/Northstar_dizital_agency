@@ -67,4 +67,7 @@ send the heavy generation to the free LLM router `social/bangla-science-channel/
 Every new Short for the Scientific Bithi Facebook Page is made in the lemo-opuscar Sci-Fi Sitcom Toon template, following
 `social/bangla-science-channel/kit/scifi-toon/README.md` (cast redrawn in the style, a new Bangladeshi setting each time,
 cyan + gold scientist portal, Bangla subtitles, synthesized score). It replaces the old puppet engine and the Blender 3D
-plates for this channel; voices, story and fact rules, approval, posting time, thumbnails and Facebook steps are unchanged.
+plates for this channel; voices, story and fact rules, posting time, thumbnails and Facebook steps are unchanged.
+- **No approval needed to publish (owner, 2026-11-18):** upload and schedule each finished video at the next free
+  20:00 Dhaka slot once all checks pass, then report to the owner (files, link, post details, push notification).
+  If a check fails or anything is blocked, don't upload: report and stop. Overrides the scheduled task's approval step.

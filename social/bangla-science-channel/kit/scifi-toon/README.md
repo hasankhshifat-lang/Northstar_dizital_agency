@@ -16,7 +16,11 @@ Approved reference: `../../../../videos/bithi-scifi-toon-demo/bithi-scifi-toon-d
   puzzle for the comments when it fits, two-step fact check, storyboard first, scene inspection before approval.
 - Voices: ElevenLabs eleven_v4 with the fixed voices (Mama `MNuISDUw2Kqij2hI0QHV`, Bithi `nUarI71Lei0IFt1ybDm1`,
   Boltu `N6PAsaEqAXM8EIxJn9g3`; scientists in `../cameos/voices.json`), one call per character, generations_count 1.
-- Approval before upload, the 20:00 Dhaka slot, thumbnails (Figma, style B) and the Facebook steps are unchanged.
+- The 20:00 Dhaka slot, thumbnails (universal thumbnail skill, style B) and the Facebook steps are unchanged.
+- **No approval needed to publish (owner, 2026-11-18):** when the fact check, storyboard check and scene inspection pass,
+  upload and schedule the video at the next free 20:00 Dhaka slot in the same run, set the cover, log it, then send the
+  owner the mp4, cover, link and post details plus a push notification as a report. If a check fails or anything is
+  blocked, don't upload: report and stop. (Replaces the old "approval before upload" rule; see CLAUDE.md on main.)
 
 ## What the template adds (keep all of STYLE.md)
 - Thick constant-width ink that boils (3 drawings at 12 fps), flat fills + one hard shadow per form, big white eyes with
