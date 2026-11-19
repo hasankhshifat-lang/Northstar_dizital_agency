@@ -1,0 +1,15 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "toon",
+ "background": { "src": "bg_figma.png", "grade": "none", "blur": 0, "darken": 0.0, "side": "top" },
+ "layers": [
+  { "type": "cutout", "src": "bithi.png", "x": -40, "y": 470, "h": 1040, "outline": "#fff" }
+ ],
+ "headline": { "lines": ["দা-এর কি", "অসুখ?!"], "accent": ["অসুখ?!"], "align": "center", "x": 0, "y": 110, "size": 160 },
+ "tags": [
+  { "text": "রোগ নয়!", "x": 650, "y": 1300, "variant": "date", "size": 66, "rotate": -4 },
+  { "text": "সাইন্টিফিক বিথী", "x": 330, "y": 480, "variant": "label", "size": 44 }
+ ],
+ "guides": false
+}
