@@ -1,0 +1,292 @@
+{
+ "long": [
+  {
+   "id": "hook1",
+   "say": "It's four in the afternoon. You've answered forty emails, picked a lunch, said yes to a meeting you didn't want... and now someone asks you one more question. So... what do you want for dinner? And your brain just... stops."
+  },
+  {
+   "id": "hook2",
+   "say": "There's a name for that feeling. Decision fatigue. And it's backed by one of the most famous studies in psychology: judges who granted parole... depending on how long it had been since their last meal."
+  },
+  {
+   "id": "hook3",
+   "say": "But here's the part almost nobody mentions. That study got checked. So did the theory behind it. And some of it... didn't survive."
+  },
+  {
+   "id": "hook4",
+   "say": "So is decision fatigue real? The honest answer is stranger than yes or no. By the end, you'll know which parts to believe... and what actually helps."
+  },
+  {
+   "id": "sting",
+   "type": "sting"
+  },
+  {
+   "id": "ch1",
+   "type": "chapter",
+   "num": "1",
+   "title": "THE HUNGRY JUDGES"
+  },
+  {
+   "id": "c1a",
+   "say": "Start with the study that made decision fatigue famous. In twenty eleven, three researchers, Shai Danziger, Jonathan Levav and Liora Avnaim-Pesso, looked at parole hearings in Israel."
+  },
+  {
+   "id": "c1b",
+   "say": "They collected more than a thousand rulings, made by eight experienced judges over ten months. Each working day was split into three sessions by two food breaks: a morning snack, and lunch."
+  },
+  {
+   "id": "c1c",
+   "say": "Then they plotted one simple thing: the chance that a prisoner was granted parole, depending on where their case fell in the session."
+  },
+  {
+   "id": "c1d",
+   "say": "At the start of a session, about sixty five percent of requests were granted. Then, case by case, the line slid down... until, just before the break, it was close to zero."
+  },
+  {
+   "id": "c1e",
+   "say": "Then the judges took their break. They ate. And when they came back, the rate jumped right back up to about sixty five percent... and started sliding all over again."
+  },
+  {
+   "id": "c1x",
+   "say": "Three sessions, three slides, three jumps. On the graph it looks like the edge of a saw. And it is very hard to look at that saw and not feel a little chill."
+  },
+  {
+   "id": "c1f",
+   "say": "The authors' reading was that ruling after ruling wears you down, and a tired mind falls back on the easy option. For a parole judge, the easy option is to say no... and leave things as they are."
+  },
+  {
+   "id": "c1g",
+   "say": "The story went everywhere. Books, talks, productivity blogs. Daniel Kahneman wrote about it in his best seller. Your freedom, people said, could depend on whether the judge had eaten."
+  },
+  {
+   "id": "c1h",
+   "say": "And it fit perfectly with a theory psychologists had been building for over a decade. A theory that said willpower works a lot like a battery."
+  },
+  {
+   "id": "ch2",
+   "type": "chapter",
+   "num": "2",
+   "title": "THE WILLPOWER BATTERY"
+  },
+  {
+   "id": "c2a",
+   "say": "In nineteen ninety eight, Roy Baumeister and his colleagues ran an experiment that sounds like a prank. Hungry students walked into a lab that smelled of freshly baked chocolate chip cookies."
+  },
+  {
+   "id": "c2b",
+   "say": "Some of them were allowed to eat the cookies. Others had to sit right in front of them... and eat radishes instead."
+  },
+  {
+   "id": "c2c",
+   "say": "Then everyone got a puzzle. What they weren't told was that it couldn't be solved. The researchers simply timed how long each person kept trying."
+  },
+  {
+   "id": "c2d",
+   "say": "The radish eaters gave up after about eight minutes. The cookie eaters kept going for close to twenty."
+  },
+  {
+   "id": "c2x",
+   "say": "Same students, same impossible puzzle. The only difference was a few minutes spent not eating the cookies."
+  },
+  {
+   "id": "c2e",
+   "say": "The idea they proposed was called ego depletion. Self-control runs on a limited resource. Spend some of it resisting cookies, and there's less left for the next hard thing."
+  },
+  {
+   "id": "c2f",
+   "say": "Later studies stretched the idea to choosing itself. People who spent a while making lots of choices, between products, or college courses, showed less self-control afterwards than people who only looked at the options."
+  },
+  {
+   "id": "c2g",
+   "say": "Some researchers even suggested the fuel was literally sugar in the blood... and that a glass of sweet lemonade could top the battery back up."
+  },
+  {
+   "id": "c2h",
+   "say": "Hundreds of studies followed. By the twenty tens, ego depletion was one of the best known ideas in psychology. Which is exactly why people started testing it properly."
+  },
+  {
+   "id": "ch3",
+   "type": "chapter",
+   "num": "3",
+   "title": "THE CHECK"
+  },
+  {
+   "id": "c3a",
+   "say": "Let's go back to the judges first. Within months, two other researchers, Keren Weinshall-Margel and John Shapard, published a reply in the same journal."
+  },
+  {
+   "id": "c3b",
+   "say": "They pointed out that the order of the cases wasn't random. Prisoners who had no lawyer tended to be heard last in a session... and prisoners without lawyers were less likely to get parole anyway."
+  },
+  {
+   "id": "c3c",
+   "say": "The original authors replied that this didn't explain their result. But the doubts kept coming."
+  },
+  {
+   "id": "c3d",
+   "say": "In twenty sixteen, the psychologist Andreas Glockner ran simulations. Granting parole usually takes longer than refusing it. So picture a judge who sees the break coming... and doesn't want to start a long case."
+  },
+  {
+   "id": "c3e",
+   "say": "Just that kind of scheduling, with no tiredness at all, could produce a big part of the drop. Others pointed out that a swing from sixty five percent to almost zero would be one of the largest effects in all of psychology."
+  },
+  {
+   "id": "c3f",
+   "say": "None of this proves the judges weren't tired. It means the famous number is probably much bigger than anything fatigue really did."
+  },
+  {
+   "id": "c3g",
+   "say": "And the battery? In twenty sixteen, twenty three labs around the world ran the same ego depletion experiment, with a method agreed in advance, and more than two thousand people."
+  },
+  {
+   "id": "c3h",
+   "say": "The effect they found... was close to zero."
+  },
+  {
+   "id": "c3x",
+   "say": "Not small. Close to zero. The original studies had reported effects many times larger."
+  },
+  {
+   "id": "c3i",
+   "say": "In twenty twenty one, an even bigger test, thirty six labs and more than three thousand people, found an effect so small it was barely different from nothing at all."
+  },
+  {
+   "id": "c3j",
+   "say": "And the sugar? Critics showed that the brain's extra use of glucose during a hard task is tiny. Far too small to be the fuel gauge the theory needed."
+  },
+  {
+   "id": "c3k",
+   "say": "So... case closed? Decision fatigue is a myth? Not so fast. Because when researchers left the lab, and looked at real people doing real jobs, something kept showing up."
+  },
+  {
+   "id": "ch4",
+   "type": "chapter",
+   "num": "4",
+   "title": "THE DRIFT"
+  },
+  {
+   "id": "c4a",
+   "say": "In twenty fourteen, a team in Boston studied almost twenty two thousand doctor visits for coughs, colds and sore throats. Most of these infections are caused by viruses, so antibiotics usually don't help."
+  },
+  {
+   "id": "c4b",
+   "say": "As each clinic session went on, doctors prescribed antibiotics more and more often. By the fourth hour, the odds of a prescription were about a quarter higher than in the first."
+  },
+  {
+   "id": "c4c",
+   "say": "Writing the prescription is the quick way to end a visit with a worried patient. Saying no, and explaining why, takes effort."
+  },
+  {
+   "id": "c4d",
+   "say": "Another team followed more than four thousand hospital caregivers, with electronic sensors on the soap dispensers. Over a twelve hour shift, hand washing fell by almost nine percentage points."
+  },
+  {
+   "id": "c4e",
+   "say": "And financial analysts who had already made several forecasts that day were more likely to simply copy the consensus, or repeat their own earlier number. The low effort answer."
+  },
+  {
+   "id": "c4f",
+   "say": "Notice the pattern. Nobody collapsed. Nobody became unable to decide. They drifted... toward the default. The option that takes the least thinking."
+  },
+  {
+   "id": "c4g",
+   "say": "That's why psychologists like Michael Inzlicht now describe it differently. Not an empty tank, but a shift in motivation and attention. After a long run of effort, the mind gets pickier about what deserves effort... and the easy option starts to look good."
+  },
+  {
+   "id": "c4h",
+   "say": "To be fair, these are real world records, not experiments, so other things could be going on, like time pressure, or a waiting room filling up. But the same drift shows up in very different jobs."
+  },
+  {
+   "id": "c4i",
+   "say": "And there's one more twist. In twenty ten, Veronika Job, Carol Dweck and Greg Walton found that people who believed willpower runs out showed the classic depletion effect... while people who believed it doesn't, mostly didn't."
+  },
+  {
+   "id": "c4j",
+   "say": "That finding needs more replication too. But it raises an uncomfortable question. How much of I'm too tired to decide is the day... and how much is the story we tell ourselves about it?"
+  },
+  {
+   "id": "ch5",
+   "type": "chapter",
+   "num": "5",
+   "title": "WHAT ACTUALLY HELPS"
+  },
+  {
+   "id": "c5a",
+   "say": "So what can you actually do with this? Here are three ideas, each tied to the evidence... and each with its limits."
+  },
+  {
+   "id": "c5b",
+   "say": "One. Move the decisions that matter. If the drift shows up late in a long run of choices, don't save your hardest decision for the end of the day. Make it while you're fresh, or sleep on it."
+  },
+  {
+   "id": "c5c",
+   "say": "Two. Decide once, not every time. Barack Obama once told a journalist that he only wore gray or blue suits, because he was trying to pare down decisions. You don't need a uniform."
+  },
+  {
+   "id": "c5d",
+   "say": "But turning a repeated choice into a simple if-then plan, like, if it's Monday, I go to the gym straight after work, has helped people follow through across nearly a hundred studies."
+  },
+  {
+   "id": "c5x",
+   "say": "Fewer decisions made on the spot means fewer chances to drift."
+  },
+  {
+   "id": "c5e",
+   "say": "Three. Take real breaks, and watch out for the default. In the hospital study, caregivers who had longer rest between shifts washed their hands more often afterwards."
+  },
+  {
+   "id": "c5f",
+   "say": "And when you catch yourself reaching for the easy answer at the end of a long day... treat it as a cue to pause. Not as proof that the easy answer is right."
+  },
+  {
+   "id": "c5g",
+   "say": "And maybe a gentle fourth one. Be careful with the battery story. Telling yourself you're out of willpower might make it truer than it needs to be."
+  },
+  {
+   "id": "end1",
+   "say": "So, back to four in the afternoon, and that dinner question. Your brain didn't run out of fuel. After a long day of choices, it's leaning toward whatever takes the least effort... and now you know to notice it."
+  },
+  {
+   "id": "end2",
+   "say": "Decision fatigue isn't a myth. It's just smaller, and stranger, than the story about the hungry judges. Those judges probably weren't ruled by their lunch. But you, at four in the afternoon, may really be a little more likely to take the easy way out."
+  },
+  {
+   "id": "end3",
+   "say": "So tell me in the comments. What's the decision you always put off until you're too tired to make it? And if you like your psychology with the receipts, subscribe. There's a new page every week."
+  },
+  {
+   "id": "card",
+   "type": "end"
+  }
+ ],
+ "short": [
+  {
+   "id": "s1",
+   "say": "In twenty eleven, researchers looked at more than a thousand parole rulings by judges in Israel."
+  },
+  {
+   "id": "s2",
+   "say": "At the start of each session, about two out of three prisoners were granted parole. Just before the food break... almost none.",
+   "tail": 0.4
+  },
+  {
+   "id": "s3",
+   "say": "After the break... back up to two out of three. The internet called it decision fatigue. Hungry judges say no.",
+   "tail": 0.4
+  },
+  {
+   "id": "s4",
+   "say": "But then other researchers checked. The cases weren't in random order. Prisoners without a lawyer were often heard last. And simulations showed that simply not starting a long case before the break could produce much of the drop.",
+   "tail": 0.5
+  },
+  {
+   "id": "s5",
+   "say": "Tired judges may still be real. But the famous number is probably far too big."
+  },
+  {
+   "id": "s6",
+   "say": "So... do you make your big decisions in the morning, or at night?",
+   "tail": 2.2
+  }
+ ]
+}

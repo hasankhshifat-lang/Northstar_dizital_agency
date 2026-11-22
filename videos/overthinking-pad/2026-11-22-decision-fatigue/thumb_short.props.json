@@ -1,0 +1,5 @@
+{"width":1080,"height":1920,"style":"notebook",
+ "background":{"src":"art_short.jpg","grade":"none","side":"none"},
+ "layers":[],
+ "headline":{"lines":["HUNGRY = NO?"],"accent":["NO?"],"x":540,"y":110,"size":120,"align":"center","panel":false},
+ "tags":[{"text":"PAROLE","x":170,"y":360,"variant":"label","rotate":-4}]}

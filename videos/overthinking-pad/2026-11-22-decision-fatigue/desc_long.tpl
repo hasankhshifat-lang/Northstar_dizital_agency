@@ -1,0 +1,34 @@
+It's 4 p.m., you've made a hundred small choices, and someone asks what you want for dinner... and your brain just stops. That's "decision fatigue", and it's usually backed by one famous study: Israeli parole judges who said yes about 65% of the time at the start of a session and almost never just before their food break. But that study got checked. So did the "willpower battery" theory behind it. Some of it didn't survive.
+
+On this page: the hungry judges study (2011), ego depletion and the cookies-and-radishes experiment (1998), the critiques (case order, Glöckner's scheduling simulation, why the effect is implausibly big), the 23-lab and 36-lab replications that found almost nothing, what still shows up in real jobs (antibiotic prescribing, hospital hand hygiene, analysts' forecasts), the "it's all in your head?" twist, and three evidence-tied things to try.
+
+Chapters
+CHAPTERS
+
+Sources
+• Danziger, Levav & Avnaim-Pesso (2011). Extraneous factors in judicial decisions. PNAS, 108(17), 6889–6892. https://doi.org/10.1073/pnas.1018033108
+• Weinshall-Margel & Shapard (2011). Overlooked factors in the analysis of parole decisions. PNAS, 108(42), E833. https://doi.org/10.1073/pnas.1110910108
+• Glöckner (2016). The irrational hungry judge effect revisited. Judgment and Decision Making, 11(6), 601–610. https://doi.org/10.1017/S1930297500004812
+• Lakens (2017). Impossibly hungry judges (blog). https://daniellakens.blogspot.com/2017/07/impossibly-hungry-judges.html
+• Baumeister, Bratslavsky, Muraven & Tice (1998). Ego depletion: Is the active self a limited resource? JPSP, 74(5), 1252–1265. https://doi.org/10.1037/0022-3514.74.5.1252
+• Vohs et al. (2008). Making choices impairs subsequent self-control. JPSP, 94(5), 883–898. https://doi.org/10.1037/0022-3514.94.5.883
+• Gailliot et al. (2007). Self-control relies on glucose as a limited energy source. JPSP, 92(2), 325–336. https://doi.org/10.1037/0022-3514.92.2.325
+• Kurzban (2010). Does the brain consume additional glucose during self-control tasks? Evolutionary Psychology, 8(2). https://doi.org/10.1177/147470491000800208
+• Hagger et al. (2016). A multilab preregistered replication of the ego-depletion effect. Perspectives on Psychological Science, 11(4), 546–573. https://doi.org/10.1177/1745691616652873
+• Vohs et al. (2021). A multisite preregistered paradigmatic test of the ego-depletion effect. Psychological Science, 32(10), 1566–1581. https://doi.org/10.1177/0956797621989733
+• Linder et al. (2014). Time of day and the decision to prescribe antibiotics. JAMA Internal Medicine, 174(12), 2029–2031. https://doi.org/10.1001/jamainternmed.2014.5225
+• Dai, Milkman, Hofmann & Staats (2015). The impact of time at work and time off from work on rule compliance: hand hygiene in health care. Journal of Applied Psychology, 100(3), 846–862. https://doi.org/10.1037/a0038067
+• Hirshleifer, Levi, Lourie & Teoh (2019). Decision fatigue and heuristic analyst forecasts. Journal of Financial Economics, 133(1), 83–98. https://doi.org/10.1016/j.jfineco.2019.01.005
+• Inzlicht & Schmeichel (2012). What is ego depletion? Perspectives on Psychological Science, 7(5), 450–463. https://doi.org/10.1177/1745691612454134
+• Job, Dweck & Walton (2010). Ego depletion—Is it all in your head? Psychological Science, 21(11), 1686–1693. https://doi.org/10.1177/0956797610384745
+• Gollwitzer & Sheeran (2006). Implementation intentions and goal achievement: A meta-analysis. Advances in Experimental Social Psychology, 38, 69–119. https://doi.org/10.1016/S0065-2601(06)38002-1
+• Lewis (2012). Obama's Way. Vanity Fair. https://www.vanityfair.com/news/2012/10/michael-lewis-profile-barack-obama
+Note: the field studies (doctors, caregivers, analysts) are observational, so time pressure and workload could also play a part; the belief finding (Job et al.) still needs more replication.
+
+What's the decision you always put off until you're too tired to make it?
+
+Narration voiced with AI.
+
+This video is for education, not professional advice.
+
+#psychology #decisionfatigue #willpower #overthinking
