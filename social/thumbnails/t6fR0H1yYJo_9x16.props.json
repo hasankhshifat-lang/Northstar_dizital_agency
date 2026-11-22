@@ -1,0 +1,66 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "map",
+ "background": {
+  "src": "map1863.jpg",
+  "crop": [
+   0.05,
+   0.02,
+   0.6,
+   0.62
+  ],
+  "grade": "warm",
+  "blur": 1.2,
+  "side": "top",
+  "darken": 0.12
+ },
+ "layers": [
+  {
+   "type": "pin",
+   "x": 433,
+   "y": 500,
+   "label": "CHARLESTON",
+   "size": 46
+  },
+  {
+   "type": "cutout",
+   "src": "smalls_cut.png",
+   "x": 300,
+   "y": 560,
+   "h": 980,
+   "grade": "sepia",
+   "glow": "rgba(255,226,170,0.55)"
+  }
+ ],
+ "headline": {
+  "lines": [
+   "DISGUISED",
+   "AS CAPTAIN"
+  ],
+  "accent": [
+   "AS CAPTAIN"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 100,
+  "size": 150
+ },
+ "tags": [
+  {
+   "text": "MAY 13, 1862",
+   "x": 70,
+   "y": 1440,
+   "variant": "date",
+   "size": 40
+  },
+  {
+   "text": "ROBERT SMALLS",
+   "x": 610,
+   "y": 1440,
+   "variant": "label",
+   "size": 40
+  }
+ ],
+ "guides": false
+}

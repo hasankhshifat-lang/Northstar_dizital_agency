@@ -16,6 +16,7 @@ import { Blackbeard, BB_END } from "./stories/blackbeard";
 import { Alcatraz, AZ_END } from "./stories/alcatraz";
 import { BalloonBombs, FG_END } from "./stories/balloonBombs";
 import { VioletJessop, VJ_END } from "./stories/violetJessop";
+import { RobertSmalls, RS_END } from "./stories/robertSmalls";
 import { NorthwestAngle, NA_END } from "./stories/northwestAngle";
 import { fonts, palette } from "./theme";
 
@@ -64,6 +65,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="BalloonBombs" component={BalloonBombs} width={1080} height={1920} fps={30} durationInFrames={Math.round(FG_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="VioletJessop" component={VioletJessop} width={1080} height={1920} fps={30} durationInFrames={Math.round(VJ_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="NorthwestAngle" component={NorthwestAngle} width={1080} height={1920} fps={30} durationInFrames={Math.round(NA_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
+    <Composition id="RobertSmalls" component={RobertSmalls} width={1080} height={1920} fps={30} durationInFrames={Math.round(RS_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="HughGlass" component={HughGlass} width={1080} height={1920} fps={30} durationInFrames={Math.round(GLASS_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="MikeThumb" component={MikeThumb} width={1080} height={1920} fps={30} durationInFrames={1} />
     <Composition id="GhostArmy" component={GhostArmy} width={1080} height={1920} fps={30} durationInFrames={Math.round(GHOST_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />

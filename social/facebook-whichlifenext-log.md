@@ -22,3 +22,4 @@
 | 2026-11-22 | Daily check | Cross-posts 11-15…11-22 | — | — | Northwest Angle (41184886317776890) live since 2026-11-19 22:00:00 = YT publishAt, but only 2 FB plays in ~2.6 d; 0 late publishes; no Which Life Next Short scheduled on YouTube or Facebook for 11-20…11-23 (scheduled_posts empty; no Short logged after lycDlMhOJ_M) |
 | 2026-11-22 | Comments check | 9 videos + 36 posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
 | 2026-11-22 | Stats | Page + 6 Reels | — | — | 6 fans / 6 followers; FB metrics written to social/learning/which-life-next.md on main (3bff4b2); `shares` field and post_impressions_unique not available for these Reels |
+| 2026-11-22 | Schedule Reel (cross-post) | He Stole a Confederate Warship and Sailed Past Fort Sumter | 1111102915088402 | 2026-11-23 13:00 UTC (= YT publishAt of t6fR0H1yYJo) | uploaded, processing, scheduled_publish_time confirmed |
