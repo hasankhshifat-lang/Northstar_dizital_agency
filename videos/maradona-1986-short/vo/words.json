@@ -1,0 +1,630 @@
+{
+"text": " In four minutes, one man scored the most famous handball in World Cup history and the greatest goal. June 22nd, 1986. Mexico City. Argentina against England in the quarterfinal. 51 minutes. A looping ball drops towards England's goalkeeper. Diego Maradona jumps and punches it in with his hand. The goal stands. Maradona later said it was scored a little with the hand of God. Four minutes later he picks up the ball in his own half He turns and runs Past one England player Then another and another Around the goalkeeper and in In 2002 a FIFA online poll voted it the goal of the century Argentina won 2-1 and went on to win the World Cup Cheat or genius? Tell me in the comments",
+"words": [
+{
+"word": "In",
+"start": 0.1,
+"end": 0.26
+},
+{
+"word": "four",
+"start": 0.26,
+"end": 0.48
+},
+{
+"word": "minutes,",
+"start": 0.48,
+"end": 0.88
+},
+{
+"word": "one",
+"start": 0.88,
+"end": 1
+},
+{
+"word": "man",
+"start": 1,
+"end": 1.26
+},
+{
+"word": "scored",
+"start": 1.26,
+"end": 1.56
+},
+{
+"word": "the",
+"start": 1.56,
+"end": 1.72
+},
+{
+"word": "most",
+"start": 1.72,
+"end": 1.92
+},
+{
+"word": "famous",
+"start": 1.92,
+"end": 2.28
+},
+{
+"word": "handball",
+"start": 2.28,
+"end": 2.66
+},
+{
+"word": "in",
+"start": 2.66,
+"end": 2.86
+},
+{
+"word": "World",
+"start": 2.86,
+"end": 3.1
+},
+{
+"word": "Cup",
+"start": 3.1,
+"end": 3.26
+},
+{
+"word": "history",
+"start": 3.26,
+"end": 3.62
+},
+{
+"word": "and",
+"start": 3.62,
+"end": 4.18
+},
+{
+"word": "the",
+"start": 4.18,
+"end": 4.3
+},
+{
+"word": "greatest",
+"start": 4.3,
+"end": 4.62
+},
+{
+"word": "goal.",
+"start": 4.62,
+"end": 5.48
+},
+{
+"word": "June",
+"start": 5.94,
+"end": 6.14
+},
+{
+"word": "22nd,",
+"start": 6.14,
+"end": 6.98
+},
+{
+"word": "1986.",
+"start": 6.98,
+"end": 8.72
+},
+{
+"word": "Mexico",
+"start": 8.72,
+"end": 8.9
+},
+{
+"word": "City.",
+"start": 8.9,
+"end": 9.88
+},
+{
+"word": "Argentina",
+"start": 9.88,
+"end": 10.34
+},
+{
+"word": "against",
+"start": 10.34,
+"end": 10.86
+},
+{
+"word": "England",
+"start": 10.86,
+"end": 11.2
+},
+{
+"word": "in",
+"start": 11.2,
+"end": 11.46
+},
+{
+"word": "the",
+"start": 11.46,
+"end": 11.56
+},
+{
+"word": "quarterfinal.",
+"start": 11.56,
+"end": 12.62
+},
+{
+"word": "51",
+"start": 12.8,
+"end": 13.18
+},
+{
+"word": "minutes.",
+"start": 13.18,
+"end": 13.82
+},
+{
+"word": "A",
+"start": 13.82,
+"end": 13.98
+},
+{
+"word": "looping",
+"start": 13.98,
+"end": 14.34
+},
+{
+"word": "ball",
+"start": 14.34,
+"end": 14.56
+},
+{
+"word": "drops",
+"start": 14.56,
+"end": 14.88
+},
+{
+"word": "towards",
+"start": 14.88,
+"end": 15.24
+},
+{
+"word": "England's",
+"start": 15.24,
+"end": 15.66
+},
+{
+"word": "goalkeeper.",
+"start": 15.66,
+"end": 16.6
+},
+{
+"word": "Diego",
+"start": 16.82,
+"end": 17.06
+},
+{
+"word": "Maradona",
+"start": 17.06,
+"end": 17.48
+},
+{
+"word": "jumps",
+"start": 17.48,
+"end": 18
+},
+{
+"word": "and",
+"start": 18,
+"end": 18.54
+},
+{
+"word": "punches",
+"start": 18.54,
+"end": 18.84
+},
+{
+"word": "it",
+"start": 18.84,
+"end": 19
+},
+{
+"word": "in",
+"start": 19,
+"end": 19.24
+},
+{
+"word": "with",
+"start": 19.24,
+"end": 19.4
+},
+{
+"word": "his",
+"start": 19.4,
+"end": 19.54
+},
+{
+"word": "hand.",
+"start": 19.54,
+"end": 20.38
+},
+{
+"word": "The",
+"start": 20.74,
+"end": 20.84
+},
+{
+"word": "goal",
+"start": 20.84,
+"end": 21
+},
+{
+"word": "stands.",
+"start": 21,
+"end": 22.08
+},
+{
+"word": "Maradona",
+"start": 22.08,
+"end": 22.44
+},
+{
+"word": "later",
+"start": 22.44,
+"end": 22.76
+},
+{
+"word": "said",
+"start": 22.76,
+"end": 23
+},
+{
+"word": "it",
+"start": 23,
+"end": 23.12
+},
+{
+"word": "was",
+"start": 23.12,
+"end": 23.22
+},
+{
+"word": "scored",
+"start": 23.22,
+"end": 23.62
+},
+{
+"word": "a",
+"start": 23.62,
+"end": 24.14
+},
+{
+"word": "little",
+"start": 24.14,
+"end": 24.38
+},
+{
+"word": "with",
+"start": 24.38,
+"end": 24.56
+},
+{
+"word": "the",
+"start": 24.56,
+"end": 24.66
+},
+{
+"word": "hand",
+"start": 24.66,
+"end": 24.84
+},
+{
+"word": "of",
+"start": 24.84,
+"end": 24.98
+},
+{
+"word": "God.",
+"start": 24.98,
+"end": 25.76
+},
+{
+"word": "Four",
+"start": 25.88,
+"end": 26
+},
+{
+"word": "minutes",
+"start": 26,
+"end": 26.24
+},
+{
+"word": "later",
+"start": 26.24,
+"end": 26.6
+},
+{
+"word": "he",
+"start": 26.6,
+"end": 26.92
+},
+{
+"word": "picks",
+"start": 26.92,
+"end": 27.12
+},
+{
+"word": "up",
+"start": 27.12,
+"end": 27.28
+},
+{
+"word": "the",
+"start": 27.28,
+"end": 27.4
+},
+{
+"word": "ball",
+"start": 27.4,
+"end": 27.52
+},
+{
+"word": "in",
+"start": 27.52,
+"end": 27.66
+},
+{
+"word": "his",
+"start": 27.66,
+"end": 27.8
+},
+{
+"word": "own",
+"start": 27.8,
+"end": 27.96
+},
+{
+"word": "half",
+"start": 27.96,
+"end": 28.34
+},
+{
+"word": "He",
+"start": 28.04,
+"end": 28.88
+},
+{
+"word": "turns",
+"start": 28.88,
+"end": 29.26
+},
+{
+"word": "and",
+"start": 29.26,
+"end": 29.86
+},
+{
+"word": "runs",
+"start": 29.86,
+"end": 30.32
+},
+{
+"word": "Past",
+"start": 30.94,
+"end": 31.2
+},
+{
+"word": "one",
+"start": 31.2,
+"end": 31.38
+},
+{
+"word": "England",
+"start": 31.38,
+"end": 31.66
+},
+{
+"word": "player",
+"start": 31.66,
+"end": 32
+},
+{
+"word": "Then",
+"start": 31.7,
+"end": 32.6
+},
+{
+"word": "another",
+"start": 32.6,
+"end": 32.92
+},
+{
+"word": "and",
+"start": 32.92,
+"end": 33.64
+},
+{
+"word": "another",
+"start": 33.64,
+"end": 33.98
+},
+{
+"word": "Around",
+"start": 33.54,
+"end": 34.84
+},
+{
+"word": "the",
+"start": 34.84,
+"end": 34.98
+},
+{
+"word": "goalkeeper",
+"start": 34.98,
+"end": 35.38
+},
+{
+"word": "and",
+"start": 35.38,
+"end": 35.92
+},
+{
+"word": "in",
+"start": 35.92,
+"end": 36.2
+},
+{
+"word": "In",
+"start": 35.78,
+"end": 36.88
+},
+{
+"word": "2002",
+"start": 36.88,
+"end": 37.54
+},
+{
+"word": "a",
+"start": 37.54,
+"end": 37.8
+},
+{
+"word": "FIFA",
+"start": 37.8,
+"end": 38.1
+},
+{
+"word": "online",
+"start": 38.1,
+"end": 38.44
+},
+{
+"word": "poll",
+"start": 38.44,
+"end": 38.76
+},
+{
+"word": "voted",
+"start": 38.76,
+"end": 39.14
+},
+{
+"word": "it",
+"start": 39.14,
+"end": 39.3
+},
+{
+"word": "the",
+"start": 39.3,
+"end": 39.46
+},
+{
+"word": "goal",
+"start": 39.46,
+"end": 39.68
+},
+{
+"word": "of",
+"start": 39.68,
+"end": 39.8
+},
+{
+"word": "the",
+"start": 39.8,
+"end": 39.9
+},
+{
+"word": "century",
+"start": 39.9,
+"end": 40.26
+},
+{
+"word": "Argentina",
+"start": 39.82,
+"end": 41.36
+},
+{
+"word": "won",
+"start": 41.36,
+"end": 41.66
+},
+{
+"word": "2-1",
+"start": 41.66,
+"end": 42.1
+},
+{
+"word": "and",
+"start": 42.1,
+"end": 42.6
+},
+{
+"word": "went",
+"start": 42.6,
+"end": 42.82
+},
+{
+"word": "on",
+"start": 42.82,
+"end": 42.98
+},
+{
+"word": "to",
+"start": 42.98,
+"end": 43.12
+},
+{
+"word": "win",
+"start": 43.12,
+"end": 43.22
+},
+{
+"word": "the",
+"start": 43.22,
+"end": 43.34
+},
+{
+"word": "World",
+"start": 43.34,
+"end": 43.6
+},
+{
+"word": "Cup",
+"start": 43.6,
+"end": 43.82
+},
+{
+"word": "Cheat",
+"start": 43.62,
+"end": 44.46
+},
+{
+"word": "or",
+"start": 44.46,
+"end": 44.92
+},
+{
+"word": "genius?",
+"start": 44.92,
+"end": 45.74
+},
+{
+"word": "Tell",
+"start": 46.04,
+"end": 46.2
+},
+{
+"word": "me",
+"start": 46.2,
+"end": 46.32
+},
+{
+"word": "in",
+"start": 46.32,
+"end": 46.4
+},
+{
+"word": "the",
+"start": 46.4,
+"end": 46.5
+},
+{
+"word": "comments",
+"start": 46.5,
+"end": 46.74
+}
+]
+}

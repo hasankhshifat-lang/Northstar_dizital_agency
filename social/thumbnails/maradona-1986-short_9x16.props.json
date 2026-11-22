@@ -1,0 +1,8 @@
+{
+ "width": 1080, "height": 1920, "style": "toon",
+ "background": {"src": "maradona-art.jpg", "grade": "none", "darken": 0, "side": "none"},
+ "layers": [],
+ "headline": {"lines": ["THE HAND", "OF GOD?"], "accent": ["GOD?"], "align": "center", "x": 0, "y": 120, "size": 150, "panel": true},
+ "tags": [{"text": "WORLD CUP · 1986 · 51′", "x": 300, "y": 1395, "variant": "label", "size": 36}],
+ "guides": false
+}

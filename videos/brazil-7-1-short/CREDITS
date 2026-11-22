@@ -1,0 +1,12 @@
+"Six Minutes" - Brazil 1-7 Germany, World Cup semi-final, Mineirão, Belo Horizonte, 8 July 2014: an animated fan retelling for the Foot All FC channel. Comic History Cartoon style (lemo-opuscar).
+Unofficial: not made or endorsed by the CBF, the DFB, FIFA or any broadcaster. No crests, league or competition marks, broadcast footage or real
+likenesses are used; players are generic paper puppets identified by shirt number, the trophy is a generic drawn cup.
+
+Puppet art: the part sheets of videos/barca-remontada-short (AI-generated), recoloured into generic kits with tools/kit.py (shirt / shorts / socks):
+  plain yellow + blue ('bra', Brazil), red/black stripes ('ger', Germany's change colours); keepers recoloured with tools/gkkit.py ('gkb' green, 'gkg' grey).
+Narration: Microsoft VibeVoice-Realtime-0.5B, voice "Frank" (MIT licence), AI-generated voice.
+Fonts (SIL Open Font License): IM FELL English SC (Igino Marini), Old Standard TT (Alexey Kryukov), Lilita One (Juan Montoreano).
+Instruments (sampled, via lemo-opuscar core/audio/sampler.py): see out/instruments.txt at build time.
+Samples (CC0): FreePats project (freepats.zenvoid.org), VS Chamber Orchestra: Community Edition (Versilian Studios), Versilian Community Sample Library (Versilian Studios)
+Foley, crowd and applause: synthesized in mix.py.
+Facts: see social/scripts/brazil-1-7-germany.md (fact sheet with sources).

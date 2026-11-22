@@ -1,0 +1,510 @@
+{
+"text": " Germany scored four goals in six minutes against Brazil in Brazil. July 8th, 2014, a World Cup semifinal in Belo Horizonte. Brazil were without Neymar, injured, and their captain, Thiago Silva, was suspended. 11 minutes. Thomas M\u00fcller, unmarked from a corner, 1-0. 23 minutes Miroslav Klose his 16th World Cup goal a new record passing Brazil's Ronaldo then Tony Crowe scores and again then Sami Khedira 5-0 after 29 minutes Andre Sch\u00fcrrle added two more Oscar got one back at the end 7-1 five days later Germany won the World Cup worst scoreline you've ever seen Tell me in the comments.",
+"words": [
+{
+"word": "Germany",
+"start": 0.18,
+"end": 0.54
+},
+{
+"word": "scored",
+"start": 0.54,
+"end": 0.86
+},
+{
+"word": "four",
+"start": 0.86,
+"end": 1.26
+},
+{
+"word": "goals",
+"start": 1.26,
+"end": 1.66
+},
+{
+"word": "in",
+"start": 1.66,
+"end": 2.04
+},
+{
+"word": "six",
+"start": 2.04,
+"end": 2.54
+},
+{
+"word": "minutes",
+"start": 2.54,
+"end": 2.96
+},
+{
+"word": "against",
+"start": 2.96,
+"end": 4
+},
+{
+"word": "Brazil",
+"start": 4,
+"end": 4.52
+},
+{
+"word": "in",
+"start": 4.52,
+"end": 4.98
+},
+{
+"word": "Brazil.",
+"start": 4.98,
+"end": 5.4
+},
+{
+"word": "July",
+"start": 6.2,
+"end": 6.42
+},
+{
+"word": "8th,",
+"start": 6.42,
+"end": 6.88
+},
+{
+"word": "2014,",
+"start": 6.88,
+"end": 7.82
+},
+{
+"word": "a",
+"start": 7.82,
+"end": 8.8
+},
+{
+"word": "World",
+"start": 8.8,
+"end": 9.16
+},
+{
+"word": "Cup",
+"start": 9.16,
+"end": 9.28
+},
+{
+"word": "semifinal",
+"start": 9.28,
+"end": 9.9
+},
+{
+"word": "in",
+"start": 9.9,
+"end": 10.34
+},
+{
+"word": "Belo",
+"start": 10.34,
+"end": 10.66
+},
+{
+"word": "Horizonte.",
+"start": 10.66,
+"end": 11.14
+},
+{
+"word": "Brazil",
+"start": 12.3,
+"end": 12.64
+},
+{
+"word": "were",
+"start": 12.64,
+"end": 12.92
+},
+{
+"word": "without",
+"start": 12.92,
+"end": 13.18
+},
+{
+"word": "Neymar,",
+"start": 13.18,
+"end": 14.14
+},
+{
+"word": "injured,",
+"start": 14.14,
+"end": 15.26
+},
+{
+"word": "and",
+"start": 15.26,
+"end": 15.28
+},
+{
+"word": "their",
+"start": 15.28,
+"end": 15.36
+},
+{
+"word": "captain,",
+"start": 15.36,
+"end": 16.08
+},
+{
+"word": "Thiago",
+"start": 16.08,
+"end": 16.34
+},
+{
+"word": "Silva,",
+"start": 16.34,
+"end": 16.94
+},
+{
+"word": "was",
+"start": 16.94,
+"end": 17.08
+},
+{
+"word": "suspended.",
+"start": 17.08,
+"end": 17.5
+},
+{
+"word": "11",
+"start": 18.94,
+"end": 19.18
+},
+{
+"word": "minutes.",
+"start": 19.18,
+"end": 19.56
+},
+{
+"word": "Thomas",
+"start": 19.56,
+"end": 20.66
+},
+{
+"word": "M\u00fcller,",
+"start": 20.66,
+"end": 21.7
+},
+{
+"word": "unmarked",
+"start": 21.7,
+"end": 22.02
+},
+{
+"word": "from",
+"start": 22.02,
+"end": 22.18
+},
+{
+"word": "a",
+"start": 22.18,
+"end": 22.3
+},
+{
+"word": "corner,",
+"start": 22.3,
+"end": 23.22
+},
+{
+"word": "1-0.",
+"start": 23.22,
+"end": 23.6
+},
+{
+"word": "23",
+"start": 25.74,
+"end": 25.92
+},
+{
+"word": "minutes",
+"start": 25.92,
+"end": 26.46
+},
+{
+"word": "Miroslav",
+"start": 27,
+"end": 27.5
+},
+{
+"word": "Klose",
+"start": 27.5,
+"end": 27.82
+},
+{
+"word": "his",
+"start": 27.38,
+"end": 28.96
+},
+{
+"word": "16th",
+"start": 28.96,
+"end": 29.58
+},
+{
+"word": "World",
+"start": 29.58,
+"end": 29.8
+},
+{
+"word": "Cup",
+"start": 29.8,
+"end": 29.96
+},
+{
+"word": "goal",
+"start": 29.96,
+"end": 30.32
+},
+{
+"word": "a",
+"start": 29.9,
+"end": 30.82
+},
+{
+"word": "new",
+"start": 30.82,
+"end": 31.04
+},
+{
+"word": "record",
+"start": 31.04,
+"end": 31.46
+},
+{
+"word": "passing",
+"start": 31.02,
+"end": 32.46
+},
+{
+"word": "Brazil's",
+"start": 32.46,
+"end": 33.04
+},
+{
+"word": "Ronaldo",
+"start": 33.04,
+"end": 33.4
+},
+{
+"word": "then",
+"start": 34.54,
+"end": 34.76
+},
+{
+"word": "Tony",
+"start": 34.76,
+"end": 35.12
+},
+{
+"word": "Crowe",
+"start": 35.12,
+"end": 35.36
+},
+{
+"word": "scores",
+"start": 35.36,
+"end": 35.78
+},
+{
+"word": "and",
+"start": 35.36,
+"end": 36.98
+},
+{
+"word": "again",
+"start": 36.98,
+"end": 37.26
+},
+{
+"word": "then",
+"start": 36.86,
+"end": 38.3
+},
+{
+"word": "Sami",
+"start": 38.3,
+"end": 38.72
+},
+{
+"word": "Khedira",
+"start": 38.72,
+"end": 39.1
+},
+{
+"word": "5-0",
+"start": 39.06,
+"end": 40.4
+},
+{
+"word": "after",
+"start": 40.4,
+"end": 41.16
+},
+{
+"word": "29",
+"start": 41.16,
+"end": 41.6
+},
+{
+"word": "minutes",
+"start": 41.6,
+"end": 42.04
+},
+{
+"word": "Andre",
+"start": 41.58,
+"end": 43
+},
+{
+"word": "Sch\u00fcrrle",
+"start": 43,
+"end": 43.3
+},
+{
+"word": "added",
+"start": 43.3,
+"end": 43.62
+},
+{
+"word": "two",
+"start": 43.62,
+"end": 43.86
+},
+{
+"word": "more",
+"start": 43.86,
+"end": 44.18
+},
+{
+"word": "Oscar",
+"start": 43.96,
+"end": 44.82
+},
+{
+"word": "got",
+"start": 44.82,
+"end": 45.02
+},
+{
+"word": "one",
+"start": 45.02,
+"end": 45.22
+},
+{
+"word": "back",
+"start": 45.22,
+"end": 45.38
+},
+{
+"word": "at",
+"start": 45.38,
+"end": 45.56
+},
+{
+"word": "the",
+"start": 45.56,
+"end": 45.7
+},
+{
+"word": "end",
+"start": 45.7,
+"end": 46
+},
+{
+"word": "7-1",
+"start": 45.9,
+"end": 47.56
+},
+{
+"word": "five",
+"start": 47.14,
+"end": 48.2
+},
+{
+"word": "days",
+"start": 48.2,
+"end": 48.46
+},
+{
+"word": "later",
+"start": 48.46,
+"end": 48.84
+},
+{
+"word": "Germany",
+"start": 48.36,
+"end": 49.44
+},
+{
+"word": "won",
+"start": 49.44,
+"end": 49.66
+},
+{
+"word": "the",
+"start": 49.66,
+"end": 49.8
+},
+{
+"word": "World",
+"start": 49.8,
+"end": 50.1
+},
+{
+"word": "Cup",
+"start": 50.1,
+"end": 50.36
+},
+{
+"word": "worst",
+"start": 49.88,
+"end": 51.08
+},
+{
+"word": "scoreline",
+"start": 51.08,
+"end": 51.56
+},
+{
+"word": "you've",
+"start": 51.56,
+"end": 51.76
+},
+{
+"word": "ever",
+"start": 51.76,
+"end": 52
+},
+{
+"word": "seen",
+"start": 52,
+"end": 52.38
+},
+{
+"word": "Tell",
+"start": 54.14,
+"end": 54.24
+},
+{
+"word": "me",
+"start": 54.24,
+"end": 54.34
+},
+{
+"word": "in",
+"start": 54.34,
+"end": 54.44
+},
+{
+"word": "the",
+"start": 54.44,
+"end": 54.52
+},
+{
+"word": "comments.",
+"start": 54.52,
+"end": 54.92
+}
+]
+}
