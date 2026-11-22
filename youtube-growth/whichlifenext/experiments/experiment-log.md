@@ -48,3 +48,7 @@ Card added 2026-11-16 to mirror the learning-database row (the experiment was ta
 - **Result:** — **Decision:** —
 
 _No new experiment proposed this week: two are running on the same Shorts, and a third would confound both._
+
+
+### 2026-11-22 update: EXP-whichlifenext-001 confounded
+Owner moved Which Life Next to 3 Shorts a day (08:00 / 13:00 / 17:00 ET) on 2026-11-22, so the one-Short-a-day test stops being clean. Interim data (YouTube Analytics to 11-19, read 2026-11-22): 08:00 ET arm 11-14…11-16 = 1,645 / 1,523 / 1,201 views, swipe-away 48–51%; 17:00 ET arm 11-17…11-19 = 573 / 349 / 52 (lycDlMhOJ_M only ~2 h of data), swipe-away 52–56%. 17:00 ET reach is clearly lower so far; no Shorts were scheduled 11-20…11-22 (missed runs). Keep logging per-slot results; decide in the weekly review.
