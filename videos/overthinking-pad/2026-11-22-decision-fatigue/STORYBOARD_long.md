@@ -10,7 +10,7 @@ Notebook doodle (channel engine, Sketchnote base). Per scene: purpose · what is
 - **SFX:** office hum; a mail ping per email; a soft "pop" on the question; silence on "stops"
 
 ## hook2
-> There's a name for that feeling. Decision fatigue. And it's backed by one of the most famous studies in psychology: judges who granted parole... depending on how long it had been since their last meal.
+> There's a name for that feeling. Decision fatigue. And it's backed by one of the most famous studies in psychology: judges who granted parole... depending on how much time had passed since their last meal.
 
 - **Purpose:** name it + the famous study: judges, parole, meals
 - **Shot:** pan right; the label first, then the bench and the plate; push on the clock between the plate and the gavel
@@ -97,7 +97,7 @@ Notebook doodle (channel engine, Sketchnote base). Per scene: purpose · what is
 - **SFX:** quick pen pops for each icon
 
 ## c1h
-> And it fit perfectly with a theory psychologists had been building for over a decade. A theory that said willpower works a lot like a battery.
+> And it fit neatly with a theory that psychologists had been building for over a decade. A theory that said willpower works a lot like a battery.
 
 - **Purpose:** the bridge: it fit a theory that willpower is a battery (open question into ch 2)
 - **Shot:** pan right; the head is drawn, a battery slides into it; push on the battery
@@ -205,7 +205,7 @@ Notebook doodle (channel engine, Sketchnote base). Per scene: purpose · what is
 - **SFX:** clock ticks; a file slide
 
 ## c3e
-> Just that kind of scheduling, with no tiredness at all, could produce a big part of the drop. Others pointed out that a swing from sixty five percent to almost zero would be one of the largest effects in all of psychology.
+> Just that kind of scheduling, with no tiredness at all, could produce a big part of the drop. Others noted that a swing from sixty five percent to almost zero would be one of the biggest effects psychology has ever seen.
 
 - **Purpose:** scheduling alone can make much of the drop; and a 65%→0 swing would be one of the biggest effects in psychology
 - **Shot:** pan right; a second saw chart made by scheduling only (no tired faces) overlays the first; then a size ruler dwarfs normal effects
@@ -233,7 +233,7 @@ Notebook doodle (channel engine, Sketchnote base). Per scene: purpose · what is
 - **SFX:** silence; one tiny pluck
 
 ## c3x
-> Not small. Close to zero. The original studies had reported effects many times larger.
+> Not just small... close to zero. The original studies had reported effects many times larger.
 
 - **Purpose:** contrast: not small, close to zero; the originals were many times larger
 - **Shot:** pan right; the original bar towers beside the new tiny bar
@@ -247,7 +247,7 @@ Notebook doodle (channel engine, Sketchnote base). Per scene: purpose · what is
 - **SFX:** pops; a tiny pluck
 
 ## c3j
-> And the sugar? Critics showed that the brain's extra use of glucose during a hard task is tiny. Far too small to be the fuel gauge the theory needed.
+> And what about the sugar? Critics showed that the brain's extra use of glucose during a hard task is tiny. Far too small to be the fuel gauge the theory needed.
 
 - **Purpose:** the sugar idea checked: the brain's extra glucose use is tiny, too small to be the fuel gauge
 - **Shot:** pan right; the lemonade glass returns; a big fuel gauge with a needle that barely moves
@@ -348,7 +348,7 @@ Notebook doodle (channel engine, Sketchnote base). Per scene: purpose · what is
 - **SFX:** pen; three taps
 
 ## c5b
-> One. Move the decisions that matter. If the drift shows up late in a long run of choices, don't save your hardest decision for the end of the day. Make it while you're fresh, or sleep on it.
+> One. Move the decisions that matter. If the drift shows up after a long run of choices, don't save your hardest decision for the end of the day. Make it while you're fresh, or sleep on it.
 
 - **Purpose:** idea 1: move the decisions that matter earlier; decide fresh or sleep on it
 - **Shot:** pan right; a day timeline; the big decision card is lifted from 6 PM and placed at 9 AM; a moon for "sleep on it"
@@ -376,7 +376,7 @@ Notebook doodle (channel engine, Sketchnote base). Per scene: purpose · what is
 - **SFX:** eraser swipes
 
 ## c5e
-> Three. Take real breaks, and watch out for the default. In the hospital study, caregivers who had longer rest between shifts washed their hands more often afterwards.
+> Three. Take real breaks, and watch out for the default. In the hospital study, caregivers who had longer rest between shifts washed their hands more often on their next shift.
 
 - **Purpose:** idea 3: real breaks; longer rest between shifts → more hand washing afterwards
 - **Shot:** pan right; a bed between two shift bars; the next shift's line starts higher
@@ -404,7 +404,7 @@ Notebook doodle (channel engine, Sketchnote base). Per scene: purpose · what is
 - **SFX:** long paper whoosh; office hum returns
 
 ## end2
-> Decision fatigue isn't a myth. It's just smaller, and stranger, than the story about the hungry judges. Those judges probably weren't ruled by their lunch. But you, at four in the afternoon, may really be a little more likely to take the easy way out.
+> So, decision fatigue isn't a myth. It's just smaller, and stranger, than the story about the hungry judges. Those judges probably weren't ruled by their lunch. But you, at four in the afternoon, may really be a little more likely to take the easy way out.
 
 - **Purpose:** the line to remember: not a myth, smaller and stranger; the judges vs you at 4 p.m.
 - **Shot:** whip right along the top row; the MYTH box is crossed, the saw chart shrinks to a small wobble; push on "a little more likely"

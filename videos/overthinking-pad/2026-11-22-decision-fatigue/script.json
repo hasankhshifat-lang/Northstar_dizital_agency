@@ -6,7 +6,7 @@
   },
   {
    "id": "hook2",
-   "say": "There's a name for that feeling. Decision fatigue. And it's backed by one of the most famous studies in psychology: judges who granted parole... depending on how long it had been since their last meal."
+   "say": "There's a name for that feeling. Decision fatigue. And it's backed by one of the most famous studies in psychology: judges who granted parole... depending on how much time had passed since their last meal."
   },
   {
    "id": "hook3",
@@ -60,7 +60,7 @@
   },
   {
    "id": "c1h",
-   "say": "And it fit perfectly with a theory psychologists had been building for over a decade. A theory that said willpower works a lot like a battery."
+   "say": "And it fit neatly with a theory that psychologists had been building for over a decade. A theory that said willpower works a lot like a battery."
   },
   {
    "id": "ch2",
@@ -128,7 +128,7 @@
   },
   {
    "id": "c3e",
-   "say": "Just that kind of scheduling, with no tiredness at all, could produce a big part of the drop. Others pointed out that a swing from sixty five percent to almost zero would be one of the largest effects in all of psychology."
+   "say": "Just that kind of scheduling, with no tiredness at all, could produce a big part of the drop. Others noted that a swing from sixty five percent to almost zero would be one of the biggest effects psychology has ever seen."
   },
   {
    "id": "c3f",
@@ -144,7 +144,7 @@
   },
   {
    "id": "c3x",
-   "say": "Not small. Close to zero. The original studies had reported effects many times larger."
+   "say": "Not just small... close to zero. The original studies had reported effects many times larger."
   },
   {
    "id": "c3i",
@@ -152,7 +152,7 @@
   },
   {
    "id": "c3j",
-   "say": "And the sugar? Critics showed that the brain's extra use of glucose during a hard task is tiny. Far too small to be the fuel gauge the theory needed."
+   "say": "And what about the sugar? Critics showed that the brain's extra use of glucose during a hard task is tiny. Far too small to be the fuel gauge the theory needed."
   },
   {
    "id": "c3k",
@@ -216,7 +216,7 @@
   },
   {
    "id": "c5b",
-   "say": "One. Move the decisions that matter. If the drift shows up late in a long run of choices, don't save your hardest decision for the end of the day. Make it while you're fresh, or sleep on it."
+   "say": "One. Move the decisions that matter. If the drift shows up after a long run of choices, don't save your hardest decision for the end of the day. Make it while you're fresh, or sleep on it."
   },
   {
    "id": "c5c",
@@ -232,7 +232,7 @@
   },
   {
    "id": "c5e",
-   "say": "Three. Take real breaks, and watch out for the default. In the hospital study, caregivers who had longer rest between shifts washed their hands more often afterwards."
+   "say": "Three. Take real breaks, and watch out for the default. In the hospital study, caregivers who had longer rest between shifts washed their hands more often on their next shift."
   },
   {
    "id": "c5f",
@@ -248,7 +248,7 @@
   },
   {
    "id": "end2",
-   "say": "Decision fatigue isn't a myth. It's just smaller, and stranger, than the story about the hungry judges. Those judges probably weren't ruled by their lunch. But you, at four in the afternoon, may really be a little more likely to take the easy way out."
+   "say": "So, decision fatigue isn't a myth. It's just smaller, and stranger, than the story about the hungry judges. Those judges probably weren't ruled by their lunch. But you, at four in the afternoon, may really be a little more likely to take the easy way out."
   },
   {
    "id": "end3",

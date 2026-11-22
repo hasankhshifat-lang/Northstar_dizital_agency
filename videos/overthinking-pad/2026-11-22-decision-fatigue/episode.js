@@ -285,12 +285,12 @@ def(LONG, 'hook1', blk(0, 1), { purpose: 'hook: the 4 p.m. freeze, shown before 
 def(LONG, 'hook2', blk(0, 2), { purpose: 'name it + the famous study: judges, parole, meals', shot: 'pan right; the label first, then the bench and the plate; push on the clock between the plate and the gavel', sfx: 'a gavel tap on "parole"; a plate clink on "meal"' }, (S, L) => {
   const [x, y] = blk(0, 2);
   tag(L, x + 800, y + 110, 'DECISION FATIGUE', 72, S.at('decision') - 0.3, { tint: L.YEL });
-  bench(L, x + 160, y + 820, 640, 300, S.at('judges') - 0.5);
-  const J = L.person(x + 480, y + 520, 1.3, S.at('judges') - 0.3, { pose: 'hold', kind: 'neutral', look: [1, 0.3], hair: 'messy', k: 0.6 });
+  bench(L, x + 160, y + 820, 640, 300, S.at('judges') - 0.05);
+  const J = L.person(x + 480, y + 640, 1.3, S.at('judges') - 0.3, { pose: 'hold', kind: 'neutral', look: [1, 0.3], hair: 'messy', k: 0.6 });
   gavel(L, J.hand[1][0] + 30, J.hand[1][1] - 20, 0.9, S.at('parole') - 0.2, { bang: true });
   L.TXT('PAROLE?', x + 480, y + 680, 56, { f: 'KB', align: 'center' }, S.at('parole'), 0.4);
-  plate(L, x + 1200, y + 640, 1.3, S.at('meal') - 0.8); L.clock(x + 1200, y + 380, 80, S.at('long') - 0.2);
-  L.TXT('time since the last meal', x + 1200, y + 790, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('last') - 0.2, 0.6);
+  plate(L, x + 1200, y + 640, 1.3, S.at('meal') - 0.8); L.clock(x + 1200, y + 380, 80, S.at('time') - 0.2);
+  L.TXT('time since the last meal', x + 1200, y + 790, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('passed') - 0.2, 0.6);
   L.inkArrow([[x + 1080, y + 380], [x + 860, y + 420]], { w: 4 }, S.at('meal'), 0.3);
 });
 def(LONG, 'hook3', blk(0, 3), { purpose: 'the twist: the study and the theory got checked; some did not survive', shot: 'pan right; the study card is stamped CHECKED, a magnifier sweeps it; push on the torn half', sfx: 'stamp thud on "checked"; paper tear on "survive"' }, (S, L) => {
@@ -299,8 +299,8 @@ def(LONG, 'hook3', blk(0, 3), { purpose: 'the twist: the study and the theory go
   card(L, x + 160, y + 540, 520, 300, S.at('theory') - 0.3, { lines: [['the willpower battery', 40], ['1998', 40, 'PH']] });
   L.TXT('almost nobody mentions...', x + 1150, y + 160, 44, { f: 'PH', align: 'center', col: L.INK2 }, S.at('mentions') - 0.5, 0.6);
   const mx = x + 1150, my = y + 400; L.INK_(L.ell(mx, my, 110, 110, 0, L.TAU, 40), { closed: true, w: 5, amp: 0.4 }, S.at('checked') - 0.4, 0.2); L.INK_(L.line(mx + 78, my + 78, mx + 190, my + 190), { w: 10, amp: 0.2, passes: 1 }, S.at('checked') - 0.25, 0.1);
-  tag(L, x + 420, y + 330, 'CHECKED', 54, S.at('checked'), { tint: L.YEL });
-  tag(L, x + 420, y + 700, 'CHECKED', 54, S.at('theory') + 0.4, { tint: L.YEL });
+  tag(L, x + 640, y + 170, 'CHECKED', 44, S.at('checked'), { tint: L.YEL });
+  tag(L, x + 640, y + 550, 'CHECKED', 44, S.at('theory') + 0.4, { tint: L.YEL });
   L.qmark(mx, my + 40, 140, S.at("didn't") - 0.2);
   L.TXT("some didn't survive", x + 1150, y + 720, 56, { f: 'KB', align: 'center' }, S.at('survive') - 0.4, 0.6); L.swash(x + 900, y + 745, x + 1400, S.at('survive') + 0.3, 0.3);
 });
@@ -351,7 +351,7 @@ const CH = blk(1, 3), CX = CH[0] + 240, CY = CH[1] + 760, CW = 1200, CHH = 560;
 def(LONG, 'c1c', CH, { purpose: 'set up the one measure: chance of parole by position in the session', shot: 'pan right; empty axes are drawn and labelled (the viewer reads the question before the data)', sfx: 'ruler-straight pen strokes' }, (S, L) => {
   L.INK_(L.line(CX, CY, CX + CW, CY), { w: 3.4, amp: 0.4 }, S.t0 + 0.2, 0.3); L.INK_(L.line(CX, CY, CX, CY - CHH), { w: 3.4, amp: 0.4 }, S.t0 + 0.35, 0.3);
   L.TXT('chance of parole', CX + 10, CY - CHH - 30, 42, { f: 'KB' }, S.at('chance') - 0.2, 0.6);
-  L.TXT('position of the case in the session  →', CX + CW / 2, CY + 110, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('where') - 0.3, 0.8);
+  L.TXT('position of the case in the session  →', CX + CW / 2, CY + 150, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('where') - 0.3, 0.8);
   L.TXT('first', CX + 60, CY + 50, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('session') - 0.2, 0.2); L.TXT('last', CX + CW / 3 - 60, CY + 50, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('session'), 0.2);
 });
 const lvC = v => CY - CHH * v / 0.8, swC = CW / 3;
@@ -365,20 +365,20 @@ def(LONG, 'c1d', CH, { purpose: 'session 1: 65% at the start, sliding to near ze
 });
 def(LONG, 'c1e', CH, { purpose: 'the break: they eat, the rate jumps back to 65% and slides again', shot: 'slow pan right along the chart to the second session; the plate is dropped in at the gap; the line jumps', sfx: 'plate clink on "ate"; an upward pluck on the jump', camFit: [CH[0] + 300, CH[1], 1100, 900], push: 0.04 }, (S, L) => {
   const bx = CX + swC - 12; L.INK_(L.line(bx, CY - 4, bx, CY - CHH * 0.95), { w: 2, amp: 0.4, passes: 1, dash: [8, 8], alpha: 0.6 }, S.at('break') - 0.3, 0.2);
-  L.cup(bx, CY - CHH * 0.98, 0.7, S.at('ate') - 0.3); L.TXT('snack', bx, CY + 50, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('ate'), 0.2);
+  L.cup(bx, CY - CHH * 0.98, 0.7, S.at('ate') - 0.3); L.TXT('snack', bx, CY + 90, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('ate'), 0.2);
   L.inkArrow([[bx - 18, lvC(0.06)], [bx + 4, lvC(0.6)]], { w: 4 }, S.at('jumped') - 0.2, 0.2);
   slide(L, 1, S.at('sliding') - 0.4, 1.6);
 });
 def(LONG, 'c1x', CH, { purpose: 'the full saw: three sessions, three slides, three jumps (the picture people remember)', shot: 'pull back to the whole chart as the third slide is drawn; hold on the saw-tooth shape', sfx: 'third descending pluck; a low cold note on "chill"', camFit: [CH[0], CH[1] - 50, 1600, 1000], push: 0.02 }, (S, L) => {
   const bx = CX + swC * 2 - 12; L.INK_(L.line(bx, CY - 4, bx, CY - CHH * 0.95), { w: 2, amp: 0.4, passes: 1, dash: [8, 8], alpha: 0.6 }, S.at('three') - 0.2, 0.2);
-  plate(L, bx, CY - CHH * 0.98, 0.5, S.at('three')); L.TXT('lunch', bx, CY + 50, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('three') + 0.2, 0.2);
+  plate(L, bx, CY - CHH * 0.98, 0.5, S.at('three')); L.TXT('lunch', bx, CY + 90, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('three') + 0.2, 0.2);
   slide(L, 2, S.at('slides') - 0.3, 1.4);
   L.TXT('the saw', CX + CW - 60, CY - CHH - 20, 52, { f: 'KB', align: 'center' }, S.at('saw') - 0.3, 0.4); L.swash(CX + CW - 180, CY - CHH + 6, CX + CW + 60, S.at('saw') + 0.2, 0.3);
 });
 def(LONG, 'c1f', blk(1, 4), { purpose: 'the authors\' reading: worn down → fall back on the easy option = say no, keep the status quo', shot: 'pan right; the judge slumps as rulings stack, the fork appears and the yellow default path lights on "say no"', sfx: 'paper flicks; a stamp on "no"' }, (S, L) => {
   const [x, y] = blk(1, 4);
-  bench(L, x + 100, y + 860, 520, 260, S.t0 + 0.1);
-  const J = L.person(x + 360, y + 600, 1.3, S.t0 + 0.2, { pose: 'hold', kind: 'neutral', look: [1, 0.3], hair: 'messy', k: 0.6 });
+  bench(L, x + 100, y + 860, 520, 260, S.t0 + 0.45);
+  const J = L.person(x + 360, y + 720, 1.3, S.t0 + 0.1, { pose: 'hold', kind: 'neutral', look: [1, 0.3], hair: 'messy', k: 0.6 });
   for (let i = 0; i < 5; i++) L.sheet(x + 480, y + 560 - i * 26, 120, 70, S.at('ruling') + i * 0.12, { lines: 1 });
   L.react(J, S.at('down') - 0.1, { kind: 'bored', look: [0.5, 0.6] });
   fork(L, x + 800, y + 640, 640, S.at('easy') - 0.6, { hard: 'grant parole: think, weigh, explain', easy: 'NO · keep things as they are', easyT: Math.max(0.5, S.at('no') - S.at('easy') + 0.4), ls: 36 });
@@ -426,21 +426,21 @@ def(LONG, 'c2b', blk(2, 2), { purpose: 'the two groups: cookies allowed vs sit i
 });
 def(LONG, 'c2c', blk(2, 3), { purpose: 'the unsolvable puzzle and the stopwatch (what was really measured)', shot: 'pan right; the puzzle drawn, the hidden "impossible" note revealed, then the stopwatch starts', sfx: 'puzzle clatter; stopwatch click' }, (S, L) => {
   const [x, y] = blk(2, 3);
-  student(L, x + 380, y + 820, 1.6, S.at('puzzle') - 0.6, { kind: 'think', look: [1, 0.4], hair: 'tuft' });
+  L.student(x + 380, y + 820, 1.6, S.at('puzzle') - 0.6, { kind: 'think', look: [1, 0.4], hair: 'tuft' });
   puzzle(L, x + 760, y + 420, 2.2, S.at('puzzle') - 0.2); puzzle(L, x + 940, y + 480, 1.6, S.at('puzzle'), { col: L.GRY });
-  L.TXT('(it could not be solved)', x + 860, y + 640, 44, { f: 'PH', align: 'center', col: L.INK2 }, S.at('solved') - 0.6, 0.6); L.MRK([[[x + 640, y + 640], [x + 1080, y + 640]]], { col: L.YEL, w: 16, edge: false }, S.at('solved') - 0.2, 0.3);
+  L.TXT('(it could not be solved)', x + 850, y + 720, 44, { f: 'PH', align: 'center', col: L.INK2 }, S.at('solved') - 0.6, 0.6); L.MRK([[[x + 630, y + 720], [x + 1070, y + 720]]], { col: L.YEL, w: 16, edge: false }, S.at('solved') - 0.2, 0.3);
   L.clock(x + 1320, y + 400, 110, S.at('timed') - 0.3); L.INK_(L.rrect(x + 1300, y + 260, 40, 30, 6), { closed: true, w: 3, amp: 0.2, passes: 1 }, S.at('timed') - 0.1, 0.05);
-  L.TXT('how long until they quit?', x + 1250, y + 620, 42, { f: 'KB', align: 'center' }, S.at('trying') - 0.8, 0.8);
+  L.TXT('how long until they quit?', x + 1320, y + 580, 42, { f: 'KB', align: 'center' }, S.at('trying') - 0.8, 0.8);
 });
 def(LONG, 'c2d', blk(2, 4), { purpose: 'the result: radish eaters quit at ~8 min, cookie eaters ~20 min', shot: 'pan right; two bars grow, push on the short radish bar', sfx: 'two rising plucks, the first cut short' }, (S, L) => {
   const [x, y] = blk(2, 4);
-  bars(L, x + 360, y + 760, 880, 560, [{ v: 0.38, label: 'radish eaters', top: '≈ 8 min', col: 'rgba(214,80,110,0.45)', t: S.at('radish') - 0.2 }, { v: 0.9, label: 'cookie eaters', top: '≈ 20 min', col: 'rgba(200,150,80,0.45)', t: S.at('cookie') - 0.2 }], S.t0 + 0.1, { ls: 40, ts: 52 });
+  L.bars(x + 360, y + 760, 880, 560, [{ v: 0.38, label: 'radish eaters', top: '≈ 8 min', col: 'rgba(214,80,110,0.45)', t: S.at('radish') - 0.2 }, { v: 0.9, label: 'cookie eaters', top: '≈ 20 min', col: 'rgba(200,150,80,0.45)', t: S.at('cookie') - 0.2 }], S.t0 + 0.1, { ls: 40, ts: 52 });
   radish(L, x + 300, y + 840, 0.9, S.at('radish')); cookie(L, x + 1300, y + 840, 34, S.at('cookie'));
   L.TXT('minutes trying', x + 360, y + 150, 40, { f: 'PH', col: L.INK2 }, S.t0 + 0.2, 0.5);
 });
 def(LONG, 'c2x', blk(2, 5), { purpose: 'the only difference: a few minutes of not eating cookies', shot: 'pan right; the two students side by side, identical; one detail circled (the radish)', sfx: 'pen circle squeak' }, (S, L) => {
   const [x, y] = blk(2, 5);
-  student(L, x + 300, y + 780, 1.4, S.at('same') - 0.5, { kind: 'neutral', look: [1, 0.4], hair: 'tuft' }); student(L, x + 900, y + 780, 1.4, S.at('same') - 0.3, { kind: 'neutral', look: [1, 0.4], hair: 'tuft' });
+  L.student(x + 300, y + 780, 1.4, S.at('same') - 0.5, { kind: 'neutral', look: [1, 0.4], hair: 'tuft' }); L.student(x + 900, y + 780, 1.4, S.at('same') - 0.3, { kind: 'neutral', look: [1, 0.4], hair: 'tuft' });
   L.TXT('same students · same puzzle', x + 800, y + 140, 54, { f: 'KB', align: 'center' }, S.at('puzzle') - 0.6, 0.8);
   cookie(L, x + 420, y + 640, 30, S.at('difference') - 0.3); radish(L, x + 1020, y + 640, 0.8, S.at('difference') - 0.2);
   L.loop(x + 1020, y + 640, 90, 80, S.at('minutes') - 0.2, 0.4);
@@ -480,7 +480,7 @@ def(LONG, 'c2h', blk(2, 9), { purpose: 'it became famous (hundreds of studies) �
   L.TXT('hundreds of studies', x + 420, y + 900, 44, { f: 'KB', align: 'center' }, S.at('studies') - 0.2, 0.5);
   L.TXT('one of the best known ideas', x + 1100, y + 240, 50, { f: 'KB', align: 'center' }, S.at('known') - 0.5, 0.8);
   const mx = x + 1100, my = y + 520; L.INK_(L.ell(mx, my, 120, 120, 0, L.TAU, 40), { closed: true, w: 5, amp: 0.4 }, S.at('testing') - 0.4, 0.2); L.INK_(L.line(mx + 85, my + 85, mx + 200, my + 200), { w: 10, amp: 0.2, passes: 1 }, S.at('testing') - 0.25, 0.1);
-  L.TXT('tested properly', mx, my + 14, 40, { f: 'KB', align: 'center' }, S.at('properly') - 0.2, 0.5);
+  L.TXT('tested', mx, my + 14, 44, { f: 'KB', align: 'center' }, S.at('properly') - 0.2, 0.5);
 });
 
 // ===== chapter 3: the check =====
@@ -512,8 +512,8 @@ def(LONG, 'c3d', blk(3, 4), { purpose: 'Glöckner 2016 simulation: granting take
   tag(L, x + 300, y + 110, '2016 · Andreas Glöckner', 46, S.at('glockner') - 0.5); L.TXT('simulations', x + 300, y + 190, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('simulations') - 0.2, 0.4);
   for (let i = 0; i < 4; i++) L.sheet(x + 200 + i * 10, y + 320 + i * 10, 260, 150, S.at('granting') - 0.4 + i * 0.04, { lines: 3 }); L.TXT('grant: longer', x + 340, y + 560, 42, { f: 'KB', align: 'center' }, S.at('longer') - 0.2, 0.4);
   L.sheet(x + 200, y + 640, 260, 60, S.at('refusing') - 0.3, { lines: 1 }); L.TXT('refuse: shorter', x + 340, y + 760, 42, { f: 'KB', align: 'center' }, S.at('refusing'), 0.4);
-  bench(L, x + 900, y + 840, 420, 220, S.at('picture') - 0.4);
-  const J = L.person(x + 1110, y + 620, 1.2, S.at('judge') - 0.3, { pose: 'hold', kind: 'think', look: [1, -0.4], hair: 'messy', k: 0.5 });
+  bench(L, x + 900, y + 840, 420, 220, S.at('judge') + 0.05);
+  const J = L.person(x + 1110, y + 730, 1.2, S.at('judge') - 0.3, { pose: 'hold', kind: 'think', look: [1, -0.4], hair: 'messy', k: 0.5 });
   L.clock(x + 1400, y + 300, 80, S.at('break') - 0.4); L.TXT('break in 5 min', x + 1400, y + 430, 36, { f: 'PH', align: 'center', col: L.INK2 }, S.at('break'), 0.4);
   L.react(J, S.at('long') - 0.2, { kind: 'worry', look: [-1, 0.3] });
   L.bubble(x + 840, y + 230, 360, 110, S.at("doesn't") - 0.3, { thought: true, text: 'not a long one now...', size: 30, tail: [J.head[0] - 20, J.head[1] - 50] });
@@ -524,15 +524,15 @@ def(LONG, 'c3e', blk(3, 5), { purpose: 'scheduling alone can make much of the dr
   L.TXT('scheduling only', x + 460, y + 140, 48, { f: 'KB', align: 'center' }, S.at('scheduling'), 0.5); L.TXT('no tiredness at all', x + 460, y + 680, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('tiredness') - 0.2, 0.5);
   L.check(x + 760, y + 300, 2, S.at('drop') - 0.2);
   L.TXT('size of the effect', x + 1200, y + 140, 44, { f: 'KB', align: 'center' }, S.at('swing') - 0.6, 0.6);
-  bars(L, x + 920, y + 760, 560, 520, [{ v: 0.12, label: 'typical', t: S.at('swing') - 0.2 }, { v: 0.2, label: 'large', t: S.at('swing') + 0.2 }, { v: 0.95, label: 'judges', col: L.YEL, top: '!', t: S.at('largest') - 0.4 }], S.at('swing') - 0.3, { ls: 34 });
+  L.bars(x + 920, y + 760, 560, 520, [{ v: 0.12, label: 'typical', t: S.at('swing') - 0.2 }, { v: 0.2, label: 'large', t: S.at('swing') + 0.2 }, { v: 0.95, label: 'judges', col: L.YEL, top: '!', t: S.at('biggest') - 0.4 }], S.at('swing') - 0.3, { ls: 34 });
 });
 def(LONG, 'c3f', blk(3, 6), { purpose: 'the honest middle: not proof the judges weren\'t tired; the number is probably too big', shot: 'pan right; a scale: a small weight labelled "fatigue?" against the big famous number', sfx: 'scale creak' }, (S, L) => {
   const [x, y] = blk(3, 6);
   L.TXT("doesn't prove they weren't tired", x + 800, y + 140, 50, { f: 'PH', align: 'center', col: L.INK2 }, S.at('proves') - 0.4, 0.8);
   L.INK_(L.line(x + 800, y + 780, x + 800, y + 360), { w: 5, amp: 0.2, passes: 1 }, S.at('famous') - 1.0, 0.2); L.INK_([[x + 700, y + 790], [x + 800, y + 740], [x + 900, y + 790]], { closed: true, w: 3, amp: 0.2 }, S.at('famous') - 1.0, 0.15);
-  L.INK_(L.line(x + 440, y + 300, x + 1160, y + 420), { w: 5, amp: 0.2, passes: 1 }, S.at('famous') - 0.8, 0.2);
-  tag(L, x + 480, y + 230, 'the famous number', 46, S.at('number') - 0.3, { tint: L.YEL });
-  tag(L, x + 1130, y + 360, 'real fatigue?', 34, S.at('fatigue') - 0.3);
+  L.INK_(L.line(x + 440, y + 420, x + 1160, y + 300), { w: 5, amp: 0.2, passes: 1 }, S.at('famous') - 0.8, 0.2);
+  tag(L, x + 480, y + 350, 'the famous number', 46, S.at('number') - 0.3, { tint: L.YEL });
+  tag(L, x + 1130, y + 240, 'real fatigue?', 34, S.at('fatigue') - 0.3);
   L.TXT('probably much bigger than', x + 800, y + 880, 46, { f: 'KB', align: 'center' }, S.at('bigger') - 0.4, 0.6);
 });
 def(LONG, 'c3g', blk(3, 7), { purpose: 'the battery tested: 2016, 23 labs, method agreed in advance, 2,000+ people', shot: 'pan right; a world doodle, 23 lab icons pop in around it one by one, then a crowd fills', sfx: 'a light pop per lab' }, (S, L) => {
@@ -552,7 +552,7 @@ def(LONG, 'c3h', blk(3, 8, 1000, 700), { purpose: 'the punch: close to zero (a b
 });
 def(LONG, 'c3x', blk(3, 9), { purpose: 'contrast: not small, close to zero; the originals were many times larger', shot: 'pan right; the original bar towers beside the new tiny bar', sfx: 'a rising pluck, then the tiny one' }, (S, L) => {
   const [x, y] = blk(3, 9);
-  bars(L, x + 400, y + 760, 800, 560, [{ v: 0.85, label: 'original studies', top: 'big', t: S.at('original') - 0.3 }, { v: 0.04, label: 'the big test', col: L.YEL, top: '≈ 0', t: S.at('zero') - 0.3 }], S.t0 + 0.1, { ls: 40 });
+  L.bars(x + 400, y + 760, 800, 560, [{ v: 0.85, label: 'original studies', top: 'big', t: S.at('original') - 0.3 }, { v: 0.04, label: 'the big test', col: L.YEL, top: '≈ 0', t: S.at('zero') - 0.3 }], S.t0 + 0.1, { ls: 40 });
   L.TXT('not small', x + 1300, y + 200, 50, { f: 'KB', align: 'center' }, S.at('small') - 0.3, 0.4); L.cross(x + 1300, y + 280, 2, S.at('small') + 0.1);
   L.TXT('many times larger', x + 500, y + 140, 44, { f: 'PH', align: 'center', col: L.INK2 }, S.at('larger') - 0.4, 0.6);
 });
@@ -569,7 +569,7 @@ def(LONG, 'c3j', blk(3, 11), { purpose: 'the sugar idea checked: the brain\'s ex
   const g = [[x + 220, y + 320], [x + 400, y + 320], [x + 375, y + 700], [x + 245, y + 700]]; L.FILL(g, S.t0 + 0.1); L.MRK([[[x + 235, y + 420], [x + 385, y + 420], [x + 372, y + 690], [x + 248, y + 690]]], { col: L.YEL, w: 16 }, S.t0 + 0.2, 0.3); L.INK_(g, { closed: true, w: 3, amp: 0.3 }, S.t0 + 0.1, 0.2);
   L.TXT('the sugar?', x + 310, y + 240, 50, { f: 'KB', align: 'center' }, S.at('sugar') - 0.3, 0.4);
   L.head(x + 800, y + 480, 130, S.at("brain's") - 0.4, { you: true, kind: 'think', look: [1, 0], k: 0.7 });
-  const G = gauge(L, x + 1220, y + 560, 220, S.at('glucose') - 0.4, { v: 0.5, lo: 'rest', hi: 'hard task', label: 'glucose use' }); G.needle(0.54, S.at('tiny') - 0.2);
+  const G = gauge(L, x + 1220, y + 560, 220, S.at('glucose') - 0.4, { v: 0.5, lo: 'rest', hi: 'task', label: 'glucose use' }); G.needle(0.54, S.at('tiny') - 0.2);
   L.TXT('a tiny change', x + 1220, y + 700, 44, { f: 'PH', align: 'center', col: L.INK2 }, S.at('tiny'), 0.4);
   L.TXT('too small to be the fuel gauge', x + 800, y + 860, 46, { f: 'KB', align: 'center' }, S.at('gauge') - 0.8, 0.8);
 });
@@ -577,7 +577,7 @@ def(LONG, 'c3k', blk(3, 12), { purpose: 'the turn: case closed? no — outside t
   const [x, y] = blk(3, 12);
   tag(L, x + 400, y + 200, 'CASE CLOSED?', 58, S.at('case') - 0.3); tag(L, x + 400, y + 330, 'MYTH?', 58, S.at('myth') - 0.3);
   L.MST(L.line(x + 180, y + 390, x + 640, y + 140), { w: 10, col: L.INK }, S.at('fast') - 0.3, 0.2);
-  door(L, x + 820, y + 820, 220, 400, S.at('lab') - 0.6, { open: 0.7 }); L.TXT('the lab', x + 930, y + 380, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('lab') - 0.3, 0.3);
+  L.door(x + 820, y + 820, 220, 400, S.at('lab') - 0.6, { open: 0.7 }); L.TXT('the lab', x + 930, y + 380, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('lab') - 0.3, 0.3);
   house(L, x + 1200, y + 820, 1.2, S.at('real') - 0.2); house(L, x + 1380, y + 820, 1.0, S.at('jobs') - 0.2);
   L.TXT('real jobs', x + 1290, y + 560, 50, { f: 'KB', align: 'center' }, S.at('jobs'), 0.4);
   L.qmark(x + 1290, y + 450, 110, S.at('showing') - 0.2);
@@ -597,7 +597,7 @@ def(LONG, 'c4a', blk(4, 1), { purpose: 'field study 1 set-up: Boston, ~22,000 vi
 });
 def(LONG, 'c4b', blk(4, 2), { purpose: 'the drift: prescribing rises through the session; 4th hour odds ~ a quarter higher than the 1st', shot: 'pan right; four hour columns with Rx pads that pile higher hour by hour; push on hour 4', sfx: 'pad tear per prescription, faster as it climbs' }, (S, L) => {
   const [x, y] = blk(4, 2);
-  bars(L, x + 260, y + 760, 1080, 560, [{ v: 0.62, label: 'hour 1', t: S.at('session') - 0.3 }, { v: 0.63, label: 'hour 2', t: S.at('antibiotics') }, { v: 0.7, label: 'hour 3', t: S.at('often') - 0.2 }, { v: 0.78, label: 'hour 4', col: L.YEL, top: '+ ~¼ odds', t: S.at('fourth') - 0.2 }], S.t0 + 0.1, { ls: 36, ts: 40 });
+  L.bars(x + 260, y + 760, 1080, 560, [{ v: 0.62, label: 'hour 1', t: S.at('session') - 0.3 }, { v: 0.63, label: 'hour 2', t: S.at('antibiotics') }, { v: 0.7, label: 'hour 3', t: S.at('often') - 0.2 }, { v: 0.78, label: 'hour 4', col: L.YEL, top: '+ ~¼ odds', t: S.at('fourth') - 0.2 }], S.t0 + 0.1, { ls: 36, ts: 40 });
   rxPad(L, x + 180, y + 340, 0.9, S.at('prescribed') - 0.3);
   L.TXT('antibiotic prescriptions', x + 800, y + 120, 46, { f: 'KB', align: 'center' }, S.at('prescribed') - 0.1, 0.6);
   L.TXT('(odds, compared with hour 1)', x + 1200, y + 880, 32, { f: 'PH', align: 'center', col: L.INK2 }, S.at('first') - 0.3, 0.5);
@@ -631,8 +631,9 @@ def(LONG, 'c4e', blk(4, 5), { purpose: 'field study 3: analysts later in the day
 def(LONG, 'c4f', blk(4, 6), { purpose: 'the pattern: nobody collapsed; they drifted toward the default', shot: 'pan right; three small figures (doctor, nurse, analyst) on a flat road all slide down a gentle slope to a yellow DEFAULT sign', sfx: 'a soft slide whistle, very gentle' }, (S, L) => {
   const [x, y] = blk(4, 6);
   L.TXT('nobody collapsed', x + 400, y + 140, 50, { f: 'KB', align: 'center' }, S.at('collapsed') - 0.4, 0.5); L.TXT('nobody froze', x + 1200, y + 140, 50, { f: 'KB', align: 'center' }, S.at('unable') - 0.4, 0.5);
-  L.INK_(L.bez([x + 100, y + 400], [x + 600, y + 420], [x + 1000, y + 600], [x + 1450, y + 760]), { w: 4, amp: 0.4 }, S.at('drifted') - 0.6, 0.4);
-  ['bun', 'long', 'cap'].forEach((h, i) => L.person(x + 400 + i * 300, y + 440 + i * 90, 0.9, S.at('drifted') - 0.3 + i * 0.25, { pose: 'walk', kind: 'neutral', look: [1, 0.3], hair: h, k: 0.4 }));
+  const road = L.bez([x + 100, y + 400], [x + 600, y + 420], [x + 1000, y + 600], [x + 1450, y + 760]); L.INK_(road, { w: 4, amp: 0.4 }, S.at('drifted') - 0.6, 0.4);
+  const onRoad = px => road.reduce((b, p) => Math.abs(p[0] - px) < Math.abs(b[0] - px) ? p : b)[1];
+  ['bun', 'long', 'cap'].forEach((h, i) => L.person(x + 400 + i * 300, onRoad(x + 400 + i * 300), 0.9, S.at('drifted') - 0.3 + i * 0.25, { pose: 'walk', kind: 'neutral', look: [1, 0.3], hair: h, k: 0.4 }));
   tag(L, x + 1380, y + 680, 'DEFAULT', 52, S.at('default') - 0.2, { tint: L.YEL });
   L.TXT('the option that takes the least thinking', x + 800, y + 880, 44, { f: 'PH', align: 'center', col: L.INK2 }, S.at('least') - 0.6, 0.8);
 });
@@ -657,14 +658,14 @@ def(LONG, 'c4h', blk(4, 8), { purpose: 'honest limits: records, not experiments;
 });
 def(LONG, 'c4i', blk(4, 9), { purpose: 'the twist: Job, Dweck & Walton 2010: belief that willpower runs out → depletion; belief it doesn\'t → mostly not', shot: 'pan right; two people with thought bubbles (an emptying battery vs an open loop); then their result lines', sfx: 'two different chimes' }, (S, L) => {
   const [x, y] = blk(4, 9);
-  tag(L, x + 800, y + 100, '2010 · Job, Dweck & Walton', 46, S.at('veronika') - 0.4);
+  tag(L, x + 800, y + 90, '2010 · Job, Dweck & Walton', 40, S.at('veronika') - 0.4);
   const A = L.person(x + 420, y + 840, 1.4, S.at('believed') - 0.5, { pose: 'stand', you: true, kind: 'worry', look: [0, -1], k: 0.6 });
   L.bubble(x + 220, y + 240, 400, 180, S.at('runs') - 0.4, { thought: true, tail: [A.head[0], A.head[1] - 60] }); battery(L, x + 420, y + 330, 180, 80, 0.15, S.at('runs') - 0.2);
-  L.TXT('"willpower runs out"', x + 420, y + 480, 36, { f: 'PH', align: 'center', col: L.INK2 }, S.at('out') - 0.2, 0.5);
+  L.TXT('"willpower runs out"', x + 420, y + 215, 36, { f: 'PH', align: 'center', col: L.INK2 }, S.at('out') - 0.2, 0.5);
   L.TXT('depleted', x + 420, y + 900, 40, { f: 'KB', align: 'center' }, S.at('classic') - 0.2, 0.4);
   const B = L.person(x + 1180, y + 840, 1.4, S.at('while') - 0.4, { pose: 'stand', kind: 'content', look: [0, -1], hair: 'long', k: 0.6 });
   L.bubble(x + 980, y + 240, 400, 180, S.at("doesn't") - 0.4, { thought: true, tail: [B.head[0], B.head[1] - 60] }); L.loop(x + 1180, y + 330, 110, 50, S.at("doesn't") - 0.1, 0.4);
-  L.TXT('"it doesn\'t"', x + 1180, y + 480, 36, { f: 'PH', align: 'center', col: L.INK2 }, S.at("doesn't"), 0.4);
+  L.TXT('"it doesn\'t"', x + 1180, y + 215, 36, { f: 'PH', align: 'center', col: L.INK2 }, S.at("doesn't"), 0.4);
   L.TXT("mostly didn't", x + 1180, y + 900, 40, { f: 'KB', align: 'center' }, S.at('mostly') - 0.2, 0.4);
 });
 def(LONG, 'c4j', blk(4, 10), { purpose: 'flag: needs replication; the uncomfortable question: the day or the story we tell ourselves?', shot: 'pan right; a "needs replication" stamp, then a person at the end of the day with two speech options; push on the question', sfx: 'stamp; a quiet low note' }, (S, L) => {
@@ -724,7 +725,7 @@ def(LONG, 'c5e', blk(5, 6), { purpose: 'idea 3: real breaks; longer rest between
   L.INK_(L.rrect(x + 160, y + 400, 400, 120, 16), { closed: true, w: 3, amp: 0.4 }, S.at('hospital') - 0.4, 0.2); L.TXT('shift', x + 360, y + 480, 44, { f: 'KB', align: 'center' }, S.at('hospital') - 0.2, 0.3);
   bed(L, x + 620, y + 620, 300, S.at('rest') - 0.6, { s: 0.6, kind: 'side', k: 0.6 }); L.TXT('longer rest', x + 790, y + 680, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('rest'), 0.3);
   L.INK_(L.rrect(x + 1040, y + 400, 400, 120, 16), { closed: true, w: 3, amp: 0.4 }, S.at('shifts') - 0.2, 0.2); L.TXT('next shift', x + 1240, y + 480, 44, { f: 'KB', align: 'center' }, S.at('shifts'), 0.3);
-  soap(L, x + 1240, y + 720, 0.9, S.at('washed') - 0.4); L.inkArrow([[x + 1360, y + 800], [x + 1360, y + 640]], { w: 5 }, S.at('more') - 0.2, 0.2); L.TXT('more hand washing', x + 1240, y + 880, 40, { f: 'KB', align: 'center' }, S.at('afterwards') - 0.3, 0.5);
+  soap(L, x + 1240, y + 720, 0.9, S.at('washed') - 0.4); L.inkArrow([[x + 1360, y + 800], [x + 1360, y + 640]], { w: 5 }, S.at('more') - 0.2, 0.2); L.TXT('more hand washing', x + 1240, y + 880, 40, { f: 'KB', align: 'center' }, S.at('next') - 0.3, 0.5);
 });
 def(LONG, 'c5f', blk(5, 7), { purpose: 'the habit to build: at the end of a long day, reaching for the easy answer = a cue to pause, not proof it is right', shot: 'pan right; the fork again; the viewer\'s hand stops at the yellow path, a PAUSE sign pops up', sfx: 'a gentle bell on "pause"' }, (S, L) => {
   const [x, y] = blk(5, 7);
@@ -750,7 +751,7 @@ def(LONG, 'end1', blk(0, 1), { purpose: 'payoff: back to 4 p.m. and the dinner q
   const B = blk(0, 1), [x, y] = B, c = S.fit(B);
   S.cam(S.t0 - 0.2, (x + 800 + blk(5, 8)[0] + 800) / 2, (y + 450 + 5 * GY + 450) / 2, 0.14, 1.1, 'io');
   S.cam(S.t0 + 0.9, c.x, c.y, c.z, 1.2, 'io');
-  S.cam(S.at('leaning') - 0.5, x + 500, y + 520, c.z * 1.35, Math.max(1, S.end - S.at('leaning')), 'sin');
+  S.cam(S.at('leaning') - 0.5, x + 720, y + 480, c.z * 1.12, Math.max(1, S.end - S.at('leaning')), 'sin');
   L.loop(x + 1130, y + 535, 260, 90, S.at('dinner') - 0.4, 0.5);
   L.box(x + 230, y + 230, 220, 90, S.at('notice') - 0.6, 0.25, { r: 16, tint: L.YEL }); L.TXT('PAUSE', x + 340, y + 292, 50, { f: 'KB', align: 'center' }, S.at('notice') - 0.4, 0.3);
   L.TXT('not out of fuel', x + 900, y + 820, 42, { f: 'PH', align: 'center', col: L.INK2 }, S.at('fuel') - 0.2, 0.5);
@@ -761,7 +762,7 @@ def(LONG, 'end2', blk(0, 6), { purpose: 'the line to remember: not a myth, small
   L.TXT('smaller', x + 800, y + 150, 64, { f: 'KB', align: 'center' }, S.at('smaller') - 0.2, 0.4); L.TXT('& stranger', x + 1250, y + 150, 64, { f: 'KB', align: 'center' }, S.at('stranger') - 0.2, 0.4);
   sawChart(L, x + 160, y + 640, 520, 300, S.at('judges') - 0.6, { ts: [S.at('judges') - 0.4, S.at('judges') - 0.1, S.at('judges') + 0.2], d: 0.3, ls: 28, blab: false });
   L.TXT('not ruled by lunch', x + 420, y + 760, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('lunch') - 0.3, 0.5);
-  const P = L.person(x + 1150, y + 820, 1.4, S.at('afternoon') - 0.6, { pose: 'sit', you: true, kind: 'bored', look: [1, 0.2], k: 0.6 });
+  const P = L.person(x + 1100, y + 860, 1.4, S.at('afternoon') - 0.6, { pose: 'sit', you: true, kind: 'bored', look: [1, 0.2], k: 0.6 }); desk(L, x + 1040, y + 700, 380, S.at('afternoon') - 0.2, { h: 160 }); laptop(L, x + 1300, y + 700, 0.8, S.at('afternoon'));
   L.clock(x + 1400, y + 360, 60, S.at('four') - 0.2);
   L.TXT('a little more likely to take the easy way', x + 1100, y + 900, 40, { f: 'KB', align: 'center' }, S.at('little') - 0.2, 0.9);
 });
@@ -791,8 +792,8 @@ function people3(L, x, y, n, t0, o = {}) {   // 3 small people, the first n mark
 def(SHORT, 's1', sblk(0), { purpose: 'hook in the first second (study-first, EXP-001 control): a judge with a gavel mid-ruling, then the scale of the data', shot: 'opens close on the judge and gavel from frame 0, pulls back to reveal the stack of 1,000+ rulings (reveal)', sfx: 'gavel bang on frame 0; paper flicks', noAutoCam: true }, (S, L) => {
   const B = sblk(0), [x, y] = B, c = S.fit(B);
   S.cam(S.t0, x + 450, y + 560, c.z * 1.7, 0.01); S.cam(S.t0 + 1.0, c.x, c.y, c.z * 1.03, 1.6, 'io');
-  bench(L, x + 200, y + 900, 500, 280, S.t0 - 1.4);
-  const J = L.person(x + 450, y + 620, 1.6, S.t0 - 1.2, { pose: 'hold', kind: 'neutral', look: [1, 0.3], hair: 'messy', k: 0.6 });
+  bench(L, x + 200, y + 900, 500, 280, S.t0 - 0.9);
+  const J = L.person(x + 450, y + 780, 1.6, S.t0 - 1.3, { pose: 'hold', kind: 'neutral', look: [1, 0.3], hair: 'messy', k: 0.6 });
   gavel(L, J.hand[1][0] + 30, J.hand[1][1] - 20, 1.1, S.t0 - 0.3, { bang: true });
   tag(L, x + 450, y + 110, '2011 · ISRAEL', 60, S.at('twenty') - 0.1);
   for (let i = 0; i < 6; i++) L.sheet(x + 60 + (i % 2) * 12, y + 300 - i * 30, 170, 90, S.at('thousand') - 0.4 + i * 0.05, { lines: 2 });
@@ -802,10 +803,10 @@ def(SHORT, 's2', sblk(1), { purpose: 'start of a session: 2 of 3 granted; just b
   const [x, y] = sblk(1);
   L.TXT('start of a session', x + 450, y + 90, 54, { f: 'KB', align: 'center' }, S.at('start') - 0.3, 0.5);
   people3(L, x + 250, y + 420, 2, S.at('two') - 0.4);
-  L.TXT('2 out of 3: parole', x + 450, y + 520, 46, { f: 'PH', align: 'center', col: L.INK2 }, S.at('parole') - 0.3, 0.5);
-  L.MST(L.bez([x + 120, y + 600], [x + 400, y + 640], [x + 600, y + 760], [x + 780, y + 880]), { w: 10, col: L.INK }, S.at('before') - 0.6, 0.9);
-  plate(L, x + 450, y + 960, 1.0, S.at('food') - 0.3); L.TXT('just before the break', x + 450, y + 1080, 46, { f: 'KB', align: 'center' }, S.at('break') - 0.3, 0.5);
-  L.TXT('almost none', x + 760, y + 820, 46, { f: 'KB', align: 'center' }, S.at('none') - 0.3, 0.4);
+  L.TXT('2 out of 3: parole', x + 450, y + 580, 46, { f: 'PH', align: 'center', col: L.INK2 }, S.at('parole') - 0.3, 0.5);
+  L.MST(L.bez([x + 120, y + 640], [x + 400, y + 670], [x + 600, y + 760], [x + 780, y + 840]), { w: 10, col: L.INK }, S.at('before') - 0.6, 0.9);
+  plate(L, x + 450, y + 920, 1.0, S.at('food') - 0.3); L.TXT('just before the break', x + 450, y + 1030, 46, { f: 'KB', align: 'center' }, S.at('break') - 0.3, 0.5);
+  L.TXT('almost none', x + 700, y + 730, 46, { f: 'KB', align: 'center' }, S.at('none') - 0.3, 0.4);
 });
 def(SHORT, 's3', sblk(2), { purpose: 'after the break: back to 2 of 3; the internet\'s story "hungry judges say no"', shot: 'pan right; the full saw chart, then the meme tag stamped over it; push on the tag', sfx: 'upward pluck; a stamp' }, (S, L) => {
   const [x, y] = sblk(2);
@@ -827,13 +828,13 @@ def(SHORT, 's5', sblk(4), { purpose: 'the honest verdict: tired judges may be re
   const [x, y] = sblk(4);
   L.TXT('tired judges: maybe real', x + 450, y + 120, 54, { f: 'KB', align: 'center' }, S.at('tired') - 0.3, 0.6);
   L.INK_(L.line(x + 450, y + 820, x + 450, y + 400), { w: 5, amp: 0.2, passes: 1 }, S.at('famous') - 1.0, 0.2); L.INK_([[x + 360, y + 830], [x + 450, y + 780], [x + 540, y + 830]], { closed: true, w: 3, amp: 0.2 }, S.at('famous') - 1.0, 0.15);
-  L.INK_(L.line(x + 140, y + 340, x + 760, y + 460), { w: 5, amp: 0.2, passes: 1 }, S.at('famous') - 0.8, 0.2);
-  tag(L, x + 220, y + 270, 'the famous number', 40, S.at('number') - 0.3, { tint: L.YEL }); tag(L, x + 720, y + 400, 'fatigue', 34, S.at('number'));
+  L.INK_(L.line(x + 140, y + 460, x + 760, y + 340), { w: 5, amp: 0.2, passes: 1 }, S.at('famous') - 0.8, 0.2);
+  tag(L, x + 240, y + 395, 'the famous number', 40, S.at('number') - 0.3, { tint: L.YEL }); tag(L, x + 720, y + 280, 'fatigue', 34, S.at('number'));
   L.TXT('probably far too big', x + 450, y + 980, 60, { f: 'KB', align: 'center' }, S.at('big') - 0.4, 0.5); L.swash(x + 160, y + 1005, x + 740, S.at('big') + 0.2, 0.3);
 });
 def(SHORT, 's6', sblk(5), { purpose: 'loop back to the judge + one comment question (morning or night?)', shot: 'pan right; the judge returns small at the top; sun vs moon; hold on the question', sfx: 'pen; closing kalimba' }, (S, L) => {
   const [x, y] = sblk(5);
-  bench(L, x + 300, y + 330, 300, 150, S.t0 + 0.05); L.person(x + 450, y + 200, 0.7, S.t0 + 0.1, { pose: 'hold', kind: 'think', look: [0, 0.3], hair: 'messy', k: 0.4 });
+  bench(L, x + 300, y + 330, 300, 150, S.t0 + 0.2); L.person(x + 450, y + 250, 0.7, S.t0 + 0.05, { pose: 'hold', kind: 'think', look: [0, 0.3], hair: 'messy', k: 0.4 });
   L.bubble(x + 60, y + 440, 780, 260, S.t0 + 0.2, { tint: 'rgba(255,205,40,0.25)' });
   L.TXT('Your big decisions:', x + 450, y + 540, 56, { f: 'KB', align: 'center' }, S.at('big') - 0.4, 0.6);
   L.TXT('morning or night?', x + 450, y + 630, 56, { f: 'KB', align: 'center' }, S.at('morning') - 0.2, 0.6);

@@ -4,7 +4,7 @@
 
 It's four in the afternoon. You've answered forty emails, picked a lunch, said yes to a meeting you didn't want... and now someone asks you one more question. So... what do you want for dinner? And your brain just... stops.
 
-There's a name for that feeling. Decision fatigue. And it's backed by one of the most famous studies in psychology: judges who granted parole... depending on how long it had been since their last meal.
+There's a name for that feeling. Decision fatigue. And it's backed by one of the most famous studies in psychology: judges who granted parole... depending on how much time had passed since their last meal.
 
 But here's the part almost nobody mentions. That study got checked. So did the theory behind it. And some of it... didn't survive.
 
@@ -31,7 +31,7 @@ The authors' reading was that ruling after ruling wears you down, and a tired mi
 
 The story went everywhere. Books, talks, productivity blogs. Daniel Kahneman wrote about it in his best seller. Your freedom, people said, could depend on whether the judge had eaten.
 
-And it fit perfectly with a theory psychologists had been building for over a decade. A theory that said willpower works a lot like a battery.
+And it fit neatly with a theory that psychologists had been building for over a decade. A theory that said willpower works a lot like a battery.
 
 
 ### 2. THE WILLPOWER BATTERY
@@ -65,7 +65,7 @@ The original authors replied that this didn't explain their result. But the doub
 
 In twenty sixteen, the psychologist Andreas Glockner ran simulations. Granting parole usually takes longer than refusing it. So picture a judge who sees the break coming... and doesn't want to start a long case.
 
-Just that kind of scheduling, with no tiredness at all, could produce a big part of the drop. Others pointed out that a swing from sixty five percent to almost zero would be one of the largest effects in all of psychology.
+Just that kind of scheduling, with no tiredness at all, could produce a big part of the drop. Others noted that a swing from sixty five percent to almost zero would be one of the biggest effects psychology has ever seen.
 
 None of this proves the judges weren't tired. It means the famous number is probably much bigger than anything fatigue really did.
 
@@ -73,11 +73,11 @@ And the battery? In twenty sixteen, twenty three labs around the world ran the s
 
 The effect they found... was close to zero.
 
-Not small. Close to zero. The original studies had reported effects many times larger.
+Not just small... close to zero. The original studies had reported effects many times larger.
 
 In twenty twenty one, an even bigger test, thirty six labs and more than three thousand people, found an effect so small it was barely different from nothing at all.
 
-And the sugar? Critics showed that the brain's extra use of glucose during a hard task is tiny. Far too small to be the fuel gauge the theory needed.
+And what about the sugar? Critics showed that the brain's extra use of glucose during a hard task is tiny. Far too small to be the fuel gauge the theory needed.
 
 So... case closed? Decision fatigue is a myth? Not so fast. Because when researchers left the lab, and looked at real people doing real jobs, something kept showing up.
 
@@ -109,7 +109,7 @@ That finding needs more replication too. But it raises an uncomfortable question
 
 So what can you actually do with this? Here are three ideas, each tied to the evidence... and each with its limits.
 
-One. Move the decisions that matter. If the drift shows up late in a long run of choices, don't save your hardest decision for the end of the day. Make it while you're fresh, or sleep on it.
+One. Move the decisions that matter. If the drift shows up after a long run of choices, don't save your hardest decision for the end of the day. Make it while you're fresh, or sleep on it.
 
 Two. Decide once, not every time. Barack Obama once told a journalist that he only wore gray or blue suits, because he was trying to pare down decisions. You don't need a uniform.
 
@@ -117,7 +117,7 @@ But turning a repeated choice into a simple if-then plan, like, if it's Monday, 
 
 Fewer decisions made on the spot means fewer chances to drift.
 
-Three. Take real breaks, and watch out for the default. In the hospital study, caregivers who had longer rest between shifts washed their hands more often afterwards.
+Three. Take real breaks, and watch out for the default. In the hospital study, caregivers who had longer rest between shifts washed their hands more often on their next shift.
 
 And when you catch yourself reaching for the easy answer at the end of a long day... treat it as a cue to pause. Not as proof that the easy answer is right.
 
@@ -125,7 +125,7 @@ And maybe a gentle fourth one. Be careful with the battery story. Telling yourse
 
 So, back to four in the afternoon, and that dinner question. Your brain didn't run out of fuel. After a long day of choices, it's leaning toward whatever takes the least effort... and now you know to notice it.
 
-Decision fatigue isn't a myth. It's just smaller, and stranger, than the story about the hungry judges. Those judges probably weren't ruled by their lunch. But you, at four in the afternoon, may really be a little more likely to take the easy way out.
+So, decision fatigue isn't a myth. It's just smaller, and stranger, than the story about the hungry judges. Those judges probably weren't ruled by their lunch. But you, at four in the afternoon, may really be a little more likely to take the easy way out.
 
 So tell me in the comments. What's the decision you always put off until you're too tired to make it? And if you like your psychology with the receipts, subscribe. There's a new page every week.
 
