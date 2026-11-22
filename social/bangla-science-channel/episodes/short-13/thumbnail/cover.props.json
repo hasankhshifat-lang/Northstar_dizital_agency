@@ -1,0 +1,53 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "toon",
+ "background": {
+  "src": "bg_figma.png",
+  "grade": "none",
+  "blur": 0,
+  "darken": 0.0,
+  "side": "top"
+ },
+ "layers": [
+  {
+   "type": "cutout",
+   "src": "bithi.png",
+   "x": -60,
+   "y": 600,
+   "h": 1040,
+   "outline": "#fff"
+  }
+ ],
+ "headline": {
+  "lines": [
+   "চাঁদ ছোট-বড়",
+   "হয় কেন?!"
+  ],
+  "accent": [
+   "হয় কেন?!"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 40,
+  "size": 125
+ },
+ "tags": [
+  {
+   "text": "ছায়া নয়!",
+   "x": 760,
+   "y": 560,
+   "variant": "date",
+   "size": 58,
+   "rotate": -4
+  },
+  {
+   "text": "সাইন্টিফিক বিথী",
+   "x": 760,
+   "y": 1180,
+   "variant": "label",
+   "size": 44
+  }
+ ],
+ "guides": false
+}
