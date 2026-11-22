@@ -35,3 +35,4 @@ Narration (owner, 2026-11-15): VibeVoice, voice Frank, via the vibevoice-voiceov
 Publish slot (owner, 2026-11-15, EXP-whichlifenext-001): 17:00 ET from 2026-11-17.
 Thumbnails (owner, 2026-11-16): universal thumbnail skill on main (dominant visual subject, Remotion render).
 AI disclosure (owner, 2026-11-17): every upload has Altered or synthetic content = YES (containsSyntheticMedia).
+Cadence (owner, 2026-11-22): 3 Shorts a day at 08:00, 13:00 and 17:00 ET (standing approval) + 4–5 long videos a week; see CLAUDE.md on main.
