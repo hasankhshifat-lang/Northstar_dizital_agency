@@ -249,7 +249,7 @@
      "type": "table",
      "item": "ejournal",
      "zoom": 0.7,
-     "say": "Ten weeks later, America and Spain were at war. So who found that hole? What did the Navy's divers see, when they went down? The answer is printed on this same front page. And the rest of the story took seventy eight years, and it still has no ending."
+     "say": "Within ten weeks, America and Spain were at war. So who found that hole? What did the Navy's divers see, when they went down? The answer is printed on this same front page. And the rest of the story took seventy eight years, and it still has no ending."
     },
     {
      "type": "chapter",
@@ -399,7 +399,7 @@
        1548
       ]
      ],
-     "say": "Maine blown up in Havana harbor, nine forty, and destroyed. Many wounded, and doubtless more killed and drowned."
+     "say": "The telegram said: Maine blown up in Havana harbor, at nine forty, and destroyed. Many wounded, and doubtless more killed and drowned."
     },
     {
      "type": "read",
@@ -427,20 +427,26 @@
     },
     {
      "type": "table",
-     "item": "wilm",
+     "item": "kcj",
      "zoom": 1.3,
      "boxes": [
       [
-       1924,
-       1640,
-       2249,
-       1658
+       86,
+       1152,
+       405,
+       1187
       ],
       [
-       1909,
-       1658,
-       2240,
-       1674
+       117,
+       1174,
+       412,
+       1186
+      ],
+      [
+       85,
+       1198,
+       217,
+       1208
       ]
      ],
      "say": "Wait for the facts. Out of three hundred and fifty four men aboard, two hundred and sixty six would die. And the country was in no mood to wait."
@@ -702,7 +708,7 @@
       "value": "17 FEB 1898",
       "source": "New York Evening Journal"
      },
-     "say": "The paper is torn here. But the line is clear. Divers will go down today at the wreck."
+     "say": "The page is torn at this spot. But the words can still be read. Divers will go down today, at the wreck."
     },
     {
      "type": "table",
@@ -958,7 +964,7 @@
        5718
       ]
      ],
-     "say": "A mine beneath her. Not a torpedo hole in her side. And no evidence of who."
+     "say": "A mine, under the ship. Not a torpedo hole in her side. And no evidence of who."
     },
     {
      "type": "read",
@@ -1111,7 +1117,7 @@
        2092
       ]
      ],
-     "say": "In Barre, Vermont, a crowd marched through the streets with an effigy of the Spanish general Weyler. It was labelled: Remember the Maine. Down with Spain."
+     "say": "In Vermont, a crowd marched through town with an effigy of a Spanish general. It was labelled: Remember the Maine. Down with Spain."
     },
     {
      "type": "read",
@@ -1478,9 +1484,8 @@
      "say": "Printed, two days after: torpedo hole discovered by government divers. Found by the court, after twenty three days of work: no evidence fixing the responsibility upon any person. And seventy eight years later, no proof there was a mine at all."
     },
     {
-     "type": "table",
+     "type": "read",
      "item": "wilm",
-     "zoom": 1.2,
      "boxes": [
       [
        1924,

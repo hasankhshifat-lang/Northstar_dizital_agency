@@ -51,7 +51,7 @@ long = [
   say="Startling evidence of Spanish treachery revealed. The battleship and hundreds of American lives sacrificed in Havana harbor."),
  # the stakes and the question, no reveal
  dict(type="table", item="ejournal", zoom=0.7,
-  say="Ten weeks later, America and Spain were at war. So who found that hole? What did the Navy's divers see, when they went down? The answer is printed on this same front page. And the rest of the story took seventy eight years, and it still has no ending."),
+  say="Within ten weeks, America and Spain were at war. So who found that hole? What did the Navy's divers see, when they went down? The answer is printed on this same front page. And the rest of the story took seventy eight years, and it still has no ending."),
  dict(type="chapter", kicker="PART 1", title="Blown up in Havana", chapterName="Blown up in Havana", item="wilm", say="Part one. Blown up in Havana."),
  # the ship (picture): what was lost and why she was there
  dict(type="photo", item="maineship", focus=[5450, 4140], nf=0.4, drift=[0.4, 0], labels=[dict(at=[5450, 3300], text="U.S.S. Maine", sub="print sold in 1898")],
@@ -65,10 +65,10 @@ long = [
  dict(type="photo", item="sigsbee", focus=[3190, 3360], nf=0.5, zoom=1.05, drift=[0, -0.3], labels=[dict(at=[3360, 6900], text="Capt. Charles D. Sigsbee", sub="commander of the Maine · print, 1898")],
   say="The first guess was an accident. The man in command was Captain Charles D. Sigsbee. He survived. That night, he telegraphed the Secretary of the Navy."),
  dict(type="read", item="wilm", boxes=B['wi_tel'],
-  say="Maine blown up in Havana harbor, nine forty, and destroyed. Many wounded, and doubtless more killed and drowned."),
+  say="The telegram said: Maine blown up in Havana harbor, at nine forty, and destroyed. Many wounded, and doubtless more killed and drowned."),
  dict(type="read", item="wilm", boxes=B['wi_susp'], card=dict(label="CAPT. SIGSBEE'S TELEGRAM", value="15 FEB 1898", source="Evening Journal, Wilmington"),
   say="And then, this line. Public opinion should be suspended till further report."),
- dict(type="table", item="wilm", zoom=1.3, boxes=B['wi_susp'],
+ dict(type="table", item="kcj", zoom=1.3, boxes=B['kc_crew'],
   say="Wait for the facts. Out of three hundred and fifty four men aboard, two hundred and sixty six would die. And the country was in no mood to wait."),
  dict(type="chapter", kicker="PART 2", title="Eight-inch hole", chapterName="Eight-inch hole", item="ejournal", say="Part two. The eight inch hole."),
  # the claim in full
@@ -95,7 +95,7 @@ long = [
  dict(type="read", item="ejournal", boxes=B['ej_board'],
   say="Secretary Long has instructed Admiral Sicard to detail the above named officers of the North Atlantic fleet, as a board to investigate the disaster to the Maine."),
  dict(type="read", item="ejournal", boxes=B['ej_divline'], card=dict(label="SAME FRONT PAGE", value="17 FEB 1898", source="New York Evening Journal"),
-  say="The paper is torn here. But the line is clear. Divers will go down today at the wreck."),
+  say="The page is torn at this spot. But the words can still be read. Divers will go down today, at the wreck."),
  dict(type="table", item="ejournal", zoom=1.5, boxes=B['ej_divline'],
   say="The court of inquiry had only just been named. And on the very page that announced the hole, the Navy's divers had not yet gone down."),
  # when the divers really arrived (picture)
@@ -117,7 +117,7 @@ long = [
  dict(type="read", item="age", boxes=B['ag_resp'], card=dict(label="NAVAL COURT OF INQUIRY", value="MARCH 1898", source="The Age-Herald, Birmingham"),
   say="Responsibility not fixed. That no evidence has been obtainable fixing the responsibility for the destruction of the Maine upon any person or persons."),
  dict(type="table", item="age", zoom=1.3, boxes=B['ag_resp'][1:],
-  say="A mine beneath her. Not a torpedo hole in her side. And no evidence of who."),
+  say="A mine, under the ship. Not a torpedo hole in her side. And no evidence of who."),
  # the other side's inquiry
  dict(type="read", item="sun", boxes=B['sn_head'] + B['sn_fish'],
   say="Spain held its own inquiry. The Sun printed its reasons. No dead fish were found in the harbor, as would have been the case if a mine or torpedo had exploded. No column of water arose. The explosion, Spain said, was internal."),
@@ -125,7 +125,7 @@ long = [
  dict(type="read", item="age", boxes=B['ag_head'],
   say="But the country had already decided. Across the top of the same Age-Herald: McKinley backs down. Will Congress uphold national honor? He is being cursed by both Republicans and Democrats, for his cowardly message to Congress."),
  dict(type="read", item="barre", boxes=B['ba_rem'],
-  say="In Barre, Vermont, a crowd marched through the streets with an effigy of the Spanish general Weyler. It was labelled: Remember the Maine. Down with Spain."),
+  say="In Vermont, a crowd marched through town with an effigy of a Spanish general. It was labelled: Remember the Maine. Down with Spain."),
  dict(type="read", item="barre", boxes=B['ba_war'],
   say="April twenty fifth. Declaration of war. It took just one minute and forty one seconds to pass a declaration of war. The vote was unanimous."),
  dict(type="table", item="barre", zoom=0.8,
@@ -154,7 +154,7 @@ long = [
   b=dict(label="NAVAL COURT OF INQUIRY · MARCH 1898", quote="\"…no evidence … fixing the responsibility … upon any person or persons.\"", value="23", unit="days of inquiry", source="The Age-Herald · Chronicling America"), strike="a",
   say="Printed, two days after: torpedo hole discovered by government divers. Found by the court, after twenty three days of work: no evidence fixing the responsibility upon any person. And seventy eight years later, no proof there was a mine at all."),
  # ending: answer the opening, then the comment question
- dict(type="table", item="wilm", zoom=1.2, boxes=B['wi_susp'],
+ dict(type="read", item="wilm", boxes=B['wi_susp'],
   say="So who found the torpedo hole? The page does not say, and no later report ever confirmed it. On the night his ship went down, Captain Sigsbee asked for one thing. Public opinion should be suspended, till further report. The papers did not wait. Here is my question. If they had, would America still have gone to war in eighteen ninety eight? Tell me in the comments."),
  dict(type="end", say="If you like history told from the papers themselves, give this video a like, and subscribe to As Printed. For what the papers said, and what the archive says."),
 ]

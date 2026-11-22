@@ -1,0 +1,7 @@
+DIFF short_000 | Torpedo hole. Discovered by government divers in the Maine. A New York front page, two days after the battleship Maine blew up in Havana. → Torpedo Hole, discovered by government divers in the main, a New York front page two days after the battleship main blew up in Havana. 
+DIFF short_001 | Divers found an eight inch hole in her plates, the paper said. Proof of a torpedo. Spanish treachery. → Diverse found an eight-inch hole in her plates, the paper said. Proof of a torpedo, Spanish treachery. 
+DIFF short_002 | But look lower, on the same front page. Divers will go down today at the wreck. → Look lower, on the same front page. Divers will go down today at the wreck. 
+OK   short_003 | The Navy's divers reached Havana two days later. The paper never named a source. → The Navy's divers reached Havana two days later. The paper never named a source. 
+OK   short_004 | Ten weeks later, America and Spain were at war. In March, the Navy's court had found a mine, but no evidence of who. → Ten weeks later, America and Spain were at war. In March, the Navy's court had found a mine, but no evidence of who. 
+DIFF short_005 | In nineteen seventy six, a Navy study said: there is no evidence that a mine destroyed the Maine. So who found that torpedo hole? → In 1976, a Navy study said there is no evidence that a mine destroyed the main. So who found that torpedo hole? 
+mismatches: 4 (lang=en, model=small.en)
