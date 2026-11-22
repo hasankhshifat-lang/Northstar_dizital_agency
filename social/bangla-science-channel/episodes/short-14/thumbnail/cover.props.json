@@ -1,0 +1,53 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "toon",
+ "background": {
+  "src": "bg_figma.png",
+  "grade": "none",
+  "blur": 0,
+  "darken": 0.0,
+  "side": "top"
+ },
+ "layers": [
+  {
+   "type": "cutout",
+   "src": "bithi.png",
+   "x": -60,
+   "y": 580,
+   "h": 1040,
+   "outline": "#fff"
+  }
+ ],
+ "headline": {
+  "lines": [
+   "স্টিল গরম,",
+   "কাঠ ঠান্ডা?!"
+  ],
+  "accent": [
+   "কাঠ ঠান্ডা?!"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 110,
+  "size": 150
+ },
+ "tags": [
+  {
+   "text": "জ্বর নয়!",
+   "x": 760,
+   "y": 560,
+   "variant": "date",
+   "size": 58,
+   "rotate": -4
+  },
+  {
+   "text": "সাইন্টিফিক বিথী",
+   "x": 280,
+   "y": 640,
+   "variant": "label",
+   "size": 44
+  }
+ ],
+ "guides": false
+}
