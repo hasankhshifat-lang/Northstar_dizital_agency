@@ -1,0 +1,61 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "archive",
+ "background": {
+  "color": "#dfe2e5",
+  "side": "none"
+ },
+ "layers": [
+  {
+   "type": "cutout",
+   "src": "sigsbee_cut.png",
+   "x": 150,
+   "y": 560,
+   "h": 920,
+   "grade": "mono",
+   "glow": "rgba(255,255,255,0.85)"
+  },
+  {
+   "type": "image",
+   "src": "journal_head.jpg",
+   "x": 30,
+   "y": 1250,
+   "w": 1020,
+   "rotate": -2,
+   "grade": "none",
+   "aspect": 4.551
+  },
+  {
+   "type": "ring",
+   "x": 465,
+   "y": 1299,
+   "rx": 440,
+   "ry": 56,
+   "rotate": -2,
+   "width": 10
+  }
+ ],
+ "headline": {
+  "lines": [
+   "Proof in",
+   "2 days?"
+  ],
+  "accent": [
+   "2 days?"
+  ],
+  "x": 60,
+  "y": 110,
+  "size": 150,
+  "panel": true
+ },
+ "tags": [
+  {
+   "text": "NEW YORK EVENING JOURNAL · 17 FEB 1898",
+   "x": 60,
+   "y": 490,
+   "variant": "date",
+   "size": 32
+  }
+ ]
+}

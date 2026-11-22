@@ -1,0 +1,1631 @@
+{
+ "slug": "torpedo-hole",
+ "title": "The Torpedo Hole",
+ "indexTitle": "USS Maine · 1898",
+ "seed": 17,
+ "items": [
+  {
+   "id": "ejournal",
+   "kind": "paper",
+   "src": "raw/ejournal.jpg",
+   "label": "NEW YORK EVENING JOURNAL · 17 FEB 1898",
+   "short": "New York Evening Journal",
+   "catalog": "LCCN sn86071545",
+   "row": "torpedo hole"
+  },
+  {
+   "id": "wilm",
+   "kind": "paper",
+   "src": "raw/wilm.jpg",
+   "label": "EVENING JOURNAL (WILMINGTON, DEL.) · 16 FEB 1898",
+   "short": "Evening Journal, Wilmington",
+   "catalog": "LCCN sn85042354",
+   "row": "suspend opinion"
+  },
+  {
+   "id": "maineship",
+   "kind": "print",
+   "src": "raw/maineship.tif",
+   "horizon": 5010,
+   "nomask": true,
+   "inches": 16,
+   "label": "THE U.S. BATTLESHIP MAINE · PRINT · 1898",
+   "short": "The U.S. Battleship Maine (print)",
+   "catalog": "LC-DIG-ppmsca-58665",
+   "credit": "H. C. Miner Litho. Co."
+  },
+  {
+   "id": "sigsbee",
+   "kind": "print",
+   "src": "raw/sigsbee.tif",
+   "horizon": 6000,
+   "nomask": true,
+   "inches": 13,
+   "label": "CAPT. CHARLES D. SIGSBEE · PRINT · 1898",
+   "short": "Capt. Charles D. Sigsbee",
+   "catalog": "LC-DIG-ppmsca-46572",
+   "credit": "Tobin Artworks"
+  },
+  {
+   "id": "kcj",
+   "kind": "paper",
+   "src": "raw/kcj.jpg",
+   "label": "KANSAS CITY JOURNAL · 17 FEB 1898",
+   "short": "Kansas City Journal",
+   "catalog": "LCCN sn86063615",
+   "row": "cause a mystery"
+  },
+  {
+   "id": "divers1",
+   "kind": "print",
+   "src": "raw/divers1.tif",
+   "crop": [
+    370,
+    740,
+    2005,
+    2540
+   ],
+   "horizon": 1495,
+   "inches": 9,
+   "label": "WRECK OF THE \"MAINE.\" FIRST DAY OF THE DIVERS · 1898",
+   "short": "First day of the divers",
+   "catalog": "LC-USZ62-104733",
+   "credit": "Griffith & Griffith"
+  },
+  {
+   "id": "diversup",
+   "kind": "print",
+   "src": "raw/diversup.tif",
+   "horizon": 660,
+   "inches": 9,
+   "label": "WRECK OF THE \"MAINE.\" DIVERS COMING UP TO REPORT · 1898",
+   "short": "Divers coming up to report",
+   "catalog": "LC-USZ62-56593",
+   "credit": "Griffith & Griffith"
+  },
+  {
+   "id": "age",
+   "kind": "paper",
+   "src": "raw/age.jpg",
+   "label": "THE AGE-HERALD (BIRMINGHAM, ALA.) · 29 MAR 1898",
+   "short": "The Age-Herald",
+   "catalog": "LCCN sn86072192",
+   "row": "no evidence"
+  },
+  {
+   "id": "sun",
+   "kind": "paper",
+   "src": "raw/sun.jpg",
+   "label": "THE SUN (NEW YORK) · 29 MAR 1898",
+   "short": "The Sun",
+   "catalog": "LCCN sn83030272",
+   "row": "internal"
+  },
+  {
+   "id": "barre",
+   "kind": "paper",
+   "src": "raw/barre.jpg",
+   "label": "BARRE EVENING ENTERPRISE (VT.) · 25 APR 1898",
+   "short": "Barre Evening Enterprise",
+   "catalog": "LCCN sn98060036",
+   "row": "war declared"
+  },
+  {
+   "id": "wreck1911",
+   "kind": "print",
+   "src": "raw/wreck1911.tif",
+   "crop": [
+    0,
+    300,
+    13586,
+    3366
+   ],
+   "horizon": 1250,
+   "inches": 20,
+   "label": "WRECK, U.S.S. MAINE · 18 NOV 1911",
+   "short": "Wreck, U.S.S. Maine, 1911",
+   "catalog": "LC-DIG-pan-6a22711",
+   "credit": "American Photo Co., Havana"
+  },
+  {
+   "id": "norwich",
+   "kind": "paper",
+   "src": "raw/norwich.jpg",
+   "label": "NORWICH BULLETIN (CONN.) · 9 DEC 1911",
+   "short": "Norwich Bulletin",
+   "catalog": "LCCN sn82014086",
+   "row": "from the outside"
+  },
+  {
+   "id": "annap",
+   "kind": "paper",
+   "src": "raw/annap.jpg",
+   "label": "EVENING CAPITAL (ANNAPOLIS, MD.) · 15 DEC 1911",
+   "short": "Evening Capital, Annapolis",
+   "catalog": "LCCN sn88065726",
+   "row": "frames 28–31"
+  },
+  {
+   "id": "wreckjuly",
+   "kind": "print",
+   "src": "raw/wreckjuly1911.tif",
+   "horizon": 300,
+   "inches": 16,
+   "label": "WRECK OF THE U.S.S. MAINE · 18 JULY 1911",
+   "short": "Wreck of the U.S.S. Maine, July 1911",
+   "catalog": "LC-USZ62-128041",
+   "credit": "American Photo Co., Havana"
+  }
+ ],
+ "end": {
+  "sub": "The USS Maine, as printed, February 1898 – December 1911",
+  "credits": [
+   "Library of Congress · Chronicling America · Prints & Photographs",
+   "Photos: Griffith & Griffith · American Photo Co. · H. C. Miner Litho. · Tobin Artworks",
+   "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"
+  ]
+ },
+ "films": {
+  "long": {
+   "size": "1920x1080",
+   "shots": [
+    {
+     "type": "title",
+     "item": "ejournal",
+     "title": "The Torpedo Hole",
+     "sub": "USS MAINE · WHAT THE PAPERS PRINTED · 1898",
+     "chapterName": "The torpedo hole",
+     "say": "Two days after the battleship Maine blew up in Havana harbor, a New York paper told its readers that divers had found the hole. An eight inch hole, in one of her plates. Proof, it said, of a torpedo."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       161,
+       402,
+       2031,
+       594
+      ],
+      [
+       416,
+       587,
+       2367,
+       672
+      ],
+      [
+       723,
+       687,
+       2367,
+       878
+      ],
+      [
+       160,
+       694,
+       398,
+       728
+      ],
+      [
+       239,
+       754,
+       474,
+       788
+      ],
+      [
+       284,
+       816,
+       666,
+       851
+      ]
+     ],
+     "say": "Torpedo hole. Discovered by government divers in the Maine. Fortune offered for evidence."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       162,
+       941,
+       1746,
+       1032
+      ],
+      [
+       244,
+       1023,
+       1680,
+       1113
+      ],
+      [
+       414,
+       1112,
+       1518,
+       1184
+      ]
+     ],
+     "say": "Startling evidence of Spanish treachery revealed. The battleship and hundreds of American lives sacrificed in Havana harbor."
+    },
+    {
+     "type": "table",
+     "item": "ejournal",
+     "zoom": 0.7,
+     "say": "Ten weeks later, America and Spain were at war. So who found that hole? What did the Navy's divers see, when they went down? The answer is printed on this same front page. And the rest of the story took seventy eight years, and it still has no ending."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 1",
+     "title": "Blown up in Havana",
+     "chapterName": "Blown up in Havana",
+     "item": "wilm",
+     "say": "Part one. Blown up in Havana."
+    },
+    {
+     "type": "photo",
+     "item": "maineship",
+     "focus": [
+      5450,
+      4140
+     ],
+     "nf": 0.4,
+     "drift": [
+      0.4,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        5450,
+        3300
+       ],
+       "text": "U.S.S. Maine",
+       "sub": "print sold in 1898"
+      }
+     ],
+     "say": "This is the Maine, on a print sold that year. A new American battleship. Since January twenty fifth, eighteen ninety eight, she had been moored in Havana harbor, while Cuba fought a war against Spain."
+    },
+    {
+     "type": "read",
+     "item": "wilm",
+     "boxes": [
+      [
+       1884,
+       342,
+       2224,
+       376
+      ],
+      [
+       1886,
+       404,
+       2226,
+       426
+      ],
+      [
+       1918,
+       438,
+       2185,
+       458
+      ],
+      [
+       1886,
+       486,
+       2228,
+       503
+      ]
+     ],
+     "say": "February sixteenth. The Evening Journal, in Wilmington, Delaware. A horrible fatality. Battleship Maine blown up and burning at Havana. Over one hundred sailors reported dead."
+    },
+    {
+     "type": "read",
+     "item": "wilm",
+     "boxes": [
+      [
+       1910,
+       764,
+       2234,
+       780
+      ],
+      [
+       1890,
+       784,
+       2234,
+       800
+      ],
+      [
+       1894,
+       806,
+       2234,
+       822
+      ],
+      [
+       1892,
+       826,
+       1953,
+       840
+      ]
+     ],
+     "say": "The explosion occurred about ten o'clock last night. It is supposed that it was caused by the bursting of the boilers."
+    },
+    {
+     "type": "photo",
+     "item": "sigsbee",
+     "focus": [
+      3190,
+      3360
+     ],
+     "nf": 0.5,
+     "zoom": 1.05,
+     "drift": [
+      0,
+      -0.3
+     ],
+     "labels": [
+      {
+       "at": [
+        3360,
+        6900
+       ],
+       "text": "Capt. Charles D. Sigsbee",
+       "sub": "commander of the Maine · print, 1898"
+      }
+     ],
+     "say": "The first guess was an accident. The man in command was Captain Charles D. Sigsbee. He survived. That night, he telegraphed the Secretary of the Navy."
+    },
+    {
+     "type": "read",
+     "item": "wilm",
+     "boxes": [
+      [
+       1905,
+       1478,
+       2236,
+       1494
+      ],
+      [
+       1905,
+       1496,
+       2246,
+       1514
+      ],
+      [
+       1904,
+       1514,
+       2246,
+       1530
+      ],
+      [
+       1904,
+       1532,
+       2248,
+       1548
+      ]
+     ],
+     "say": "Maine blown up in Havana harbor, nine forty, and destroyed. Many wounded, and doubtless more killed and drowned."
+    },
+    {
+     "type": "read",
+     "item": "wilm",
+     "boxes": [
+      [
+       1924,
+       1640,
+       2249,
+       1658
+      ],
+      [
+       1909,
+       1658,
+       2240,
+       1674
+      ]
+     ],
+     "card": {
+      "label": "CAPT. SIGSBEE'S TELEGRAM",
+      "value": "15 FEB 1898",
+      "source": "Evening Journal, Wilmington"
+     },
+     "say": "And then, this line. Public opinion should be suspended till further report."
+    },
+    {
+     "type": "table",
+     "item": "wilm",
+     "zoom": 1.3,
+     "boxes": [
+      [
+       1924,
+       1640,
+       2249,
+       1658
+      ],
+      [
+       1909,
+       1658,
+       2240,
+       1674
+      ]
+     ],
+     "say": "Wait for the facts. Out of three hundred and fifty four men aboard, two hundred and sixty six would die. And the country was in no mood to wait."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 2",
+     "title": "Eight-inch hole",
+     "chapterName": "Eight-inch hole",
+     "item": "ejournal",
+     "say": "Part two. The eight inch hole."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       259,
+       1224,
+       1740,
+       1250
+      ],
+      [
+       280,
+       1248,
+       335,
+       1266
+      ]
+     ],
+     "say": "February seventeenth. The New York Evening Journal. Havana. Divers who have descended and inspected the hull of the sunken battle ship Maine have discovered an eight inch percussion hole in one of her plates."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       323,
+       1273,
+       1737,
+       1301
+      ],
+      [
+       276,
+       1297,
+       546,
+       1318
+      ]
+     ],
+     "say": "This indicates that the Maine was destroyed by a torpedo. It makes clear that the destruction of the Maine was not brought about by an accidental explosion aboard the battle ship."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       237,
+       1323,
+       1736,
+       1352
+      ],
+      [
+       177,
+       1346,
+       813,
+       1372
+      ]
+     ],
+     "say": "It is very clear, that either a Spanish fanatic, or a secret emissary of the Spanish government, floated the torpedo under the waterline."
+    },
+    {
+     "type": "table",
+     "item": "ejournal",
+     "zoom": 1.0,
+     "boxes": [
+      [
+       1902,
+       2199,
+       2310,
+       2287
+      ],
+      [
+       1810,
+       2306,
+       2310,
+       2384
+      ]
+     ],
+     "say": "And on the right of the page, a reward. Fifty thousand dollars, for the detection of whoever did it."
+    },
+    {
+     "type": "read",
+     "item": "kcj",
+     "boxes": [
+      [
+       172,
+       508,
+       398,
+       572
+      ],
+      [
+       85,
+       616,
+       411,
+       630
+      ],
+      [
+       123,
+       639,
+       373,
+       652
+      ],
+      [
+       86,
+       699,
+       411,
+       720
+      ],
+      [
+       86,
+       766,
+       411,
+       778
+      ],
+      [
+       145,
+       788,
+       352,
+       799
+      ]
+     ],
+     "say": "The same day, in Missouri, the Kansas City Journal. About two hundred and sixty dead. Maine disaster even more terrible than was feared. Cause is still a mystery. Sigsbee said to believe it was a floating torpedo."
+    },
+    {
+     "type": "read",
+     "item": "kcj",
+     "boxes": [
+      [
+       98,
+       1342,
+       413,
+       1356
+      ],
+      [
+       86,
+       1364,
+       413,
+       1380
+      ],
+      [
+       86,
+       1386,
+       414,
+       1400
+      ],
+      [
+       87,
+       1409,
+       394,
+       1422
+      ],
+      [
+       87,
+       1474,
+       414,
+       1489
+      ],
+      [
+       87,
+       1496,
+       413,
+       1512
+      ]
+     ],
+     "say": "But here is what Captain Sigsbee told the Associated Press. I cannot determine the cause, but competent investigators will decide whether the explosion was produced from an interior or exterior cause. I will not, and cannot conscientiously anticipate the decision."
+    },
+    {
+     "type": "table",
+     "item": "kcj",
+     "zoom": 0.8,
+     "card": {
+      "label": "SIGSBEE TO SECRETARY LONG",
+      "value": "17 FEB 1898",
+      "source": "quoted in Rickover, 1976"
+     },
+     "say": "Privately, Sigsbee did suspect a mine. That day he cabled Washington: Probably the Maine destroyed by mine, perhaps by accident. And then: I can only surmise this. A guess. And he called it one."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 3",
+     "title": "The same page",
+     "chapterName": "The same page",
+     "item": "ejournal",
+     "say": "Part three. The same page."
+    },
+    {
+     "type": "table",
+     "item": "ejournal",
+     "zoom": 0.75,
+     "boxes": [
+      [
+       277,
+       2709,
+       470,
+       2720
+      ]
+     ],
+     "say": "Now go back to the Evening Journal. Bottom left corner. Same front page. Same day."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       277,
+       2709,
+       470,
+       2720
+      ],
+      [
+       280,
+       2729,
+       470,
+       2740
+      ],
+      [
+       179,
+       2748,
+       470,
+       2760
+      ],
+      [
+       180,
+       2768,
+       470,
+       2782
+      ],
+      [
+       179,
+       2789,
+       328,
+       2800
+      ]
+     ],
+     "say": "Secretary Long has instructed Admiral Sicard to detail the above named officers of the North Atlantic fleet, as a board to investigate the disaster to the Maine."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       180,
+       2889,
+       454,
+       2904
+      ]
+     ],
+     "card": {
+      "label": "SAME FRONT PAGE",
+      "value": "17 FEB 1898",
+      "source": "New York Evening Journal"
+     },
+     "say": "The paper is torn here. But the line is clear. Divers will go down today at the wreck."
+    },
+    {
+     "type": "table",
+     "item": "ejournal",
+     "zoom": 1.5,
+     "boxes": [
+      [
+       180,
+       2889,
+       454,
+       2904
+      ]
+     ],
+     "say": "The court of inquiry had only just been named. And on the very page that announced the hole, the Navy's divers had not yet gone down."
+    },
+    {
+     "type": "photo",
+     "item": "divers1",
+     "focus": [
+      983,
+      1556
+     ],
+     "nf": 0.5,
+     "drift": [
+      0.3,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        1000,
+        900
+       ],
+       "text": "\"First day of the divers\"",
+       "sub": "stereograph, Griffith & Griffith, 1898"
+      }
+     ],
+     "say": "According to the Navy's own history, its divers from the North Atlantic Squadron reached Havana on February nineteenth. Two days after the torpedo hole was in print. This stereo card was sold as: Wreck of the Maine. First day of the divers."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       1135,
+       2344,
+       1347,
+       2375
+      ],
+      [
+       1151,
+       2384,
+       1442,
+       2418
+      ],
+      [
+       1145,
+       2506,
+       1439,
+       2523
+      ],
+      [
+       1132,
+       2526,
+       1440,
+       2545
+      ],
+      [
+       1133,
+       2548,
+       1439,
+       2564
+      ],
+      [
+       1132,
+       2568,
+       1246,
+       2581
+      ]
+     ],
+     "say": "The Journal had another headline on that page. Dispatch from Sigsbee suppressed. A dispatch was received by the Navy Department from Captain Sigsbee early this morning, which is still suppressed."
+    },
+    {
+     "type": "table",
+     "item": "ejournal",
+     "zoom": 0.8,
+     "say": "So the official word was not out. The paper printed a verdict anyway. Where did the eight inch hole come from? The story names no diver, and no source. And the court's findings, when they came, did not mention it."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 4",
+     "title": "Mine, or no mine",
+     "chapterName": "Mine, or no mine",
+     "item": "age",
+     "say": "Part four. Mine, or no mine."
+    },
+    {
+     "type": "photo",
+     "item": "diversup",
+     "focus": [
+      522,
+      1198
+     ],
+     "nf": 0.45,
+     "drift": [
+      0.2,
+      -0.2
+     ],
+     "labels": [
+      {
+       "at": [
+        700,
+        1380
+       ],
+       "text": "Divers coming up to report",
+       "sub": "stereograph, Griffith & Griffith, 1898"
+      }
+     ],
+     "say": "For weeks, Navy divers worked in the wreck, in the mud of the harbor. Wreck of the Maine. Divers coming up to report."
+    },
+    {
+     "type": "read",
+     "item": "age",
+     "boxes": [
+      [
+       2321,
+       5232,
+       3596,
+       5256
+      ],
+      [
+       2271,
+       5261,
+       3597,
+       5287
+      ],
+      [
+       2271,
+       5290,
+       3597,
+       5317
+      ],
+      [
+       2270,
+       5318,
+       2512,
+       5343
+      ]
+     ],
+     "say": "On March twenty eighth, President McKinley sent the court's findings to Congress. The Age-Herald, in Birmingham, printed them. At frame eighteen, the vertical keel is broken in two, and the flat keel is bent."
+    },
+    {
+     "type": "read",
+     "item": "age",
+     "boxes": [
+      [
+       2297,
+       5401,
+       3600,
+       5434
+      ],
+      [
+       2271,
+       5434,
+       3598,
+       5463
+      ],
+      [
+       2271,
+       5463,
+       2989,
+       5489
+      ]
+     ],
+     "say": "In the opinion of the court, this effect could have been produced only by the explosion of a mine, situated under the bottom of the ship."
+    },
+    {
+     "type": "read",
+     "item": "age",
+     "boxes": [
+      [
+       2319,
+       5491,
+       3598,
+       5518
+      ],
+      [
+       2270,
+       5520,
+       3449,
+       5547
+      ],
+      [
+       2318,
+       5549,
+       3600,
+       5578
+      ],
+      [
+       2269,
+       5578,
+       3452,
+       5606
+      ]
+     ],
+     "say": "That the ship was destroyed by the explosion of a submarine mine, which caused the partial explosion of two or more of her forward magazines."
+    },
+    {
+     "type": "read",
+     "item": "age",
+     "boxes": [
+      [
+       2685,
+       5624,
+       3181,
+       5645
+      ],
+      [
+       2317,
+       5664,
+       3597,
+       5693
+      ],
+      [
+       2268,
+       5693,
+       2904,
+       5718
+      ]
+     ],
+     "card": {
+      "label": "NAVAL COURT OF INQUIRY",
+      "value": "MARCH 1898",
+      "source": "The Age-Herald, Birmingham"
+     },
+     "say": "Responsibility not fixed. That no evidence has been obtainable fixing the responsibility for the destruction of the Maine upon any person or persons."
+    },
+    {
+     "type": "table",
+     "item": "age",
+     "zoom": 1.3,
+     "boxes": [
+      [
+       2317,
+       5664,
+       3597,
+       5693
+      ],
+      [
+       2268,
+       5693,
+       2904,
+       5718
+      ]
+     ],
+     "say": "A mine beneath her. Not a torpedo hole in her side. And no evidence of who."
+    },
+    {
+     "type": "read",
+     "item": "sun",
+     "boxes": [
+      [
+       765,
+       2570,
+       1097,
+       2583
+      ],
+      [
+       764,
+       2598,
+       1099,
+       2610
+      ],
+      [
+       803,
+       2613,
+       1056,
+       2624
+      ],
+      [
+       763,
+       2695,
+       1097,
+       2709
+      ],
+      [
+       822,
+       2711,
+       1097,
+       2725
+      ],
+      [
+       762,
+       2727,
+       1096,
+       2742
+      ],
+      [
+       762,
+       2744,
+       1097,
+       2757
+      ],
+      [
+       762,
+       2759,
+       1096,
+       2774
+      ],
+      [
+       762,
+       2775,
+       1096,
+       2790
+      ],
+      [
+       762,
+       2792,
+       1095,
+       2807
+      ],
+      [
+       762,
+       2808,
+       1096,
+       2825
+      ],
+      [
+       762,
+       2824,
+       1096,
+       2837
+      ],
+      [
+       761,
+       2836,
+       1096,
+       2850
+      ],
+      [
+       762,
+       2848,
+       1015,
+       2862
+      ]
+     ],
+     "say": "Spain held its own inquiry. The Sun printed its reasons. No dead fish were found in the harbor, as would have been the case if a mine or torpedo had exploded. No column of water arose. The explosion, Spain said, was internal."
+    },
+    {
+     "type": "read",
+     "item": "age",
+     "boxes": [
+      [
+       155,
+       643,
+       4342,
+       803
+      ],
+      [
+       151,
+       914,
+       2223,
+       1082
+      ],
+      [
+       659,
+       1090,
+       1727,
+       1238
+      ],
+      [
+       159,
+       1346,
+       2227,
+       1450
+      ]
+     ],
+     "say": "But the country had already decided. Across the top of the same Age-Herald: McKinley backs down. Will Congress uphold national honor? He is being cursed by both Republicans and Democrats, for his cowardly message to Congress."
+    },
+    {
+     "type": "read",
+     "item": "barre",
+     "boxes": [
+      [
+       440,
+       1748,
+       655,
+       1760
+      ],
+      [
+       447,
+       2036,
+       704,
+       2054
+      ],
+      [
+       387,
+       2054,
+       702,
+       2072
+      ],
+      [
+       387,
+       2074,
+       703,
+       2092
+      ]
+     ],
+     "say": "In Barre, Vermont, a crowd marched through the streets with an effigy of the Spanish general Weyler. It was labelled: Remember the Maine. Down with Spain."
+    },
+    {
+     "type": "read",
+     "item": "barre",
+     "boxes": [
+      [
+       1431,
+       1846,
+       1661,
+       1866
+      ],
+      [
+       1442,
+       2505,
+       1706,
+       2521
+      ],
+      [
+       1425,
+       2528,
+       1707,
+       2545
+      ],
+      [
+       1387,
+       2550,
+       1705,
+       2568
+      ],
+      [
+       1454,
+       2574,
+       1706,
+       2590
+      ],
+      [
+       1406,
+       2598,
+       1706,
+       2614
+      ],
+      [
+       1386,
+       2620,
+       1706,
+       2640
+      ],
+      [
+       1387,
+       2642,
+       1706,
+       2662
+      ]
+     ],
+     "say": "April twenty fifth. Declaration of war. It took just one minute and forty one seconds to pass a declaration of war. The vote was unanimous."
+    },
+    {
+     "type": "table",
+     "item": "barre",
+     "zoom": 0.8,
+     "say": "From declaration to armistice, the war lasted one hundred and ten days. The Maine stayed where she sank, in Havana harbor. And so did the question."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 5",
+     "title": "Raising the Maine",
+     "chapterName": "Raising the Maine",
+     "item": "wreck1911",
+     "say": "Part five. Raising the Maine."
+    },
+    {
+     "type": "photo",
+     "item": "wreck1911",
+     "focus": [
+      6800,
+      1500
+     ],
+     "nf": 0.35,
+     "drift": [
+      0.6,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        6800,
+        1100
+       ],
+       "text": "The Maine, exposed",
+       "sub": "Havana harbor · 18 November 1911"
+      }
+     ],
+     "say": "Thirteen years later, in nineteen eleven, Army engineers built a wall of steel around the wreck, and pumped out the water. For the first time, the hull could be seen. This is the Maine on November eighteenth, nineteen eleven."
+    },
+    {
+     "type": "read",
+     "item": "norwich",
+     "boxes": [
+      [
+       161,
+       2287,
+       355,
+       2299
+      ],
+      [
+       244,
+       2308,
+       459,
+       2320
+      ],
+      [
+       106,
+       2337,
+       458,
+       2352
+      ],
+      [
+       132,
+       2356,
+       431,
+       2370
+      ],
+      [
+       123,
+       2385,
+       457,
+       2398
+      ],
+      [
+       104,
+       2399,
+       456,
+       2413
+      ],
+      [
+       145,
+       2415,
+       457,
+       2429
+      ]
+     ],
+     "say": "A new Navy board studied it. December ninth. The Norwich Bulletin. The Maine blown up from the outside. External explosion caused explosion of magazine, says government."
+    },
+    {
+     "type": "read",
+     "item": "annap",
+     "boxes": [
+      [
+       1357,
+       1793,
+       1724,
+       1814
+      ],
+      [
+       1334,
+       1814,
+       1724,
+       1831
+      ],
+      [
+       1334,
+       1836,
+       1725,
+       1855
+      ],
+      [
+       1334,
+       1856,
+       1725,
+       1875
+      ],
+      [
+       1334,
+       1878,
+       1723,
+       1898
+      ]
+     ],
+     "say": "The board finds that the injuries to the bottom of the Maine were caused by the explosion of a charge of a low form of explosive, exterior to the ship, between frames twenty eight and thirty one."
+    },
+    {
+     "type": "read",
+     "item": "annap",
+     "boxes": [
+      [
+       1359,
+       2098,
+       1727,
+       2118
+      ],
+      [
+       1337,
+       2120,
+       1725,
+       2138
+      ],
+      [
+       1337,
+       2140,
+       1726,
+       2158
+      ],
+      [
+       1337,
+       2161,
+       1726,
+       2181
+      ],
+      [
+       1337,
+       2183,
+       1727,
+       2203
+      ],
+      [
+       1338,
+       2205,
+       1727,
+       2226
+      ]
+     ],
+     "say": "But the Evening Capital, in Annapolis, noticed something. The Vreeland board report, fixing the position of the mine on the port side, between frames twenty eight and thirty one, differs from the Sampson court finding, which fixed the position of the mine at frame eighteen."
+    },
+    {
+     "type": "read",
+     "item": "norwich",
+     "boxes": [
+      [
+       116,
+       2941,
+       451,
+       2954
+      ],
+      [
+       96,
+       2956,
+       452,
+       2968
+      ],
+      [
+       95,
+       2971,
+       451,
+       2983
+      ],
+      [
+       96,
+       2985,
+       450,
+       2997
+      ],
+      [
+       79,
+       2998,
+       450,
+       3014
+      ],
+      [
+       78,
+       3012,
+       449,
+       3028
+      ],
+      [
+       78,
+       3027,
+       450,
+       3041
+      ],
+      [
+       95,
+       3042,
+       450,
+       3057
+      ],
+      [
+       93,
+       3062,
+       137,
+       3071
+      ]
+     ],
+     "say": "Two boards. A mine in two different places. The Norwich Bulletin wrote: This only deepens the mystery of the destruction of the Maine."
+    },
+    {
+     "type": "photo",
+     "item": "wreckjuly",
+     "focus": [
+      1600,
+      400
+     ],
+     "nf": 0.4,
+     "drift": [
+      -0.5,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        1600,
+        160
+       ],
+       "text": "Inside the cofferdam",
+       "sub": "Havana harbor · 18 July 1911"
+      }
+     ],
+     "say": "In March, nineteen twelve, the hull was floated, towed out to sea, and sunk in about six hundred fathoms of water. Whatever it could still tell us went down with it."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 6",
+     "title": "Seventy-eight years",
+     "chapterName": "Seventy-eight years",
+     "item": "maineship",
+     "say": "Part six. Seventy eight years."
+    },
+    {
+     "type": "photo",
+     "item": "maineship",
+     "focus": [
+      5450,
+      4400
+     ],
+     "nf": 0.45,
+     "zoom": 1.1,
+     "drift": [
+      -0.3,
+      0
+     ],
+     "card": {
+      "label": "HOW THE BATTLESHIP MAINE WAS DESTROYED",
+      "value": "1976",
+      "source": "Rickover · Naval History Division"
+     },
+     "say": "In nineteen seventy four, Admiral Hyman Rickover asked two engineers to study the old drawings, photographs and testimony again. The Navy published their work in nineteen seventy six. They found no technical evidence of an external explosion. Most likely, they said, heat from a fire in a coal bunker, next to a magazine."
+    },
+    {
+     "type": "photo",
+     "item": "maineship",
+     "focus": [
+      5450,
+      4140
+     ],
+     "nf": 0.4,
+     "zoom": 0.9,
+     "say": "Rickover's conclusion was blunt. There is no evidence that a mine destroyed the Maine. In nineteen ninety eight, a computer study for National Geographic came back inconclusive. A mine. Or a fire inside. Either could have done it."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "NEW YORK EVENING JOURNAL · 17 FEB 1898",
+      "quote": "\"Torpedo hole discovered by government divers\"",
+      "value": "2",
+      "unit": "days after · printed"
+     },
+     "b": {
+      "label": "NAVAL COURT OF INQUIRY · MARCH 1898",
+      "quote": "\"…no evidence … fixing the responsibility … upon any person or persons.\"",
+      "value": "23",
+      "unit": "days of inquiry",
+      "source": "The Age-Herald · Chronicling America"
+     },
+     "strike": "a",
+     "say": "Printed, two days after: torpedo hole discovered by government divers. Found by the court, after twenty three days of work: no evidence fixing the responsibility upon any person. And seventy eight years later, no proof there was a mine at all."
+    },
+    {
+     "type": "table",
+     "item": "wilm",
+     "zoom": 1.2,
+     "boxes": [
+      [
+       1924,
+       1640,
+       2249,
+       1658
+      ],
+      [
+       1909,
+       1658,
+       2240,
+       1674
+      ]
+     ],
+     "say": "So who found the torpedo hole? The page does not say, and no later report ever confirmed it. On the night his ship went down, Captain Sigsbee asked for one thing. Public opinion should be suspended, till further report. The papers did not wait. Here is my question. If they had, would America still have gone to war in eighteen ninety eight? Tell me in the comments."
+    },
+    {
+     "type": "end",
+     "say": "If you like history told from the papers themselves, give this video a like, and subscribe to As Printed. For what the papers said, and what the archive says."
+    }
+   ]
+  },
+  "short": {
+   "size": "1080x1920",
+   "shots": [
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       161,
+       402,
+       2031,
+       594
+      ],
+      [
+       416,
+       587,
+       2367,
+       672
+      ],
+      [
+       723,
+       687,
+       2367,
+       878
+      ]
+     ],
+     "card": {
+      "label": "AS PRINTED",
+      "value": "17 FEB 1898",
+      "source": "New York Evening Journal"
+     },
+     "say": "Torpedo hole. Discovered by government divers in the Maine. A New York front page, two days after the battleship Maine blew up in Havana."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       259,
+       1224,
+       1740,
+       1250
+      ],
+      [
+       280,
+       1248,
+       335,
+       1266
+      ]
+     ],
+     "say": "Divers found an eight inch hole in her plates, the paper said. Proof of a torpedo. Spanish treachery."
+    },
+    {
+     "type": "read",
+     "item": "ejournal",
+     "boxes": [
+      [
+       180,
+       2889,
+       454,
+       2904
+      ]
+     ],
+     "say": "But look lower, on the same front page. Divers will go down today at the wreck."
+    },
+    {
+     "type": "photo",
+     "item": "divers1",
+     "focus": [
+      983,
+      1556
+     ],
+     "nf": 0.5,
+     "drift": [
+      0.3,
+      0
+     ],
+     "say": "The Navy's divers reached Havana two days later. The paper never named a source."
+    },
+    {
+     "type": "read",
+     "item": "age",
+     "boxes": [
+      [
+       2685,
+       5624,
+       3181,
+       5645
+      ],
+      [
+       2317,
+       5664,
+       3597,
+       5693
+      ],
+      [
+       2268,
+       5693,
+       2904,
+       5718
+      ]
+     ],
+     "say": "Ten weeks later, America and Spain were at war. In March, the Navy's court had found a mine, but no evidence of who."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "PRINTED · 17 FEB 1898",
+      "quote": "\"Torpedo hole discovered\"",
+      "value": "1898",
+      "unit": "the headline"
+     },
+     "b": {
+      "label": "NAVY STUDY · 1976",
+      "quote": "\"There is no evidence that a mine destroyed the Maine.\"",
+      "value": "1976",
+      "unit": "the record",
+      "source": "Rickover, How the Battleship Maine Was Destroyed"
+     },
+     "strike": "a",
+     "say": "In nineteen seventy six, a Navy study said: there is no evidence that a mine destroyed the Maine. So who found that torpedo hole?"
+    }
+   ]
+  }
+ }
+}
