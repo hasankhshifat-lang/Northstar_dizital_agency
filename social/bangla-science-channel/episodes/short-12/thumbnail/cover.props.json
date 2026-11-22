@@ -1,0 +1,53 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "toon",
+ "background": {
+  "src": "bg_figma.png",
+  "grade": "none",
+  "blur": 0,
+  "darken": 0.0,
+  "side": "top"
+ },
+ "layers": [
+  {
+   "type": "cutout",
+   "src": "bithi.png",
+   "x": -60,
+   "y": 560,
+   "h": 1040,
+   "outline": "#fff"
+  }
+ ],
+ "headline": {
+  "lines": [
+   "বরফ নেই,",
+   "তবু ঠান্ডা?!"
+  ],
+  "accent": [
+   "তবু ঠান্ডা?!"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 110,
+  "size": 150
+ },
+ "tags": [
+  {
+   "text": "বিদ্যুৎ লাগে না!",
+   "x": 600,
+   "y": 1330,
+   "variant": "date",
+   "size": 58,
+   "rotate": -4
+  },
+  {
+   "text": "সাইন্টিফিক বিথী",
+   "x": 330,
+   "y": 480,
+   "variant": "label",
+   "size": 44
+  }
+ ],
+ "guides": false
+}
