@@ -16,4 +16,4 @@ FACTS.md. Mark used topics `done YYYY-MM-DD (VIDEO_ID)`. Add new finds at the bo
 | 9 | Why Getting What You Wanted Stops Feeling Good | Hedonic adaptation; Brickman et al. 1978 lottery study and its limits | | open |
 | 10 | Overthinking a Text Message | Mind-reading errors, negativity in ambiguous messages (Kruger et al. 2005 email tone) | Very relatable Short | open |
 | 11 | Talk to Yourself in the Third Person | Kross et al. 2014 distanced self-talk | Practical episode; partly covered in #2 (2026-11-17), needs a new angle | open |
-| 12 | Decision Fatigue: Real or Myth? | Danziger et al. 2011 judges study + critiques (Weinshall-Margel & Shapard 2011); ego-depletion replication failures | Myth-check format | open |
+| 12 | Decision Fatigue: Real or Myth? | Danziger et al. 2011 judges study + critiques (Weinshall-Margel & Shapard 2011); ego-depletion replication failures | Myth-check format | done 2026-11-22 (nbM4DVNyLo8, Short HpMzRZJs5So) |

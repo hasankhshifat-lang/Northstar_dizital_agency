@@ -1,0 +1,115 @@
+1
+00:00:00,150 --> 00:00:01,591
+In twenty eleven, researchers
+
+2
+00:00:01,631 --> 00:00:03,123
+looked at more than a thousand
+
+3
+00:00:03,163 --> 00:00:04,502
+parole rulings by judges in
+
+4
+00:00:04,542 --> 00:00:05,249
+Israel.
+
+5
+00:00:05,749 --> 00:00:07,294
+At the start of each session
+
+6
+00:00:07,334 --> 00:00:08,496
+about two out of three
+
+7
+00:00:08,536 --> 00:00:10,136
+prisoners were granted parole.
+
+8
+00:00:10,176 --> 00:00:11,611
+Just before the food break...
+
+9
+00:00:11,651 --> 00:00:12,657
+almost none.
+
+10
+00:00:13,107 --> 00:00:14,115
+After the break...
+
+11
+00:00:14,155 --> 00:00:15,948
+back up to two out of three.
+
+12
+00:00:15,988 --> 00:00:17,388
+The internet called it
+
+13
+00:00:17,428 --> 00:00:18,501
+decision fatigue.
+
+14
+00:00:18,541 --> 00:00:20,266
+Hungry judges say no.
+
+15
+00:00:20,716 --> 00:00:22,265
+But then other researchers
+
+16
+00:00:22,305 --> 00:00:24,037
+checked. The cases weren't in
+
+17
+00:00:24,077 --> 00:00:24,831
+random order.
+
+18
+00:00:24,871 --> 00:00:26,420
+Prisoners without a lawyer
+
+19
+00:00:26,460 --> 00:00:27,764
+were often heard last.
+
+20
+00:00:27,804 --> 00:00:29,414
+And simulations showed that
+
+21
+00:00:29,454 --> 00:00:31,003
+simply not starting a long
+
+22
+00:00:31,043 --> 00:00:32,652
+case before the break could
+
+23
+00:00:32,692 --> 00:00:34,570
+produce much of the drop.
+
+24
+00:00:35,120 --> 00:00:36,804
+Tired judges may still be
+
+25
+00:00:36,844 --> 00:00:38,872
+real. But the famous number is
+
+26
+00:00:38,912 --> 00:00:40,710
+probably far too big.
+
+27
+00:00:41,210 --> 00:00:42,752
+So… do you make your big
+
+28
+00:00:42,792 --> 00:00:44,598
+decisions in the morning, or
+
+29
+00:00:44,638 --> 00:00:45,581
+at night?
