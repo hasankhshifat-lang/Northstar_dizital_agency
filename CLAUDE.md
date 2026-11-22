@@ -214,3 +214,17 @@ promos and any other video on the page; where the README says "Shorts", read it 
   a push notification as a report. This overrides the approval step in the scheduled task's prompt. If a check fails,
   a fact can't be confirmed or anything is blocked, don't upload: report and stop. The owner can still ask for changes
   after the report; never delete or edit a posted video unless they ask for that specific one.
+
+## Which Life Next: 3 Shorts a day + 4–5 long videos a week (owner, 2026-11-22)
+
+Owner request 2026-11-22: "Make 3 shorts daily and publish" and "4–5 long videos weekly" for **Which Life Next**.
+- **Shorts: three a day**, standing approval to publish (same rules as before: Pony Express format, VibeVoice Frank,
+  universal thumbnail, AI disclosure YES, Facebook cross-post). Slots **08:00, 13:00 and 17:00 US Eastern**, each
+  at least 4 h away when chosen. This overrides "make exactly ONE Short" in the daily scheduled task's prompt: each
+  run fills the free slots it can still produce in time. Never two Shorts in the same bucket back to back.
+- This ends EXP-whichlifenext-001 as a clean one-Short-a-day test from 2026-11-22 (confound recorded on its card);
+  slot results keep being logged per slot in `youtube-growth/whichlifenext/publishing/publish-time-log.md`.
+- **Long videos: 4–5 a week** (Mon, Tue, Thu, Sat, plus Wed in 5-video weeks unless the owner sets other days),
+  7:00 PM ET by default. Follow the scriptwriting rules (4-act long-form), animation direction rules, VibeVoice,
+  lemo-opuscar and the universal thumbnail skill (16:9). Approval: send the first long video to the owner before it
+  is published; publishing without approval for long videos only once the owner says so.
