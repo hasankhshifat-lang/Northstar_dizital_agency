@@ -1,0 +1,8 @@
+{
+ "width": 1080, "height": 1920, "style": "toon",
+ "background": {"src": "brazil-art.jpg", "grade": "none", "darken": 0, "side": "none"},
+ "layers": [],
+ "headline": {"lines": ["1–7.", "AT HOME."], "accent": ["HOME."], "align": "center", "x": 0, "y": 120, "size": 160, "panel": true},
+ "tags": [{"text": "WORLD CUP SEMI-FINAL · 2014", "x": 250, "y": 1395, "variant": "label", "size": 36}],
+ "guides": false
+}
