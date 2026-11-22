@@ -19,3 +19,6 @@
 | 2026-11-18 | Thumbnail set | Why Part of Minnesota Is Stuck in Canada | 41184886317776890 | — | is_preferred=true; Remotion render 1080×1920 (status: ready, scheduled 2026-11-19 22:00 UTC) |
 | 2026-11-18 | Daily check | All cross-posts 11-12…11-19 present | — | — | Balloons (1867753887551647) live since 2026-11-17 22:00:02 = YT publishAt; Titanic/Jessop (1139472315483528) scheduled 2026-11-18 22:00 = YT publishAt; Northwest Angle (41184886317776890) scheduled 2026-11-19 22:00 = YT publishAt; 0 late publishes |
 | 2026-11-18 | Comments check | 11 videos + 26 posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
+| 2026-11-22 | Daily check | Cross-posts 11-15…11-22 | — | — | Northwest Angle (41184886317776890) live since 2026-11-19 22:00:00 = YT publishAt, but only 2 FB plays in ~2.6 d; 0 late publishes; no Which Life Next Short scheduled on YouTube or Facebook for 11-20…11-23 (scheduled_posts empty; no Short logged after lycDlMhOJ_M) |
+| 2026-11-22 | Comments check | 9 videos + 36 posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
+| 2026-11-22 | Stats | Page + 6 Reels | — | — | 6 fans / 6 followers; FB metrics written to social/learning/which-life-next.md on main (3bff4b2); `shares` field and post_impressions_unique not available for these Reels |
