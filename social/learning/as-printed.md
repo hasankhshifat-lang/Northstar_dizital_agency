@@ -15,7 +15,8 @@ _None yet. Add a line only with the videos/metrics that support it._
 
 | Tag | Variable changed (one only) | Variants | Videos so far | Status | Result |
 |---|---|---|---|---|---|
-| EXP-asprinted-001 (card: youtube-growth/asprinted/experiments/experiment-log.md) | Title framing (long-form) | event-first · press-first | 0 | planned | n/a |
+| EXP-asprinted-001 (card: youtube-growth/asprinted/experiments/experiment-log.md) | Title framing (long-form) | event-first · press-first | 0 | planned (thumbnail precondition met 2026-11-17; waiting for owner OK on title approach; 2026-11-23) | n/a |
+| EXP-asprinted-002 (card: youtube-growth/asprinted/experiments/experiment-log.md) | Short beat 2 narration | spoken date line · straight to conflict (date on screen only) | 0 | planned (proposed 2026-11-23) | n/a |
 
 ## Weekly reviews
 

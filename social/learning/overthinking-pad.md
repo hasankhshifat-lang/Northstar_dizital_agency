@@ -14,7 +14,8 @@ _None yet. Add a line only with the videos/metrics that support it._
 
 | Tag | Variable changed (one only) | Variants | Videos so far | Status | Result |
 |---|---|---|---|---|---|
-| EXP-overthinkingpad-001 (card: youtube-growth/overthinkingpad/experiments/experiment-log.md) | Shorts first line + frame: study set-up vs viewer's moment | study-first (control) · your-moment-first | 3 controls (8GYwZB1soxo 2026-11-16, q4cK6ZazDEo 2026-11-17, HpMzRZJs5So 2026-11-22): control arm complete; treatment arm can start next episode once all 3 have 72 h data | planned (2026-11-16) | n/a yet |
+| EXP-overthinkingpad-001 (card: youtube-growth/overthinkingpad/experiments/experiment-log.md) | Shorts first line + frame: study set-up vs viewer's moment | study-first (control) · your-moment-first | 3 controls published (8GYwZB1soxo 59.1% engaged at 72h; q4cK6ZazDEo 46.6% lifetime to 11-21; HpMzRZJs5So pending); 0 treatment. Audit 2026-11-23: start treatment on the next Short | planned (2026-11-16) | n/a yet |
+| EXP-overthinkingpad-002 (same card file) | Long-form cold open (first 10–15 s): scene-first vs payoff-first | scene-first (control: VSaFr4doR0M, b9ReSvwwjNw, nbM4DVNyLo8) · payoff-first | 0 treatment | planned (2026-11-23) | n/a yet |
 
 ## Weekly reviews
 

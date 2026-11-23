@@ -1,0 +1,359 @@
+{
+ "channel": "asprinted",
+ "generated_at": "2026-11-23T18:22:12+00:00",
+ "data_through": "2026-11-21",
+ "subscribers": "1",
+ "total_views": "757",
+ "videos": "8",
+ "periods": {
+  "7d": {
+   "range": [
+    "2026-11-15",
+    "2026-11-21"
+   ],
+   "by_format": {
+    "videoOnDemand": {
+     "creatorContentType": "videoOnDemand",
+     "views": 42,
+     "engagedViews": 28,
+     "estimatedMinutesWatched": 92,
+     "averageViewDuration": 189,
+     "averageViewPercentage": 30.9,
+     "subscribersGained": 0,
+     "subscribersLost": 0
+    },
+    "shorts": {
+     "creatorContentType": "shorts",
+     "views": 712,
+     "engagedViews": 242,
+     "estimatedMinutesWatched": 128,
+     "averageViewDuration": 29,
+     "averageViewPercentage": 54.69,
+     "subscribersGained": 1,
+     "subscribersLost": 0
+    }
+   },
+   "us": {
+    "views": 98,
+    "estimatedMinutesWatched": 31,
+    "averageViewDuration": 62
+   },
+   "all": {
+    "views": 750,
+    "estimatedMinutesWatched": 208
+   }
+  },
+  "prev7d": {
+   "range": [
+    "2026-11-08",
+    "2026-11-14"
+   ],
+   "by_format": {},
+   "us": {
+    "views": 0,
+    "estimatedMinutesWatched": 0,
+    "averageViewDuration": 0
+   },
+   "all": {
+    "views": 0,
+    "estimatedMinutesWatched": 0
+   }
+  },
+  "28d": {
+   "range": [
+    "2026-10-25",
+    "2026-11-21"
+   ],
+   "by_format": {
+    "videoOnDemand": {
+     "creatorContentType": "videoOnDemand",
+     "views": 42,
+     "engagedViews": 28,
+     "estimatedMinutesWatched": 92,
+     "averageViewDuration": 189,
+     "averageViewPercentage": 30.9,
+     "subscribersGained": 0,
+     "subscribersLost": 0
+    },
+    "shorts": {
+     "creatorContentType": "shorts",
+     "views": 712,
+     "engagedViews": 242,
+     "estimatedMinutesWatched": 128,
+     "averageViewDuration": 29,
+     "averageViewPercentage": 54.69,
+     "subscribersGained": 1,
+     "subscribersLost": 0
+    }
+   },
+   "us": {
+    "views": 98,
+    "estimatedMinutesWatched": 31,
+    "averageViewDuration": 62
+   },
+   "all": {
+    "views": 750,
+    "estimatedMinutesWatched": 208
+   }
+  },
+  "prev28d": {
+   "range": [
+    "2026-09-27",
+    "2026-10-24"
+   ],
+   "by_format": {},
+   "us": {
+    "views": 0,
+    "estimatedMinutesWatched": 0,
+    "averageViewDuration": 0
+   },
+   "all": {
+    "views": 0,
+    "estimatedMinutesWatched": 0
+   }
+  },
+  "90d": {
+   "range": [
+    "2026-08-24",
+    "2026-11-21"
+   ],
+   "by_format": {
+    "videoOnDemand": {
+     "creatorContentType": "videoOnDemand",
+     "views": 42,
+     "engagedViews": 28,
+     "estimatedMinutesWatched": 92,
+     "averageViewDuration": 189,
+     "averageViewPercentage": 30.9,
+     "subscribersGained": 0,
+     "subscribersLost": 0
+    },
+    "shorts": {
+     "creatorContentType": "shorts",
+     "views": 712,
+     "engagedViews": 242,
+     "estimatedMinutesWatched": 128,
+     "averageViewDuration": 29,
+     "averageViewPercentage": 54.69,
+     "subscribersGained": 1,
+     "subscribersLost": 0
+    }
+   },
+   "us": {
+    "views": 98,
+    "estimatedMinutesWatched": 31,
+    "averageViewDuration": 62
+   },
+   "all": {
+    "views": 750,
+    "estimatedMinutesWatched": 208
+   }
+  },
+  "lifetime": {
+   "range": [
+    "2026-11-14",
+    "2026-11-21"
+   ],
+   "by_format": {
+    "videoOnDemand": {
+     "creatorContentType": "videoOnDemand",
+     "views": 42,
+     "engagedViews": 28,
+     "estimatedMinutesWatched": 92,
+     "averageViewDuration": 189,
+     "averageViewPercentage": 30.9,
+     "subscribersGained": 0,
+     "subscribersLost": 0
+    },
+    "shorts": {
+     "creatorContentType": "shorts",
+     "views": 712,
+     "engagedViews": 242,
+     "estimatedMinutesWatched": 128,
+     "averageViewDuration": 29,
+     "averageViewPercentage": 54.69,
+     "subscribersGained": 1,
+     "subscribersLost": 0
+    }
+   },
+   "us": {
+    "views": 98,
+    "estimatedMinutesWatched": 31,
+    "averageViewDuration": 62
+   },
+   "all": {
+    "views": 750,
+    "estimatedMinutesWatched": 208
+   }
+  }
+ },
+ "last28": {
+  "traffic_sources": [
+   {
+    "insightTrafficSourceType": "SHORTS",
+    "views": 681,
+    "estimatedMinutesWatched": 122
+   },
+   {
+    "insightTrafficSourceType": "RELATED_VIDEO",
+    "views": 28,
+    "estimatedMinutesWatched": 54
+   },
+   {
+    "insightTrafficSourceType": "YT_SEARCH",
+    "views": 15,
+    "estimatedMinutesWatched": 1
+   },
+   {
+    "insightTrafficSourceType": "YT_OTHER_PAGE",
+    "views": 15,
+    "estimatedMinutesWatched": 3
+   },
+   {
+    "insightTrafficSourceType": "SUBSCRIBER",
+    "views": 9,
+    "estimatedMinutesWatched": 14
+   },
+   {
+    "insightTrafficSourceType": "NO_LINK_OTHER",
+    "views": 1,
+    "estimatedMinutesWatched": 11
+   },
+   {
+    "insightTrafficSourceType": "PLAYLIST",
+    "views": 1,
+    "estimatedMinutesWatched": 0
+   },
+   {
+    "insightTrafficSourceType": "YT_CHANNEL",
+    "views": 0,
+    "estimatedMinutesWatched": 0
+   }
+  ],
+  "top_countries": [
+   {
+    "country": "US",
+    "views": 98,
+    "estimatedMinutesWatched": 31,
+    "averageViewDuration": 62
+   },
+   {
+    "country": "GB",
+    "views": 71,
+    "estimatedMinutesWatched": 13,
+    "averageViewDuration": 27
+   },
+   {
+    "country": "CA",
+    "views": 64,
+    "estimatedMinutesWatched": 12,
+    "averageViewDuration": 30
+   },
+   {
+    "country": "ZA",
+    "views": 0,
+    "estimatedMinutesWatched": 0,
+    "averageViewDuration": 0
+   }
+  ],
+  "search_terms": [
+   {
+    "insightTrafficSourceDetail": "adult pranks",
+    "views": 1
+   },
+   {
+    "insightTrafficSourceDetail": "hanby",
+    "views": 1
+   },
+   {
+    "insightTrafficSourceDetail": "idaho4",
+    "views": 1
+   },
+   {
+    "insightTrafficSourceDetail": "snowman",
+    "views": 1
+   },
+   {
+    "insightTrafficSourceDetail": "suho meso",
+    "views": 1
+   }
+  ],
+  "devices": [
+   {
+    "deviceType": "DESKTOP",
+    "views": 64
+   },
+   {
+    "deviceType": "TV",
+    "views": 32
+   },
+   {
+    "deviceType": "MOBILE",
+    "views": 561
+   },
+   {
+    "deviceType": "TABLET",
+    "views": 93
+   }
+  ],
+  "subscribed_status": [],
+  "top_videos": [
+   {
+    "video": "I3uM_6UVWp0",
+    "views": 605,
+    "engagedViews": 208,
+    "averageViewPercentage": 55.88000000000001,
+    "subscribersGained": 1
+   },
+   {
+    "video": "XxaVSsEPZ9Y",
+    "views": 74,
+    "engagedViews": 22,
+    "averageViewPercentage": 51.35000000000001,
+    "subscribersGained": 0
+   },
+   {
+    "video": "a9Hca04eBvw",
+    "views": 22,
+    "engagedViews": 11,
+    "averageViewPercentage": 35.64,
+    "subscribersGained": 0
+   },
+   {
+    "video": "8h8BakYSZk0",
+    "views": 17,
+    "engagedViews": 6,
+    "averageViewPercentage": 37.94,
+    "subscribersGained": 0
+   },
+   {
+    "video": "BzGnyOekmnA",
+    "views": 16,
+    "engagedViews": 6,
+    "averageViewPercentage": 44.15,
+    "subscribersGained": 0
+   },
+   {
+    "video": "1xyUQOa6VgM",
+    "views": 10,
+    "engagedViews": 8,
+    "averageViewPercentage": 24.99,
+    "subscribersGained": 0
+   },
+   {
+    "video": "nfI5VIM0wP8",
+    "views": 10,
+    "engagedViews": 9,
+    "averageViewPercentage": 29.630000000000003,
+    "subscribersGained": 0
+   }
+  ],
+  "us_time_zone_mix": {}
+ },
+ "unavailable_in_api": [
+  "impressions",
+  "impressions CTR",
+  "returning/new viewers",
+  "when your viewers are on YouTube"
+ ]
+}
