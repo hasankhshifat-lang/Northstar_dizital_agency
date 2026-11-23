@@ -1,0 +1,13 @@
+"The Banana Free Kick" - Brazil 1-1 France, Tournoi de France opening match, Stade de Gerland, Lyon, 3 June 1997: an animated fan retelling for the Foot All FC channel. Comic History Cartoon style (lemo-opuscar).
+Unofficial: not made or endorsed by the CBF, the FFF, FIFA or any broadcaster. No crests, competition marks, broadcast footage or real
+likenesses are used; players are generic paper puppets identified by shirt number (#6), the keeper and the ball boy are generic puppets.
+
+Puppet art: the part sheets of videos/barca-remontada-short (AI-generated), recoloured with tools/kit.py into generic kits:
+  plain yellow shirt, blue shorts, white socks ('bra'); plain blue shirt, white shorts, red socks ('fra'); grey tracksuit ('boy');
+  the yellow keeper recoloured green with tools/gkcolor.py ('gkg').
+Narration: Microsoft VibeVoice-Realtime-0.5B, voice "Frank" (MIT licence), AI-generated voice.
+Fonts (SIL Open Font License): IM FELL English SC (Igino Marini), Old Standard TT (Alexey Kryukov), Lilita One (Juan Montoreano).
+Instruments (sampled, via lemo-opuscar core/audio/sampler.py): see out/instruments.txt at build time.
+Samples (CC0): FreePats project (freepats.zenvoid.org), VS Chamber Orchestra: Community Edition (Versilian Studios), Versilian Community Sample Library (Versilian Studios)
+Foley, crowd and applause: synthesized in mix.py.
+Facts: see social/scripts/roberto-carlos-1997-free-kick.md (fact sheet with sources). Paper on screen: Dupeux, Le Goff, Quere & Clanet, "The spinning ball spiral", New Journal of Physics (2010).

@@ -1,0 +1,8 @@
+{
+ "width": 1080, "height": 1920, "style": "toon",
+ "background": {"src": "zidane-2006-art.jpg", "grade": "none", "darken": 0, "side": "none"},
+ "layers": [],
+ "headline": {"lines": ["WHY DID HE", "DO IT?"], "accent": ["DO", "IT?"], "align": "center", "x": 0, "y": 120, "size": 150, "panel": true},
+ "tags": [{"text": "WORLD CUP FINAL · 2006", "x": 300, "y": 1395, "variant": "label", "size": 36}],
+ "guides": false
+}
