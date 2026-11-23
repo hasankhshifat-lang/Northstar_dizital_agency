@@ -140,7 +140,7 @@ long = [
  dict(type="read", item="annap", boxes=B['an_diff'],
   say="But the Evening Capital, in Annapolis, noticed something. The Vreeland board report, fixing the position of the mine on the port side, between frames twenty eight and thirty one, differs from the Sampson court finding, which fixed the position of the mine at frame eighteen."),
  dict(type="read", item="norwich", boxes=B['no_myst'],
-  say="Two boards. A mine in two different places. The Norwich Bulletin wrote: This only deepens the mystery of the destruction of the Maine."),
+  say="Two Navy boards. A mine in two different places. The Norwich Bulletin wrote: This only deepens the mystery of the destruction of the Maine."),
  dict(type="photo", item="wreckjuly", focus=[1600, 400], nf=0.4, drift=[-0.5, 0], labels=[dict(at=[1600, 160], text="Inside the cofferdam", sub="Havana harbor · 18 July 1911")],
   say="In March, nineteen twelve, the hull was floated, towed out to sea, and sunk in about six hundred fathoms of water. Whatever it could still tell us went down with it."),
  dict(type="chapter", kicker="PART 6", title="Seventy-eight years", chapterName="Seventy-eight years", item="maineship", say="Part six. Seventy eight years."),
@@ -152,7 +152,7 @@ long = [
  # verdict: printed vs the record, printed one struck
  dict(type="compare", a=dict(label="NEW YORK EVENING JOURNAL · 17 FEB 1898", quote="\"Torpedo hole discovered by government divers\"", value="2", unit="days after · printed"),
   b=dict(label="NAVAL COURT OF INQUIRY · MARCH 1898", quote="\"…no evidence … fixing the responsibility … upon any person or persons.\"", value="23", unit="days of inquiry", source="The Age-Herald · Chronicling America"), strike="a",
-  say="Printed, two days after: torpedo hole discovered by government divers. Found by the court, after twenty three days of work: no evidence fixing the responsibility upon any person. And seventy eight years later, no proof there was a mine at all."),
+  say="In print, two days after: torpedo hole discovered by government divers. Found by the court, after twenty three days of work: no evidence fixing the responsibility upon any person. And seventy eight years later, no proof there was a mine at all."),
  # ending: answer the opening, then the comment question
  dict(type="read", item="wilm", boxes=B['wi_susp'],
   say="So who found the torpedo hole? The page does not say, and no later report ever confirmed it. On the night his ship went down, Captain Sigsbee asked for one thing. Public opinion should be suspended, till further report. The papers did not wait. Here is my question. If they had, would America still have gone to war in eighteen ninety eight? Tell me in the comments."),
