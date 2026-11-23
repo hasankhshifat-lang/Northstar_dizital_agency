@@ -21,3 +21,6 @@ Mirror each card as a row in `social/learning/<channel>.md` → Experiments.
 - **Status:** planned. No time change needed; topic assignment per the calendar.
 - 2026-11-18 (day 4): 19:00 ET Tw7hVywh-88 (Maracanazo, 85), 21:00 ET hVYufhSqQwE (Anfield corner, 88): higher score at 21:00.
 - **Result:** — **Decision:** —
+
+### 2026-11-23 daily checkpoints (YouTube Analytics API via growth.py, data to 11-18…11-20)
+- **EXP-footallfc-001 interim (status: running, the log said "planned"; slots alternate since day 1):** 72 h views, 19:00 ET slot: krePEx98iNA 171 · Tw7hVywh-88 196 · tNIQekn0giI 141 (median 171); 21:00 ET slot: hVYufhSqQwE 747 · bA8U2Sb4o20 91 · BrktyLaF4SI 70 (median 91). Engaged/views 19:00: 0.322 / 0.418 / 0.355; 21:00: 0.534 / 0.385 / 0.229. Day 1 at 7 d: j_ApWmdOq7A (19:00) 385 vs Ee8NbFAdEfg (21:00) 60. 21:00 trails on the median but has the single best Short (hVYufhSqQwE): mixed. n=3 per slot at 72 h, card needs ≥5 per slot: no decision. The day-5/6 pairs (22–23 Nov) complete the sample.
