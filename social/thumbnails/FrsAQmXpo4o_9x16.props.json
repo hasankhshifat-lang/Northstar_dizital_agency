@@ -1,0 +1,78 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "map",
+ "background": {
+  "src": "nm_map.png",
+  "crop": [
+   0.105,
+   0.369,
+   0.6,
+   0.6
+  ],
+  "grade": "warm",
+  "blur": 0.8,
+  "side": "top",
+  "darken": 0.12
+ },
+ "layers": [
+  {
+   "type": "image",
+   "src": "fire.jpg",
+   "x": 40,
+   "y": 450,
+   "w": 640,
+   "aspect": 0.705,
+   "rotate": -3,
+   "grade": "mono",
+   "paper": true
+  },
+  {
+   "type": "pin",
+   "x": 850,
+   "y": 560,
+   "label": "CARLSBAD, N.M.",
+   "size": 50
+  },
+  {
+   "type": "cutout",
+   "src": "bat_cut.png",
+   "x": 330,
+   "y": 860,
+   "h": 800,
+   "glow": "rgba(255,226,170,0.55)"
+  }
+ ],
+ "headline": {
+  "lines": [
+   "BATS BURNED",
+   "THIS BASE"
+  ],
+  "accent": [
+   "THIS",
+   "BASE"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 90,
+  "size": 150
+ },
+ "tags": [
+  {
+   "text": "MAY 1943",
+   "x": 70,
+   "y": 1460,
+   "variant": "date",
+   "size": 44
+  },
+  {
+   "text": "REAL PHOTO",
+   "x": 80,
+   "y": 1370,
+   "variant": "label",
+   "size": 34,
+   "rotate": -3
+  }
+ ],
+ "guides": false
+}

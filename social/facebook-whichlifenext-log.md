@@ -23,3 +23,4 @@
 | 2026-11-22 | Comments check | 9 videos + 36 posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
 | 2026-11-22 | Stats | Page + 6 Reels | — | — | 6 fans / 6 followers; FB metrics written to social/learning/which-life-next.md on main (3bff4b2); `shares` field and post_impressions_unique not available for these Reels |
 | 2026-11-22 | Schedule Reel (cross-post) | He Stole a Confederate Warship and Sailed Past Fort Sumter | 1111102915088402 | 2026-11-23 13:00 UTC (= YT publishAt of t6fR0H1yYJo) | uploaded, processing, scheduled_publish_time confirmed |
+| 2026-11-23 | Schedule Reel (cross-post) | The US Army Strapped Bombs to Bats | 1140531628523497 | 2026-11-23 18:00 UTC (= YT publishAt of FrsAQmXpo4o) | uploaded, processing, scheduled_publish_time confirmed |

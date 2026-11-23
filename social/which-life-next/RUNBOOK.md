@@ -511,3 +511,11 @@ Start on the map, then **dive into the place** and show what the narration descr
 - A held object that starts on a peg: put the peg at `handAt(...)` for the reach angle so the hand meets the object exactly, then draw the object at the hand until it is placed.
 - VibeVoice was not preinstalled again (install ~2 min in the background). 150 words → 51.3 s, 0.8 s leading silence trimmed; Groq whisper-large-v3 matched the script word for word.
 - Wikimedia thumbnails through the proxy only work at standard widths (1280px worked; 1600px/2000px returned an error page).
+
+### Learned 2026-11-23 (bat bomb Short, WR, first 13:00 ET slot)
+- Story `src/stories/batBomb.tsx` (Pacific Mercator from the balloon Short, NM highlight, plane icon over Japan; `clean` prop hides scenes/text/pins for a thumbnail map still) + `src/sets/batScenes.tsx` (`Bat` with flap/asleep/bomb/timer, `Swarm`, `Hangar`, `Flames`, `Desk`, `Paper` with stamp, `Stamp`, `Icebox`, `Tray`, `Bomber`, parachute `Case` that splits, `Houses`, `StaffCar`, `Calendar`, `DentalChair`, `Glasses`, general's star); `BatCut` composition renders the bat on a transparent background for thumbnail cutouts. Mix: `shorts/bat-bomb-2026-11-23/mix.py` (synth wing flutter, drone, stamp thud, ticking).
+- Sky-only scenes: `Sky` stops at GY+10, so add a ground/sky rect below it or the map shows through.
+- A figure behind a desk: put the desk top at the stamping hand's height (`handAt(...)[1]`) and scale the figure up (1.6) so the face reads above it.
+- Remotion stills: bundle once (`npx remotion bundle --out-dir …`) and call `renderStill` from a small node script for many timestamps (~1.5 s per still); tile with ffmpeg (`tile=9x3`) because the system PIL is broken in this image.
+- Wikimedia upload.wikimedia.org rate-limits (429) quickly; wait ~20 s between requests and send a descriptive User-Agent.
+- Final encode: Remotion's mp4 is full-range (yuvj420p); re-encode with `-vf scale=in_range=pc:out_range=tv,format=yuv420p`.
