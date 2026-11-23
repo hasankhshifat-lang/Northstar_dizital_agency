@@ -1,0 +1,13 @@
+"The Last Game" - Italy 1-1 France (Italy won 5-3 on penalties), World Cup final, Olympiastadion, Berlin, 9 July 2006: an animated fan retelling for the Foot All FC channel. Comic History Cartoon style (lemo-opuscar).
+Unofficial: not made or endorsed by the FFF, the FIGC, FIFA or any broadcaster. No crests, competition marks, broadcast footage or real
+likenesses are used; players are generic paper puppets identified by shirt number (#10, #23); referee, fourth official and keepers are generic puppets;
+the trophy is a generic drawn cup, not the real trophy's design. No dialogue is invented: speech balloons show only "...".
+
+Puppet art: the part sheets of videos/barca-remontada-short (AI-generated, incl. the referee parts), recoloured with tools/kit.py into generic kits:
+  plain white ('fra', France wore white that day), plain blue shirt, white shorts ('ita'); keepers recoloured with tools/gkcolor.py (grey 'gkx', green 'gkg').
+Narration: Microsoft VibeVoice-Realtime-0.5B, voice "Frank" (MIT licence), AI-generated voice.
+Fonts (SIL Open Font License): IM FELL English SC (Igino Marini), Old Standard TT (Alexey Kryukov), Lilita One (Juan Montoreano).
+Instruments (sampled, via lemo-opuscar core/audio/sampler.py): see out/instruments.txt at build time.
+Samples (CC0): FreePats project (freepats.zenvoid.org), VS Chamber Orchestra: Community Edition (Versilian Studios), Versilian Community Sample Library (Versilian Studios)
+Foley, crowd and applause: synthesized in mix.py.
+Facts: see social/scripts/zidane-2006-final-red-card.md (fact sheet with sources).

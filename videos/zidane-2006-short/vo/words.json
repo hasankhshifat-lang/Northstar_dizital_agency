@@ -1,0 +1,685 @@
+{
+"text": " It was the last game of his career, a World Cup final. And Zinedine Zidane walked off with a red card. July 9th, 2006. Berlin, France against Italy. Seven minutes in, Zidane takes a penalty and chips it. It hits the crossbar, bounces down over the line. Twelve minutes later, Marco Martirazzi heads Italy level. 1-1. Extra time. Zidane and Martirazzi exchange words. Zidane walks away, then turns around and headbutts him in the chest The referee didn't see it, the fourth official did Red card, Zidane walks past the World Cup trophy and off the pitch, forever Italy won on penalties And Zidane was still voted the best player of the tournament Matarazzi later said he insulted Zidane's sister Zidane never repeated the words Would you have sent him off? Tell me in the comments",
+"words": [
+{
+"word": "It",
+"start": 0,
+"end": 0.16
+},
+{
+"word": "was",
+"start": 0.16,
+"end": 0.28
+},
+{
+"word": "the",
+"start": 0.28,
+"end": 0.4
+},
+{
+"word": "last",
+"start": 0.4,
+"end": 0.62
+},
+{
+"word": "game",
+"start": 0.62,
+"end": 0.88
+},
+{
+"word": "of",
+"start": 0.88,
+"end": 1.06
+},
+{
+"word": "his",
+"start": 1.06,
+"end": 1.16
+},
+{
+"word": "career,",
+"start": 1.16,
+"end": 2.02
+},
+{
+"word": "a",
+"start": 2.02,
+"end": 2.1
+},
+{
+"word": "World",
+"start": 2.1,
+"end": 2.4
+},
+{
+"word": "Cup",
+"start": 2.4,
+"end": 2.58
+},
+{
+"word": "final.",
+"start": 2.58,
+"end": 3.44
+},
+{
+"word": "And",
+"start": 3.74,
+"end": 3.9
+},
+{
+"word": "Zinedine",
+"start": 3.9,
+"end": 4.28
+},
+{
+"word": "Zidane",
+"start": 4.28,
+"end": 4.58
+},
+{
+"word": "walked",
+"start": 4.58,
+"end": 4.9
+},
+{
+"word": "off",
+"start": 4.9,
+"end": 5.18
+},
+{
+"word": "with",
+"start": 5.18,
+"end": 5.34
+},
+{
+"word": "a",
+"start": 5.34,
+"end": 5.44
+},
+{
+"word": "red",
+"start": 5.44,
+"end": 5.58
+},
+{
+"word": "card.",
+"start": 5.58,
+"end": 6.42
+},
+{
+"word": "July",
+"start": 6.5,
+"end": 6.68
+},
+{
+"word": "9th,",
+"start": 6.68,
+"end": 7.14
+},
+{
+"word": "2006.",
+"start": 7.14,
+"end": 8.46
+},
+{
+"word": "Berlin,",
+"start": 8.78,
+"end": 9.6
+},
+{
+"word": "France",
+"start": 9.6,
+"end": 9.98
+},
+{
+"word": "against",
+"start": 9.98,
+"end": 10.42
+},
+{
+"word": "Italy.",
+"start": 10.42,
+"end": 11.3
+},
+{
+"word": "Seven",
+"start": 11.62,
+"end": 11.8
+},
+{
+"word": "minutes",
+"start": 11.8,
+"end": 12.1
+},
+{
+"word": "in,",
+"start": 12.1,
+"end": 12.84
+},
+{
+"word": "Zidane",
+"start": 12.84,
+"end": 13.08
+},
+{
+"word": "takes",
+"start": 13.08,
+"end": 13.38
+},
+{
+"word": "a",
+"start": 13.38,
+"end": 13.5
+},
+{
+"word": "penalty",
+"start": 13.5,
+"end": 13.84
+},
+{
+"word": "and",
+"start": 13.84,
+"end": 14.48
+},
+{
+"word": "chips",
+"start": 14.48,
+"end": 14.74
+},
+{
+"word": "it.",
+"start": 14.74,
+"end": 15.4
+},
+{
+"word": "It",
+"start": 15.64,
+"end": 15.78
+},
+{
+"word": "hits",
+"start": 15.78,
+"end": 15.92
+},
+{
+"word": "the",
+"start": 15.92,
+"end": 16.1
+},
+{
+"word": "crossbar,",
+"start": 16.1,
+"end": 17.04
+},
+{
+"word": "bounces",
+"start": 17.04,
+"end": 17.24
+},
+{
+"word": "down",
+"start": 17.24,
+"end": 17.7
+},
+{
+"word": "over",
+"start": 17.7,
+"end": 18.14
+},
+{
+"word": "the",
+"start": 18.14,
+"end": 18.22
+},
+{
+"word": "line.",
+"start": 18.22,
+"end": 19.02
+},
+{
+"word": "Twelve",
+"start": 19.52,
+"end": 19.72
+},
+{
+"word": "minutes",
+"start": 19.72,
+"end": 19.98
+},
+{
+"word": "later,",
+"start": 19.98,
+"end": 20.98
+},
+{
+"word": "Marco",
+"start": 20.98,
+"end": 21.32
+},
+{
+"word": "Martirazzi",
+"start": 21.32,
+"end": 21.92
+},
+{
+"word": "heads",
+"start": 21.92,
+"end": 22.3
+},
+{
+"word": "Italy",
+"start": 22.3,
+"end": 22.64
+},
+{
+"word": "level.",
+"start": 22.64,
+"end": 23.44
+},
+{
+"word": "1-1.",
+"start": 23.52,
+"end": 23.88
+},
+{
+"word": "Extra",
+"start": 23.88,
+"end": 24.74
+},
+{
+"word": "time.",
+"start": 24.74,
+"end": 25.12
+},
+{
+"word": "Zidane",
+"start": 25.92,
+"end": 26.2
+},
+{
+"word": "and",
+"start": 26.2,
+"end": 26.36
+},
+{
+"word": "Martirazzi",
+"start": 26.36,
+"end": 26.88
+},
+{
+"word": "exchange",
+"start": 26.88,
+"end": 27.46
+},
+{
+"word": "words.",
+"start": 27.46,
+"end": 27.82
+},
+{
+"word": "Zidane",
+"start": 28.68,
+"end": 28.86
+},
+{
+"word": "walks",
+"start": 28.86,
+"end": 29.2
+},
+{
+"word": "away,",
+"start": 29.2,
+"end": 30.36
+},
+{
+"word": "then",
+"start": 30.36,
+"end": 30.48
+},
+{
+"word": "turns",
+"start": 30.48,
+"end": 30.76
+},
+{
+"word": "around",
+"start": 30.76,
+"end": 31.14
+},
+{
+"word": "and",
+"start": 31.14,
+"end": 31.72
+},
+{
+"word": "headbutts",
+"start": 31.72,
+"end": 32.18
+},
+{
+"word": "him",
+"start": 32.18,
+"end": 32.28
+},
+{
+"word": "in",
+"start": 32.28,
+"end": 32.42
+},
+{
+"word": "the",
+"start": 32.42,
+"end": 32.52
+},
+{
+"word": "chest",
+"start": 32.52,
+"end": 32.82
+},
+{
+"word": "The",
+"start": 32.52,
+"end": 33.72
+},
+{
+"word": "referee",
+"start": 33.72,
+"end": 34.04
+},
+{
+"word": "didn't",
+"start": 34.04,
+"end": 34.3
+},
+{
+"word": "see",
+"start": 34.3,
+"end": 34.52
+},
+{
+"word": "it,",
+"start": 34.52,
+"end": 35.2
+},
+{
+"word": "the",
+"start": 35.2,
+"end": 35.42
+},
+{
+"word": "fourth",
+"start": 35.42,
+"end": 35.66
+},
+{
+"word": "official",
+"start": 35.66,
+"end": 36.04
+},
+{
+"word": "did",
+"start": 36.04,
+"end": 36.38
+},
+{
+"word": "Red",
+"start": 37.02,
+"end": 37.24
+},
+{
+"word": "card,",
+"start": 37.24,
+"end": 38.22
+},
+{
+"word": "Zidane",
+"start": 38.22,
+"end": 38.56
+},
+{
+"word": "walks",
+"start": 38.56,
+"end": 38.8
+},
+{
+"word": "past",
+"start": 38.8,
+"end": 39.08
+},
+{
+"word": "the",
+"start": 39.08,
+"end": 39.24
+},
+{
+"word": "World",
+"start": 39.24,
+"end": 39.46
+},
+{
+"word": "Cup",
+"start": 39.46,
+"end": 39.62
+},
+{
+"word": "trophy",
+"start": 39.62,
+"end": 39.94
+},
+{
+"word": "and",
+"start": 39.94,
+"end": 40.42
+},
+{
+"word": "off",
+"start": 40.42,
+"end": 40.58
+},
+{
+"word": "the",
+"start": 40.58,
+"end": 40.72
+},
+{
+"word": "pitch,",
+"start": 40.72,
+"end": 41.38
+},
+{
+"word": "forever",
+"start": 41.38,
+"end": 41.66
+},
+{
+"word": "Italy",
+"start": 41.2,
+"end": 42.74
+},
+{
+"word": "won",
+"start": 42.74,
+"end": 42.94
+},
+{
+"word": "on",
+"start": 42.94,
+"end": 43.08
+},
+{
+"word": "penalties",
+"start": 43.08,
+"end": 43.44
+},
+{
+"word": "And",
+"start": 42.98,
+"end": 44.4
+},
+{
+"word": "Zidane",
+"start": 44.4,
+"end": 44.76
+},
+{
+"word": "was",
+"start": 44.76,
+"end": 44.94
+},
+{
+"word": "still",
+"start": 44.94,
+"end": 45.18
+},
+{
+"word": "voted",
+"start": 45.18,
+"end": 45.52
+},
+{
+"word": "the",
+"start": 45.52,
+"end": 45.7
+},
+{
+"word": "best",
+"start": 45.7,
+"end": 45.92
+},
+{
+"word": "player",
+"start": 45.92,
+"end": 46.14
+},
+{
+"word": "of",
+"start": 46.14,
+"end": 46.28
+},
+{
+"word": "the",
+"start": 46.28,
+"end": 46.36
+},
+{
+"word": "tournament",
+"start": 46.36,
+"end": 46.72
+},
+{
+"word": "Matarazzi",
+"start": 47.64,
+"end": 48.16
+},
+{
+"word": "later",
+"start": 48.16,
+"end": 48.48
+},
+{
+"word": "said",
+"start": 48.48,
+"end": 48.8
+},
+{
+"word": "he",
+"start": 48.8,
+"end": 48.94
+},
+{
+"word": "insulted",
+"start": 48.94,
+"end": 49.42
+},
+{
+"word": "Zidane's",
+"start": 49.42,
+"end": 49.88
+},
+{
+"word": "sister",
+"start": 49.88,
+"end": 50.18
+},
+{
+"word": "Zidane",
+"start": 49.72,
+"end": 51.5
+},
+{
+"word": "never",
+"start": 51.5,
+"end": 51.76
+},
+{
+"word": "repeated",
+"start": 51.76,
+"end": 52.14
+},
+{
+"word": "the",
+"start": 52.14,
+"end": 52.3
+},
+{
+"word": "words",
+"start": 52.3,
+"end": 52.6
+},
+{
+"word": "Would",
+"start": 52.3,
+"end": 53.62
+},
+{
+"word": "you",
+"start": 53.62,
+"end": 53.76
+},
+{
+"word": "have",
+"start": 53.76,
+"end": 53.88
+},
+{
+"word": "sent",
+"start": 53.88,
+"end": 54.1
+},
+{
+"word": "him",
+"start": 54.1,
+"end": 54.24
+},
+{
+"word": "off?",
+"start": 54.24,
+"end": 54.96
+},
+{
+"word": "Tell",
+"start": 55.42,
+"end": 55.58
+},
+{
+"word": "me",
+"start": 55.58,
+"end": 55.7
+},
+{
+"word": "in",
+"start": 55.7,
+"end": 55.8
+},
+{
+"word": "the",
+"start": 55.8,
+"end": 55.9
+},
+{
+"word": "comments",
+"start": 55.9,
+"end": 56.16
+}
+]
+}

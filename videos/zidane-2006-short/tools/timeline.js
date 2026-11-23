@@ -1,0 +1,35 @@
+window.DUR = 56.7;
+const T = {
+  last: .3, final: 2.0, card0: 4.85,
+  sB: 6.9, pin: 7.4, vs: 9.2,
+  sC: 11.5, run: 12.9, chip: 14.45, bar: 16.0, down: 17.0, line: 17.25, out: 18.3,
+  sD: 19.5, corner: 20.6, head: 21.9, g2: 22.5, lvl: 22.6,
+  sE: 24.4, words: 26.8, away: 28.7, turn: 30.4, butt: 31.75, fall: 32.0,
+  sF: 33.9, fourth: 34.55,
+  sG: 37.1, red: 37.2, walk: 38.3, gone: 40.8,
+  sH: 42.6, pens: 42.75, gold: 45.0,
+  sI: 47.9, never: 50.6,
+  sJ: 52.8, endPull: 54.9, end: 56.7,
+};
+const CAPS = [
+  [0.0, 2.0, 'It was the last game of his career…'],
+  [2.0, 3.7, '…a World Cup final.'],
+  [3.7, 6.85, 'And Zinedine Zidane walked off with a red card.'],
+  [6.9, 9.5, 'July 9, 2006. Berlin.'],
+  [9.55, 11.45, 'France against Italy.'],
+  [11.5, 15.5, '7 minutes in, Zidane takes a penalty… and chips it.'],
+  [15.55, 19.35, 'It hits the crossbar… bounces down… over the line.'],
+  [19.5, 23.4, '12 minutes later, Marco Materazzi heads Italy level.'],
+  [23.45, 25.8, '1–1. Extra time.'],
+  [25.85, 28.6, 'Zidane and Materazzi exchange words.'],
+  [28.65, 33.85, 'Zidane walks away… then turns around… and headbutts him in the chest.'],
+  [33.9, 37.05, 'The referee didn’t see it. The fourth official did.'],
+  [37.1, 42.55, 'Red card. Zidane walks past the World Cup trophy… and off the pitch, forever.'],
+  [42.6, 44.95, 'Italy won on penalties.'],
+  [45.0, 47.85, 'And Zidane was still voted the best player of the tournament.'],
+  [47.9, 50.55, 'Materazzi later said he insulted Zidane’s sister.'],
+  [50.6, 53.5, 'Zidane never repeated the words.'],
+  [53.55, 55.3, 'Would you have sent him off?'],
+  [55.35, 56.7, 'Tell me in the comments.'],
+];
+window.CAPS = CAPS;
