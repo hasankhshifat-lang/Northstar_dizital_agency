@@ -1,0 +1,700 @@
+{
+"text": " Most goalkeepers stop the ball with their hands. This one used his heels. Upside down. September 6, 1995. Wembley, England against Colombia. Just a friendly. What could possibly go wrong? In goal for Colombia, Rene Higuita. His nickname? El Loco. The madman. Jamie Redknapp tries a lob from 30 yards. A soft, easy ball. Any keeper would just catch it. Not Higuita. He dives forward, flips his legs over his head and kicks it away with his heels. 20,000 people at Wembley had never seen anything like it. And the funniest part? The flag was already up for offside. He didn't even need to save it. It wasn't luck either. He later said he'd practiced it all through the warm-up. The match ended nil-nil. Nobody remembers the score. Would you try this in goal? Tell me in the comments.",
+"words": [
+{
+"word": "Most",
+"start": 0,
+"end": 0.32
+},
+{
+"word": "goalkeepers",
+"start": 0.32,
+"end": 0.88
+},
+{
+"word": "stop",
+"start": 0.88,
+"end": 1.16
+},
+{
+"word": "the",
+"start": 1.16,
+"end": 1.28
+},
+{
+"word": "ball",
+"start": 1.28,
+"end": 1.44
+},
+{
+"word": "with",
+"start": 1.44,
+"end": 1.62
+},
+{
+"word": "their",
+"start": 1.62,
+"end": 1.78
+},
+{
+"word": "hands.",
+"start": 1.78,
+"end": 2.66
+},
+{
+"word": "This",
+"start": 2.66,
+"end": 2.74
+},
+{
+"word": "one",
+"start": 2.74,
+"end": 3.1
+},
+{
+"word": "used",
+"start": 3.1,
+"end": 3.72
+},
+{
+"word": "his",
+"start": 3.72,
+"end": 3.94
+},
+{
+"word": "heels.",
+"start": 3.94,
+"end": 4.76
+},
+{
+"word": "Upside",
+"start": 4.76,
+"end": 5.08
+},
+{
+"word": "down.",
+"start": 5.08,
+"end": 5.82
+},
+{
+"word": "September",
+"start": 5.82,
+"end": 5.9
+},
+{
+"word": "6,",
+"start": 5.9,
+"end": 6.54
+},
+{
+"word": "1995.",
+"start": 6.76,
+"end": 7.62
+},
+{
+"word": "Wembley,",
+"start": 7.62,
+"end": 7.98
+},
+{
+"word": "England",
+"start": 7.98,
+"end": 8.32
+},
+{
+"word": "against",
+"start": 8.32,
+"end": 8.64
+},
+{
+"word": "Colombia.",
+"start": 8.64,
+"end": 9.56
+},
+{
+"word": "Just",
+"start": 9.56,
+"end": 10.04
+},
+{
+"word": "a",
+"start": 10.04,
+"end": 10.2
+},
+{
+"word": "friendly.",
+"start": 10.2,
+"end": 10.82
+},
+{
+"word": "What",
+"start": 10.82,
+"end": 11.06
+},
+{
+"word": "could",
+"start": 11.06,
+"end": 11.22
+},
+{
+"word": "possibly",
+"start": 11.22,
+"end": 11.62
+},
+{
+"word": "go",
+"start": 11.62,
+"end": 11.82
+},
+{
+"word": "wrong?",
+"start": 11.82,
+"end": 12.56
+},
+{
+"word": "In",
+"start": 12.56,
+"end": 12.7
+},
+{
+"word": "goal",
+"start": 12.7,
+"end": 12.88
+},
+{
+"word": "for",
+"start": 12.38,
+"end": 13.12
+},
+{
+"word": "Colombia,",
+"start": 13.12,
+"end": 13.84
+},
+{
+"word": "Rene",
+"start": 13.84,
+"end": 14.06
+},
+{
+"word": "Higuita.",
+"start": 14.06,
+"end": 14.96
+},
+{
+"word": "His",
+"start": 14.96,
+"end": 15.22
+},
+{
+"word": "nickname?",
+"start": 15.22,
+"end": 16.04
+},
+{
+"word": "El",
+"start": 16.04,
+"end": 16.14
+},
+{
+"word": "Loco.",
+"start": 16.14,
+"end": 17.1
+},
+{
+"word": "The",
+"start": 17.1,
+"end": 17.32
+},
+{
+"word": "madman.",
+"start": 17.32,
+"end": 18.62
+},
+{
+"word": "Jamie",
+"start": 18.62,
+"end": 18.84
+},
+{
+"word": "Redknapp",
+"start": 18.84,
+"end": 19.24
+},
+{
+"word": "tries",
+"start": 19.24,
+"end": 19.48
+},
+{
+"word": "a",
+"start": 19.48,
+"end": 19.68
+},
+{
+"word": "lob",
+"start": 19.68,
+"end": 19.84
+},
+{
+"word": "from",
+"start": 19.84,
+"end": 20.04
+},
+{
+"word": "30",
+"start": 20.04,
+"end": 20.38
+},
+{
+"word": "yards.",
+"start": 19.9,
+"end": 21.12
+},
+{
+"word": "A",
+"start": 21.12,
+"end": 21.28
+},
+{
+"word": "soft,",
+"start": 21.28,
+"end": 21.84
+},
+{
+"word": "easy",
+"start": 21.84,
+"end": 21.98
+},
+{
+"word": "ball.",
+"start": 21.98,
+"end": 22.78
+},
+{
+"word": "Any",
+"start": 22.78,
+"end": 23.02
+},
+{
+"word": "keeper",
+"start": 23.02,
+"end": 23.36
+},
+{
+"word": "would",
+"start": 23.36,
+"end": 23.52
+},
+{
+"word": "just",
+"start": 23.52,
+"end": 23.74
+},
+{
+"word": "catch",
+"start": 23.74,
+"end": 24
+},
+{
+"word": "it.",
+"start": 24,
+"end": 24.78
+},
+{
+"word": "Not",
+"start": 24.78,
+"end": 24.96
+},
+{
+"word": "Higuita.",
+"start": 24.96,
+"end": 25.74
+},
+{
+"word": "He",
+"start": 25.74,
+"end": 25.86
+},
+{
+"word": "dives",
+"start": 25.86,
+"end": 26.18
+},
+{
+"word": "forward,",
+"start": 26.18,
+"end": 27.16
+},
+{
+"word": "flips",
+"start": 27.16,
+"end": 27.24
+},
+{
+"word": "his",
+"start": 27.3,
+"end": 27.46
+},
+{
+"word": "legs",
+"start": 27.46,
+"end": 27.7
+},
+{
+"word": "over",
+"start": 27.7,
+"end": 27.94
+},
+{
+"word": "his",
+"start": 27.94,
+"end": 28.12
+},
+{
+"word": "head",
+"start": 28.12,
+"end": 28.36
+},
+{
+"word": "and",
+"start": 28.36,
+"end": 28.7
+},
+{
+"word": "kicks",
+"start": 28.7,
+"end": 29
+},
+{
+"word": "it",
+"start": 29,
+"end": 29.14
+},
+{
+"word": "away",
+"start": 29.14,
+"end": 29.32
+},
+{
+"word": "with",
+"start": 29.32,
+"end": 29.5
+},
+{
+"word": "his",
+"start": 29.5,
+"end": 29.64
+},
+{
+"word": "heels.",
+"start": 29.64,
+"end": 30.88
+},
+{
+"word": "20,000",
+"start": 30.88,
+"end": 31.48
+},
+{
+"word": "people",
+"start": 31.48,
+"end": 31.84
+},
+{
+"word": "at",
+"start": 31.84,
+"end": 31.98
+},
+{
+"word": "Wembley",
+"start": 31.98,
+"end": 32.3
+},
+{
+"word": "had",
+"start": 32.3,
+"end": 32.48
+},
+{
+"word": "never",
+"start": 32.48,
+"end": 32.78
+},
+{
+"word": "seen",
+"start": 32.78,
+"end": 33.1
+},
+{
+"word": "anything",
+"start": 32.66,
+"end": 33.56
+},
+{
+"word": "like",
+"start": 33.56,
+"end": 33.84
+},
+{
+"word": "it.",
+"start": 33.84,
+"end": 34.08
+},
+{
+"word": "And",
+"start": 34.08,
+"end": 34.52
+},
+{
+"word": "the",
+"start": 34.52,
+"end": 34.64
+},
+{
+"word": "funniest",
+"start": 34.64,
+"end": 34.94
+},
+{
+"word": "part?",
+"start": 34.94,
+"end": 35.46
+},
+{
+"word": "The",
+"start": 35.46,
+"end": 35.96
+},
+{
+"word": "flag",
+"start": 35.96,
+"end": 36.24
+},
+{
+"word": "was",
+"start": 36.24,
+"end": 36.42
+},
+{
+"word": "already",
+"start": 36.42,
+"end": 36.72
+},
+{
+"word": "up",
+"start": 36.72,
+"end": 36.92
+},
+{
+"word": "for",
+"start": 36.92,
+"end": 37.1
+},
+{
+"word": "offside.",
+"start": 37.1,
+"end": 37.92
+},
+{
+"word": "He",
+"start": 37.92,
+"end": 38.02
+},
+{
+"word": "didn't",
+"start": 38.02,
+"end": 38.18
+},
+{
+"word": "even",
+"start": 38.18,
+"end": 38.42
+},
+{
+"word": "need",
+"start": 38.42,
+"end": 38.56
+},
+{
+"word": "to",
+"start": 38.24,
+"end": 38.74
+},
+{
+"word": "save",
+"start": 38.74,
+"end": 39
+},
+{
+"word": "it.",
+"start": 39,
+"end": 39.7
+},
+{
+"word": "It",
+"start": 39.7,
+"end": 39.78
+},
+{
+"word": "wasn't",
+"start": 39.78,
+"end": 40.02
+},
+{
+"word": "luck",
+"start": 40.02,
+"end": 40.32
+},
+{
+"word": "either.",
+"start": 40.32,
+"end": 41.2
+},
+{
+"word": "He",
+"start": 41.2,
+"end": 41.34
+},
+{
+"word": "later",
+"start": 41.34,
+"end": 41.6
+},
+{
+"word": "said",
+"start": 41.6,
+"end": 41.8
+},
+{
+"word": "he'd",
+"start": 41.8,
+"end": 41.96
+},
+{
+"word": "practiced",
+"start": 41.96,
+"end": 42.3
+},
+{
+"word": "it",
+"start": 42.3,
+"end": 42.58
+},
+{
+"word": "all",
+"start": 42.58,
+"end": 42.94
+},
+{
+"word": "through",
+"start": 42.94,
+"end": 43.14
+},
+{
+"word": "the",
+"start": 43.14,
+"end": 43.28
+},
+{
+"word": "warm-up.",
+"start": 43.28,
+"end": 44.18
+},
+{
+"word": "The",
+"start": 44.18,
+"end": 44.26
+},
+{
+"word": "match",
+"start": 44.18,
+"end": 44.56
+},
+{
+"word": "ended",
+"start": 44.56,
+"end": 44.86
+},
+{
+"word": "nil-nil.",
+"start": 44.86,
+"end": 45.98
+},
+{
+"word": "Nobody",
+"start": 45.98,
+"end": 46.24
+},
+{
+"word": "remembers",
+"start": 46.24,
+"end": 46.7
+},
+{
+"word": "the",
+"start": 46.7,
+"end": 46.88
+},
+{
+"word": "score.",
+"start": 46.88,
+"end": 48.04
+},
+{
+"word": "Would",
+"start": 48.04,
+"end": 48.16
+},
+{
+"word": "you",
+"start": 48.16,
+"end": 48.26
+},
+{
+"word": "try",
+"start": 48.26,
+"end": 48.48
+},
+{
+"word": "this",
+"start": 48.48,
+"end": 48.7
+},
+{
+"word": "in",
+"start": 48.7,
+"end": 48.84
+},
+{
+"word": "goal?",
+"start": 48.84,
+"end": 49.88
+},
+{
+"word": "Tell",
+"start": 49.88,
+"end": 50
+},
+{
+"word": "me",
+"start": 50,
+"end": 50.14
+},
+{
+"word": "in",
+"start": 50.14,
+"end": 50.2
+},
+{
+"word": "the",
+"start": 50.2,
+"end": 50.28
+},
+{
+"word": "comments.",
+"start": 50.28,
+"end": 50.56
+}
+]
+}

@@ -1,0 +1,661 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>html,body{margin:0;background:#0B1026;overflow:hidden}canvas{display:block}</style>
+</head><body><canvas id="c"></canvas>
+<script type="module">
+// higuita-1995-short - "Night Match Toon" with caricatures: Foot All FC's own 2.5D vector style (not a lemo-opuscar template).
+// A real perspective camera over a 3D pitch; flat vector players drawn as billboards with cel shading, smooth per-frame
+// motion, eyes that track the ball; neon-lit night stadium; broadcast-style scorebug + shootout tracker; word-by-word captions.
+// Only the renderer (core/render/*.mjs) and the maths helpers of /core/lib.js are shared with lemo-opuscar.
+import { mulberry, clamp, lerp, ss, eio, eo, ei, back } from '/core/lib.js';
+
+const W = innerWidth, H = innerHeight;           // 1080 x 1920
+const cv = document.getElementById('c'); cv.width = W; cv.height = H;
+const X = cv.getContext('2d');
+const FONT = { head: "'Lilita One', sans-serif", body: "'Inter XB', sans-serif" };
+await document.fonts.load(`80px ${FONT.head}`); await document.fonts.load(`80px ${FONT.body}`);
+const WORDS = (await (await fetch('vo/words.json')).json()).words;
+let NOW = 0;
+
+// ---------------------------------------------------------------- palette
+const C = {
+  ink: '#141A33', sky0: '#070B1F', sky1: '#18205A', sky2: '#3A2D72', haze: '#6A5BC2',
+  grass: '#2F8F4E', grass2: '#287F44', line: '#F4F7FF', glow: '#FFE9A8',
+  cze: '#E0313A', czeD: '#A81F2A', czeS: '#F4F4F4', czeSo: '#2B4DB3',
+  frg: '#F5F5F2', frgD: '#C9CCD6', frgS: '#1E1E24', frgSo: '#F5F5F2',
+  gkM: '#5B6372', gkMD: '#3F4655', gkV: '#E8C531', gkVD: '#B99A1C', gkT: '#3FAE6A', gkTD: '#2A7F4C',
+  skin: '#F2C29B', skinD: '#D9A27A', yel: '#FFD23F', red: '#FF4D5E', white: '#FFFFFF',
+};
+const KIT = {   // caricatures: recognisable by hair, moustache and build; generic kits (no crests or sponsors)
+  hig: { shirt: '#6B3FA0', shade: '#4E2C7A', shorts: '#1E1E28', socks: '#6B3FA0', skin: '#C98B5E', skinD: '#A86E45', hair: '#15100E', style: 'mane', stache: true, head: 1.32, nose: 3.4, brow: '#15100E', browW: 3.2, gloves: true, glove: '#F2D02E' },
+  red: { shirt: '#F5F5F2', shade: '#C9CCD6', shorts: '#1E2A5A', socks: '#F5F5F2', hair: '#6B4423', style: 'parted', head: 1.22, nose: 2.4 },
+  ref: { shirt: '#17181F', shade: '#0B0B10', shorts: '#17181F', socks: '#17181F', hair: '#3B2A1E', style: 'short', head: 1.1 },
+  col: { shirt: '#F2D02E', shade: '#C9A81E', shorts: '#1E3F9A', socks: '#D7263D', hair: '#15100E', style: 'curly', skin: '#B9794C', skinD: '#995F37' },
+};
+
+// ---------------------------------------------------------------- timeline (from the VibeVoice take's word timings, vo/words.json)
+window.DUR = 51.2;
+const T = {
+  heels0: 3.0, upside: 4.7, sB: 5.6, vs: 7.6, friendly: 9.5, wrong: 10.8, sC: 12.4, loco: 16.0, madman: 17.0,
+  sD: 18.5, lobK: 19.6, notHig: 24.7, sE: 25.6, flips: 27.1, heel: 29.4, sF: 30.7, sG: 34.0, flag: 35.9, noNeed: 37.9,
+  sH: 39.6, sI: 44.1, forgot: 45.9, sJ: 47.9, endPull: 50, end: 51.2,
+};
+const CAPS = [
+  [0.0, 'Most goalkeepers stop the ball with their hands.'], [2.6, 'This one… used his heels.'], [4.7, 'Upside down.'],
+  [5.6, 'September 6, 1995. Wembley.'], [7.9, 'England against Colombia.'], [9.5, 'Just a friendly. What could possibly go wrong?'],
+  [12.4, 'In goal for Colombia: René Higuita.'], [14.9, 'His nickname? El Loco. The madman.'],
+  [18.5, 'Jamie Redknapp tries a lob from 30 yards.'], [21.0, 'A soft, easy ball. Any keeper would just catch it.'],
+  [24.7, 'Not Higuita.'], [25.6, 'He dives forward… flips his legs over his head…'], [28.3, '…and kicks it away with his heels.'],
+  [30.7, '20,000 people at Wembley had never seen anything like it.'],
+  [34.0, 'And the funniest part? The flag was already up for offside.'], [37.8, 'He didn’t even need to save it.'],
+  [39.6, 'It wasn’t luck, either. He later said he’d practised it… all through the warm-up.'],
+  [44.1, 'The match ended nil-nil. Nobody remembers the score.'],
+  [47.9, 'Would you try this in goal?'], [49.8, 'Tell me in the comments.'],
+];
+
+// ---------------------------------------------------------------- sound events (mix.py reads these)
+const EV = [{ t: 0, type: 'vo', id: 'narration' }];
+const ev = (t, type, o = {}) => EV.push({ t, type, ...o });
+
+// ---------------------------------------------------------------- camera + projection
+let CAM = { x: 0, y: 1.3, z: 16, yaw: 0, pitch: .06, f: 1500, cy: H * .44 };
+function P(wx, wy, wz) {
+  const dx = wx - CAM.x, dy = wy - CAM.y, dz = wz - CAM.z;
+  const cy = Math.cos(CAM.yaw), sy = Math.sin(CAM.yaw);
+  const x1 = dx * cy - dz * sy, z1 = dx * sy + dz * cy;
+  const d = -z1, cp = Math.cos(CAM.pitch), sp = Math.sin(CAM.pitch);
+  const y2 = dy * cp + d * sp, d2 = d * cp - dy * sp;
+  return { x: W / 2 + CAM.f * x1 / d2, y: (CAM.cy || H * .44) - CAM.f * y2 / d2, s: CAM.f / d2, d: d2 };
+}
+const horizonY = () => (CAM.cy || H * .44) - CAM.f * Math.tan(CAM.pitch);
+function camTrack(keys, t) {   // keys: [[t, {x,y,z,yaw,pitch,f}], ...] eased
+  if (t <= keys[0][0]) return { ...CAM, ...keys[0][1] };
+  for (let i = 0; i < keys.length - 1; i++) {
+    const [t0, a] = keys[i], [t1, b] = keys[i + 1];
+    if (t < t1) { const k = eio((t - t0) / (t1 - t0)); const o = { ...CAM }; for (const key in b) o[key] = lerp(a[key] ?? CAM[key], b[key], k); for (const key in a) if (!(key in b)) o[key] = a[key]; return o; }
+  }
+  return { ...CAM, ...keys[keys.length - 1][1] };
+}
+
+// ---------------------------------------------------------------- the night stadium (screen-space backdrop with yaw parallax)
+const R0 = mulberry(5);
+const CROWD = (() => {   // a wide strip of tiny heads in team colours
+  const c = document.createElement('canvas'); c.width = 3600; c.height = 420; const g = c.getContext('2d');
+  const grd = g.createLinearGradient(0, 0, 0, 420); grd.addColorStop(0, '#1A1F46'); grd.addColorStop(1, '#2A2F63'); g.fillStyle = grd; g.fillRect(0, 0, 3600, 420);
+  const cols = ['#E0313A', '#F5F5F2', '#2B4DB3', '#C9B7FF', '#E0313A', '#8E96C8', '#F5F5F2', '#5B66A8'];
+  for (let row = 0; row < 26; row++) for (let i = 0; i < 260; i++) {
+    const x = i * 14 + (row % 2) * 7 + R0() * 3, y = 8 + row * 16;
+    g.globalAlpha = .45 + .55 * (row / 26); g.fillStyle = cols[Math.floor(R0() * cols.length)];
+    g.beginPath(); g.arc(x, y, 4.2 + row * .08, 0, 7); g.fill();
+  }
+  g.globalAlpha = 1; return c;
+})();
+const STARS = Array.from({ length: 90 }, () => [R0() * W, R0(), R0() * 1.6 + .4, R0() * 6]);
+const FLASH = Array.from({ length: 70 }, () => [R0() * 3600, R0() * 400, R0() * 10]);
+function sky(t, mode) {
+  const hy = horizonY();
+  if (mode === 'day') {
+    const g = X.createLinearGradient(0, hy - 1400, 0, hy); g.addColorStop(0, '#7EC8F2'); g.addColorStop(.7, '#BDE3F5'); g.addColorStop(1, '#FBE2B8');
+    X.fillStyle = g; X.fillRect(0, 0, W, Math.max(0, hy) + 2);
+    // training ground: trees and a fence
+    X.fillStyle = '#5D9C5A'; for (let i = -2; i < 14; i++) { const x = i * 110 - CAM.yaw * 900 % 110, r = 70 + 30 * Math.sin(i * 2.1); X.beginPath(); X.arc(x, hy - 40, r, Math.PI, 0); X.fill(); }
+    X.fillStyle = '#4C8A4C'; X.fillRect(0, hy - 42, W, 44);
+    X.strokeStyle = 'rgba(255,255,255,.75)'; X.lineWidth = 4; X.beginPath(); X.moveTo(0, hy - 10); X.lineTo(W, hy - 10); X.stroke();
+    for (let i = 0; i < 30; i++) { const x = i * 40 - (CAM.yaw * 1400) % 40; X.beginPath(); X.moveTo(x, hy - 30); X.lineTo(x, hy); X.stroke(); }
+    return;
+  }
+  const g = X.createLinearGradient(0, hy - 1500, 0, hy); g.addColorStop(0, C.sky0); g.addColorStop(.55, C.sky1); g.addColorStop(1, C.sky2);
+  X.fillStyle = g; X.fillRect(0, 0, W, Math.max(0, hy) + 2);
+  for (const [x, y, r, ph] of STARS) { const yy = hy - 700 - y * 1300; if (yy < -10 || yy > hy - 330) continue; X.globalAlpha = .4 + .4 * Math.sin(t * 2 + ph); X.fillStyle = '#DDE4FF'; X.beginPath(); X.arc((x - CAM.yaw * 400 + W) % W, yy, r, 0, 7); X.fill(); }
+  X.globalAlpha = 1;
+  // the stands: a curved bowl band with the crowd texture, parallax with yaw
+  const off = (-CAM.yaw * 1300) % 1200 - 1200;
+  const top = hy - 300;
+  X.save(); X.beginPath(); X.moveTo(0, hy + 4);
+  for (let x = 0; x <= W; x += 30) X.lineTo(x, top + 40 * Math.cos((x / W - .5) * 2.2));
+  X.lineTo(W, hy + 4); X.closePath(); X.clip();
+  for (let k = 0; k < 3; k++) X.drawImage(CROWD, 0, 0, 3600, 420, off + k * 1200 * 3, top - 20, 3600, 320);
+  // camera flashes
+  for (const [fx, fy, ph] of FLASH) { const a = Math.max(0, Math.sin(t * 3.3 + ph * 7)) ** 30; if (a < .05) continue; X.globalAlpha = a; X.fillStyle = '#FFFFFF'; X.beginPath(); X.arc((fx + off + 3600) % W, top + fy * .7, 5, 0, 7); X.fill(); }
+  X.globalAlpha = 1;
+  X.restore();
+  // roof rim
+  X.strokeStyle = '#0D1230'; X.lineWidth = 16; X.beginPath(); for (let x = 0; x <= W; x += 30) { const y = top + 40 * Math.cos((x / W - .5) * 2.2); x ? X.lineTo(x, y) : X.moveTo(x, y); } X.stroke();
+  // floodlight towers with light cones
+  for (const [bx, sc] of [[-260, 1], [W + 260, 1], [250, .55], [W - 250, .55]]) {
+    const x = bx - CAM.yaw * 1500 * sc, y = top - 260 * sc;
+    X.save(); X.globalCompositeOperation = 'lighter';
+    const rg = X.createRadialGradient(x, y, 10, x, y, 520 * sc); rg.addColorStop(0, 'rgba(255,240,200,.55)'); rg.addColorStop(1, 'rgba(255,240,200,0)');
+    X.fillStyle = rg; X.beginPath(); X.arc(x, y, 520 * sc, 0, 7); X.fill();
+    X.fillStyle = 'rgba(255,240,200,.07)'; X.beginPath(); X.moveTo(x - 60 * sc, y); X.lineTo(x + 60 * sc, y); X.lineTo(W / 2 + (x - W / 2) * .2 + 300, hy + 200); X.lineTo(W / 2 + (x - W / 2) * .2 - 300, hy + 200); X.closePath(); X.fill();
+    X.restore();
+    X.fillStyle = '#0D1230'; X.fillRect(x - 8 * sc, y, 16 * sc, top + 60 - y);
+    X.fillStyle = '#FFF4D6'; X.beginPath(); X.roundRect(x - 70 * sc, y - 30 * sc, 140 * sc, 50 * sc, 8); X.fill();
+    X.strokeStyle = '#0D1230'; X.lineWidth = 3; for (let i = 1; i < 4; i++) { X.beginPath(); X.moveTo(x - 70 * sc + i * 35 * sc, y - 30 * sc); X.lineTo(x - 70 * sc + i * 35 * sc, y + 20 * sc); X.stroke(); }
+  }
+  // haze over the pitch edge
+  const hz = X.createLinearGradient(0, hy - 120, 0, hy + 40); hz.addColorStop(0, 'rgba(106,91,194,0)'); hz.addColorStop(1, 'rgba(160,150,255,.35)');
+  X.fillStyle = hz; X.fillRect(0, hy - 120, W, 160);
+}
+// ---------------------------------------------------------------- the pitch in perspective
+function poly(pts, fill, stroke, lw) {
+  const q = pts.map(p => P(p[0], p[1], p[2])); if (q.some(p => p.d < .4)) return false;
+  X.beginPath(); q.forEach((p, i) => i ? X.lineTo(p.x, p.y) : X.moveTo(p.x, p.y)); X.closePath();
+  if (fill) { X.fillStyle = fill; X.fill(); } if (stroke) { X.strokeStyle = stroke; X.lineWidth = lw; X.stroke(); } return true;
+}
+function wline(pts, col, wm) {   // a world-space polyline whose width shrinks with distance (wm = metres)
+  for (let i = 1; i < pts.length; i++) {
+    const a = P(...pts[i - 1]), b = P(...pts[i]); if (a.d < .4 || b.d < .4) continue;
+    X.strokeStyle = col; X.lineWidth = Math.max(1, wm * (a.s + b.s) / 2); X.lineCap = 'round'; X.beginPath(); X.moveTo(a.x, a.y); X.lineTo(b.x, b.y); X.stroke();
+  }
+}
+function pitch(t, mode) {
+  const hy = horizonY();
+  X.fillStyle = mode === 'day' ? '#62B05E' : C.grass; X.fillRect(0, hy, W, H - hy);
+  const g2 = mode === 'day' ? '#58A354' : C.grass2;
+  for (let z = -60; z < 60; z += 4) if ((z / 4) % 2 === 0) {
+    // split each stripe into chunks so nothing crosses the near plane
+    for (let z0 = z; z0 < z + 4; z0 += 1) poly([[-70, 0, z0], [70, 0, z0], [70, 0, z0 + 1], [-70, 0, z0 + 1]], g2);
+  }
+  const L = mode === 'day' ? 'rgba(255,255,255,.85)' : C.line;
+  wline([[-34, 0, 0], [34, 0, 0]], L, .12);                                     // goal line
+  wline([[-20.16, 0, 0], [-20.16, 0, 16.5], [20.16, 0, 16.5], [20.16, 0, 0]], L, .12);   // penalty area
+  wline([[-9.16, 0, 0], [-9.16, 0, 5.5], [9.16, 0, 5.5], [9.16, 0, 0]], L, .12);         // six-yard box
+  const arc = []; for (let a = -.93; a <= .93; a += .06) arc.push([Math.sin(a) * 9.15, 0, 11 + Math.cos(a) * 9.15]); wline(arc.filter(p => p[2] > 16.5), L, .12);
+  const s = P(0, 0, 11); if (s.d > .4) { X.fillStyle = L; X.beginPath(); X.ellipse(s.x, s.y, .14 * s.s, .06 * s.s, 0, 0, 7); X.fill(); }
+  // light pools on the grass
+  if (mode !== 'day') { X.save(); X.globalCompositeOperation = 'soft-light'; const rg = X.createRadialGradient(W / 2, hy + 300, 50, W / 2, hy + 300, 900); rg.addColorStop(0, 'rgba(255,255,220,.5)'); rg.addColorStop(1, 'rgba(0,0,0,.35)'); X.fillStyle = rg; X.fillRect(0, hy, W, H - hy); X.restore(); }
+}
+// the goal: posts, bar and a net that bulges where the ball hits
+let NET = null;   // {x, y, t0, k}
+function goal(t) {
+  const back = -2.0, bulge = (x, y) => { if (!NET) return 0; const age = t - NET.t0; if (age < 0) return 0; const d = Math.hypot(x - NET.x, y - NET.y); return NET.k * Math.exp(-d * d / .8) * Math.exp(-age * 2.2) * (1 + .3 * Math.sin(age * 18)); };
+  X.save(); X.globalAlpha = .55;
+  for (let i = 0; i <= 14; i++) { const x = -3.66 + i * 7.32 / 14; const pts = []; for (let j = 0; j <= 6; j++) { const y = 2.44 * (1 - j / 6); pts.push([x, y, back * (.55 + .45 * (1 - y / 2.44)) - bulge(x, y)]); } pts.unshift([x, 2.44, -.05]); wline(pts, '#E9EEFF', .025); }
+  for (let j = 0; j <= 6; j++) { const y = 2.44 * j / 6; const pts = []; for (let i = 0; i <= 14; i++) { const x = -3.66 + i * 7.32 / 14; pts.push([x, y, back * (.55 + .45 * (1 - y / 2.44)) - bulge(x, y)]); } wline(pts, '#E9EEFF', .025); }
+  for (const sx of [-3.66, 3.66]) { const pts = []; for (let j = 0; j <= 6; j++) { const y = 2.44 * j / 6; pts.push([sx, y, back * (.55 + .45 * (1 - y / 2.44))]); } wline(pts, '#E9EEFF', .025); }
+  X.restore();
+  wline([[-3.66, 0, 0], [-3.66, 2.44, 0], [3.66, 2.44, 0], [3.66, 0, 0]], C.ink, .2);
+  wline([[-3.66, 0, 0], [-3.66, 2.44, 0], [3.66, 2.44, 0], [3.66, 0, 0]], '#FFFFFF', .12);
+}
+
+// ---------------------------------------------------------------- vector players (billboards)
+// pose: angles in degrees, 0 = hanging straight down, positive = towards screen right. lean/rot in degrees, crouch in units.
+const POSE = {
+  idle:   { lean: 0, uL: -10, fL: -6, uR: 10, fR: 6, tL: -4, sL: 0, tR: 4, sR: 0 },
+  ready:  { lean: 0, uL: -38, fL: -20, uR: 38, fR: 20, tL: -14, sL: 8, tR: 14, sR: -8, crouch: 8 },
+  wide:   { lean: 0, uL: -70, fL: -30, uR: 70, fR: 30, tL: -16, sL: 8, tR: 16, sR: -8, crouch: 10 },
+  runA:   { lean: 8, uL: 40, fL: 70, uR: -40, fR: -20, tL: -30, sL: 40, tR: 25, sR: 10 },
+  runB:   { lean: 8, uL: -40, fL: -20, uR: 40, fR: 70, tL: 25, sL: 10, tR: -30, sR: 40 },
+  plant:  { lean: -4, uL: -40, fL: -10, uR: 30, fR: 20, tL: -8, sL: 0, tR: 30, sR: 60 },
+  kick:   { lean: -10, uL: -60, fL: -20, uR: 50, fR: 20, tL: -6, sL: 0, tR: -40, sR: -10 },
+  cheer:  { lean: 0, uL: -165, fL: -10, uR: 165, fR: 10, tL: -8, sL: 0, tR: 8, sR: 0 },
+  cheerB: { lean: 0, uL: -150, fL: -30, uR: 150, fR: 30, tL: -20, sL: 30, tR: 20, sR: -30, crouch: -10 },
+  hands:  { lean: 4, uL: -150, fL: -150, uR: 150, fR: 150, tL: -4, sL: 0, tR: 4, sR: 0 },
+  slump:  { lean: 10, uL: -4, fL: 0, uR: 4, fR: 0, tL: -2, sL: 0, tR: 2, sR: 0, crouch: 4 },
+  place:  { lean: 0, uL: -30, fL: -20, uR: 12, fR: -8, tL: -34, sL: 60, tR: 34, sR: -60, crouch: 24 },
+  armsIn: { lean: 0, uL: 30, fL: 40, uR: -30, fR: -40, tL: -6, sL: 0, tR: 6, sR: 0 },
+};
+function mixP(a, b, k) { const o = {}; for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) o[key] = lerp(a[key] || 0, b[key] || 0, k); return o; }
+function poseTrack(tr, t) {   // [[t, pose], ...] smooth
+  if (t <= tr[0][0]) return tr[0][1];
+  for (let i = 0; i < tr.length - 1; i++) if (t < tr[i + 1][0]) return mixP(tr[i][1], tr[i + 1][1], eio((t - tr[i][0]) / (tr[i + 1][0] - tr[i][0])));
+  return tr[tr.length - 1][1];
+}
+const runCycle = (t, f = 2.6) => { const k = (Math.sin(t * f * Math.PI * 2) + 1) / 2; return mixP(POSE.runA, POSE.runB, k); };
+const dir = a => [Math.sin(a * Math.PI / 180), Math.cos(a * Math.PI / 180)];
+function limb(x, y, a, len, w, col, outline = C.ink) {
+  const [dx, dy] = dir(a); const ex = x + dx * len, ey = y + dy * len;
+  X.lineCap = 'round';
+  X.strokeStyle = outline; X.lineWidth = w + 5; X.beginPath(); X.moveTo(x, y); X.lineTo(ex, ey); X.stroke();
+  X.strokeStyle = col; X.lineWidth = w; X.beginPath(); X.moveTo(x, y); X.lineTo(ex, ey); X.stroke();
+  return [ex, ey];
+}
+// o: {x, y (feet, screen), k (px per unit; the player is ~100 units tall), kit, view 'front'|'back', pose, rot, look [-1..1, -1..1], expr, mouth, t}
+function player(o) {
+  const k = o.k, P0 = o.pose, kit = o.kit, front = o.view !== 'back';
+  X.save(); X.translate(o.x, o.y);
+  // ground shadow
+  X.fillStyle = 'rgba(5,10,30,.35)'; X.beginPath(); X.ellipse(0, 0, 26 * k, 6 * k, 0, 0, 7); X.fill();
+  X.scale(k, k); X.rotate((o.rot || 0) * Math.PI / 180);
+  const cr = P0.crouch || 0, bob = o.bob || 0;
+  X.translate(0, cr + bob);
+  const hipY = -30;
+  X.save(); X.translate(0, hipY); X.rotate((P0.lean || 0) * Math.PI / 180 * (o.leanDir || 1)); X.translate(0, -hipY);
+  const drawLegs = () => {
+  const LS = o.legScale || 1;
+  for (const sd of [-1, 1]) {
+    const L = sd < 0 ? 'L' : 'R';
+    const hx = sd * 7, hy = hipY + 2;
+    const [kx, ky] = limb(hx, hy, P0['t' + L], 15 * LS, 9, kit.skin || C.skin);
+    const thighEnd = [hx + dir(P0['t' + L])[0] * 7 * LS, hy + dir(P0['t' + L])[1] * 7 * LS];
+    X.strokeStyle = kit.shorts; X.lineWidth = 11; X.beginPath(); X.moveTo(hx, hy); X.lineTo(...thighEnd); X.stroke();
+    const sa = P0['t' + L] + P0['s' + L];
+    const [fx, fy] = limb(kx, ky, sa, 14 * LS, 8.5, kit.socks);
+    X.save(); X.translate(fx, fy); X.rotate(-sa * Math.PI / 180 * .3); X.fillStyle = '#16181F'; X.strokeStyle = C.ink; X.lineWidth = 2.5;
+    X.beginPath(); X.ellipse(sd * (front ? 1.5 : -1.5), 1, 6.5, 3.6, 0, 0, 7); X.fill(); X.stroke(); X.restore();
+    if (o.feet) o.feet[L] = X.getTransform().transformPoint(new DOMPoint(fx, fy));
+  }
+  };
+  if (!o.legsFront) drawLegs();
+  // shorts
+  X.fillStyle = kit.shorts; X.strokeStyle = C.ink; X.lineWidth = 2.6;
+  X.beginPath(); X.roundRect(-13, -36, 26, 12, 4); X.fill(); X.stroke();
+  // torso (cel-shaded)
+  X.beginPath(); X.moveTo(-15, -64); X.quadraticCurveTo(-17, -46, -12, -33); X.lineTo(12, -33); X.quadraticCurveTo(17, -46, 15, -64); X.quadraticCurveTo(0, -68, -15, -64); X.closePath();
+  X.fillStyle = kit.shirt; X.fill();
+  X.save(); X.clip(); X.fillStyle = kit.shade; X.fillRect(4, -70, 20, 40); X.fillStyle = 'rgba(255,255,255,.18)'; X.fillRect(-15, -66, 6, 30); X.restore();
+  X.strokeStyle = C.ink; X.lineWidth = 2.6; X.stroke();
+  if (front) { X.strokeStyle = kit.shade; X.lineWidth = 2.4; X.beginPath(); X.arc(0, -66, 5, .2, Math.PI - .2); X.stroke(); }
+  if (o.legsFront) drawLegs();
+  // arms
+  for (const sd of [-1, 1]) {
+    const L = sd < 0 ? 'L' : 'R';
+    const sx = sd * 14, sy = -61;
+    const [ex, ey] = limb(sx, sy, P0['u' + L], 12, 8, kit.shirt);
+    const [hx, hy] = limb(ex, ey, P0['u' + L] + P0['f' + L], 11, 6.5, kit.gloves ? kit.shirt : (kit.skin || C.skin));
+    X.fillStyle = kit.gloves ? (kit.glove || '#F28C28') : (kit.skin || C.skin); X.strokeStyle = C.ink; X.lineWidth = 2.4;
+    X.beginPath(); X.arc(hx, hy, kit.gloves ? 5.2 : 3.8, 0, 7); X.fill(); X.stroke();
+    if (o.hands) o.hands[L] = X.getTransform().transformPoint(new DOMPoint(hx, hy));
+  }
+  // head
+  X.save(); X.translate(0, -82); X.rotate((o.headTilt || 0) * Math.PI / 180); X.translate(0, -(kit.head || 1) * 8 + 8); X.scale(kit.head || 1, kit.head || 1);
+  hairBack(kit, front, o.t || 0);
+  X.fillStyle = kit.skin || C.skin; X.strokeStyle = C.ink; X.lineWidth = 2.8;
+  X.beginPath(); X.arc(-16, 2, 4, 0, 7); X.arc(16, 2, 4, 0, 7); X.fill(); X.stroke();   // ears
+  X.beginPath(); X.ellipse(0, 0, 16, 17, 0, 0, 7); X.fill(); X.stroke();
+  if (front) {
+    X.save(); X.beginPath(); X.ellipse(0, 0, 16, 17, 0, 0, 7); X.clip(); X.fillStyle = kit.skinD || C.skinD; X.globalAlpha = .45; X.beginPath(); X.ellipse(9, 4, 9, 15, 0, 0, 7); X.fill(); X.restore();
+    face(o);
+  }
+  hair(kit, front);
+  X.restore();
+  X.restore();
+  X.restore();
+}
+function face(o) {
+  const [lx, ly] = o.look || [0, 0], e = o.expr || 'neutral', kit = o.kit;
+  const ew = e === 'wide' || e === 'shock' ? 1.3 : 1;
+  for (const sd of [-1, 1]) {
+    X.fillStyle = '#FFFFFF'; X.strokeStyle = C.ink; X.lineWidth = 1.6;
+    const blink = o.blink ? .15 : 1;
+    X.beginPath(); X.ellipse(sd * 6, -1, 3.6 * ew, 4.6 * blink * ew, 0, 0, 7); X.fill(); X.stroke();
+    if (blink === 1) { X.fillStyle = C.ink; X.beginPath(); X.arc(sd * 6 + lx * 1.7, -1 + ly * 2, 2, 0, 7); X.fill(); X.fillStyle = '#FFF'; X.beginPath(); X.arc(sd * 6 + lx * 1.7 + .7, -1.8 + ly * 2, .6, 0, 7); X.fill(); }
+    // brows
+    let bt = { neutral: 0, focus: 18, happy: -10, shock: -22, sad: -18, angry: 24, grin: -8, wide: -24, cocky: sd < 0 ? -26 : 14 }[e] || 0;
+    X.save(); X.translate(sd * 6, -8 - (e === 'shock' || e === 'wide' ? 3 : 0) - (e === 'cocky' && sd < 0 ? 2.5 : 0)); X.rotate(sd * bt * Math.PI / 180 * (e === 'sad' ? -1 : 1)); X.strokeStyle = kit && kit.brow || C.ink; X.lineWidth = kit && kit.browW || 2.2; X.beginPath(); X.moveTo(-3.5, 0); X.lineTo(3.5, 0); X.stroke(); X.restore();
+  }
+  X.fillStyle = 'rgba(255,120,120,.35)'; X.beginPath(); X.arc(-10, 6, 2.6, 0, 7); X.arc(10, 6, 2.6, 0, 7); X.fill();
+  // nose
+  X.strokeStyle = C.ink; X.lineWidth = 1.8; X.fillStyle = kit && kit.skinD || C.skinD;
+  X.beginPath(); X.ellipse(.5, 3.2, (kit && kit.nose) || 2.6, ((kit && kit.nose) || 2.6) * .8, 0, 0, 7); X.fill(); X.stroke();
+  if (e === 'grin') {   // wide toothy grin
+    X.fillStyle = '#7A2230'; X.beginPath(); X.moveTo(-9, 7.5); X.quadraticCurveTo(0, 18, 9, 7.5); X.closePath(); X.fill(); X.stroke();
+    X.fillStyle = '#FFF'; X.beginPath(); X.moveTo(-8, 8); X.lineTo(8, 8); X.lineTo(6.5, 10.5); X.lineTo(-6.5, 10.5); X.closePath(); X.fill();
+    if (kit && kit.stache) stache(kit); return;
+  }
+  if (e === 'cocky') { X.beginPath(); X.moveTo(-5, 9.5); X.quadraticCurveTo(1, 11.5, 6, 7); X.stroke(); if (kit && kit.stache) stache(kit); return; }
+  if (e === 'wide') { X.fillStyle = '#7A2230'; X.beginPath(); X.ellipse(0, 10, 4.5, 6, 0, 0, 7); X.fill(); X.stroke(); if (kit && kit.stache) stache(kit); return; }
+  X.strokeStyle = C.ink; X.lineWidth = 2; X.fillStyle = '#7A2230';
+  if (e === 'happy' || e === 'grin') { X.beginPath(); X.moveTo(-6, 7); X.quadraticCurveTo(0, 15, 6, 7); X.closePath(); X.fill(); X.stroke(); X.fillStyle = '#FFF'; X.fillRect(-4, 7.3, 8, 2); }
+  else if (e === 'shock') { X.beginPath(); X.ellipse(0, 9, 3, 4, 0, 0, 7); X.fill(); X.stroke(); }
+  else if (e === 'sad') { X.beginPath(); X.moveTo(-4, 11); X.quadraticCurveTo(0, 7, 4, 11); X.stroke(); }
+  else if (e === 'focus') { X.beginPath(); X.moveTo(-4, 9); X.lineTo(4, 9); X.stroke(); }
+  else { X.beginPath(); X.moveTo(-4, 8.5); X.quadraticCurveTo(0, 11, 4, 8.5); X.stroke(); }
+  if (kit && kit.stache) stache(kit);
+  if (o.sweat) { X.fillStyle = '#9FD8FF'; X.strokeStyle = C.ink; X.lineWidth = 1.4; X.beginPath(); X.moveTo(15, -12); X.quadraticCurveTo(19, -5, 15, -3); X.quadraticCurveTo(11, -5, 15, -12); X.fill(); X.stroke(); }
+}
+function stache(kit) {   // a thick moustache
+  X.fillStyle = kit.hair; X.strokeStyle = C.ink; X.lineWidth = 1.6;
+  X.beginPath(); X.moveTo(-8, 7.5); X.quadraticCurveTo(-4, 4.2, 0, 6); X.quadraticCurveTo(4, 4.2, 8, 7.5); X.quadraticCurveTo(4, 8.8, 0, 7.6); X.quadraticCurveTo(-4, 8.8, -8, 7.5); X.fill(); X.stroke();
+}
+function hairBack(kit, front, t) {   // the big curly mane behind the head (and over the shoulders)
+  if (kit.style !== 'mane') return;
+  X.fillStyle = kit.hair; X.strokeStyle = C.ink; X.lineWidth = 2.4;
+  const R = mulberry(4), bounce = Math.sin(t * 9) * 1.2;
+  const blobs = [];
+  for (let a = Math.PI * .95; a <= Math.PI * 2.05; a += .22) blobs.push([Math.cos(a) * 18.5, Math.sin(a) * 18.5 - 2, 6.5 + R() * 2]);
+  for (let i = 0; i < 5; i++) { const sd = i % 2 ? -1 : 1; blobs.push([sd * (16 + R() * 3), 5 + i * 2.4 + bounce, 5.5 + R() * 2]); }
+  X.beginPath(); for (const [x, y, r] of blobs) { X.moveTo(x + r, y); X.arc(x, y, r, 0, 7); } X.fill();
+  for (const [x, y, r] of blobs) { X.beginPath(); X.arc(x, y, r, Math.PI * 1.1, Math.PI * 1.9); X.stroke(); }
+}
+function hair(kit, front) {
+  X.fillStyle = kit.hair; X.strokeStyle = C.ink; X.lineWidth = 2.6;
+  X.beginPath();
+  if (kit.style === 'mane') {   // curly fringe on top of the mane
+    const R = mulberry(8);
+    for (let a = -2.75; a <= -.35; a += .3) { const x = Math.cos(a) * 15, y = Math.sin(a) * 15 - 3, r = 6.5 + R() * 2; X.moveTo(x + r, y); X.arc(x, y, r, 0, 7); }
+    if (!front) { X.moveTo(17, 4); X.arc(0, 2, 17.5, 0, Math.PI * 2); }
+  } else if (kit.style === 'parted') {   // neat side parting
+    if (front) { X.moveTo(-16, 0); X.quadraticCurveTo(-18, -20, 2, -19); X.quadraticCurveTo(18, -19, 16, 0); X.quadraticCurveTo(13, -12, 4, -13); X.lineTo(-4, -16); X.quadraticCurveTo(-12, -10, -16, 0); }
+    else { X.moveTo(-16, 6); X.quadraticCurveTo(-18, -20, 0, -19); X.quadraticCurveTo(18, -20, 16, 6); X.quadraticCurveTo(0, 12, -16, 6); }
+  } else if (kit.style === 'bald') { X.rect(0, 0, 0, 0);
+  } else if (kit.style === 'mop') {    // 1970s mop: full on top, over the ears
+    if (front) { X.moveTo(-18, 6); X.quadraticCurveTo(-21, -22, 0, -20); X.quadraticCurveTo(21, -22, 18, 6); X.quadraticCurveTo(16, -6, 10, -9); X.quadraticCurveTo(0, -4, -10, -9); X.quadraticCurveTo(-16, -6, -18, 6); }
+    else { X.moveTo(-18, 10); X.quadraticCurveTo(-21, -22, 0, -20); X.quadraticCurveTo(21, -22, 18, 10); X.quadraticCurveTo(0, 16, -18, 10); }
+  } else if (kit.style === 'curly') {
+    for (let a = -2.9; a <= -.2; a += .45) { X.moveTo(Math.cos(a) * 15 + 6, Math.sin(a) * 15 - 2); X.arc(Math.cos(a) * 15, Math.sin(a) * 15 - 2, 6, 0, 7); }
+    if (!front) { X.moveTo(-16, 8); X.arc(0, 0, 16.5, Math.PI * .95, Math.PI * .05, false); }
+  } else {
+    if (front) { X.moveTo(-16, -2); X.quadraticCurveTo(-17, -20, 0, -19); X.quadraticCurveTo(17, -20, 16, -2); X.quadraticCurveTo(8, -11, -16, -2); }
+    else { X.moveTo(-16, 6); X.quadraticCurveTo(-18, -20, 0, -19); X.quadraticCurveTo(18, -20, 16, 6); X.quadraticCurveTo(0, 12, -16, 6); }
+  }
+  X.fill(); X.stroke();
+}
+// place a player in the world: feet at (wx, wz); returns the screen anchor
+function wplayer(wx, wz, o) {
+  const p = P(wx, o.lift || 0, wz); if (p.d < .5) return null;
+  const g = P(wx, 0, wz);
+  player({ ...o, x: p.x, y: p.y, k: p.s * 1.8 / 100, t: o.t ?? NOW });
+  return { p, g };
+}
+function ball(wx, wy, wz, spin = 0, trail = null) {
+  const p = P(wx, wy + .11, wz), g = P(wx, 0, wz); if (p.d < .5) return;
+  const r = Math.max(3, .11 * p.s);
+  X.fillStyle = 'rgba(5,10,30,.35)'; X.beginPath(); X.ellipse(g.x, g.y, r * 1.1, r * .35, 0, 0, 7); X.fill();
+  if (trail) { X.save(); X.globalCompositeOperation = 'lighter'; trail.forEach(([a, b, c], i) => { const q = P(a, b + .11, c); if (q.d < .5) return; X.globalAlpha = (i / trail.length) * .35; X.fillStyle = '#FFF6D0'; X.beginPath(); X.arc(q.x, q.y, Math.max(2, .11 * q.s) * (i / trail.length), 0, 7); X.fill(); }); X.restore(); }
+  X.save(); X.translate(p.x, p.y); X.rotate(spin);
+  X.fillStyle = '#FFFFFF'; X.strokeStyle = C.ink; X.lineWidth = Math.max(1.5, r * .14); X.beginPath(); X.arc(0, 0, r, 0, 7); X.fill();
+  X.fillStyle = '#1C2236'; X.beginPath(); for (let i = 0; i < 5; i++) { const a = i * 1.2566; X.lineTo(Math.cos(a) * r * .4, Math.sin(a) * r * .4); } X.fill();
+  for (let i = 0; i < 5; i++) { const a = i * 1.2566 + .63; X.beginPath(); X.arc(Math.cos(a) * r * .95, Math.sin(a) * r * .95, r * .25, 0, 7); X.fill(); }
+  X.beginPath(); X.arc(0, 0, r, 0, 7); X.stroke();
+  X.fillStyle = 'rgba(255,255,255,.5)'; X.beginPath(); X.ellipse(-r * .35, -r * .4, r * .25, r * .15, -.6, 0, 7); X.fill();
+  X.restore();
+}
+
+// ---------------------------------------------------------------- graphics: kinetic text, scorebug, tracker, captions
+const TEXTS = [];
+function popText(t, t0, t1, text, x, y, size, o = {}) {
+  if (t < t0 || t > t1) return;
+  const kin = clamp((t - t0) / .28, 0, 1), kout = clamp((t1 - t) / .2, 0, 1);
+  const s = back(kin, 2.2) * (o.noOut ? 1 : lerp(.85, 1, kout)), a = Math.min(kin * 3, 1) * (o.noOut ? 1 : kout);
+  X.save(); X.translate(x, y); X.rotate((o.rot || 0) * Math.PI / 180); X.scale(s, s); X.globalAlpha = a;
+  X.font = `${size}px ${o.font || FONT.head}`; X.textAlign = 'center'; X.textBaseline = 'middle';
+  const lines = text.split('\n'), lh = size * 1.05, wmax = Math.max(...lines.map(l => X.measureText(l).width));
+  if (o.box) { X.fillStyle = o.box; X.beginPath(); X.roundRect(-wmax / 2 - 34, -lines.length * lh / 2 - 18, wmax + 68, lines.length * lh + 36, 26); X.fill(); }
+  lines.forEach((l, i) => {
+    const yy = (i - (lines.length - 1) / 2) * lh + size * .04;
+    X.lineJoin = 'round'; X.strokeStyle = o.stroke || C.ink; X.lineWidth = size * .16; X.strokeText(l, 0, yy + size * .06);
+    X.strokeText(l, 0, yy); X.fillStyle = o.color || '#FFFFFF'; X.fillText(l, 0, yy);
+  });
+  X.restore();
+  if (a > .6) TEXTS.push({ pass: !!o.pass, id: o.id || text, text: text.replace(/\n/g, ' '), x0: x - wmax / 2 - 30, y0: y - lines.length * lh / 2 - 15, x1: x + wmax / 2 + 30, y1: y + lines.length * lh / 2 + 15 });
+}
+function nameTag(t, t0, t1, name, sub, x, y, col) {
+  if (t < t0 || t > t1) return;
+  const k = eo(clamp((t - t0) / .35, 0, 1)) * clamp((t1 - t) / .25, 0, 1);
+  X.save(); X.globalAlpha = k; X.translate(x - (1 - k) * 60, y);
+  X.font = `56px ${FONT.head}`; const w1 = X.measureText(name).width; X.font = `30px ${FONT.body}`; const w2 = X.measureText(sub).width; const w = Math.max(w1, w2) + 60;
+  X.fillStyle = col; X.beginPath(); X.roundRect(0, -6, 14, 116, 6); X.fill();
+  X.fillStyle = 'rgba(12,16,40,.88)'; X.beginPath(); X.roundRect(20, -6, w, 116, 14); X.fill();
+  X.fillStyle = '#FFF'; X.font = `56px ${FONT.head}`; X.textBaseline = 'top'; X.textAlign = 'left'; X.fillText(name, 46, 4);
+  if (sub) { X.fillStyle = C.yel; X.font = `30px ${FONT.body}`; X.fillText(sub, 46, 66); }
+  X.restore();
+  if (k > .6) TEXTS.push({ id: 'tag' + name, text: name + ' ' + sub, x0: x, y0: y - 6, x1: x + w + 20, y1: y + 110 });
+}
+// shootout: CZE kicked first; 4-3 before Hoeness's miss; Panenka's kick made it 5-3
+const SHOOT = [['cze', 1], ['frg', 1], ['cze', 1], ['frg', 1], ['cze', 1], ['frg', 1], ['cze', 1], ['frg', 0], ['cze', 1]];
+let KICKS_DONE = 0;
+function scorebug(t, show) {
+  if (!show) return;
+  X.save(); X.translate(W / 2, 120);
+  X.fillStyle = 'rgba(10,14,36,.9)'; X.beginPath(); X.roundRect(-300, -46, 600, 92, 46); X.fill();
+  X.fillStyle = C.frg; X.beginPath(); X.roundRect(-288, -34, 20, 68, 10); X.fill(); X.fillStyle = '#F2D02E'; X.beginPath(); X.roundRect(268, -34, 20, 68, 10); X.fill();
+  X.font = `46px ${FONT.head}`; X.textBaseline = 'middle'; X.fillStyle = '#FFF';
+  X.textAlign = 'left'; X.fillText('ENG', -250, 2); X.textAlign = 'right'; X.fillText('COL', 250, 2);
+  X.textAlign = 'center'; X.fillStyle = C.yel; X.fillText('0–0', 0, 2);
+  X.font = `22px ${FONT.body}`; X.fillStyle = 'rgba(255,255,255,.7)'; X.fillText('FRIENDLY', 0, 34);
+  X.restore();
+  TEXTS.push({ id: 'bug', text: 'ENG 0–0 COL', x0: W / 2 - 300, y0: 74, x1: W / 2 + 300, y1: 166, pass: true });
+}
+function captions(t) {
+  let li = -1; for (let i = 0; i < CAPS.length; i++) if (t >= CAPS[i][0]) li = i;
+  if (li < 0) return; const t0 = CAPS[li][0], t1 = li + 1 < CAPS.length ? CAPS[li + 1][0] : DUR;
+  if (t > t1 - .05) return;
+  const words = CAPS[li][1].split(' ');
+  // the voice's words inside this line's window, to light each display word in time
+  const vw = WORDS.filter(w => w.start >= t0 - .15 && w.start < t1 - .05);
+  const times = words.map((_, i) => vw.length ? vw[Math.min(vw.length - 1, Math.floor(i * vw.length / words.length))].start : t0 + i * (t1 - t0) / words.length);
+  X.font = `62px ${FONT.body}`;
+  const lines = [[]]; let wl = 0;
+  words.forEach((w, i) => { const ww = X.measureText(w + ' ').width; if (wl + ww > 900 && lines[lines.length - 1].length) { lines.push([]); wl = 0; } lines[lines.length - 1].push(i); wl += ww; });
+  const y0 = 1330 - (lines.length - 1) * 40;
+  const kin = eo(clamp((t - t0) / .18, 0, 1));
+  X.save(); X.globalAlpha = kin; X.textBaseline = 'middle'; X.textAlign = 'left'; X.lineJoin = 'round';
+  lines.forEach((ln, j) => {
+    const lw = ln.reduce((s, i) => s + X.measureText(words[i] + ' ').width + 8, 0) - X.measureText(' ').width - 8;
+    let x = W / 2 - lw / 2; const y = y0 + j * 80 + (1 - kin) * 20;
+    ln.forEach(i => {
+      const w = words[i], on = t >= times[i], cur = on && (i === words.length - 1 || t < times[i + 1]);
+      const sc = cur ? 1.05 : 1, ww = X.measureText(w + ' ').width + 8;
+      X.save(); X.translate(x + X.measureText(w).width / 2, y); X.scale(sc, sc);
+      X.strokeStyle = C.ink; X.lineWidth = 14; X.textAlign = 'center'; X.strokeText(w, 0, 0);
+      X.fillStyle = cur ? C.yel : on ? '#FFFFFF' : 'rgba(255,255,255,.55)'; X.fillText(w, 0, 0);
+      X.restore(); x += ww;
+    });
+  });
+  X.restore();
+  TEXTS.push({ id: 'cap' + t0, text: CAPS[li][1], x0: 80, y0: y0 - 45, x1: W - 80, y1: y0 + lines.length * 80, pass: true });
+}
+function vignette(strength = .55) {
+  const g = X.createRadialGradient(W / 2, H * .42, H * .25, W / 2, H * .45, H * .8); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(3,5,18,${strength})`);
+  X.fillStyle = g; X.fillRect(0, 0, W, H);
+  const b = X.createLinearGradient(0, 1180, 0, H); b.addColorStop(0, 'rgba(7,10,28,0)'); b.addColorStop(.35, 'rgba(7,10,28,.78)'); b.addColorStop(1, 'rgba(7,10,28,.95)');
+  X.fillStyle = b; X.fillRect(0, 1180, W, H - 1180);
+}
+function flashFrame(t, t0, d = .18) { const k = (t - t0) / d; if (k < 0 || k > 1) return; X.fillStyle = `rgba(255,255,255,${(1 - k) * .85})`; X.fillRect(0, 0, W, H); }
+function speedRays(t, t0, d, cx, cy, col = 'rgba(255,255,255,.5)') {
+  const k = (t - t0) / d; if (k < 0 || k > 1) return; const R = mulberry(Math.round(t0 * 100));
+  X.save(); X.globalAlpha = Math.sin(k * Math.PI); X.strokeStyle = col; X.lineWidth = 6;
+  for (let i = 0; i < 40; i++) { const a = R() * 6.283, r0 = 380 + R() * 200, r1 = r0 + 300 + R() * 500; X.beginPath(); X.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); X.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); X.stroke(); }
+  X.restore();
+}
+function slowmoBars(on) { if (!on) return; X.fillStyle = 'rgba(0,0,0,.6)'; X.fillRect(0, 0, W, 40); X.fillRect(0, 1140, W, 40); }
+function brand() { X.save(); X.font = `34px ${FONT.head}`; X.textAlign = 'left'; X.textBaseline = 'top'; X.fillStyle = 'rgba(255,255,255,.85)'; X.fillText('FOOT ALL FC', 44, 40); X.restore(); }
+
+// ---------------------------------------------------------------- the scorpion: one simulation (side camera)
+// u: seconds since Higuita leaves the ground. Contact at 0.62 s.
+const SC_T = .62;
+POSE.scorpA = { lean: 0, uL: -80, fL: 0, uR: -100, fR: 0, tL: 20, sL: 10, tR: 10, sR: 10 };
+POSE.scorpB = { lean: 0, uL: -70, fL: -20, uR: -110, fR: 10, tL: 108, sL: 92, tR: 98, sR: 104 };
+POSE.flat = { lean: 0, uL: -60, fL: -20, uR: -110, fR: 10, tL: 60, sL: 20, tR: 50, sR: 30 };
+POSE.wave = { lean: 0, uL: -20, fL: -10, uR: 150, fR: 40, tL: -4, sL: 0, tR: 4, sR: 0 };
+POSE.flag = { lean: 0, uL: -12, fL: -6, uR: 175, fR: 0, tL: -4, sL: 0, tR: 4, sR: 0 };
+POSE.lob = { lean: -6, uL: -70, fL: -20, uR: 60, fR: 20, tL: -6, sL: 0, tR: -55, sR: -20 };
+function scorpState(u) {
+  const dive = clamp(u / .35, 0, 1), flip = clamp((u - .3) / .32, 0, 1), land = clamp((u - .9) / .4, 0, 1);
+  const rot = lerp(0, -74, eo(dive)) + lerp(0, -14, land);
+  const lift = Math.sin(clamp(u / 1.1, 0, 1) * Math.PI) * .75;
+  let pose = u < .3 ? mixP(POSE.ready, POSE.scorpA, eio(dive)) : u < .9 ? mixP(POSE.scorpA, POSE.scorpB, eio(flip)) : mixP(POSE.scorpB, POSE.flat, eio(land));
+  return { rot, lift, pose, z: 1.1 + eo(dive) * .5, legScale: 1 + .75 * Math.sin(clamp((u - .3) / .7, 0, 1) * Math.PI), legsFront: u > .32 && u < 1.05 };
+}
+const CAM_SIDE = { x: 6.2, y: 1.05, z: 2.9, yaw: Math.PI / 2, pitch: .02, f: 1500 };
+let HEEL = null;
+function scorpScene(t, u, opts = {}) {
+  sky(t); pitch(t); goal(t);
+  const s = scorpState(u);
+  const feet = {};
+  wplayer(.4, s.z, { kit: KIT.hig, view: 'front', pose: s.pose, rot: s.rot, lift: s.lift, feet, legScale: s.legScale, legsFront: s.legsFront, expr: u > SC_T ? 'grin' : 'focus', look: [-1, .3] });
+  // the heel point (right foot) at contact; the ball comes down over his back onto it, then flies back towards the field
+  if (feet.R && Math.abs(u - SC_T) < .04 || (!HEEL && feet.R)) HEEL = [feet.R.x, feet.R.y];
+  const from = P(.4, 3.4, 9.5), away = P(.4, 5.5, 13);
+  let bx, by;
+  if (u < SC_T) { const k = clamp((u + .9) / (SC_T + .9), 0, 1); bx = lerp(from.x, HEEL[0], k); by = lerp(from.y, HEEL[1], k) - Math.sin(k * Math.PI) * 120; }
+  else { const k = clamp((u - SC_T) / .9, 0, 1); bx = lerp(HEEL[0], away.x, eo(k)); by = lerp(HEEL[1], away.y, eo(k)) - Math.sin(k * Math.PI) * 90; }
+  const r = Math.max(8, .11 * P(.4, 1, 1.5).s);
+  X.save(); X.translate(bx, by); X.rotate(u * 6); X.fillStyle = '#FFF'; X.strokeStyle = C.ink; X.lineWidth = 3; X.beginPath(); X.arc(0, 0, r, 0, 7); X.fill(); X.stroke();
+  X.fillStyle = '#1C2236'; X.beginPath(); for (let i = 0; i < 5; i++) { const a = i * 1.2566; X.lineTo(Math.cos(a) * r * .4, Math.sin(a) * r * .4); } X.fill(); X.restore();
+  return { s, bx, by };
+}
+
+// ---------------------------------------------------------------- scenes
+function sceneHook(t) {   // frozen mid-scorpion; "upside down" written upside down
+  CAM = camTrack([[0, { ...CAM_SIDE, x: 6.8 }], [T.sB, { ...CAM_SIDE, x: 6.0, f: 1600 }]], t);
+  const u = Math.min(SC_T, .1 + t * .3);
+  const r = scorpScene(t, u);
+  slowmoBars(true);
+  if (u >= SC_T) { X.save(); X.strokeStyle = C.yel; X.lineWidth = 8; X.setLineDash([22, 14]); X.beginPath(); X.arc(r.bx, r.by, 80, 0, 7); X.stroke(); X.restore(); }
+  popText(t, T.heels0, T.sB, 'WITH HIS\nHEELS?!', W / 2, 330, 124, { color: C.yel, rot: -4, id: 'heels' });
+  popText(t, T.upside, T.sB, 'UPSIDE DOWN', W / 2, 1060, 80, { rot: 180, id: 'upside' });
+}
+function sceneWembley(t) {
+  CAM = camTrack([[T.sB, { x: 0, y: 26, z: 70, yaw: 0, pitch: -.3, f: 1300 }], [T.sB + 3, { x: 0, y: 9, z: 52, yaw: 0, pitch: .09, f: 1300 }], [T.sC, { x: 0, y: 6, z: 44, yaw: .05, pitch: .1, f: 1400 }]], t);
+  sky(t); pitch(t); goal(t);
+  popText(t, T.sB + .25, T.sC - .1, 'WEMBLEY', W / 2, 400, 150, { id: 'wem' });
+  popText(t, T.sB + .5, T.sC - .1, '6 SEPTEMBER 1995', W / 2, 540, 60, { color: C.yel, font: FONT.body, id: 'date' });
+  popText(t, T.vs, T.sC - .1, 'ENGLAND v COLOMBIA', W / 2, 660, 64, { box: '#2B4DB3', id: 'vs' });
+  popText(t, T.friendly, T.sC - .1, 'JUST A FRIENDLY…', W / 2, 820, 70, { color: '#FFF', rot: -3, id: 'fr' });
+  popText(t, T.wrong, T.sC - .1, 'WHAT COULD GO WRONG?', W / 2, 960, 56, { box: C.cze, font: FONT.body, rot: 3, id: 'wrong' });
+}
+function sceneLoco(t) {   // Higuita: grin, wave, the mane bouncing; EL LOCO
+  CAM = camTrack([[T.sC, { x: 0, y: 1.25, z: 5.2, yaw: 0, pitch: .02, f: 1500 }], [T.sD, { x: 0, y: 1.2, z: 4.4, yaw: 0, pitch: .01, f: 1650 }]], t);
+  sky(t); pitch(t); goal(t);
+  const loco = t > T.loco;
+  wplayer(0, .8, { kit: KIT.hig, view: 'front', pose: loco ? (Math.sin(t * 8) > 0 ? POSE.cheer : POSE.cheerB) : mixP(POSE.idle, POSE.wave, (Math.sin(t * 5) + 1) / 2), lift: loco ? Math.abs(Math.sin(t * 8)) * .1 : 0, expr: loco ? 'grin' : 'cocky', look: [Math.sin(t * 2) * .4, 0], headTilt: loco ? Math.sin(t * 8) * 8 : 0 });
+  nameTag(t, T.sC + .2, T.loco - .1, 'RENÉ HIGUITA', 'COLOMBIA · GOALKEEPER', 60, 1010, C.yel);
+  popText(t, T.loco, T.sD - .1, 'EL LOCO', W / 2, 330, 150, { color: C.yel, rot: -5, id: 'loco' });
+  popText(t, T.madman, T.sD - .1, '= THE MADMAN', W / 2, 480, 70, { font: FONT.body, id: 'mad' });
+}
+function sceneLob(t) {    // Redknapp lobs from 30 yards; the keeper looks up at an easy ball
+  const split = T.sD + 2.6;
+  if (t < split) {
+    CAM = camTrack([[T.sD, { x: 2.4, y: 1.8, z: 37, yaw: .05, pitch: .04, f: 1500 }], [split, { x: 2.2, y: 1.8, z: 36, yaw: .05, pitch: .035, f: 1550 }]], t);
+    sky(t); pitch(t); goal(t);
+    const kk = clamp((t - (T.lobK - .8)) / .8, 0, 1);
+    wplayer(.5, 28.6, { kit: KIT.red, view: 'back', pose: t < T.lobK - .25 ? runCycle(t, 2.6) : t < T.lobK + .6 ? POSE.lob : POSE.idle });
+    const fk = clamp((t - T.lobK) / 2.2, 0, 1);
+    if (fk > 0) ball(lerp(.6, .4, fk), Math.sin(fk * Math.PI) * 8 + fk * 2, lerp(27.4, 6, fk), fk * 6); else ball(.6, 0, 27.4);
+    wplayer(.4, 1.0, { kit: KIT.hig, view: 'front', pose: POSE.ready, expr: 'focus', look: [0, -1] });
+    nameTag(t, T.sD + .1, split - .1, 'JAMIE REDKNAPP', 'ENGLAND', 60, 1010, C.frg);
+    popText(t, T.lobK + .3, split - .1, '30 YARDS', W - 230, 420, 70, { color: C.yel, id: '30' });
+  } else {   // the keeper, looking up, under an easy ball
+    CAM = camTrack([[split, { x: 0, y: 1.0, z: 5.6, yaw: 0, pitch: -.12, f: 1550 }], [T.sE, { x: 0, y: 1.0, z: 5.0, yaw: 0, pitch: -.14, f: 1650 }]], t);
+    sky(t); pitch(t); goal(t);
+    const fk = clamp((t - T.lobK) / 2.2, 0, 1);
+    wplayer(.1, 1.0, { kit: KIT.hig, view: 'front', pose: mixP(POSE.ready, POSE.cheer, .3), expr: t > T.notHig ? 'cocky' : 'focus', look: [0, -1] });
+    ball(.1, lerp(7, 4, clamp((t - split) / 2, 0, 1)), 4.2, t * 3);
+    popText(t, split + .3, T.notHig - .1, 'EASY CATCH', W / 2, 330, 96, { box: '#2FA35C', id: 'easy' });
+    popText(t, T.notHig, T.sE - .05, 'NOT HIGUITA.', W / 2, 330, 110, { color: C.yel, rot: -4, id: 'not' });
+  }
+}
+function sceneScorpion(t) {   // the real thing, side-on, slowing down at the flip; flash at the heel contact
+  const t0 = T.flips - .5;           // leaves the ground just before "flips"
+  const uReal = t - t0;
+  const u = uReal < .3 ? uReal : .3 + (uReal - .3) * ((SC_T - .3) / (T.heel - t0 - .3));   // slow-motion into the contact
+  const uu = t < T.heel ? Math.max(-.6, u) : SC_T + (t - T.heel) * .8;
+  CAM = camTrack([[T.sE, { ...CAM_SIDE, x: 7.4, f: 1400 }], [T.heel, { ...CAM_SIDE, x: 5.9, f: 1650 }], [T.sF, { ...CAM_SIDE, x: 6.3, f: 1550 }]], t);
+  if (uu < 0) {   // the run forward, ball dropping in
+    sky(t); pitch(t); goal(t);
+    wplayer(.4, 1.1 + uu * .6, { kit: KIT.hig, view: 'front', pose: runCycle(t, 3), expr: 'focus', look: [-1, -.4] });
+    const from = P(.4, 3.4, 9.5), k = clamp((uu + .9) / .9, 0, .6); ball(.4, lerp(4.5, 3.2, k), lerp(12, 9.5, k), t * 3);
+  } else scorpScene(t, uu);
+  slowmoBars(t > T.flips && t < T.heel + .2);
+  flashFrame(t, T.heel, .22);
+  speedRays(t, T.heel, .5, W / 2, 620);
+  popText(t, T.heel + .1, T.sF - .1, 'SCORPION KICK!', W / 2, 330, 116, { color: C.yel, rot: -4, id: 'scorp' });
+}
+function sceneCrowd(t) {   // the crowd: flashes everywhere; Redknapp's jaw drops
+  CAM = camTrack([[T.sF, { x: 0, y: 1.4, z: 26, yaw: Math.PI, pitch: -.06, f: 1500 }], [T.sG, { x: 0, y: 1.4, z: 24.5, yaw: Math.PI, pitch: -.08, f: 1650 }]], t);
+  sky(t); pitch(t);
+  for (let i = 0; i < 40; i++) { const R = mulberry(i + Math.floor(t * 8) * 50); X.globalAlpha = .9; X.fillStyle = '#FFF'; X.beginPath(); X.arc(R() * W, horizonY() - 40 - R() * 240, 4 + R() * 6, 0, 7); X.fill(); }
+  X.globalAlpha = 1;
+  wplayer(0, 28.5, { kit: KIT.red, view: 'front', pose: POSE.hands, expr: 'wide', look: [0, 0], sweat: true });
+  popText(t, T.sF + .2, T.sG - .1, '20,038 FANS', W / 2, 330, 110, { color: C.yel, id: 'fans' });
+  popText(t, T.sF + .7, T.sG - .1, 'NEVER SEEN ANYTHING LIKE IT', W / 2, 470, 50, { font: FONT.body, box: '#2B4DB3', id: 'never' });
+}
+function sceneOffside(t) {   // the flag was already up: the assistant referee, flag raised; Higuita looks over from the grass
+  CAM = camTrack([[T.sG, { x: 3, y: 1.3, z: 12.5, yaw: 0, pitch: .05, f: 1300 }], [T.sH, { x: 3, y: 1.3, z: 11.8, yaw: 0, pitch: .05, f: 1400 }]], t);
+  sky(t); pitch(t); goal(t);
+  wplayer(.4, 1.6, { kit: KIT.hig, view: 'front', pose: POSE.flat, rot: -88, lift: .05, expr: t > T.noNeed ? 'wide' : 'grin', look: [1, -.5] });
+  const hands = {};
+  wplayer(4.2, 5, { kit: KIT.ref, view: 'front', pose: POSE.flag, hands, expr: 'cocky', look: [-1, 0] });
+  if (hands.R) {   // the flag in the raised hand
+    const hp = hands.R; const L = 90;
+    X.strokeStyle = C.ink; X.lineWidth = 6; X.beginPath(); X.moveTo(hp.x, hp.y + 10); X.lineTo(hp.x, hp.y - L); X.stroke();
+    const wv = Math.sin(t * 9) * 6; X.fillStyle = C.yel; X.strokeStyle = C.ink; X.lineWidth = 3;
+    X.beginPath(); X.moveTo(hp.x, hp.y - L); X.quadraticCurveTo(hp.x + 30, hp.y - L - 10 + wv, hp.x + 60, hp.y - L + wv); X.lineTo(hp.x + 60, hp.y - L + 40 + wv); X.quadraticCurveTo(hp.x + 30, hp.y - L + 30 + wv, hp.x, hp.y - L + 40); X.closePath(); X.fill(); X.stroke();
+    X.fillStyle = C.red; X.fillRect(hp.x + 4, hp.y - L + 14 + wv * .5, 52, 10);
+  }
+  popText(t, T.flag, T.sH - .1, 'OFFSIDE!', W / 2, 330, 130, { color: C.red, rot: -4, id: 'off' });
+  popText(t, T.noNeed, T.sH - .1, "HE DIDN'T NEED TO", W / 2, 480, 60, { font: FONT.body, box: '#2B4DB3', id: 'noneed' });
+}
+function sceneWarmup(t) {   // before kick-off: scorpion after scorpion
+  CAM = camTrack([[T.sH, { ...CAM_SIDE, x: 6.8 }], [T.sI, { ...CAM_SIDE, x: 6.3 }]], t);
+  const per = (T.sI - T.sH) / 3, i = clamp(Math.floor((t - T.sH) / per), 0, 2), lt = t - T.sH - i * per;
+  HEEL = null;
+  const u = lt * .9 - .3;
+  if (u < 0) { sky(t, 'day'); pitch(t, 'day'); goal(t); wplayer(.4, 1.1, { kit: KIT.hig, view: 'front', pose: POSE.ready, expr: 'grin', look: [-1, -.3] }); }
+  else { const save = sky; scorpSceneDay(t, Math.min(u, 1.4)); }
+  X.fillStyle = 'rgba(255,200,120,.12)'; X.fillRect(0, 0, W, H);
+  popText(t, T.sH + .15, T.sI - .1, 'WARM-UP', 220, 230, 56, { box: '#C77B2A', font: FONT.body, id: 'wu' });
+  popText(t, T.sH + per * i + .5, T.sI - .1, ['AGAIN', 'AND AGAIN', 'AND AGAIN'][i], W / 2, 400, 90, { color: C.yel, rot: -3, id: 'again' + i, noOut: true });
+}
+function scorpSceneDay(t, u) {   // same scorpion, daylight pitch
+  sky(t, 'day'); pitch(t, 'day'); goal(t);
+  const s = scorpState(u), feet = {};
+  wplayer(.4, s.z, { kit: KIT.hig, view: 'front', pose: s.pose, rot: s.rot, lift: s.lift, feet, legScale: s.legScale, legsFront: s.legsFront, expr: u > SC_T ? 'grin' : 'focus', look: [-1, .3] });
+  if (feet.R) { if (u <= SC_T) HEEL = [feet.R.x, feet.R.y]; }
+  const from = P(.4, 3.4, 9.5), away = P(.4, 5.5, 13);
+  if (!HEEL) return;
+  let bx, by; if (u < SC_T) { const k = clamp((u + .5) / (SC_T + .5), 0, 1); bx = lerp(from.x, HEEL[0], k); by = lerp(from.y, HEEL[1], k); } else { const k = clamp((u - SC_T) / .8, 0, 1); bx = lerp(HEEL[0], away.x, k); by = lerp(HEEL[1], away.y, k) - Math.sin(k * Math.PI) * 80; }
+  X.fillStyle = '#FFF'; X.strokeStyle = C.ink; X.lineWidth = 3; X.beginPath(); X.arc(bx, by, 14, 0, 7); X.fill(); X.stroke();
+}
+function sceneScore(t) {   // 0-0: nobody remembers the score
+  CAM = camTrack([[T.sI, { x: 0, y: 1.2, z: 6.6, yaw: 0, pitch: -.02, f: 1500 }], [T.sJ, { x: 0, y: 1.2, z: 6.2, yaw: 0, pitch: -.02, f: 1600 }]], t);
+  sky(t); pitch(t); goal(t);
+  wplayer(0, .8, { kit: KIT.hig, view: 'front', pose: POSE.wave, expr: 'cocky', look: [.4, 0] });
+  const k = back(clamp((t - T.sI - .1) / .35, 0, 1), 2);
+  X.save(); X.translate(W / 2, 360); X.scale(k, k); X.rotate(-.04);
+  X.fillStyle = 'rgba(10,14,36,.92)'; X.beginPath(); X.roundRect(-380, -90, 760, 180, 30); X.fill();
+  X.font = `86px ${FONT.head}`; X.textAlign = 'center'; X.textBaseline = 'middle'; X.fillStyle = '#FFF'; X.fillText('ENG  0–0  COL', 0, 6);
+  X.restore();
+  if (k > .6) TEXTS.push({ id: 'score', text: 'ENG 0–0 COL', x0: W / 2 - 380, y0: 270, x1: W / 2 + 380, y1: 450 });
+  if (t > T.forgot) {   // scribbled out
+    const kk = clamp((t - T.forgot) / .5, 0, 1); X.save(); X.strokeStyle = C.red; X.lineWidth = 14; X.lineCap = 'round'; X.beginPath(); X.moveTo(W / 2 - 330, 330); X.lineTo(W / 2 - 330 + 660 * kk, 400 - 60 * kk); X.stroke(); X.restore();
+    popText(t, T.forgot + .2, T.sJ - .1, 'NOBODY REMEMBERS', W / 2, 1100, 70, { color: C.yel, rot: 3, id: 'nob' });
+  }
+}
+function sceneQuestion(t) {
+  CAM = { ...CAM_SIDE, x: 6.0, f: 1600 };
+  HEEL = null; scorpScene(t, SC_T - .04); scorpScene(t, SC_T);
+  X.fillStyle = 'rgba(7,10,28,.35)'; X.fillRect(0, 0, W, H);
+  popText(t, T.sJ + .1, DUR, 'WOULD YOU\nTRY IT?', W / 2, 360, 120, { color: '#FFF', id: 'try', noOut: true });
+  popText(t, T.sJ + .6, DUR, 'YES', W / 2 - 200, 1040, 80, { box: '#2FA35C', id: 'yes', noOut: true });
+  popText(t, T.sJ + .9, DUR, 'NO WAY', W / 2 + 200, 1040, 80, { box: C.cze, id: 'no', noOut: true });
+}
+const SCENES = [[0, sceneHook], [T.sB, sceneWembley], [T.sC, sceneLoco], [T.sD, sceneLob], [T.sE, sceneScorpion], [T.sF, sceneCrowd], [T.sG, sceneOffside], [T.sH, sceneWarmup], [T.sI, sceneScore], [T.sJ, sceneQuestion]];
+
+// ---------------------------------------------------------------- sound cues
+ev(0, 'mus', { n: 'A' }); ev(T.sD, 'mus', { n: 'build' }); ev(T.flips - .5, 'mus', { n: 'hush' }); ev(T.heel, 'mus', { n: 'drop' }); ev(T.sH, 'mus', { n: 'soft' }); ev(T.sI, 'mus', { n: 'A2' }); ev(T.sJ + 1.2, 'mus', { n: 'end' });
+ev(.05, 'boom'); ev(T.heels0, 'hit'); ev(T.upside, 'slowmo'); ev(T.sB - .1, 'swoosh');
+ev(T.sB + .25, 'hit'); ev(T.vs, 'pop'); ev(T.friendly, 'pop'); ev(T.wrong, 'tick'); ev(T.wrong + .05, 'pop');
+ev(T.sC - .1, 'swoosh'); ev(T.sC + .2, 'pop'); ev(T.loco, 'hit'); ev(T.loco + .1, 'cheer', { d: 1 }); ev(T.madman, 'pop');
+ev(T.sD - .1, 'swoosh'); ev(T.lobK, 'kickSoft'); ev(T.lobK + .3, 'pop'); ev(T.sD + 2.6, 'swoosh'); ev(T.notHig, 'hit');
+ev(T.sE - .1, 'swoosh'); ev(T.flips - .4, 'whoosh'); ev(T.flips, 'slowmo'); ev(T.heel, 'kick'); ev(T.heel, 'drop'); ev(T.heel + .05, 'roar', { d: 4 });
+ev(T.sF - .1, 'swoosh'); ev(T.sF + .2, 'hit'); ev(T.sF + .7, 'pop');
+ev(T.sG - .1, 'swoosh'); ev(T.flag - .3, 'whistle'); ev(T.flag, 'hit'); ev(T.noNeed, 'pop');
+ev(T.sH - .1, 'swoosh'); { const per = (T.sI - T.sH) / 3; for (let i = 0; i < 3; i++) { ev(T.sH + i * per + .35 + SC_T / .9, 'kickSoft'); ev(T.sH + i * per + .5, 'pop'); } }
+ev(T.sI - .1, 'swoosh'); ev(T.sI + .1, 'hit'); ev(T.forgot, 'tick'); ev(T.forgot + .2, 'pop');
+ev(T.sJ - .1, 'swoosh'); ev(T.sJ + .1, 'pop'); ev(T.sJ + .6, 'pop'); ev(T.sJ + .9, 'pop');
+
+// ---------------------------------------------------------------- frame
+function frame(t) {
+  NOW = t; TEXTS.length = 0; NET = NET && NET.t0 > t ? null : NET;
+  let i = 0; while (i < SCENES.length - 1 && t >= SCENES[i + 1][0]) i++;
+  X.setTransform(1, 0, 0, 1, 0, 0); X.fillStyle = C.sky0; X.fillRect(0, 0, W, H);
+  SCENES[i][1](t);
+  // a quick white wipe on every cut (0.12 s)
+  const tc = SCENES[i][0]; if (i > 0 && t - tc < .12) { X.fillStyle = `rgba(255,255,255,${(1 - (t - tc) / .12) * .5})`; X.fillRect(0, 0, W, H); }
+  vignette(i === 7 ? .3 : .55);
+  scorebug(t, t >= T.sD && t < T.sH);
+  brand();
+  captions(t);
+}
+window.render = t => frame(t);
+window.EV = EV.sort((a, b) => a.t - b.t);
+window.TEXTS = t => { frame(t); return TEXTS.map(b => ({ ...b, x0: Math.max(0, b.x0), y0: Math.max(0, b.y0), x1: Math.min(W, b.x1), y1: Math.min(H, b.y1) })); };
+window.CAPS = CAPS;
+frame(0);
+window.READY = true;
+</script></body></html>
