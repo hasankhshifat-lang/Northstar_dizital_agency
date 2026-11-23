@@ -1,0 +1,94 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "map",
+ "background": {
+  "src": "map.png",
+  "crop": [
+   0.06,
+   0.128,
+   0.6,
+   0.6
+  ],
+  "grade": "warm",
+  "blur": 0.8,
+  "side": "top",
+  "darken": 0.12
+ },
+ "layers": [
+  {
+   "type": "image",
+   "src": "lake.jpg",
+   "x": 20,
+   "y": 450,
+   "w": 1040,
+   "aspect": 1.494,
+   "crop": [
+    0.36,
+    0.22,
+    0.42,
+    0.52
+   ],
+   "rotate": -2,
+   "grade": "warm",
+   "paper": true
+  },
+  {
+   "type": "ring",
+   "x": 540,
+   "y": 1030,
+   "rx": 510,
+   "ry": 34
+  },
+  {
+   "type": "arrow",
+   "from": [
+    300,
+    1230
+   ],
+   "to": [
+    380,
+    1060
+   ],
+   "bend": -0.2
+  },
+  {
+   "type": "pin",
+   "x": 780,
+   "y": 1330,
+   "label": "CHICAGO",
+   "size": 50
+  }
+ ],
+ "headline": {
+  "lines": [
+   "SHOPS STAYED",
+   "OPEN"
+  ],
+  "accent": [
+   "OPEN"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 100,
+  "size": 160
+ },
+ "tags": [
+  {
+   "text": "ON JACKSCREWS",
+   "x": 80,
+   "y": 1250,
+   "variant": "label",
+   "size": 44,
+   "rotate": -2
+  },
+  {
+   "text": "REAL 1857 PRINT",
+   "x": 80,
+   "y": 1460,
+   "variant": "date",
+   "size": 40
+  }
+ ],
+ "guides": false
+}

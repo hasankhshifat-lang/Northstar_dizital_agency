@@ -25,7 +25,7 @@ WD weird but true · FT feats & escapes
 | 10 | MAP | Why Minnesota Has a Piece Stuck in Canada | You have to drive through Canada to reach this part of the US. | done 2026-11-18 lycDlMhOJ_M (slot 2026-11-19 17:00 ET; title: Why Part of Minnesota Is Stuck in Canada; population left out: census 149 vs CBS ~60) |
 | 11 | FT | He Stole a Warship and Sailed to Freedom | In 1862 an enslaved pilot stole a Confederate warship. | done 2026-11-22 t6fR0H1yYJo (slot 2026-11-23 08:00 ET; title: He Stole a Confederate Warship and Sailed Past Fort Sumter; head count left out: NPS 16 vs Wikipedia 8 crew + 9 family) |
 | 12 | WR | America Strapped Bombs to Bats | The US tried to burn Japan with bats. They burned their own base. | done 2026-11-23 FrsAQmXpo4o (slot 2026-11-23 13:00 ET; title: The US Army Strapped Bombs to Bats; bats-per-bomb left out: 1,040 vs 180 in the sources) |
-| 13 | HOW | Chicago Lifted the Whole City With Screws | In the 1850s Chicago jacked up entire buildings, with people inside. | |
+| 13 | HOW | Chicago Lifted the Whole City With Screws | In the 1850s Chicago jacked up entire buildings, with people inside. | done 2026-11-23 nJopWLqMnJU (slot 2026-11-23 17:00 ET; title: Chicago Lifted an Entire City Block; days of work left out: 5 vs 4 in the sources) |
 | 14 | SV | A 25-Foot Wave of Molasses Hit Boston | A wave of molasses moving 35 mph killed 21 people. | |
 | 15 | WD | The 1904 Olympic Marathon Was a Disaster | The winner was fed rat poison during the race. | |
 | 16 | WW | He Robbed 28 Stagecoaches and Left Poems | Black Bart never fired a shot. A laundry mark caught him. | |

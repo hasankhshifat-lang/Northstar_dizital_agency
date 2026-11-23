@@ -519,3 +519,8 @@ Start on the map, then **dive into the place** and show what the narration descr
 - Remotion stills: bundle once (`npx remotion bundle --out-dir …`) and call `renderStill` from a small node script for many timestamps (~1.5 s per still); tile with ffmpeg (`tile=9x3`) because the system PIL is broken in this image.
 - Wikimedia upload.wikimedia.org rate-limits (429) quickly; wait ~20 s between requests and send a descriptive User-Agent.
 - Final encode: Remotion's mp4 is full-range (yuvj420p); re-encode with `-vf scale=in_range=pc:out_range=tv,format=yuv420p`.
+
+### Learned 2026-11-23 (Chicago raising Short, HOW, 17:00 ET slot — 3 Shorts in one day)
+- Story `src/stories/chicagoRaise.tsx` + `src/sets/chicagoScenes.tsx` (`Jack` screw jack with turning bar, `BrickRow` that rises on timbers and jacks, `Steps`, `Mud`, `Wagon`, `Pipe`, `Hotel`, `TopHat`, `Bonnet`, `Skirt`); mix `shorts/chicago-raise-2026-11-23/mix.py` (ratchets, creaks, crowd). `clean` prop for a text-free map still.
+- **us-atlas `states-10m` polygons run out into the Great Lakes**, so Lake Michigan draws as land. Draw `src/data/ne50m_great_lakes.json` (Natural Earth 50m, the five lakes, rounded to 3 decimals, 30 KB) on top of the states in the sea colour.
+- Two complete Shorts fit in one run when the first finishes early: ~20 min of rendering each (5.5 min Remotion render at concurrency 4, 2 min VibeVoice).
