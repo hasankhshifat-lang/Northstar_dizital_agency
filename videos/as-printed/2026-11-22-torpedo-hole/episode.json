@@ -102,12 +102,12 @@
    "row": "internal"
   },
   {
-   "id": "barre",
+   "id": "topeka",
    "kind": "paper",
-   "src": "raw/barre.jpg",
-   "label": "BARRE EVENING ENTERPRISE (VT.) · 25 APR 1898",
-   "short": "Barre Evening Enterprise",
-   "catalog": "LCCN sn98060036",
+   "src": "raw/topeka.jpg",
+   "label": "THE TOPEKA STATE JOURNAL · 25 APR 1898",
+   "short": "The Topeka State Journal",
+   "catalog": "LCCN sn82016014",
    "row": "war declared"
   },
   {
@@ -1090,93 +1090,93 @@
     },
     {
      "type": "read",
-     "item": "barre",
+     "item": "topeka",
      "boxes": [
       [
-       440,
-       1748,
-       655,
-       1760
+       130,
+       582,
+       482,
+       658
       ],
       [
-       447,
-       2036,
-       704,
-       2054
+       131,
+       698,
+       484,
+       720
       ],
       [
-       387,
-       2054,
-       702,
-       2072
+       250,
+       727,
+       359,
+       744
       ],
       [
-       387,
-       2074,
-       703,
-       2092
+       129,
+       774,
+       482,
+       792
+      ],
+      [
+       278,
+       799,
+       386,
+       823
+      ],
+      [
+       126,
+       1055,
+       480,
+       1085
+      ],
+      [
+       126,
+       1109,
+       479,
+       1129
+      ],
+      [
+       206,
+       1137,
+       404,
+       1153
       ]
      ],
-     "say": "In Vermont, a crowd marched through town with an effigy of a Spanish general. It was labelled: Remember the Maine. Down with Spain."
+     "say": "April twenty fifth, in Topeka, Kansas. State of war. Is formally declared to be in existence, between the United States and Spain. House acts quickly. Passes a war measure by unanimous vote."
     },
     {
      "type": "read",
-     "item": "barre",
+     "item": "topeka",
      "boxes": [
       [
-       1431,
-       1846,
-       1661,
-       1866
+       491,
+       3081,
+       846,
+       3103
       ],
       [
-       1442,
-       2505,
-       1706,
-       2521
+       507,
+       3119,
+       846,
+       3132
       ],
       [
-       1425,
-       2528,
-       1707,
-       2545
+       490,
+       3139,
+       846,
+       3153
       ],
       [
-       1387,
-       2550,
-       1705,
-       2568
-      ],
-      [
-       1454,
-       2574,
-       1706,
-       2590
-      ],
-      [
-       1406,
-       2598,
-       1706,
-       2614
-      ],
-      [
-       1386,
-       2620,
-       1706,
-       2640
-      ],
-      [
-       1387,
-       2642,
-       1706,
-       2662
+       491,
+       3159,
+       659,
+       3172
       ]
      ],
-     "say": "April twenty fifth. Declaration of war. It took just one minute and forty one seconds to pass a declaration of war. The vote was unanimous."
+     "say": "Double quick time. It took the house one minute and forty one seconds to pass declaration of war."
     },
     {
      "type": "table",
-     "item": "barre",
+     "item": "topeka",
      "zoom": 0.8,
      "say": "From declaration to armistice, the war lasted one hundred and ten days. The Maine stayed where she sank, in Havana harbor. And so did the question."
     },

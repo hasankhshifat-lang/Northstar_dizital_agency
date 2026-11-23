@@ -42,9 +42,9 @@ Episode folder: `videos/as-printed/2026-11-22-torpedo-hole/` · facts: `FACTS.md
 35. **[table · age]** A mine beneath her. Not a torpedo hole in her side. And no evidence of who.
 36. **[read · sun]** Spain held its own inquiry. The Sun printed its reasons. No dead fish were found in the harbor, as would have been the case if a mine or torpedo had exploded. No column of water arose. The explosion, Spain said, was internal.
 37. **[read · age]** But the country had already decided. Across the top of the same Age-Herald: McKinley backs down. Will Congress uphold national honor? He is being cursed by both Republicans and Democrats, for his cowardly message to Congress.
-38. **[read · barre]** In Barre, Vermont, a crowd marched through the streets with an effigy of the Spanish general Weyler. It was labelled: Remember the Maine. Down with Spain.
-39. **[read · barre]** April twenty fifth. Declaration of war. It took just one minute and forty one seconds to pass a declaration of war. The vote was unanimous.
-40. **[table · barre]** From declaration to armistice, the war lasted one hundred and ten days. The Maine stayed where she sank, in Havana harbor. And so did the question.
+38. **[read · topeka]** April twenty fifth, in Topeka, Kansas. State of war. Is formally declared to be in existence, between the United States and Spain. House acts quickly. Passes a war measure by unanimous vote.
+39. **[read · topeka]** Double quick time. It took the house one minute and forty one seconds to pass declaration of war.
+40. **[table · topeka]** From declaration to armistice, the war lasted one hundred and ten days. The Maine stayed where she sank, in Havana harbor. And so did the question.
 41. **[chapter · wreck1911]** Part five. Raising the Maine.
 42. **[photo · wreck1911]** Thirteen years later, in nineteen eleven, Army engineers built a wall of steel around the wreck, and pumped out the water. For the first time, the hull could be seen. This is the Maine on November eighteenth, nineteen eleven.
 43. **[read · norwich]** A new Navy board studied it. December ninth. The Norwich Bulletin. The Maine blown up from the outside. External explosion caused explosion of magazine, says government.
