@@ -1,0 +1,8 @@
+{
+ "width": 1080, "height": 1920, "style": "toon",
+ "background": {"src": "panenka-1976-art.jpg", "grade": "none", "darken": 0, "side": "none"},
+ "layers": [],
+ "headline": {"lines": ["DOWN THE", "MIDDLE?!"], "accent": ["MIDDLE?!"], "align": "center", "x": 0, "y": 120, "size": 160, "panel": true},
+ "tags": [{"text": "EURO 1976 FINAL", "x": 340, "y": 1380, "variant": "label", "size": 40}],
+ "guides": false
+}

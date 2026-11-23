@@ -17,6 +17,7 @@ const FONT = { head: "'Lilita One', sans-serif", body: "'Inter XB', sans-serif" 
 await document.fonts.load(`80px ${FONT.head}`); await document.fonts.load(`80px ${FONT.body}`);
 const WORDS = (await (await fetch('vo/words.json')).json()).words;
 let NOW = 0;
+const THUMB = new URLSearchParams(location.search).get('thumb');   // ?thumb=SECONDS: a clean frame for the thumbnail art
 
 // ---------------------------------------------------------------- palette
 const C = {
@@ -37,9 +38,9 @@ const KIT = {   // caricatures: recognisable by hair, moustache and build; gener
 // ---------------------------------------------------------------- timeline (from the VibeVoice take's word timings, vo/words.json)
 window.DUR = 51.2;
 const T = {
-  heels0: 3.0, upside: 4.7, sB: 5.6, vs: 7.6, friendly: 9.5, wrong: 10.8, sC: 12.4, loco: 16.0, madman: 17.0,
-  sD: 18.5, lobK: 19.6, notHig: 24.7, sE: 25.6, flips: 27.1, heel: 29.4, sF: 30.7, sG: 34.0, flag: 35.9, noNeed: 37.9,
-  sH: 39.6, sI: 44.1, forgot: 45.9, sJ: 47.9, endPull: 50, end: 51.2,
+  heels0: 2.95, upside: 4.0, sB: 6.4, vs: 7.6, friendly: 9.5, wrong: 10.2, sC: 13.1, loco: 16.0, madman: 16.35,
+  sD: 18.8, lobK: 19.6, notHig: 24.15, sE: 26.5, flips: 27.1, heel: 29.4, sF: 31.6, sG: 34.4, flag: 35.9, noNeed: 37.4,
+  sH: 39.9, sI: 44.1, forgot: 45.6, sJ: 48.3, endPull: 50, end: 51.2,
 };
 const CAPS = [
   [0.0, 'Most goalkeepers stop the ball with their hands.'], [2.6, 'This one… used his heels.'], [4.7, 'Upside down.'],
@@ -367,8 +368,9 @@ function ball(wx, wy, wz, spin = 0, trail = null) {
 // ---------------------------------------------------------------- graphics: kinetic text, scorebug, tracker, captions
 const TEXTS = [];
 function popText(t, t0, t1, text, x, y, size, o = {}) {
+  if (THUMB) return;
   if (t < t0 || t > t1) return;
-  const kin = clamp((t - t0) / .28, 0, 1), kout = clamp((t1 - t) / .2, 0, 1);
+  const kin = clamp((t - t0) / .2, 0, 1), kout = clamp((t1 - t) / .12, 0, 1);
   const s = back(kin, 2.2) * (o.noOut ? 1 : lerp(.85, 1, kout)), a = Math.min(kin * 3, 1) * (o.noOut ? 1 : kout);
   X.save(); X.translate(x, y); X.rotate((o.rot || 0) * Math.PI / 180); X.scale(s, s); X.globalAlpha = a;
   X.font = `${size}px ${o.font || FONT.head}`; X.textAlign = 'center'; X.textBaseline = 'middle';
@@ -383,8 +385,9 @@ function popText(t, t0, t1, text, x, y, size, o = {}) {
   if (a > .6) TEXTS.push({ pass: !!o.pass, id: o.id || text, text: text.replace(/\n/g, ' '), x0: x - wmax / 2 - 30, y0: y - lines.length * lh / 2 - 15, x1: x + wmax / 2 + 30, y1: y + lines.length * lh / 2 + 15 });
 }
 function nameTag(t, t0, t1, name, sub, x, y, col) {
+  if (THUMB) return;
   if (t < t0 || t > t1) return;
-  const k = eo(clamp((t - t0) / .35, 0, 1)) * clamp((t1 - t) / .25, 0, 1);
+  const k = eo(clamp((t - t0) / .22, 0, 1)) * clamp((t1 - t) / .15, 0, 1);
   X.save(); X.globalAlpha = k; X.translate(x - (1 - k) * 60, y);
   X.font = `56px ${FONT.head}`; const w1 = X.measureText(name).width; X.font = `30px ${FONT.body}`; const w2 = X.measureText(sub).width; const w = Math.max(w1, w2) + 60;
   X.fillStyle = col; X.beginPath(); X.roundRect(0, -6, 14, 116, 6); X.fill();
@@ -398,7 +401,7 @@ function nameTag(t, t0, t1, name, sub, x, y, col) {
 const SHOOT = [['cze', 1], ['frg', 1], ['cze', 1], ['frg', 1], ['cze', 1], ['frg', 1], ['cze', 1], ['frg', 0], ['cze', 1]];
 let KICKS_DONE = 0;
 function scorebug(t, show) {
-  if (!show) return;
+  if (!show || THUMB) return;
   X.save(); X.translate(W / 2, 120);
   X.fillStyle = 'rgba(10,14,36,.9)'; X.beginPath(); X.roundRect(-300, -46, 600, 92, 46); X.fill();
   X.fillStyle = C.frg; X.beginPath(); X.roundRect(-288, -34, 20, 68, 10); X.fill(); X.fillStyle = '#F2D02E'; X.beginPath(); X.roundRect(268, -34, 20, 68, 10); X.fill();
@@ -410,6 +413,7 @@ function scorebug(t, show) {
   TEXTS.push({ id: 'bug', text: 'ENG 0–0 COL', x0: W / 2 - 300, y0: 74, x1: W / 2 + 300, y1: 166, pass: true });
 }
 function captions(t) {
+  if (THUMB) return;
   let li = -1; for (let i = 0; i < CAPS.length; i++) if (t >= CAPS[i][0]) li = i;
   if (li < 0) return; const t0 = CAPS[li][0], t1 = li + 1 < CAPS.length ? CAPS[li + 1][0] : DUR;
   if (t > t1 - .05) return;
@@ -444,15 +448,16 @@ function vignette(strength = .55) {
   const b = X.createLinearGradient(0, 1180, 0, H); b.addColorStop(0, 'rgba(7,10,28,0)'); b.addColorStop(.35, 'rgba(7,10,28,.78)'); b.addColorStop(1, 'rgba(7,10,28,.95)');
   X.fillStyle = b; X.fillRect(0, 1180, W, H - 1180);
 }
-function flashFrame(t, t0, d = .18) { const k = (t - t0) / d; if (k < 0 || k > 1) return; X.fillStyle = `rgba(255,255,255,${(1 - k) * .85})`; X.fillRect(0, 0, W, H); }
+function flashFrame(t, t0, d = .18) { if (THUMB) return; const k = (t - t0) / d; if (k < 0 || k > 1) return; X.fillStyle = `rgba(255,255,255,${(1 - k) * .85})`; X.fillRect(0, 0, W, H); }
 function speedRays(t, t0, d, cx, cy, col = 'rgba(255,255,255,.5)') {
+  if (THUMB) return;
   const k = (t - t0) / d; if (k < 0 || k > 1) return; const R = mulberry(Math.round(t0 * 100));
   X.save(); X.globalAlpha = Math.sin(k * Math.PI); X.strokeStyle = col; X.lineWidth = 6;
   for (let i = 0; i < 40; i++) { const a = R() * 6.283, r0 = 380 + R() * 200, r1 = r0 + 300 + R() * 500; X.beginPath(); X.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); X.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); X.stroke(); }
   X.restore();
 }
-function slowmoBars(on) { if (!on) return; X.fillStyle = 'rgba(0,0,0,.6)'; X.fillRect(0, 0, W, 40); X.fillRect(0, 1140, W, 40); }
-function brand() { X.save(); X.font = `34px ${FONT.head}`; X.textAlign = 'left'; X.textBaseline = 'top'; X.fillStyle = 'rgba(255,255,255,.85)'; X.fillText('FOOT ALL FC', 44, 40); X.restore(); }
+function slowmoBars(on) { if (THUMB) return; if (!on) return; X.fillStyle = 'rgba(0,0,0,.6)'; X.fillRect(0, 0, W, 40); X.fillRect(0, 1140, W, 40); }
+function brand() { if (THUMB) return; X.save(); X.font = `34px ${FONT.head}`; X.textAlign = 'left'; X.textBaseline = 'top'; X.fillStyle = 'rgba(255,255,255,.85)'; X.fillText('FOOT ALL FC', 44, 40); X.restore(); }
 
 // ---------------------------------------------------------------- the scorpion: one simulation (side camera)
 // u: seconds since Higuita leaves the ground. Contact at 0.62 s.
@@ -513,12 +518,12 @@ function sceneLoco(t) {   // Higuita: grin, wave, the mane bouncing; EL LOCO
   sky(t); pitch(t); goal(t);
   const loco = t > T.loco;
   wplayer(0, .8, { kit: KIT.hig, view: 'front', pose: loco ? (Math.sin(t * 8) > 0 ? POSE.cheer : POSE.cheerB) : mixP(POSE.idle, POSE.wave, (Math.sin(t * 5) + 1) / 2), lift: loco ? Math.abs(Math.sin(t * 8)) * .1 : 0, expr: loco ? 'grin' : 'cocky', look: [Math.sin(t * 2) * .4, 0], headTilt: loco ? Math.sin(t * 8) * 8 : 0 });
-  nameTag(t, T.sC + .2, T.loco - .1, 'RENÉ HIGUITA', 'COLOMBIA · GOALKEEPER', 60, 1010, C.yel);
+  nameTag(t, T.sC + .1, T.loco + .4, 'RENÉ HIGUITA', 'COLOMBIA', 60, 1010, C.yel);
   popText(t, T.loco, T.sD - .1, 'EL LOCO', W / 2, 330, 150, { color: C.yel, rot: -5, id: 'loco' });
   popText(t, T.madman, T.sD - .1, '= THE MADMAN', W / 2, 480, 70, { font: FONT.body, id: 'mad' });
 }
 function sceneLob(t) {    // Redknapp lobs from 30 yards; the keeper looks up at an easy ball
-  const split = T.sD + 2.6;
+  const split = T.sD + 2.9;
   if (t < split) {
     CAM = camTrack([[T.sD, { x: 2.4, y: 1.8, z: 37, yaw: .05, pitch: .04, f: 1500 }], [split, { x: 2.2, y: 1.8, z: 36, yaw: .05, pitch: .035, f: 1550 }]], t);
     sky(t); pitch(t); goal(t);
@@ -527,8 +532,8 @@ function sceneLob(t) {    // Redknapp lobs from 30 yards; the keeper looks up at
     const fk = clamp((t - T.lobK) / 2.2, 0, 1);
     if (fk > 0) ball(lerp(.6, .4, fk), Math.sin(fk * Math.PI) * 8 + fk * 2, lerp(27.4, 6, fk), fk * 6); else ball(.6, 0, 27.4);
     wplayer(.4, 1.0, { kit: KIT.hig, view: 'front', pose: POSE.ready, expr: 'focus', look: [0, -1] });
-    nameTag(t, T.sD + .1, split - .1, 'JAMIE REDKNAPP', 'ENGLAND', 60, 1010, C.frg);
-    popText(t, T.lobK + .3, split - .1, '30 YARDS', W - 230, 420, 70, { color: C.yel, id: '30' });
+    nameTag(t, T.sD, split - .05, 'JAMIE REDKNAPP', '', 60, 1010, C.frg);
+    popText(t, T.lobK, split - .1, '30 YARDS', W - 230, 420, 70, { color: C.yel, id: '30' });
   } else {   // the keeper, looking up, under an easy ball
     CAM = camTrack([[split, { x: 0, y: 1.0, z: 5.6, yaw: 0, pitch: -.12, f: 1550 }], [T.sE, { x: 0, y: 1.0, z: 5.0, yaw: 0, pitch: -.14, f: 1650 }]], t);
     sky(t); pitch(t); goal(t);
@@ -553,7 +558,7 @@ function sceneScorpion(t) {   // the real thing, side-on, slowing down at the fl
   slowmoBars(t > T.flips && t < T.heel + .2);
   flashFrame(t, T.heel, .22);
   speedRays(t, T.heel, .5, W / 2, 620);
-  popText(t, T.heel + .1, T.sF - .1, 'SCORPION KICK!', W / 2, 330, 116, { color: C.yel, rot: -4, id: 'scorp' });
+  popText(t, T.heel - .1, T.sF - .1, 'SCORPION!', W / 2, 330, 116, { color: C.yel, rot: -4, id: 'scorp' });
 }
 function sceneCrowd(t) {   // the crowd: flashes everywhere; Redknapp's jaw drops
   CAM = camTrack([[T.sF, { x: 0, y: 1.4, z: 26, yaw: Math.PI, pitch: -.06, f: 1500 }], [T.sG, { x: 0, y: 1.4, z: 24.5, yaw: Math.PI, pitch: -.08, f: 1650 }]], t);
@@ -562,7 +567,7 @@ function sceneCrowd(t) {   // the crowd: flashes everywhere; Redknapp's jaw drop
   X.globalAlpha = 1;
   wplayer(0, 28.5, { kit: KIT.red, view: 'front', pose: POSE.hands, expr: 'wide', look: [0, 0], sweat: true });
   popText(t, T.sF + .2, T.sG - .1, '20,038 FANS', W / 2, 330, 110, { color: C.yel, id: 'fans' });
-  popText(t, T.sF + .7, T.sG - .1, 'NEVER SEEN ANYTHING LIKE IT', W / 2, 470, 50, { font: FONT.body, box: '#2B4DB3', id: 'never' });
+  popText(t, T.sF + .2, T.sG - .1, 'NEVER SEEN!', W / 2, 470, 50, { font: FONT.body, box: '#2B4DB3', id: 'never' });
 }
 function sceneOffside(t) {   // the flag was already up: the assistant referee, flag raised; Higuita looks over from the grass
   CAM = camTrack([[T.sG, { x: 3, y: 1.3, z: 12.5, yaw: 0, pitch: .05, f: 1300 }], [T.sH, { x: 3, y: 1.3, z: 11.8, yaw: 0, pitch: .05, f: 1400 }]], t);
@@ -578,7 +583,7 @@ function sceneOffside(t) {   // the flag was already up: the assistant referee, 
     X.fillStyle = C.red; X.fillRect(hp.x + 4, hp.y - L + 14 + wv * .5, 52, 10);
   }
   popText(t, T.flag, T.sH - .1, 'OFFSIDE!', W / 2, 330, 130, { color: C.red, rot: -4, id: 'off' });
-  popText(t, T.noNeed, T.sH - .1, "HE DIDN'T NEED TO", W / 2, 480, 60, { font: FONT.body, box: '#2B4DB3', id: 'noneed' });
+  popText(t, T.noNeed, T.sH - .1, 'NO NEED!', W / 2, 480, 60, { font: FONT.body, box: '#2B4DB3', id: 'noneed' });
 }
 function sceneWarmup(t) {   // before kick-off: scorpion after scorpion
   CAM = camTrack([[T.sH, { ...CAM_SIDE, x: 6.8 }], [T.sI, { ...CAM_SIDE, x: 6.3 }]], t);
@@ -589,7 +594,8 @@ function sceneWarmup(t) {   // before kick-off: scorpion after scorpion
   else { const save = sky; scorpSceneDay(t, Math.min(u, 1.4)); }
   X.fillStyle = 'rgba(255,200,120,.12)'; X.fillRect(0, 0, W, H);
   popText(t, T.sH + .15, T.sI - .1, 'WARM-UP', 220, 230, 56, { box: '#C77B2A', font: FONT.body, id: 'wu' });
-  popText(t, T.sH + per * i + .5, T.sI - .1, ['AGAIN', 'AND AGAIN', 'AND AGAIN'][i], W / 2, 400, 90, { color: C.yel, rot: -3, id: 'again' + i, noOut: true });
+  popText(t, T.sH + .3, T.sI - .1, 'AGAIN AND AGAIN', W / 2, 400, 86, { color: C.yel, rot: -3, id: 'again' });
+  popText(t, T.sH + per * i + .5, T.sI - .1, '×' + (i + 1), W - 170, 560, 90, { color: '#FFF', id: 'x' + i, noOut: true, pass: true });
 }
 function scorpSceneDay(t, u) {   // same scorpion, daylight pitch
   sky(t, 'day'); pitch(t, 'day'); goal(t);
@@ -613,7 +619,7 @@ function sceneScore(t) {   // 0-0: nobody remembers the score
   if (k > .6) TEXTS.push({ id: 'score', text: 'ENG 0–0 COL', x0: W / 2 - 380, y0: 270, x1: W / 2 + 380, y1: 450 });
   if (t > T.forgot) {   // scribbled out
     const kk = clamp((t - T.forgot) / .5, 0, 1); X.save(); X.strokeStyle = C.red; X.lineWidth = 14; X.lineCap = 'round'; X.beginPath(); X.moveTo(W / 2 - 330, 330); X.lineTo(W / 2 - 330 + 660 * kk, 400 - 60 * kk); X.stroke(); X.restore();
-    popText(t, T.forgot + .2, T.sJ - .1, 'NOBODY REMEMBERS', W / 2, 1100, 70, { color: C.yel, rot: 3, id: 'nob' });
+    popText(t, T.forgot, T.sJ - .1, 'NOBODY REMEMBERS', W / 2, 1100, 70, { color: C.yel, rot: 3, id: 'nob' });
   }
 }
 function sceneQuestion(t) {
@@ -631,7 +637,7 @@ ev(0, 'mus', { n: 'A' }); ev(T.sD, 'mus', { n: 'build' }); ev(T.flips - .5, 'mus
 ev(.05, 'boom'); ev(T.heels0, 'hit'); ev(T.upside, 'slowmo'); ev(T.sB - .1, 'swoosh');
 ev(T.sB + .25, 'hit'); ev(T.vs, 'pop'); ev(T.friendly, 'pop'); ev(T.wrong, 'tick'); ev(T.wrong + .05, 'pop');
 ev(T.sC - .1, 'swoosh'); ev(T.sC + .2, 'pop'); ev(T.loco, 'hit'); ev(T.loco + .1, 'cheer', { d: 1 }); ev(T.madman, 'pop');
-ev(T.sD - .1, 'swoosh'); ev(T.lobK, 'kickSoft'); ev(T.lobK + .3, 'pop'); ev(T.sD + 2.6, 'swoosh'); ev(T.notHig, 'hit');
+ev(T.sD - .1, 'swoosh'); ev(T.lobK, 'kickSoft'); ev(T.lobK + .3, 'pop'); ev(T.sD + 2.9, 'swoosh'); ev(T.notHig, 'hit');
 ev(T.sE - .1, 'swoosh'); ev(T.flips - .4, 'whoosh'); ev(T.flips, 'slowmo'); ev(T.heel, 'kick'); ev(T.heel, 'drop'); ev(T.heel + .05, 'roar', { d: 4 });
 ev(T.sF - .1, 'swoosh'); ev(T.sF + .2, 'hit'); ev(T.sF + .7, 'pop');
 ev(T.sG - .1, 'swoosh'); ev(T.flag - .3, 'whistle'); ev(T.flag, 'hit'); ev(T.noNeed, 'pop');
@@ -652,10 +658,10 @@ function frame(t) {
   brand();
   captions(t);
 }
-window.render = t => frame(t);
+window.render = THUMB ? (() => frame(+THUMB)) : (t => frame(t));
 window.EV = EV.sort((a, b) => a.t - b.t);
 window.TEXTS = t => { frame(t); return TEXTS.map(b => ({ ...b, x0: Math.max(0, b.x0), y0: Math.max(0, b.y0), x1: Math.min(W, b.x1), y1: Math.min(H, b.y1) })); };
 window.CAPS = CAPS;
-frame(0);
+frame(THUMB ? +THUMB : 0);
 window.READY = true;
 </script></body></html>

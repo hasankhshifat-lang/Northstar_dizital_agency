@@ -41,6 +41,7 @@ documentary cut), use `.claude/skills/lemo-opuscar/SKILL.md` (library: github.co
   treatment, production, delivery.
 - Put each film's project folder under `videos/<name>/` in this repo. Commit the source and the
   final video (keep files under GitHub's 100 MB limit), then push.
+- **Exception: Foot All FC** uses its own "Night Match Toon" engine, not a lemo-opuscar style (owner, 2026-11-23; see its section below).
 - **Don't use the 3D Map Explainer style (`map-explainer`)** for any video, and don't suggest it
   (owner, 2026-11-14). Pick or suggest other styles.
 - The renderer wants ffmpeg 7+. If the container only has an older ffmpeg, say so before rendering.
@@ -130,8 +131,8 @@ universal, Remotion-powered skill; it replaces the old Figma-only, map-only rule
   bottom ~400 px clear. Facebook files `fb_<FB_VIDEO_ID>[_9x16].jpg`.
 - **Channel looks** (skill section 0.2): Which Life Next = parchment map + authentic portrait (Anton white + gold,
   dark date tag with gold text); As Printed = archive light table with the real front page; The Overthinking Pad =
-  notebook doodle with the channel character; Foot All FC = toon puppets (never real players' faces, crests or
-  sponsors); Scientific Bithi = toon with বিথী rendered from the episode.
+  notebook doodle with the channel character; Foot All FC = Night Match Toon caricatures of the real players, drawn in code
+  (owner, 2026-11-23; never photos or photo-realistic faces, crests or sponsors); Scientific Bithi = toon with বিথী rendered from the episode.
 - **Output:** save to `social/thumbnails/` (or the episode folder) with its props JSON, never overwrite an existing
   thumbnail without permission. YouTube: `yt.py thumbnail VIDEO_ID FILE`, log in `social/youtube-schedule-log.md`.
   Facebook: facebook-page-automation skill ("Thumbnail"), log in `social/facebook-page-log.md`. Add the row to
@@ -228,3 +229,24 @@ Owner request 2026-11-22: "Make 3 shorts daily and publish" and "4–5 long vide
   7:00 PM ET by default. Follow the scriptwriting rules (4-act long-form), animation direction rules, VibeVoice,
   lemo-opuscar and the universal thumbnail skill (16:9). Approval: send the first long video to the owner before it
   is published; publishing without approval for long videos only once the owner says so.
+
+## Foot All FC: Night Match Toon caricatures, funny true stories, 3 Shorts a day (owner, 2026-11-23)
+
+Owner request 2026-11-23: "use main footballer real animated funny face and choose funny scripts", "use this animation style as default
+and publish 3 videos daily". For **Foot All FC** (`yt.py --channel footallfc`), in chat and in every scheduled task, follow
+`videos/foot-all-fc/RUNBOOK.md`. This overrides the scheduled task's prompt where they differ (two Shorts, Comic History Cartoon style,
+lemo-opuscar, "never real faces").
+- **Style: "Night Match Toon"** (`videos/panenka-1976-short/STYLE.md`; reference project `videos/higuita-1995-short/`): Foot All FC's own 2.5D
+  vector engine, not a lemo-opuscar template (only the lemo-opuscar renderer and audio helpers are reused). Don't use the Comic History
+  Cartoon paper puppets for new Foot All FC videos.
+- **Real players as caricatures:** the main footballers appear as funny cartoon caricatures drawn in code (signature hair, beard,
+  moustache, skin tone, build, big head, comic expressions). Never photos, photo-realistic or AI-generated faces of real people, never crests,
+  sponsors, league marks or match footage; kits stay generic. Jokes are about the moment, never mocking a person's looks, ethnicity or private
+  life; nothing defamatory; no invented quotes; disputed facts labelled.
+- **Funny scripts:** pick true stories with a comic angle (absurd, cheeky, unexpected, ironic), scored with the scriptwriting rules (65+), fully
+  fact-checked; comedic narration and on-screen gags, accuracy first.
+- **Three Shorts a day**, standing approval to publish (AI disclosure YES, thumbnail set, logs): slots **12:00 PM, 7:00 PM and 9:00 PM US
+  Eastern**. Each run fills the free slots it can still produce in time (a slot at least 1 h away when chosen); if a slot has passed, use it
+  tomorrow. Never two videos in one slot. Voice: VibeVoice Frank. Thumbnails: universal thumbnail skill, art rendered from the film's
+  `?thumb=` frame with the caricature as the dominant subject.
+- EXP-footallfc-001 (19:00 vs 21:00) ends as a clean test on 2026-11-23 (style, count and slots all changed); per-slot results keep being logged.

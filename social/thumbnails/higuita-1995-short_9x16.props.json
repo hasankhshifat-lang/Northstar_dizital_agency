@@ -1,0 +1,8 @@
+{
+ "width": 1080, "height": 1920, "style": "toon",
+ "background": {"src": "higuita-1995-art.jpg", "grade": "none", "darken": 0, "side": "none"},
+ "layers": [],
+ "headline": {"lines": ["CATCH IT?", "NAH."], "accent": ["NAH."], "align": "center", "x": 0, "y": 120, "size": 160, "panel": true},
+ "tags": [{"text": "WEMBLEY · 1995", "x": 360, "y": 1380, "variant": "label", "size": 40}],
+ "guides": false
+}

@@ -24,3 +24,7 @@ Mirror each card as a row in `social/learning/<channel>.md` → Experiments.
 
 ### 2026-11-23 daily checkpoints (YouTube Analytics API via growth.py, data to 11-18…11-20)
 - **EXP-footallfc-001 interim (status: running, the log said "planned"; slots alternate since day 1):** 72 h views, 19:00 ET slot: krePEx98iNA 171 · Tw7hVywh-88 196 · tNIQekn0giI 141 (median 171); 21:00 ET slot: hVYufhSqQwE 747 · bA8U2Sb4o20 91 · BrktyLaF4SI 70 (median 91). Engaged/views 19:00: 0.322 / 0.418 / 0.355; 21:00: 0.534 / 0.385 / 0.229. Day 1 at 7 d: j_ApWmdOq7A (19:00) 385 vs Ee8NbFAdEfg (21:00) 60. 21:00 trails on the median but has the single best Short (hVYufhSqQwE): mixed. n=3 per slot at 72 h, card needs ≥5 per slot: no decision. The day-5/6 pairs (22–23 Nov) complete the sample.
+- **EXP-footallfc-001 closed as a clean test (2026-11-23, owner change):** from 24 Nov the channel moves to three Shorts a day (12:00 / 19:00 / 21:00 ET),
+  a new animation style (Night Match Toon caricatures) and funny scripts, so slot, style and count change together. Final pairs in the old style: 22 Nov
+  (H_TO2a6Sc1Y 19:00 / B5Y7KOCnJ7A 21:00) and 23 Nov (UpEfNjwpGAw 19:00 / Ouix6g_BXJc 21:00): fill their 72 h / 7 d views here for the record,
+  no decision from them. Per-slot results keep being logged in `publishing/publish-time-log.md`. Next experiments start once the new format has ≥ 9 videos.

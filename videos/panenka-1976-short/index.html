@@ -16,6 +16,8 @@ const X = cv.getContext('2d');
 const FONT = { head: "'Lilita One', sans-serif", body: "'Inter XB', sans-serif" };
 await document.fonts.load(`80px ${FONT.head}`); await document.fonts.load(`80px ${FONT.body}`);
 const WORDS = (await (await fetch('vo/words.json')).json()).words;
+let NOW = 0;
+const THUMB = new URLSearchParams(location.search).get('thumb');   // ?thumb=SECONDS: a clean frame for the thumbnail art
 
 // ---------------------------------------------------------------- palette
 const C = {
@@ -41,7 +43,7 @@ const KIT = {
 window.DUR = 53.2;
 const T = {
   sB: 4.3, fin: 8.1, teams: 10.0, sC: 12.3, sD: 17.85, g7: 20.55, sE: 20.6, miss: 22.6, sF: 24.9, champ: 26.9, sG: 29.8,
-  sH: 33.2, kick: 34.8, dive: 34.7, net: 38.4, cele: 38.9, sI: 40.3, k1: 40.4, k2: 42.2, k3: 44.0, sJ: 46.1, name: 48.5, sK: 50.3, end: 53.2,
+  sH: 33.2, kick: 34.8, dive: 34.7, net: 38.4, cele: 38.9, sI: 40.7, k1: 40.4, k2: 42.2, k3: 44.0, sJ: 46.1, name: 48.5, sK: 50.3, end: 53.2,
 };
 const CAPS = [   // display lines; each word is lit by the voice's own timing
   [0.0, 'The most important penalty of his life…'], [2.2, '…and he chipped it down the middle.'],
@@ -328,8 +330,9 @@ function ball(wx, wy, wz, spin = 0, trail = null) {
 // ---------------------------------------------------------------- graphics: kinetic text, scorebug, tracker, captions
 const TEXTS = [];
 function popText(t, t0, t1, text, x, y, size, o = {}) {
+  if (THUMB) return;
   if (t < t0 || t > t1) return;
-  const kin = clamp((t - t0) / .28, 0, 1), kout = clamp((t1 - t) / .2, 0, 1);
+  const kin = clamp((t - t0) / .2, 0, 1), kout = clamp((t1 - t) / .12, 0, 1);
   const s = back(kin, 2.2) * (o.noOut ? 1 : lerp(.85, 1, kout)), a = Math.min(kin * 3, 1) * (o.noOut ? 1 : kout);
   X.save(); X.translate(x, y); X.rotate((o.rot || 0) * Math.PI / 180); X.scale(s, s); X.globalAlpha = a;
   X.font = `${size}px ${o.font || FONT.head}`; X.textAlign = 'center'; X.textBaseline = 'middle';
@@ -344,8 +347,9 @@ function popText(t, t0, t1, text, x, y, size, o = {}) {
   if (a > .6) TEXTS.push({ pass: !!o.pass, id: o.id || text, text: text.replace(/\n/g, ' '), x0: x - wmax / 2 - 30, y0: y - lines.length * lh / 2 - 15, x1: x + wmax / 2 + 30, y1: y + lines.length * lh / 2 + 15 });
 }
 function nameTag(t, t0, t1, name, sub, x, y, col) {
+  if (THUMB) return;
   if (t < t0 || t > t1) return;
-  const k = eo(clamp((t - t0) / .35, 0, 1)) * clamp((t1 - t) / .25, 0, 1);
+  const k = eo(clamp((t - t0) / .22, 0, 1)) * clamp((t1 - t) / .15, 0, 1);
   X.save(); X.globalAlpha = k; X.translate(x - (1 - k) * 60, y);
   X.font = `56px ${FONT.head}`; const w1 = X.measureText(name).width; X.font = `30px ${FONT.body}`; const w2 = X.measureText(sub).width; const w = Math.max(w1, w2) + 60;
   X.fillStyle = col; X.beginPath(); X.roundRect(0, -6, 14, 116, 6); X.fill();
@@ -359,7 +363,7 @@ function nameTag(t, t0, t1, name, sub, x, y, col) {
 const SHOOT = [['cze', 1], ['frg', 1], ['cze', 1], ['frg', 1], ['cze', 1], ['frg', 1], ['cze', 1], ['frg', 0], ['cze', 1]];
 let KICKS_DONE = 0;
 function scorebug(t, show) {
-  if (!show) return;
+  if (!show || THUMB) return;
   const k = eo(clamp((t - T.sC) / .4, 0, 1));
   X.save(); X.translate(W / 2, 120 - (1 - k) * 200);
   X.fillStyle = 'rgba(10,14,36,.9)'; X.beginPath(); X.roundRect(-330, -50, 660, 100, 50); X.fill();
@@ -392,6 +396,7 @@ function scorebug(t, show) {
   TEXTS.push({ id: 'bug', text: 'CZE 2–2 FRG AET', x0: W / 2 - 330, y0: 70, x1: W / 2 + 330, y1: 170, pass: true });
 }
 function captions(t) {
+  if (THUMB) return;
   let li = -1; for (let i = 0; i < CAPS.length; i++) if (t >= CAPS[i][0]) li = i;
   if (li < 0) return; const t0 = CAPS[li][0], t1 = li + 1 < CAPS.length ? CAPS[li + 1][0] : DUR;
   if (t > t1 - .05) return;
@@ -426,15 +431,16 @@ function vignette(strength = .55) {
   const b = X.createLinearGradient(0, 1180, 0, H); b.addColorStop(0, 'rgba(7,10,28,0)'); b.addColorStop(.35, 'rgba(7,10,28,.78)'); b.addColorStop(1, 'rgba(7,10,28,.95)');
   X.fillStyle = b; X.fillRect(0, 1180, W, H - 1180);
 }
-function flashFrame(t, t0, d = .18) { const k = (t - t0) / d; if (k < 0 || k > 1) return; X.fillStyle = `rgba(255,255,255,${(1 - k) * .85})`; X.fillRect(0, 0, W, H); }
+function flashFrame(t, t0, d = .18) { if (THUMB) return; const k = (t - t0) / d; if (k < 0 || k > 1) return; X.fillStyle = `rgba(255,255,255,${(1 - k) * .85})`; X.fillRect(0, 0, W, H); }
 function speedRays(t, t0, d, cx, cy, col = 'rgba(255,255,255,.5)') {
+  if (THUMB) return;
   const k = (t - t0) / d; if (k < 0 || k > 1) return; const R = mulberry(Math.round(t0 * 100));
   X.save(); X.globalAlpha = Math.sin(k * Math.PI); X.strokeStyle = col; X.lineWidth = 6;
   for (let i = 0; i < 40; i++) { const a = R() * 6.283, r0 = 380 + R() * 200, r1 = r0 + 300 + R() * 500; X.beginPath(); X.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); X.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); X.stroke(); }
   X.restore();
 }
-function slowmoBars(on) { if (!on) return; X.fillStyle = 'rgba(0,0,0,.6)'; X.fillRect(0, 0, W, 40); X.fillRect(0, 1140, W, 40); }
-function brand() { X.save(); X.font = `34px ${FONT.head}`; X.textAlign = 'left'; X.textBaseline = 'top'; X.fillStyle = 'rgba(255,255,255,.85)'; X.fillText('FOOT ALL FC', 44, 40); X.restore(); }
+function slowmoBars(on) { if (THUMB) return; if (!on) return; X.fillStyle = 'rgba(0,0,0,.6)'; X.fillRect(0, 0, W, 40); X.fillRect(0, 1140, W, 40); }
+function brand() { if (THUMB) return; X.save(); X.font = `34px ${FONT.head}`; X.textAlign = 'left'; X.textBaseline = 'top'; X.fillStyle = 'rgba(255,255,255,.85)'; X.fillText('FOOT ALL FC', 44, 40); X.restore(); }
 
 // ---------------------------------------------------------------- the chip: one simulation shared by the hook, the kick and the end
 // u: seconds since Panenka starts his run (run 1.4 s, contact at 1.4 s); the flight is slow and soft (1.1 s real)
@@ -474,7 +480,7 @@ function sceneHook(t) {   // the chip in slow motion, frozen with the keeper in 
   const s = chipScene(t, u);
   slowmoBars(true);
   if (u >= 2.02) { const b = P(s.bx, s.by + .11, s.bz); X.save(); X.strokeStyle = C.yel; X.lineWidth = 8; X.setLineDash([22, 14]); X.beginPath(); X.arc(b.x, b.y, 70, 0, 7); X.stroke(); X.restore(); }
-  popText(t, 1.85, T.sB, 'DOWN THE\nMIDDLE?!', W / 2, 420, 130, { color: C.yel, rot: -4, id: 'hook' });
+  popText(t, 1.55, T.sB, 'DOWN THE\nMIDDLE?!', W / 2, 420, 130, { color: C.yel, rot: -4, id: 'hook' });
 }
 function sceneCity(t) {   // crane down from the night sky into the stadium; place and teams
   const lt = t - T.sB;
@@ -485,7 +491,7 @@ function sceneCity(t) {   // crane down from the night sky into the stadium; pla
   popText(t, T.fin, T.sC - .1, 'EURO FINAL', W / 2, 680, 70, { box: '#2B4DB3', id: 'final' });
   if (t > T.teams - .5) {
     nameTag(t, T.teams - .5, T.sC - .1, 'CZECHOSLOVAKIA', '', 80, 820, C.cze);
-    nameTag(t, T.teams - .2, T.sC - .1, 'WEST GERMANY', '', 80, 960, C.frg);
+    nameTag(t, T.teams - .4, T.sC - .1, 'WEST GERMANY', '', 80, 960, C.frg);
   }
 }
 const LINEUP = [[-4.2, 'cze'], [-3, 'cze'], [-1.8, 'cze'], [-.6, 'cze'], [.6, 'frg'], [1.8, 'frg2'], [3, 'frg'], [4.2, 'frg2']];
@@ -493,10 +499,10 @@ function sceneShootout(t) {   // 2-2 aet; the players lined up at the halfway li
   CAM = camTrack([[T.sC, { x: 0, y: 2.2, z: 70, yaw: 0, pitch: .02, f: 1500 }], [T.sD, { x: 0, y: 1.9, z: 66, yaw: 0, pitch: .015, f: 1600 }]], t);
   sky(t); pitch(t);
   LINEUP.forEach(([x, k], i) => wplayer(x, 54, { kit: KIT[k], view: 'front', pose: POSE.armsIn, look: [Math.sin(t + i) * .3, -.3], expr: 'focus', bob: Math.sin(t * 2 + i) * 1.5 }));
-  popText(t, T.sC + .1, T.sC + 2.15, '2–2', W / 2, 520, 220, { color: C.yel, id: '22' });
-  popText(t, T.sC + .2, T.sC + 2.15, 'AFTER EXTRA TIME', W / 2, 680, 60, { font: FONT.body, id: 'aet' });
-  popText(t, T.sC + 2.25, T.sD - .1, 'PENALTIES', W / 2, 520, 150, { color: C.white, rot: -3, id: 'pens' });
-  popText(t, T.sC + 2.45, T.sD - .1, 'FIRST EVER IN A EURO FINAL', W / 2, 660, 50, { box: C.cze, font: FONT.body, id: 'first' });
+  popText(t, T.sC + .1, T.sC + 2.6, '2–2', W / 2, 520, 220, { color: C.yel, id: '22' });
+  popText(t, T.sC + .1, T.sC + 2.6, 'AFTER EXTRA TIME', W / 2, 680, 60, { font: FONT.body, id: 'aet' });
+  popText(t, T.sC + 2.65, T.sD - .1, 'PENALTIES', W / 2, 520, 150, { color: C.white, rot: -3, id: 'pens' });
+  popText(t, T.sC + 2.65, T.sD - .1, 'A EURO FINAL FIRST', W / 2, 660, 50, { box: C.cze, font: FONT.body, id: 'first' });
 }
 const SEVEN = [[1.9, .8], [-2.1, 1.2], [2.3, .4], [-1.6, .5], [1.2, 1.6], [-2.6, .9], [2.0, 1.1]];
 function sceneSeven(t) {   // rapid cuts: seven kicks, seven goals; the tracker fills
@@ -524,8 +530,8 @@ function sceneMiss(t) {   // Hoeness: over the bar, the camera tilts up after th
   if (fk > 0) { const bz = lerp(SPOT, -14, fk), by = lerp(0, 9, fk) + Math.sin(fk * Math.PI) * 2.4; const tr = []; for (let i = 6; i >= 1; i--) { const f2 = clamp(fk - i * .03, 0, 1); tr.push([lerp(0, .9, f2), lerp(0, 9, f2) + Math.sin(f2 * Math.PI) * 2.4, lerp(SPOT, -14, f2)]); } ball(lerp(0, .9, fk), by, bz, fk * 20, tr); }
   else ball(0, 0, SPOT);
   wplayer(lerp(-1.4, -.4, run), lerp(14.6, SPOT + .5, run), { kit: KIT.frg, view: 'back', pose: t < tk - .2 ? runCycle(t, 2.6) : t < tk + .8 ? POSE.kick : POSE.hands });
-  nameTag(t, T.sE + .15, tk + .85, 'ULI HOENESS', 'WEST GERMANY', 60, 1010, C.frg);
-  popText(t, tk + .7, T.sF - .1, 'OVER THE BAR!', W / 2, 520, 120, { color: C.red, rot: 3, id: 'miss' });
+  nameTag(t, T.sE, tk + .95, 'ULI HOENESS', '', 60, 1010, C.frg);
+  popText(t, tk + .45, T.sF - .05, 'OVER THE BAR!', W / 2, 520, 120, { color: C.red, rot: 3, id: 'miss' });
 }
 function sceneStep(t) {   // Panenka places the ball (hand on it), stands, looks up at the goal: hero low angle from the goal side
   CAM = camTrack([[T.sF, { x: .15, y: .7, z: 5.6, yaw: Math.PI, pitch: -.03, f: 1500 }], [T.sG, { x: .1, y: .6, z: 6.6, yaw: Math.PI, pitch: -.05, f: 1650 }]], t);
@@ -548,7 +554,7 @@ function sceneKeeper(t) {   // over Panenka's shoulder: Maier on his line, bounc
   wplayer(0, .25, { kit: KIT.maier, view: 'front', pose: mixP(POSE.ready, POSE.wide, b), lift: b * .08, look: [.3, .4], expr: 'focus' });
   ball(0, 0, SPOT);
   wplayer(-.85, SPOT + 1.5, { kit: KIT.pan, view: 'back', pose: POSE.idle, bob: Math.sin(t * 2) * 1 });
-  nameTag(t, T.sG + .15, T.sH - .05, 'SEPP MAIER', 'WORLD CUP WINNER 1974', 60, 1010, C.frg);
+  nameTag(t, T.sG, T.sH - .05, 'SEPP MAIER', 'WORLD CUP WINNER', 60, 1010, C.frg);
 }
 function sceneKick(t) {   // the kick: run-up, Maier dives left, the chip floats into the middle in slow motion
   const u0 = T.kick - 1.4, u = t - u0;
@@ -559,6 +565,7 @@ function sceneKick(t) {   // the kick: run-up, Maier dives left, the chip floats
   if (t < T.cele) {
     const s = chipScene(t, u < 1.4 ? u : 1.4 + (t - T.kick) * (1.1 / flight), { flight: 1.1 });
     slowmoBars(t > T.kick && t < T.net);
+    popText(t, T.net - .1, T.sI - .1, 'CHAMPIONS!', W / 2, 480, 150, { color: C.yel, rot: -4, id: 'won' });
     flashFrame(t, T.net, .25);
     speedRays(t, T.net, .5, W / 2, 600);
   } else {   // celebration: Panenka turns, arms up; team-mates run in; confetti
@@ -569,7 +576,7 @@ function sceneKick(t) {   // the kick: run-up, Maier dives left, the chip floats
     wplayer(2.8 - lt * 1.3, 14.5 + lt * .3, { kit: KIT.cze, view: 'front', pose: runCycle(t + .3, 3), expr: 'happy', look: [-.8, 0] });
     wplayer(0, 12.2, { kit: KIT.pan, view: 'front', pose: Math.sin(t * 7) > 0 ? POSE.cheer : POSE.cheerB, expr: 'happy', lift: Math.abs(Math.sin(t * 7)) * .12 });
     confetti(t, T.cele);
-    popText(t, T.net + .05, T.sI - .1, 'CHAMPIONS!', W / 2, 480, 150, { color: C.yel, rot: -4, id: 'won' });
+    popText(t, T.net - .1, T.sI - .1, 'CHAMPIONS!', W / 2, 480, 150, { color: C.yel, rot: -4, id: 'won' });
   }
 }
 function confetti(t, t0) {
@@ -624,7 +631,7 @@ function sceneName(t) {   // the name: the arc of the chip draws itself under th
   X.save(); X.strokeStyle = C.yel; X.lineWidth = 9; X.setLineDash([24, 16]); X.lineCap = 'round'; X.shadowColor = C.yel; X.shadowBlur = 18;
   X.beginPath(); pts.forEach((p, i) => i ? X.lineTo(p.x, p.y) : X.moveTo(p.x, p.y)); X.stroke(); X.restore();
   if (pts.length) { const p = pts[pts.length - 1]; const s = chipState(1.4 + k * 1.1); ball(s.bx, s.by, s.bz, t * 3); }
-  popText(t, T.name - .5, T.sK - .1, 'THE PANENKA', W / 2, 430, 140, { color: C.yel, id: 'name' });
+  popText(t, T.name - .7, T.sK - .1, 'THE PANENKA', W / 2, 430, 140, { color: C.yel, id: 'name' });
 }
 function sceneQuestion(t) {   // would you dare? the hook frame again, two buttons
   CAM = { ...CAM_BEHIND, z: 15.8, f: 1800 };
@@ -639,7 +646,7 @@ const SCENES = [[0, sceneHook], [T.sB, sceneCity], [T.sC, sceneShootout], [T.sD,
 // ---------------------------------------------------------------- sound cues
 ev(.05, 'boom'); ev(.7 + 0, 'kickSoft'); ev(2.3, 'hit'); ev(T.sB - .1, 'swoosh');
 ev(T.sB + .3, 'hit'); ev(T.fin, 'pop'); ev(T.teams, 'pop'); ev(T.teams + .8, 'pop');
-ev(T.sC - .1, 'swoosh'); ev(T.sC + .2, 'hit'); ev(T.sC + 2.3, 'whistle'); ev(T.sC + 2.8, 'pop');
+ev(T.sC - .1, 'swoosh'); ev(T.sC + .2, 'hit'); ev(T.sC + 2.65, 'whistle'); ev(T.sC + 2.75, 'pop');
 { const per = (T.g7 - T.sD) / 7; for (let i = 0; i < 7; i++) { ev(T.sD + i * per + .2 * per + .02, 'kick'); ev(T.sD + i * per + .65 * per, 'net'); ev(T.sD + i * per + .65 * per, 'tick'); ev(T.sD + i * per + .66 * per, 'cheer', { d: .6 }); } }
 ev(T.sE - .1, 'swoosh'); ev(T.miss - .5, 'kick'); ev(T.miss - .4, 'whoosh'); ev(T.miss + .2, 'groan'); ev(T.miss + .3, 'tick');
 ev(T.sF - .1, 'swoosh'); ev(T.sF + .8, 'thud'); ev(T.champ, 'hit');
@@ -664,10 +671,10 @@ function frame(t) {
   brand();
   captions(t);
 }
-window.render = t => frame(t);
+window.render = THUMB ? (() => frame(+THUMB)) : (t => frame(t));
 window.EV = EV.sort((a, b) => a.t - b.t);
 window.TEXTS = t => { frame(t); return TEXTS.map(b => ({ ...b, x0: Math.max(0, b.x0), y0: Math.max(0, b.y0), x1: Math.min(W, b.x1), y1: Math.min(H, b.y1) })); };
 window.CAPS = CAPS;
-frame(0);
+frame(THUMB ? +THUMB : 0);
 window.READY = true;
 </script></body></html>
