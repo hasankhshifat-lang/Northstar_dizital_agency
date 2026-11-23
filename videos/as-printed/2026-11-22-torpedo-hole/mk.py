@@ -62,7 +62,7 @@ long = [
  dict(type="read", item="wilm", boxes=B['wi_boil'],
   say="The explosion occurred about ten o'clock last night. It is supposed that it was caused by the bursting of the boilers."),
  # the captain (picture), then his own words
- dict(type="photo", item="sigsbee", focus=[3190, 3360], nf=0.5, zoom=1.05, drift=[0, -0.3], labels=[dict(at=[3190, 4900], text="Capt. Charles D. Sigsbee", sub="commander of the Maine · print, 1898")],
+ dict(type="photo", item="sigsbee", focus=[3190, 3360], nf=0.5, zoom=1.05, drift=[0, -0.3], labels=[dict(at=[3360, 6900], text="Capt. Charles D. Sigsbee", sub="commander of the Maine · print, 1898")],
   say="The first guess was an accident. The man in command was Captain Charles D. Sigsbee. He survived. That night, he telegraphed the Secretary of the Navy."),
  dict(type="read", item="wilm", boxes=B['wi_tel'],
   say="The telegram said: Maine blown up in Havana harbor, at nine forty, and destroyed. Many wounded, and doubtless more killed and drowned."),
@@ -99,7 +99,7 @@ long = [
  dict(type="table", item="ejournal", zoom=1.5, boxes=B['ej_divline'],
   say="The court of inquiry had only just been named. And on the very page that announced the hole, the Navy's divers had not yet gone down."),
  # when the divers really arrived (picture)
- dict(type="photo", item="divers1", focus=[983, 1556], nf=0.5, drift=[0.3, 0], labels=[dict(at=[1000, 1250], text="\"First day of the divers\"", sub="stereograph, Griffith & Griffith, 1898")],
+ dict(type="photo", item="divers1", focus=[983, 1556], nf=0.5, drift=[0.3, 0], labels=[dict(at=[1000, 900], text="\"First day of the divers\"", sub="stereograph, Griffith & Griffith, 1898")],
   say="According to the Navy's own history, its divers from the North Atlantic Squadron reached Havana on February nineteenth. Two days after the torpedo hole was in print. This stereo card was sold as: Wreck of the Maine. First day of the divers."),
  dict(type="read", item="ejournal", boxes=B['ej_supp'],
   say="The Journal had another headline on that page. Dispatch from Sigsbee suppressed. A dispatch was received by the Navy Department from Captain Sigsbee early this morning, which is still suppressed."),
