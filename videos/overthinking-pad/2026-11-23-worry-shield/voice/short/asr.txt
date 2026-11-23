@@ -1,0 +1,7 @@
+OK   s1 | You spent the whole night worrying about it. And then... nothing happened. → You spent the whole night worrying about it and then nothing happened. 
+OK   s2 | Psychologists at Penn State had people who worry constantly write down their worries, four times a day, for ten days. Then, for a month, they checked. Did they come true? → Psychologists at Penn State had people who worry constantly write down their worries four times a day for 10 days. Then for a month they checked. Did they come true? 
+DIFF s3 | About ninety-one percent... never happened. For seven of them... not one single worry came true. → About 91% never happened. For seven of them, not one single worry came true. 
+OK   s4 | So why does worry still feel so useful? Because when the bad thing doesn't happen, you feel relief. That relief feels like proof. And your brain gives the credit to the worry. Like a rain dance, in a place where it rains anyway. → So, why does worry still feel so useful? Because when the bad thing doesn't happen, you feel relief. That relief feels like proof, and your brain gives the credit to the worry. Like a rain dance in a place where it rains anyway. 
+OK   s5 | Try this. Write the worry down as a prediction, with a date. Then check it. → Try this, write the worry down as a prediction, with a date, then check it. 
+OK   s6 | So... what did you worry about last month that never happened? → So, what did you worry about last month that never happened? 
+mismatches: 1 (lang=en, model=small.en)

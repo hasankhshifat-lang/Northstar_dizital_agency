@@ -8,7 +8,7 @@ FACTS.md. Mark used topics `done YYYY-MM-DD (VIDEO_ID)`. Add new finds at the bo
 | 1 | Nobody Noticed Your Shirt: The Spotlight Effect | Gilovich, Medvec & Savitsky 2000 (embarrassing T-shirt study) | Strong universal hook; replicated | done 2026-11-16 (VSaFr4doR0M, Short 8GYwZB1soxo) |
 | 2 | Why You Replay Embarrassing Moments at 2 A.M. | Rumination research (Nolen-Hoeksema); autobiographical memory and emotion | Practical close: distanced self-talk (Kross) | done 2026-11-17 (b9ReSvwwjNw, Short q4cK6ZazDEo) |
 | 3 | They Can't Tell You're Nervous: The Illusion of Transparency | Gilovich, Savitsky & Medvec 1998; Savitsky & Gilovich 2003 (public speaking) | Pairs with #1, don't run back to back | open |
-| 4 | Why Worrying Feels Like Doing Something | Borkovec's worry research; contrast avoidance model (Newman & Llera 2011) | Mental-health line in description | open |
+| 4 | Why Worrying Feels Like Doing Something | Borkovec's worry research; contrast avoidance model (Newman & Llera 2011) | Mental-health line in description | done 2026-11-23 (BbM54vNDsH8, Short lMU813FS0FE) |
 | 5 | More Choices, Worse Decisions? | Iyengar & Lepper 2000 jam study + Scheibehenne et al. 2010 meta-analysis (mixed) | Honest "it's complicated" turn | open |
 | 6 | Your Brain Weighs Bad News Heavier | Baumeister et al. 2001 "Bad is stronger than good"; Rozin & Royzman 2001 | | open |
 | 7 | Why You Feel Like a Fraud | Clance & Imes 1978; Bravata et al. 2020 review | Not a diagnosis; label it a feeling/pattern | open |

@@ -17,5 +17,5 @@ Mirror each card as a row in `social/learning/<channel>.md` → Experiments.
 - **Expected outcome:** engaged ÷ views higher by ≥5 pts at 72 h.
 - **Metric + checkpoint:** engagedViews ÷ views and avg % viewed at 72 h and 7 d (`growth.py snapshot`).
 - **Sample:** ≥3 Shorts per arm (alternate episodes), so about 3 weeks.
-- **Status:** planned (start after 3 control Shorts have 72 h data). Controls: 8GYwZB1soxo (11-16), q4cK6ZazDEo (11-17), HpMzRZJs5So (11-22, 3 of 3). 72 h data so far: 8GYwZB1soxo engaged/views 377/638 = 59%, avg viewed 59.4%.
+- **Status:** planned (start after 3 control Shorts have 72 h data). Controls: 8GYwZB1soxo (11-16), q4cK6ZazDEo (11-17), HpMzRZJs5So (11-22, 3 of 3). 72 h data so far: 8GYwZB1soxo engaged/views 377/638 = 59%, avg viewed 59.4%; q4cK6ZazDEo 131/281 = 47%, avg viewed 49.6% (Analytics to 11-22). **Treatment started 2026-11-23:** lMU813FS0FE ("You spent the whole night worrying about it. And then... nothing happened."), 1 of 3; its 72 h checkpoint (11-27) comes after HpMzRZJs5So's (11-26), so no control data is affected.
 - **Result:** — **Decision:** —
