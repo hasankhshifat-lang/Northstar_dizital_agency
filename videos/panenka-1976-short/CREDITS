@@ -1,0 +1,8 @@
+"The First Panenka" - Czechoslovakia 2-2 West Germany (Czechoslovakia won 5-3 on penalties), Euro 1976 final, Belgrade, 20 June 1976:
+an animated fan retelling for the Foot All FC channel, in the channel's own "Night Match Toon" style (see STYLE.md).
+Unofficial: not made or endorsed by UEFA, the Czech or German football associations or any broadcaster. No crests, competition marks,
+broadcast footage or real likenesses are used; all characters are original vector cartoons drawn in code, kits are generic colours.
+Narration: Microsoft VibeVoice-Realtime-0.5B, voice "Frank" (MIT licence), AI-generated voice.
+Music and sound: original, synthesized in mix.py (no samples).
+Fonts: Lilita One (Juan Montoreano, SIL Open Font License), Inter ExtraBold (Rasmus Andersson, SIL Open Font License).
+Renderer: lemo-opuscar core/render (frame capture, mux, readcheck). Facts: social/scripts/panenka-1976-chip.md.

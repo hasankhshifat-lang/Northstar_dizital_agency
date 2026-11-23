@@ -34,6 +34,8 @@ _None yet. Add a line only with the videos/metrics that support it._
 
 _Newest first: date, best/weakest video, patterns, comment themes, decisions._
 
+- 2026-11-23 (style): owner asked to move away from the lemo-opuscar templates. New channel style **"Night Match Toon"** (2.5D vector, own code; `videos/panenka-1976-short/STYLE.md`) demoed on the Panenka 1976 Short (not uploaded; waiting for the owner's verdict). If adopted, compare its retention against the Comic History Shorts above (one variable: the style; keep slots and topic buckets comparable).
+
 - 2026-11-23 (daily-run snapshot, not a weekly review): Analytics API 15–23 Nov. Avg % viewed: krePEx98iNA 63.5%, tNIQekn0giI 57.9%, j_ApWmdOq7A 54.2%, hVYufhSqQwE 50.0% (down from 65.5% as views grew to 857), Ee8NbFAdEfg 45.6%, BrktyLaF4SI 44.3%, Tw7hVywh-88 42.7%, bA8U2Sb4o20 35.0%. The 22 Nov pair not in Analytics yet; Data API at ~10 UTC 23 Nov: H_TO2a6Sc1Y 105 views (~10 h), B5Y7KOCnJ7A 91 (~8 h). Still 0 comments on all Shorts. Today's pair tests a new bucket on 19:00 ("mechanism / how did that happen", like the corner Short) and a red-card controversy on 21:00 with a direct yes/no comment question. Too few videos for a conclusion.
 
 - 2026-11-22 (daily-run snapshot, not a weekly review): Analytics API 15–21 Nov. Highest avg % viewed: hVYufhSqQwE 65.5% (35 s of 53 s), krePEx98iNA 63.0%; lowest bA8U2Sb4o20 35.0%, Tw7hVywh-88 41.1%. Most views: j_ApWmdOq7A 630, hVYufhSqQwE 427 (870 total by 22 Nov). 0 comments on all 8 Shorts. No uploads 19–21 Nov (daily runs produced nothing those days); views on older Shorts nearly flat since ~19 Nov. Too few videos for a conclusion; EXP-footallfc-001 continues.
