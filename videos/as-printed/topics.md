@@ -15,7 +15,7 @@ Rights: pre-1929 US newspapers and photographs are public domain; anything later
 | 7 | San Francisco earthquake, April 1906 | Official toll of a few hundred | Later research: about 3,000 dead | Chronicling America Apr 1906; LoC panoramas and stereographs | open |
 | 8 | Custer, June–July 1876 | First reports of the Little Bighorn | The army count and later accounts | Chronicling America July 1876; LoC photographs | open |
 | 9 | The Cardiff Giant, 1869 | "A petrified giant" found in New York | A carved gypsum hoax (Hull's confession) | Chronicling America 1869–70; LoC images | open |
-| 10 | Charles Ponzi, 1920 | Papers praising the "wizard" of 50% returns | Federal charges, the collapse | Chronicling America July–Aug 1920; LoC photos of Ponzi (Bain) | open |
+| 10 | Charles Ponzi, 1920 | Papers praising the "wizard" of 50% returns | Federal charges, the collapse | Chronicling America July–Aug 1920; LoC photos of Ponzi (Bain) | done 2026-11-24 (publishes 24 Nov), 5luIUIdumTU (Short CSDLgSTq_vA): angle "$9,000,000 vs $30" (Tribune 31 Jul 1920 p. 1 vs p. 3); taken before #6 to avoid two disasters in a row |
 | 11 | The Eastland, July 1915 | Early tolls and blame | 844 dead; inquiry findings | Chronicling America July 1915; Chicago Daily News negatives (LoC) | open |
 | 12 | Lincoln's assassination, April 1865 | First telegraph reports | What the War Department record says | Chronicling America Apr 1865; LoC photographs | open |
 | 13 | Galveston, September 1900 | First reports of the storm's toll | 6,000–12,000 dead | Chronicling America Sept 1900; LoC photographs | open |

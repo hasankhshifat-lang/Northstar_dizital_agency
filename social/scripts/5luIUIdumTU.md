@@ -1,5 +1,7 @@
 # As Printed — The Coupon King (Charles Ponzi, 1920)
 
+Long: 5luIUIdumTU · Short: CSDLgSTq_vA (As Printed, scheduled 2026-11-24 19:00 / 20:00 ET).
+
 Episode folder: `videos/as-printed/2026-11-24-coupon-king/` (facts: FACTS.md, topic report: TOPIC.md, storyboard: mk.py / episode.json).
 
 ## Long video (16:9)
