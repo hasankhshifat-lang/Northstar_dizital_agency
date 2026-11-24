@@ -1,0 +1,8 @@
+OK   s1 | You just read okay, with a period... fourteen times. And every time, it sounded colder. → You just read okay with a period 14 times and every time it sounded colder. 
+DIFF s2 | Psychologists tested this. Students tried to get sarcastic or serious sentences across to a partner. Half of them used their voice. The other half typed. → Psychologists tested this. Students tried to get sarcastic or serious senses across to a partner. Half of them used their voice. The other half typed. 
+OK   s3 | The listeners got about three out of four right. The readers... no better than a coin flip. And the readers felt just as sure. → The listeners got about three out of four right, the readers no better than a coin flip, and the readers felt just as sure. 
+OK   s4 | In a bigger study, friends were no more accurate than strangers. Because text has no voice. So your brain supplies one. Usually... the one you're afraid of. → In a bigger study, friends were no more accurate than strangers, because text has no voice, so your brain supplies one, usually the one you're afraid of. 
+OK   s5 | So read it again in the warmest voice you can. Or just ask. Or call. → So read it again in the warmest voice you can or just ask or call. 
+DIFF s6 | That okay, with a period? It probably meant... okay. → That okay with the period? It probably meant okay. 
+OK   s7 | What's the shortest text that ever sent you spiraling? → What's the shortest text that ever sent you spiraling? 
+mismatches: 2 (lang=en, model=small.en)
