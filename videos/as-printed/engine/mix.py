@@ -147,7 +147,7 @@ for s in SH:
     add(voice, x.astype(np.float32), s['vt'], 1.0, 0)
 
 def rms(x): return float(np.sqrt(np.mean(x ** 2)) + 1e-12)
-vo = voice.mean(1); env = np.convolve(np.abs(vo) > .02, np.ones(int(.25 * SR)) / (.25 * SR), 'same'); env = np.clip(env * 3, 0, 1)
+vo = voice.mean(1); from scipy.signal import fftconvolve; env = fftconvolve((np.abs(vo) > .02).astype(np.float64), np.ones(int(.25 * SR)) / (.25 * SR), 'same')   # fft: direct np.convolve took hours on CPU; env = np.clip(env * 3, 0, 1)
 vr = rms(voice[np.abs(voice).max(1) > .01])
 music *= (vr / rms(music[np.abs(music).max(1) > .005])) * 10 ** (-12 / 20); music *= (1 - 0.45 * env)[:, None].astype(np.float32)
 foley *= (vr / max(rms(foley[np.abs(foley).max(1) > .01]), 1e-6)) * 10 ** (-10 / 20)
