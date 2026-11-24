@@ -1,0 +1,11 @@
+{
+ "width": 1080, "height": 1920, "style": "archive",
+ "background": {"color": "#dfe2e5", "side": "none"},
+ "layers": [
+  {"type": "cutout", "src": "ponzi_cut.png", "x": 170, "y": 520, "h": 960, "grade": "mono", "glow": "rgba(255,255,255,0.85)"},
+  {"type": "image", "src": "clip30c.jpg", "x": 40, "y": 1180, "w": 1000, "rotate": -1.5, "grade": "none", "aspect": 3.212},
+  {"type": "ring", "x": 410, "y": 1325, "rx": 190, "ry": 40, "rotate": -1.5, "width": 10}
+ ],
+ "headline": {"lines": ["Only $30", "of coupons?"], "accent": ["$30"], "x": 60, "y": 110, "size": 140, "panel": true},
+ "tags": [{"text": "NEW-YORK TRIBUNE · 31 JUL 1920", "x": 60, "y": 470, "variant": "date", "size": 32}]
+}

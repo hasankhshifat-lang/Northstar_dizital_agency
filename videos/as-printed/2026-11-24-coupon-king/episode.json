@@ -1,0 +1,1852 @@
+{
+ "slug": "coupon-king",
+ "title": "The Coupon King",
+ "indexTitle": "Charles Ponzi · 1920",
+ "seed": 24,
+ "items": [
+  {
+   "id": "trib31",
+   "kind": "paper",
+   "src": "raw/trib31.jpg",
+   "label": "NEW-YORK TRIBUNE · 31 JUL 1920",
+   "short": "New-York Tribune, 31 July",
+   "catalog": "LCCN sn83030214",
+   "row": "$9,000,000"
+  },
+  {
+   "id": "azrep",
+   "kind": "paper",
+   "src": "raw/azrep.jpg",
+   "label": "ARIZONA REPUBLICAN · 27 JUL 1920",
+   "short": "Arizona Republican",
+   "catalog": "LCCN sn84020558",
+   "row": "50% in 45 days"
+  },
+  {
+   "id": "ponzi",
+   "kind": "print",
+   "src": "raw/ponzi.tif",
+   "crop": [
+    160,
+    360,
+    4120,
+    5360
+   ],
+   "horizon": 5000,
+   "nomask": true,
+   "inches": 12,
+   "label": "CHAS. PONZI · BAIN NEWS SERVICE",
+   "short": "Chas. Ponzi (photograph)",
+   "catalog": "LC-DIG-ggbain-30981",
+   "credit": "Bain News Service"
+  },
+  {
+   "id": "posq",
+   "kind": "print",
+   "src": "raw/posq.tif",
+   "crop": [
+    280,
+    260,
+    4780,
+    3780
+   ],
+   "horizon": 3160,
+   "nomask": true,
+   "inches": 14,
+   "label": "POST OFFICE SQUARE, BOSTON · 1900–1920",
+   "short": "Post Office Square, Boston",
+   "catalog": "LC-DIG-det-4a24026",
+   "credit": "Detroit Publishing Co."
+  },
+  {
+   "id": "cityhall",
+   "kind": "print",
+   "src": "raw/cityhall.tif",
+   "horizon": 560,
+   "nomask": true,
+   "inches": 16,
+   "label": "BOSTON CITY HALL, SCHOOL STREET · c1903",
+   "short": "Boston City Hall, School Street",
+   "catalog": "LC pan 6a06421",
+   "credit": "Panoramic photograph, c1903"
+  },
+  {
+   "id": "trib28",
+   "kind": "paper",
+   "src": "raw/trib28.jpg",
+   "label": "NEW-YORK TRIBUNE · 28 JUL 1920",
+   "short": "New-York Tribune, 28 July",
+   "catalog": "LCCN sn83030214",
+   "row": "pays all claims"
+  },
+  {
+   "id": "trib31b",
+   "kind": "paper",
+   "src": "raw/trib31b.jpg",
+   "label": "NEW-YORK TRIBUNE · 31 JUL 1920 · PAGE 3",
+   "short": "New-York Tribune, 31 July, p. 3",
+   "catalog": "LCCN sn83030214",
+   "row": "$30"
+  },
+  {
+   "id": "wtimes2",
+   "kind": "paper",
+   "src": "raw/wtimes2.jpg",
+   "label": "THE WASHINGTON TIMES · 2 AUG 1920",
+   "short": "The Washington Times, 2 Aug",
+   "catalog": "LCCN sn84026749",
+   "row": "insolvent"
+  },
+  {
+   "id": "wtimes3",
+   "kind": "paper",
+   "src": "raw/wtimes3.jpg",
+   "label": "THE WASHINGTON TIMES · 3 AUG 1920",
+   "short": "The Washington Times, 3 Aug",
+   "catalog": "LCCN sn84026749",
+   "row": "the run"
+  },
+  {
+   "id": "trib10",
+   "kind": "paper",
+   "src": "raw/trib10.jpg",
+   "label": "NEW-YORK TRIBUNE · 10 AUG 1920",
+   "short": "New-York Tribune, 10 Aug",
+   "catalog": "LCCN sn83030214",
+   "row": "not one cent"
+  },
+  {
+   "id": "trib13",
+   "kind": "paper",
+   "src": "raw/trib13.jpg",
+   "label": "NEW-YORK TRIBUNE · 13 AUG 1920",
+   "short": "New-York Tribune, 13 Aug",
+   "catalog": "LCCN sn83030214",
+   "row": "$20,000,000"
+  },
+  {
+   "id": "star30",
+   "kind": "paper",
+   "src": "raw/star30.jpg",
+   "label": "EVENING STAR (WASHINGTON) · 30 NOV 1920",
+   "short": "Evening Star, 30 Nov",
+   "catalog": "LCCN sn83045462",
+   "row": "5 years"
+  }
+ ],
+ "end": {
+  "sub": "Charles Ponzi, as printed, July – November 1920",
+  "credits": [
+   "Library of Congress · Chronicling America · Prints & Photographs",
+   "Photos: Bain News Service · Detroit Publishing Co. · panoramic photograph c1903",
+   "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"
+  ]
+ },
+ "films": {
+  "long": {
+   "size": "1920x1080",
+   "shots": [
+    {
+     "type": "title",
+     "item": "trib31",
+     "title": "The Coupon King",
+     "sub": "CHARLES PONZI · WHAT THE PAPERS PRINTED · 1920",
+     "chapterName": "The financial wizard",
+     "say": "In the summer of nineteen twenty, a New York front page called him the financial wizard. Nine million dollars, in a few months. From postage coupons."
+    },
+    {
+     "type": "read",
+     "item": "trib31",
+     "boxes": [
+      [
+       1221,
+       938,
+       1612,
+       1013
+      ],
+      [
+       1244,
+       1002,
+       1645,
+       1097
+      ],
+      [
+       1280,
+       1069,
+       1668,
+       1160
+      ]
+     ],
+     "say": "U.S. searches for mystery in Ponzi coup."
+    },
+    {
+     "type": "read",
+     "item": "trib31",
+     "boxes": [
+      [
+       1263,
+       1509,
+       1651,
+       1539
+      ],
+      [
+       1245,
+       1532,
+       1651,
+       1566
+      ],
+      [
+       1247,
+       1556,
+       1652,
+       1588
+      ],
+      [
+       1243,
+       1582,
+       1652,
+       1612
+      ],
+      [
+       1242,
+       1604,
+       1648,
+       1638
+      ],
+      [
+       1247,
+       1631,
+       1649,
+       1661
+      ]
+     ],
+     "say": "New troubles are piling up for Charles Ponzi, the financial wizard, who is said to have made more than nine million dollars in a few months, by dealing in international postal coupons."
+    },
+    {
+     "type": "table",
+     "item": "trib31",
+     "zoom": 0.7,
+     "say": "But the same story printed one more number, from the Boston post office. It should have ended everything that afternoon. Instead, people kept lining up at his door for nine more days. So what was that number? And how did one man keep a whole city believing?"
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 1",
+     "title": "Fifty per cent",
+     "chapterName": "Fifty per cent",
+     "item": "azrep",
+     "say": "Part one. Fifty per cent."
+    },
+    {
+     "type": "photo",
+     "item": "ponzi",
+     "focus": [
+      2080,
+      1700
+     ],
+     "nf": 0.5,
+     "drift": [
+      0.2,
+      -0.2
+     ],
+     "labels": [
+      {
+       "at": [
+        2080,
+        750
+       ],
+       "text": "Charles Ponzi",
+       "sub": "Bain News Service photograph"
+      }
+     ],
+     "say": "This is Charles Ponzi, in a Bain News Service photograph. An Italian immigrant in Boston. Small, smiling, always well dressed. In nineteen twenty, his business had a plain name. The Securities Exchange Company."
+    },
+    {
+     "type": "read",
+     "item": "azrep",
+     "boxes": [
+      [
+       2268,
+       626,
+       2623,
+       697
+      ],
+      [
+       2292,
+       730,
+       2643,
+       796
+      ],
+      [
+       2291,
+       831,
+       2666,
+       908
+      ]
+     ],
+     "say": "The wire story reached Phoenix, Arizona, under this headline. Makes dollars gain fifty cents, within fifty four days. Even the headline had the days wrong. Further down the column, it is forty five."
+    },
+    {
+     "type": "read",
+     "item": "azrep",
+     "boxes": [
+      [
+       2290,
+       1268,
+       2670,
+       1282
+      ],
+      [
+       2272,
+       1288,
+       2670,
+       1302
+      ],
+      [
+       2270,
+       1304,
+       2671,
+       1321
+      ],
+      [
+       2270,
+       1322,
+       2670,
+       1339
+      ],
+      [
+       2270,
+       1340,
+       2671,
+       1356
+      ],
+      [
+       2272,
+       1360,
+       2670,
+       1376
+      ],
+      [
+       2271,
+       1376,
+       2672,
+       1393
+      ],
+      [
+       2270,
+       1394,
+       2672,
+       1410
+      ],
+      [
+       2271,
+       1412,
+       2566,
+       1427
+      ]
+     ],
+     "say": "For several weeks, crowds have flocked to Ponzi's offices, and given their savings, in exchange for notes of the company, for the principal plus fifty per cent, payable in ninety days. Invariably, Ponzi is said to have paid off the note in forty five days. And there has been no complaint that any person has failed to receive money when due."
+    },
+    {
+     "type": "table",
+     "item": "azrep",
+     "zoom": 0.85,
+     "boxes": [
+      [
+       2271,
+       1376,
+       2672,
+       1393
+      ],
+      [
+       2270,
+       1394,
+       2672,
+       1410
+      ],
+      [
+       2271,
+       1412,
+       2566,
+       1427
+      ]
+     ],
+     "say": "No complaint. That was Ponzi's best argument. People put money in, and took more money out. But what was he buying with it?"
+    },
+    {
+     "type": "read",
+     "item": "azrep",
+     "boxes": [
+      [
+       2292,
+       1430,
+       2672,
+       1444
+      ],
+      [
+       2320,
+       1447,
+       2672,
+       1464
+      ],
+      [
+       2272,
+       1465,
+       2672,
+       1482
+      ],
+      [
+       2271,
+       1484,
+       2672,
+       1500
+      ],
+      [
+       2336,
+       1502,
+       2672,
+       1517
+      ],
+      [
+       2364,
+       1520,
+       2673,
+       1534
+      ],
+      [
+       2271,
+       1539,
+       2368,
+       1554
+      ]
+     ],
+     "say": "Ponzi describes his exchange system, as being based on the use of the international reply coupon, authorized under the international postal agreement."
+    },
+    {
+     "type": "photo",
+     "item": "posq",
+     "focus": [
+      2800,
+      2300
+     ],
+     "nf": 0.45,
+     "drift": [
+      0.4,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        2800,
+        1250
+       ],
+       "text": "Boston Post Office",
+       "sub": "Post Office Square · Detroit Publishing Co."
+      }
+     ],
+     "say": "A reply coupon was a small slip sold at post offices around the world. You mailed it abroad, and the person who got it could trade it for a stamp at their own post office. Ponzi's story was simple. After the war, money in Europe was weak. Buy coupons cheaply there. Cash them for more here."
+    },
+    {
+     "type": "read",
+     "item": "azrep",
+     "boxes": [
+      [
+       2274,
+       1806,
+       2676,
+       1821
+      ],
+      [
+       2274,
+       1824,
+       2676,
+       1840
+      ],
+      [
+       2274,
+       1842,
+       2676,
+       1858
+      ],
+      [
+       2274,
+       1860,
+       2502,
+       1873
+      ]
+     ],
+     "say": "This usually takes forty five days, according to Ponzi, who says his profits have reached four hundred per cent in some transactions."
+    },
+    {
+     "type": "table",
+     "item": "azrep",
+     "zoom": 0.75,
+     "say": "Four hundred per cent. It sounded like a loophole that bankers had somehow missed. There was just one way to check it. Count the coupons."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 2",
+     "title": "He paid",
+     "chapterName": "He paid",
+     "item": "trib28",
+     "say": "Part two. He paid."
+    },
+    {
+     "type": "read",
+     "item": "azrep",
+     "boxes": [
+      [
+       2288,
+       946,
+       2668,
+       962
+      ],
+      [
+       2268,
+       964,
+       2668,
+       980
+      ],
+      [
+       2268,
+       982,
+       2669,
+       998
+      ],
+      [
+       2268,
+       1002,
+       2668,
+       1016
+      ],
+      [
+       2268,
+       1019,
+       2669,
+       1034
+      ]
+     ],
+     "say": "On July twenty sixth, the district attorney stepped in. A bar was placed today, on the rush of people to give their money to Charles Ponzi, head of the Securities Exchange Company, on his promise to repay with fifty per cent."
+    },
+    {
+     "type": "read",
+     "item": "azrep",
+     "boxes": [
+      [
+       2269,
+       1126,
+       2670,
+       1141
+      ],
+      [
+       2270,
+       1144,
+       2658,
+       1160
+      ],
+      [
+       2270,
+       1161,
+       2659,
+       1176
+      ],
+      [
+       2268,
+       1178,
+       2670,
+       1194
+      ],
+      [
+       2270,
+       1198,
+       2678,
+       1212
+      ]
+     ],
+     "say": "Ponzi agreed to accept no further deposits, until an auditor selected by the district attorney has examined his accounts, which are said to total millions."
+    },
+    {
+     "type": "photo",
+     "item": "cityhall",
+     "focus": [
+      1320,
+      330
+     ],
+     "nf": 0.45,
+     "drift": [
+      0.5,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        1320,
+        120
+       ],
+       "text": "Boston City Hall",
+       "sub": "School Street · c1903"
+      }
+     ],
+     "say": "His offices were in the middle of Boston, near City Hall, with an entrance on a narrow lane called Pie Alley. When the news broke, that lane filled with people who wanted their money back. Ponzi did something nobody expected."
+    },
+    {
+     "type": "read",
+     "item": "trib28",
+     "boxes": [
+      [
+       458,
+       590,
+       874,
+       659
+      ],
+      [
+       482,
+       641,
+       889,
+       702
+      ],
+      [
+       496,
+       689,
+       901,
+       756
+      ]
+     ],
+     "say": "Money wizard pays all claims. Court denies injunction."
+    },
+    {
+     "type": "read",
+     "item": "trib28",
+     "boxes": [
+      [
+       484,
+       1497,
+       883,
+       1525
+      ],
+      [
+       485,
+       1517,
+       885,
+       1541
+      ],
+      [
+       476,
+       1536,
+       885,
+       1563
+      ],
+      [
+       482,
+       1554,
+       883,
+       1582
+      ],
+      [
+       479,
+       1573,
+       886,
+       1599
+      ],
+      [
+       484,
+       1592,
+       885,
+       1620
+      ],
+      [
+       475,
+       1610,
+       880,
+       1638
+      ],
+      [
+       479,
+       1629,
+       798,
+       1654
+      ]
+     ],
+     "say": "Thousands of persons, in all stations of life, have invested money with Ponzi, ranging from ten dollars to fifty thousand. The notes call for fifty per cent on their investment within ninety days. But in most instances, Ponzi has paid principal and profit in full in that time."
+    },
+    {
+     "type": "table",
+     "item": "trib28",
+     "zoom": 0.8,
+     "say": "He paid every claim, in cash. To the crowd, that looked like proof. A swindler runs. This man stayed and paid. So where was the money coming from?"
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 3",
+     "title": "Count the coupons",
+     "chapterName": "Count the coupons",
+     "item": "trib31b",
+     "say": "Part three. Count the coupons."
+    },
+    {
+     "type": "read",
+     "item": "trib31b",
+     "boxes": [
+      [
+       1627,
+       843,
+       2014,
+       914
+      ],
+      [
+       1651,
+       905,
+       2046,
+       996
+      ],
+      [
+       1684,
+       973,
+       2068,
+       1061
+      ]
+     ],
+     "say": "Back to July thirty first. The wizard story jumps to page three, under the same headline."
+    },
+    {
+     "type": "read",
+     "item": "trib31b",
+     "boxes": [
+      [
+       1646,
+       1102,
+       2053,
+       1126
+      ],
+      [
+       1649,
+       1123,
+       2052,
+       1152
+      ],
+      [
+       1651,
+       1147,
+       2050,
+       1174
+      ],
+      [
+       1649,
+       1172,
+       2053,
+       1198
+      ],
+      [
+       1648,
+       1196,
+       2049,
+       1224
+      ]
+     ],
+     "card": {
+      "label": "BOSTON POST OFFICE · 3 MONTHS",
+      "value": "30",
+      "unit": "dollars of coupons",
+      "source": "New-York Tribune, p. 3"
+     },
+     "say": "A statement came from Postmaster Roland Baker, that the Boston post office redeemed only thirty dollars worth of international postal reply coupons, in the last three months, for Ponzi's exchange company."
+    },
+    {
+     "type": "table",
+     "item": "trib31b",
+     "zoom": 1.2,
+     "boxes": [
+      [
+       1651,
+       1147,
+       2050,
+       1174
+      ],
+      [
+       1649,
+       1172,
+       2053,
+       1198
+      ]
+     ],
+     "say": "Thirty dollars. Against a fortune said to be nine million. If his profits came from reply coupons, those coupons had to be cashed somewhere. In Boston, in three months, they barely existed."
+    },
+    {
+     "type": "read",
+     "item": "trib31b",
+     "boxes": [
+      [
+       1651,
+       2064,
+       2057,
+       2093
+      ],
+      [
+       1654,
+       2082,
+       2057,
+       2110
+      ],
+      [
+       1647,
+       2100,
+       2057,
+       2129
+      ]
+     ],
+     "say": "The federal attorney added the national figures. Up to and including the year ending June thirtieth, nineteen eighteen, fifty four thousand, four hundred and thirty six dollars worth of coupons were redeemed by this government."
+    },
+    {
+     "type": "table",
+     "item": "trib31b",
+     "zoom": 0.8,
+     "say": "Fifty four thousand dollars, in about ten years, for the whole country. Ponzi was said to be holding millions of the public's money. Whatever was paying his investors, the record says it was not postal coupons."
+    },
+    {
+     "type": "read",
+     "item": "trib31",
+     "boxes": [
+      [
+       1267,
+       1818,
+       1651,
+       1850
+      ],
+      [
+       1246,
+       1842,
+       1645,
+       1875
+      ],
+      [
+       1241,
+       1866,
+       1656,
+       1900
+      ],
+      [
+       1249,
+       1889,
+       1650,
+       1920
+      ],
+      [
+       1247,
+       1913,
+       1655,
+       1945
+      ],
+      [
+       1238,
+       1935,
+       1656,
+       1972
+      ]
+     ],
+     "say": "But the dapper little man who has them all guessing, continues to smile, nonchalantly signing thousands of dollars worth of checks, and declaring: I should worry."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 4",
+     "title": "Hopelessly insolvent",
+     "chapterName": "Hopelessly insolvent",
+     "item": "wtimes2",
+     "say": "Part four. Hopelessly insolvent."
+    },
+    {
+     "type": "read",
+     "item": "wtimes2",
+     "boxes": [
+      [
+       1455,
+       184,
+       1825,
+       324
+      ],
+      [
+       1509,
+       296,
+       1836,
+       429
+      ]
+     ],
+     "say": "August second. A new headline. Claims Ponzi is insolvent."
+    },
+    {
+     "type": "read",
+     "item": "wtimes2",
+     "boxes": [
+      [
+       1485,
+       885,
+       1824,
+       913
+      ],
+      [
+       1469,
+       908,
+       1820,
+       934
+      ],
+      [
+       1470,
+       930,
+       1820,
+       955
+      ],
+      [
+       1470,
+       950,
+       1824,
+       975
+      ],
+      [
+       1470,
+       971,
+       1822,
+       996
+      ],
+      [
+       1466,
+       990,
+       1820,
+       1014
+      ],
+      [
+       1469,
+       1006,
+       1823,
+       1030
+      ],
+      [
+       1478,
+       1023,
+       1820,
+       1047
+      ],
+      [
+       1471,
+       1038,
+       1819,
+       1064
+      ],
+      [
+       1470,
+       1054,
+       1824,
+       1079
+      ]
+     ],
+     "say": "Charges, that Ponzi is unbalanced on one subject, is hopelessly insolvent, has not sufficient funds to meet his notes, and has sent or received no money from Europe recently. Written by William H. McMasters, who has been employed as a publicity man by Ponzi."
+    },
+    {
+     "type": "table",
+     "item": "wtimes2",
+     "zoom": 0.9,
+     "say": "The accusation came from inside. McMasters had worked for Ponzi. His article ran in the Boston Post. Ponzi answered the same day."
+    },
+    {
+     "type": "read",
+     "item": "wtimes2",
+     "boxes": [
+      [
+       1490,
+       1392,
+       1823,
+       1414
+      ],
+      [
+       1470,
+       1414,
+       1822,
+       1435
+      ],
+      [
+       1471,
+       1434,
+       1822,
+       1456
+      ],
+      [
+       1470,
+       1455,
+       1821,
+       1479
+      ],
+      [
+       1473,
+       1476,
+       1823,
+       1498
+      ]
+     ],
+     "say": "McMasters' statement, that I have not sent money abroad, and that it has not taken the course of my system of operations, and returned to this country with heavy profits, is entirely false."
+    },
+    {
+     "type": "read",
+     "item": "wtimes3",
+     "boxes": [
+      [
+       6,
+       190,
+       382,
+       327
+      ],
+      [
+       44,
+       303,
+       395,
+       438
+      ],
+      [
+       40,
+       575,
+       380,
+       599
+      ],
+      [
+       21,
+       590,
+       378,
+       618
+      ],
+      [
+       29,
+       612,
+       381,
+       638
+      ],
+      [
+       29,
+       631,
+       377,
+       657
+      ],
+      [
+       24,
+       651,
+       377,
+       679
+      ],
+      [
+       27,
+       668,
+       378,
+       694
+      ],
+      [
+       26,
+       684,
+       377,
+       711
+      ],
+      [
+       26,
+       700,
+       377,
+       726
+      ],
+      [
+       25,
+       716,
+       380,
+       744
+      ],
+      [
+       29,
+       733,
+       378,
+       759
+      ],
+      [
+       28,
+       748,
+       380,
+       776
+      ],
+      [
+       23,
+       768,
+       280,
+       790
+      ]
+     ],
+     "say": "The next day, the run got worse. Pays millions to investors. More than five hundred note holders, anxious to get their money back, lined up outside the Pie Alley entrance. A line which extended out to City Hall Avenue, and was constantly increasing."
+    },
+    {
+     "type": "read",
+     "item": "wtimes3",
+     "boxes": [
+      [
+       42,
+       782,
+       381,
+       807
+      ],
+      [
+       28,
+       800,
+       379,
+       824
+      ],
+      [
+       26,
+       815,
+       379,
+       842
+      ],
+      [
+       29,
+       831,
+       377,
+       858
+      ],
+      [
+       29,
+       852,
+       169,
+       874
+      ]
+     ],
+     "say": "A cheer went up from the waiting men and women, when the doors were opened."
+    },
+    {
+     "type": "table",
+     "item": "wtimes3",
+     "zoom": 0.8,
+     "say": "A cheer, for the man they were lining up to leave. But the window was about to close."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 5",
+     "title": "Not one cent",
+     "chapterName": "Not one cent",
+     "item": "trib10",
+     "say": "Part five. Not one cent."
+    },
+    {
+     "type": "read",
+     "item": "trib10",
+     "boxes": [
+      [
+       840,
+       333,
+       1246,
+       416
+      ],
+      [
+       852,
+       408,
+       1264,
+       522
+      ],
+      [
+       874,
+       489,
+       1280,
+       601
+      ]
+     ],
+     "say": "August tenth. Ponzi sued as bankrupt, by creditors."
+    },
+    {
+     "type": "read",
+     "item": "trib10",
+     "boxes": [
+      [
+       883,
+       1025,
+       1266,
+       1054
+      ],
+      [
+       865,
+       1050,
+       1267,
+       1080
+      ],
+      [
+       867,
+       1075,
+       1268,
+       1102
+      ],
+      [
+       864,
+       1098,
+       1265,
+       1124
+      ]
+     ],
+     "say": "Charles Ponzi, financial wizard, announced tonight, that he would not pay out one cent of money tomorrow at his offices."
+    },
+    {
+     "type": "read",
+     "item": "trib10",
+     "boxes": [
+      [
+       862,
+       1122,
+       1266,
+       1150
+      ],
+      [
+       865,
+       1145,
+       1268,
+       1173
+      ],
+      [
+       864,
+       1170,
+       1269,
+       1196
+      ],
+      [
+       862,
+       1194,
+       1265,
+       1220
+      ],
+      [
+       870,
+       1218,
+       1266,
+       1244
+      ],
+      [
+       861,
+       1237,
+       1266,
+       1265
+      ],
+      [
+       865,
+       1258,
+       1265,
+       1282
+      ],
+      [
+       866,
+       1275,
+       1011,
+       1301
+      ]
+     ],
+     "say": "Earlier in the day, involuntary bankruptcy proceedings had been instituted against Ponzi by three creditors. And the State Bank Commissioner had ordered the Hanover Trust Company, not to pay out any more money on checks of Ponzi or his agents."
+    },
+    {
+     "type": "read",
+     "item": "trib13",
+     "boxes": [
+      [
+       -9,
+       312,
+       729,
+       431
+      ],
+      [
+       11,
+       411,
+       787,
+       531
+      ],
+      [
+       39,
+       509,
+       838,
+       636
+      ]
+     ],
+     "say": "Three days later. Ponzi is arrested. Took in twenty millions. Says he cannot pay."
+    },
+    {
+     "type": "read",
+     "item": "trib13",
+     "boxes": [
+      [
+       14,
+       648,
+       419,
+       694
+      ],
+      [
+       33,
+       684,
+       413,
+       737
+      ],
+      [
+       39,
+       723,
+       415,
+       772
+      ],
+      [
+       29,
+       761,
+       415,
+       801
+      ]
+     ],
+     "say": "Financial wizard said to be hopelessly insolvent, by officials who scanned accounts."
+    },
+    {
+     "type": "read",
+     "item": "trib13",
+     "boxes": [
+      [
+       36,
+       1461,
+       411,
+       1486
+      ],
+      [
+       31,
+       1480,
+       402,
+       1506
+      ],
+      [
+       34,
+       1498,
+       401,
+       1525
+      ]
+     ],
+     "card": {
+      "label": "INVESTORS · ESTIMATE",
+      "value": "30,000",
+      "unit": "people",
+      "source": "New-York Tribune, 13 Aug 1920"
+     },
+     "say": "An estimate, that some thirty thousand persons entrusted upward of twenty million dollars to the promoter."
+    },
+    {
+     "type": "read",
+     "item": "trib13",
+     "boxes": [
+      [
+       33,
+       1932,
+       404,
+       1959
+      ],
+      [
+       31,
+       1952,
+       407,
+       1978
+      ],
+      [
+       35,
+       1970,
+       406,
+       1998
+      ],
+      [
+       31,
+       1990,
+       405,
+       2017
+      ],
+      [
+       30,
+       2008,
+       404,
+       2035
+      ],
+      [
+       32,
+       2027,
+       401,
+       2055
+      ],
+      [
+       32,
+       2047,
+       389,
+       2073
+      ]
+     ],
+     "say": "And a post office inspector declared, that Ponzi's claim that he had made millions by manipulating international reply coupons was a stupendous fraud. And that in six years, dealings in those coupons, throughout the international postal union, would not add up to five hundred thousand dollars."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 6",
+     "title": "Thus passes glory",
+     "chapterName": "Thus passes glory",
+     "item": "star30",
+     "say": "Part six. Thus passes glory."
+    },
+    {
+     "type": "read",
+     "item": "star30",
+     "boxes": [
+      [
+       1750,
+       1280,
+       2092,
+       1375
+      ],
+      [
+       1796,
+       1362,
+       2110,
+       1458
+      ],
+      [
+       1756,
+       1479,
+       2102,
+       1519
+      ],
+      [
+       1784,
+       1518,
+       2071,
+       1565
+      ],
+      [
+       1814,
+       1559,
+       2037,
+       1599
+      ]
+     ],
+     "say": "November thirtieth, nineteen twenty. Ponzi gets five year term for fraud. Promoter changes plea to guilty."
+    },
+    {
+     "type": "read",
+     "item": "star30",
+     "boxes": [
+      [
+       1764,
+       1830,
+       2101,
+       1852
+      ],
+      [
+       1756,
+       1850,
+       2100,
+       1870
+      ],
+      [
+       1761,
+       1869,
+       2098,
+       1892
+      ],
+      [
+       1762,
+       1888,
+       2100,
+       1910
+      ],
+      [
+       1760,
+       1902,
+       2099,
+       1926
+      ],
+      [
+       1755,
+       1917,
+       2100,
+       1940
+      ],
+      [
+       1761,
+       1935,
+       1838,
+       1952
+      ]
+     ],
+     "say": "It was charged that Ponzi had represented falsely, that he was able to pay interest at the rate of fifty per cent in forty five days, from profits made in international postal reply coupons."
+    },
+    {
+     "type": "read",
+     "item": "star30",
+     "boxes": [
+      [
+       1768,
+       2129,
+       2100,
+       2153
+      ],
+      [
+       1762,
+       2145,
+       2097,
+       2162
+      ],
+      [
+       1763,
+       2159,
+       2099,
+       2182
+      ],
+      [
+       1764,
+       2174,
+       2205,
+       2209
+      ],
+      [
+       1864,
+       2187,
+       2103,
+       2218
+      ],
+      [
+       1760,
+       2203,
+       2104,
+       2227
+      ],
+      [
+       1760,
+       2217,
+       2098,
+       2241
+      ],
+      [
+       1760,
+       2233,
+       2103,
+       2259
+      ],
+      [
+       1760,
+       2247,
+       2103,
+       2268
+      ],
+      [
+       1764,
+       2261,
+       2102,
+       2286
+      ]
+     ],
+     "say": "And the paper explained what the coupons had hidden. The little Italian, with prison sentences in Canada and this country behind him, developed his supposed scheme, only to have his house of easy money topple over on him, when the props of income from investors were pulled out."
+    },
+    {
+     "type": "table",
+     "item": "star30",
+     "zoom": 1.1,
+     "boxes": [
+      [
+       1760,
+       2247,
+       2103,
+       2268
+      ],
+      [
+       1764,
+       2261,
+       2102,
+       2286
+      ]
+     ],
+     "say": "The props of income from investors. That was the whole system. The money paid out to the early investors had come in from the later ones. When new money stopped, the payments stopped."
+    },
+    {
+     "type": "read",
+     "item": "star30",
+     "boxes": [
+      [
+       1761,
+       2452,
+       2099,
+       2472
+      ],
+      [
+       1758,
+       2466,
+       2101,
+       2488
+      ],
+      [
+       1764,
+       2480,
+       2104,
+       2502
+      ],
+      [
+       1757,
+       2495,
+       2102,
+       2523
+      ],
+      [
+       1761,
+       2510,
+       2071,
+       2531
+      ]
+     ],
+     "say": "As he faced the court, he wrote one line for the press. Sic transit gloria mundi. Thus passes the glory of the world."
+    },
+    {
+     "type": "photo",
+     "item": "ponzi",
+     "focus": [
+      2080,
+      1750
+     ],
+     "nf": 0.55,
+     "zoom": 1.1,
+     "drift": [
+      -0.2,
+      0
+     ],
+     "say": "It was not the end of Charles Ponzi. In nineteen thirty four he was deported to Italy. He died in Rio de Janeiro in nineteen forty nine, nearly penniless. The Boston Post won the Pulitzer Prize for public service, for exposing him. And his name became the word for this kind of scheme."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "NEW-YORK TRIBUNE · 31 JUL 1920 · PAGE 1",
+      "quote": "\"…said to have made more than $9,000,000 … by dealing in international postal coupons.\"",
+      "value": "9,000,000",
+      "unit": "dollars · as printed"
+     },
+     "b": {
+      "label": "BOSTON POST OFFICE · SAME STORY · PAGE 3",
+      "quote": "\"…redeemed only $30 worth of International Postal Reply coupons in the last three months…\"",
+      "value": "30",
+      "unit": "dollars · the record",
+      "source": "New-York Tribune · Chronicling America"
+     },
+     "strike": "a",
+     "say": "As printed: nine million dollars, from postal coupons. As recorded, under the same headline: thirty dollars worth of coupons, in three months. The answer was on page three all along."
+    },
+    {
+     "type": "read",
+     "item": "trib31b",
+     "boxes": [
+      [
+       1646,
+       1102,
+       2053,
+       1126
+      ],
+      [
+       1649,
+       1123,
+       2052,
+       1152
+      ],
+      [
+       1651,
+       1147,
+       2050,
+       1174
+      ],
+      [
+       1649,
+       1172,
+       2053,
+       1198
+      ],
+      [
+       1648,
+       1196,
+       2049,
+       1224
+      ]
+     ],
+     "say": "So how did he keep a city believing? He paid. Every payment looked like proof, and every payment came from the next person in line. The thirty dollar figure was printed on July thirty first. Ponzi kept paying for nine more days. Here is my question. If you had been standing in Pie Alley, holding one of his notes, would you have taken your money out, or waited for the fifty per cent? Tell me in the comments."
+    },
+    {
+     "type": "end",
+     "say": "If you like history told from the papers themselves, give this video a like, and subscribe to As Printed. For what the papers said, and what the archive says."
+    }
+   ]
+  },
+  "short": {
+   "size": "1080x1920",
+   "shots": [
+    {
+     "type": "read",
+     "item": "trib31",
+     "boxes": [
+      [
+       1263,
+       1509,
+       1651,
+       1539
+      ],
+      [
+       1245,
+       1532,
+       1651,
+       1566
+      ],
+      [
+       1247,
+       1556,
+       1652,
+       1588
+      ],
+      [
+       1243,
+       1582,
+       1652,
+       1612
+      ],
+      [
+       1242,
+       1604,
+       1648,
+       1638
+      ],
+      [
+       1247,
+       1631,
+       1649,
+       1661
+      ]
+     ],
+     "card": {
+      "label": "AS PRINTED",
+      "value": "31 JUL 1920",
+      "source": "New-York Tribune"
+     },
+     "say": "Charles Ponzi, the financial wizard, said to have made more than nine million dollars in a few months, by dealing in postal coupons."
+    },
+    {
+     "type": "read",
+     "item": "azrep",
+     "boxes": [
+      [
+       2290,
+       1268,
+       2670,
+       1282
+      ],
+      [
+       2272,
+       1288,
+       2670,
+       1302
+      ],
+      [
+       2270,
+       1304,
+       2671,
+       1321
+      ],
+      [
+       2270,
+       1322,
+       2670,
+       1339
+      ],
+      [
+       2270,
+       1340,
+       2671,
+       1356
+      ]
+     ],
+     "say": "His promise: fifty per cent profit in forty five days. Crowds handed him their savings."
+    },
+    {
+     "type": "photo",
+     "item": "posq",
+     "focus": [
+      2800,
+      2300
+     ],
+     "nf": 0.45,
+     "drift": [
+      0.4,
+      0
+     ],
+     "say": "His secret, he said, was postal reply coupons. Bought cheap in Europe. Cashed for more at American post offices."
+    },
+    {
+     "type": "read",
+     "item": "trib31b",
+     "boxes": [
+      [
+       1646,
+       1102,
+       2053,
+       1126
+      ],
+      [
+       1649,
+       1123,
+       2052,
+       1152
+      ],
+      [
+       1651,
+       1147,
+       2050,
+       1174
+      ],
+      [
+       1649,
+       1172,
+       2053,
+       1198
+      ],
+      [
+       1648,
+       1196,
+       2049,
+       1224
+      ]
+     ],
+     "say": "But on page three, the same story quoted the Boston postmaster. In three months: thirty dollars worth of coupons, for Ponzi's company."
+    },
+    {
+     "type": "read",
+     "item": "trib13",
+     "boxes": [
+      [
+       -9,
+       312,
+       729,
+       431
+      ],
+      [
+       11,
+       411,
+       787,
+       531
+      ],
+      [
+       39,
+       509,
+       838,
+       636
+      ]
+     ],
+     "say": "Two weeks later. Ponzi is arrested. Took in twenty millions. Says he cannot pay."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "PRINTED · 31 JUL 1920",
+      "quote": "\"…more than $9,000,000 … in international postal coupons\"",
+      "value": "9,000,000",
+      "unit": "dollars"
+     },
+     "b": {
+      "label": "THE RECORD · SAME STORY",
+      "quote": "\"…only $30 worth of International Postal Reply coupons…\"",
+      "value": "30",
+      "unit": "dollars",
+      "source": "New-York Tribune, p. 3"
+     },
+     "strike": "a",
+     "say": "Nine million, as printed. Thirty dollars, as recorded. So where did the wizard's money come from? From the next investor in line."
+    }
+   ]
+  }
+ }
+}

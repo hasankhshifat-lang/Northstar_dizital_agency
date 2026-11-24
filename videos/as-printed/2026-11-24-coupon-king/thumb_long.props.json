@@ -1,0 +1,13 @@
+{
+ "width": 1280, "height": 720, "style": "archive",
+ "background": {"color": "#dfe2e5", "side": "none"},
+ "layers": [
+  {"type": "image", "src": "clip9mc.jpg", "x": 30, "y": 300, "w": 700, "rotate": -2, "grade": "none", "aspect": 5.775},
+  {"type": "image", "src": "clip30c.jpg", "x": 40, "y": 450, "w": 720, "rotate": 1.5, "grade": "none", "aspect": 3.212},
+  {"type": "ring", "x": 312, "y": 541, "rx": 140, "ry": 30, "rotate": 1.5, "width": 8},
+  {"type": "cutout", "src": "ponzi_cut.png", "x": 770, "y": 30, "h": 700, "grade": "mono", "glow": "rgba(255,255,255,0.85)"},
+  {"type": "arrow", "from": [560, 690], "to": [420, 575], "bend": 0.25, "width": 11}
+ ],
+ "headline": {"lines": ["$9 million", "or $30?"], "accent": ["$30?"], "x": 36, "y": 30, "size": 104, "panel": true},
+ "tags": [{"text": "NEW-YORK TRIBUNE · 31 JUL 1920", "x": 40, "y": 262, "variant": "date", "size": 24}]
+}
