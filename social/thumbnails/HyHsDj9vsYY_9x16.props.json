@@ -1,0 +1,17 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "map",
+ "background": { "src": "map.png", "crop": [0.0, 0.2, 1.0, 0.6], "grade": "warm", "blur": 0.8, "side": "top", "darken": 0.12 },
+ "layers": [
+  { "type": "image", "src": "aftermath.jpg", "x": 20, "y": 470, "w": 1040, "aspect": 1.0, "crop": [0.1, 0.32, 0.72, 0.68], "rotate": -2, "grade": "warm", "paper": true },
+  { "type": "ring", "x": 600, "y": 820, "rx": 300, "ry": 150 },
+  { "type": "pin", "x": 820, "y": 1330, "label": "NORTH END, BOSTON", "size": 44 }
+ ],
+ "headline": { "lines": ["ALL THIS FROM", "SYRUP"], "accent": ["SYRUP"], "align": "center", "x": 0, "y": 100, "size": 150 },
+ "tags": [
+  { "text": "JAN 15, 1919", "x": 80, "y": 1250, "variant": "date", "size": 48, "rotate": -2 },
+  { "text": "REAL 1919 PHOTO", "x": 80, "y": 1400, "variant": "label", "size": 40 }
+ ],
+ "guides": false
+}

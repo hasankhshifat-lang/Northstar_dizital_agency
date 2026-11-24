@@ -28,3 +28,4 @@
 | 2026-11-23 | Daily check | Cross-posts 11-16…11-23 | — | — | Fort Sumter (1111102915088402) live since 13:00 UTC = YT publishAt of t6fR0H1yYJo, 178 plays at ~45 min; Bats (1140531628523497) scheduled 18:00 UTC and Chicago (1169007055562745) scheduled 22:00 UTC, both = YT publishAt (in scheduled_posts); 0 late publishes, 0 missing (no Shorts logged 11-20…11-22) |
 | 2026-11-23 | Comments check | 10 videos + 37 posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
 | 2026-11-23 | Stats | Page + 5 Reels | — | — | 6 fans / 6 followers; FB metrics written to social/learning/which-life-next.md on main (81a6abf); total_video_* and reach metrics not returned for these Reels (Reels insights only) |
+| 2026-11-24 | Scheduled Reel (cross-post) | A Wave of Molasses Killed 21 People | 1655279699715872 | 2026-11-24 13:00 UTC (= YT publishAt of HyHsDj9vsYY) | uploaded, processing; permalink /reel/1655279699715872/ |

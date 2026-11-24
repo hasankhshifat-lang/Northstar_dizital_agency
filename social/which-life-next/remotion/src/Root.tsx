@@ -19,6 +19,7 @@ import { VioletJessop, VJ_END } from "./stories/violetJessop";
 import { RobertSmalls, RS_END } from "./stories/robertSmalls";
 import { BatBomb, BB_END, BatCut } from "./stories/batBomb";
 import { ChicagoRaise, CH_END } from "./stories/chicagoRaise";
+import { MolassesFlood, MO_END } from "./stories/molassesFlood";
 import { NorthwestAngle, NA_END } from "./stories/northwestAngle";
 import { fonts, palette } from "./theme";
 
@@ -70,6 +71,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="RobertSmalls" component={RobertSmalls} width={1080} height={1920} fps={30} durationInFrames={Math.round(RS_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="BatBomb" component={BatBomb} width={1080} height={1920} fps={30} durationInFrames={Math.round(BB_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="ChicagoRaise" component={ChicagoRaise} width={1080} height={1920} fps={30} durationInFrames={Math.round(CH_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
+    <Composition id="MolassesFlood" component={MolassesFlood} width={1080} height={1920} fps={30} durationInFrames={Math.round(MO_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="BatCut" component={BatCut} width={1000} height={1000} fps={30} durationInFrames={1} />
     <Composition id="HughGlass" component={HughGlass} width={1080} height={1920} fps={30} durationInFrames={Math.round(GLASS_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="MikeThumb" component={MikeThumb} width={1080} height={1920} fps={30} durationInFrames={1} />
