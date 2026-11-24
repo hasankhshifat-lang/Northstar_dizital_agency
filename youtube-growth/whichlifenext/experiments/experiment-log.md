@@ -66,6 +66,7 @@ Card added 2026-11-16 to mirror the learning-database row (the experiment was ta
   person-first (0.564 vs 0.487 on 11-23 morning) disappears with the two new 72 h rows. Pending: t6fR0H1yYJo (person),
   nJopWLqMnJU (object/place) from 11-26; FrsAQmXpo4o (GI holding a bat) is mixed: exclude from both arms. Still running;
   the object arm needs one more Short with 72 h data. No decision.
+- **Data 2026-11-24 (daily checkpoints):** t6fR0H1yYJo (person) 24h: Analytics not in yet (public 877 at ~28 h); vy-qRhRjnN0 (object) 14d unchanged at 0.339. No new arm readings; still running, no decision.
 - **Result:** — **Decision:** —
 
 _No new experiment proposed on 2026-11-16: two are running on the same Shorts, and a third would confound both._
