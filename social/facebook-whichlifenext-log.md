@@ -29,3 +29,4 @@
 | 2026-11-23 | Comments check | 10 videos + 37 posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
 | 2026-11-23 | Stats | Page + 5 Reels | — | — | 6 fans / 6 followers; FB metrics written to social/learning/which-life-next.md on main (81a6abf); total_video_* and reach metrics not returned for these Reels (Reels insights only) |
 | 2026-11-24 | Scheduled Reel (cross-post) | A Wave of Molasses Killed 21 People | 1655279699715872 | 2026-11-24 13:00 UTC (= YT publishAt of HyHsDj9vsYY) | uploaded, processing; permalink /reel/1655279699715872/ |
+| 2026-11-24 | Scheduled Reel (cross-post) | The Olympic Marathon Winner Was Fed Rat Poison | 1514865577177791 | 2026-11-24 18:00 UTC (= YT publishAt of g4FVyyqeJkg) | uploaded |

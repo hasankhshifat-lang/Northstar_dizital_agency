@@ -27,7 +27,7 @@ WD weird but true · FT feats & escapes
 | 12 | WR | America Strapped Bombs to Bats | The US tried to burn Japan with bats. They burned their own base. | done 2026-11-23 FrsAQmXpo4o (slot 2026-11-23 13:00 ET; title: The US Army Strapped Bombs to Bats; bats-per-bomb left out: 1,040 vs 180 in the sources) |
 | 13 | HOW | Chicago Lifted the Whole City With Screws | In the 1850s Chicago jacked up entire buildings, with people inside. | done 2026-11-23 nJopWLqMnJU (slot 2026-11-23 17:00 ET; title: Chicago Lifted an Entire City Block; days of work left out: 5 vs 4 in the sources) |
 | 14 | SV | A 25-Foot Wave of Molasses Hit Boston | A wave of molasses moving 35 mph killed 21 people. | done 2026-11-24 HyHsDj9vsYY (slot 2026-11-24 08:00 ET; title: A Wave of Molasses Killed 21 People; wave height left out: 15/25/40 ft in the sources) |
-| 15 | WD | The 1904 Olympic Marathon Was a Disaster | The winner was fed rat poison during the race. | |
+| 15 | WD | The 1904 Olympic Marathon Was a Disaster | The winner was fed rat poison during the race. | done 2026-11-24 g4FVyyqeJkg (slot 2026-11-24 13:00 ET; title: The Olympic Marathon Winner Was Fed Rat Poison; finisher count left out: one source only) |
 | 16 | WW | He Robbed 28 Stagecoaches and Left Poems | Black Bart never fired a shot. A laundry mark caught him. | |
 | 17 | TI | The Key That Could Have Saved the Titanic | The binoculars on the Titanic were locked away. | |
 | 18 | MY | The Colony That Vanished, Leaving One Word | 115 people disappeared. One word was carved into a post. | |

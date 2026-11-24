@@ -1,0 +1,16 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "map",
+ "background": { "src": "map.png", "crop": [0.165, 0.139, 0.5, 0.5], "grade": "warm", "blur": 0.8, "side": "top", "darken": 0.12 },
+ "layers": [
+  { "type": "image", "src": "hicks.jpg", "x": 150, "y": 440, "w": 780, "aspect": 0.891, "crop": [0, 0, 1, 1], "rotate": -2, "grade": "warm", "paper": true },
+  { "type": "pin", "x": 800, "y": 1380, "label": "ST. LOUIS", "size": 46 }
+ ],
+ "headline": { "lines": ["HE STILL", "WON GOLD"], "accent": ["GOLD"], "align": "center", "x": 0, "y": 100, "size": 160 },
+ "tags": [
+  { "text": "AUG 30, 1904", "x": 90, "y": 1260, "variant": "date", "size": 48, "rotate": -2 },
+  { "text": "RAT POISON IN HIS CUP", "x": 90, "y": 1400, "variant": "label", "size": 40 }
+ ],
+ "guides": false
+}

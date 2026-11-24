@@ -1,0 +1,8 @@
+RTF (Real Time Factor): 2.82x
+Generation time: 135.16 seconds
+Audio duration: 48.00 seconds
+RTF (Real Time Factor): 2.82x
+Saved narration_raw.wav (48.000000 s, voice Frank)
+The winner of the 1904 Olympic marathon was fed rat poison during the race. How did that happen? St. Louis. 90 degrees. 32 runners on dusty roads with one water stop at mile 12. Fred Law's got cramps after nine miles so he climbed into a car. Later he hopped out, jogged into the stadium and was cheered as the winner until people saw the trick. Behind him Thomas Hicks was fading. His trainers gave him strict nine rat poison mixed with egg whites and later brandy. Meanwhile a Cuban runner ate rotten apples, got cramps and took a nap. A wild dog chased another runner a mile off course. Hicks kept going and won the gold. Because the winner of the 1904 Olympic marathon
+first {'w': 'The', 's': np.float64(0.0), 'e': np.float64(0.98)} last {'w': 'marathon', 's': np.float64(47.44), 'e': np.float64(47.78)} n 125
+FIN
