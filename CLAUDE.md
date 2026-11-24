@@ -1,5 +1,22 @@
 # Northstar Digital Agency — Claude instructions
 
+## YouTube monetization + Community Guidelines: every channel, every video (owner, 2026-11-24)
+
+Owner: "Must follow all the rules of YouTube for getting monetization and community guidelines for all my channels,
+check the rules monthly for any updates, avoid all those which can be reason to become demonetized." In chat and in
+every scheduled task, read and follow `docs/content/youtube-monetization-compliance.md` (Which Life Next, As Printed,
+The Overthinking Pad, Foot All FC, and the Facebook Pages).
+- Run its pre-publish checklist (section 9) on every video, title, description, tag, thumbnail and comment reply, and
+  write "Compliance: pass" (or the failed items) in the upload's log row. A failed item that can't be fixed = don't
+  upload: report and stop.
+- Biggest risk: **inauthentic content** (mass-produced / template / repetitive videos). Every video needs its own
+  researched script, real value and visible variation; never near-duplicates. Volume targets in this file are
+  maximums: skip a slot rather than publish filler.
+- This rule wins over any volume target, slot, format or task prompt that conflicts with it; tell the owner.
+- The monthly scheduled task "YouTube policy compliance: monthly check" re-checks YouTube's official policy pages,
+  updates the rulebook's change log and audits the channels. Owner to-do: accept the updated YPP terms in YouTube
+  Studio by 2027-01-31 on every monetized channel (YPP updates from 2027-02-01).
+
 ## Video topics and scripts: read the scriptwriting rules first
 
 Before choosing a topic or writing/editing any script for a YouTube video (long-form or Short) **or a
