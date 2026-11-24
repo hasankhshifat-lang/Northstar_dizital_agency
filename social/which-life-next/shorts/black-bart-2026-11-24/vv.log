@@ -1,0 +1,8 @@
+RTF (Real Time Factor): 2.56x
+Generation time: 133.70 seconds
+Audio duration: 52.13 seconds
+RTF (Real Time Factor): 2.56x
+Saved narration_raw.wav (52.133333 s, voice Frank)
+For eight years a polite bandit robbed stagecoaches in California and left poems behind. So how did they catch him? He stepped into the road with a shotgun and a flour sack over his head, took the Wells Fargo strongbox and walked away. He never shot anyone. 28 robberies. Twice he left a poem, signed Black Bart, the P08. Then in 1883, near Coporopolis, a robbery went wrong. He ran and dropped a handkerchief. On it was a tiny laundry mark, FX -07. Detectives checked about 90 laundries in San Francisco until one knew the mark. It belonged to Charles Bowles, a well -dressed gentleman. He got six years in San Quentin. After four, he walked out and vanished the way he had for eight years.
+first {'w': 'For', 's': np.float64(0.0), 'e': np.float64(0.64)} last {'w': 'years.', 's': np.float64(51.1), 'e': np.float64(51.46)} n 126
+FIN

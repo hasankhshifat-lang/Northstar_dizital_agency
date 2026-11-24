@@ -1,0 +1,83 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "map",
+ "background": {
+  "src": "map.png",
+  "crop": [
+   0.326,
+   0.086,
+   0.6,
+   0.6
+  ],
+  "grade": "warm",
+  "blur": 0.8,
+  "side": "top",
+  "darken": 0.12
+ },
+ "layers": [
+  {
+   "type": "image",
+   "src": "bart.jpg",
+   "x": 330,
+   "y": 420,
+   "w": 680,
+   "aspect": 0.788,
+   "crop": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "rotate": 2,
+   "grade": "warm",
+   "paper": true
+  },
+  {
+   "type": "pin",
+   "x": 300,
+   "y": 1400,
+   "label": "COPPEROPOLIS",
+   "size": 44
+  }
+ ],
+ "headline": {
+  "lines": [
+   "CAUGHT BY",
+   "HIS LAUNDRY"
+  ],
+  "accent": [
+   "LAUNDRY"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 100,
+  "size": 150
+ },
+ "tags": [
+  {
+   "text": "1875\u20131883",
+   "x": 50,
+   "y": 560,
+   "variant": "date",
+   "size": 48,
+   "rotate": -3
+  },
+  {
+   "text": "MARK: F.X.O.7",
+   "x": 50,
+   "y": 1080,
+   "variant": "stamp",
+   "size": 46,
+   "rotate": -4
+  },
+  {
+   "text": "BLACK BART",
+   "x": 640,
+   "y": 1330,
+   "variant": "label",
+   "size": 44
+  }
+ ],
+ "guides": false
+}

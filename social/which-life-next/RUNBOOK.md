@@ -524,3 +524,9 @@ Start on the map, then **dive into the place** and show what the narration descr
 - Story `src/stories/chicagoRaise.tsx` + `src/sets/chicagoScenes.tsx` (`Jack` screw jack with turning bar, `BrickRow` that rises on timbers and jacks, `Steps`, `Mud`, `Wagon`, `Pipe`, `Hotel`, `TopHat`, `Bonnet`, `Skirt`); mix `shorts/chicago-raise-2026-11-23/mix.py` (ratchets, creaks, crowd). `clean` prop for a text-free map still.
 - **us-atlas `states-10m` polygons run out into the Great Lakes**, so Lake Michigan draws as land. Draw `src/data/ne50m_great_lakes.json` (Natural Earth 50m, the five lakes, rounded to 3 decimals, 30 KB) on top of the states in the sea colour.
 - Two complete Shorts fit in one run when the first finishes early: ~20 min of rendering each (5.5 min Remotion render at concurrency 4, 2 min VibeVoice).
+
+- 2026-11-24 (3 Shorts in one run): build the next Short's scenes while the current one renders (render ~6–7 min at concurrency 3–4, VibeVoice ~2 min; don't run both at once).
+  Thumbnail map backgrounds: crop the clean map still with a 9:16 crop ([x0, y0, 0.5, 0.5] = 2× zoom) and compute it so the real place lands exactly under the pin
+  (screen x = (mapX − x0·1080)·k, y = (mapY − y0·1920)·k); a plain [0, 0.2, 1, 0.6] crop moves the place away from the pin. Check the photo doesn't cover the pin.
+  Low-res PD portraits (e.g. 319×358) look fine as a "paper" print; a rembg cutout of an old photo can leave a jagged collar edge.
+  Remotion stills reflect the encoded output's pix_fmt only after `scale=in_range=full:out_range=tv,format=yuv420p` (plain -pix_fmt gives yuvj420p).
