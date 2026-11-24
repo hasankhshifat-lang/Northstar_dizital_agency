@@ -1,0 +1,7 @@
+DIFF short_000 | Charles Ponzi, the financial wizard, said to have made more than nine million dollars in a few months, by dealing in postal coupons. → Charles Ponzi, the financial wizard, said to have made more than $9 million in a few months by dealing in postal coupons. 
+DIFF short_001 | His promise: fifty per cent profit in forty five days. Crowds handed him their savings. → His promise 50% profit in 45 days, crowds handed him their savings. 
+OK   short_002 | His secret, he said, was postal reply coupons. Bought cheap in Europe. Cashed for more at American post offices. → His secret, he said, was postal reply coupons, bought cheap in Europe, cashed for more at American post offices. 
+DIFF short_003 | But on page three, the same story quoted the Boston postmaster. In three months: thirty dollars worth of coupons, for Ponzi's company. → But on page 3, the same story quoted the Boston Postmaster. In 3 months, $30 worth of coupons for Ponzi's company. 
+OK   short_004 | Two weeks later. Ponzi is arrested. Took in twenty millions. Says he cannot pay. → Two weeks later, Ponzi is arrested, took in 20 millions, says he cannot pay. 
+DIFF short_005 | Nine million, as printed. Thirty dollars, as recorded. So where did the wizard's money come from? From the next investor in line. → $9 million as printed, $30 as recorded, so where did the wizard's money come from? From the next investor in line. 
+mismatches: 4 (lang=en, model=small.en)

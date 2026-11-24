@@ -251,8 +251,8 @@
      "labels": [
       {
        "at": [
-        2080,
-        750
+        3350,
+        2600
        ],
        "text": "Charles Ponzi",
        "sub": "Bain News Service photograph"
@@ -347,9 +347,8 @@
      "say": "For several weeks, crowds have flocked to Ponzi's offices, and given their savings, in exchange for notes of the company, for the principal plus fifty per cent, payable in ninety days. Invariably, Ponzi is said to have paid off the note in forty five days. And there has been no complaint that any person has failed to receive money when due."
     },
     {
-     "type": "table",
+     "type": "read",
      "item": "azrep",
-     "zoom": 0.85,
      "boxes": [
       [
        2271,
@@ -437,7 +436,7 @@
       {
        "at": [
         2800,
-        1250
+        2050
        ],
        "text": "Boston Post Office",
        "sub": "Post Office Square · Detroit Publishing Co."
@@ -580,7 +579,7 @@
       {
        "at": [
         1320,
-        120
+        260
        ],
        "text": "Boston City Hall",
        "sub": "School Street · c1903"
@@ -751,9 +750,8 @@
      "say": "A statement came from Postmaster Roland Baker, that the Boston post office redeemed only thirty dollars worth of international postal reply coupons, in the last three months, for Ponzi's exchange company."
     },
     {
-     "type": "table",
+     "type": "read",
      "item": "trib31b",
-     "zoom": 1.2,
      "boxes": [
       [
        1651,
@@ -1532,9 +1530,8 @@
      "say": "And the paper explained what the coupons had hidden. The little Italian, with prison sentences in Canada and this country behind him, developed his supposed scheme, only to have his house of easy money topple over on him, when the props of income from investors were pulled out."
     },
     {
-     "type": "table",
+     "type": "read",
      "item": "star30",
-     "zoom": 1.1,
      "boxes": [
       [
        1760,
@@ -1609,13 +1606,13 @@
       "label": "NEW-YORK TRIBUNE · 31 JUL 1920 · PAGE 1",
       "quote": "\"…said to have made more than $9,000,000 … by dealing in international postal coupons.\"",
       "value": "9,000,000",
-      "unit": "dollars · as printed"
+      "unit": "as printed"
      },
      "b": {
       "label": "BOSTON POST OFFICE · SAME STORY · PAGE 3",
       "quote": "\"…redeemed only $30 worth of International Postal Reply coupons in the last three months…\"",
       "value": "30",
-      "unit": "dollars · the record",
+      "unit": "the record",
       "source": "New-York Tribune · Chronicling America"
      },
      "strike": "a",
@@ -1832,13 +1829,13 @@
      "type": "compare",
      "a": {
       "label": "PRINTED · 31 JUL 1920",
-      "quote": "\"…more than $9,000,000 … in international postal coupons\"",
+      "quote": "\"…more than $9,000,000…\"",
       "value": "9,000,000",
       "unit": "dollars"
      },
      "b": {
       "label": "THE RECORD · SAME STORY",
-      "quote": "\"…only $30 worth of International Postal Reply coupons…\"",
+      "quote": "\"…only $30 worth…\"",
       "value": "30",
       "unit": "dollars",
       "source": "New-York Tribune, p. 3"
