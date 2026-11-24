@@ -1,0 +1,625 @@
+{
+"text": " Two nights before the Manchester derby, Mario Balotelli's bathroom caught fire. Fireworks. October 2011. Just after midnight, a firework set the bathroom of his rented house alight. Two fire engines came. Nobody was hurt. The repair bill, reportedly \u00a3400,000. And Mario? He blamed a friend. Then, on Sunday, Manchester City went to Old Trafford. 22 minutes in, Balotelli scores And he lifts his shirt Underneath a message Why always me? He scored again after the break City won 6 goals to 1 at Old Trafford United's worst home defeat in 56 years Sir Alex Ferguson called it Our worst ever day And the funniest part? Days later, Mario became the face of a firework safety campaign Genius or chaos? Tell me in the comments",
+"words": [
+{
+"word": "Two",
+"start": 0,
+"end": 0.26
+},
+{
+"word": "nights",
+"start": 0.26,
+"end": 0.52
+},
+{
+"word": "before",
+"start": 0.52,
+"end": 0.82
+},
+{
+"word": "the",
+"start": 0.82,
+"end": 0.94
+},
+{
+"word": "Manchester",
+"start": 0.94,
+"end": 1.46
+},
+{
+"word": "derby,",
+"start": 1.46,
+"end": 2.28
+},
+{
+"word": "Mario",
+"start": 2.28,
+"end": 2.58
+},
+{
+"word": "Balotelli's",
+"start": 2.58,
+"end": 3.14
+},
+{
+"word": "bathroom",
+"start": 3.14,
+"end": 3.56
+},
+{
+"word": "caught",
+"start": 3.56,
+"end": 3.84
+},
+{
+"word": "fire.",
+"start": 3.84,
+"end": 4.24
+},
+{
+"word": "Fireworks.",
+"start": 4.88,
+"end": 5.86
+},
+{
+"word": "October",
+"start": 5.86,
+"end": 6.14
+},
+{
+"word": "2011.",
+"start": 6.14,
+"end": 7.46
+},
+{
+"word": "Just",
+"start": 7.46,
+"end": 7.56
+},
+{
+"word": "after",
+"start": 7.56,
+"end": 7.84
+},
+{
+"word": "midnight,",
+"start": 7.84,
+"end": 8.4
+},
+{
+"word": "a",
+"start": 8.4,
+"end": 8.44
+},
+{
+"word": "firework",
+"start": 8.44,
+"end": 8.98
+},
+{
+"word": "set",
+"start": 8.98,
+"end": 9.2
+},
+{
+"word": "the",
+"start": 9.2,
+"end": 9.34
+},
+{
+"word": "bathroom",
+"start": 9.34,
+"end": 9.66
+},
+{
+"word": "of",
+"start": 9.66,
+"end": 9.84
+},
+{
+"word": "his",
+"start": 9.84,
+"end": 9.96
+},
+{
+"word": "rented",
+"start": 9.96,
+"end": 10.22
+},
+{
+"word": "house",
+"start": 10.22,
+"end": 10.5
+},
+{
+"word": "alight.",
+"start": 10.44,
+"end": 11.54
+},
+{
+"word": "Two",
+"start": 11.54,
+"end": 11.68
+},
+{
+"word": "fire",
+"start": 11.68,
+"end": 11.98
+},
+{
+"word": "engines",
+"start": 11.98,
+"end": 12.28
+},
+{
+"word": "came.",
+"start": 12.28,
+"end": 13.14
+},
+{
+"word": "Nobody",
+"start": 13.14,
+"end": 13.4
+},
+{
+"word": "was",
+"start": 13.4,
+"end": 13.64
+},
+{
+"word": "hurt.",
+"start": 13.64,
+"end": 14.52
+},
+{
+"word": "The",
+"start": 14.52,
+"end": 14.62
+},
+{
+"word": "repair",
+"start": 14.62,
+"end": 14.94
+},
+{
+"word": "bill,",
+"start": 14.94,
+"end": 15.42
+},
+{
+"word": "reportedly",
+"start": 15.42,
+"end": 16.06
+},
+{
+"word": "\u00a3400,000.",
+"start": 16.06,
+"end": 17.84
+},
+{
+"word": "And",
+"start": 19.12,
+"end": 19.26
+},
+{
+"word": "Mario?",
+"start": 19.26,
+"end": 20.22
+},
+{
+"word": "He",
+"start": 20.22,
+"end": 20.34
+},
+{
+"word": "blamed",
+"start": 20.34,
+"end": 20.6
+},
+{
+"word": "a",
+"start": 20.6,
+"end": 20.74
+},
+{
+"word": "friend.",
+"start": 20.74,
+"end": 21.58
+},
+{
+"word": "Then,",
+"start": 21.58,
+"end": 21.8
+},
+{
+"word": "on",
+"start": 21.8,
+"end": 21.98
+},
+{
+"word": "Sunday,",
+"start": 21.98,
+"end": 23.06
+},
+{
+"word": "Manchester",
+"start": 23.06,
+"end": 23.54
+},
+{
+"word": "City",
+"start": 23.54,
+"end": 23.86
+},
+{
+"word": "went",
+"start": 23.86,
+"end": 24.08
+},
+{
+"word": "to",
+"start": 24.08,
+"end": 24.28
+},
+{
+"word": "Old",
+"start": 24.28,
+"end": 24.46
+},
+{
+"word": "Trafford.",
+"start": 24.46,
+"end": 25.34
+},
+{
+"word": "22",
+"start": 25.44,
+"end": 25.8
+},
+{
+"word": "minutes",
+"start": 25.8,
+"end": 26.1
+},
+{
+"word": "in,",
+"start": 26.1,
+"end": 26.58
+},
+{
+"word": "Balotelli",
+"start": 26.58,
+"end": 26.88
+},
+{
+"word": "scores",
+"start": 26.88,
+"end": 27.3
+},
+{
+"word": "And",
+"start": 28.02,
+"end": 28.2
+},
+{
+"word": "he",
+"start": 28.2,
+"end": 28.32
+},
+{
+"word": "lifts",
+"start": 28.32,
+"end": 28.52
+},
+{
+"word": "his",
+"start": 28.52,
+"end": 28.68
+},
+{
+"word": "shirt",
+"start": 28.68,
+"end": 29.02
+},
+{
+"word": "Underneath",
+"start": 28.86,
+"end": 30.04
+},
+{
+"word": "a",
+"start": 30.04,
+"end": 30.14
+},
+{
+"word": "message",
+"start": 30.14,
+"end": 30.56
+},
+{
+"word": "Why",
+"start": 30.06,
+"end": 31.18
+},
+{
+"word": "always",
+"start": 31.18,
+"end": 31.58
+},
+{
+"word": "me?",
+"start": 31.58,
+"end": 32.28
+},
+{
+"word": "He",
+"start": 32.3,
+"end": 32.4
+},
+{
+"word": "scored",
+"start": 32.4,
+"end": 32.64
+},
+{
+"word": "again",
+"start": 32.64,
+"end": 32.88
+},
+{
+"word": "after",
+"start": 32.88,
+"end": 33.14
+},
+{
+"word": "the",
+"start": 33.14,
+"end": 33.3
+},
+{
+"word": "break",
+"start": 33.3,
+"end": 33.6
+},
+{
+"word": "City",
+"start": 33.3,
+"end": 34.36
+},
+{
+"word": "won",
+"start": 34.36,
+"end": 34.7
+},
+{
+"word": "6",
+"start": 34.7,
+"end": 35.38
+},
+{
+"word": "goals",
+"start": 35.38,
+"end": 35.72
+},
+{
+"word": "to",
+"start": 35.72,
+"end": 35.96
+},
+{
+"word": "1",
+"start": 35.96,
+"end": 36.28
+},
+{
+"word": "at",
+"start": 36.28,
+"end": 36.8
+},
+{
+"word": "Old",
+"start": 36.8,
+"end": 37.06
+},
+{
+"word": "Trafford",
+"start": 37.06,
+"end": 37.42
+},
+{
+"word": "United's",
+"start": 36.96,
+"end": 38.38
+},
+{
+"word": "worst",
+"start": 38.38,
+"end": 38.68
+},
+{
+"word": "home",
+"start": 38.68,
+"end": 38.96
+},
+{
+"word": "defeat",
+"start": 38.96,
+"end": 39.24
+},
+{
+"word": "in",
+"start": 39.24,
+"end": 39.42
+},
+{
+"word": "56",
+"start": 39.42,
+"end": 39.98
+},
+{
+"word": "years",
+"start": 39.98,
+"end": 40.44
+},
+{
+"word": "Sir",
+"start": 40.18,
+"end": 41.1
+},
+{
+"word": "Alex",
+"start": 41.1,
+"end": 41.34
+},
+{
+"word": "Ferguson",
+"start": 41.34,
+"end": 41.74
+},
+{
+"word": "called",
+"start": 41.74,
+"end": 42.12
+},
+{
+"word": "it",
+"start": 42.12,
+"end": 42.3
+},
+{
+"word": "Our",
+"start": 41.88,
+"end": 42.74
+},
+{
+"word": "worst",
+"start": 42.74,
+"end": 43.1
+},
+{
+"word": "ever",
+"start": 43.1,
+"end": 43.4
+},
+{
+"word": "day",
+"start": 43.4,
+"end": 43.76
+},
+{
+"word": "And",
+"start": 44.68,
+"end": 44.86
+},
+{
+"word": "the",
+"start": 44.86,
+"end": 44.98
+},
+{
+"word": "funniest",
+"start": 44.98,
+"end": 45.24
+},
+{
+"word": "part?",
+"start": 45.24,
+"end": 45.74
+},
+{
+"word": "Days",
+"start": 46.3,
+"end": 46.52
+},
+{
+"word": "later,",
+"start": 46.52,
+"end": 47.1
+},
+{
+"word": "Mario",
+"start": 47.1,
+"end": 47.44
+},
+{
+"word": "became",
+"start": 47.44,
+"end": 47.7
+},
+{
+"word": "the",
+"start": 47.7,
+"end": 47.88
+},
+{
+"word": "face",
+"start": 47.88,
+"end": 48.18
+},
+{
+"word": "of",
+"start": 48.18,
+"end": 48.3
+},
+{
+"word": "a",
+"start": 48.3,
+"end": 48.4
+},
+{
+"word": "firework",
+"start": 48.4,
+"end": 48.82
+},
+{
+"word": "safety",
+"start": 48.82,
+"end": 49.2
+},
+{
+"word": "campaign",
+"start": 49.2,
+"end": 49.68
+},
+{
+"word": "Genius",
+"start": 49.48,
+"end": 50.74
+},
+{
+"word": "or",
+"start": 50.74,
+"end": 51.42
+},
+{
+"word": "chaos?",
+"start": 51.42,
+"end": 52.38
+},
+{
+"word": "Tell",
+"start": 52.56,
+"end": 52.72
+},
+{
+"word": "me",
+"start": 52.72,
+"end": 52.84
+},
+{
+"word": "in",
+"start": 52.84,
+"end": 52.92
+},
+{
+"word": "the",
+"start": 52.92,
+"end": 53.02
+},
+{
+"word": "comments",
+"start": 53.02,
+"end": 53.24
+}
+]
+}

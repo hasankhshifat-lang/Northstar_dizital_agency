@@ -1,0 +1,8 @@
+{
+ "width": 1080, "height": 1920, "style": "toon",
+ "background": {"src": "balotelli-2011-short-art.jpg", "grade": "none", "darken": 0, "side": "none"},
+ "layers": [],
+ "headline": {"lines": ["HOUSE FIRE.", "THEN 6–1."], "accent": ["THEN 6–1."], "align": "center", "x": 0, "y": 110, "size": 150, "panel": true},
+ "tags": [{"text": "MANCHESTER DERBY · 2011", "x": 270, "y": 1380, "variant": "label", "size": 40}],
+ "guides": false
+}
