@@ -16,3 +16,6 @@ Append-only checkpoint log (growth.py snapshots).
 5. **Evidence:** retention above median rules out story; engaged ratio at median rules out the hook as the main issue.
 6. **What can change:** prefer stories with a single absurd image (the new funny brief already does this).
 7. **Test next:** none specific (gap too small); keep logging.
+- 2026-11-24 · 7d (age 184.8 h) · views 141 · engagedViews/views 50/141 = 0.355 · avg % viewed 55.8% · avg duration 27 s · US share 0.0% · subs gained 0 · data_through 2026-11-19 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
+  - retention (growth.py retention): same as 72h (data_through 2026-11-19): drops 4.9 s (-0.06), 47.5/48.5 s (-0.06), 7.8 s (-0.04); script leicester-5000-1.md: 4.9 s = end of hook / start of "A year earlier, they'd spent Christmas bottom…" (4.85–10 s, league-table scene); 47.5–48.5 s = final comment question "or can you name a bigger one?" (bookend). Rewatch blips 15.7/19.1 s (Vardy record run).
+  - Compare at 7d: too few videos to compare (n=4).

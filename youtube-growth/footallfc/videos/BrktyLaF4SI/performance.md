@@ -16,3 +16,6 @@ Append-only checkpoint log (growth.py snapshots).
 5. **Evidence:** lowest engaged ratio of 8 Shorts; best Short (hVYufhSqQwE, 0.53) opened on a visual oddity in motion. Hypothesis: topic, thumbnail state and opening all differ between them.
 6. **What can change:** open on motion with the absurd image (tiny boy among giants, or the napkin being signed as the payoff), turn medical explanation into a 2-second visual gag.
 7. **Test next:** EXP-footallfc-002 (payoff-first freeze vs setup-first), on the new style.
+- 2026-11-24 · 7d (age 182.8 h) · views 70 · engagedViews/views 16/70 = 0.229 · avg % viewed 47.8% · avg duration 26 s · US share 0.0% · subs gained 0 · data_through 2026-11-19 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
+  - retention (growth.py retention): same curve as 72h (data_through 2026-11-19): drops 9.5 s, 12.3 s (-0.125), 5.0 s (-0.062); script messi-napkin-contract.md: 5.0 s = scene 2 "smallest boy" (4.9–9.7 s), 9.5/12.3 s = scene 3 diagnosis (9.7–14.1 s).
+  - Compare at 7d: too few videos to compare (n=4 Shorts with 7d analytics). Earlier 72h flag (hook/first frame) stands.
