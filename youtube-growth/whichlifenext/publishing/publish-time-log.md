@@ -8,3 +8,4 @@
 | 2026-11-23 13:00 | 08:00 | 08:00 ET (3-a-day slot) | Short 51.0 s, voiced map | Robert Smalls steals the Planter past Fort Sumter (FT) · t6fR0H1yYJo | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22); EXP-whichlifenext-001 no longer a clean test |
 | 2026-11-23 18:00 | 13:00 | 13:00 ET (3-a-day slot) | Short 49.9 s, voiced map | The WWII bat bomb backfires at Carlsbad (WR) · FrsAQmXpo4o | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22); first 13:00 ET Short |
 | 2026-11-23 22:00 | 17:00 | 17:00 ET (3-a-day slot) | Short 47.4 s, voiced map | The raising of Chicago: Lake Street block on 6,000 jackscrews (HOW) · nJopWLqMnJU | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22); first day with all 3 slots filled |
+| 2026-11-24 13:00 | 08:00 | 08:00 ET (3-a-day slot) | Short 47.3 s, voiced map | The Great Molasses Flood, Boston 1919 (SV) · HyHsDj9vsYY | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22) |
