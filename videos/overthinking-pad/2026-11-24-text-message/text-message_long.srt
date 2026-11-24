@@ -1,0 +1,987 @@
+1
+00:00:00,300 --> 00:00:03,791
+Your phone buzzes. It's a reply to the long
+
+2
+00:00:03,831 --> 00:00:06,760
+careful message you sent an hour ago.
+
+3
+00:00:06,800 --> 00:00:09,088
+And it says… okay. Just okay.
+
+4
+00:00:09,128 --> 00:00:10,601
+With a period.
+
+5
+00:00:11,651 --> 00:00:13,093
+So you read it again.
+
+6
+00:00:13,133 --> 00:00:15,070
+And again. Are they annoyed?
+
+7
+00:00:15,110 --> 00:00:16,905
+Did I say something wrong?
+
+8
+00:00:16,945 --> 00:00:18,246
+And why the period?
+
+9
+00:00:18,286 --> 00:00:21,422
+Within a minute, two letters have turned into
+
+10
+00:00:21,462 --> 00:00:24,528
+a whole story… and the story is never a good
+
+11
+00:00:24,568 --> 00:00:25,200
+one.
+
+12
+00:00:26,250 --> 00:00:27,561
+Here's the strange part.
+
+13
+00:00:27,601 --> 00:00:30,151
+Psychologists have tested how well people read
+
+14
+00:00:30,191 --> 00:00:31,502
+tone in a typed message.
+
+15
+00:00:31,542 --> 00:00:33,754
+And the answer says a lot less about the
+
+16
+00:00:33,794 --> 00:00:36,344
+message… and a lot more about the brain that's
+
+17
+00:00:36,384 --> 00:00:37,353
+reading it.
+
+18
+00:00:38,403 --> 00:00:41,002
+So why does your brain turn a two letter text
+
+19
+00:00:41,042 --> 00:00:43,407
+into a verdict? How often is that verdict
+
+20
+00:00:43,447 --> 00:00:45,929
+right? And what should you do the next time
+
+21
+00:00:45,969 --> 00:00:48,783
+okay, with a period, lands on your screen?
+
+22
+00:00:54,633 --> 00:00:57,207
+In two thousand five, a team led by the
+
+23
+00:00:57,247 --> 00:01:00,290
+psychologists Justin Kruger and Nicholas Epley
+
+24
+00:01:00,330 --> 00:01:03,038
+ran a set of experiments on exactly this.
+
+25
+00:01:03,078 --> 00:01:06,122
+In one of them, sixty students at Cornell came
+
+26
+00:01:06,162 --> 00:01:07,383
+in, in pairs.
+
+27
+00:01:08,433 --> 00:01:10,757
+Each person got a list of short sentences
+
+28
+00:01:10,797 --> 00:01:12,718
+about campus life. Some were meant
+
+29
+00:01:12,758 --> 00:01:15,082
+sarcastically. Some were meant seriously.
+
+30
+00:01:15,122 --> 00:01:17,619
+Their job was to get the real meaning across
+
+31
+00:01:17,659 --> 00:01:18,989
+to their partner.
+
+32
+00:01:20,039 --> 00:01:22,422
+Here's the twist. Half of them typed their
+
+33
+00:01:22,462 --> 00:01:23,806
+sentences into an email.
+
+34
+00:01:23,846 --> 00:01:26,402
+The other half read them out loud into a tape
+
+35
+00:01:26,442 --> 00:01:27,844
+recorder. Same sentences.
+
+36
+00:01:27,884 --> 00:01:29,272
+Different channel.
+
+37
+00:01:30,322 --> 00:01:32,717
+Before the partners saw anything, the senders
+
+38
+00:01:32,757 --> 00:01:34,990
+predicted how many their partner would get
+
+39
+00:01:35,030 --> 00:01:37,209
+right. And the email senders were just as
+
+40
+00:01:37,249 --> 00:01:39,872
+confident as the people using their voice.
+
+41
+00:01:40,922 --> 00:01:43,447
+The listeners got close to three out of four
+
+42
+00:01:43,487 --> 00:01:44,554
+right. The readers?
+
+43
+00:01:44,594 --> 00:01:47,626
+Their accuracy was no better than a coin flip.
+
+44
+00:01:48,676 --> 00:01:50,363
+And the readers had no idea.
+
+45
+00:01:50,403 --> 00:01:53,014
+They felt about as sure of their answers as
+
+46
+00:01:53,054 --> 00:01:55,605
+the listeners did. Nearly nine out of ten
+
+47
+00:01:55,645 --> 00:01:58,195
+they believed… with the accuracy of a coin
+
+48
+00:01:58,235 --> 00:01:58,893
+flip.
+
+49
+00:01:59,943 --> 00:02:02,381
+So the problem isn't that text is hard to
+
+50
+00:02:02,421 --> 00:02:04,860
+read. The problem is that it doesn't feel
+
+51
+00:02:04,900 --> 00:02:07,580
+hard. Your brain hands you an interpretation...
+
+52
+00:02:07,620 --> 00:02:09,360
+and stamps it, certain.
+
+53
+00:02:10,410 --> 00:02:13,468
+Even in their smallest study, where most
+
+54
+00:02:13,508 --> 00:02:16,721
+messages did get through, senders expected
+
+55
+00:02:16,761 --> 00:02:19,587
+ninety seven percent of them to land.
+
+56
+00:02:19,627 --> 00:02:21,445
+Eighty four percent did.
+
+57
+00:02:21,485 --> 00:02:23,307
+Confident… and off.
+
+58
+00:02:24,357 --> 00:02:26,728
+But surely this is about strangers, right?
+
+59
+00:02:26,768 --> 00:02:29,310
+Your best friend's texts, you can read those.
+
+60
+00:02:29,350 --> 00:02:31,996
+The researchers wondered the same thing.
+
+61
+00:02:33,046 --> 00:02:36,566
+So they ran a bigger version at the University
+
+62
+00:02:36,606 --> 00:02:40,125
+of Illinois. One hundred and fifty four pairs.
+
+63
+00:02:40,165 --> 00:02:41,673
+Some were strangers.
+
+64
+00:02:41,713 --> 00:02:45,232
+Some were friends. And this time, the messages
+
+65
+00:02:45,272 --> 00:02:48,250
+carried sarcasm, seriousness, anger, or
+
+66
+00:02:48,290 --> 00:02:49,259
+sadness.
+
+67
+00:02:50,309 --> 00:02:52,750
+Over email, the readers believed they had
+
+68
+00:02:52,790 --> 00:02:55,110
+understood almost nine in ten messages.
+
+69
+00:02:55,150 --> 00:02:57,470
+They had actually got about six in ten.
+
+70
+00:02:57,510 --> 00:02:59,406
+And here's the part that stings...
+
+71
+00:02:59,446 --> 00:03:02,519
+friends were no more accurate than strangers.
+
+72
+00:03:03,569 --> 00:03:06,207
+Knowing someone for years didn't fix it.
+
+73
+00:03:06,247 --> 00:03:07,814
+Which raises a question.
+
+74
+00:03:07,854 --> 00:03:09,822
+If the tone isn't in the text...
+
+75
+00:03:09,862 --> 00:03:12,622
+where is your brain getting it from?
+
+76
+00:03:16,272 --> 00:03:18,916
+Think about what a voice carries.
+
+77
+00:03:18,956 --> 00:03:22,250
+Pitch. Pauses. A little laugh at the end.
+
+78
+00:03:22,290 --> 00:03:25,341
+A face adds a raised eyebrow, a smile.
+
+79
+00:03:25,381 --> 00:03:28,659
+Text strips almost all of that away.
+
+80
+00:03:29,709 --> 00:03:31,832
+But your brain doesn't like a gap.
+
+81
+00:03:31,872 --> 00:03:34,694
+So it fills it. And the voice it uses to fill
+
+82
+00:03:34,734 --> 00:03:35,911
+it… is yours.
+
+83
+00:03:36,961 --> 00:03:39,312
+Kruger and Epley saw this from the sender's
+
+84
+00:03:39,352 --> 00:03:41,869
+side. When you type a sarcastic line, you hear
+
+85
+00:03:41,909 --> 00:03:44,149
+the sarcasm in your head as you write it.
+
+86
+00:03:44,189 --> 00:03:45,261
+So it seems obvious.
+
+87
+00:03:45,301 --> 00:03:46,040
+To you.
+
+88
+00:03:47,090 --> 00:03:50,329
+In one study, they asked senders to read their
+
+89
+00:03:50,369 --> 00:03:53,322
+own messages out loud in the opposite tone
+
+90
+00:03:53,362 --> 00:03:56,031
+first. Sarcastic lines read seriously.
+
+91
+00:03:56,071 --> 00:03:58,773
+Serious lines read sarcastically.
+
+92
+00:03:59,823 --> 00:04:01,771
+And their overconfidence disappeared.
+
+93
+00:04:01,811 --> 00:04:04,242
+Once they heard the message the way a stranger
+
+94
+00:04:04,282 --> 00:04:06,390
+might hear it, their predictions finally
+
+95
+00:04:06,430 --> 00:04:07,640
+matched reality.
+
+96
+00:04:08,690 --> 00:04:09,824
+Now flip that around.
+
+97
+00:04:09,864 --> 00:04:12,227
+When a text lands on your phone, you're the
+
+98
+00:04:12,267 --> 00:04:13,569
+one supplying the voice.
+
+99
+00:04:13,609 --> 00:04:16,140
+And the voice you supply depends on your mood
+
+100
+00:04:16,180 --> 00:04:17,817
+your history with that person...
+
+101
+00:04:17,857 --> 00:04:20,107
+and what you're already afraid of.
+
+102
+00:04:21,157 --> 00:04:23,937
+If you've been worrying that a friend is upset
+
+103
+00:04:23,977 --> 00:04:26,635
+with you, the voice in your head reads okay...
+
+104
+00:04:26,675 --> 00:04:27,515
+as cold.
+
+105
+00:04:28,565 --> 00:04:31,021
+There's a reason that voice so often sounds
+
+106
+00:04:31,061 --> 00:04:33,518
+negative. In a two thousand eight review of
+
+107
+00:04:33,558 --> 00:04:36,072
+how emotion travels by email, the management
+
+108
+00:04:36,112 --> 00:04:38,627
+researcher Kristin Byron argued that readers
+
+109
+00:04:38,667 --> 00:04:41,297
+tend to see messages as more negative, or more
+
+110
+00:04:41,337 --> 00:04:43,487
+neutral, than the sender meant.
+
+111
+00:04:44,537 --> 00:04:47,459
+That was a theory paper, built on earlier
+
+112
+00:04:47,499 --> 00:04:49,771
+studies, not one big experiment.
+
+113
+00:04:49,811 --> 00:04:52,878
+But small pieces of evidence point the same
+
+114
+00:04:52,918 --> 00:04:54,857
+way. Take that period.
+
+115
+00:04:55,907 --> 00:04:59,039
+In a study at Binghamton University, a hundred
+
+116
+00:04:59,079 --> 00:05:02,072
+and twenty six students read short exchanges
+
+117
+00:05:02,112 --> 00:05:05,037
+where the reply was one word, like okay, or
+
+118
+00:05:05,077 --> 00:05:08,002
+yup. When the reply was a text message, the
+
+119
+00:05:08,042 --> 00:05:11,035
+version ending in a period was rated as less
+
+120
+00:05:11,075 --> 00:05:11,977
+sincere.
+
+121
+00:05:13,027 --> 00:05:15,685
+On a handwritten note, the period made no
+
+122
+00:05:15,725 --> 00:05:18,448
+difference. The authors called it a modest
+
+123
+00:05:18,488 --> 00:05:20,159
+study, with one age group.
+
+124
+00:05:20,199 --> 00:05:23,054
+But it shows how much meaning we pour into a
+
+125
+00:05:23,094 --> 00:05:24,168
+single dot.
+
+126
+00:05:25,218 --> 00:05:26,879
+So your brain fills the gap.
+
+127
+00:05:26,919 --> 00:05:29,552
+And it tends to fill it with something worse
+
+128
+00:05:29,592 --> 00:05:30,707
+than what was sent.
+
+129
+00:05:30,747 --> 00:05:33,258
+Which leads to the most useful question in
+
+130
+00:05:33,298 --> 00:05:35,749
+this whole video. When your brain guesses
+
+131
+00:05:35,789 --> 00:05:38,448
+wrong… which way does it usually lean?
+
+132
+00:05:42,098 --> 00:05:43,454
+Here's where it turns.
+
+133
+00:05:43,494 --> 00:05:46,374
+If our errors were random, we'd guess too warm
+
+134
+00:05:46,414 --> 00:05:48,088
+about as often as too cold.
+
+135
+00:05:48,128 --> 00:05:51,334
+But in one area, the errors have a direction.
+
+136
+00:05:52,384 --> 00:05:54,352
+In a two thousand eighteen study, the
+
+137
+00:05:54,392 --> 00:05:56,522
+psychologists Erica Boothby, Gus Cooney
+
+138
+00:05:56,562 --> 00:05:58,856
+Gillian Sandstrom and Margaret Clark paired
+
+139
+00:05:58,896 --> 00:06:00,429
+strangers for a conversation.
+
+140
+00:06:00,469 --> 00:06:02,763
+Afterwards, each person rated how much they
+
+141
+00:06:02,803 --> 00:06:03,848
+liked their partner...
+
+142
+00:06:03,888 --> 00:06:06,734
+and guessed how much their partner liked them.
+
+143
+00:06:07,784 --> 00:06:10,160
+People consistently underestimated it.
+
+144
+00:06:10,200 --> 00:06:12,893
+Their partners liked them more, and enjoyed
+
+145
+00:06:12,933 --> 00:06:15,309
+their company more, than they thought.
+
+146
+00:06:15,349 --> 00:06:18,305
+The researchers called it the liking gap.
+
+147
+00:06:19,355 --> 00:06:21,639
+And it wasn't just one awkward lab chat.
+
+148
+00:06:21,679 --> 00:06:24,194
+They found it in first year students getting
+
+149
+00:06:24,234 --> 00:06:26,750
+to know their dorm mates, and the gap lasted
+
+150
+00:06:26,790 --> 00:06:29,074
+for months. They found it in adults at a
+
+151
+00:06:29,114 --> 00:06:31,439
+personal development workshop too.
+
+152
+00:06:32,489 --> 00:06:34,705
+Why? The researchers' best guess is that
+
+153
+00:06:34,745 --> 00:06:37,186
+during a conversation we're busy judging our
+
+154
+00:06:37,226 --> 00:06:39,780
+own performance, so we miss the signs that the
+
+155
+00:06:39,820 --> 00:06:42,256
+other person is actually enjoying it.
+
+156
+00:06:43,306 --> 00:06:45,563
+Now think about what that means for the okay
+
+157
+00:06:45,603 --> 00:06:47,912
+on your screen. You're reading a message from
+
+158
+00:06:47,952 --> 00:06:50,001
+someone who, on average, probably thinks
+
+159
+00:06:50,041 --> 00:06:51,957
+better of you than you assume.
+
+160
+00:06:53,007 --> 00:06:55,418
+And there's a second gap, about reaching out.
+
+161
+00:06:55,458 --> 00:06:57,759
+In a series of experiments published in two
+
+162
+00:06:57,799 --> 00:06:59,828
+thousand twenty two, Peggy Liu and her
+
+163
+00:06:59,868 --> 00:07:02,224
+colleagues had people send a short note or a
+
+164
+00:07:02,264 --> 00:07:05,065
+small gift to someone in their social circle.
+
+165
+00:07:06,115 --> 00:07:08,537
+The senders guessed how much it would be
+
+166
+00:07:08,577 --> 00:07:11,245
+appreciated. Then the people who got it said
+
+167
+00:07:11,285 --> 00:07:12,660
+how they actually felt.
+
+168
+00:07:12,700 --> 00:07:15,820
+Over and over, the senders underestimated it.
+
+169
+00:07:16,870 --> 00:07:19,500
+And the gap was biggest when the message was a
+
+170
+00:07:19,540 --> 00:07:21,823
+surprise… like a text out of the blue to
+
+171
+00:07:21,863 --> 00:07:24,203
+someone you haven't talked to in a while.
+
+172
+00:07:24,243 --> 00:07:26,857
+The exact text people keep not sending.
+
+173
+00:07:27,907 --> 00:07:29,941
+Put it together. Text hides tone.
+
+174
+00:07:29,981 --> 00:07:32,580
+Your brain fills in the missing voice with
+
+175
+00:07:32,620 --> 00:07:35,471
+your fears. And on the question of what people
+
+176
+00:07:35,511 --> 00:07:38,236
+think of you, those fears tend to run darker
+
+177
+00:07:38,276 --> 00:07:39,569
+than the truth.
+
+178
+00:07:40,619 --> 00:07:42,859
+One honest caveat. These are averages.
+
+179
+00:07:42,899 --> 00:07:45,560
+Sometimes okay with a period really does mean
+
+180
+00:07:45,600 --> 00:07:48,080
+someone's upset. The point isn't that your
+
+181
+00:07:48,120 --> 00:07:49,401
+worry is always wrong.
+
+182
+00:07:49,441 --> 00:07:51,621
+It's that your confidence in it isn't
+
+183
+00:07:51,661 --> 00:07:52,551
+evidence.
+
+184
+00:07:56,201 --> 00:07:58,619
+So what do you do when a short text sends your
+
+185
+00:07:58,659 --> 00:08:00,916
+brain spinning? Here are three things, each
+
+186
+00:08:00,956 --> 00:08:02,642
+one tied to the research.
+
+187
+00:08:03,692 --> 00:08:06,035
+One. Read it again, in a different voice.
+
+188
+00:08:06,075 --> 00:08:08,592
+Remember the senders who read their messages
+
+189
+00:08:08,632 --> 00:08:11,149
+in the opposite tone, and suddenly saw how a
+
+190
+00:08:11,189 --> 00:08:12,992
+stranger might hear them?
+
+191
+00:08:14,042 --> 00:08:15,491
+Do the reader's version.
+
+192
+00:08:15,531 --> 00:08:17,849
+Read okay in the warmest voice you can
+
+193
+00:08:17,889 --> 00:08:20,331
+imagine. Then in a rushed voice, someone
+
+194
+00:08:20,371 --> 00:08:21,696
+typing at a red light.
+
+195
+00:08:21,736 --> 00:08:24,488
+If all of them fit the words, the words alone
+
+196
+00:08:24,528 --> 00:08:26,925
+don't tell you which one is true.
+
+197
+00:08:27,975 --> 00:08:29,977
+That's not pretending everything is fine.
+
+198
+00:08:30,017 --> 00:08:32,119
+It's noticing that the cold version was one
+
+199
+00:08:32,159 --> 00:08:33,264
+reading out of several...
+
+200
+00:08:33,304 --> 00:08:34,800
+and that you picked it.
+
+201
+00:08:35,850 --> 00:08:37,685
+Two. If it matters, ask.
+
+202
+00:08:37,725 --> 00:08:40,810
+A quick, light question, like, all good?
+
+203
+00:08:40,850 --> 00:08:44,403
+clears up in ten seconds what your brain could
+
+204
+00:08:44,443 --> 00:08:47,996
+spin on for hours. In the Illinois study, even
+
+205
+00:08:48,036 --> 00:08:50,106
+friends misread each other.
+
+206
+00:08:50,146 --> 00:08:51,590
+Asking isn't needy.
+
+207
+00:08:51,630 --> 00:08:53,464
+It's just accurate.
+
+208
+00:08:54,514 --> 00:08:57,687
+Three. When it really matters, use your voice.
+
+209
+00:08:57,727 --> 00:09:00,620
+In two thousand twenty one, Amit Kumar and
+
+210
+00:09:00,660 --> 00:09:03,553
+Nicholas Epley asked two hundred people to
+
+211
+00:09:03,593 --> 00:09:06,626
+reconnect with an old friend, by email or by
+
+212
+00:09:06,666 --> 00:09:07,435
+phone.
+
+213
+00:09:08,485 --> 00:09:10,933
+People expected a phone call to feel more
+
+214
+00:09:10,973 --> 00:09:13,177
+awkward, so they leaned toward email.
+
+215
+00:09:13,217 --> 00:09:15,968
+But the people who were assigned to phone felt
+
+216
+00:09:16,008 --> 00:09:18,577
+a stronger bond. And the phone calls didn't
+
+217
+00:09:18,617 --> 00:09:20,302
+feel any more awkward.
+
+218
+00:09:21,352 --> 00:09:24,265
+In another study, strangers chatted by text
+
+219
+00:09:24,305 --> 00:09:25,742
+by audio, or by video.
+
+220
+00:09:25,782 --> 00:09:28,830
+Hearing each other's voice made them feel more
+
+221
+00:09:28,870 --> 00:09:32,240
+connected. Adding video didn't add much more.
+
+222
+00:09:33,290 --> 00:09:35,549
+So the voice is the missing piece.
+
+223
+00:09:35,589 --> 00:09:38,388
+Put it back, and most of the guessing goes
+
+224
+00:09:38,428 --> 00:09:39,116
+away.
+
+225
+00:09:40,166 --> 00:09:42,887
+And a bonus for when you're the sender.
+
+226
+00:09:42,927 --> 00:09:46,003
+If a message could be read two ways, add the
+
+227
+00:09:46,043 --> 00:09:49,118
+tone yourself. A few warm words, a ha, or an
+
+228
+00:09:49,158 --> 00:09:52,765
+emoji does the job your voice would have done.
+
+229
+00:09:53,815 --> 00:09:55,255
+None of this is therapy.
+
+230
+00:09:55,295 --> 00:09:57,907
+If messages regularly leave you anxious for
+
+231
+00:09:57,947 --> 00:10:00,313
+days, that's worth talking through with
+
+232
+00:10:00,353 --> 00:10:02,842
+someone. But for the everyday okay, these
+
+233
+00:10:02,882 --> 00:10:04,897
+three habits go a long way.
+
+234
+00:10:05,947 --> 00:10:08,186
+So, back to that okay, with a period.
+
+235
+00:10:08,226 --> 00:10:10,404
+Your brain heard it in a cold voice...
+
+236
+00:10:10,444 --> 00:10:13,177
+because it had to pick a voice, and it picked
+
+237
+00:10:13,217 --> 00:10:15,230
+the one you were afraid of.
+
+238
+00:10:16,280 --> 00:10:18,853
+The research says that voice is often wrong
+
+239
+00:10:18,893 --> 00:10:21,050
+and wrong in a predictable direction.
+
+240
+00:10:21,090 --> 00:10:23,782
+The person who sent it probably likes you more
+
+241
+00:10:23,822 --> 00:10:26,725
+than you think… and was probably just busy.
+
+242
+00:10:27,775 --> 00:10:29,233
+So tell me in the comments.
+
+243
+00:10:29,273 --> 00:10:31,675
+What's the shortest text that ever sent your
+
+244
+00:10:31,715 --> 00:10:32,785
+brain into a spiral?
+
+245
+00:10:32,825 --> 00:10:35,004
+And if you like your psychology with the
+
+246
+00:10:35,044 --> 00:10:36,114
+receipts, subscribe.
+
+247
+00:10:36,154 --> 00:10:38,169
+There's a new page every week.
