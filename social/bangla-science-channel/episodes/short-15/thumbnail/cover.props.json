@@ -1,0 +1,15 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "toon",
+ "background": { "src": "bg_figma.png", "grade": "none", "blur": 0, "darken": 0.0, "side": "top" },
+ "layers": [
+  { "type": "cutout", "src": "bithi.png", "x": 0, "y": 450, "h": 1030, "outline": "#fff" }
+ ],
+ "headline": { "lines": ["ফাঁকা বাড়িতে", "কে কথা বলে?!"], "accent": ["কে কথা বলে?!"], "align": "center", "x": 0, "y": 110, "size": 140 },
+ "tags": [
+  { "text": "ভূত নয়!", "x": 790, "y": 560, "variant": "date", "size": 62, "rotate": -4 },
+  { "text": "সাইন্টিফিক বিথী", "x": 690, "y": 1250, "variant": "label", "size": 44 }
+ ],
+ "guides": false
+}
