@@ -125,7 +125,7 @@ long = [
   say="Under control. Printed under the worst week the city had ever recorded. And the paper had already explained, in its own words, why the deaths would keep coming."),
  dict(type="read", item="oct12", boxes=B['o12_after'][3:],
   say="Pneumonia, the frequent aftermath of the grip plague."),
- dict(type="photo", item="dcamb", focus=[2830, 2300], nf=0.5, drift=[0.25, 0], labels=[dict(at=[1500, 600], text="Red Cross Ambulance Station", sub="Washington, D.C., 1918 · a demonstration")],
+ dict(type="photo", item="dcamb", focus=[2830, 2300], nf=0.5, drift=[0.25, 0], labels=[dict(at=[2700, 1950], text="Red Cross Ambulance Station", sub="Washington, D.C., 1918 · a demonstration")],
   say="Many of the deaths came from pneumonia that followed the flu, often a week or more after someone fell ill. So a fall in new cases did not mean a fall in deaths. Not yet. The deaths were still on their way."),
  dict(type="chapter", kicker="PART 6", title="Less grip here", chapterName="Less grip here", item="oct16", say="Part six. Less grip here."),
  dict(type="read", item="oct16", boxes=B['o16_head'],
