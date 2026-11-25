@@ -6,3 +6,5 @@ Append-only checkpoint log (growth.py snapshots).
 
 - 2026-11-23 · 72h (age 136.8 h) · views 6 · engagedViews/views 4/6 = 0.667 · avg % viewed 27.9% · avg duration 176 s · US share 0% · subs gained 0 · data_through 2026-11-20 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
   - retention: no data yet (analytics lag or too few views)
+- 2026-11-25 · 7d (age 184.8 h) · views 8 · engagedViews/views 6/8 = 0.75 · avg % viewed 32.9% · avg duration 208 s · US share 0.0% · subs gained 0 · data_through 2026-11-21 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
+  - retention: no data yet (analytics lag or too few views); script 1xyUQOa6VgM.md exists, nothing to map

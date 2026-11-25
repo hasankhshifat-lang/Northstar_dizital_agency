@@ -14,3 +14,5 @@ Append-only checkpoint log (growth.py snapshots).
    "War is over! That is a real front page, printed on November seventh, nineteen eighteen." spends 3–9 s on the date,
    the same pattern that lost viewers at 6–10 s in I3uM_6UVWp0. 5. Evidence: views; no curve (too few views).
    6. Change: higher-demand topics; cut the spoken date line. 7. Test: EXP-asprinted-002.
+- 2026-11-25 · 7d (age 183.8 h) · views 1 · engagedViews/views 0/1 = 0.0 · avg % viewed 0% · avg duration 0 s · US share 0.0% · subs gained 0 · data_through 2026-11-19 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
+  - retention: no data yet (analytics lag or too few views)

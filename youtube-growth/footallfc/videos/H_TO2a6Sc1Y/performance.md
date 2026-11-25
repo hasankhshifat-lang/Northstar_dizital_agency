@@ -6,3 +6,4 @@ Append-only checkpoint log (growth.py snapshots).
 
 - 2026-11-24 · 24h (age 40.8 h) · Analytics n/a (not in yet, data_through null) · public views 155 · likes 0 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
   - Analytics not in yet (API lag). Compare at 24h: no analytics readings yet.
+- 2026-11-25 · 48h (age 64.8 h) · Analytics n/a (not in yet, data_through null) · public views 159 · likes 0 · source: YouTube Data API + YouTube Analytics API (own OAuth client)

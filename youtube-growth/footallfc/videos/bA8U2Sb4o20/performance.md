@@ -16,3 +16,6 @@ Append-only checkpoint log (growth.py snapshots).
 5. **Evidence:** the drop sits exactly on the context line; same 5–12 s drop pattern on BrktyLaF4SI, Ee8NbFAdEfg and (smaller) tNIQekn0giI.
 6. **What can change:** move date/place into an on-screen tag while action continues; go from hook straight to the first goal.
 7. **Test next:** production direction for all new scripts (no context-only line in 4–12 s); measured through the watch ratio at 10 s in EXP-footallfc-002.
+- 2026-11-25 · 7d (age 182.8 h) · views 91 · engagedViews/views 35/91 = 0.385 · avg % viewed 36.0% · avg duration 20 s · US share 14.3% · subs gained 1 · data_through 2026-11-19 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
+  - retention (growth.py retention): biggest drops at 11.4 s (-0.086), 10.8 s (-0.086), 6.3 s (-0.086); unchanged from 72h; script ronaldinho-bernabeu-ovation.md: line 2 (5.8–14.4 s) "November nineteenth, two thousand five. The Clasico, at the Bernabeu..."
+  - **Flag (2026-11-25):** below channel median at 7d, Shorts (91 vs 116 views, n=6; engaged 0.385 vs 0.339, above; 36.0% vs 50.8% viewed). Hypothesis unchanged from the 2026-11-23 diagnostic: story/production, viewers leave at the date/context line (6.3–11.4 s).
