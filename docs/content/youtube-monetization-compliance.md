@@ -161,7 +161,8 @@ A video can stay up but earn little or nothing. The **title, thumbnail and first
 Meta's Community Standards and Partner Monetization / Content Monetization policies are stricter than many think and
 follow the same logic: original content (no unoriginal or reused material), no misleading packaging or engagement
 bait ("comment YES", "share if you agree"), no limited-originality clips, no dangerous acts for young viewers, music
-only with rights. Use the same checklist (section 9) for Facebook posts.
+only with rights. Use the same checklist (section 9) for Facebook posts, plus: no branded content / paid partnership
+label (none of our videos is sponsored; owner, 2026-11-25) and the Facebook section of `after-upload-playbook.md`.
 
 ## 9. Pre-publish checklist (run on every video, before upload; record the result)
 

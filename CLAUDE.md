@@ -32,6 +32,11 @@ scheduled task, follow `docs/content/after-upload-playbook.md` (compliance ruleb
    together (CTR only from vidIQ/Studio, after ≥1,000 impressions).
 - Studio-only owner actions (no API): pin the question, end screens, a Short's related video, Test & Compare.
 - This changes the fixed publish minutes on every channel (owner-approved); the slots themselves stay.
+- **Facebook Page videos/Reels follow the same rules** (owner, 2026-11-25), as adapted in the playbook's Facebook
+  section: off-the-minute publishing (Scientific Bithi e.g. 20:04 Dhaka; Which Life Next cross-posts keep the YouTube
+  moment), processing check, sets of three, 4 h hands-off, ≤3 repackages, one question comment (Bithi: the puzzle), a
+  Reel from every long video, no branded-content/paid label, avg watch time + 3-s views ÷ reach instead of CTR.
+  Owner (no API): pin comments, series/playlists, Reels remix setting.
 
 ## Video topics and scripts: read the scriptwriting rules first
 

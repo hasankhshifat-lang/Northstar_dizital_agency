@@ -121,3 +121,38 @@ Upload defaults) and remixing = audio only (see CLAUDE.md).
 Each upload row in `social/youtube-schedule-log.md` adds: `slot 19:00 → published 19:03`, `check: ready`,
 `set: <playlist title> (n/3)`, `question: "<text>"`. Repackages get their own row ("repackage 1/3", old → new title,
 signal used) and an experiment note in `youtube-growth/<ch>/experiments/experiment-log.md`.
+
+---
+
+## Facebook Page videos and Reels: same rules (owner, 2026-11-25)
+
+Owner: "Same rules goes for fb page videos also." Applies to every video/Reel on our Facebook Pages (Scientific Bithi
+1497857623404891, Which Life Next 1342776542260801, and any other NorthStar Page), in chat and in every scheduled task,
+through the facebook-page-automation skill (Graph API v21.0). Meta's rules and the compliance rulebook (section 8) win.
+
+What the Graph API can and can't do (checked 2026-11-25): it can upload unpublished/scheduled
+(`published=false` + `scheduled_publish_time`), read processing status (`GET /<video>?fields=status`), post a comment
+as the Page (`POST /<video>/comments`), edit title/description (`POST /<video>` title=, description=) and set the cover
+(`/thumbnails`). It **cannot** pin a comment, make video playlists/series (`/video_lists` is read-only for us), set the
+Reels remix option, or give a thumbnail CTR. Those are **owner actions in Meta Business Suite / the Facebook app**.
+
+| Step | On Facebook |
+|---|---|
+| 1. Ready before public, off the round minute | Upload scheduled at least 2 h ahead. Before the run ends, `GET /<video>?fields=status` must show `processing_phase: complete` and `video_status` ready/scheduled; not ready ~30 min before → next slot. Publish **2–9 min after the slot**, never :00/:15/:30/:45 (Scientific Bithi 20:00 Dhaka → e.g. 20:04 = 14:04 UTC). Which Life Next cross-posts keep the **same moment as the YouTube publishAt** (which is already off the round minute). |
+| 2. No mass sharing | Never spam groups or other Pages with links; share only where the topic fits, with one line of value. |
+| 3. Sets of three | Same planning as YouTube (each its own topic/story); the caption names the set and the previous video. Facebook series/playlists: owner in Meta Business Suite. |
+| 4. Hands off for 4 h, verdict at ≥12 h | No edits for 4 h (typos, wrong facts, compliance excepted). At ≥12 h a video is a repackage candidate when its 3-second views / reach are in the bottom third of the Page's comparable videos (≥5; else no verdict); repackage = one big title/caption-first-line + cover change (`POST /<video>` title/description, `/thumbnails` is_preferred=true), honest, compliance pass. |
+| 5. One 5-second question comment | Once the video is public, the Page posts one question comment specific to the video (`POST /<video>/comments`); for Scientific Bithi this is the episode's puzzle question in Bangla. No bait ("share if…", "comment YES"), no links, varied wording. Pinning: owner. |
+| 6. Reel from every long video | Every longer feed video gets a Reel cut from its best moment with its own hook, linking the full video in the caption. |
+| 7. Not working → change style/length | Weekly review proposes one presentation experiment (one variable) when the last ~5 comparable videos are below the Page's median. |
+| 8. Max 3 changes, never delete | Max 3 packaging changes per video, ≥12 h apart; never delete or hide an under-performing video. |
+| 9. Two numbers | Facebook has no thumbnail CTR in the API: read **average watch time** (`total_video_avg_time_watched`, vs the Page's previous comparable video) together with **3-second views ÷ reach** (hook/cover pull) and the retention graph. Low pull + good watch time = cover/title; good pull + early drop = hook. |
+
+**Paid promotion / branded content (owner, 2026-11-25):** none of our Facebook videos is sponsored: never add a branded
+content / paid partnership label or tag a sponsor; if a video ever has one, ask the owner first.
+**Remixing:** Facebook's Reels remix option is set in the Facebook app / Meta Business Suite, not the API. Owner to-do:
+set it to the most restrictive option that matches YouTube's "audio only" choice (if Facebook offers no audio-only
+choice, say which option was picked). Never claim the API set it.
+
+Log fields (in the Page's log): `slot 20:00 → published 20:04`, `status: ready`, `set (n/3)`, `question: ...`,
+`repackage n/3` rows.

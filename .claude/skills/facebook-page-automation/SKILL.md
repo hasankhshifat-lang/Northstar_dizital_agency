@@ -93,6 +93,14 @@ Check with `GET /VIDEO_ID/thumbnails?fields=id,uri,is_preferred` and log it in `
 - `GET /$PAGE/videos?fields=id,title,created_time,permalink_url`
 - `GET /$PAGE/posts?fields=id,message,created_time,permalink_url`
 
+## After-upload playbook (owner, 2026-11-25)
+
+Every Page video/Reel follows the Facebook section of `docs/content/after-upload-playbook.md`: schedule ≥2 h ahead and
+2–9 min after the slot; before the run ends `GET /<video>?fields=status` must show processing complete; no edits for
+4 h; repackage (title/description + `/thumbnails`) max 3 times, ≥12 h apart; one question comment as the Page once
+public (`POST /<video>/comments` message=...); never a branded-content/paid partnership label. Pinning comments,
+series/playlists and the Reels remix option are owner actions in Meta Business Suite (no API).
+
 ## Log every action
 
 Add a row to `social/facebook-page-log.md` for each upload, scheduled post and deletion
