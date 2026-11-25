@@ -30,7 +30,7 @@ WD weird but true · FT feats & escapes
 | 15 | WD | The 1904 Olympic Marathon Was a Disaster | The winner was fed rat poison during the race. | done 2026-11-24 g4FVyyqeJkg (slot 2026-11-24 13:00 ET; title: The Olympic Marathon Winner Was Fed Rat Poison; finisher count left out: one source only) |
 | 16 | WW | He Robbed 28 Stagecoaches and Left Poems | Black Bart never fired a shot. A laundry mark caught him. | done 2026-11-24 zQ83JK9BaD8 (slot 2026-11-24 17:00 ET; same title; "never fired a shot" voiced as "never shot anyone") |
 | 17 | TI | The Key That Could Have Saved the Titanic | The binoculars on the Titanic were locked away. | done 2026-11-25 k-qXJ1fIzEI (slot 2026-11-25 08:00 ET; title: The Key That Left the Titanic Too Early; "locked away" not claimed: sources differ on what the locker held) |
-| 18 | MY | The Colony That Vanished, Leaving One Word | 115 people disappeared. One word was carved into a post. | |
+| 18 | MY | The Colony That Vanished, Leaving One Word | 115 people disappeared. One word was carved into a post. | done 2026-11-25 J96VCDgNvZg (slot 2026-11-25 13:00 ET; same title; "115" voiced as "over a hundred": 115 vs 117 in the sources) |
 | 19 | FT | A 63-Year-Old Went Over Niagara Falls in a Barrel | The first person to survive Niagara in a barrel was a 63-year-old teacher. | |
 | 20 | WR | He Saved 75 Men Without a Gun | Desmond Doss refused to carry a weapon. | |
 | 21 | MAP | The Ohio–Michigan War Over Toledo | Two US states went to war over one city. | |

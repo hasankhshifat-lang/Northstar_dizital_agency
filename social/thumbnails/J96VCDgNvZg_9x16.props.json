@@ -1,0 +1,82 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "map",
+ "background": {
+  "src": "map.png",
+  "crop": [
+   0.133,
+   0.198,
+   0.8,
+   0.8
+  ],
+  "grade": "warm",
+  "blur": 0.8,
+  "side": "top",
+  "darken": 0.12
+ },
+ "layers": [
+  {
+   "type": "image",
+   "src": "croatoan.jpg",
+   "x": 70,
+   "y": 720,
+   "w": 940,
+   "aspect": 0.964,
+   "crop": [
+    0.215,
+    0,
+    0.6,
+    1
+   ],
+   "rotate": -2,
+   "grade": "sepia",
+   "paper": true
+  },
+  {
+   "type": "pin",
+   "x": 820,
+   "y": 620,
+   "label": "ROANOKE ISLAND",
+   "size": 40
+  },
+  {
+   "type": "ring",
+   "x": 186,
+   "y": 946,
+   "rx": 115,
+   "ry": 38
+  }
+ ],
+ "headline": {
+  "lines": [
+   "NO SIGN",
+   "OF DANGER"
+  ],
+  "accent": [
+   "DANGER"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 100,
+  "size": 160
+ },
+ "tags": [
+  {
+   "text": "AUGUST 1590",
+   "x": 50,
+   "y": 520,
+   "variant": "date",
+   "size": 48,
+   "rotate": -3
+  },
+  {
+   "text": "CARVED: CROATOAN",
+   "x": 50,
+   "y": 610,
+   "variant": "label",
+   "size": 38
+  }
+ ],
+ "guides": false
+}

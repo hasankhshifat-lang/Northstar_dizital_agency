@@ -25,6 +25,7 @@ import { BlackBart, BT_END } from "./stories/blackBart";
 import { TitanicKey, TK_END } from "./stories/titanicKey";
 import { Roanoke, RK_END } from "./stories/roanoke";
 import { TitanicKeyCut } from "./stories/titanicKeyCut";
+import { NiagaraBarrel, NB_END } from "./stories/niagaraBarrel";
 import { NorthwestAngle, NA_END } from "./stories/northwestAngle";
 import { fonts, palette } from "./theme";
 
@@ -82,6 +83,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="TitanicKey" component={TitanicKey} width={1080} height={1920} fps={30} durationInFrames={Math.round(TK_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="Roanoke" component={Roanoke} width={1080} height={1920} fps={30} durationInFrames={Math.round(RK_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="TitanicKeyCut" component={TitanicKeyCut} width={900} height={500} fps={30} durationInFrames={1} />
+    <Composition id="NiagaraBarrel" component={NiagaraBarrel} width={1080} height={1920} fps={30} durationInFrames={Math.round(NB_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="BatCut" component={BatCut} width={1000} height={1000} fps={30} durationInFrames={1} />
     <Composition id="HughGlass" component={HughGlass} width={1080} height={1920} fps={30} durationInFrames={Math.round(GLASS_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="MikeThumb" component={MikeThumb} width={1080} height={1920} fps={30} durationInFrames={1} />

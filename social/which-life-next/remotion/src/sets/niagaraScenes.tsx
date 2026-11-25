@@ -45,13 +45,13 @@ const Derby: React.FC = () => <g><path d="M -36 -372 Q -36 -436 10 -438 Q 56 -43
 const Bandage: React.FC = () => <path d="M -30 -366 Q 10 -378 52 -366 L 52 -352 Q 10 -364 -30 -352 Z" fill="#fff" stroke={INK} strokeWidth={3} />;
 
 // ---------- props ----------
-/** oak barrel with iron hoops, standing; origin = centre; height 300·s; lid = 0 closed … 1 off */
+/** oak barrel with iron hoops, standing; origin = centre; height 300·s; lid = 0 closed … 1 off and leaning against the barrel's side on the ground */
 export const Barrel: React.FC<{ x: number; y: number; s?: number; rot?: number; lid?: number }> = ({ x, y, s = 1, rot = 0, lid = 0 }) => (
   <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
     <path d="M -100 -150 Q -125 0 -100 150 L 100 150 Q 125 0 100 -150 Z" fill="#9a6a3a" stroke={INK} strokeWidth={6} />
     {[-60, -20, 20, 60].map((sx) => <path key={sx} d={`M ${sx} -150 Q ${sx * 1.22} 0 ${sx} 150`} stroke="#7a5228" strokeWidth={5} fill="none" />)}
     {[-110, -40, 40, 110].map((hy) => <path key={hy} d={`M ${-104 - (1 - Math.abs(hy) / 150) * 18} ${hy} L ${104 + (1 - Math.abs(hy) / 150) * 18} ${hy}`} stroke="#3a3a3a" strokeWidth={14} />)}
-    <g transform={`translate(${lid * 140} ${-150 - lid * 60}) rotate(${lid * 40})`}><ellipse cx={0} cy={0} rx={100} ry={18} fill="#b07a44" stroke={INK} strokeWidth={5} /></g>
+    <g transform={`translate(${lid * 128} ${-150 + lid * 200}) rotate(${lid * 82})`}><ellipse cx={0} cy={0} rx={100} ry={18} fill="#b07a44" stroke={INK} strokeWidth={5} /></g>
   </g>
 );
 const Cat: React.FC<{ x: number; y: number; s?: number; flip?: boolean; shake?: number }> = ({ x, y, s = 1, flip, shake = 0 }) => (
@@ -65,7 +65,7 @@ const Cat: React.FC<{ x: number; y: number; s?: number; flip?: boolean; shake?: 
   </g>
 );
 /** river surface from y down to the lip at lipY with flowing streaks */
-const River: React.FC<{ y: number; frame: number; to?: number; c1?: string; c2?: string; speed?: number }> = ({ y, frame, to = 2000, c1 = "#5a9ab0", c2 = "#3a7890", speed = 6 }) => (
+const River: React.FC<{ y: number; frame: number; to?: number; c1?: string; c2?: string; speed?: number }> = ({ y, frame, to = 2300, c1 = "#5a9ab0", c2 = "#3a7890", speed = 6 }) => (
   <g>
     <rect x={-60} y={y} width={1200} height={to - y} fill={c1} />
     {Array.from({ length: 16 }, (_, i) => { const yy = y + 20 + rnd(i) * (to - y - 40); const x = ((rnd(i + 3) * 1300 + frame * speed * (1 + rnd(i + 7))) % 1400) - 160; return <path key={i} d={`M ${x} ${yy} l 110 0`} stroke={i % 2 ? "#e8f4f8" : c2} strokeWidth={5} strokeLinecap="round" opacity={0.6} />; })}
@@ -74,6 +74,10 @@ const River: React.FC<{ y: number; frame: number; to?: number; c1?: string; c2?:
 /** the Horseshoe Falls seen from the side: top river to the right of edgeX at lipY, falling sheet down to the mist */
 const Falls: React.FC<{ frame: number; edgeX: number; lipY: number; base: number }> = ({ frame, edgeX, lipY, base }) => (
   <g>
+    {/* the misty gorge beyond the falls, and the plunge pool below */}
+    <rect x={-60} y={lipY - 10} width={edgeX + 100} height={base - lipY + 20} fill="#9ab8c2" />
+    <path d={`M -60 ${lipY + 120} Q 200 ${lipY + 60} ${edgeX - 200} ${lipY + 140} L ${edgeX - 200} ${base} L -60 ${base} Z`} fill="#7a8a7a" opacity={0.5} />
+    <rect x={-60} y={base - 20} width={1300} height={1200} fill="#4a8aa0" />
     <rect x={edgeX - 40} y={lipY} width={1300} height={60} fill="#5a9ab0" />
     {Array.from({ length: 12 }, (_, i) => { const x = ((rnd(i) * 900 + frame * 9) % 1000) + edgeX; return <path key={i} d={`M ${x} ${lipY + 20} l 90 0`} stroke="#e8f4f8" strokeWidth={5} opacity={0.6} />; })}
     <path d={`M ${edgeX - 40} ${lipY} Q ${edgeX - 140} ${lipY + 80} ${edgeX - 170} ${base} L ${edgeX - 10} ${base} Q ${edgeX - 20} ${lipY + 100} ${edgeX} ${lipY + 60} Z`} fill="#cfe8f0" stroke={INK} strokeWidth={4} />
@@ -170,7 +174,8 @@ export const SceneBroke: React.FC<SP> = ({ lt, frame }) => {
 // ---------- 4: the plan: at her desk she draws a barrel going over the falls ----------
 export const ScenePlan: React.FC<SP> = ({ lt, frame }) => {
   const k = interpolate(lt, [0.6, 3.6], [0, 1], cl);
-  const nib: V2 = [430 + (k * 6 % 1) * 260, 640 + Math.floor(k * 6) * 40];
+  // the nib sits exactly where the line is being drawn: river line, then the drop, then the barrel, then the $ signs
+  const nib: V2 = k < 0.5 ? [300 + Math.min(1, k * 2) * 300, 700] : k < 0.6 ? [600 + (k - 0.5) * 400, 700 + (k - 0.5) * 3000] : k < 0.8 ? [570 + Math.sin(k * 60) * 20, 640] : [480 + (k - 0.8) * 600, 1060];
   return (
     <g>
       <Room wall="#b8a47a" />
