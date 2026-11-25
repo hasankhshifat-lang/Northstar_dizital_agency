@@ -52,7 +52,7 @@ Episode folder: `videos/as-printed/2026-11-25-the-crest/` (facts: FACTS.md, topi
 44. [read · oct16] Doctor Krusen announces burial situation in this city has greatly improved.
 45. [table · oct16] The cases really were falling. The paper was right about that. But four hundred and sixty six deaths, in a single day. So which week was the worst? For that, we need a record that wasn't written for the next morning's front page.
 46. [chapter · phr] Part seven. The record.
-47. [read · phr] Public Health Reports, November twenty second, nineteen eighteen. Cases of influenza and deaths from influenza and pneumonia, as reported to the United States Public Health Service.
+47. [read · phr] This is a government weekly, called Public Health Reports. The issue of November the twenty second, nineteen eighteen. Cases of influenza and deaths from influenza and pneumonia, as reported to the United States Public Health Service.
 48. [read · phr] Philadelphia, deaths, week by week. Week ending October fifth: sixteen hundred and twenty five. October twelfth: three thousand and sixty. October nineteenth: four thousand, two hundred and eighteen. Then the numbers fall. Two thousand three hundred and forty one. Twelve hundred and three.
 49. [table · phr] The deadliest week of all ended on October nineteenth. Nineteen days after danger passing. Twelve days after the peak. Ten days after high tide. And the Public Health Service warned that its own figures were probably considerably below the actual ones. Added up, from October to mid November, this one row counts nearly thirteen thousand deaths.
 50. [compare · ] As printed: the crest, on September thirtieth. As recorded: the deadliest week, ending October nineteenth.
@@ -67,6 +67,6 @@ Episode folder: `videos/as-printed/2026-11-25-the-crest/` (facts: FACTS.md, topi
 2. [read · sep30] Philadelphia, nineteen eighteen. The flu, said the paper, had reached its crest. So why was the worst still coming?
 3. [read · oct7] A week later: the disease had reached its peak.
 4. [read · oct9] Then: high tide. It will begin to recede.
-5. [read · oct12] Then, October twelfth, on the front page. City death toll trebled by grip. Three thousand, two hundred and thirty four deaths in one week.
-6. [read · phr] The government's weekly table shows the deadliest week came after that. Four thousand, two hundred and eighteen deaths.
-7. [compare · ] They were counting new cases. The deaths came a week or more later. Danger passing? Not for almost three more weeks.
+5. [read · oct12] October twelfth. City death toll trebled by grip. Three thousand, two hundred and thirty four deaths in a week.
+6. [read · phr] The government's table: the deadliest week came after that. Four thousand, two hundred and eighteen.
+7. [compare · ] They counted new cases. The deaths came a week later. Danger passing? Not for almost three weeks.

@@ -1293,7 +1293,7 @@
        275
       ]
      ],
-     "say": "Public Health Reports, November twenty second, nineteen eighteen. Cases of influenza and deaths from influenza and pneumonia, as reported to the United States Public Health Service."
+     "say": "This is a government weekly, called Public Health Reports. The issue of November the twenty second, nineteen eighteen. Cases of influenza and deaths from influenza and pneumonia, as reported to the United States Public Health Service."
     },
     {
      "type": "read",
@@ -1521,16 +1521,16 @@
        2402
       ]
      ],
-     "say": "Then, October twelfth, on the front page. City death toll trebled by grip. Three thousand, two hundred and thirty four deaths in one week."
+     "say": "October twelfth. City death toll trebled by grip. Three thousand, two hundred and thirty four deaths in a week."
     },
     {
      "type": "read",
      "item": "phr",
      "boxes": [
       [
-       220,
+       1372,
        1282,
-       2000,
+       1490,
        1330
       ]
      ],
@@ -1540,7 +1540,7 @@
       "unit": "deaths",
       "source": "Public Health Reports"
      },
-     "say": "The government's weekly table shows the deadliest week came after that. Four thousand, two hundred and eighteen deaths."
+     "say": "The government's table: the deadliest week came after that. Four thousand, two hundred and eighteen."
     },
     {
      "type": "compare",
@@ -1558,7 +1558,7 @@
       "source": "Public Health Reports"
      },
      "strike": "a",
-     "say": "They were counting new cases. The deaths came a week or more later. Danger passing? Not for almost three more weeks."
+     "say": "They counted new cases. The deaths came a week later. Danger passing? Not for almost three weeks."
     }
    ]
   }

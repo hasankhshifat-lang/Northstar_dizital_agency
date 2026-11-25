@@ -1,0 +1,9 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+OK   short_000 | Grip decreasing. Danger passing, doctors believe. → Grip decreasing. Danger passing, doctors believe. 
+DIFF short_001 | Philadelphia, nineteen eighteen. The flu, said the paper, had reached its crest. So why was the worst still coming? → Philadelphia, 1918, the flu, said the paper, had reached its crest. So why was the worst still coming? 
+OK   short_002 | A week later: the disease had reached its peak. → A week later, the disease had reached its peak. 
+OK   short_003 | Then: high tide. It will begin to recede. → Then, high tide, it will begin to recede. 
+DIFF short_004 | October twelfth. City death toll trebled by grip. Three thousand, two hundred and thirty four deaths in a week. → October 12, City death toll trebled by grip, 3,234 deaths in a week. 
+DIFF short_005 | The government's table: the deadliest week came after that. Four thousand, two hundred and eighteen. → The government's table, the deadliest week came after that, 4,218. 
+OK   short_006 | They counted new cases. The deaths came a week later. Danger passing? Not for almost three weeks. → They counted new cases. The deaths came a week later. Danger passing? Not for almost three weeks. 
+mismatches: 3 (lang=en, model=small.en)
