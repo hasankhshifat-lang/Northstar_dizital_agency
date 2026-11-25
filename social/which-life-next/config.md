@@ -37,3 +37,4 @@ Thumbnails (owner, 2026-11-16): universal thumbnail skill on main (dominant visu
 AI disclosure (owner, 2026-11-17): every upload has Altered or synthetic content = YES (containsSyntheticMedia).
 Shorts per day (owner, 2026-11-22): 3 a day at 08:00, 13:00 and 17:00 ET (each ≥ 4 h away when chosen); this ends the 17:00-only slot of EXP-whichlifenext-001.
 Shorts per day (owner, 2026-11-22): 3 Shorts a day at 08:00, 13:00 and 17:00 ET (each slot at least 4 h away when chosen); see CLAUDE.md on main.
+Compliance (owner, 2026-11-24): every upload passes docs/content/youtube-monetization-compliance.md section 9 on main; never near-duplicates or filler.

@@ -16,6 +16,8 @@
 
 # Which Life Next — daily video job
 
+**Compliance (owner, 2026-11-24):** every upload passes `docs/content/youtube-monetization-compliance.md` section 9 on main (write "Compliance: pass" in the log row); never near-duplicates or filler: skip a slot rather than publish one.
+
 The scheduled task runs this once a day (13:17 SGT). It makes one 8–12 minute video and
 4 Shorts (1 cut from the long video + 3 standalone story Shorts, see "Standalone story Shorts"), and schedules all five for the publish day's slots (SGT, see config.md).
 

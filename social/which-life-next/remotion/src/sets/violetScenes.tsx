@@ -563,3 +563,4 @@ export const SceneCottage: React.FC<SP> = ({ lt, frame }) => {
   );
 };
 export const _unused = rnd;
+export { Liner, Sea, Rail, OFFICER, SAILOR, GENT as VGENT, Skirt };

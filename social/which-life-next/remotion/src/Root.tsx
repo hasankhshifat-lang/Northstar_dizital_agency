@@ -22,6 +22,9 @@ import { ChicagoRaise, CH_END } from "./stories/chicagoRaise";
 import { MolassesFlood, MO_END } from "./stories/molassesFlood";
 import { Marathon1904, MA_END } from "./stories/marathon1904";
 import { BlackBart, BT_END } from "./stories/blackBart";
+import { TitanicKey, TK_END } from "./stories/titanicKey";
+import { Roanoke, RK_END } from "./stories/roanoke";
+import { TitanicKeyCut } from "./stories/titanicKeyCut";
 import { NorthwestAngle, NA_END } from "./stories/northwestAngle";
 import { fonts, palette } from "./theme";
 
@@ -76,6 +79,9 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="MolassesFlood" component={MolassesFlood} width={1080} height={1920} fps={30} durationInFrames={Math.round(MO_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="Marathon1904" component={Marathon1904} width={1080} height={1920} fps={30} durationInFrames={Math.round(MA_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="BlackBart" component={BlackBart} width={1080} height={1920} fps={30} durationInFrames={Math.round(BT_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
+    <Composition id="TitanicKey" component={TitanicKey} width={1080} height={1920} fps={30} durationInFrames={Math.round(TK_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
+    <Composition id="Roanoke" component={Roanoke} width={1080} height={1920} fps={30} durationInFrames={Math.round(RK_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
+    <Composition id="TitanicKeyCut" component={TitanicKeyCut} width={900} height={500} fps={30} durationInFrames={1} />
     <Composition id="BatCut" component={BatCut} width={1000} height={1000} fps={30} durationInFrames={1} />
     <Composition id="HughGlass" component={HughGlass} width={1080} height={1920} fps={30} durationInFrames={Math.round(GLASS_END * 30)} defaultProps={{ words: [] as { w: string; s: number; e: number }[] }} />
     <Composition id="MikeThumb" component={MikeThumb} width={1080} height={1920} fps={30} durationInFrames={1} />

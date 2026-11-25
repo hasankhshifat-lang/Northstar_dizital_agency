@@ -1,0 +1,84 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "map",
+ "background": {
+  "src": "map.png",
+  "crop": [
+   0.434,
+   0.2427,
+   0.5,
+   0.5
+  ],
+  "grade": "warm",
+  "blur": 0.8,
+  "side": "top",
+  "darken": 0.12
+ },
+ "layers": [
+  {
+   "type": "image",
+   "src": "titanic.jpg",
+   "x": 60,
+   "y": 900,
+   "w": 900,
+   "aspect": 1.633,
+   "crop": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "rotate": -2,
+   "grade": "sepia",
+   "paper": true
+  },
+  {
+   "type": "pin",
+   "x": 780,
+   "y": 820,
+   "label": "SOUTHAMPTON",
+   "size": 44
+  },
+  {
+   "type": "cutout",
+   "src": "key.png",
+   "x": 430,
+   "y": 1190,
+   "h": 300,
+   "glow": "rgba(255,226,170,0.6)",
+   "outline": "#fff"
+  }
+ ],
+ "headline": {
+  "lines": [
+   "THEY HAD NO",
+   "BINOCULARS"
+  ],
+  "accent": [
+   "BINOCULARS"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 100,
+  "size": 150
+ },
+ "tags": [
+  {
+   "text": "APRIL 1912",
+   "x": 50,
+   "y": 560,
+   "variant": "date",
+   "size": 50,
+   "rotate": -3
+  },
+  {
+   "text": "THE CROW'S NEST KEY",
+   "x": 40,
+   "y": 1500,
+   "variant": "label",
+   "size": 40
+  }
+ ],
+ "guides": false
+}

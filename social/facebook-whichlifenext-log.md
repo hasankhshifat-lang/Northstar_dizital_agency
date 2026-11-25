@@ -34,3 +34,4 @@
 | 2026-11-24 | Health check (daily FB run) | Shorts 11-17 → 11-24 | — | — | all 7 YouTube Shorts with a passed publish time are live on FB at their YT publishAt; latest: A Wave of Molasses Killed 21 People live 13:00:00 UTC (/reel/1655279699715872/); next two scheduled at YT times (Rat Poison 18:00 UTC, Black Bart 22:00 UTC); 0 late, 0 missing |
 | 2026-11-24 | Comments check | 13 videos + 38 posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
 | 2026-11-24 | Stats | Page + 7 Reels | — | — | 6 fans / 6 followers; FB Reel metrics (plays, avg time, retention graph, likes, comments, shares, follows) written to social/learning/which-life-next.md on main (4e11c71); total_video_* and reach not returned for Reels (Reels insights only) |
+| 2026-11-25 | Scheduled Reel (cross-post) | The Key That Left the Titanic Too Early | 3624500004397728 | 2026-11-25 13:00 UTC | uploaded, scheduled with YouTube k-qXJ1fIzEI; Compliance: pass |
