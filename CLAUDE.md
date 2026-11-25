@@ -112,6 +112,11 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
   always set to Yes (`status.containsSyntheticMedia = true`; `yt.py upload`/`update` do this automatically). If a
   video is ever found without it, set it with `yt.py --channel NAME ai-disclose`.
 - Never delete a video, comment or playlist unless the user explicitly asks for that deletion.
+- **Comment auto-replies cover every channel** (owner, 2026-11-25): any comment-reply run, including the scheduled
+  task "auto-reply to new YouTube comments" (even if its prompt names only Which Life Next), checks and replies on all
+  four channels: `yt.py --channel whichlifenext|asprinted|overthinkingpad|footallfc comments --unanswered --max 50`,
+  then `yt.py --channel NAME reply ...`. Max 20 replies per run across all channels, each in that channel's voice,
+  same skip and compliance rules; log each row in `social/youtube-comments-log.md` with the channel name.
 - Log uploads/schedules/edits in `social/youtube-schedule-log.md` and comment replies in
   `social/youtube-comments-log.md`, then commit and push.
 
