@@ -23,9 +23,12 @@ Usage (all output is JSON; put --channel NAME before the command):
   yt.py playlist-add PLAYLIST_ID VIDEO_ID
   yt.py analytics START END [--metrics views,likes] [--dimensions day]
   yt.py ai-disclose [--dry-run]                 # set "Altered or synthetic content" = YES on every upload missing it
+  yt.py paid-promo-off [--dry-run]              # set "Paid promotion" = No on every upload that isn't No
 
 AI disclosure (owner, 2026-11-17): every upload and every update sets status.containsSyntheticMedia = true
 (YouTube Studio: "Altered or synthetic content" = Yes). All our videos use AI voice/visuals, so this is never off.
+Paid promotion (owner, 2026-11-25): every upload and every update sets paidProductPlacementDetails.hasPaidProductPlacement
+= false (Studio: "Paid promotion" = No). Remixing ("Allow only audio remixing") has no API field: set it in Studio.
 """
 import argparse, json, mimetypes, os, sys, urllib.error, urllib.parse, urllib.request
 
@@ -39,6 +42,7 @@ CHANNELS = {   # name -> (refresh-token variable, channel ID; None until the fir
 CHANNEL = "whichlifenext"
 CHANNEL_ID = CHANNELS[CHANNEL][1]
 _token = None
+NO_PAID_PROMO = {"hasPaidProductPlacement": False}   # "Paid promotion" = No on every upload/update (owner, 2026-11-25)
 
 
 def token():
@@ -98,6 +102,7 @@ def video_summary(v):
     return {"id": v["id"], "title": s.get("title"), "publishedAt": s.get("publishedAt"),
             "privacy": st.get("privacyStatus"), "publishAt": st.get("publishAt"),
             "uploadStatus": st.get("uploadStatus"), "aiDisclosed": st.get("containsSyntheticMedia"),
+            "paidPromotion": v.get("paidProductPlacementDetails", {}).get("hasPaidProductPlacement"),
             "stats": v.get("statistics")}
 
 
@@ -115,11 +120,11 @@ def cmd_videos(a):
     ids = ",".join(i["contentDetails"]["videoId"] for i in items)
     if not ids:
         return out([])
-    r = _call("GET", f"{API}/videos", {"part": "snippet,status,statistics", "id": ids})
+    r = _call("GET", f"{API}/videos", {"part": "snippet,status,statistics,paidProductPlacementDetails", "id": ids})
     out([video_summary(v) for v in r.get("items", [])])
 
 
-def get_video(vid, part="snippet,status,statistics"):
+def get_video(vid, part="snippet,status,statistics,paidProductPlacementDetails"):
     items = _call("GET", f"{API}/videos", {"part": part, "id": vid}).get("items", [])
     if not items:
         sys.exit(f"Video {vid} not found on this channel")
@@ -154,8 +159,8 @@ def cmd_upload(a):
     size = os.path.getsize(a.file)
     ctype = mimetypes.guess_type(a.file)[0] or "video/mp4"
     r = _call("POST", "https://www.googleapis.com/upload/youtube/v3/videos",
-              {"uploadType": "resumable", "part": "snippet,status"},
-              body={"snippet": snippet, "status": status},
+              {"uploadType": "resumable", "part": "snippet,status,paidProductPlacementDetails"},
+              body={"snippet": snippet, "status": status, "paidProductPlacementDetails": NO_PAID_PROMO},
               headers={"X-Upload-Content-Type": ctype, "X-Upload-Content-Length": str(size)}, raw=True)
     location = r.headers["Location"]
     with open(a.file, "rb") as f:
@@ -169,8 +174,9 @@ def put_video(vid, snippet, status):
     keep_stat = {k: status[k] for k in ("privacyStatus", "publishAt", "embeddable", "license",
                                         "publicStatsViewable", "selfDeclaredMadeForKids") if k in status}
     keep_stat["containsSyntheticMedia"] = True   # AI disclosure is always YES (owner, 2026-11-17)
-    return _call("PUT", f"{API}/videos", {"part": "snippet,status"},
-                 body={"id": vid, "snippet": keep_snip, "status": keep_stat})
+    return _call("PUT", f"{API}/videos", {"part": "snippet,status,paidProductPlacementDetails"},
+                 body={"id": vid, "snippet": keep_snip, "status": keep_stat,
+                       "paidProductPlacementDetails": NO_PAID_PROMO})   # Paid promotion = No (owner, 2026-11-25)
 
 
 def cmd_update(a):
@@ -213,6 +219,28 @@ def cmd_ai_disclose(a):
                 failed.append({"id": v["id"], "title": v["snippet"]["title"], "error": str(e)[:300]})
     out({"channel": CHANNEL, "total": len(ids), "already_yes": len(done),
          ("would_set" if a.dry_run else "set_yes"): fixed, "failed": failed})
+
+
+def cmd_paid_promo_off(a):
+    """Set "Paid promotion" = No (hasPaidProductPlacement false) on every upload of the channel that isn't already No.
+    The read returns the field, so only videos that need it are written (50 quota units each)."""
+    ids, done, fixed, failed = all_upload_ids(), [], [], []
+    for i in range(0, len(ids), 50):
+        for v in _call("GET", f"{API}/videos", {"part": "snippet,paidProductPlacementDetails",
+                                                "id": ",".join(ids[i:i + 50])}).get("items", []):
+            if v.get("paidProductPlacementDetails", {}).get("hasPaidProductPlacement") is False:
+                done.append(v["id"]); continue
+            if a.dry_run:
+                fixed.append({"id": v["id"], "title": v["snippet"]["title"]}); continue
+            try:
+                r = _call("PUT", f"{API}/videos", {"part": "paidProductPlacementDetails"},
+                          body={"id": v["id"], "paidProductPlacementDetails": NO_PAID_PROMO})
+                fixed.append({"id": v["id"], "title": v["snippet"]["title"],
+                              "paidPromotion": r.get("paidProductPlacementDetails", {}).get("hasPaidProductPlacement")})
+            except SystemExit as e:
+                failed.append({"id": v["id"], "title": v["snippet"]["title"], "error": str(e)[:300]})
+    out({"channel": CHANNEL, "total": len(ids), "already_no": len(done),
+         ("would_set" if a.dry_run else "set_no"): fixed, "failed": failed})
 
 
 def cmd_thumbnail(a):
@@ -292,6 +320,8 @@ def main():
     s.add_argument("--metrics", default="views,estimatedMinutesWatched,likes,subscribersGained")
     s.add_argument("--dimensions"); s.set_defaults(f=cmd_analytics)
     s = sp.add_parser("ai-disclose"); s.add_argument("--dry-run", action="store_true"); s.set_defaults(f=cmd_ai_disclose)
+    s = sp.add_parser("paid-promo-off"); s.add_argument("--dry-run", action="store_true")
+    s.set_defaults(f=cmd_paid_promo_off)
     a = p.parse_args()
     CHANNEL = a.channel; CHANNEL_ID = CHANNELS[CHANNEL][1]
     if a.cmd == "upload" and a.title is None:

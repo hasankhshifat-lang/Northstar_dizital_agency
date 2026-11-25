@@ -147,6 +147,9 @@ A video can stay up but earn little or nothing. The **title, thumbnail and first
   names, no unrelated trending terms.
 - Description: sources, AI disclosure line, no misleading links, no affiliate/sponsor content without the paid
   promotion box ticked in Studio.
+- **Channel defaults (owner, 2026-11-25):** paid promotion = No on every video (yt.py sets it on every upload and
+  update; `yt.py --channel NAME paid-promo-off` audits and fixes) and remixing = "Allow only audio remixing" on every
+  video (no API field: set in YouTube Studio upload defaults + bulk edit by the owner).
 - Comment replies (auto-reply tasks): varied, human-sounding, on-topic, never the same text pasted many times,
   never links, never asking for subs/likes in exchange for anything.
 - Keep each channel active (YouTube may turn off monetization after **6+ months** without uploads).
@@ -178,7 +181,9 @@ Write "Compliance: pass" (or the failed items) in the upload's row in `social/yo
    recorded; no crests, logos, match/TV footage.
 8. AI disclosure YES set and "Narration voiced with AI." in the description; no realistic fake of a real person.
 9. Metadata: accurate description with sources, 3–5 relevant hashtags, relevant tags, made-for-kids set honestly,
-   paid promotion declared if any.
+   paid promotion = No (`"paidPromotion": false` in the yt.py output; owner, 2026-11-25: none of our videos are
+   sponsored; if one ever is, ask the owner first), remixing = "Allow only audio remixing" (Studio only, owner's
+   upload default).
 10. Health/medical, finance or legal claims: educational, sourced, no advice or guarantees.
 
 ## 10. Monthly audit (done by the monthly scheduled task)

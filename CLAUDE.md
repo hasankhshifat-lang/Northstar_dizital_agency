@@ -111,6 +111,16 @@ scheduled tasks, checking status), use `.claude/skills/youtube-channel-automatio
 - **AI disclosure = YES on every upload, every channel** (owner, 2026-11-17): "Altered or synthetic content" is
   always set to Yes (`status.containsSyntheticMedia = true`; `yt.py upload`/`update` do this automatically). If a
   video is ever found without it, set it with `yt.py --channel NAME ai-disclose`.
+- **Paid promotion = No and remixing = audio only, every video, every channel** (owner, 2026-11-25), existing and future:
+  - Paid promotion: `yt.py upload`/`update` set `paidProductPlacementDetails.hasPaidProductPlacement = false`
+    automatically; `yt.py --channel NAME paid-promo-off` fixes any video that isn't No (all 78 videos on the four
+    channels read No on 2026-11-25). Check `"paidPromotion": false` in the upload output. If a video ever really has a
+    sponsor, ask the owner first; never tick it without them.
+  - Remixing ("Allow only audio remixing"): the YouTube API has no field for it, so it is a YouTube Studio setting.
+    Owner to-do on each channel: Settings → Upload defaults → Advanced settings → Shorts remixing = "Allow only audio
+    remixing" (for future uploads), and Content → select all → Edit → Shorts remixing (or each video's "Show more")
+    for existing videos. Upload defaults may not reach API uploads, so the monthly compliance task asks the owner to
+    spot-check the newest videos in Studio. Never tell the owner it was set by the API.
 - Never delete a video, comment or playlist unless the user explicitly asks for that deletion.
 - **Comment auto-replies cover every channel** (owner, 2026-11-25): any comment-reply run, including the scheduled
   task "auto-reply to new YouTube comments" (even if its prompt names only Which Life Next), checks and replies on all

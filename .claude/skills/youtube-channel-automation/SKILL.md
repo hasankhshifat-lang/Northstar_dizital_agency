@@ -61,6 +61,13 @@ yt.py upload /path/video.mp4 --title "TITLE" --description "DESC" --tags "a,b" \
   never turn it off. Check `"aiDisclosed": true` in the upload output. `yt.py --channel NAME ai-disclose` sets it on
   every video of a channel (the read API does not return the field, so it re-sets all videos, 50 units each;
   done for all 38 videos on all four channels on 2026-11-17).
+- **Paid promotion is always No** (owner, 2026-11-25): every upload and every `update` sets
+  `paidProductPlacementDetails.hasPaidProductPlacement = false` (Studio: "Paid promotion" unticked). Check
+  `"paidPromotion": false` in the output. `yt.py --channel NAME paid-promo-off [--dry-run]` audits a whole channel and
+  sets No where needed (the read returns the field, so only those are written; all 78 videos read No on 2026-11-25).
+- **Remixing = "Allow only audio remixing"** (owner, 2026-11-25) on every video. The Data API has no remix field, so
+  `yt.py` can't set it: it is the owner's Studio upload default (Settings → Upload defaults → Advanced settings →
+  Shorts remixing) plus a bulk edit for existing videos. Don't claim it was set by the API.
 - Log every upload/schedule in `social/youtube-schedule-log.md`, then commit and push.
 
 ## Editing
