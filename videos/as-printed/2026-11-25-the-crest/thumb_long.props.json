@@ -1,0 +1,13 @@
+{
+ "width": 1280, "height": 720, "style": "archive",
+ "background": {"color": "#dfe2e5", "side": "none"},
+ "layers": [
+  {"type": "image", "src": "clipdanger.jpg", "x": 40, "y": 318, "w": 420, "rotate": -2, "grade": "none", "aspect": 1.4367},
+  {"type": "image", "src": "clipcrest.jpg", "x": 330, "y": 585, "w": 540, "rotate": 1.5, "grade": "none", "aspect": 4.874},
+  {"type": "ring", "x": 460, "y": 650, "rx": 150, "ry": 31, "rotate": 1.5, "width": 8},
+  {"type": "cutout", "src": "nurse_half.png", "x": 870, "y": 18, "h": 702, "grade": "mono", "glow": "rgba(255,255,255,0.85)"},
+  {"type": "arrow", "from": [640, 430], "to": [600, 610], "bend": -0.3, "width": 11}
+ ],
+ "headline": {"lines": ["Danger", "passing?"], "accent": ["passing?"], "x": 36, "y": 30, "size": 100, "panel": true},
+ "tags": [{"text": "EVENING PUBLIC LEDGER · 30 SEP 1918", "x": 40, "y": 274, "variant": "date", "size": 22}]
+}

@@ -1,0 +1,11 @@
+{
+ "width": 1080, "height": 1920, "style": "archive",
+ "background": {"color": "#dfe2e5", "side": "none"},
+ "layers": [
+  {"type": "cutout", "src": "nurse_fade.png", "x": 290, "y": 470, "h": 1060, "grade": "mono", "glow": "rgba(255,255,255,0.85)"},
+  {"type": "image", "src": "clipdanger.jpg", "x": 40, "y": 1010, "w": 560, "rotate": -2, "grade": "none", "aspect": 1.4367},
+  {"type": "ring", "x": 320, "y": 1175, "rx": 270, "ry": 58, "rotate": -2, "width": 10}
+ ],
+ "headline": {"lines": ["Worst week", "still ahead?"], "accent": ["ahead?"], "x": 60, "y": 100, "size": 130, "panel": true},
+ "tags": [{"text": "EVENING PUBLIC LEDGER · 30 SEP 1918", "x": 60, "y": 960, "variant": "date", "size": 30}]
+}
