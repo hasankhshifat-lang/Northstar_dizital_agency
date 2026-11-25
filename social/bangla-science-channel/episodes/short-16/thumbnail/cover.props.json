@@ -1,0 +1,16 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "toon",
+ "background": { "src": "bg_figma.png", "grade": "none", "blur": 0, "darken": 0.0, "side": "top" },
+ "layers": [
+  { "type": "cutout", "src": "newton.png", "x": 300, "y": 719, "h": 860, "outline": "#fff" },
+  { "type": "cutout", "src": "bithi.png", "x": -40, "y": 568, "h": 1030, "outline": "#fff" }
+ ],
+ "headline": { "lines": ["রংধনু কি", "বস্তায় ভরা যায়?!"], "accent": ["বস্তায় ভরা যায়?!"], "align": "center", "x": 0, "y": 110, "size": 130 },
+ "tags": [
+  { "text": "মামার প্ল্যান!", "x": 740, "y": 770, "variant": "date", "size": 54, "rotate": -4 },
+  { "text": "সাইন্টিফিক বিথী", "x": 760, "y": 1250, "variant": "label", "size": 44 }
+ ],
+ "guides": false
+}
