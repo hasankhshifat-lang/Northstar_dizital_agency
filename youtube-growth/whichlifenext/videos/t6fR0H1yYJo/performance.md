@@ -7,3 +7,4 @@ Append-only checkpoint log (growth.py snapshots).
 - 2026-11-24 · 24h (age 27.8 h) · Analytics n/a (not in yet, data_through null) · public views 877 · likes 20 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
   - impressions/CTR/stayed-to-watch: n/a (vidIQ not connected)
   - Not compared: Analytics not in yet at 24h (API lag), "too few comparable readings" until the 72h snapshot.
+- 2026-11-25 · 48h (age 51.8 h) · Analytics n/a (not in yet, data_through null) · public views 940 · likes 20 · source: YouTube Data API + YouTube Analytics API (own OAuth client)

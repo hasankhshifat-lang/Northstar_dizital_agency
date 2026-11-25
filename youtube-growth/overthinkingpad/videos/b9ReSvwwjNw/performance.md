@@ -24,3 +24,5 @@ collected 2026-11-23 18:28 UTC. Impressions/CTR: n/a (not in API; vidIQ not conn
    then the opening: state the payoff (the step-back finding) inside 10 s.
 7. **Test next:** EXP-overthinkingpad-002 (long-form cold open: payoff-first). No title/thumbnail change proposed
    (no impressions/CTR data to justify it).
+- 2026-11-25 · 7d (age 184.8 h) · views 104 · engagedViews/views 11/104 = 0.106 · avg % viewed 11.2% · avg duration 77 s · US share 0.0% · subs gained 0 · data_through 2026-11-21 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
+  - retention (growth.py retention): biggest drops at 27.7 s (-0.364), 48.5 s (-0.182), 20.8 s (-0.091), 69.3 s (-0.091), 180.2 s (-0.091); 20.8/27.7 s = cold-open recap line and the 'Here's the strange part' stall (26–31 s), as mapped in the 72h diagnosis above

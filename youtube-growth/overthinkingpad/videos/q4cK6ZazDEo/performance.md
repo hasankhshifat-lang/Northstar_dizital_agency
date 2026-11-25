@@ -20,3 +20,5 @@ Retention curve: not available yet ("no retention data yet").
 5. **Evidence:** both are study-first; same length, voice, look, slot.
 6. **What can change:** concrete, visual premise in the first line (a thing you can see).
 7. **Test next:** EXP-overthinkingpad-001 treatment arm (viewer's-moment first line).
+- 2026-11-25 · 7d (age 183.8 h) · views 7 · engagedViews/views 3/7 = 0.429 · avg % viewed 77.3% · avg duration 37 s · US share 0.0% · subs gained 0 · data_through 2026-11-20 · source: YouTube Data API + YouTube Analytics API (own OAuth client)
+  - retention: no data yet (analytics lag or too few views)
