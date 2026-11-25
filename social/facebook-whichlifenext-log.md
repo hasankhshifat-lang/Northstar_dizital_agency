@@ -38,5 +38,5 @@
 | 2026-11-25 | Scheduled Reel (cross-post) | The Colony That Vanished, Leaving One Word | 1496024465828975 | 2026-11-25 18:00 UTC | uploaded, scheduled with YouTube J96VCDgNvZg; Compliance: pass |
 | 2026-11-25 | Scheduled Reel (cross-post) | A Teacher in Her 60s Went Over Niagara Falls | 1112249251650407 | 2026-11-25 22:00 UTC | uploaded, scheduled with YouTube 09dDXApuIGM; Compliance: pass |
 | 2026-11-25 | Health check (daily FB run) | Shorts 11-18 → 11-25 | — | — | all 9 YouTube Shorts with a passed publish time are live on FB at their YT publishAt; latest: The Key That Left the Titanic Too Early live 13:00:11 UTC (/reel/3624500004397728/), 0 plays at ~40 min (insights lag or slow start; recheck); next two scheduled at YT times (Roanoke 18:00 UTC, Niagara 22:00 UTC, both in scheduled_posts); 0 late, 0 missing |
-| 2026-11-25 | Comments check | 16 videos + 39 posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
+| 2026-11-25 | Comments check | 55 videos + posts (last 14 days) | — | — | 0 comments on the Page; 0 replies, 0 skips |
 | 2026-11-25 | Stats | Page + 9 Reels | — | — | 6 fans / 6 followers; FB Reel metrics (plays, avg time, retention graph, likes, comments, follows) written to social/learning/which-life-next.md on main (bb0bbad); shares, total_video_* and reach not returned for Reels |
