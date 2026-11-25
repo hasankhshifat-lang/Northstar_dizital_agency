@@ -31,8 +31,8 @@ WD weird but true · FT feats & escapes
 | 16 | WW | He Robbed 28 Stagecoaches and Left Poems | Black Bart never fired a shot. A laundry mark caught him. | done 2026-11-24 zQ83JK9BaD8 (slot 2026-11-24 17:00 ET; same title; "never fired a shot" voiced as "never shot anyone") |
 | 17 | TI | The Key That Could Have Saved the Titanic | The binoculars on the Titanic were locked away. | done 2026-11-25 k-qXJ1fIzEI (slot 2026-11-25 08:00 ET; title: The Key That Left the Titanic Too Early; "locked away" not claimed: sources differ on what the locker held) |
 | 18 | MY | The Colony That Vanished, Leaving One Word | 115 people disappeared. One word was carved into a post. | done 2026-11-25 J96VCDgNvZg (slot 2026-11-25 13:00 ET; same title; "115" voiced as "over a hundred": 115 vs 117 in the sources) |
-| 19 | FT | A 63-Year-Old Went Over Niagara Falls in a Barrel | The first person to survive Niagara in a barrel was a 63-year-old teacher. | |
-| 20 | WR | He Saved 75 Men Without a Gun | Desmond Doss refused to carry a weapon. | |
+| 19 | FT | A 63-Year-Old Went Over Niagara Falls in a Barrel | The first person to survive Niagara in a barrel was a 63-year-old teacher. | done 2026-11-25 09dDXApuIGM (slot 2026-11-25 17:00 ET; title: A Teacher in Her 60s Went Over Niagara Falls; age voiced as "in her sixties": 62 vs 63 in the sources) |
+| 20 | WR | He Saved 75 Men Without a Gun | Desmond Doss refused to carry a weapon. | SKIP until 2026-12-09 (plan rule: WR under 2K views for 3 Shorts: vy-qRhRjnN0 62, 5BAbL0eYfRQ 574, FrsAQmXpo4o 1,115) |
 | 21 | MAP | The Ohio–Michigan War Over Toledo | Two US states went to war over one city. | |
 | 22 | PJ | They Were Told to Lick Radium Paint | These women were told to lick glowing paint. | |
 | 23 | HOW | Kids Were Sent Through the US Mail | In 1914 a 5-year-old was mailed with stamps on her coat. | |

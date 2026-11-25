@@ -1,0 +1,76 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "map",
+ "background": {
+  "src": "map.png",
+  "crop": [
+   0.002,
+   0.2,
+   0.8,
+   0.8
+  ],
+  "grade": "warm",
+  "blur": 0.8,
+  "side": "top",
+  "darken": 0.12
+ },
+ "layers": [
+  {
+   "type": "image",
+   "src": "annie.jpg",
+   "x": 30,
+   "y": 600,
+   "w": 700,
+   "aspect": 0.781,
+   "crop": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "rotate": -3,
+   "grade": "sepia",
+   "paper": true
+  },
+  {
+   "type": "pin",
+   "x": 840,
+   "y": 740,
+   "label": "NIAGARA FALLS",
+   "size": 40
+  }
+ ],
+ "headline": {
+  "lines": [
+   "SURVIVED IT,",
+   "DIED POOR"
+  ],
+  "accent": [
+   "DIED",
+   "POOR"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 100,
+  "size": 150
+ },
+ "tags": [
+  {
+   "text": "OCT 24, 1901",
+   "x": 730,
+   "y": 900,
+   "variant": "date",
+   "size": 46,
+   "rotate": 3
+  },
+  {
+   "text": "REAL 1901 PHOTO",
+   "x": 730,
+   "y": 1010,
+   "variant": "label",
+   "size": 34
+  }
+ ],
+ "guides": false
+}

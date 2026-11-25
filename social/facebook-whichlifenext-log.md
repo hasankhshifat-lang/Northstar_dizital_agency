@@ -36,3 +36,4 @@
 | 2026-11-24 | Stats | Page + 7 Reels | — | — | 6 fans / 6 followers; FB Reel metrics (plays, avg time, retention graph, likes, comments, shares, follows) written to social/learning/which-life-next.md on main (4e11c71); total_video_* and reach not returned for Reels (Reels insights only) |
 | 2026-11-25 | Scheduled Reel (cross-post) | The Key That Left the Titanic Too Early | 3624500004397728 | 2026-11-25 13:00 UTC | uploaded, scheduled with YouTube k-qXJ1fIzEI; Compliance: pass |
 | 2026-11-25 | Scheduled Reel (cross-post) | The Colony That Vanished, Leaving One Word | 1496024465828975 | 2026-11-25 18:00 UTC | uploaded, scheduled with YouTube J96VCDgNvZg; Compliance: pass |
+| 2026-11-25 | Scheduled Reel (cross-post) | A Teacher in Her 60s Went Over Niagara Falls | 1112249251650407 | 2026-11-25 22:00 UTC | uploaded, scheduled with YouTube 09dDXApuIGM; Compliance: pass |
