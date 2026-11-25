@@ -314,7 +314,8 @@ def cmd_comments(a):
         rows.append({"thread_id": t["id"], "video_id": t["snippet"].get("videoId"),
                      "author": top.get("authorDisplayName"), "text": top.get("textDisplay"),
                      "publishedAt": top.get("publishedAt"), "likes": top.get("likeCount"),
-                     "reply_count": t["snippet"].get("totalReplyCount"), "channel_replied": own_reply})
+                     "reply_count": t["snippet"].get("totalReplyCount"), "channel_replied": own_reply,
+                     "by_channel": is_own})
     out(rows)
 
 
