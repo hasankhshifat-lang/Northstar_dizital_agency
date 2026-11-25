@@ -1,6 +1,6 @@
 # As Printed — The Crest (Philadelphia, the 1918 flu)
 
-Long: (upload pending) · Short: (upload pending)
+Long: eJOP7pf60zw · Short: W-GwriXluFw (As Printed, scheduled 2026-11-25 19:00 / 20:00 ET).
 
 Episode folder: `videos/as-printed/2026-11-25-the-crest/` (facts: FACTS.md, topic report: TOPIC.md, storyboard: mk.py / episode.json).
 
