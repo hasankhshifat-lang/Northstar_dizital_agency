@@ -1,0 +1,123 @@
+# After-upload playbook: 9 steps for every YouTube video (owner, 2026-11-25)
+
+Owner: "Now follow all the steps for my YouTube channels as default." Source: the video "9 Things You Must Do After
+Uploading a YouTube Video" (8WrFkUODe1w; transcript in the session of 2026-11-25). Its numbers are one strategist's
+experience, not YouTube policy, so we treat them as **defaults and starting benchmarks**, measured with
+`growth.py` like everything else and changed when our own data says so.
+
+Applies to **every channel** (Which Life Next, As Printed, The Overthinking Pad, Foot All FC), in chat and in every
+scheduled task. **The compliance rulebook (`youtube-monetization-compliance.md`) wins** over anything here; fixed
+slots, approval rules and channel formats in CLAUDE.md stay as they are except where this file says otherwise.
+
+What the API can and can't do (checked 2026-11-25): `yt.py` can check processing/HD (`check`), post a comment
+(`comment`), make and fill playlists (`playlist-create`, `playlist-add`), edit titles/descriptions/thumbnails. It
+**cannot** pin a comment, add end screens, set a Short's "related video", run Test & Compare, or read copyright-check
+results, impressions or CTR. Those are **owner actions in YouTube Studio** (listed in step 10) or come from vidIQ.
+
+---
+
+## 1. Private first, public only when ready; publish off the round minute
+
+- Upload with `--publish-at` (private until then; this is what yt.py already does). Never upload straight to public.
+- Upload at least **2 h before** the slot. Before the run ends: `yt.py --channel CH check VIDEO_ID` must say
+  `"ready": true` (processed, HD, Paid promotion No). Not ready → wait and re-check; still not ready ~30 min before
+  the slot → move it to the channel's next free slot and say so. Look at title, thumbnail and description one last
+  time against the compliance checklist.
+- **Off-the-minute publishing (owner-approved change to the fixed slots):** publish **2–9 minutes after** the slot,
+  never on :00/:15/:30/:45 (e.g. 7:00 PM slot → 7:03 PM ET; 8:00 PM → 8:06 PM). Vary the offset between videos. The
+  slot keeps its name in the logs (e.g. "19:00 slot, published 19:03"), so publish-time results stay comparable.
+- Slot choice stays with the owner; the weekly audit may propose a slot change from Studio's "When your viewers are
+  on YouTube" (vidIQ `audience` report) as an experiment.
+
+## 2. Share only where the audience is
+
+- Never mass-send links (contact lists, unrelated groups, spam comments on other channels). Cross-posting to our own
+  Facebook Pages stays as it is.
+- If the owner shares a video in a community, it goes only to places about that topic, with one line on what the
+  viewer gets from it. No link-dropping.
+
+## 3. Schedule topics, not only times: sets of three
+
+- Plan topics in **sets of three** for the same viewer interest (e.g. three 1918 stories, three money-scam stories),
+  each with **its own story, angle and research** (no near-duplicates: the inauthentic-content rule wins). After
+  three, move on or come back later from a new angle.
+- Every set gets a **playlist**: create it with `yt.py --channel CH playlist-create "TITLE"` when the first video of
+  the set is uploaded (check `yt.py playlists` first; never a duplicate), add each video with `playlist-add`, record
+  the set in the channel's content calendar (`youtube-growth/<ch>/content-strategy/content-calendar.md`).
+- Each description links the previous video of the set (and the long video for a Short).
+- End screens pointing to the next video of the set: owner in Studio (step 10).
+- Keep the fixed days and times (they are the channel's rhythm).
+
+## 4. Don't touch it for 4 hours; first verdict at 12 h
+
+- **No edits in the first 4 hours after publishing** (title, description, thumbnail, tags), except to fix a spelling
+  mistake, wrong information or a compliance problem: fix those immediately.
+- **First check at ≥12 h** (the next "YouTube growth: daily checkpoints" run): a video is a **repackage candidate**
+  when impressions are flat (vidIQ `thumbnail_ctr` where connected) or, where impressions aren't available, its
+  views/engagedViews at the 24 h checkpoint are in the bottom third of the channel's comparable videos (same format,
+  ≥5 videos; otherwise no verdict). Label which signal was used; never invent impressions or CTR.
+- Repackage = **one big, clear change** of title + thumbnail together (new concept, not a small tweak), still honest
+  (compliance section 4/9), made with the universal thumbnail skill, scored ≥70. Prefer making the change in the
+  evening (around 8–9 PM ET) so impressions arrive the next morning; if no run happens then, the next production run
+  makes it.
+- Studio **Test & Compare** (A/B of titles/thumbnails) beats guessing: the owner can start it in Studio; recommend it
+  in the report for long videos.
+
+## 5. Ask one 5-second question in a comment
+
+- Every video gets **one channel comment with a question viewers can answer in 5 seconds**, specific to that video
+  (e.g. "Would you have trusted the 1918 headline: yes or no?"). Never "thanks for watching, like and subscribe",
+  never bait ("comment YES", "like if…"), never a link; a different question every video.
+- Write it during production (save it as `pin_question` in the episode folder / log row). It is posted when the video
+  is public: the comment-reply task posts it on any video public for <72 h that has no channel comment yet, with
+  `yt.py --channel CH comment VIDEO_ID "QUESTION"`, and logs it in `social/youtube-comments-log.md`.
+- Pinning: owner in Studio (step 10). Reply to the answers (the comment-reply task already does, each reply written
+  for that comment).
+
+## 6. Cut a Short from every long video
+
+- Every long video gets one Short (15–60 s) cut from its most useful or surprising point, **with its own hook** (not a
+  random clip), that teaches something on its own and promises only what the long video delivers. As Printed and The
+  Overthinking Pad already do this; Which Life Next long videos fill one of that day's Short slots with it.
+- The Short's description links the long video. The "related video" link under the Short: owner in Studio (step 10).
+
+## 7. Not working? Change the style or length, not only the topic
+
+- When a channel's last ~5 comparable videos sit below its median, the weekly audit proposes one experiment that
+  changes **presentation**, one variable at a time: length (e.g. 8 → 12 min), pacing/edit density, opening type,
+  visual approach within the channel's style. Never keep repeating what isn't working; never break the channel's
+  fixed look rules in CLAUDE.md without the owner.
+
+## 8. Don't spend the week on one video
+
+- At most **3 packaging changes per video in its lifetime, at least 12 h apart**; then leave it and put the effort
+  into the next video. Never delete an under-performing video (many find their audience later).
+- Never delay or skip the next scheduled video to keep fiddling with an old one.
+
+## 9. Read two numbers together: average view duration and CTR
+
+- **Average view duration (AVD):** starting benchmark for 10–12 min videos is **> 3 min**; more important, it should
+  beat the channel's previous comparable video. (Shorts: use engagedViews/views and average % viewed.)
+- **CTR** (vidIQ or Studio only, never computed by us): **> 5 %** on track, **> 10 %** strong. Only judge it after
+  **≥ 1,000 impressions**.
+- Diagnosis matrix (in every daily/weekly report where the data exists):
+
+  | CTR | AVD | Problem is in |
+  |---|---|---|
+  | low | good | title + thumbnail (the video is good) |
+  | good | viewers leave in the first ~30 s | the hook / the promise not delivered early |
+  | low | low | topic or the whole package |
+  | good | good | working: make the next video of the set |
+
+## 10. Owner actions in YouTube Studio (no API)
+
+Per video, when the owner has a minute (the report lists the videos): **pin** the question comment; add an **end
+screen** to the next video of the set or the playlist; set the Short's **related video** to the long video; start
+**Test & Compare** on long videos when a repackage is proposed. Once per channel: end-screen template (Settings →
+Upload defaults) and remixing = audio only (see CLAUDE.md).
+
+## Log fields
+
+Each upload row in `social/youtube-schedule-log.md` adds: `slot 19:00 → published 19:03`, `check: ready`,
+`set: <playlist title> (n/3)`, `question: "<text>"`. Repackages get their own row ("repackage 1/3", old → new title,
+signal used) and an experiment note in `youtube-growth/<ch>/experiments/experiment-log.md`.

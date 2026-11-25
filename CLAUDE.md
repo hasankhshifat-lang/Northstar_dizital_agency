@@ -17,6 +17,22 @@ The Overthinking Pad, Foot All FC, and the Facebook Pages).
   updates the rulebook's change log and audits the channels. Owner to-do: accept the updated YPP terms in YouTube
   Studio by 2027-01-31 on every monetized channel (YPP updates from 2027-02-01).
 
+## After every YouTube upload: the 9-step playbook (owner, 2026-11-25)
+
+Owner: "follow all the steps for my YouTube channels as default." For every video on every channel, in chat and in every
+scheduled task, follow `docs/content/after-upload-playbook.md` (compliance rulebook still wins):
+1. Upload private with `--publish-at` ≥2 h ahead; `yt.py check VIDEO_ID` must be `"ready": true` (processed, HD) before
+   the run ends. **Publish 2–9 min after each fixed slot** (e.g. 7:03 PM ET), never on :00/:15/:30/:45; the slot keeps
+   its name in the logs. 2. No mass link-sharing. 3. Topics in **sets of three** (each its own story and angle), one
+   playlist per set (`yt.py playlist-create` / `playlist-add`). 4. **No edits for 4 h** after publishing (typos, wrong
+   facts and compliance fixes excepted); first verdict at ≥12 h; one big title + thumbnail repackage when the playbook's
+   signal says so. 5. One **5-second question comment** per video (`yt.py comment`, posted once the video is public; no
+   bait, no links). 6. A Short with its own hook cut from every long video. 7. Not working → change style/length (one
+   variable). 8. Max 3 packaging changes per video, 12 h apart, then move on; never delete. 9. Diagnose with AVD + CTR
+   together (CTR only from vidIQ/Studio, after ≥1,000 impressions).
+- Studio-only owner actions (no API): pin the question, end screens, a Short's related video, Test & Compare.
+- This changes the fixed publish minutes on every channel (owner-approved); the slots themselves stay.
+
 ## Video topics and scripts: read the scriptwriting rules first
 
 Before choosing a topic or writing/editing any script for a YouTube video (long-form or Short) **or a

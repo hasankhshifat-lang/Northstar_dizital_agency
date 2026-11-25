@@ -315,6 +315,12 @@ thumbnail.
 
 ## 10. Tracking and diagnosis (every published video)
 
+**After-upload playbook (owner, 2026-11-25):** `docs/content/after-upload-playbook.md` sets the defaults for every
+channel: off-the-minute publishing, sets of three + playlists, no edits for 4 h, the ≥12 h repackage check (signal
+rules in its step 4), the question comment, a Short from every long video, max 3 repackages, and the AVD + CTR
+diagnosis matrix (step 9). Use it with the checkpoints below; where it and this section differ, the playbook wins
+(CLAUDE.md wins over both).
+
 **Checkpoints:** about 24h, 48h, 72h, 7d, 14d and 28d. A daily scheduled task runs `growth.py due` / `snapshot` for
 each channel and adds what's new to `videos/<ID>/performance.md` and the learning database row. Remember the
 2–3 day lag: an early checkpoint can show partial data. Store `data_through`; never back-fill guesses.

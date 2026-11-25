@@ -70,6 +70,16 @@ yt.py upload /path/video.mp4 --title "TITLE" --description "DESC" --tags "a,b" \
   Shorts remixing) plus a bulk edit for existing videos. Don't claim it was set by the API.
 - Log every upload/schedule in `social/youtube-schedule-log.md`, then commit and push.
 
+## After-upload playbook (owner, 2026-11-25)
+
+Every video follows `docs/content/after-upload-playbook.md`. Tools for it:
+- `yt.py check VIDEO_ID`: `"ready": true` = processed, HD, Paid promotion No (run before the upload run ends).
+- `yt.py comment VIDEO_ID "QUESTION"`: the video's 5-second question comment, posted once the video is public
+  (commenting on a still-private scheduled video may fail). 50 units. Pinning is Studio-only.
+- `yt.py playlists`, `yt.py playlist-create "TITLE" [--description D]` (public by default), `yt.py playlist-add`.
+- Publish 2–9 min after the slot (`--publish-at 2026-11-26T00:03:00Z` for a 7 PM EST slot), never on a round minute.
+- No edits in the first 4 h after publishing (except typos, wrong facts, compliance); max 3 repackages per video.
+
 ## Editing
 
 `yt.py update VIDEO_ID [--title] [--description] [--tags] [--privacy] [--publish-at] [--category]`

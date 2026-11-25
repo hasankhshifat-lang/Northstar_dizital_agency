@@ -24,6 +24,10 @@ Usage (all output is JSON; put --channel NAME before the command):
   yt.py analytics START END [--metrics views,likes] [--dimensions day]
   yt.py ai-disclose [--dry-run]                 # set "Altered or synthetic content" = YES on every upload missing it
   yt.py paid-promo-off [--dry-run]              # set "Paid promotion" = No on every upload that isn't No
+  yt.py check VIDEO_ID                          # ready to go public? processing done, HD, publishAt, AI/paid flags
+  yt.py comment VIDEO_ID TEXT                   # post a top-level comment as the channel (the after-upload question)
+  yt.py playlists                               # the channel's playlists (id, title, item count)
+  yt.py playlist-create TITLE [--description D] [--privacy public|unlisted|private]
 
 AI disclosure (owner, 2026-11-17): every upload and every update sets status.containsSyntheticMedia = true
 (YouTube Studio: "Altered or synthetic content" = Yes). All our videos use AI voice/visuals, so this is never off.
@@ -243,6 +247,47 @@ def cmd_paid_promo_off(a):
          ("would_set" if a.dry_run else "set_no"): fixed, "failed": failed})
 
 
+def cmd_check(a):
+    """After-upload playbook step 1: is the video ready to go public (processed, HD, flags right)?"""
+    v = get_video(a.video_id, "snippet,status,contentDetails,processingDetails,paidProductPlacementDetails")
+    st, pd, cd = v["status"], v.get("processingDetails", {}), v.get("contentDetails", {})
+    problems = []
+    if st.get("uploadStatus") != "processed":
+        problems.append(f"uploadStatus={st.get('uploadStatus')} {st.get('failureReason') or st.get('rejectionReason') or ''}".strip())
+    if pd.get("processingStatus") not in (None, "succeeded"):
+        problems.append(f"processingStatus={pd.get('processingStatus')}")
+    if cd.get("definition") != "hd":
+        problems.append(f"definition={cd.get('definition')} (HD not ready yet)")
+    if v.get("paidProductPlacementDetails", {}).get("hasPaidProductPlacement") is not False:
+        problems.append("paid promotion not No")
+    out({"id": v["id"], "title": v["snippet"]["title"], "privacy": st.get("privacyStatus"),
+         "publishAt": st.get("publishAt"), "uploadStatus": st.get("uploadStatus"),
+         "processingStatus": pd.get("processingStatus"), "definition": cd.get("definition"),
+         "duration": cd.get("duration"), "ready": not problems, "problems": problems,
+         "note": "Copyright-check results, end screens and pinned comments are Studio-only (no API)."})
+
+
+def cmd_comment(a):
+    r = _call("POST", f"{API}/commentThreads", {"part": "snippet"},
+              body={"snippet": {"videoId": a.video_id, "topLevelComment": {"snippet": {"textOriginal": a.text}}}})
+    out({"thread_id": r["id"], "video_id": a.video_id,
+         "text": r["snippet"]["topLevelComment"]["snippet"].get("textOriginal"),
+         "note": "Pinning is not in the API: the owner pins it in Studio."})
+
+
+def cmd_playlists(a):
+    r = _call("GET", f"{API}/playlists", {"part": "snippet,status,contentDetails", "mine": "true", "maxResults": 50})
+    out([{"id": p["id"], "title": p["snippet"]["title"], "privacy": p["status"]["privacyStatus"],
+          "items": p["contentDetails"]["itemCount"]} for p in r.get("items", [])])
+
+
+def cmd_playlist_create(a):
+    r = _call("POST", f"{API}/playlists", {"part": "snippet,status"},
+              body={"snippet": {"title": a.title, "description": a.description or ""},
+                    "status": {"privacyStatus": a.privacy}})
+    out({"playlist_id": r["id"], "title": r["snippet"]["title"], "privacy": r["status"]["privacyStatus"]})
+
+
 def cmd_thumbnail(a):
     ctype = mimetypes.guess_type(a.image)[0] or "image/jpeg"
     with open(a.image, "rb") as f:
@@ -322,6 +367,12 @@ def main():
     s = sp.add_parser("ai-disclose"); s.add_argument("--dry-run", action="store_true"); s.set_defaults(f=cmd_ai_disclose)
     s = sp.add_parser("paid-promo-off"); s.add_argument("--dry-run", action="store_true")
     s.set_defaults(f=cmd_paid_promo_off)
+    s = sp.add_parser("check"); s.add_argument("video_id"); s.set_defaults(f=cmd_check)
+    s = sp.add_parser("comment"); s.add_argument("video_id"); s.add_argument("text"); s.set_defaults(f=cmd_comment)
+    sp.add_parser("playlists").set_defaults(f=cmd_playlists)
+    s = sp.add_parser("playlist-create"); s.add_argument("title"); s.add_argument("--description")
+    s.add_argument("--privacy", choices=["public", "unlisted", "private"], default="public")
+    s.set_defaults(f=cmd_playlist_create)
     a = p.parse_args()
     CHANNEL = a.channel; CHANNEL_ID = CHANNELS[CHANNEL][1]
     if a.cmd == "upload" and a.title is None:
