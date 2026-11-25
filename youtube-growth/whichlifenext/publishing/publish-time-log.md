@@ -11,3 +11,6 @@
 | 2026-11-24 13:00 | 08:00 | 08:00 ET (3-a-day slot) | Short 47.3 s, voiced map | The Great Molasses Flood, Boston 1919 (SV) · HyHsDj9vsYY | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22) |
 | 2026-11-24 18:00 | 13:00 | 13:00 ET (3-a-day slot) | Short 47.5 s, voiced map | The 1904 Olympic marathon: winner fed rat poison (WD) · g4FVyyqeJkg | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22) |
 | 2026-11-24 22:00 | 17:00 | 17:00 ET (3-a-day slot) | Short 51.9 s, voiced map | Black Bart, the stagecoach robber who left poems (WW) · zQ83JK9BaD8 | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22); second day with all 3 slots filled |
+| 2026-11-25 13:00 | 08:00 | 08:00 ET (3-a-day slot) | Short 57.6 s, voiced map | The crow's-nest key that left the Titanic (TI) · k-qXJ1fIzEI | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22) |
+| 2026-11-25 18:00 | 13:00 | 13:00 ET (3-a-day slot) | Short 58.1 s, voiced map | The Roanoke colony that vanished, leaving one word (MY) · J96VCDgNvZg | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22) |
+| 2026-11-25 22:00 | 17:00 | 17:00 ET (3-a-day slot) | Short 51.6 s, voiced map | Annie Edson Taylor over Niagara Falls in a barrel (FT) · 09dDXApuIGM | n/a | n/a | n/a | n/a | n/a | 3-a-day rule (owner 2026-11-22); third day with all 3 slots filled |
