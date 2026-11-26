@@ -165,11 +165,11 @@ short = [
  dict(type="read", item="trib6", boxes=B['t6_head'][1:],
   say="Custer killed. Every man killed. Three hundred and fifteen."),
  dict(type="read", item="boz7", boxes=B['b_taylor'][-2:],
-  say="The source: a civilian scout, who rode to the telegraph in Bozeman, Montana."),
+  say="The source: a civilian scout, who rode to a telegraph in Montana."),
  dict(type="read", item="herald7", boxes=B['h_terrible'][:2],
   say="General Sherman: it must be exaggerated."),
  dict(type="read", item="herald7", boxes=B['h_rap'][1:],
-  say="Mid-interview, there's a rap at the door. Custer's death is confirmed."),
+  say="Then a rap at the door. Custer's death is confirmed."),
  dict(type="read", item="natrep7", boxes=B['n_conf'][1:],
   say="The army's own dispatch, coming by steamboat, confirmed the newspaper reports."),
  dict(type="compare", a=dict(label="PRINTED · 6 JUL 1876", quote="\"…killed was 315.\"", value="315", unit="killed"),
@@ -177,7 +177,7 @@ short = [
   say="The count was too high. Two hundred and sixty eight died. But the general? He read it in the paper."),
 ]
 ep = dict(slug="custer-news", title="Read It in the Papers", indexTitle="Little Bighorn · July 1876", seed=26, items=items,
- end=dict(sub="How the news of the Little Bighorn reached the army, as printed, July 1876", credits=["Library of Congress · Chronicling America (New York Herald, New-York Tribune, National Republican, Evening Star, Helena Weekly Herald, Bozeman Avant Courier)", "Library of Congress · Prints & Photographs (Sheridan, Sherman, Sitting Bull, Centennial Exhibition, S. J. Morrow)", "Casualty figures: National Park Service, Little Bighorn Battlefield National Monument", "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"]),
+ end=dict(sub="The Little Bighorn news, as printed, July 1876", credits=["Library of Congress · Chronicling America", "Library of Congress · Prints & Photographs", "Casualty figures: National Park Service", "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"]),
  films=dict(long=dict(size="1920x1080", shots=long), short=dict(size="1080x1920", shots=short)))
 json.dump(ep, open(f'{H}/episode.json', 'w'), indent=1, ensure_ascii=False)
 w = lambda f: sum(len(s.get('say', '').split()) for s in f)

@@ -204,11 +204,11 @@
   }
  ],
  "end": {
-  "sub": "How the news of the Little Bighorn reached the army, as printed, July 1876",
+  "sub": "The Little Bighorn news, as printed, July 1876",
   "credits": [
-   "Library of Congress · Chronicling America (New York Herald, New-York Tribune, National Republican, Evening Star, Helena Weekly Herald, Bozeman Avant Courier)",
-   "Library of Congress · Prints & Photographs (Sheridan, Sherman, Sitting Bull, Centennial Exhibition, S. J. Morrow)",
-   "Casualty figures: National Park Service, Little Bighorn Battlefield National Monument",
+   "Library of Congress · Chronicling America",
+   "Library of Congress · Prints & Photographs",
+   "Casualty figures: National Park Service",
    "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"
   ]
  },
@@ -1396,7 +1396,7 @@
        945
       ]
      ],
-     "say": "The source: a civilian scout, who rode to the telegraph in Bozeman, Montana."
+     "say": "The source: a civilian scout, who rode to a telegraph in Montana."
     },
     {
      "type": "read",
@@ -1440,7 +1440,7 @@
        612
       ]
      ],
-     "say": "Mid-interview, there's a rap at the door. Custer's death is confirmed."
+     "say": "Then a rap at the door. Custer's death is confirmed."
     },
     {
      "type": "read",
