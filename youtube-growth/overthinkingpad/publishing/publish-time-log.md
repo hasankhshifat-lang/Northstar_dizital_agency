@@ -8,3 +8,5 @@
 | 2026-11-18 01:00 | Tue 11-17 20:00 | US evening (fixed slot) | Short 0:48 | self-distancing (q4cK6ZazDEo) | n/a | n/a | n/a | n/a | n/a yet (72h: 7 views per Analytics, lagging; 281 by 11-21) | EXP-001 control |
 | 2026-11-23 00:00 | Sun 11-22 19:00 | US evening (Sunday, off the Mon/Tue/Thu/Sat plan) | long 10:38 | decision fatigue (nbM4DVNyLo8) | n/a | n/a | n/a (3 public views at 18 h) | n/a | — | — |
 | 2026-11-23 01:00 | Sun 11-22 20:00 | US evening (Sunday) | Short 0:48 | hungry judges (HpMzRZJs5So) | n/a | n/a | n/a (64 public views at 17.5 h) | n/a | — | EXP-001 control |
+| 2026-11-27 00:04 | Thu 11-26 19:00 slot → 19:04 (Thanksgiving) | US evening (fixed slot, off-minute) | long 10:46 | impostor feelings (KsNL4L1DfmE) | n/a | n/a | n/a | n/a | — | EXP-002 treatment #1 |
+| 2026-11-27 01:07 | Thu 11-26 20:00 slot → 20:07 (Thanksgiving) | US evening (fixed slot, off-minute) | Short 0:53 | Tewfik doctors (rVtGFCEi3Ak) | n/a | n/a | n/a | n/a | — | EXP-001 control |

@@ -19,6 +19,7 @@ Mirror each card as a row in `social/learning/<channel>.md` → Experiments.
 - **Sample:** ≥3 Shorts per arm (alternate episodes), so about 3 weeks.
 - **Data 2026-11-24 (daily checkpoints):** control 8GYwZB1soxo 7d = 377/638 = 59.1% engaged, 59.4% viewed (Analytics data_through 11-19, same as 72h); HpMzRZJs5So 24h Analytics not in yet. No treatment data yet. Still running, no decision.
 - **Data 2026-11-25 (daily checkpoints):** control q4cK6ZazDEo 7d in Analytics = 3/7 engaged (0.429), 77.3% viewed, data_through 11-20, while public views are 281: Analytics still under-reports this Short, use the lifetime read (46.6% to 11-21) for the arm. HpMzRZJs5So 48h and lMU813FS0FE 24h: Analytics not in yet (public 68 and 181). Treatment kyphkB4zuzc: no checkpoint due yet. Still running, no decision.
+- **Status 2026-11-26:** control arm continues: rVtGFCEi3Ak (study-first, "Researchers filmed doctors in training..."), alternating after the 11-24 treatment.
 - **Status 2026-11-24:** treatment arm started: kyphkB4zuzc ("You just read okay, with a period... fourteen times.", 20:00 ET 11-24). The 11-23 Short lMU813FS0FE has no run record (files missing); its title reads study-first, treat its arm as unknown.
 - **Status:** planned (weekly audit 2026-11-23). Control arm published 3 of 3 (8GYwZB1soxo 11-16, q4cK6ZazDEo 11-17,
   HpMzRZJs5So 11-22). Control data (YouTube Analytics API via growth.py, own OAuth client):
@@ -47,4 +48,5 @@ Mirror each card as a row in `social/learning/<channel>.md` → Experiments.
   and 7 d. Impressions/CTR from a Studio export if the owner provides one (not in API).
 - **Sample:** ≥3 long videos per arm (alternate episodes), or 28 days; allow for topic differences.
 - **Status:** planned (proposed 2026-11-23; does not touch the Shorts, so it does not confound EXP-001).
+- **Status 2026-11-26:** treatment arm started: **KsNL4L1DfmE** (impostor feelings, 19:04 ET 11-26) opens payoff-first ("If you've ever felt like a fraud... here's what the research actually says..."). Controls so far: VSaFr4doR0M, b9ReSvwwjNw, nbM4DVNyLo8, qIT6XDMypN8. Confounds: Thanksgiving evening; new topic bucket.
 - **Result:** — **Decision:** —

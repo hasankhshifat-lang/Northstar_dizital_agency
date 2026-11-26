@@ -11,9 +11,11 @@ FACTS.md. Mark used topics `done YYYY-MM-DD (VIDEO_ID)`. Add new finds at the bo
 | 4 | Why Worrying Feels Like Doing Something | Borkovec's worry research; contrast avoidance model (Newman & Llera 2011) | Mental-health line in description | done 2026-11-23 (BbM54vNDsH8, Short lMU813FS0FE; found on the channel 2026-11-24, that run's files never reached the repo) |
 | 5 | More Choices, Worse Decisions? | Iyengar & Lepper 2000 jam study + Scheibehenne et al. 2010 meta-analysis (mixed) | Honest "it's complicated" turn | open |
 | 6 | Your Brain Weighs Bad News Heavier | Baumeister et al. 2001 "Bad is stronger than good"; Rozin & Royzman 2001 | | open |
-| 7 | Why You Feel Like a Fraud | Clance & Imes 1978; Bravata et al. 2020 review | Not a diagnosis; label it a feeling/pattern | open |
+| 7 | Why You Feel Like a Fraud | Clance & Imes 1978; Bravata et al. 2020 review | Not a diagnosis; label it a feeling/pattern | done 2026-11-26 (KsNL4L1DfmE, Short rVtGFCEi3Ak) |
 | 8 | The Unfinished Task Your Brain Won't Drop | Zeigarnik 1927 + replication problems (Ghibellini & Meier 2023 meta-analysis); Masicampo & Baumeister 2011 plans | Say clearly what held up | open |
 | 9 | Why Getting What You Wanted Stops Feeling Good | Hedonic adaptation; Brickman et al. 1978 lottery study and its limits | | open |
 | 10 | Overthinking a Text Message | Mind-reading errors, negativity in ambiguous messages (Kruger et al. 2005 email tone) | Very relatable Short | done 2026-11-24 (qIT6XDMypN8, Short kyphkB4zuzc) |
 | 11 | Talk to Yourself in the Third Person | Kross et al. 2014 distanced self-talk | Practical episode; partly covered in #2 (2026-11-17), needs a new angle | open |
 | 12 | Decision Fatigue: Real or Myth? | Danziger et al. 2011 judges study + critiques (Weinshall-Margel & Shapard 2011); ego-depletion replication failures | Myth-check format | done 2026-11-22 (nbM4DVNyLo8, Short HpMzRZJs5So) |
+| 13 | The "70%" Stat and Other Viral Psychology Numbers | Bravata 2020 prevalence ranges; origin of viral figures | Myth-check; only if new studies, not a repeat of 11-26 | open |
+| 14 | Why Praise Doesn't Stick But Criticism Does | Baumeister et al. 2001; Rozin & Royzman 2001 (merge with #6) | Set "Why You Doubt Yourself" 2/3 with #6 | open |

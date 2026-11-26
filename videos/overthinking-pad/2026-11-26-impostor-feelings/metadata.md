@@ -69,10 +69,14 @@ This video is for education, not a substitute for professional help. If you're s
 ### Description
 Researchers filmed doctors in training with their patients and measured which doctors felt like frauds. Patients rated the doctors with more impostor thoughts as more empathetic and better listeners (Tewfik, 2022, Academy of Management Journal). But those thoughts also lowered self-esteem, so it's no reason to want them.
 
-Full video: LONG_LINK
+Full video: https://youtu.be/KsNL4L1DfmE
 
 Source: https://news.mit.edu/2022/imposter-syndrome-upside-0415 · https://doi.org/10.5465/amj.2020.1627
 Narration voiced with AI.
 This video is for education, not a substitute for professional help. If you're struggling, talk to a doctor or a licensed therapist. In the US you can call or text 988.
 
 #shorts #psychology #impostorsyndrome
+
+## Uploaded 2026-11-26 (~07:49 UTC)
+- Long: **KsNL4L1DfmE** https://youtu.be/KsNL4L1DfmE · publishAt 2026-11-27T00:04:00Z (19:04 ET) · aiDisclosed true · paidPromotion false · check ready true · thumbnail set · playlist PLGxKdwJJMObU (1/3)
+- Short: **rVtGFCEi3Ak** https://youtube.com/shorts/rVtGFCEi3Ak · publishAt 2026-11-27T01:07:00Z (20:07 ET) · aiDisclosed true · paidPromotion false · check ready true · thumbnail set · description links the long video
