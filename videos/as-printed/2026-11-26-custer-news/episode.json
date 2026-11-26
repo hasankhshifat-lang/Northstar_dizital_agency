@@ -1346,7 +1346,7 @@
      ],
      "nf": 0.6,
      "zoom": 1.2,
-     "say": "General Sheridan, July eighteen seventy six. He had just read, in the morning paper, that Custer was dead. So how did the paper know first?"
+     "say": "General Sheridan, July eighteen seventy six. He read in the morning paper that Custer was dead. How did the paper know first?"
     },
     {
      "type": "read",
@@ -1440,7 +1440,7 @@
        612
       ]
      ],
-     "say": "Then, mid-interview, a rap at the door. Custer's death, confirmed."
+     "say": "Mid-interview, there's a rap at the door. Custer's death is confirmed."
     },
     {
      "type": "read",
