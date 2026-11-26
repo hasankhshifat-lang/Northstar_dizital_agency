@@ -1346,7 +1346,7 @@
      ],
      "nf": 0.6,
      "zoom": 1.2,
-     "say": "General Sheridan, July eighteen seventy six. He read in the morning paper that Custer was dead. How did the paper know first?"
+     "say": "General Sheridan had just read, in the morning paper, that Custer was dead. How did the paper know first?"
     },
     {
      "type": "read",
@@ -1396,7 +1396,7 @@
        945
       ]
      ],
-     "say": "The source: a civilian scout, who rode to a telegraph in Montana."
+     "say": "The source: a civilian scout, who rode to the telegraph in Bozeman, Montana."
     },
     {
      "type": "read",
@@ -1440,7 +1440,7 @@
        612
       ]
      ],
-     "say": "Then a rap at the door. Custer's death is confirmed."
+     "say": "Mid-interview, there's a rap at the door. Custer's death is confirmed."
     },
     {
      "type": "read",
