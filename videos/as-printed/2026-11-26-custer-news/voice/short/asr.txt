@@ -1,9 +1,9 @@
 OK   short_000 | So incredible that he could not believe it. → so incredible that he could not believe it. 
-DIFF short_001 | General Sheridan, July eighteen seventy six. He read in the morning paper that Custer was dead. How did the paper know first? → General Sheridan, July 1876. He read in the morning paper that Custer was dead. How did the paper know first? 
+OK   short_001 | General Sheridan had just read, in the morning paper, that Custer was dead. How did the paper know first? → General Sheridan had just read in the morning paper that Custer was dead. How did the paper know first? 
 OK   short_002 | Custer killed. Every man killed. Three hundred and fifteen. → Custer killed. Every man killed. 315. 
-DIFF short_003 | The source: a civilian scout, who rode to a telegraph in Montana. → These all see cost for doring. 
+OK   short_003 | The source: a civilian scout, who rode to the telegraph in Bozeman, Montana. → The source, a civilian scout who rode to the telegraph in Bozeman, Montana. 
 OK   short_004 | General Sherman: it must be exaggerated. → General Sherman, it must be exaggerated. 
-DIFF short_005 | Then a rap at the door. Custer's death is confirmed. → to create expanse then a rap at the door Custer's death is confirmed 
+DIFF short_005 | Mid-interview, there's a rap at the door. Custer's death is confirmed. → Mid-interview, there's a wrap at the door. Custer's death is confirmed. 
 OK   short_006 | The army's own dispatch, coming by steamboat, confirmed the newspaper reports. → The Army's own dispatch, coming by steamboat, confirmed the newspaper reports. 
 OK   short_007 | The count was too high. Two hundred and sixty eight died. But the general? He read it in the paper. → The count was too high. 268 died, but the general, he read it in the paper. 
-mismatches: 3 (lang=en, model=small.en)
+mismatches: 1 (lang=en, model=small.en)

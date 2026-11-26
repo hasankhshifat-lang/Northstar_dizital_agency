@@ -1346,6 +1346,7 @@
      ],
      "nf": 0.6,
      "zoom": 1.2,
+     "lead": 0.5,
      "say": "General Sheridan had just read, in the morning paper, that Custer was dead. How did the paper know first?"
     },
     {
@@ -1396,6 +1397,7 @@
        945
       ]
      ],
+     "lead": 0.5,
      "say": "The source: a civilian scout, who rode to the telegraph in Bozeman, Montana."
     },
     {
@@ -1440,6 +1442,7 @@
        612
       ]
      ],
+     "lead": 0.5,
      "say": "Mid-interview, there's a rap at the door. Custer's death is confirmed."
     },
     {
@@ -1465,10 +1468,12 @@
        2057
       ]
      ],
+     "lead": 0.5,
      "say": "The army's own dispatch, coming by steamboat, confirmed the newspaper reports."
     },
     {
      "type": "compare",
+     "lead": 0.4,
      "a": {
       "label": "PRINTED · 6 JUL 1876",
       "quote": "\"…killed was 315.\"",
