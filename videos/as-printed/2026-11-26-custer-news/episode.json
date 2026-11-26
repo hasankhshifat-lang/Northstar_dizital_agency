@@ -607,7 +607,7 @@
        "sub": "Centennial Exhibition · Philadelphia, 1876"
       }
      ],
-     "say": "Philadelphia was hosting the Centennial Exhibition. This is its Main Building, in eighteen seventy six. That week the city was full of veterans, politicians, and generals. Remember that. It matters in a minute."
+     "say": "Philadelphia was the host of the Centennial Exhibition. This is the Main Building, in eighteen seventy six. That week the city was full of veterans, politicians, and generals. Remember that. It matters in a minute."
     },
     {
      "type": "read",
@@ -1234,7 +1234,7 @@
        "sub": "Custer's battlefield · 1879"
       }
      ],
-     "say": "On the number, he was right. The papers had it too high. On everything else, the scout was right and the generals were wrong. The defeat they called incredible had happened, much as the rider described it."
+     "say": "On the number, he was right. The papers had it too high. On everything else, the scout was right and the generals were wrong. The defeat they called incredible had happened, much as the scout described it."
     },
     {
      "type": "read",
@@ -1346,7 +1346,7 @@
      ],
      "nf": 0.6,
      "zoom": 1.2,
-     "say": "That's General Sheridan, the man running the war on the northern plains. July eighteen seventy six. He had just read that Custer was dead. In the morning paper. So how did the paper know first?"
+     "say": "General Sheridan, July eighteen seventy six. He had just read, in the morning paper, that Custer was dead. So how did the paper know first?"
     },
     {
      "type": "read",
@@ -1396,7 +1396,7 @@
        945
       ]
      ],
-     "say": "The source: a civilian scout, who rode to the telegraph in Bozeman, Montana. Monday evening, July third."
+     "say": "The source: a civilian scout, who rode to the telegraph in Bozeman, Montana."
     },
     {
      "type": "read",
@@ -1415,7 +1415,7 @@
        2932
       ]
      ],
-     "say": "General Sherman, in his hotel: it must be exaggerated."
+     "say": "General Sherman: it must be exaggerated."
     },
     {
      "type": "read",
@@ -1440,7 +1440,7 @@
        612
       ]
      ],
-     "say": "Then, mid-interview, a rap at the door. A telegram. Custer's death, confirmed."
+     "say": "Then, mid-interview, a rap at the door. Custer's death, confirmed."
     },
     {
      "type": "read",
@@ -1465,7 +1465,7 @@
        2057
       ]
      ],
-     "say": "The army's own dispatch was coming by steamboat. It confirmed, the newspaper reports."
+     "say": "The army's own dispatch, coming by steamboat, confirmed the newspaper reports."
     },
     {
      "type": "compare",
@@ -1483,7 +1483,7 @@
       "source": "National Park Service"
      },
      "strike": "a",
-     "say": "The papers' count was too high. Two hundred and sixty eight died. But the defeat was real. And the general? He read it in the paper."
+     "say": "The count was too high. Two hundred and sixty eight died. But the general? He read it in the paper."
     }
    ]
   }
