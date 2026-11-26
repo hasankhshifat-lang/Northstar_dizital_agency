@@ -1,0 +1,11 @@
+{
+ "width": 1080, "height": 1920, "style": "archive",
+ "background": {"color": "#dfe2e5", "side": "none"},
+ "layers": [
+  {"type": "cutout", "src": "custer_cut.png", "x": 230, "y": 430, "h": 1090, "grade": "mono", "glow": "rgba(255,255,255,0.85)"},
+  {"type": "image", "src": "clip_incredible.jpg", "x": 40, "y": 1170, "w": 760, "rotate": -1.5, "grade": "none", "aspect": 4.2},
+  {"type": "ring", "x": 190, "y": 1326, "rx": 165, "ry": 30, "rotate": -1.5, "width": 10}
+ ],
+ "headline": {"lines": ["Is it", "true?"], "accent": ["true?"], "x": 60, "y": 100, "size": 150, "panel": true},
+ "tags": [{"text": "NEW YORK HERALD · 7 JUL 1876", "x": 60, "y": 1100, "variant": "date", "size": 30}]
+}

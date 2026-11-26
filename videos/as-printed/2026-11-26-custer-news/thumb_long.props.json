@@ -1,0 +1,12 @@
+{
+ "width": 1280, "height": 720, "style": "archive",
+ "background": {"color": "#dfe2e5", "side": "none"},
+ "layers": [
+  {"type": "image", "src": "clip_custerkilled.jpg", "x": 50, "y": 560, "w": 560, "rotate": 1.2, "grade": "none", "aspect": 4.0426},
+  {"type": "image", "src": "clip_incredible.jpg", "x": 36, "y": 345, "w": 660, "rotate": -1.5, "grade": "none", "aspect": 4.2},
+  {"type": "ring", "x": 165, "y": 478, "rx": 135, "ry": 25, "rotate": -1.5, "width": 8},
+  {"type": "cutout", "src": "custer_cut.png", "x": 690, "y": 10, "h": 710, "grade": "mono", "glow": "rgba(255,255,255,0.85)"}
+ ],
+ "headline": {"lines": ["\"Could not", "believe it\""], "accent": ["believe it\""], "x": 36, "y": 30, "size": 96, "panel": true},
+ "tags": [{"text": "NEW YORK HERALD · 7 JUL 1876", "x": 40, "y": 300, "variant": "date", "size": 22}]
+}

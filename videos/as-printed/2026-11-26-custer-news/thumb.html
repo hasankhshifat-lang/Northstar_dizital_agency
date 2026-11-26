@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>As Printed · thumbnail</title>
+<style>
+@font-face{font-family:'PM';src:url(fonts/IBMPlexMono-500.woff2);font-weight:500}
+@font-face{font-family:'PS';src:url(fonts/IBMPlexSans-500.woff2);font-weight:500}
+@font-face{font-family:'SF';src:url(fonts/IBMPlexSerif-600.woff2);font-weight:600}
+html,body{margin:0;background:#0d0e10} canvas{display:block}
+</style></head><body><canvas id="c"></canvas>
+<script>
+// Archive-style thumbnail: one real archive item, magnified, on the light table; a 2–6 word heading; an orange ring
+// on the detail that matters; a small catalogue tag. ?fmt=long (1280x720) | short (1080x1920). Reads thumb.json.
+const ORANGE = '#ff5a1f', INK = '#15171a';
+const fmt = new URLSearchParams(location.search).get('fmt') || 'long';
+const W = fmt === 'short' ? 1080 : 1280, H = fmt === 'short' ? 1920 : 720;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; const c = cv.getContext('2d');
+const img = s => new Promise((r, j) => { const i = new Image(); i.onload = () => r(i); i.onerror = j; i.src = s; });
+function wrap(s, font, max) { c.font = font; const o = []; let l = ''; for (const w of s.split(' ')) { const t = l ? l + ' ' + w : w; if (c.measureText(t).width > max && l) { o.push(l); l = w; } else l = t; } o.push(l); return o; }
+(async () => {
+  for (const f of ['500 20px PM', '500 20px PS', '600 20px SF']) await document.fonts.load(f);
+  const T = await (await fetch('thumb.json')).json();
+  const im = await img(T.image);                    // a prepared crop (positive) of the archive item
+  // table
+  const g = c.createRadialGradient(W * .5, H * .45, 10, W * .5, H * .5, Math.hypot(W, H) * .6);
+  g.addColorStop(0, '#f8fafc'); g.addColorStop(1, '#d6dade'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  // the item, large, slightly turned
+  const long = fmt === 'long', iw = long ? W * 0.66 : W * 1.9, ih = im.height * iw / im.width;
+  const cx = long ? W * 0.68 : W * (T.shortX ?? 0.62), cy = long ? H * 0.5 : H * 0.58;
+  c.save(); c.translate(cx, cy); c.rotate((T.rot ?? -2.5) * Math.PI / 180); c.shadowColor = 'rgba(0,0,0,0.25)'; c.shadowBlur = 24;
+  c.drawImage(im, -iw / 2, -ih / 2, iw, ih); c.restore();
+  // the ring on the detail (fractions of the image)
+  if (T.ring) { const [fx, fy, fr] = T.ring; const p = [cx + (fx - .5) * iw, cy + (fy - .5) * ih];
+    c.strokeStyle = ORANGE; c.lineWidth = long ? 9 : 12; c.beginPath(); c.ellipse(p[0], p[1], fr * iw, fr * iw * 0.55, -0.05, 0, 7); c.stroke(); }
+  // heading block
+  const fH = `600 ${long ? 84 : 124}px SF`, maxW = long ? W * 0.40 : W * 0.84;
+  const lines = wrap(T.heading, fH, maxW), lh = long ? 98 : 128;
+  const bx = long ? 40 : 60, by = long ? H * 0.5 - (lines.length * lh) / 2 - 40 : 230;
+  const bw = Math.max(...lines.map(l => (c.font = fH, c.measureText(l).width))) + 60, bh = lines.length * lh + 90;
+  c.fillStyle = 'rgba(14,15,17,0.88)'; c.beginPath(); c.roundRect(bx, by, bw, bh, 6); c.fill();
+  c.fillStyle = ORANGE; c.fillRect(bx, by, 8, bh);
+  lines.forEach((l, i) => { c.font = fH; c.fillStyle = i === lines.length - 1 && T.goldLast !== false ? '#ffb38f' : '#fafaf7'; c.fillText(l, bx + 32, by + 22 + (i + 1) * lh - 16); });
+  if (T.tag) { c.font = `500 ${long ? 24 : 34}px PM`; c.fillStyle = ORANGE; c.fillText(T.tag.toUpperCase(), bx + 32, by + bh - 26); }
+  window.READY = true;
+})();
+</script></body></html>

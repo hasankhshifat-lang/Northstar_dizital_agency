@@ -1,0 +1,1491 @@
+{
+ "slug": "custer-news",
+ "title": "Read It in the Papers",
+ "indexTitle": "Little Bighorn · July 1876",
+ "seed": 26,
+ "items": [
+  {
+   "id": "herald7",
+   "kind": "paper",
+   "src": "raw/herald7.jpg",
+   "label": "THE NEW YORK HERALD · 7 JUL 1876 · P. 3",
+   "short": "The New York Herald, 7 July 1876",
+   "catalog": "LCCN sn83030313",
+   "row": "\"could not believe it\""
+  },
+  {
+   "id": "sheridan",
+   "kind": "print",
+   "src": "raw/3c31934u.tif",
+   "crop": [
+    150,
+    150,
+    3100,
+    3850
+   ],
+   "horizon": 0,
+   "nomask": true,
+   "inches": 8,
+   "label": "LT. GEN. PHILIP H. SHERIDAN · ENGRAVING",
+   "short": "Lieut. Gen. Philip H. Sheridan (engraving)",
+   "catalog": "LC-USZ62-131934",
+   "credit": "Library of Congress, Prints & Photographs"
+  },
+  {
+   "id": "trib6",
+   "kind": "paper",
+   "src": "raw/trib6.jpg",
+   "label": "NEW-YORK TRIBUNE · 6 JUL 1876",
+   "short": "New-York Tribune, 6 July 1876",
+   "catalog": "LCCN sn83030214",
+   "row": "\"315 in number\""
+  },
+  {
+   "id": "sbull",
+   "kind": "print",
+   "src": "raw/3c22859u.tif",
+   "crop": [
+    400,
+    150,
+    2900,
+    3550
+   ],
+   "horizon": 0,
+   "nomask": true,
+   "inches": 7,
+   "label": "SITTING BULL · HUNKPAPA LAKOTA · 1884",
+   "short": "Sitting Bull, photographed 1884",
+   "catalog": "LC-USZ62-122859",
+   "credit": "Palmquist & Jurgens, 1884"
+  },
+  {
+   "id": "boz7",
+   "kind": "paper",
+   "src": "raw/boz7.jpg",
+   "label": "BOZEMAN AVANT COURIER · 7 JUL 1876",
+   "short": "Bozeman Avant Courier, 7 July 1876",
+   "catalog": "LCCN sn84038123",
+   "row": "the rider, Monday 3 July"
+  },
+  {
+   "id": "trib5",
+   "kind": "paper",
+   "src": "raw/trib5.jpg",
+   "label": "NEW-YORK TRIBUNE · 5 JUL 1876",
+   "short": "New-York Tribune, 5 July 1876",
+   "catalog": "LCCN sn83030214",
+   "row": "the hundredth Fourth"
+  },
+  {
+   "id": "centen",
+   "kind": "print",
+   "src": "raw/1s01695u.tif",
+   "crop": [
+    520,
+    200,
+    2480,
+    2050
+   ],
+   "horizon": 1100,
+   "nomask": true,
+   "inches": 6,
+   "label": "MAIN BUILDING, CENTENNIAL EXHIBITION · PHILADELPHIA 1876",
+   "short": "Centennial Exhibition, Main Building (stereograph)",
+   "catalog": "LC-DIG-stereo-1s01695",
+   "credit": "Centennial Photographic Co., 1876"
+  },
+  {
+   "id": "helena6",
+   "kind": "paper",
+   "src": "raw/helena6.jpg",
+   "label": "HELENA WEEKLY HERALD · 6 JUL 1876",
+   "short": "Helena Weekly Herald, 6 July 1876",
+   "catalog": "LCCN sn84036143",
+   "row": "\"literally true\""
+  },
+  {
+   "id": "sherman",
+   "kind": "print",
+   "src": "raw/56337u.tif",
+   "crop": [
+    100,
+    180,
+    1930,
+    2980
+   ],
+   "horizon": 0,
+   "nomask": true,
+   "inches": 6,
+   "label": "GEN. WILLIAM T. SHERMAN · CARTE DE VISITE",
+   "short": "Gen. William Tecumseh Sherman (photograph)",
+   "catalog": "LC-DIG-ppmsca-56337",
+   "credit": "Library of Congress, Prints & Photographs"
+  },
+  {
+   "id": "natrep7",
+   "kind": "paper",
+   "src": "raw/natrep7.jpg",
+   "label": "NATIONAL REPUBLICAN · WASHINGTON · 7 JUL 1876",
+   "short": "National Republican, 7 July 1876",
+   "catalog": "LCCN sn86053573",
+   "row": "\"confirm the newspaper reports\""
+  },
+  {
+   "id": "star7",
+   "kind": "paper",
+   "src": "raw/star7.jpg",
+   "label": "EVENING STAR · WASHINGTON · 7 JUL 1876",
+   "short": "Evening Star, 7 July 1876",
+   "catalog": "LCCN sn83045462",
+   "row": "261 buried"
+  },
+  {
+   "id": "ford",
+   "kind": "print",
+   "src": "raw/3a13422u.tif",
+   "crop": [
+    100,
+    40,
+    1270,
+    1500
+   ],
+   "horizon": 500,
+   "nomask": true,
+   "inches": 6,
+   "label": "CAMP AT THE FORD, CUSTER'S BATTLEFIELD · S. J. MORROW",
+   "short": "Captain Sanderson's camp at the ford (S. J. Morrow)",
+   "catalog": "LC-USZ62-11021",
+   "credit": "S. J. Morrow, Yankton, D.T."
+  },
+  {
+   "id": "trib7",
+   "kind": "paper",
+   "src": "raw/trib7.jpg",
+   "label": "NEW-YORK TRIBUNE · 7 JUL 1876",
+   "short": "New-York Tribune, 7 July 1876",
+   "catalog": "LCCN sn83030214",
+   "row": "\"some doubt\""
+  },
+  {
+   "id": "boards",
+   "kind": "print",
+   "src": "raw/1s41973u.tif",
+   "crop": [
+    480,
+    330,
+    2700,
+    2800
+   ],
+   "horizon": 1090,
+   "nomask": true,
+   "inches": 6,
+   "label": "CUSTER'S BATTLEFIELD · LETTERING THE HEAD-BOARDS · 1879",
+   "short": "Custer's battlefield, lettering the head-boards (stereograph)",
+   "catalog": "LC-DIG-stereo-1s41973",
+   "credit": "S. J. Morrow, 1879"
+  },
+  {
+   "id": "custer",
+   "kind": "print",
+   "src": "raw/33129u.tif",
+   "crop": [
+    60,
+    120,
+    3220,
+    4700
+   ],
+   "horizon": 0,
+   "nomask": true,
+   "inches": 7,
+   "label": "GEORGE ARMSTRONG CUSTER",
+   "short": "George Armstrong Custer (photograph)",
+   "catalog": "LC-DIG-ppmsca-33129",
+   "credit": "Library of Congress, Prints & Photographs"
+  }
+ ],
+ "end": {
+  "sub": "How the news of the Little Bighorn reached the army, as printed, July 1876",
+  "credits": [
+   "Library of Congress · Chronicling America (New York Herald, New-York Tribune, National Republican, Evening Star, Helena Weekly Herald, Bozeman Avant Courier)",
+   "Library of Congress · Prints & Photographs (Sheridan, Sherman, Sitting Bull, Centennial Exhibition, S. J. Morrow)",
+   "Casualty figures: National Park Service, Little Bighorn Battlefield National Monument",
+   "Narration: VibeVoice · Piano: Salamander Grand (CC BY 3.0)"
+  ]
+ },
+ "films": {
+  "long": {
+   "size": "1920x1080",
+   "shots": [
+    {
+     "type": "photo",
+     "item": "sheridan",
+     "focus": [
+      1640,
+      1230
+     ],
+     "nf": 0.6,
+     "zoom": 1.15,
+     "drift": [
+      0,
+      -0.2
+     ],
+     "say": "On the morning of July sixth, eighteen seventy six, General Philip Sheridan found out that Custer was dead. He read it in the newspaper. Like everyone else."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       115,
+       1447,
+       581,
+       1473
+      ],
+      [
+       114,
+       1474,
+       582,
+       1500
+      ],
+      [
+       115,
+       1505,
+       184,
+       1524
+      ]
+     ],
+     "say": "That's how the New York Herald put it. He said he had read the painful narrative, in the morning papers."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       115,
+       1554,
+       626,
+       1609
+      ],
+      [
+       161,
+       1584,
+       581,
+       1609
+      ],
+      [
+       112,
+       1611,
+       581,
+       1636
+      ],
+      [
+       114,
+       1638,
+       581,
+       1664
+      ]
+     ],
+     "say": "He had no news at all. The whole thing was a surprise to him, a mystery, and so incredible that he could not believe it."
+    },
+    {
+     "type": "title",
+     "item": "herald7",
+     "title": "Read It in the Papers",
+     "sub": "LITTLE BIGHORN · JULY 1876 · AS PRINTED",
+     "chapterName": "Morning papers",
+     "say": "Sheridan commanded the army's Division of the Missouri. The war against the Lakota and the Northern Cheyenne was his. So how did a newspaper know before he did? And when the papers and the generals disagreed, who turned out to be right?"
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 1",
+     "title": "Every man killed",
+     "chapterName": "Every man killed",
+     "item": "trib6",
+     "say": "Part one. Every man killed."
+    },
+    {
+     "type": "read",
+     "item": "trib6",
+     "boxes": [
+      [
+       1019,
+       1819,
+       1489,
+       1841
+      ],
+      [
+       1136,
+       1868,
+       1369,
+       1885
+      ],
+      [
+       1019,
+       1900,
+       1489,
+       1916
+      ],
+      [
+       1053,
+       1924,
+       1488,
+       1939
+      ],
+      [
+       1052,
+       1949,
+       1385,
+       1962
+      ]
+     ],
+     "say": "The New York Tribune, Thursday morning, July sixth. Fearful massacre by Indians. General Custer killed. Every man killed. Three hundred and fifteen in number."
+    },
+    {
+     "type": "photo",
+     "item": "custer",
+     "focus": [
+      1560,
+      1950
+     ],
+     "nf": 0.6,
+     "zoom": 1.1,
+     "drift": [
+      0,
+      -0.2
+     ],
+     "labels": [
+      {
+       "at": [
+        1560,
+        1250
+       ],
+       "text": "George Armstrong Custer",
+       "sub": "Lt. Col., 7th Cavalry · 1839–1876"
+      }
+     ],
+     "say": "George Armstrong Custer was thirty six. In the Civil War he had been made a general at twenty three, and he was one of the best known soldiers in the country. Now the paper said he was dead, with every man around him."
+    },
+    {
+     "type": "read",
+     "item": "trib6",
+     "boxes": [
+      [
+       1049,
+       2968,
+       1488,
+       2989
+      ],
+      [
+       1018,
+       2992,
+       1489,
+       3012
+      ],
+      [
+       1018,
+       3014,
+       1489,
+       3035
+      ],
+      [
+       1019,
+       3038,
+       1490,
+       3058
+      ]
+     ],
+     "say": "Further down, the source. A dispatch from Bozeman, Montana Territory, dated July third, seven p.m. A Mister Taylor, bearer of dispatches from the Little Horn to Fort Ellis, had arrived that evening."
+    },
+    {
+     "type": "read",
+     "item": "trib6",
+     "boxes": [
+      [
+       1019,
+       3178,
+       1489,
+       3202
+      ],
+      [
+       1021,
+       3203,
+       1489,
+       3230
+      ],
+      [
+       1006,
+       3226,
+       1490,
+       3248
+      ],
+      [
+       1019,
+       3248,
+       1490,
+       3269
+      ],
+      [
+       1006,
+       3272,
+       1490,
+       3292
+      ]
+     ],
+     "card": {
+      "label": "AS PRINTED · 6 JUL 1876",
+      "value": "315",
+      "unit": "killed",
+      "source": "New-York Tribune"
+     },
+     "say": "Custer, and thirteen officers, and every man belonging to the five companies were killed. Reno retreated. The whole number killed, was three hundred and fifteen."
+    },
+    {
+     "type": "table",
+     "item": "trib6",
+     "zoom": 0.8,
+     "say": "Notice what's missing. No army source. No official list. Just a rider, a town in Montana, and a telegraph wire. And three hundred and fifteen is a very exact number for a story like that. Keep it in mind. We'll check it at the end."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 2",
+     "title": "The rider",
+     "chapterName": "The rider",
+     "item": "boz7",
+     "say": "Part two. The rider."
+    },
+    {
+     "type": "photo",
+     "item": "sbull",
+     "focus": [
+      1590,
+      1900
+     ],
+     "nf": 0.5,
+     "zoom": 1.1,
+     "drift": [
+      0,
+      0.2
+     ],
+     "labels": [
+      {
+       "at": [
+        1650,
+        1150
+       ],
+       "text": "Sitting Bull",
+       "sub": "Hunkpapa Lakota · photographed 1884"
+      }
+     ],
+     "say": "First, what had happened. On June twenty fifth, Custer's Seventh Cavalry attacked a large village of Lakota and Northern Cheyenne people, on the Little Bighorn River, in what is now Montana. Sitting Bull, the Hunkpapa Lakota leader, was in that village. The warriors who defended it won the battle."
+    },
+    {
+     "type": "read",
+     "item": "boz7",
+     "boxes": [
+      [
+       661,
+       510,
+       1034,
+       530
+      ],
+      [
+       775,
+       538,
+       914,
+       556
+      ],
+      [
+       651,
+       595,
+       1036,
+       618
+      ],
+      [
+       651,
+       624,
+       975,
+       646
+      ]
+     ],
+     "say": "The papers called it a massacre. This is Bozeman's own weekly, the Avant Courier, on July seventh. The gallant Custer, killed."
+    },
+    {
+     "type": "read",
+     "item": "boz7",
+     "boxes": [
+      [
+       672,
+       824,
+       1040,
+       846
+      ],
+      [
+       650,
+       850,
+       1039,
+       869
+      ],
+      [
+       651,
+       874,
+       1038,
+       893
+      ],
+      [
+       650,
+       898,
+       1042,
+       920
+      ],
+      [
+       650,
+       922,
+       1001,
+       945
+      ]
+     ],
+     "say": "We give below the report of Mister H. M. Taylor, bearer of dispatches from General Gibbon to Fort Ellis. Mister Taylor arrived here Monday evening."
+    },
+    {
+     "type": "table",
+     "item": "boz7",
+     "zoom": 0.75,
+     "say": "That Monday was July third. The battle was eight days old. Taylor was a civilian scout, carrying army mail from Colonel John Gibbon's column. Bozeman had a telegraph. And the next day, the whole country was throwing the biggest party in its history."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 3",
+     "title": "The hundredth Fourth",
+     "chapterName": "The hundredth Fourth",
+     "item": "trib5",
+     "say": "Part three. The hundredth Fourth."
+    },
+    {
+     "type": "read",
+     "item": "trib5",
+     "boxes": [
+      [
+       40,
+       562,
+       512,
+       594
+      ],
+      [
+       40,
+       591,
+       512,
+       621
+      ],
+      [
+       40,
+       620,
+       512,
+       650
+      ]
+     ],
+     "say": "July fifth. The national celebration of the hundredth anniversary of our existence as an independent republic took place yesterday at Philadelphia."
+    },
+    {
+     "type": "photo",
+     "item": "centen",
+     "focus": [
+      1500,
+      1100
+     ],
+     "nf": 0.4,
+     "drift": [
+      0.25,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        1500,
+        700
+       ],
+       "text": "Main Building",
+       "sub": "Centennial Exhibition · Philadelphia, 1876"
+      }
+     ],
+     "say": "Philadelphia was hosting the Centennial Exhibition. This is its Main Building, in eighteen seventy six. That week the city was full of veterans, politicians, and generals. Remember that. It matters in a minute."
+    },
+    {
+     "type": "read",
+     "item": "helena6",
+     "boxes": [
+      [
+       2558,
+       2128,
+       3052,
+       2158
+      ],
+      [
+       2533,
+       2162,
+       3065,
+       2192
+      ],
+      [
+       2534,
+       2196,
+       3064,
+       2229
+      ],
+      [
+       2535,
+       2229,
+       3060,
+       2264
+      ]
+     ],
+     "say": "Out in Helena, Montana, the news arrived in the middle of the party. The news received last evening, of the defeat of Custer, fell upon the festivities of the day, with a gloom that could not be shaken off."
+    },
+    {
+     "type": "read",
+     "item": "helena6",
+     "boxes": [
+      [
+       2535,
+       2261,
+       3062,
+       2296
+      ],
+      [
+       2536,
+       2296,
+       3060,
+       2331
+      ],
+      [
+       2536,
+       2330,
+       3064,
+       2364
+      ]
+     ],
+     "say": "There is only too much reason to believe, that the facts given in the extras of last evening, are literally true."
+    },
+    {
+     "type": "table",
+     "item": "helena6",
+     "zoom": 0.75,
+     "say": "Montana believed it. The men who brought the news were known there. The story went out on the wire, through Salt Lake City, and east. To a hotel in Philadelphia, where the two most senior generals in the army were staying."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 4",
+     "title": "Too terrible",
+     "chapterName": "Too terrible",
+     "item": "herald7",
+     "say": "Part four. Too terrible."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       -26,
+       98,
+       600,
+       246
+      ],
+      [
+       106,
+       253,
+       583,
+       302
+      ],
+      [
+       163,
+       292,
+       521,
+       340
+      ],
+      [
+       112,
+       382,
+       577,
+       429
+      ]
+     ],
+     "say": "The New York Herald, the next morning. The massacre. The gallant cavalry leader's death officially confirmed. An interview with General Sheridan."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       114,
+       1638,
+       581,
+       1664
+      ],
+      [
+       113,
+       1665,
+       580,
+       1688
+      ],
+      [
+       111,
+       1692,
+       580,
+       1719
+      ],
+      [
+       101,
+       1714,
+       578,
+       1746
+      ]
+     ],
+     "say": "He was the more surprised, the Herald wrote, because the news came in such a roundabout way. Why were there no narratives in the New York papers, from the special correspondents?"
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       142,
+       1969,
+       582,
+       1995
+      ],
+      [
+       108,
+       1997,
+       583,
+       2021
+      ],
+      [
+       109,
+       2025,
+       580,
+       2047
+      ],
+      [
+       114,
+       2051,
+       582,
+       2079
+      ],
+      [
+       92,
+       2076,
+       582,
+       2109
+      ],
+      [
+       114,
+       2107,
+       581,
+       2132
+      ],
+      [
+       98,
+       2134,
+       582,
+       2158
+      ]
+     ],
+     "say": "If you will analyze the despatch, you will see that it comes without any of the marks of credence. It does not come to headquarters. It does not come to the leading papers from special correspondents. It appears first in a Salt Lake and Montana paper."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       128,
+       2523,
+       582,
+       2545
+      ],
+      [
+       118,
+       2550,
+       583,
+       2578
+      ],
+      [
+       22,
+       2578,
+       582,
+       2603
+      ],
+      [
+       119,
+       2606,
+       582,
+       2630
+      ],
+      [
+       119,
+       2629,
+       591,
+       2662
+      ],
+      [
+       116,
+       2660,
+       590,
+       2686
+      ],
+      [
+       116,
+       2690,
+       205,
+       2708
+      ]
+     ],
+     "say": "Even if Custer had fallen into an engagement, he said, there would not have been the slaughter here described. A fight was probable, and a defeat possible. But no such defeat, as is here described."
+    },
+    {
+     "type": "photo",
+     "item": "sherman",
+     "focus": [
+      1008,
+      1330
+     ],
+     "nf": 0.6,
+     "zoom": 1.15,
+     "drift": [
+      0,
+      -0.15
+     ],
+     "say": "His superior was in Philadelphia too. William Tecumseh Sherman, the commanding general of the army. The Herald found him at his hotel, coat and boots off, in an easy chair by the window. And before the reporter could ask a thing, Sherman asked him."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       612,
+       2742,
+       1059,
+       2764
+      ],
+      [
+       594,
+       2765,
+       701,
+       2790
+      ]
+     ],
+     "say": "Is it true? What news have you got? What about Custer?"
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       611,
+       2879,
+       1068,
+       2910
+      ],
+      [
+       592,
+       2908,
+       1068,
+       2932
+      ],
+      [
+       595,
+       2936,
+       1058,
+       2958
+      ]
+     ],
+     "say": "It seems almost too terrible to be entirely true. It must be exaggerated. I cannot believe that Custer, and his whole command, would be swept away."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       1087,
+       506,
+       1542,
+       528
+      ],
+      [
+       1072,
+       530,
+       1542,
+       556
+      ],
+      [
+       1070,
+       554,
+       1542,
+       589
+      ],
+      [
+       1070,
+       588,
+       1532,
+       612
+      ]
+     ],
+     "say": "Sherman explained how real news would travel: by telegraph, to Sheridan, and then to him. Even while the General was finishing this sentence, there was a rap at the door, and a telegram was brought to him. The death of Custer was confirmed."
+    },
+    {
+     "type": "table",
+     "item": "herald7",
+     "zoom": 0.8,
+     "say": "The story he had just called exaggerated was confirmed in the middle of the interview. So where had the army's own news been all this time?"
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 5",
+     "title": "Without advices",
+     "chapterName": "Without advices",
+     "item": "natrep7",
+     "say": "Part five. Without advices."
+    },
+    {
+     "type": "read",
+     "item": "natrep7",
+     "boxes": [
+      [
+       985,
+       1243,
+       1554,
+       1271
+      ],
+      [
+       930,
+       1272,
+       1555,
+       1300
+      ],
+      [
+       984,
+       1301,
+       1553,
+       1329
+      ]
+     ],
+     "say": "In Washington, the War Department, as well as the Indian office, was without advices, indicating a possible event of this character."
+    },
+    {
+     "type": "read",
+     "item": "natrep7",
+     "boxes": [
+      [
+       1081,
+       1699,
+       1553,
+       1725
+      ],
+      [
+       931,
+       1722,
+       1553,
+       1750
+      ],
+      [
+       931,
+       1746,
+       1553,
+       1772
+      ]
+     ],
+     "say": "Throughout the day, it was hoped that the reports were idle, or else that they were vastly exaggerated."
+    },
+    {
+     "type": "read",
+     "item": "natrep7",
+     "boxes": [
+      [
+       956,
+       1960,
+       1554,
+       1988
+      ],
+      [
+       931,
+       1984,
+       1554,
+       2011
+      ],
+      [
+       931,
+       2007,
+       1555,
+       2035
+      ],
+      [
+       931,
+       2030,
+       1554,
+       2057
+      ]
+     ],
+     "card": {
+      "label": "TERRY'S DISPATCH · WRITTEN 2 JUL",
+      "value": "6 JUL",
+      "unit": "reached Washington",
+      "source": "National Republican, 7 Jul 1876"
+     },
+     "say": "Then, late in the afternoon, a telegram from Sheridan's staff in Chicago. Dispatches from General Terry, dated at his camp, mouth of Big Horn, July second, confirm the newspaper reports of a fight on the twenty fifth of June, on the Little Big Horn, and of Custer's death."
+    },
+    {
+     "type": "table",
+     "item": "natrep7",
+     "zoom": 0.8,
+     "say": "Confirm the newspaper reports. That's the army's own telegram. General Terry's dispatch was written on July second. It reached the War Department on the afternoon of July sixth. After the papers."
+    },
+    {
+     "type": "read",
+     "item": "star7",
+     "boxes": [
+      [
+       514,
+       2987,
+       963,
+       3021
+      ],
+      [
+       513,
+       3005,
+       963,
+       3036
+      ],
+      [
+       512,
+       3024,
+       962,
+       3053
+      ],
+      [
+       514,
+       3042,
+       958,
+       3068
+      ],
+      [
+       512,
+       3058,
+       962,
+       3085
+      ],
+      [
+       512,
+       3076,
+       966,
+       3101
+      ]
+     ],
+     "say": "Washington's Evening Star printed Sherman's own message that day. The dispatch, sent by Captain Smith to Bismarck, confirms the report of the scout from Fort Ellis. Two hundred and sixty one of the dead are buried, and fifty wounded have been carried from the field to the steamboat."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 6",
+     "title": "Boat against rider",
+     "chapterName": "Boat against rider",
+     "item": "star7",
+     "say": "Part six. Boat against rider."
+    },
+    {
+     "type": "photo",
+     "item": "ford",
+     "focus": [
+      600,
+      700
+     ],
+     "nf": 0.45,
+     "drift": [
+      0.2,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        600,
+        560
+       ],
+       "text": "Camp at the ford",
+       "sub": "Custer's battlefield · photographed a few years later"
+      }
+     ],
+     "say": "Sent to Bismarck. That's the answer. The army's report went with the wounded, down the Bighorn, the Yellowstone and the Missouri, on the steamboat Far West. This photograph, from a few years later, shows how far from anything this place was. The boat reached Bismarck, in Dakota Territory, late on July fifth."
+    },
+    {
+     "type": "read",
+     "item": "boz7",
+     "boxes": [
+      [
+       650,
+       922,
+       1001,
+       945
+      ]
+     ],
+     "say": "Taylor went overland instead, to Fort Ellis and Bozeman, where a telegraph office was waiting. He reached a wire about two days before the boat did."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       111,
+       1692,
+       580,
+       1719
+      ],
+      [
+       101,
+       1714,
+       578,
+       1746
+      ]
+     ],
+     "say": "And Sheridan's question? Why no narratives from the special correspondents? There was one. Mark Kellogg, a reporter writing for the Bismarck Tribune, rode with Custer. He was killed with him, on June twenty fifth."
+    },
+    {
+     "type": "chapter",
+     "kicker": "PART 7",
+     "title": "The count",
+     "chapterName": "The count",
+     "item": "trib6",
+     "say": "Part seven. The count."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "NEW-YORK TRIBUNE · 6 JUL 1876",
+      "quote": "\"The whole number killed was 315.\"",
+      "value": "315",
+      "unit": "killed, as printed"
+     },
+     "b": {
+      "label": "THE RECORD · NATIONAL PARK SERVICE",
+      "quote": "7th Cavalry soldiers, scouts and civilians killed or mortally wounded",
+      "value": "268",
+      "unit": "killed",
+      "source": "NPS, Little Bighorn Battlefield"
+     },
+     "strike": "a",
+     "say": "So, the number. As printed: three hundred and fifteen killed. As counted today by the National Park Service: two hundred and sixty eight soldiers, scouts and civilians. About two hundred and ten of them were in Custer's five companies, and none of those men survived. Lakota and Cheyenne losses are estimated at somewhere between thirty and about a hundred."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       131,
+       2244,
+       583,
+       2270
+      ],
+      [
+       112,
+       2274,
+       581,
+       2296
+      ],
+      [
+       113,
+       2301,
+       581,
+       2326
+      ],
+      [
+       110,
+       2328,
+       582,
+       2353
+      ],
+      [
+       116,
+       2356,
+       580,
+       2382
+      ],
+      [
+       116,
+       2384,
+       536,
+       2409
+      ]
+     ],
+     "say": "Remember what Sheridan said. The story was so horrible that he could only accept it when it came officially. And when the truth was known, it would be found less alarming than is here printed."
+    },
+    {
+     "type": "photo",
+     "item": "boards",
+     "focus": [
+      1600,
+      1500
+     ],
+     "nf": 0.5,
+     "drift": [
+      -0.2,
+      0
+     ],
+     "labels": [
+      {
+       "at": [
+        1600,
+        1250
+       ],
+       "text": "Lettering the head-boards",
+       "sub": "Custer's battlefield · 1879"
+      }
+     ],
+     "say": "On the number, he was right. The papers had it too high. On everything else, the scout was right and the generals were wrong. The defeat they called incredible had happened, much as the rider described it."
+    },
+    {
+     "type": "read",
+     "item": "trib7",
+     "boxes": [
+      [
+       542,
+       1298,
+       998,
+       1322
+      ],
+      [
+       525,
+       1322,
+       997,
+       1349
+      ],
+      [
+       526,
+       1346,
+       1000,
+       1369
+      ],
+      [
+       525,
+       1370,
+       997,
+       1393
+      ],
+      [
+       526,
+       1394,
+       996,
+       1415
+      ]
+     ],
+     "say": "Why did the men in charge doubt it? The Tribune's Washington correspondent printed one reason. It was supposed to be impossible, for four thousand Indians to have been at the point where the battle is said to have taken place."
+    },
+    {
+     "type": "table",
+     "item": "trib7",
+     "zoom": 0.8,
+     "say": "The army had badly misjudged how many people had gathered in that village. And it trusted its own channels, which were running on a riverboat. The rider's story didn't look official. So it didn't look true."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       115,
+       1447,
+       581,
+       1473
+      ],
+      [
+       114,
+       1474,
+       582,
+       1500
+      ],
+      [
+       115,
+       1505,
+       184,
+       1524
+      ]
+     ],
+     "say": "So how did a newspaper know before the general? A scout found a telegraph two days before the army's boat. And the men in charge read it in the morning papers, and called it too terrible to be true. Here's my question. If you had read every man killed on July sixth, with no word from the army, would you have believed it? Tell me in the comments."
+    },
+    {
+     "type": "end",
+     "say": "If you like history told from the papers themselves, give this video a like, and subscribe to As Printed. For what the papers said, and what the archive says."
+    }
+   ]
+  },
+  "short": {
+   "size": "1080x1920",
+   "shots": [
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       112,
+       1611,
+       581,
+       1636
+      ],
+      [
+       114,
+       1638,
+       581,
+       1664
+      ]
+     ],
+     "card": {
+      "label": "AS PRINTED · 7 JUL 1876",
+      "value": "NEW YORK HERALD",
+      "source": "Gen. Sheridan, interviewed"
+     },
+     "say": "So incredible that he could not believe it."
+    },
+    {
+     "type": "photo",
+     "item": "sheridan",
+     "focus": [
+      1640,
+      1230
+     ],
+     "nf": 0.6,
+     "zoom": 1.2,
+     "say": "That's General Sheridan, the man running the war on the northern plains. July eighteen seventy six. He had just read that Custer was dead. In the morning paper. So how did the paper know first?"
+    },
+    {
+     "type": "read",
+     "item": "trib6",
+     "boxes": [
+      [
+       1136,
+       1868,
+       1369,
+       1885
+      ],
+      [
+       1019,
+       1900,
+       1489,
+       1916
+      ],
+      [
+       1053,
+       1924,
+       1488,
+       1939
+      ],
+      [
+       1052,
+       1949,
+       1385,
+       1962
+      ]
+     ],
+     "say": "Custer killed. Every man killed. Three hundred and fifteen."
+    },
+    {
+     "type": "read",
+     "item": "boz7",
+     "boxes": [
+      [
+       650,
+       898,
+       1042,
+       920
+      ],
+      [
+       650,
+       922,
+       1001,
+       945
+      ]
+     ],
+     "say": "The source: a civilian scout, who rode to the telegraph in Bozeman, Montana. Monday evening, July third."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       611,
+       2879,
+       1068,
+       2910
+      ],
+      [
+       592,
+       2908,
+       1068,
+       2932
+      ]
+     ],
+     "say": "General Sherman, in his hotel: it must be exaggerated."
+    },
+    {
+     "type": "read",
+     "item": "herald7",
+     "boxes": [
+      [
+       1072,
+       530,
+       1542,
+       556
+      ],
+      [
+       1070,
+       554,
+       1542,
+       589
+      ],
+      [
+       1070,
+       588,
+       1532,
+       612
+      ]
+     ],
+     "say": "Then, mid-interview, a rap at the door. A telegram. Custer's death, confirmed."
+    },
+    {
+     "type": "read",
+     "item": "natrep7",
+     "boxes": [
+      [
+       931,
+       1984,
+       1554,
+       2011
+      ],
+      [
+       931,
+       2007,
+       1555,
+       2035
+      ],
+      [
+       931,
+       2030,
+       1554,
+       2057
+      ]
+     ],
+     "say": "The army's own dispatch was coming by steamboat. It confirmed, the newspaper reports."
+    },
+    {
+     "type": "compare",
+     "a": {
+      "label": "PRINTED · 6 JUL 1876",
+      "quote": "\"…killed was 315.\"",
+      "value": "315",
+      "unit": "killed"
+     },
+     "b": {
+      "label": "THE RECORD",
+      "quote": "soldiers, scouts and civilians",
+      "value": "268",
+      "unit": "killed",
+      "source": "National Park Service"
+     },
+     "strike": "a",
+     "say": "The papers' count was too high. Two hundred and sixty eight died. But the defeat was real. And the general? He read it in the paper."
+    }
+   ]
+  }
+ }
+}
