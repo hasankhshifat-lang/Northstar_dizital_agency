@@ -1,0 +1,61 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "style": "toon",
+ "background": {
+  "src": "bg_figma.png",
+  "grade": "none",
+  "blur": 0,
+  "darken": 0.0,
+  "side": "top"
+ },
+ "layers": [
+  {
+   "type": "cutout",
+   "src": "mama.png",
+   "x": 640,
+   "y": 700,
+   "h": 780,
+   "outline": "#fff"
+  },
+  {
+   "type": "cutout",
+   "src": "bithi.png",
+   "x": -50,
+   "y": 560,
+   "h": 920,
+   "outline": "#fff"
+  }
+ ],
+ "headline": {
+  "lines": [
+   "চিনি ছাড়াই",
+   "ভাত মিষ্টি?!"
+  ],
+  "accent": [
+   "ভাত মিষ্টি?!"
+  ],
+  "align": "center",
+  "x": 0,
+  "y": 110,
+  "size": 130
+ },
+ "tags": [
+  {
+   "text": "কেউ চিনি দেয়নি!",
+   "x": 640,
+   "y": 480,
+   "variant": "date",
+   "size": 50,
+   "rotate": -4
+  },
+  {
+   "text": "সাইন্টিফিক বিথী",
+   "x": 760,
+   "y": 1530,
+   "variant": "label",
+   "size": 44
+  }
+ ],
+ "guides": false
+}
