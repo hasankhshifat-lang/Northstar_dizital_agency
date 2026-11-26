@@ -1,0 +1,8 @@
+OK   s1 | Researchers filmed doctors in training with their patients... and measured which doctors felt like frauds. → Researchers filmed doctors in training with their patients and measured which doctors felt like frauds. 
+DIFF s2 | A researcher at M I T asked each young doctor how often they had impostor thoughts... the feeling that you're not as good as people think. → A researcher at M.I.T. asked each young doctor how often they had imposter thoughts, the feeling that you're not as good as people think. 
+DIFF s3 | Then the patients rated them. The doctors with more impostor thoughts came out as more empathetic... and better listeners. → Then the patients rated them, the doctors with more imposter thoughts came out as more empathetic and better listeners. 
+OK   s4 | On video, they made more eye contact and nodded more. Feeling unsure made them focus on the patient. → On video they made more eye contact and nodded more. Feeling unsure made them focus on the patient. 
+OK   s5 | But don't wish for the feeling. It also lowered self esteem. The real lesson? Feeling like a fraud is not evidence that you are one. → But don't wish for the feeling, it also lowered self-esteem. The real lesson? Feeling like a fraud is not evidence that you are one. 
+OK   s6 | So next time that voice says they'll find out... maybe what they'll find is someone who listens. → So next time that voice says they'll find out, maybe what they'll find is someone who listens? 
+DIFF s7 | Where does the impostor feeling hit you most? School, work, or somewhere else? → Where does the imposter feeling hit you most? School, work or somewhere else? 
+mismatches: 3 (lang=en, model=small.en)

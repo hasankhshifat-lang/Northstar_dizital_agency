@@ -330,7 +330,7 @@ function star(L, cx, cy, r, t0, o = {}) {   // a five-point star, yellow
 // the smiling mask on a stick, held in front of the face (contact: the stick ends in the hand)
 function mask(L, cx, cy, s, t0, o = {}) {
   const m = L.ell(cx, cy, 62 * s, 74 * s, 0, L.TAU, 40);
-  L.FILL(m, t0); L.MRK([m], { col: o.tint || 'rgba(255,205,40,0.35)', w: 14 }, t0 + 0.06, 0.08); L.INK_(m, { closed: true, w: 3, amp: 0.3 }, t0, 0.14);
+  L.FILL(m, t0); L.MRK([m], { col: o.tint || L.GRY, w: 14 }, t0 + 0.06, 0.08); L.INK_(m, { closed: true, w: 3, amp: 0.3 }, t0, 0.14);
   for (const d of [-1, 1]) { const e = L.ell(cx + d * 22 * s, cy - 14 * s, 12 * s, 7 * s, 0, L.TAU, 14); L.MRK([e], { col: L.INKM(0.85), w: 6, edge: false, op: 'source-over' }, t0 + 0.12, 0.03); }
   L.INK_(L.quad([cx - 30 * s, cy + 22 * s], [cx, cy + 50 * s], [cx + 30 * s, cy + 22 * s]), { w: 3.4, amp: 0.2, passes: 1 }, t0 + 0.15, 0.06);
   if (o.stick) L.INK_(L.line(cx + 10 * s, cy + 74 * s, o.stick[0], o.stick[1]), { w: 4, amp: 0.2, passes: 1 }, t0 + 0.05, 0.06);
@@ -406,6 +406,7 @@ function nod(L, cx, cy, s, t0) { for (let i = 0; i < 2; i++) L.INK_(L.quad([cx +
 function gaze(L, a, b, t0) { return L.INK_(L.line(a[0], a[1], b[0], b[1]), { w: 2.4, amp: 0.4, passes: 1, dash: [10, 10], alpha: 0.7 }, t0, 0.2); }
 function hourglass(L, cx, cy, s, t0) { const P = [[cx - 40 * s, cy - 60 * s], [cx + 40 * s, cy - 60 * s], [cx + 6 * s, cy], [cx + 40 * s, cy + 60 * s], [cx - 40 * s, cy + 60 * s], [cx - 6 * s, cy]]; L.FILL(P, t0); L.INK_(P, { closed: true, w: 3, amp: 0.3 }, t0, 0.12); L.MRK([[[cx - 30 * s, cy + 56 * s], [cx + 30 * s, cy + 56 * s], [cx, cy + 20 * s]]], { col: L.YELD, w: 8, edge: false }, t0 + 0.1, 0.06); L.INK_(L.line(cx - 52 * s, cy - 62 * s, cx + 52 * s, cy - 62 * s), { w: 4, amp: 0.1, passes: 1 }, t0 + 0.14, 0.03); L.INK_(L.line(cx - 52 * s, cy + 62 * s, cx + 52 * s, cy + 62 * s), { w: 4, amp: 0.1, passes: 1 }, t0 + 0.16, 0.03); return t0 + 0.2; }
 
+function neq(L, cx, cy, s, t0) { L.INK_(L.line(cx - 40 * s, cy - 14 * s, cx + 40 * s, cy - 14 * s), { w: 7, amp: 0.2, passes: 1 }, t0, 0.08); L.INK_(L.line(cx - 40 * s, cy + 14 * s, cx + 40 * s, cy + 14 * s), { w: 7, amp: 0.2, passes: 1 }, t0 + 0.08, 0.08); return L.INK_(L.line(cx + 22 * s, cy - 44 * s, cx - 22 * s, cy + 44 * s), { w: 7, amp: 0.2, passes: 1, col: L.YELD }, t0 + 0.16, 0.1); }
 const LONG = {};
 const def = (F, id, block, o, draw) => { F[id] = { block, ...o, draw }; };
 const chapter = (F, id, row, n, title) => {
@@ -423,7 +424,7 @@ def(LONG, 'hook1', blk(0, 1), { purpose: 'payoff first: the feeling named, then 
   S.cam(S.t0 - 0.01, x + 330, y + 470, 1.6, 0.01); S.cam(S.at('research') - 0.4, c.x, c.y, c.z * 1.02, 1.6, 'io');
   const P = L.person(x + 330, y + 860, 2.1, S.t0 - 1.4, { pose: 'hold', you: true, kind: 'worry', look: [0.6, -0.2], hair: 'tuft', k: 0.6 });
   const [hx, hy, r] = P.head;
-  mask(L, hx + r * 0.55, hy + r * 0.1, 1.15, S.t0 - 0.6, { stick: P.hand[1] });
+  mask(L, hx + r * 1.25, hy + r * 0.05, 1.15, S.t0 - 0.6, { stick: P.hand[1] });
   L.bubble(x + 40, y + 60, 560, 90, S.at('fraud') - 0.3, { text: 'they\'ll find out...', size: 40, thought: true, tail: [hx - 10, hy - r * 1.3] });
   card(L, x + 760, y + 150, 760, 150, S.at('common') - 0.4, { lines: [['common', 56]] });
   card(L, x + 760, y + 350, 760, 150, S.at('men') - 0.4, { lines: [['men + women, teens to seniors', 40]] });
@@ -443,7 +444,7 @@ def(LONG, 'hook2', blk(0, 2), { purpose: 'the scene: good news arrives, one seco
   L.bubble(x + 960, y + 470, 560, 90, S.at('mistake') - 0.4, { text: 'they made a mistake', size: 38, tail: [hx + r * 1.9, hy + r * 0.6], shadow: false, tint: 'rgba(150,150,150,0.18)' });
   L.bubble(x + 1000, y + 590, 460, 80, S.at('lucky') - 0.3, { text: 'you just got lucky', size: 34, tail: [hx + r * 1.9, hy + r * 0.7], shadow: false, tint: 'rgba(150,150,150,0.18)' });
   L.react(P, S.at('mistake'), { kind: 'worry', look: [1, 0.2] });
-  L.TXT('wait until they see the real you', x + 900, y + 780, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('real') - 0.4, 0.6);
+  L.TXT('wait until they see the real you', x + 1240, y + 740, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('real') - 0.4, 0.6);
 });
 def(LONG, 'hook3', blk(0, 3), { purpose: 'the promise: four questions, ticked off as the episode will answer them', shot: 'pan right; a notepad with four questions written one by one; slow push', sfx: 'pen; four ticks' }, (S, L) => {
   const [x, y] = blk(0, 3);
@@ -484,7 +485,7 @@ def(LONG, 'c1b', blk(1, 2), { purpose: 'the people: 150+ highly successful women
 def(LONG, 'c1c', blk(1, 3), { purpose: 'what they said: not bright, fooled everyone; success = mistake, luck, overestimated, anything but ability', shot: 'pan right; one woman lifts the smiling mask to her face; around her, three labels point at the trophy; ABILITY is written and crossed out; push on the cross-out', sfx: 'pen; a hard scratch on the cross-out' }, (S, L) => {
   const [x, y] = blk(1, 3);
   const P = L.person(x + 380, y + 860, 1.9, S.t0 - 0.2, { pose: 'hold', kind: 'worry', look: [1, -0.2], hair: 'long', k: 0.5 });
-  const [hx, hy, r] = P.head; mask(L, hx + r * 0.5, hy + r * 0.1, 1.05, S.at('fooled') - 0.5, { stick: P.hand[1] });
+  const [hx, hy, r] = P.head; mask(L, hx + r * 1.25, hy + r * 0.05, 1.05, S.at('fooled') - 0.5, { stick: P.hand[1] });
   L.TXT('"not really bright"', x + 1000, y + 140, 46, { f: 'KB', align: 'center' }, S.at('bright') - 0.4, 0.5);
   trophy(L, x + 1050, y + 640, 1.1, S.at('success') - 0.4);
   L.TXT('a mistake', x + 760, y + 360, 42, { f: 'KB', align: 'center' }, S.at('mistake') - 0.2, 0.3); L.inkArrow([[x + 800, y + 390], [x + 990, y + 470]], { w: 3 }, S.at('mistake'), 0.15);
@@ -496,8 +497,8 @@ def(LONG, 'c1d', blk(1, 4), { purpose: 'the name: impostor phenomenon; not a syn
   const [x, y] = blk(1, 4);
   L.TXT('the impostor phenomenon', x + 800, y + 220, 84, { f: 'KB', align: 'center' }, S.at('impostor') - 0.4, 0.8);
   L.swash(x + 420, y + 250, x + 1180, S.at('notice') - 0.2, 0.3);
-  L.TXT('syndrome', x + 420, y + 480, 54, { f: 'PH', align: 'center' }, S.at('syndrome') - 0.3, 0.3); L.cross(x + 420, y + 465, 3.4, S.at('syndrome') + 0.1);
-  L.TXT('disorder', x + 1180, y + 480, 54, { f: 'PH', align: 'center' }, S.at('disorder') - 0.3, 0.3); L.cross(x + 1180, y + 465, 3.4, S.at('disorder') + 0.1);
+  L.TXT('syndrome', x + 420, y + 480, 54, { f: 'PH', align: 'center' }, S.at('syndrome') - 0.3, 0.3); L.cross(x + 420, y + 465, 7, S.at('syndrome') + 0.1);
+  L.TXT('disorder', x + 1180, y + 480, 54, { f: 'PH', align: 'center' }, S.at('disorder') - 0.3, 0.3); L.cross(x + 1180, y + 465, 7, S.at('disorder') + 0.1);
   L.TXT('an experience', x + 800, y + 720, 70, { f: 'KB', align: 'center' }, S.at('experience') - 0.4, 0.4); L.loop(x + 800, y + 700, 300, 80, S.at('lots') - 0.2, 0.4);
   for (let i = 0; i < 6; i++) L.head(x + 260 + i * 216, y + 880, 34, S.at('people') - 0.3 + i * 0.05, { kind: 'neutral', look: [0, -1], hair: ['tuft', 'long', 'cap', 'curly', 'bun', 'messy'][i], k: 0.3 });
 });
@@ -554,8 +555,8 @@ def(LONG, 'c2b', blk(2, 2), { purpose: 'men and women: Clance saw it in men too;
   const [x, y] = blk(2, 2);
   const A = L.person(x + 330, y + 700, 1.6, S.at('men') - 0.5, { pose: 'hold', kind: 'worry', look: [1, 0], hair: 'cap', k: 0.5 });
   const B2 = L.person(x + 760, y + 700, 1.6, S.at('women') - 0.5, { pose: 'hold', kind: 'worry', look: [-1, 0], hair: 'long', k: 0.5 });
-  mask(L, A.head[0] + A.head[2] * 0.5, A.head[1] + A.head[2] * 0.1, 0.85, S.at('men', 2) - 0.2, { stick: A.hand[1] });
-  mask(L, B2.head[0] - B2.head[2] * 0.5, B2.head[1] + B2.head[2] * 0.1, 0.85, S.at('women', 2) - 0.2, { stick: B2.hand[1] });
+  mask(L, A.head[0] + A.head[2] * 1.25, A.head[1], 0.85, S.at('men', 2) - 0.2, { stick: A.hand[1] });
+  mask(L, B2.head[0] - B2.head[2] * 1.25, B2.head[1], 0.85, S.at('women', 2) - 0.2, { stick: B2.hand[1] });
   L.TXT('both', x + 545, y + 120, 64, { f: 'KB', align: 'center' }, S.at('both') - 0.2, 0.3);
   L.bubble(x + 960, y + 120, 560, 140, S.at('certainly') - 0.5, { text: '"seen it in men too"', size: 40 });
   L.TXT('Clance', x + 1240, y + 310, 34, { f: 'PH', align: 'center', col: L.INK2 }, S.at('certainly'), 0.2);
@@ -599,8 +600,8 @@ def(LONG, 'c2f', blk(2, 6), { purpose: 'why so wide: questionnaires and cutoffs;
   L.TXT('who counts?', x + 800, y + 110, 60, { f: 'KB', align: 'center' }, S.at('counts') - 0.3, 0.3);
   const sc = [3, 9, 5, 14, 7, 11, 2, 16, 8, 12, 6, 15, 10, 4, 13, 17, 1, 18, 19, 20];
   for (let i = 0; i < 20; i++) { const cx = x + 140 + i * 66, cy = y + 620 - sc[i] * 16, c = L.ell(cx, cy, 22, 24, 0, L.TAU, 18); L.FILL(c, S.at('questionnaires') - 0.6 + i * 0.03); L.INK_(c, { closed: true, w: 2.2, amp: 0.2, passes: 1 }, S.at('questionnaires') - 0.6 + i * 0.03, 0.04); if (sc[i] > 14) L.MRK([c], { col: L.YEL, w: 10, edge: false }, S.at('cutoffs') + 0.1, 0.05); if (sc[i] > 7 && sc[i] <= 14) L.MRK([c], { col: L.YEL, w: 10, edge: false }, S.at('moves') - 0.1, 0.05); }
-  L.INK_(L.line(x + 110, y + 620 - 14.5 * 16, x + 1490, y + 620 - 14.5 * 16), { w: 3, amp: 0.4, passes: 1, dash: [14, 10] }, S.at('cutoffs') - 0.2, 0.2); L.TXT('5 of 20', x + 1560, y + 620 - 14.5 * 16 + 14, 36, { f: 'KB', align: 'right' }, S.at('cutoffs') + 0.2, 0.2);
-  L.INK_(L.line(x + 110, y + 620 - 7.5 * 16, x + 1490, y + 620 - 7.5 * 16), { w: 3, amp: 0.4, passes: 1, dash: [14, 10] }, S.at('line') - 0.2, 0.2); L.TXT('12 of 20', x + 1560, y + 620 - 7.5 * 16 + 14, 36, { f: 'KB', align: 'right' }, S.at('moves') - 0.1, 0.2);
+  L.INK_(L.line(x + 110, y + 620 - 14.5 * 16, x + 1490, y + 620 - 14.5 * 16), { w: 3, amp: 0.4, passes: 1, dash: [14, 10] }, S.at('cutoffs') - 0.2, 0.2); L.TXT('6 of 20', x + 1560, y + 620 - 14.5 * 16 + 14, 36, { f: 'KB', align: 'right' }, S.at('cutoffs') + 0.2, 0.2);
+  L.INK_(L.line(x + 110, y + 620 - 7.5 * 16, x + 1490, y + 620 - 7.5 * 16), { w: 3, amp: 0.4, passes: 1, dash: [14, 10] }, S.at('line') - 0.2, 0.2); L.TXT('13 of 20', x + 1560, y + 620 - 7.5 * 16 + 14, 36, { f: 'KB', align: 'right' }, S.at('moves') - 0.1, 0.2);
   L.TXT('move the line → the number moves', x + 800, y + 820, 46, { f: 'KB', align: 'center' }, S.at('number') - 0.3, 0.6);
 });
 def(LONG, 'c2f2', blk(2, 7), { purpose: 'balance: even 9% is a lot of people; the exact number is softer than posters suggest', shot: 'pan right; a grid of 100 tiny heads with 9 in yellow; the 70% poster drawn soft and wobbly (dashed); push on the 9', sfx: 'nine soft taps' }, (S, L) => {
@@ -660,7 +661,7 @@ def(LONG, 'c3b', blk(3, 2), { purpose: 'station 1: the task (presentation, exam,
 def(LONG, 'c3c', blk(3, 3), { purpose: 'path A: over-preparing (three times harder, checking again and again)', shot: 'pan right; the road forks; on the left path a desk with a towering stack and the character re-checking with a magnifier, ×3 tag; push on the stack', sfx: 'a page riffle, repeated' }, (S, L) => {
   const [x, y] = blk(3, 3);
   L.INK_(L.line(x + 100, y + 160, x + 500, y + 160), { w: 4, amp: 0.4 }, S.at('ways') - 0.6, 0.15); L.inkArrow([[x + 500, y + 160], [x + 760, y + 300]], { w: 4 }, S.at('ways') - 0.4, 0.2); L.INK_(L.line(x + 500, y + 160, x + 1500, y + 160), { w: 3, amp: 0.4, passes: 1, dash: [12, 10], alpha: 0.5 }, S.at('ways') - 0.3, 0.2);
-  L.TXT('A: over-prepare', x + 900, y + 330, 56, { f: 'KB', align: 'center' }, S.at('prepare') - 0.3, 0.4);
+  L.TXT('A: over-prepare', x + 1150, y + 300, 56, { f: 'KB', align: 'center' }, S.at('prepare') - 0.3, 0.4);
   desk(L, x + 300, y + 700, 760, S.at('work') - 0.6, { h: 880 - 700 });
   for (let i = 0; i < 10; i++) L.sheet(x + 420 + (i % 2) * 6, y + 680 - i * 28, 220, 30, S.at('harder') - 0.6 + i * 0.05, { lines: 0 });
   const P = L.person(x + 860, y + 880, 1.5, S.at('work') - 0.5, { pose: 'sit', kind: 'worry', look: [-1, 0.3], hair: 'tuft', you: true, dir: -1, k: 0.4 });
@@ -681,7 +682,7 @@ def(LONG, 'c3e', blk(3, 5), { purpose: 'success → relief, then the credit goes
   const [x, y] = blk(3, 5);
   L.check(x + 260, y + 180, 4, S.at('well') - 0.3); L.TXT('relief!', x + 460, y + 200, 64, { f: 'KB', align: 'center' }, S.at('relief') - 0.2, 0.3);
   trophy(L, x + 800, y + 520, 1.3, S.at('credit') - 0.5);
-  card(L, x + 140, y + 420, 400, 170, S.at('preparer') - 0.4, { lines: [['"I worked so hard"', 36]] }); L.inkArrow([[x + 690, y + 420], [x + 550, y + 480]], { w: 4 }, S.at('worked') - 0.3, 0.2);
+  card(L, x + 140, y + 420, 400, 170, S.at('prepared') - 0.4, { lines: [['"I worked so hard"', 36]] }); L.inkArrow([[x + 690, y + 420], [x + 550, y + 480]], { w: 4 }, S.at('worked') - 0.3, 0.2);
   card(L, x + 1060, y + 420, 400, 170, S.at('procrastinator') - 0.4, { lines: [['"I got lucky"', 40]] }); L.inkArrow([[x + 910, y + 420], [x + 1050, y + 480]], { w: 4 }, S.at('lucky') - 0.3, 0.2);
   const ab = L.rrect(x + 600, y + 680, 400, 140, 14); L.INK_(ab, { closed: true, w: 3, amp: 1, dash: [12, 10] }, S.at('lucky') + 0.2, 0.2); L.TXT('ability: empty', x + 800, y + 765, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('lucky') + 0.4, 0.3);
 });
@@ -701,7 +702,7 @@ def(LONG, 'c3e2', blk(3, 6), { purpose: 'an "Imagine" example: a week to prepare
 def(LONG, 'c3f', blk(3, 7), { purpose: 'the loop closes: success never filed under ability; next task starts with the same doubt; success feeds the cycle', shot: 'pan right; the full wheel again with its 4 stations labelled (task, doubt, over-prepare/put off, success → effort/luck) and an arrow back to the start; a yellow ring spins around; push on the arrow back', sfx: 'a circling whoosh, then a click on "feeds"' }, (S, L) => {
   const [x, y] = blk(3, 7);
   const pos = ring(L, x + 800, y + 470, 380, S.t0, 0.8);
-  const st = [['task', -Math.PI / 2], ['doubt', 0], ['over-prepare / put off', Math.PI / 2], ['success → "effort" or "luck"', Math.PI]];
+  const st = [['task', -Math.PI / 2], ['doubt', 0], ['over-prepare / put off', Math.PI / 2], ['success → effort / luck', Math.PI]];
   st.forEach(([t, a], i) => { const [px, py] = pos(a); tag(L, px, py, t, 34, S.t0 + 0.3 + i * 0.3, i === 3 ? { tint: L.YEL } : {}); });
   L.TXT('ability?', x + 800, y + 470, 50, { f: 'KB', align: 'center' }, S.at('ability') - 0.3, 0.3); L.cross(x + 800, y + 455, 3.0, S.at('ability') + 0.1);
   L.loop(x + 800, y + 470, 470, 380, S.at('feeds') - 0.4, 0.7, { w: 8 });
@@ -791,7 +792,7 @@ def(LONG, 'c4d', blk(4, 4), { purpose: 'on video: more eye contact, nodding, ope
   const D = L.person(x + 500, y + 900, 2.4, S.t0 - 0.2, { pose: 'shrug', kind: 'smile', look: [1, 0], hair: 'tuft', k: 0.4 }); stetho(L, D, S.t0);
   const Pt = L.person(x + 1100, y + 900, 2.4, S.t0 - 0.1, { pose: 'stand', kind: 'content', look: [-1, 0], hair: 'bun', k: 0.4 });
   gaze(L, [D.head[0] + 30, D.head[1]], [Pt.head[0] - 30, Pt.head[1]], S.at('eye') - 0.2); L.TXT('eye contact', x + 800, D.head[1] - 120, 44, { f: 'KB', align: 'center' }, S.at('contact') - 0.2, 0.3);
-  nod(L, D.head[0] + D.head[2], D.head[1] - 10, 1.6, S.at('nodded') - 0.2); L.TXT('nods', D.head[0] + 170, D.head[1] - 120, 40, { f: 'KB', align: 'center' }, S.at('nodded'), 0.2);
+  nod(L, D.head[0] + D.head[2], D.head[1] - 10, 1.6, S.at('nodded') - 0.2); L.TXT('nods', D.head[0] + 190, D.head[1] + 70, 40, { f: 'KB', align: 'center' }, S.at('nodded'), 0.2);
   L.TXT('open hands', x + 260, y + 520, 40, { f: 'KB', align: 'center' }, S.at('gestures') - 0.3, 0.3); L.sparks(D.hand[0][0], D.hand[0][1], 30, 50, [-2.6, -2.0], S.at('open') - 0.1, 0.1);
   L.TXT('paying attention', x + 800, y + 140, 54, { f: 'KB', align: 'center' }, S.at('attention') - 0.3, 0.4);
 });
@@ -821,8 +822,7 @@ def(LONG, 'c4g', blk(4, 7), { purpose: 'takeaway: the feeling is not evidence; f
   L.TXT('the feeling is not evidence', x + 800, y + 140, 62, { f: 'KB', align: 'center' }, S.at('evidence') - 0.4, 0.6);
   card(L, x + 120, y + 330, 580, 300, S.at('feeling', 2) - 0.4, { lines: [['feeling', 46, 'PH'], ['like a fraud', 54]] });
   card(L, x + 900, y + 330, 580, 300, S.at('being') - 0.4, { lines: [['being', 46, 'PH'], ['a fraud', 54]] });
-  L.TXT('≠', x + 800, y + 520, 160, { f: 'KB', align: 'center' }, S.at('different') - 0.3, 0.3);
-  L.swash(x + 640, y + 560, x + 960, S.at('different'), 0.2);
+  neq(L, x + 800, y + 480, 1.6, S.at('different') - 0.3);
   L.TXT('two very different things', x + 800, y + 800, 46, { f: 'PH', align: 'center', col: L.INK2 }, S.at('things') - 0.3, 0.5);
 });
 def(LONG, 'c4h', blk(4, 8), { purpose: 'the strange part: the feeling can make you the person who pays most attention to others', shot: 'pan right; a meeting table from above, everyone talking (bubbles) and one masked figure leaning in with a yellow attention halo; push on them', sfx: 'room chatter, then quiet on "attention"' }, (S, L) => {
@@ -907,8 +907,8 @@ def(LONG, 'end1', blk(0, 2), { purpose: 'payoff: whip back to the good-news mome
   const B = blk(0, 2), [x, y] = B, c = S.fit(B);
   S.cam(S.t0 - 0.2, (x + 800 + blk(5, 6)[0] + 800) / 2, (y + 450 + 5 * GY + 450) / 2, 0.13, 1.1, 'io');
   S.cam(S.t0 + 0.9, c.x, c.y, c.z, 1.2, 'io');
-  S.cam(S.at('mistake') - 1.2, x + 1000, y + 480, c.z * 1.3, Math.max(1, S.end - S.at('mistake') + 1.2), 'sin');
-  L.TXT('the same quiet voice...', x + 330, y + 120, 42, { f: 'PH', align: 'center', col: L.INK2 }, S.at('quiet') - 0.3, 0.5);
+  S.cam(S.at('mistake') - 1.2, x + 1000, y + 480, c.z * 1.15, Math.max(1, S.end - S.at('mistake') + 1.2), 'sin');
+  L.TXT('the same quiet voice...', x + 620, y + 190, 42, { f: 'PH', align: 'center', col: L.INK2 }, S.at('quiet') - 0.3, 0.5);
 });
 def(LONG, 'end2', blk(0, 5), { purpose: 'the line to remember: common, not a diagnosis, ignores evidence, not the truth; you probably did the work', shot: 'whip right; the character lowers the mask and puts it down on a desk beside the letter; the grey voice shrinks to a dot; the trophy gets a label "you did this"; push on the face', sfx: 'whoosh; a soft clack as the mask is put down; a warm final pluck', ease: 'q' }, (S, L) => {
   const [x, y] = blk(0, 5);
@@ -954,10 +954,9 @@ def(SHORT, 's1', sblk(0), { purpose: 'hook in the first second (EXP-overthinking
 });
 def(SHORT, 's2', sblk(1), { purpose: 'who: Basima Tewfik (MIT); measured impostor thoughts per doctor', shot: 'pan right; name card, then a row of doctors each with a small meter above the head filling to different levels; push on the fullest meter', sfx: 'pen; three rising plucks' }, (S, L) => {
   const [x, y] = sblk(1);
-  card(L, x + 80, y + 80, 740, 150, S.at('tewfik') - 0.4, { lines: [['Basima Tewfik · MIT', 50]] });
+  card(L, x + 80, y + 80, 740, 150, S.at('researcher') - 0.4, { lines: [['Basima Tewfik · MIT', 50]] });
   [0.3, 0.9, 0.6].forEach((v, i) => { const P = L.person(x + 180 + i * 270, y + 900, 1.2, S.at('doctor') - 0.5 + i * 0.12, { kind: v > 0.8 ? 'worry' : 'neutral', look: [0, -0.5], hair: ['tuft', 'long', 'cap'][i], k: 0.3 }); stetho(L, P, S.at('doctor') - 0.2 + i * 0.12); thermo(L, x + 180 + i * 270, y + 560, 180, v, S.at('impostor') - 0.3 + i * 0.1); });
   L.TXT('impostor thoughts', x + 450, y + 300, 50, { f: 'KB', align: 'center' }, S.at('thoughts') - 0.3, 0.4);
-  L.TXT('"not as good as people think"', x + 450, y + 1060, 40, { f: 'PH', align: 'center', col: L.INK2 }, S.at('good') - 0.4, 0.6);
 });
 def(SHORT, 's3', sblk(2), { purpose: 'result: patients rated the high-impostor doctors more empathetic and better listeners', shot: 'pan right; a patient holds a rating card, stars fill beside the doctor with the full meter; two ticks; push on the stars', sfx: 'star plings; two ticks' }, (S, L) => {
   const [x, y] = sblk(2);
@@ -982,7 +981,7 @@ def(SHORT, 's5', sblk(4), { purpose: 'caveat + lesson: don\'t wish for it (lower
   L.TXT("don't wish for it", x + 450, y + 90, 54, { f: 'KB', align: 'center' }, S.at('wish') - 0.3, 0.4);
   card(L, x + 60, y + 600, 340, 220, S.at('feeling') - 0.4, { lines: [['feeling', 36, 'PH'], ['a fraud', 46]] });
   card(L, x + 500, y + 600, 340, 220, S.at('evidence') - 0.4, { lines: [['being', 36, 'PH'], ['a fraud', 46]] });
-  L.TXT('≠', x + 450, y + 740, 110, { f: 'KB', align: 'center' }, S.at('evidence') - 0.1, 0.2);
+  neq(L, x + 450, y + 710, 1.0, S.at('evidence') - 0.1);
 });
 def(SHORT, 's6', sblk(5), { purpose: 'loop back to the hook: the doctor behind the camera\'s gaze; "they\'ll find out" → "someone who listens"', shot: 'pan right; the same camera and REC light; the doctor\'s thought bubble changes from "fraud?" to a listening ear; push on the ear', sfx: 'the camera beep again (loop); a warm pluck' }, (S, L) => {
   const [x, y] = sblk(5);
@@ -990,8 +989,8 @@ def(SHORT, 's6', sblk(5), { purpose: 'loop back to the hook: the doctor behind t
   const rd = L.ell(x + 140, y + 185, 10, 10, 0, L.TAU, 12); L.MRK([rd], { col: L.YELD, w: 10, edge: false }, S.t0 + 0.1, 0.04);
   const D = L.person(x + 450, y + 1000, 1.8, S.t0 + 0.1, { kind: 'content', look: [0, 0], hair: 'tuft', k: 0.4 }); stetho(L, D, S.t0 + 0.3);
   L.bubble(x + 420, y + 160, 400, 90, S.at('voice') - 0.3, { text: "they'll find out", size: 40, shadow: false, tint: 'rgba(150,150,150,0.18)' });
-  ear(L, x + 450, y + 470, 1.8, S.at('listens') - 0.5);
-  L.TXT('someone who listens', x + 450, y + 680, 56, { f: 'KB', align: 'center' }, S.at('listens') - 0.3, 0.4);
+  ear(L, x + 440, y + 400, 1.6, S.at('listens') - 0.5);
+  L.TXT('someone who listens', x + 450, y + 590, 56, { f: 'KB', align: 'center' }, S.at('listens') - 0.3, 0.4);
 });
 def(SHORT, 's7', sblk(6), { purpose: 'one comment question', shot: 'pan right; hold on the question bubble', sfx: 'pen; closing kalimba' }, (S, L) => {
   const [x, y] = sblk(6);
