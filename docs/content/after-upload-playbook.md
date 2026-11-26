@@ -1,18 +1,104 @@
-# After-upload playbook: 9 steps for every YouTube video (owner, 2026-11-25)
+# Video playbook: 6 steps before upload + 9 steps after (owner, 2026-11-25/26)
 
-Owner: "Now follow all the steps for my YouTube channels as default." Source: the video "9 Things You Must Do After
-Uploading a YouTube Video" (8WrFkUODe1w; transcript in the session of 2026-11-25). Its numbers are one strategist's
-experience, not YouTube policy, so we treat them as **defaults and starting benchmarks**, measured with
-`growth.py` like everything else and changed when our own data says so.
+Owner: "Now follow all the steps for my YouTube channels as default" (after-upload, 2026-11-25) and "Follow the steps
+for making videos for all of my YouTube channels and FB pages, make them as default" (before-upload, 2026-11-26).
+Sources: "9 Things You Must Do After Uploading a YouTube Video" (8WrFkUODe1w) and "Stop Uploading Videos Like This,
+Do These 6 Things First" (hEokaxsqaYo), same strategist; transcripts in the sessions of those dates. Their numbers are
+one strategist's experience, not YouTube policy, so we treat them as **defaults and starting benchmarks**, measured
+with `growth.py` like everything else and changed when our own data says so.
 
-Applies to **every channel** (Which Life Next, As Printed, The Overthinking Pad, Foot All FC), in chat and in every
-scheduled task. **The compliance rulebook (`youtube-monetization-compliance.md`) wins** over anything here; fixed
-slots, approval rules and channel formats in CLAUDE.md stay as they are except where this file says otherwise.
+Applies to **every channel** (Which Life Next, As Printed, The Overthinking Pad, Foot All FC) **and every Facebook
+Page** (see the Facebook sections), in chat and in every scheduled task. **The compliance rulebook
+(`youtube-monetization-compliance.md`) wins** over anything here, and so do CLAUDE.md's owner rules (AI disclosure
+YES on every upload, fixed slots, approval rules, channel looks and formats) except where this file says otherwise.
+The scriptwriting rules (topic report + score ≥65), animation rules and the universal thumbnail skill still apply in
+full; this playbook adds to them.
 
 What the API can and can't do (checked 2026-11-25): `yt.py` can check processing/HD (`check`), post a comment
 (`comment`), make and fill playlists (`playlist-create`, `playlist-add`), edit titles/descriptions/thumbnails. It
 **cannot** pin a comment, add end screens, set a Short's "related video", run Test & Compare, or read copyright-check
-results, impressions or CTR. Those are **owner actions in YouTube Studio** (listed in step 10) or come from vidIQ.
+results, impressions or CTR. Studio's Insights → **Research** tab ("What my viewers watched", "Outliers in my niche",
+"Analyze title patterns") is also Studio-only; we use **vidIQ outliers** for the same job. Studio-only items are
+**owner actions** (listed in step 10) or come from vidIQ.
+
+---
+
+# Part A: before upload (6 steps, owner 2026-11-26)
+
+## A1. Topic from proven demand, not a hunch
+
+- Before choosing a topic, research what has already worked, then make it **better and our own** (new research, our
+  angle, our format; never a copy of the other video's script, structure or title: reused/inauthentic-content rules).
+- **YouTube:** `vidiq_outliers` with the channel's niche keyword and `contentType` long or short, `publishedWithin:
+  "oneYear"`, `minOutlierScore: 5`, `minViews: 10000`, `maxViews: 100000`, `maxSubscribers: 10000` (small channels
+  whose video beat their own average because of the **topic**); then a second pass with `minOutlierScore: 10`.
+  `minEngagementRate: 0.02` filters re-upload farms. 5 credits a call: one or two calls per run.
+- **Facebook (Scientific Bithi, Bangla):** `vidiq_instagram_tiktok_outlier_search` with the science topic as `query`,
+  `descriptionLanguage: ["bn"]`, `audienceQuery: "Culture/Region: Bangladesh/Bangla; Global: false; Demographics:
+  school students classes 6-10 and families;"`, `outlierScoreMin: 5`, `followersMax: 10000`, `viewsMin: 10000`; plus
+  `vidiq_outliers` (language `hi` or a Bangla keyword) when that finds too little. Which Life Next FB uses its YouTube
+  research.
+- If vidIQ is not connected or out of credits: YouTube Data API search (`yt.py`-style client) for recent videos on
+  the topic, compare each video's views with its channel's average, and say vidIQ was unavailable.
+- Owner (Studio, optional): Insights → Research → "What my viewers watched" shows what our own audience watches
+  elsewhere; the weekly audit asks the owner for a screenshot/export when useful.
+- Write a **topic list of ~10** in the channel's research folder (`youtube-growth/<ch>/research/topic-opportunities/
+  <date>.md`; Bithi: the queue file) with four columns: **topic, that channel's subscribers, the video's views, outlier
+  score** (+ link). Pick the highest-scoring topic we can make best, then run the usual topic report and score (≥65).
+  Organise picks into sets of three (step 3 below).
+
+## A2. Title before the video
+
+- Before the script: write **5 titles**, then check each for: (1) the searched words at the start; (2) curiosity
+  ("I have to see this"); (3) a promise the video really delivers (no clickbait: compliance section 4); (4) the key
+  part inside the first ~40 characters (phones cut the rest). Pick one; keep a curiosity variant for the thumbnail
+  headline or a later repackage. Optional: `vidiq_score_title`; owner can use Studio's "Analyze title patterns".
+- The chosen title is the script's promise: the script must deliver it early (it is also the hook check).
+- Save the 5 titles + the pick and why in the episode folder (`metadata.md`, step A4). Facebook: the same for the
+  video title and the caption's first line (Bangla for Bithi).
+
+## A3. Thumbnail before the video
+
+- Decide the thumbnail concept and headline **before production** (universal thumbnail skill: three concepts, score
+  ≥70): **3–4 words** (never more than 5), one clear eye-catching subject, and it **adds to the title, never repeats
+  it** (title = promise, thumbnail = the emotion/urgency or the visual proof). Plan the shot/frame or asset it needs so
+  production makes it.
+- **Phone test:** put the rendered thumbnail next to 3–5 thumbnails of the research videos (from A1; `vidiq_get_images`
+  or `vidiq_similar_thumbnails`) at phone size and ask honestly which gets clicked; redo if ours loses.
+- Facebook covers: the same (Bithi style B rules stay).
+
+## A4. All details ready before the upload starts
+
+- Write `metadata.md` in the episode folder before uploading: final title; description whose **first two lines** say
+  what the video is about with the searched words, then details, sources (as required), chapters with timestamps
+  (long videos), "Narration voiced with AI."; tags; playlist/set; the end-screen target (A5); the question comment
+  (after step 5); thumbnail file. The upload then copies from it, no improvising.
+- Thumbnail and playlist are set in the same run as the upload. Facebook: caption, title, hashtags, cover and the
+  set's previous video in `post.md`.
+
+## A5. Settings, including the end screen
+
+- Made for kids: **No** (`selfDeclaredMadeForKids=false`, yt.py default) unless a video really is for children.
+- **AI disclosure: YES on every upload** (owner rule 2026-11-17; this overrides the video's advice to answer No).
+  Paid promotion: No (yt.py sets both).
+- Automatic chapters / featured places / automatic concepts: leave on (YouTube defaults); chapters in the description
+  anyway.
+- **End screen (never skipped):** pick the video that naturally comes **next** (the next video of the set, not the
+  most popular one), write it in `metadata.md` and the log row. The API can't set end screens, so the report lists
+  "owner: end screen → <video>" until the owner sets it (or sets a channel-wide end-screen template in Studio:
+  Settings → Upload defaults). The last ~20 s of every long video must leave room for it (no key info or captions
+  there). Shorts: the long video goes in the description (related video = owner, step 10). Facebook: no end screens;
+  the caption links the next/previous video of the set.
+
+## A6. Let the checks finish, then schedule off the round minute
+
+- Upload as private with `--publish-at` at least 2 h ahead, 2–9 min after the slot (step 1 below); wait for
+  `yt.py check` = ready. Copyright and Community Guidelines check results are Studio-only: if the owner reports a
+  claim or the upload shows a rejection/failure reason, don't let it go public; report.
+
+---
+
+# Part B: after upload (9 steps, owner 2026-11-25)
 
 ---
 
@@ -124,7 +210,12 @@ signal used) and an experiment note in `youtube-growth/<ch>/experiments/experime
 
 ---
 
-## Facebook Page videos and Reels: same rules (owner, 2026-11-25)
+## Facebook Page videos and Reels: same rules (owner, 2026-11-25; before-upload steps A1–A6 added 2026-11-26)
+
+Part A applies to Facebook as written in its Facebook notes: A1 topic research (Bithi: Instagram/TikTok outliers in
+Bangla), A2 five titles (title + caption first line), A3 cover decided before production with the phone test, A4
+`post.md` complete before upload, A5 no end screens (caption links the set; no branded-content label), A6 schedule
+off the round minute after processing completes.
 
 Owner: "Same rules goes for fb page videos also." Applies to every video/Reel on our Facebook Pages (Scientific Bithi
 1497857623404891, Which Life Next 1342776542260801, and any other NorthStar Page), in chat and in every scheduled task,

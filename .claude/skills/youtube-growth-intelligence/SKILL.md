@@ -142,6 +142,10 @@ Rules:
 
 ## 4. Research → topic → calendar
 
+**Before-upload steps (owner, 2026-11-26):** topic research starts with Part A of `docs/content/after-upload-playbook.md`
+(A1 vidIQ outlier filters and the 4-column topic list, A2 five titles before the script, A3 thumbnail before
+production, A4 metadata.md, A5 end-screen target). Where it and this section differ, the playbook wins.
+
 **Research before choosing.** Use vidIQ (`vidiq_outliers`, `vidiq_trending_videos`, `vidiq_keyword_research`,
 `vidiq_similar_channels`, `vidiq_channel_videos`), YouTube search and web search. Look at the last 7, 30 and 90
 days. For each candidate, answer:

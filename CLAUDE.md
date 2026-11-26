@@ -17,6 +17,20 @@ The Overthinking Pad, Foot All FC, and the Facebook Pages).
   updates the rulebook's change log and audits the channels. Owner to-do: accept the updated YPP terms in YouTube
   Studio by 2027-01-31 on every monetized channel (YPP updates from 2027-02-01).
 
+## Every video: 6 steps before upload (owner, 2026-11-26)
+
+Owner: "Follow the steps for making videos for all of my YouTube channels and FB pages, make them as default." Part A of
+`docs/content/after-upload-playbook.md`, for every YouTube video and every Facebook Page video/Reel, in chat and in every
+scheduled task (compliance rulebook and the owner rules below still win):
+A1. Topic from proven demand: vidIQ outliers (last year, outlier ≥5x/≥10x, 10k–100k views, channels <10k subs; Bithi:
+Instagram/TikTok outliers in Bangla), a ~10-topic list (topic, subs, views, outlier score), then our own angle + the
+usual score ≥65; never copy. A2. Five titles before the script (search words first, curiosity, a promise we deliver,
+key part in ~40 chars). A3. Thumbnail/cover concept before production, 3–4 words that add to the title, phone test next
+to the research thumbnails. A4. `metadata.md` / `post.md` complete before upload (first two description lines with the
+search words, chapters, tags, playlist, end-screen target). A5. Made for kids No, **AI disclosure stays YES**, paid
+promotion No, end screen to the natural next video (Studio-only: listed for the owner; keep the last ~20 s clear).
+A6. Let checks/processing finish; schedule 2–9 min after the slot.
+
 ## After every YouTube upload: the 9-step playbook (owner, 2026-11-25)
 
 Owner: "follow all the steps for my YouTube channels as default." For every video on every channel, in chat and in every
